@@ -1,0 +1,146 @@
+[project]
+name = "frictionless-architect"
+description = "A project for frictionless architecture and design."
+authors = [
+    { name = "Stephan Borg", email = "wolffborg1@gmail.com" }
+]
+readme = "README.md"
+packages = [{include = "frictionless_architect", from = "src"}]
+include = [
+    "config/*",
+    "docs/*",
+    "CHANGELOG.md",
+    "poetry.lock",
+]
+dynamic = ["version"]
+
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "fastapi (>=0.128.0,<0.129.0)",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+docs = [
+    "pdoc (>=16.0.0,<17.0.0)",
+]
+
+[tool.poetry]
+version = "0.0.0"
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^4.11.0"
+snakeviz = "^2.2.2"
+
+[tool.poetry.group.tests.dependencies]
+pytest = ">=9.0.2,<10.0.0"
+pytest-mock = ">=3.15.1,<4.0.0"
+pytest-asyncio = ">=1.3.0,<2.0.0"
+pytest-cov = ">=7.0.0,<8.0.0"
+behave = ">=1.3.3,<2.0.0"
+sentence-transformers = "^5.2.2"
+rapidfuzz = "^3.14.3"
+
+[tool.poetry.group.lint.dependencies]
+types-requests = ">=2.32.4.20250913,<3.0.0"
+types-pyyaml = ">=6.0.12.20250915,<7.0.0"
+mypy = ">=1.19.1,<2.0.0"
+pyright = ">=1.1.407,<2.0.0"
+ruff = ">=0.14.10,<1.0.0"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "poetry"
+update_changelog_on_bump = false
+
+[tool.poetry-dynamic-versioning]
+# Versions derive from git tags prefixed with "v" (e.g., v1.2.3) and follow semver.
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportMissingImports = true
+reportUnusedVariable = "warning"
+reportMissingTypeStubs = "none"
+reportUnknownMemberType = false
+
+[tool.mypy]
+strict = true
+mypy_path = "src"
+packages = ["frictionless_architect", "tests"]
+show_error_codes = true
+ignore_missing_imports = false
+allow_redefinition = false
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+plugins = [
+  "pydantic.mypy"
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "C", "I"]
+ignore = [
+    "E501",
+]
+exclude = [
+    ".venv",
+    ".git",
+    "docs",
+    "build",
+    "dist",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+indent-width = 4
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["./tests"]
+asyncio_default_fixture_loop_scope = "function"
+addopts = "--cov --junitxml='build/unit-tests.xml'"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+branch = true
+source = ["friction_"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
+
+[tool.coverage.html]
+directory = "build/coverage-reports"
+
+[tool.coverage.xml]
+output = "build/coverage.xml"
+
+[tool.behave]
+paths = [
+    "tests/features/"
+]
+
+[tool.markdownlint.config]
+line_length = 120
+no_hard_tabs = true
+MD007 = { indent = 4 }
+unordered_list_style = "dash"
+
+[build-system]
+requires = ["poetry-core>=2.0.0", "poetry-dynamic-versioning>=1.6.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
