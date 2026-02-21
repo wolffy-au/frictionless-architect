@@ -125,25 +125,27 @@ The concept of using autonomous agents to uplift code quality and incrementally 
 * **API Versioning**: Implement a clear versioning strategy (e.g., URL path versioning) for managing API evolution.
 * **Authentication and Authorization**: Define secure mechanisms for authenticating API consumers and authorizing access to resources.
 * **Data Validation**: Utilize `Pydantic V2` for request and response data validation to ensure data integrity.
+* **State Transition Enforcement**: When designing APIs for entities modeled as FSMs, use Pydantic models to define valid states and enforce transition rules. Prefer action-based endpoints (e.g., `/resource/{id}/action`) that trigger state changes as side-effects, rather than direct state updates, to maintain workflow integrity.
 
 ## Software Architectural Patterns
 
 * **Model-View-Controller (MVC)**: A common pattern for structuring applications, separating concerns into model (data and business logic), view (UI), and controller (handles input and updates).
 * **Two-Tier and Three-Tier Architectures**: Understand and apply standard architectural patterns for client-server applications, separating presentation, application logic, and data management layers as appropriate for the solution.
+* **Finite State Machines (FSM)**: Employ FSMs to model entities with distinct states and transitions, ensuring predictable lifecycles, data integrity, and controlled workflows. This pattern is especially useful for entities with complex operational states or governance processes.
 
 ## Domain-Driven Design (DDD)
 
 * **Ubiquitous Language**: Establish and use a common language shared by developers and domain experts throughout the project.
 * **Bounded Contexts**: Define clear boundaries for different parts of the domain model, managing complexity and allowing for independent evolution.
-* **Aggregates and Entities**: Design domain models around aggregates to enforce invariants and manage consistency.
+* **Aggregates and Entities**: Design domain models around aggregates to enforce invariants and manage consistency. FSMs often complement DDD by managing the state of aggregates or entities.
 
 ## Utilities and Frameworks
 
 * **Testing Frameworks**: `pytest`, `pytest-mock`, `behave` (for BDD)
 * **Linters/Formatters**: `Ruff`
 * **Type Checkers**: `MyPy`, `PyRight`
-* **Build/Dependency Management**: `Poetry`
-* **Package Installation/Running**: `UV` (as a fast alternative for package installation)
+* **Build/Dependency Management**: Prefer `uv` for dependency installation and resolution from `pyproject.toml` and `requirements.txt`. Use `Poetry` for comprehensive project management tasks such as building and publishing.
+* **Package Installation/Running**: `UV`
 * **API Framework**: `FastAPI`
 * **UI Frameworks**: `Streamlit`, `Chainlit` (for building interactive UIs and LLM-based applications)
 * **Messaging/Orchestration**: `CrewAI` (implied by usage context)

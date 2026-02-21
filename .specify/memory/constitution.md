@@ -53,6 +53,13 @@ Security is paramount throughout the development lifecycle. We adhere to secure 
 - **Rules**: Never commit sensitive information; validate all user inputs; use environment variables for configuration. Detailed security guidelines are available in `TECHNICAL.md`'s "Security" section.
 - **Rationale**: Protecting data and systems from threats is a fundamental responsibility.
 
+### VI. State Management and Workflow Integrity (Predictable Evolution)
+
+Logic must define clear lifecycles and state transitions for key entities to ensure predictable evolution and auditable workflows. Data integrity must be maintained through controlled state changes, preventing invalid transitions.
+
+- **Rules**: Document entity lifecycles and state transition rules. Implement these rules rigorously. Refer to `TECHNICAL.md` for detailed patterns on implementing state management and workflow control.
+- **Rationale**: Robust state management and enforced workflows enhance system predictability, reliability, audibility, and maintainability, crucial for governance and complex processes.
+
 ## Development Workflow
 
 Our workflow is designed to ensure that every change is intentional and verified. It follows a sequence of:

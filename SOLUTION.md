@@ -105,3 +105,52 @@ This layer establishes the "Rules of the Road" and foundational memory for the p
 ### Summary of Success Criteria
 
 The implementation is successful if a Solution Architect can **curate the DNA** and the platform ensures the **"body"** (the application) remains healthy, resilient, and compliant—even when "emergency surgery" (intentional drift) is required.
+
+---
+
+## Components
+
+   1. Core Engine: Python-based CLI/service for the Specify lifecycle, including PII Anonymization Gateway.
+   2. Data Layer: Postgres for metadata, Neo4j for Knowledge Graph, Policy Engine (Open Policy Agent).
+   3. Frontend: Vite-based dashboard.
+   4. Key Functionalities:
+       * Semantic Graph Integration (OpenAPI/data model ingestion, CBS mapping)
+       * Automated ADR Generator (text scrubbing, conflict detection)
+       * Attestation Workflow (UI for architects)
+       * Real-Time Drift Logic (drift detection, remediation proposals)
+       * Compliance Query Interface (natural-language-to-graph queries)
+   5. Cross-cutting Concerns: Regulatory Compliance (APRA CPS 230, CPS 234), Security (RBAC, encryption, threat modeling), Performance Metrics, Testing Strategies, Documentation Strategy.
+
+  I will propose breaking this down into the following major components and sub-features:
+
+  Proposed Breakdown:
+
+* Component 1: Core Governance Engine
+  * Sub-feature 1.1: CLI/Service Management (Specify lifecycle)
+  * Sub-feature 1.2: PII Anonymization Gateway
+* Component 2: Data & Knowledge Management
+  * Sub-feature 2.1: Metadata Persistence (Postgres integration)
+  * Sub-feature 2.2: Knowledge Graph (Neo4j integration, Ontology management)
+  * Sub-feature 2.3: Semantic Model Integration (OpenAPI/data model ingestion, CBS mapping)
+* Component 3: Policy & Compliance Enforcement
+  * Sub-feature 3.1: Policy Engine Integration (Open Policy Agent/Rego)
+  * Sub-feature 3.2: Regulatory Compliance Automation (CPS 230, CPS 234 enforcement)
+* Component 4: Decision Capture & Management
+  * Sub-feature 4.1: Unstructured Text Ingestion & Processing
+  * Sub-feature 4.2: AI-Assisted ADR Generation
+  * Sub-feature 4.3: ADR Conflict Detection
+  * Sub-feature 4.4: Attestation Workflow (UI for architect sign-off)
+* Component 5: Architecture Monitoring & Drift Management
+  * Sub-feature 5.1: Real-time Drift Detection
+  * Sub-feature 5.2: "Break-Glass" Protocol Implementation
+  * Sub-feature 5.3: Managed Drift Logic & Ticket Generation
+* Component 6: Audit & Query Interface
+  * Sub-feature 6.1: Regulatory Traceability Matrix Generation
+  * Sub-feature 6.2: Natural-Language-to-Graph Query Engine
+* Component 7: Frontend Dashboard
+  * Sub-feature 7.1: Visualization (Digital Twin, System Model)
+  * Sub-feature 7.2: User Interaction (CLI integration, UI for attestation)
+* Component 8: Security & Access Control
+  * Sub-feature 8.1: RBAC Implementation
+  * Sub-feature 8.2: Data Encryption (at rest/transit)
+  * Sub-feature 8.3: Threat Modeling & Platform Scanning
