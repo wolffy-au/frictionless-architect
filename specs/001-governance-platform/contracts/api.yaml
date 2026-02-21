@@ -1,0 +1,415 @@
+openapi: 3.0.0
+info:
+  title: Frictionless Architecture Governance API
+  version: 1.0.0
+  description: API for managing architectural decisions, compliance, and system visualization.
+
+servers:
+  - url: /api/v1
+
+paths:
+  /auth/token:
+    post:
+      summary: Obtain JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    enum: [bearer]
+        "401":
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        "200":
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    enum: [bearer]
+        "401":
+          description: Invalid refresh token
+
+  /adrs:
+    post:
+      summary: Create a new ADR
+      description: Allows creation of new Architecture Decision Records, potentially with AI assistance for drafting.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ADRInput"
+      responses:
+        "201":
+          description: ADR created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ADR"
+        "400":
+          description: Invalid input
+
+    get:
+      summary: List ADRs
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Draft, Under Review, Approved, Superseded]
+          description: Filter ADRs by status
+      responses:
+        "200":
+          description: List of ADRs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ADR"
+
+  /adrs/{id}:
+    get:
+      summary: Get a specific ADR
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the ADR to retrieve
+      responses:
+        "200":
+          description: ADR details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ADR"
+        "404":
+          description: ADR not found
+
+  /adrs/{id}/sign:
+    put:
+      summary: Cryptographically sign an ADR
+      description: Attests to the ADR's content by a human architect.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the ADR to sign
+      responses:
+        "200":
+          description: ADR signed successfully
+        "404":
+          description: ADR not found
+        "403":
+          description: User not authorized to sign
+
+  /adrs/{id}/upload_transcript:
+    post:
+      summary: Upload transcript for AI analysis
+      description: Uploads raw text (e.g., Slack, whiteboard) for AI-assisted ADR drafting.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the ADR to associate the transcript with
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        "202":
+          description: Transcript received for processing
+        "400":
+          description: Invalid input
+        "404":
+          description: ADR not found
+
+  /model/semantic:
+    get:
+      summary: Query the Semantic System Model
+      description: Retrieve information about microservices, data domains, CBS, and regulations.
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Natural language query for the model
+      responses:
+        "200":
+          description: Query results
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Flexible schema for graph query results
+        "400":
+          description: Invalid query
+
+  /model/cbs:
+    get:
+      summary: List Critical Business Services (CBS)
+      responses:
+        "200":
+          description: List of CBS
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CBS"
+
+  /compliance/matrix:
+    get:
+      summary: Query the Regulatory Traceability Matrix
+      description: Supports natural-language queries for compliance data.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Natural language query for compliance information
+      responses:
+        "200":
+          description: Compliance query results
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Flexible schema for compliance query results
+        "400":
+          description: Invalid query
+        "503":
+          description: Service temporarily unavailable
+
+  /compliance/regulations:
+    get:
+      summary: List supported regulations
+      responses:
+        "200":
+          description: List of supported regulations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /status/drift:
+    get:
+      summary: Get architectural drift status
+      description: Real-time monitoring of deviations from the "as-designed" state.
+      responses:
+        "200":
+          description: Drift status information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_drifting:
+                    type: boolean
+                  deviations:
+                    type: array
+                    items:
+                      type: string
+        "503":
+          description: Monitoring service unavailable
+
+  /incident/break_glass:
+    post:
+      summary: Request "Break-Glass" exception
+      description: Allows for intentional, temporary drift during P1 incidents. Requires justification and logging.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                justification:
+                  type: string
+                duration_hours:
+                  type: integer
+                  default: 48
+      responses:
+        "202":
+          description: Exception request accepted for processing
+        "400":
+          description: Invalid request (e.g., missing justification)
+        "409":
+          description: Break-glass already active or not permitted
+
+  /logs/audit:
+    get:
+      summary: Access audit logs
+      description: Retrieves logs related to system operations, changes, and exceptions.
+      parameters:
+        - name: start_time
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter logs from this timestamp
+        - name: end_time
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter logs up to this timestamp
+      responses:
+        "200":
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLogEntry"
+
+components:
+  schemas:
+    ADRInput:
+      type: object
+      properties:
+        title:
+          type: string
+        transcript:
+          type: string
+          description: Raw text transcript for AI analysis (optional)
+      required:
+        - title
+
+    ADR:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          type: string
+          enum: [Draft, Under Review, Approved, Superseded]
+        date:
+          type: string
+          format: date-time
+        rationale:
+          type: string
+        decision:
+          type: string
+        consequences:
+          type: string
+        human_attestation:
+          type: object
+          properties:
+            signer_id:
+              type: string
+            signature:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+          nullable: true
+        transcript_processed:
+          type: boolean
+      required:
+        - id
+        - title
+        - status
+        - date
+        - rationale
+        - decision
+        - consequences
+
+    CBS:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        impact_tolerances:
+          type: object
+          properties:
+            rto:
+              type: string # e.g., "4 hours"
+            rpo:
+              type: string # e.g., "1 hour"
+        mapped_technical_components:
+          type: array
+          items:
+            type: string # References to microservice IDs
+        associated_regulations:
+          type: array
+          items:
+            type: string # References to regulation IDs or names
+      required:
+        - id
+        - name
+        - impact_tolerances
+
+    AuditLogEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        event_type:
+          type: string # e.g., "ADR_CREATED", "BREAK_GLASS_REQUESTED", "USER_LOGIN"
+        user_id:
+          type: string
+        details:
+          type: object
+          description: Additional context about the event
+      required:
+        - timestamp
+        - event_type
