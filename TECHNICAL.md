@@ -1,6 +1,6 @@
 # Technical Specifications and Guidelines
 
-This document consolidates technical specifications, patterns, utilities, and preferred libraries.
+This document consolidates technical specifications, patterns, utilities, and preferred libraries. It provides specific guidance that complements the high-level principles outlined in the *SpecKit Constitution* (`.specify\memory\constitution.md`).
 
 ## Code Style
 
@@ -33,8 +33,7 @@ This document consolidates technical specifications, patterns, utilities, and pr
   * Aim for greater than 90% test coverage.
   * Test positive and negative cases.
   * Use descriptive test function names.
-  * Follow the TDD (Test-Driven Development) principle implicitly by writing tests for new functionality.
-  * (Implied by `pytest` usage) Utilize fixtures and parameterization for efficient testing.
+    * *See SpecKit Constitution II. Testing Standards for core principles.*
 * **Documentation**:
   * Document all public functions with docstrings.
   * Include type hints where appropriate.
@@ -46,24 +45,23 @@ This document consolidates technical specifications, patterns, utilities, and pr
   * Follow semantic versioning.
   * Keep commits small and focused.
   * Use `commitizen` for managing version changes.
+  * Adopt the Conventional Commits specification for commit message structure (e.g., feat, fix, refactor, chore) to ensure consistency and facilitate automated changelog generation.
 * **Security**:
-  * Never commit sensitive information.
-  * Use environment variables for configuration.
-  * Validate all user inputs.
-  * Follow secure coding practices, referencing resources like OWASP guidelines.
+  * *For overarching security principles, refer to SpecKit Constitution V. Security Practices.*
 * **Performance**:
   * Avoid unnecessary computations.
   * Use efficient data structures.
   * Profile code when performance is critical.
   * Consider memory usage for large datasets.
+    * *Refer to SpecKit Constitution IV. Performance Requirements for fundamental guidelines.*
 * **Code Quality**:
   * Keep functions small and focused.
   * Avoid code duplication.
   * Use meaningful variable names.
-  * Follow the DRY (Don't Repeat Yourself) principle.
   * Write readable and maintainable code.
   * Use strict type casting.
   * Use native types (e.g., `list`, `dict`) over `typing` library equivalents (e.g., `List`, `Dict`).
+    * *For broader quality principles, see SpecKit Constitution I. Code Quality.*
 * **Diagramming**:
   * When documenting in UML and C4, use PlantUML.
   * Primarily focus on structural representation.
