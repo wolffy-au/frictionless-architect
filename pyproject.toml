@@ -20,40 +20,49 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 docs = [
     "pdoc (>=16.0.0,<17.0.0)",
 ]
 
+dev = [
+    "commitizen>=4.11.0,<5.0.0",
+    "snakeviz>=2.2.2,<3.0.0",
+    "locust (>=2.43.3,<3.0.0)",
+    "pymarkdownlnt>=0.9.35",
+]
+
+tests = [
+    "pytest>=9.0.2,<10.0.0",
+    "pytest-mock>=3.15.1,<4.0.0",
+    "pytest-asyncio>=1.3.0,<2.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
+    "behave>=1.3.3,<2.0.0",
+    "rapidfuzz>=3.14.3,<4.0.0",
+    "jaraco.classes>=3.4.0,<4.0.0",
+    "jaraco.context>=6.1.1,<7.0.0",
+    "jaraco.functools>=4.4.0,<5.0.0",
+    "pytest-httpx>=0.24.0,<1.0.0",
+]
+
+lint = [
+    "types-requests>=2.32.4.20250913,<3.0.0",
+    "types-pyyaml>=6.0.12.20250915,<7.0.0",
+    "mypy>=1.19.1,<2.0.0",
+    "pyright>=1.1.407,<2.0.0",
+    "ruff>=0.14.10,<1.0.0",
+    "pysonar>=1.3.0.4086",
+]
+
 [tool.poetry]
 version = "0.0.0"
-
-[tool.poetry.group.dev.dependencies]
-commitizen = "^4.11.0"
-snakeviz = "^2.2.2"
-
-[tool.poetry.group.tests.dependencies]
-pytest = ">=9.0.2,<10.0.0"
-pytest-mock = ">=3.15.1,<4.0.0"
-pytest-asyncio = ">=1.3.0,<2.0.0"
-pytest-cov = ">=7.0.0,<8.0.0"
-behave = ">=1.3.3,<2.0.0"
-sentence-transformers = "^5.2.2"
-rapidfuzz = "^3.14.3"
-
-[tool.poetry.group.lint.dependencies]
-types-requests = ">=2.32.4.20250913,<3.0.0"
-types-pyyaml = ">=6.0.12.20250915,<7.0.0"
-mypy = ">=1.19.1,<2.0.0"
-pyright = ">=1.1.407,<2.0.0"
-ruff = ">=0.14.10,<1.0.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "v$version"
 version_scheme = "pep440"
 version_provider = "poetry"
-update_changelog_on_bump = false
+update_changelog_on_bump = true
 
 [tool.poetry-dynamic-versioning]
 # Versions derive from git tags prefixed with "v" (e.g., v1.2.3) and follow semver.
@@ -89,6 +98,7 @@ plugins = [
 
 [tool.ruff]
 line-length = 120
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "C", "I"]
@@ -101,27 +111,47 @@ exclude = [
     "docs",
     "build",
     "dist",
+    "__pycache__",
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    "env",
+    "ENV",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".pytest_cache",
+    "*.log",
+    ".env*",
+    "node_modules",
+    "*.lock",
+    "*.json",
+    "*.md",
 ]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-indent-width = 4
 
 [tool.pytest.ini_options]
 pythonpath = "src"
-testpaths = ["./tests"]
-asyncio_default_fixture_loop_scope = "function"
-addopts = "--cov --junitxml='build/unit-tests.xml'"
+testpaths = ["./tests/unit", "./tests/security", "./tests/integration", "./tests/api"]
+python_files = "*_test.py test_*.py *_spec.py"
+asyncio_default_fixture_loop_scope = "module"
+addopts = """
+--cov=src
+--cov-report=xml:build/coverage.xml
+--cov-report=term-missing 
+--junitxml=build/unit-tests.xml
+"""
 asyncio_mode = "auto"
+cache_dir = "/tmp/.pytest_cache"
 
 [tool.coverage.run]
 branch = true
-source = ["friction_"]
+source = ["src"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 90
 
 [tool.coverage.html]
 directory = "build/coverage-reports"
@@ -134,11 +164,16 @@ paths = [
     "tests/features/"
 ]
 
-[tool.markdownlint.config]
+[tool.pymarkdown]
+# MD010 - no hard tabs
+plugins.md010.enabled = true
+# MD007 - unordered list indentation
+plugins.md007.indent = 4
+# MD004 - unordered list style
+plugins.md004.style = "dash"
+
+[tool.pymarkdown.plugins.md013]
 line_length = 120
-no_hard_tabs = true
-MD007 = { indent = 4 }
-unordered_list_style = "dash"
 
 [build-system]
 requires = ["poetry-core>=2.0.0", "poetry-dynamic-versioning>=1.6.0,<2.0.0"]

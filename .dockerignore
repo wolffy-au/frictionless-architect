@@ -1,0 +1,40 @@
+# Ignore files for Docker builds
+
+# General ignore patterns
+.git/
+.venv
+.env*
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Python specific
+__pycache__/
+*.pyc
+.venv/
+virtualenv/
+*.egg-info/
+dist/
+build/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+
+# Node.js specific (if applicable)
+node_modules/
+
+# IDE/Editor specific
+.vscode/
+.idea/
+
+# Tool specific
+.sonar/
+.sonarlint/
+.codex/
+.gemini/
+.aider/
+.specify/
+.aider.tags.*
+.aider.chat.*

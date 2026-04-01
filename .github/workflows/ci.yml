@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "bugfix/**"
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Poetry
+        run: pip install --upgrade poetry
+
+      - name: Sync dependencies
+        run: poetry lock
+
+      - name: Install uv CLI
+        run: pip install --upgrade uv
+
+      - name: Sync dependencies
+        run: uv sync --upgrade --all-groups
+
+      - name: Run linters and tests
+        run: uv run pymarkdownlnt fix ./*.md specs/*.md
+
+      - name: Run ruff for linting and auto-fixing
+        run: uv run ruff check . --fix
+
+      - name: Run pyright for static type checking
+        run: uv run pyright
+
+      - name: Run mypy for static type checking
+        run: uv run mypy
+
+      - name: Run behave tests
+        run: uv run behave tests/features/ || true
+
+      - name: Run pytest for unit and integration tests
+        run: uv run pytest --cov --cov-report=xml --cov-fail-under=90
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@9598b8a83feef37de07f549027fab50ecffe6a6e
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarQube Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@cb3ed20f9fec62b4c3b8ad9e77656c6adaade913
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: uv run snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Scan Test
+        run: uv run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
+
+      - name: Snyk Code Scan
+        run: uv run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores

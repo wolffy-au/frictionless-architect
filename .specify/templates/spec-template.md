@@ -77,6 +77,8 @@
 
 ## Requirements *(mandatory)*
 
+All requirements must explicitly account for Constitution Principles VII-IX (Financial Data Accuracy, Data Longevity & Interoperability, Cross-Platform Consistency) when applicable.
+
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
   Fill them out with the right functional requirements.

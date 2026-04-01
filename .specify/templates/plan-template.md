@@ -32,6 +32,7 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 [Gates determined based on constitution file]
+Constitution verification now explicitly covers Principles VII-IX: Financial Data Accuracy, Data Longevity & Interoperability, and Cross-Platform Consistency.
 
 ## Project Structure
 
