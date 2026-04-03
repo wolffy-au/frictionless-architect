@@ -33,6 +33,34 @@ This document outlines the key business features and input/output formats, the f
 
 # Frictionless Architecture & Governance Platform
 
+## C4 Context Diagram
+
+A C4 Context view shows how the platform interacts with its primary actors and supporting systems. This diagram positions the platform at the center, connected to architects, developers, operations/compliance teams, and external systems such as policy/knowledge repositories.
+
+```plantuml
+@startuml
+!include <C4/C4_Context>
+title Frictionless Architecture & Governance Platform
+LAYOUT_WITH_LEGEND()
+Person(architect, "Architect", "Defines governance, reviews models, and attests ADRs.")
+Person(developer, "Developer", "Uses CLI for Specify workflows and requests drift exceptions.")
+Person(compliance, "Compliance Officer", "Audits policies and verifies regulatory traceability.")
+System_Ext(policy_engine, "Policy Engine (OPA)", "Evaluates RBAC policies and managed drift rules.")
+System_Ext(graph_db, "Knowledge Graph", "Stores models, ADRs, and traces metadata.")
+System_Ext(ci_cd, "CI/CD Platform", "Triggers policy/chaos/test suites and ingests compliance results.")
+System(system, "Architecture Governance Platform", "Automates Specify lifecycle, drift detection, and compliance reporting.")
+
+Rel(architect, system, "Defines principles, reviews alerts, and signs ADRs.")
+Rel(developer, system, "Runs CLI commands, ingests models, requests drift exceptions.")
+Rel(compliance, system, "Queries traceability matrix and verifies mitigation tickets.")
+Rel(system, policy_engine, "Pushes compliance checks and managed drift policies.")
+Rel(system, graph_db, "Reads/writes semantic model, ADRs, and audit logs.")
+Rel(system, ci_cd, "Feeds policy results and resilience tests, receives automation triggers.")
+Rel(ci_cd, system, "Provides automated execution context and observability data.")
+Rel(system, policy_engine, "Policies drive verification of drift and compliance.")
+@enduml
+```
+
 ## Phase 1: The Project Constitution (Governing Principles)
 
 This layer establishes the "Rules of the Road" and foundational memory for the platform.
