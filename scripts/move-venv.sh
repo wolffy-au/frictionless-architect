@@ -2,14 +2,14 @@
 
 set -e
 
-VENV_DIR="$HOME/.cache/pypoetry/virtualenvs/sdd_cash_manager"
+VENV_DIR="$HOME/.cache/pypoetry/virtualenvs/frictionless-architect"
 
 # create parent directory only
 mkdir -p "$(dirname "$VENV_DIR")"
 
 # create venv if missing
 if [ ! -d "$VENV_DIR" ]; then
-    uv venv "$VENV_DIR"
+    python -m venv "$VENV_DIR"
 fi
 
 # create workspace symlink if missing
@@ -22,4 +22,6 @@ fi
 
 # uv cache clean
 rm uv.lock
+rm poetry.lock
+poetry env use "$VENV_DIR/bin/python"
 uv sync --upgrade --all-groups
