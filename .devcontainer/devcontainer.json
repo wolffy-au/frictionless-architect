@@ -43,7 +43,8 @@
                 "snyk-security.snyk-vulnerability-scanner",
                 "redhat.vscode-yaml",
                 "SonarSource.sonarlint-vscode",
-                "ms-vscode-remote.remote-containers"
+                "ms-vscode-remote.remote-containers",
+                "yzhang.markdown-all-in-one"
             ],
             "settings": {
                 "debug.javascript.autoAttachFilter": "disabled",
