@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,20 +13,24 @@
       background: #f6f6f6;
       color: #202020;
     }
+
     header {
       background: #1b396a;
       color: #fff;
       padding: 1rem;
     }
+
     #warning-banner {
-      background: #fff3cd;
-      color: #291700;
+      background: #fffcd6;
+      color: #1f1600;
       padding: 0.75rem 1rem;
       display: none;
     }
+
     #warning-banner.visible {
       display: block;
     }
+
     #controls {
       display: flex;
       gap: 0.5rem;
@@ -34,6 +39,7 @@
       background: #fff;
       border-bottom: 1px solid #ddd;
     }
+
     #controls button {
       border: 1px solid #1b396a;
       background: #fff;
@@ -42,10 +48,12 @@
       font-weight: 600;
       cursor: pointer;
     }
+
     #controls button.active {
       background: #1b396a;
       color: #fff;
     }
+
     #status-panel {
       padding: 0 1rem 1rem;
       background: #fff;
@@ -54,11 +62,13 @@
       flex-wrap: wrap;
       border-bottom: 1px solid #ddd;
     }
+
     #view-container {
       display: flex;
       gap: 1rem;
       padding: 1rem;
     }
+
     .view-pane {
       flex: 1;
       min-height: 420px;
@@ -66,30 +76,38 @@
       border: 1px solid #ddd;
       position: relative;
     }
+
     .hidden {
       display: none;
     }
+
     #diagram-view {
       overflow: hidden;
     }
+
     #diagram-view canvas {
       width: 100% !important;
       height: 100% !important;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
     }
-    th, td {
+
+    th,
+    td {
       padding: 0.4rem;
       border-bottom: 1px solid #eee;
       text-align: left;
     }
+
     #schema-summary {
       padding: 1rem;
       background: #fff;
       border-top: 1px solid #ddd;
     }
+
     .badge {
       display: inline-flex;
       align-items: center;
@@ -99,14 +117,24 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .badge.ok { background: #e4f7e6; color: #1f8b4c; }
-    .badge.warn { background: #fff3d6; color: #a64e00; }
+
+    .badge.ok {
+      background: #e4f7e6;
+      color: #1f8b4c;
+    }
+
+    .badge.warn {
+      background: #fff3d6;
+      color: #a64e00;
+    }
+
     #error-message {
       padding: 1rem;
       color: #c5372e;
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1>Neo4j Schema Visualiser</h1>
@@ -143,7 +171,10 @@
     <h2>Schema Summary</h2>
     <div id="summary-list"></div>
   </div>
-  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"
+    integrity="sha384-lXrzMjLDk3q9l0I/kjqjMcDgfFnHvWTDeWP3DmMqoeOq49/qa8drmlP3OBWN9dQ3"
+    crossorigin="anonymous"></script>
   <script src="/schema-visualizer/static/schema_visualizer.js"></script>
 </body>
+
 </html>
