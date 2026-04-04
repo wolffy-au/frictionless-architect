@@ -30,9 +30,10 @@ echo "Running mypy..."
 # Runs mypy on the src directory for static type checking.
 uv run mypy
 
-# --- Code Quality Checks ---
-# The lockfiles were refreshed above; run any additional quality checks below.
-# uv run pysonar --sonar-token=<token> --exclude .git || true
+# --- Unit Tests ---
+echo "Running pytest unit tests..."
+uv run pytest tests/unit/
+
 
 echo "Pre-commit checks passed successfully."
 echo "✅ Pre-commit checks completed."

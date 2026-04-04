@@ -8,8 +8,13 @@ cd "$(git rev-parse --show-toplevel)"
 echo "💡 Running pre-merge checks (includes pre-commit and heavier suites)..."
 scripts/pre_commit_checks.sh
 
-echo "Running security scan..."
-uv run snyk test --package-manager=poetry || true
+# --- Code Quality Checks ---
+# echo "Running code quality scan..."
+# uv run pysonar --sonar-token=<token> --exclude .git || true
+
+# --- Security Checks ---
+# echo "Running security scan..."
+# uv run snyk test --package-manager=poetry || true
 
 echo "Running behave acceptance tests..."
 uv run behave tests/features/

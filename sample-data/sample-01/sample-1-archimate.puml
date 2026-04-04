@@ -1,0 +1,13 @@
+@startuml Sample_Platform_ArchiMate
+!include <archimate/Archimate>
+title Sample Platform Archimate
+Business_Actor(BusinessActor, "Business Actor\n(A role played by an organisational entity outside the architecture.)")
+Business_Interface(BusinessInterface, "Business Interface\n(Defines the access point exposing business services.)")
+Rel_Serving(BusinessActor, BusinessInterface, "interacts through")
+package "sample-platform Boundary" as system_boundary {
+    Application_Component(AppComponent, "Web Application")
+    Application_Interface(AppInterface, "Web Interface")
+    Rel_Composition_Up(AppComponent, AppInterface, "exposes")`
+}
+Rel_Serving_Up(AppInterface, BusinessInterface, "serves")
+@enduml

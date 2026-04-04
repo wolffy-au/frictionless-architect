@@ -215,3 +215,37 @@ The implementation is successful if a Solution Architect can **curate the DNA** 
   - Sub-feature 8.1: RBAC Implementation
   - Sub-feature 8.2: Data Encryption (at rest/transit)
   - Sub-feature 8.3: Threat Modeling & Platform Scanning
+
+## Proposed Grouping of Features into Cohesive Units
+
+   1. Core Governance Service with PII Handling:
+      - Combine: CLI/Service Management (Specify lifecycle) and PII Anonymization Gateway.
+      - Rationale: This feature encapsulates the foundational service layer responsible for managing the specification process and ensuring data privacy during processing.
+
+   2. Architecture Knowledge Graph & Semantic Model:
+      - Combine: Metadata Persistence (Postgres), Knowledge Graph (Neo4j/Ontology), and Semantic Model Integration (OpenAPI/data model ingestion, CBS mapping).
+      - Rationale: This focuses on the data structure and representation of the architecture, including how external models are integrated and mapped to business context.
+
+   3. AI-Assisted Decision Capture & Attestation:
+      - Combine: Unstructured Text Ingestion, AI-Assisted ADR Generation, ADR Conflict Detection, and Attestation Workflow.
+      - Rationale: This groups the end-to-end lifecycle of capturing, generating, and validating architectural decisions (ADRs).
+
+   4. Automated Policy & Compliance Enforcement:
+      - Combine: Policy Engine Integration (Open Policy Agent/Rego) and Regulatory Compliance Automation (CPS 230, CPS 234 enforcement).
+      - Rationale: This feature set addresses the core requirement of automatically enforcing defined policies and regulations.
+
+   5. Real-Time Architecture Monitoring & Drift Management:
+      - Combine: Real-time Drift Detection, "Break-Glass" Protocol Implementation, and Managed Drift Logic & Ticket Generation.
+      - Rationale: This groups the functionality related to detecting deviations from the desired state and managing them, including emergency procedures.
+
+   6. Compliance Audit & Query Interface:
+      - Combine: Regulatory Traceability Matrix Generation and Natural-Language-to-Graph Query Engine.
+      - Rationale: This focuses on the output and user interaction for auditing and retrieving compliance information.
+
+   7. Architecture Governance Dashboard:
+      - This can stand alone as the Frontend component, encompassing Visualization and User Interaction aspects relevant to the dashboard.
+      - Rationale: A distinct UI feature that brings together various aspects for user interaction and visualization.
+
+   8. Security Foundations:
+      - Combine: RBAC Implementation, Data Encryption (at rest/transit), and Threat Modeling & Platform Scanning.
+      - Rationale: These are foundational security requirements that can be specified as a cohesive set of controls.

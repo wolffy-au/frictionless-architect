@@ -1,0 +1,7 @@
+"ID","Type","Name","Documentation","Specialization"
+"id-8c86d1c3839543f1b17ec1391b165d77","ArchimateModel","sample-1","",""
+"id-e76c10598dd041f5b273ce80a3d6cb4f","BusinessActor","Business Actor","",""
+"id-80fc233748a94adbbc55287777955d7a","BusinessInterface","Business Interface","",""
+"id-47899a4c621741be9204f91d8d9764a5","ApplicationComponent","Application Component","",""
+"id-90c8999bbe354e86a4d597cd5b0160d5","ApplicationInterface","Application Interface","",""
+"id-f4bb742a88f6460ebe95b788f6f7da05","Grouping","Boundary","",""

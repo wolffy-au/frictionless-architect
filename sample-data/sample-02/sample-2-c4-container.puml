@@ -1,0 +1,15 @@
+@startuml Sample_Platform_C4_Container
+!include <C4/C4_Container>
+title Sample Platform
+LAYOUT_WITH_LEGEND()
+Person(BusinessActor, "Business Actor", "A role played by an organisational entity outside the architecture.")
+System_Boundary(system_context_boundary, "sample-platform System Context") {
+    Container(WebApp, "Web Application", "HTML/CSS/JavaScript", "Delivers the static web content and user interface to the business actor's browser.")
+    Container(ApiBackend, "API Backend", "REST API", "Handles business logic and processes requests from the web application.")
+    ContainerDb(Database, "Database", "Relational Database", "Stores and retrieves application data.")
+}
+
+Rel(BusinessActor, WebApp, "interacts through", "interface")
+Rel(WebApp, ApiBackend, "makes API calls to", "HTTPS/JSON")
+Rel(ApiBackend, Database, "reads from and writes to", "SQL")
+@enduml

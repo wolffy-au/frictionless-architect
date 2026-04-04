@@ -1,0 +1,6 @@
+"ID","Type","Name","Documentation","Source","Target","Specialization"
+"id-8824774f5fc448d9a8afedf2209fec32","AssignmentRelationship","","","id-e76c10598dd041f5b273ce80a3d6cb4f","id-80fc233748a94adbbc55287777955d7a",""
+"id-250ec0d1f3f646348da4c43059a4ab15","CompositionRelationship","","","id-f4bb742a88f6460ebe95b788f6f7da05","id-47899a4c621741be9204f91d8d9764a5",""
+"id-adef199ed60e45499324b47638b3e10d","CompositionRelationship","","","id-f4bb742a88f6460ebe95b788f6f7da05","id-90c8999bbe354e86a4d597cd5b0160d5",""
+"id-d5101c537d634fc8a64a7e934180e5e5","CompositionRelationship","","","id-47899a4c621741be9204f91d8d9764a5","id-90c8999bbe354e86a4d597cd5b0160d5",""
+"id-4c263701c363443b882d77a3d1e6d046","ServingRelationship","","","id-80fc233748a94adbbc55287777955d7a","id-90c8999bbe354e86a4d597cd5b0160d5",""

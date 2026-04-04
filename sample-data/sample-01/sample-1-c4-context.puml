@@ -1,0 +1,10 @@
+@startuml Sample_Platform_C4_Context
+!include <C4/C4_Context>
+title Sample Platform Context
+LAYOUT_WITH_LEGEND()
+Person(BusinessActor, "Business Actor", "A role played by an organisational entity outside the architecture.")
+System_Boundary(system_boundary, "sample-platform Boundary") {
+    System(AppComponent, "Application Component", "A modular, deployable and replaceable part of a software system.")
+}
+Rel(BusinessActor, AppComponent, "interacts through", "interface")
+@enduml
