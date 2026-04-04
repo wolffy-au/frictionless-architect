@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable, Mapping, Sequence
-from datetime import datetime
-from typing import Any
+from datetime import datetime, timezone
+from typing import Any, LiteralString, cast
 
-from neo4j import GraphDatabase, Session, basic_auth
+from neo4j import GraphDatabase, ManagedTransaction, basic_auth
 
 CONSTRAINTS = [
     "CREATE CONSTRAINT element_identifier IF NOT EXISTS FOR (e:Element) REQUIRE e.identifier IS UNIQUE",
@@ -27,7 +27,11 @@ INDEXES = [
     "CREATE INDEX diagram_name_index IF NOT EXISTS FOR (d:Diagram) ON (d.name)",
 ]
 
-_LABEL_SANITIZER = re.compile(r"[^A-Za-z0-9_]")
+_LABEL_SANITIZER = re.compile(r"\W")
+
+
+def _run_literal(tx: ManagedTransaction, statement: object, **parameters: Any) -> Any:
+    return tx.run(cast(LiteralString, statement), **parameters)
 
 
 def sanitize_label(value: str | None) -> str:
@@ -62,8 +66,8 @@ class SchemaManager:
                 session.execute_write(self._run_statement, statement)
 
     @staticmethod
-    def _run_statement(tx: Session, statement: str) -> None:
-        tx.run(statement)
+    def _run_statement(tx: ManagedTransaction, statement: str) -> None:
+        _run_literal(tx, statement)
 
     def ingest_payload(self, payload: Mapping[str, Sequence[Mapping[str, Any]]]) -> None:
         elements = payload.get("elements", [])
@@ -82,14 +86,15 @@ class SchemaManager:
                 session.execute_write(self._ingest_diagrams, diagrams)
 
     @staticmethod
-    def _ingest_elements(tx: Session, elements: Iterable[Mapping[str, Any]]) -> None:
+    def _ingest_elements(tx: ManagedTransaction, elements: Iterable[Mapping[str, Any]]) -> None:
         for element in elements:
             identifier = element["identifier"]
             element_type = element.get("type", "Element")
             label = sanitize_label(element_type)
             label_clause = f":{label}" if label else ""
             data_properties = element.get("properties", {}) or {}
-            tx.run(
+            _run_literal(
+                tx,
                 f"""
 MERGE (node:Element {{identifier:$identifier}})
 SET node.type = $type, node.layer = $layer, node.name = $name, node.documentation = $documentation
@@ -105,7 +110,9 @@ SET node += $additional
             )
 
     @staticmethod
-    def _ingest_relationships(tx: Session, relationships: Iterable[Mapping[str, Any]]) -> None:
+    def _ingest_relationships(
+        tx: ManagedTransaction, relationships: Iterable[Mapping[str, Any]]
+    ) -> None:
         for relationship in relationships:
             identifier = relationship["identifier"]
             source_id = relationship["source"]
@@ -113,7 +120,8 @@ SET node += $additional
             rel_type = relationship.get("type", "ArchimateRelationship")
             rel_properties = relationship.get("properties", {}) or {}
 
-            existence = tx.run(
+            existence = _run_literal(
+                tx,
                 """OPTIONAL MATCH (source:Element {identifier:$source})
 OPTIONAL MATCH (target:Element {identifier:$target})
 RETURN source IS NOT NULL AS sourceExists, target IS NOT NULL AS targetExists""",
@@ -131,7 +139,8 @@ RETURN source IS NOT NULL AS sourceExists, target IS NOT NULL AS targetExists"""
                     f"Relationship {identifier} references missing {', '.join(missing)} node(s)."
                 )
 
-            tx.run(
+            _run_literal(
+                tx,
                 """MATCH (source:Element {identifier:$source})
 MATCH (target:Element {identifier:$target})
 MERGE (source)-[rel:ARCHIMATE_RELATIONSHIP {identifier:$identifier}]->(target)
@@ -143,7 +152,8 @@ SET rel.type = $type, rel += $properties""",
                 properties=rel_properties,
             )
 
-            tx.run(
+            _run_literal(
+                tx,
                 """MERGE (meta:RelationshipFact {identifier:$identifier})
 SET meta.type = $type, meta.source_id = $source, meta.target_id = $target, meta += $properties
 WITH meta
@@ -158,11 +168,12 @@ MERGE (meta)-[:TARGET_ELEMENT]->(target)""",
             )
 
     @staticmethod
-    def _ingest_views(tx: Session, views: Iterable[Mapping[str, Any]]) -> None:
+    def _ingest_views(tx: ManagedTransaction, views: Iterable[Mapping[str, Any]]) -> None:
         for view in views:
             identifier = view["identifier"]
             view_props = view.get("properties", {}) or {}
-            tx.run(
+            _run_literal(
+                tx,
                 """MERGE (v:View {identifier:$identifier})
 SET v.name = $name, v.viewpoint = $viewpoint, v.viewpointRef = $viewpointRef
 SET v += $properties""",
@@ -174,7 +185,8 @@ SET v += $properties""",
             )
 
             for element_id in view.get("elements", []):
-                tx.run(
+                _run_literal(
+                    tx,
                     """MATCH (v:View {identifier:$view_id})
 MATCH (element:Element {identifier:$element_id})
 MERGE (v)-[:INCLUDES]->(element)""",
@@ -183,7 +195,8 @@ MERGE (v)-[:INCLUDES]->(element)""",
                 )
 
             for relationship_id in view.get("relationships", []):
-                tx.run(
+                _run_literal(
+                    tx,
                     """MATCH (v:View {identifier:$view_id})
 MATCH (relationship:RelationshipFact {identifier:$relationship_id})
 MERGE (v)-[:HAS_RELATIONSHIP]->(relationship)""",
@@ -192,11 +205,12 @@ MERGE (v)-[:HAS_RELATIONSHIP]->(relationship)""",
                 )
 
     @staticmethod
-    def _ingest_diagrams(tx: Session, diagrams: Iterable[Mapping[str, Any]]) -> None:
+    def _ingest_diagrams(tx: ManagedTransaction, diagrams: Iterable[Mapping[str, Any]]) -> None:
         for diagram in diagrams:
             identifier = diagram["identifier"]
             diagram_props = diagram.get("properties", {}) or {}
-            tx.run(
+            _run_literal(
+                tx,
                 """MERGE (d:Diagram {identifier:$identifier})
 SET d.name = $name, d.viewRef = $view_ref, d.viewpoint = $viewpoint
 SET d += $properties""",
@@ -208,7 +222,8 @@ SET d += $properties""",
             )
 
             if diagram.get("viewRef"):
-                tx.run(
+                _run_literal(
+                    tx,
                     """MATCH (d:Diagram {identifier:$diagram_id})
 MATCH (v:View {identifier:$view_id})
 MERGE (d)-[:REPRESENTS_VIEW]->(v)""",
@@ -217,7 +232,8 @@ MERGE (d)-[:REPRESENTS_VIEW]->(v)""",
                 )
 
             for node_id in diagram.get("nodes", []):
-                tx.run(
+                _run_literal(
+                    tx,
                     """MATCH (d:Diagram {identifier:$diagram_id})
 MATCH (element:Element {identifier:$node_id})
 MERGE (d)-[:HAS_NODE]->(element)""",
@@ -226,7 +242,8 @@ MERGE (d)-[:HAS_NODE]->(element)""",
                 )
 
             for connection_id in diagram.get("connections", []):
-                tx.run(
+                _run_literal(
+                    tx,
                     """MATCH (d:Diagram {identifier:$diagram_id})
 MATCH (relationship:RelationshipFact {identifier:$connection_id})
 MERGE (d)-[:HAS_CONNECTION]->(relationship)""",
@@ -239,12 +256,13 @@ MERGE (d)-[:HAS_CONNECTION]->(relationship)""",
             session.execute_write(self._ensure_schema_version, name)
 
     @staticmethod
-    def _ensure_schema_version(tx: Session, name: str) -> None:
-        tx.run(
+    def _ensure_schema_version(tx: ManagedTransaction, name: str) -> None:
+        _run_literal(
+            tx,
             """MERGE (sv:SchemaVersion {name:$name})
 SET sv.applied_at = datetime($timestamp)""",
             name=name,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
     def run_audit_checks(self) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -254,24 +272,26 @@ SET sv.applied_at = datetime($timestamp)""",
         return missing_relations, orphan_views
 
     @staticmethod
-    def _find_missing_relationship_targets(tx: Session) -> list[dict[str, Any]]:
-        result = tx.run(
+    def _find_missing_relationship_targets(tx: ManagedTransaction) -> list[dict[str, Any]]:
+        result = _run_literal(
+            tx,
             """MATCH (rel:RelationshipFact)
 WITH rel, [(rel.source_id IS NULL) AS sourceMissing, (rel.target_id IS NULL) AS targetMissing]
 WHERE sourceMissing OR targetMissing
 RETURN rel.identifier AS identifier,
-       CASE WHEN rel.source_id IS NULL THEN 'source' ELSE '' END + CASE WHEN rel.target_id IS NULL THEN ' target' ELSE '' END AS missing"""
+       CASE WHEN rel.source_id IS NULL THEN 'source' ELSE '' END + CASE WHEN rel.target_id IS NULL THEN ' target' ELSE '' END AS missing""",
         )
         return [row.data() for row in result]
 
     @staticmethod
-    def _find_orphan_views(tx: Session) -> list[dict[str, Any]]:
-        result = tx.run(
+    def _find_orphan_views(tx: ManagedTransaction) -> list[dict[str, Any]]:
+        result = _run_literal(
+            tx,
             """MATCH (v:View)
 WITH v, size((v)-[:INCLUDES]->(:Element)) AS elements,
      size((v)-[:HAS_RELATIONSHIP]->(:RelationshipFact)) AS relationships
 WHERE elements = 0 OR relationships = 0
 RETURN v.identifier AS identifier,
-       CASE WHEN elements = 0 THEN 'elements' ELSE 'relationships' END AS kind"""
+       CASE WHEN elements = 0 THEN 'elements' ELSE 'relationships' END AS kind""",
         )
         return [row.data() for row in result]

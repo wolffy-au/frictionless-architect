@@ -147,4 +147,3 @@ Key API endpoints covered by tests include:
 - Account merging (`POST /accounts/merge`)
 
 These tests seed deterministic accounts, rely on JWT-authenticated requests, and perform cleanup. Failures indicate regressions and should be investigated by inspecting the logged HTTP response payload. For more advanced filtering or running individual tests, refer to the `pytest` documentation or use its `-k` flag (e.g., `pytest tests/api -k balance`).
-
