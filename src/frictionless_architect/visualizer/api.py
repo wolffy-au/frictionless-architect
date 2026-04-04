@@ -6,10 +6,10 @@ import asyncio
 import time
 from datetime import datetime, timezone
 from functools import lru_cache
-from typing import Any
+from typing import Annotated, Any
 from xml.etree.ElementTree import ParseError
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 from pydantic import BaseModel
 
 from frictionless_architect.visualizer.cache import SchemaCache
@@ -30,6 +30,10 @@ class RefreshInProgress(Exception):
 
 class RefreshRequest(BaseModel):
     source: str | None = None
+
+
+MODEL_SCHEMA_FILE = "archimate3_Model.xsd"
+VIEW_SCHEMA_FILE = "archimate3_View.xsd"
 
 
 class SchemaPayloadService:
@@ -65,6 +69,7 @@ class SchemaPayloadService:
             raise RefreshInProgress()
         estimate = max(500, (self._last_latency_ms or 1200) * 2)
         self._refresh_task = asyncio.create_task(self._background_refresh())
+        await asyncio.sleep(0)
         return estimate
 
     async def _build_and_cache(self) -> dict[str, Any]:
@@ -144,7 +149,7 @@ class SchemaPayloadService:
             "identifier": "schema",
             "name": "ArchiMate Schema",
         }
-        model_payload["source_file"] = "archimate3_Model.xsd"
+        model_payload["source_file"] = MODEL_SCHEMA_FILE
 
         relationship_ids: set[str] = {
             identifier
@@ -159,7 +164,7 @@ class SchemaPayloadService:
         )
         relationships = self._merge_relationships(schema_payload["relationships"], sample_result.relationships, add_warning)
         views = [
-            {**view, "source_file": "archimate3_View.xsd"}
+            {**view, "source_file": VIEW_SCHEMA_FILE}
             for view in sample_result.views
         ]
 
@@ -180,7 +185,7 @@ class SchemaPayloadService:
         add_warning: Any,
         relationship_ids: set[str],
     ) -> list[dict[str, Any]]:
-        model_file = "archimate3_Model.xsd"
+        model_file = MODEL_SCHEMA_FILE
         schema_map = {
             el.get("identifier"): el for el in schema_elements if el.get("identifier")
         }
@@ -218,7 +223,7 @@ class SchemaPayloadService:
         sample_relationships: dict[str, dict[str, Any]],
         add_warning: Any,
     ) -> list[dict[str, Any]]:
-        model_file = "archimate3_Model.xsd"
+        model_file = MODEL_SCHEMA_FILE
         schema_map = {
             rel.get("identifier"): rel for rel in schema_relationships if rel.get("identifier")
         }
@@ -258,18 +263,31 @@ def get_schema_service() -> SchemaPayloadService:
 
 router = APIRouter()
 
-
-@router.get("/schema-payload")
-async def schema_payload(force_reload: bool = Query(False, alias="force_reload")) -> dict[str, Any]:
-        service = get_schema_service()
-        try:
-            return await service.get_payload(force_reload)
-        except PayloadUnavailable as exc:
-            raise HTTPException(status_code=503, detail=str(exc)) from exc
+ForceReloadQuery = Annotated[bool, Query(alias="force_reload")]
+RefreshRequestBody = Annotated[RefreshRequest, Body()]
 
 
-@router.post("/schema-payload/refresh", status_code=202)
-async def schema_payload_refresh(request: RefreshRequest) -> dict[str, Any]:
+@router.get(
+    "/schema-payload",
+    responses={503: {"description": "Schema payload unavailable when both sample data and Neo4j are unreachable"}},
+)
+async def schema_payload(force_reload: ForceReloadQuery = False) -> dict[str, Any]:
+    service = get_schema_service()
+    try:
+        return await service.get_payload(force_reload)
+    except PayloadUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.post(
+    "/schema-payload/refresh",
+    status_code=202,
+    responses={
+        409: {"description": "A refresh is already in progress"},
+        503: {"description": "Schema payload unavailable while refreshing"},
+    },
+)
+async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
     service = get_schema_service()
     try:
         estimated = await service.request_refresh()

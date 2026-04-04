@@ -178,7 +178,12 @@
       const status = await response.json();
       neo4jStatus.textContent = status.neo4j_status || "unknown";
       sampleStatus.textContent = status.sample_file_status || "unknown";
-      cacheAge.textContent = status.cache_age_seconds != null ? `${status.cache_age_seconds}s` : "—";
+      const cacheAgeSeconds = status.cache_age_seconds;
+      if (typeof cacheAgeSeconds === "number") {
+        cacheAge.textContent = `${cacheAgeSeconds}s`;
+      } else {
+        cacheAge.textContent = "—";
+      }
       lastWarning.textContent = status.last_warning || "";
       if (status.last_warning) {
         showWarning(status.last_warning);
