@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neo4j Schema Visualiser</title>
+  <style>
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f6f6f6;
+      color: #202020;
+    }
+    header {
+      background: #1b396a;
+      color: #fff;
+      padding: 1rem;
+    }
+    #warning-banner {
+      background: #f0a500;
+      color: #2b1b00;
+      padding: 0.75rem 1rem;
+      display: none;
+    }
+    #warning-banner.visible {
+      display: block;
+    }
+    #controls {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem;
+      align-items: center;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+    #controls button {
+      border: 1px solid #1b396a;
+      background: #fff;
+      color: #1b396a;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #controls button.active {
+      background: #1b396a;
+      color: #fff;
+    }
+    #status-panel {
+      padding: 0 1rem 1rem;
+      background: #fff;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #ddd;
+    }
+    #view-container {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .view-pane {
+      flex: 1;
+      min-height: 420px;
+      background: #fff;
+      border: 1px solid #ddd;
+      position: relative;
+    }
+    .hidden {
+      display: none;
+    }
+    #diagram-view {
+      overflow: hidden;
+    }
+    #diagram-view canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 0.4rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    #schema-summary {
+      padding: 1rem;
+      background: #fff;
+      border-top: 1px solid #ddd;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge.ok { background: #e4f7e6; color: #1f8b4c; }
+    .badge.warn { background: #fff3d6; color: #a64e00; }
+    #error-message {
+      padding: 1rem;
+      color: #c5372e;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Neo4j Schema Visualiser</h1>
+    <p>Schema definitions and sample coverage in one cohesive view.</p>
+  </header>
+  <div id="warning-banner">{{ warning_text }}</div>
+  <div id="controls">
+    <button type="button" id="diagram-btn" class="active">Diagram</button>
+    <button type="button" id="table-btn">Table</button>
+    <button type="button" id="refresh-btn">Refresh sample</button>
+    <span id="refresh-status" aria-live="polite"></span>
+  </div>
+  <div id="status-panel">
+    <div>Neo4j: <strong id="neo4j-status">loading</strong></div>
+    <div>Sample file: <strong id="sample-status">loading</strong></div>
+    <div>Cache age: <strong id="cache-age">—</strong></div>
+    <div id="last-warning" style="color:#a64e00"></div>
+  </div>
+  <div id="error-message" role="alert" style="display:none"></div>
+  <div id="view-container">
+    <div id="diagram-view" class="view-pane"></div>
+    <div id="table-view" class="view-pane hidden">
+      <section>
+        <h2>Elements</h2>
+        <div id="elements-table"></div>
+      </section>
+      <section>
+        <h2>Relationships</h2>
+        <div id="relationships-table"></div>
+      </section>
+    </div>
+  </div>
+  <div id="schema-summary">
+    <h2>Schema Summary</h2>
+    <div id="summary-list"></div>
+  </div>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <script src="/schema-visualizer/static/schema_visualizer.js"></script>
+</body>
+</html>

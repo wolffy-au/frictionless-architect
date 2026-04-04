@@ -11,9 +11,9 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Purpose**: Prepare the visualiser module, static assets, and configuration wiring for the FastAPI service.
 
-- [ ] T001 [P] Create `src/frictionless_architect/visualizer/__init__.py` with a FastAPI router that mounts the schema visualiser endpoints and exposes the static/template directories.
-- [ ] T002 [P] Add `src/frictionless_architect/visualizer/config.py` to read Neo4j credentials, cache paths, sample-data location, and warning text from `.env` (per quickstart).
-- [ ] T003 [P] Create `src/frictionless_architect/visualizer/static/schema_visualizer.js` and `.../templates/schema_visualizer.html` to host the cytoscape diagram, table view, refresh button, status message, and non-blocking warning banner mentioned in the spec.
+- [x] T001 [P] Create `src/frictionless_architect/visualizer/__init__.py` with a FastAPI router that mounts the schema visualiser endpoints and exposes the static/template directories.
+- [x] T002 [P] Add `src/frictionless_architect/visualizer/config.py` to read Neo4j credentials, cache paths, sample-data location, and warning text from `.env` (per quickstart).
+- [x] T003 [P] Create `src/frictionless_architect/visualizer/static/schema_visualizer.js` and `.../templates/schema_visualizer.html` to host the cytoscape diagram, table view, refresh button, status message, and non-blocking warning banner mentioned in the spec.
 
 ---
 
@@ -21,10 +21,10 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Purpose**: Implement services that load Neo4j/schema metadata, parse the enhanced sample, cache aggregated JSON, and expose the API payloads before user stories begin.
 
-- [ ] T004 [P] Build `src/frictionless_architect/visualizer/sample_parser.py` to parse `sample-data/sample-00/Test Model Full.xml`, extracting elements, relationships, views, node bounds, and diagram connections.
-- [ ] T005 [P] Build `src/frictionless_architect/visualizer/data_loader.py` that connects to Neo4j, collects elements/relationships/views (including schema source file references), merges them with parsed sample data, records `latency_ms`, warnings, and data-source statuses.
-- [ ] T006 [P] Implement `src/frictionless_architect/visualizer/cache.py` to persist the aggregated payload into `.cache/visualiser/schema_payload.json` and read it when Neo4j/sample data are unavailable.
-- [ ] T007 [P] Implement `src/frictionless_architect/visualizer/api.py` controllers for `/schema-payload`, `/schema-payload/refresh`, and `/schema-payload/status` per the contract, using the loader/cache modules, honoring refresh guards, and surfacing warnings/backoff metadata.
+- [x] T004 [P] Build `src/frictionless_architect/visualizer/sample_parser.py` to parse `sample-data/sample-00/Test Model Full.xml`, extracting elements, relationships, views, node bounds, and diagram connections.
+- [x] T005 [P] Build `src/frictionless_architect/visualizer/data_loader.py` that connects to Neo4j, collects elements/relationships/views (including schema source file references), merges them with parsed sample data, records `latency_ms`, warnings, and data-source statuses.
+- [x] T006 [P] Implement `src/frictionless_architect/visualizer/cache.py` to persist the aggregated payload into `.cache/visualiser/schema_payload.json` and read it when Neo4j/sample data are unavailable.
+- [x] T007 [P] Implement `src/frictionless_architect/visualizer/api.py` controllers for `/schema-payload`, `/schema-payload/refresh`, and `/schema-payload/status` per the contract, using the loader/cache modules, honoring refresh guards, and surfacing warnings/backoff metadata.
 
 ---
 
@@ -34,9 +34,9 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Independent Test**: `/schema-payload` returns element/relationship arrays containing `source_file`, sample instances, coverage warnings, and `warnings` includes "Sample data unavailable" when needed per FR-006.
 
-- [ ] T008 [P] [US1] Create `tests/api/test_schema_payload.py` that asserts `/schema-payload` returns element/relationship metadata, includes sample instance identifiers, and populates `warnings` when `Test Model Full.xml` or Neo4j is unavailable.
-- [ ] T009 [US1] Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
-- [ ] T010 [US1] Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
+- [x] T008 [P] [US1] Create `tests/api/test_schema_payload.py` that asserts `/schema-payload` returns element/relationship metadata, includes sample instance identifiers, and populates `warnings` when `Test Model Full.xml` or Neo4j is unavailable.
+- [x] T009 [US1] Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
+- [x] T010 [US1] Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
 
 ---
 
@@ -46,9 +46,9 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Independent Test**: The diagram/table pulls from the same dataset (identical element/relationship counts and attribute lists) returned by `/schema-payload`.
 
-- [ ] T011 [P] [US2] Create `tests/api/test_schema_view_consistency.py` that validates `/schema-payload` contains matching element/relationship data for both diagram nodes and table rows, including layout bounds from `Test Model Full.xml`.
-- [ ] T012 [US2] Extend `schema_visualizer.js` to build the cytoscape diagram from the `views` payload, respecting stored x/y/w/h bounds, and toggle between the diagram and table while showing identical metadata (identifier, label, source file) per FR-003.
-- [ ] T013 [US2] Update `templates/schema_visualizer.html` plus CSS to support switching between diagram and table views while keeping the schema list visible and consistent.
+- [x] T011 [P] [US2] Create `tests/api/test_schema_view_consistency.py` that validates `/schema-payload` contains matching element/relationship data for both diagram nodes and table rows, including layout bounds from `Test Model Full.xml`.
+- [x] T012 [US2] Extend `schema_visualizer.js` to build the cytoscape diagram from the `views` payload, respecting stored x/y/w/h bounds, and toggle between the diagram and table while showing identical metadata (identifier, label, source file) per FR-003.
+- [x] T013 [US2] Update `templates/schema_visualizer.html` plus CSS to support switching between diagram and table views while keeping the schema list visible and consistent.
 
 ---
 
@@ -58,9 +58,9 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Independent Test**: `/schema-payload/status` reports `cache_age_seconds`, `neo4j_status`, `sample_file_status`, and `/schema-payload/refresh` responds with `refresh_started` while respecting the 5-minute retry requirement.
 
-- [ ] T014 [US3] Create `tests/api/test_schema_status.py` asserting `/schema-payload/status` returns freshness/warning metadata and POST `/schema-payload/refresh` returns 202 when idle and 409 if a refresh is running.
-- [ ] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and both honor the retry/backoff rules from the spec.
-- [ ] T016 [US3] Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
+- [x] T014 [US3] Create `tests/api/test_schema_status.py` asserting `/schema-payload/status` returns freshness/warning metadata and POST `/schema-payload/refresh` returns 202 when idle and 409 if a refresh is running.
+- [x] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and both honor the retry/backoff rules from the spec.
+- [x] T016 [US3] Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
 
 ---
 
@@ -68,8 +68,8 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Purpose**: Document the feature, validate quickstart steps, and highlight the new visualiser in repository docs.
 
-- [ ] T017 [P] Update `specs/002-neo4j-schema-ui/quickstart.md` to capture the commands, env vars, access expectations, and warning text discovered while implementing the feature.
-- [ ] T018 [P] Run lint/tests (`ruff`, `pytest tests/api`) and ensure `README.md` or developer docs mention the schema visualiser entry point along with the “Sample data unavailable” warning text.
+- [x] T017 [P] Update `specs/002-neo4j-schema-ui/quickstart.md` to capture the commands, env vars, access expectations, and warning text discovered while implementing the feature.
+- [x] T018 [P] Run lint/tests (`ruff`, `pytest tests/api`) and ensure `README.md` or developer docs mention the schema visualiser entry point along with the “Sample data unavailable” warning text.
 
 ---
 

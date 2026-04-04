@@ -115,6 +115,31 @@ uvicorn src.main:app --reload
 
 The API will be available at `http://127.0.0.1:8000`.
 
+## Schema Visualiser
+
+The Neo4j schema visualiser ships with its own FastAPI entry point. To explore it:
+
+1. Point your `.env` at the Neo4j instance and sample data:
+
+   ```
+   FRICTIONLESS_ARCHITECT_NEO4J_URI=bolt://localhost:7687
+   FRICTIONLESS_ARCHITECT_NEO4J_USER=reader
+   FRICTIONLESS_ARCHITECT_NEO4J_PASSWORD=reader
+   FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
+   FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
+   FRICTIONLESS_ARCHITECT_WARNING_TEXT="Sample data unavailable"
+   ```
+
+2. Start the visualiser service:
+  
+```bash
+   uvicorn frictionless_architect.visualizer:app --reload --port 8100
+   ```
+
+1. Visit `http://127.0.0.1:8100/schema-visualizer` to see the diagram, table, and schema summary driven by `/schema-payload`.
+
+The interface keeps the schema list visible even when the banner reads “Sample data unavailable,” exposes `/schema-payload/refresh` for guaranteed freshness, and posts status info at `/schema-payload/status` so you can monitor cache age, Neo4j health, and warnings.
+
 ## Benchmarking
 
 Use `python scripts/benchmark_workflow.py` to gather average timings for creation, adjustments, and hierarchy queries. The script runs against an in-memory SQLite database and prints the per-operation latency so you can compare before/after tuning.

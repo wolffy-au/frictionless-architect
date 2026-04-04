@@ -6,11 +6,11 @@ This guide provides essential steps to get started with the Frictionless Archite
 
 Ensure you have the following installed:
 
-* **Python**: Version 3.11 or higher (as determined by research).
-* **UV**: Python package installer.
-* **Git**: For managing code versions and branches.
-* **Podman (Docker)**: For running PostgreSQL and Neo4j databases (if applicable).
-* **UV**: For running build and test commands.
+- **Python**: Version 3.11 or higher (as determined by research).
+- **UV**: Python package installer.
+- **Git**: For managing code versions and branches.
+- **Podman (Docker)**: For running PostgreSQL and Neo4j databases (if applicable).
+- **UV**: For running build and test commands.
 
 ## Project Setup
 
@@ -63,13 +63,13 @@ The core service is likely a Python application using FastAPI.
 
 Use the `specify` CLI commands for managing your architecture specifications:
 
-* **Check prerequisites**:
+- **Check prerequisites**:
 
     ```bash
     .specify/scripts/bash/check-prerequisites.sh
     ```
 
-* **Start planning a feature**:
+- **Start planning a feature**:
 
     ```bash
     .specify/scripts/bash/setup-plan.sh --json # Or use the interactive command

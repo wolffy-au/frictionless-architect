@@ -71,6 +71,9 @@ frontend/.cache
 frontend/test-results/
 .mypy_cache/
 
+# Local cache
+.cache/
+
 # Ruff cache
 .ruff_cache/
 .sonar/
