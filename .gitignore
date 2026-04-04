@@ -17,7 +17,6 @@ virtualenv/
 dist/
 build/
 *.log
-.env*
 
 # FastAPI/SQLAlchemy specific
 *.sqlite3
