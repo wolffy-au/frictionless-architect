@@ -144,18 +144,6 @@ The interface keeps the schema list visible even when the banner reads “Sample
 
 Use `python scripts/benchmark_workflow.py` to gather average timings for creation, adjustments, and hierarchy queries. The script runs against an in-memory SQLite database and prints the per-operation latency so you can compare before/after tuning.
 
-## Manual Balance Adjustments
-
-Manual balance adjustments live behind the `/accounts/{account_id}/adjust-balance` endpoint and always require the `operator` role (`require_role(Role.OPERATOR)` guards the route). The API writes a `ManualBalanceAdjustment` record even when the requested balance matches the ledger (zero-difference scenarios), and it routes approved adjustments through `TransactionService` to keep double-entry accounting intact.
-
-Every adjustment call is recorded via `log_security_event(SecurityEvent.SENSITIVE_DATA_ACCESS)` (look for JSON blobs in `security.log`) and traced with duration metadata so you can monitor the milliseconds spent computing balances and persisting transactions. Failures emit `SecurityEvent.SYSTEM_ALERT` entries, providing an audit trail for denied adjustments.
-
-To explore the feature manually:
-
-1. Start the app (`uvicorn src.frictionless_architect.main:app --reload`) and source a JWT for an operator (`Role.OPERATOR`).
-2. POST to `/accounts/{account_id}/adjust-balance` with `target_balance`, `effective_date`, and `submitted_by_user_id`.
-3. Check `/accounts/{account_id}/reconciliation` for the accompanying reconciliation entry and examine `security.log` for the structured audit record.
-
 ## Notes on API Tests
 
 The API regression suite is located under `tests/api/` and utilizes `pytest` to exercise the FastAPI endpoints via `httpx` clients.
@@ -165,10 +153,4 @@ To run these tests:
 2. Set the required environment variables: `FRICTIONLESS_ARCHITECT_SECURITY_ENABLED=true`, `FRICTIONLESS_ARCHITECT_JWT_SECRET`, and `FRICTIONLESS_ARCHITECT_JWT_ALGORITHM=HS256`.
 3. Execute `pytest tests/api` in your project's root directory.
 
-Key API endpoints covered by tests include:
-- Transaction management (`POST /transactions/`)
-- QuickFill suggestions and approvals (`GET /quickfill/`, `POST /quickfill/templates/{template_id}/approve`)
-- Duplicate detection and merging (`GET /duplicates/`, `POST /duplicates/merge`)
-- Account merging (`POST /accounts/merge`)
-
-These tests seed deterministic accounts, rely on JWT-authenticated requests, and perform cleanup. Failures indicate regressions and should be investigated by inspecting the logged HTTP response payload. For more advanced filtering or running individual tests, refer to the `pytest` documentation or use its `-k` flag (e.g., `pytest tests/api -k balance`).
+Key API coverage includes the schema payload, status, refresh endpoints, and the authentication guards around them. These tests seed deterministic data, rely on JWT-authenticated requests, and clean up after each scenario. Failures indicate regressions and should be investigated by inspecting the logged HTTP response payload. For more advanced filtering or running individual tests, refer to the `pytest` documentation or use its `-k` flag (e.g., `pytest tests/api -k schema`).
