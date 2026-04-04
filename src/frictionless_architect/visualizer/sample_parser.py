@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"
-XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
+ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"  # Defined namespace per ArchiMate 3 spec (must stay http)
+XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"  # Standard XML Schema Instance namespace uses http and is the published URI
 
 
 @dataclass
