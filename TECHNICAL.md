@@ -133,10 +133,6 @@ The following patterns and practices have been established for API-level integra
   - `assert_payload_contains(response, required_keys)` - Validate response structure
   - `reset_test_database(db_session)` - Clean state between tests
   - These helpers reduce duplication and provide consistent error messaging
-- **Financial Data Validation**: Include helpers that validate:
-  - Decimal precision (e.g., currency values quantized to 2 decimal places)
-  - Double-entry invariants (debits = credits)
-  - Account hierarchy constraints (parent-child relationships)
 
 ### Test Module Organization
 
