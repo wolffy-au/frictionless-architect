@@ -10,17 +10,17 @@ scripts/pre_commit_checks.sh
 
 # --- Code Quality Checks ---
 # echo "Running code quality scan..."
-# uv run pysonar --sonar-token=<token> --exclude .git || true
+# poetry run pysonar --sonar-token=<token> --exclude .git || true
 
 # --- Security Checks ---
 # echo "Running security scan..."
-# uv run snyk test --package-manager=poetry || true
+# poetry run snyk test --package-manager=poetry || true
 
 echo "Running behave acceptance tests..."
-uv run behave tests/features/
+poetry run behave tests/features/
 
 echo "Running pytest suites..."
-uv run pytest --cov-fail-under=90 --cov=src --cov-report=term-missing
+poetry run pytest --cov-fail-under=90 --cov=src --cov-report=term-missing
 
 echo "Running frontend UI harness..."
 if [ -d frontend ]; then

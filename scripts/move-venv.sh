@@ -31,4 +31,4 @@ if [ -f poetry.lock ]; then
     rm poetry.lock
 fi
 poetry env use "$VENV_DIR/bin/python"
-uv sync --upgrade --all-groups
+poetry update

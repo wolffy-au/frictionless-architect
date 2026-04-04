@@ -37,25 +37,25 @@ jobs:
         run: pip install --upgrade uv
 
       - name: Sync dependencies
-        run: uv sync --upgrade --all-groups
+        run: poetry update
 
       - name: Run linters and tests
-        run: uv run pymarkdownlnt fix ./*.md specs/*.md
+        run: poetry run pymarkdownlnt fix ./*.md specs/*.md
 
       - name: Run ruff for linting and auto-fixing
-        run: uv run ruff check . --fix
+        run: poetry run ruff check . --fix
 
       - name: Run pyright for static type checking
-        run: uv run pyright
+        run: poetry run pyright
 
       - name: Run mypy for static type checking
-        run: uv run mypy
+        run: poetry run mypy
 
       - name: Run behave tests
-        run: uv run behave tests/features/ || true
+        run: poetry run behave tests/features/ || true
 
       - name: Run pytest for unit and integration tests
-        run: uv run pytest --cov --cov-report=xml --cov-fail-under=90
+        run: poetry run pytest --cov --cov-report=xml --cov-fail-under=90
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@9598b8a83feef37de07f549027fab50ecffe6a6e
@@ -72,10 +72,10 @@ jobs:
         run: npm install -g snyk
 
       - name: Authenticate Snyk
-        run: uv run snyk auth ${{ secrets.SNYK_TOKEN }}
+        run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
 
       # - name: Snyk Scan Test
-      #   run: uv run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
+      #   run: poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
 
       # - name: Snyk Code Scan
-      #   run: uv run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
+      #   run: poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores

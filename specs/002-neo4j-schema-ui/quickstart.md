@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-1. **Python 3.12** and repo dependencies (`uv sync --all-groups` or `pip install -e .`).
+1. **Python 3.12** and repo dependencies (`poetry sync` or `pip install -e .`).
 2. **Neo4j 5.x** with a read-only user (the visualiser only needs read access because it never mutates data).
 3. Verify `sample-data/sample-00/Test Model Full.xml` exists in the repo; the visualiser parses it to seed the diagram bounds, sample nodes, and relationships.
 
@@ -27,7 +27,7 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
 1. Activate your virtual environment and install dependencies:
    ```bash
    source .venv/bin/activate
-   uv sync --all-groups
+   poetry sync
    ```
 2. (Optional) If you want Neo4j to hold the same dataset as the sample XML, use the schema manager with a JSON fixture derived from `Test Model Full.xml`.
 3. Run the FastAPI visualiser:

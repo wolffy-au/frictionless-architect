@@ -323,7 +323,7 @@ pip install --upgrade uv
   - uv: `uv remove <package>`
 
 - Install / sync including all groups / extras
-  - uv: `uv sync --upgrade --all-groups`
+  - uv: `poetry update`
   - or to include specific groups: `uv sync --upgrade --groups dev,tests,lint,docs`
 
 - Update dependencies
@@ -341,9 +341,9 @@ pip install --upgrade uv
   - uv: `uv show [--tree] [<package>]`
 
 - Run a command in the venv, run scripts / entry points defined in pyproject
-  - uv: `uv run -- <command>` or `uv run <command> [args...]`
-  - example: `uv run python`, `uv run pytest`
-  - uv: `uv run <script-name>` (scripts exposed via project config)
+  - uv: `poetry run -- <command>` or `poetry run <command> [args...]`
+  - example: `poetry run python`, `poetry run pytest`
+  - uv: `poetry run <script-name>` (scripts exposed via project config)
 
 - Spawn a shell in the venv
   - uv: `uv shell`

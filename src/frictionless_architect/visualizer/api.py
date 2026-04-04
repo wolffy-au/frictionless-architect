@@ -146,8 +146,10 @@ class SchemaPayloadService:
         }
         model_payload["source_file"] = "archimate3_Model.xsd"
 
-        relationship_ids = {
-            rel.get("identifier") for rel in schema_payload["relationships"] if rel.get("identifier")
+        relationship_ids: set[str] = {
+            identifier
+            for rel in schema_payload["relationships"]
+            if (identifier := rel.get("identifier")) and isinstance(identifier, str)
         }
         elements = self._merge_elements(
             schema_payload["elements"],

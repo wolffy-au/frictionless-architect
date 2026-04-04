@@ -75,7 +75,7 @@ The dedicated API regression suite lives under `tests/api` and exercises the Fas
 
 1. **Prepare the environment**
    - Activate your virtual environment (e.g., `source .venv/bin/activate`).
-   - Install project dependencies via the configured tooling (e.g., `uv sync --all-groups` or `pip install -r requirements.txt`).
+   - Install project dependencies via the configured tooling (e.g., `poetry sync` or `pip install -r requirements.txt`).
    - Ensure the local API is running and reachable (`uvicorn src.main:app --reload` by default).
 
 2. **Set required environment variables**
@@ -161,7 +161,7 @@ To explore the feature manually:
 The API regression suite is located under `tests/api/` and utilizes `pytest` to exercise the FastAPI endpoints via `httpx` clients.
 
 To run these tests:
-1. Ensure your virtual environment is active and project dependencies are installed (e.g., `uv sync --all-groups`).
+1. Ensure your virtual environment is active and project dependencies are installed (e.g., `poetry sync`).
 2. Set the required environment variables: `FRICTIONLESS_ARCHITECT_SECURITY_ENABLED=true`, `FRICTIONLESS_ARCHITECT_JWT_SECRET`, and `FRICTIONLESS_ARCHITECT_JWT_ALGORITHM=HS256`.
 3. Execute `pytest tests/api` in your project's root directory.
 
