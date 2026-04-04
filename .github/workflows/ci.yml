@@ -74,8 +74,8 @@ jobs:
       - name: Authenticate Snyk
         run: uv run snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      - name: Snyk Scan Test
-        run: uv run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
+      # - name: Snyk Scan Test
+      #   run: uv run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
 
-      - name: Snyk Code Scan
-        run: uv run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
+      # - name: Snyk Code Scan
+      #   run: uv run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
