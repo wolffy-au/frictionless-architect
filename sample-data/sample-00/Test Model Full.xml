@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengroup.org/xsd/archimate/3.0/ http://www.opengroup.org/xsd/archimate/3.1/archimate3_Diagram.xsd" identifier="id-model-full">
+  <name xml:lang="en">Comprehensive Test Model</name>
+  <elements>
+    <element identifier="id-vs1" xsi:type="ValueStream">
+      <name xml:lang="en">Value Stream VS1</name>
+    </element>
+    <element identifier="id-busactor" xsi:type="BusinessActor">
+      <name xml:lang="en">Data Steward</name>
+    </element>
+    <element identifier="id-serv" xsi:type="BusinessService">
+      <name xml:lang="en">Governance Service</name>
+    </element>
+    <element identifier="id-appcomp" xsi:type="ApplicationComponent">
+      <name xml:lang="en">Schema Service</name>
+    </element>
+    <element identifier="id-dataobj" xsi:type="DataObject">
+      <name xml:lang="en">Ledger Data</name>
+    </element>
+    <element identifier="id-node" xsi:type="Node">
+      <name xml:lang="en">Compute Node</name>
+    </element>
+    <element identifier="id-network" xsi:type="CommunicationNetwork">
+      <name xml:lang="en">Internal Network</name>
+    </element>
+    <element identifier="id-system" xsi:type="SystemSoftware">
+      <name xml:lang="en">Neo4j Engine</name>
+    </element>
+  </elements>
+  <relationships>
+    <relationship identifier="id-assoc" source="id-vs1" target="id-serv" xsi:type="Association" />
+    <relationship identifier="id-real" source="id-serv" target="id-appcomp" xsi:type="Realization" />
+    <relationship identifier="id-agg" source="id-system" target="id-node" xsi:type="Aggregation" />
+    <relationship identifier="id-comp" source="id-node" target="id-network" xsi:type="Composition" />
+    <relationship identifier="id-flow" source="id-appcomp" target="id-dataobj" xsi:type="Flow" />
+    <relationship identifier="id-special" source="id-appcomp" target="id-system" xsi:type="Specialization" />
+    <relationship identifier="id-3589033886bb4c598b3d9baa04f5e874" source="id-node" target="id-dataobj" xsi:type="Access" accessType="ReadWrite" />
+  </relationships>
+  <organizations>
+    <item>
+      <label xml:lang="en">Strategy</label>
+      <item identifierRef="id-vs1" />
+    </item>
+    <item>
+      <label xml:lang="en">Business</label>
+      <item identifierRef="id-busactor" />
+      <item identifierRef="id-serv" />
+    </item>
+    <item>
+      <label xml:lang="en">Application</label>
+      <item identifierRef="id-appcomp" />
+      <item identifierRef="id-dataobj" />
+    </item>
+    <item>
+      <label xml:lang="en">Technology &amp; Physical</label>
+      <item identifierRef="id-node" />
+      <item identifierRef="id-network" />
+      <item identifierRef="id-system" />
+    </item>
+    <item>
+      <label xml:lang="en">Relations</label>
+      <item identifierRef="id-assoc" />
+      <item identifierRef="id-real" />
+      <item identifierRef="id-agg" />
+      <item identifierRef="id-comp" />
+      <item identifierRef="id-flow" />
+      <item identifierRef="id-special" />
+      <item identifierRef="id-3589033886bb4c598b3d9baa04f5e874" />
+    </item>
+    <item>
+      <label xml:lang="en">Views</label>
+      <item identifierRef="id-view-full" />
+    </item>
+  </organizations>
+  <views>
+    <diagrams>
+      <view identifier="id-view-full" xsi:type="Diagram">
+        <name xml:lang="en">Full Schema View</name>
+        <node identifier="node-vs1" elementRef="id-vs1" xsi:type="Element" x="50" y="60" w="140" h="50">
+          <style>
+            <fillColor r="245" g="222" b="170" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="node-serv" elementRef="id-serv" xsi:type="Element" x="220" y="60" w="140" h="50">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="node-app" elementRef="id-appcomp" xsi:type="Element" x="50" y="200" w="140" h="50">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="node-data" elementRef="id-dataobj" xsi:type="Element" x="220" y="200" w="140" h="50">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="node-node" elementRef="id-node" xsi:type="Element" x="400" y="200" w="140" h="50">
+          <style>
+            <fillColor r="201" g="231" b="183" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <connection identifier="conn-assoc" relationshipRef="id-assoc" xsi:type="Relationship" source="node-vs1" target="node-serv">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-real" relationshipRef="id-real" xsi:type="Relationship" source="node-serv" target="node-app">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-flow" relationshipRef="id-flow" xsi:type="Relationship" source="node-app" target="node-data">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="id-3352901b63514ea68d5636500c334da9" relationshipRef="id-3589033886bb4c598b3d9baa04f5e874" xsi:type="Relationship" source="node-node" target="node-data">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+      </view>
+    </diagrams>
+  </views>
+</model>
