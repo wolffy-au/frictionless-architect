@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -euo pipefail
 
 VENV_DIR="$HOME/.cache/pypoetry/virtualenvs/frictionless-architect"
 
@@ -21,7 +21,14 @@ if [ ! -e ".venv" ]; then
 fi
 
 # uv cache clean
-rm uv.lock
-rm poetry.lock
+if [ -f uv.lock ]; then
+    rm uv.lock
+fi
+if [ -f uv.lock ]; then
+    rm uv.lock
+fi
+if [ -f poetry.lock ]; then
+    rm poetry.lock
+fi
 poetry env use "$VENV_DIR/bin/python"
 uv sync --upgrade --all-groups
