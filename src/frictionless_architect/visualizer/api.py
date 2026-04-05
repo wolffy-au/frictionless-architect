@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -252,9 +253,20 @@ class SchemaPayloadService:
         return result
 
 
+logger = logging.getLogger(__name__)
+
+
 @lru_cache(maxsize=1)
 def get_schema_service() -> SchemaPayloadService:
     settings = get_visualizer_settings()
+    logger.debug(
+        "Visualizer settings read: neo4j_uri=%s, neo4j_user=%s, sample_data_dir=%s, sample_model_path=%s, cache_dir=%s",
+        settings.neo4j_uri or "<empty>",
+        settings.neo4j_user or "<empty>",
+        settings.sample_data_dir,
+        settings.sample_model_path,
+        settings.cache_dir,
+    )
     parser = SampleParser(settings.sample_model_path)
     loader = DataLoader(settings)
     cache = SchemaCache(settings.cache_path)
