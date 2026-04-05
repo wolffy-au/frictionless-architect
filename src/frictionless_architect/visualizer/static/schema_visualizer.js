@@ -14,6 +14,8 @@
   const elementsTable = document.getElementById("elements-table");
   const relationshipsTable = document.getElementById("relationships-table");
   const summaryList = document.getElementById("summary-list");
+  const schemaUnavailableBanner = document.getElementById("schema-unavailable");
+  const viewContainer = document.getElementById("view-container");
   const TABLE_URL = "/schema-payload";
   let cyInstance = null;
 
@@ -25,6 +27,23 @@
     }
     warningBanner.textContent = message;
     warningBanner.classList.add("visible");
+  }
+
+  function setSchemaAvailability(available, message = "") {
+    if (available) {
+      schemaUnavailableBanner?.classList.add("hidden");
+      viewContainer?.classList.remove("hidden");
+      diagramBtn.disabled = false;
+      tableBtn.disabled = false;
+      return;
+    }
+    if (schemaUnavailableBanner) {
+      schemaUnavailableBanner.textContent = message;
+      schemaUnavailableBanner.classList.remove("hidden");
+    }
+    viewContainer?.classList.add("hidden");
+    diagramBtn.disabled = true;
+    tableBtn.disabled = true;
   }
 
   function showDiagramView() {
@@ -156,6 +175,18 @@
         throw new Error(await response.text());
       }
       const payload = await response.json();
+      const hasSample = (payload.sample_file_status || "loaded") === "loaded";
+      if (!hasSample) {
+        const sampleWarning =
+          payload.warnings?.find((warning) => warning.includes("looked for")) ||
+          payload.warnings?.[0] ||
+          "Sample data unavailable; schema preview disabled.";
+        setSchemaAvailability(false, sampleWarning);
+        showWarning(sampleWarning);
+        errorMessage.style.display = "none";
+        return;
+      }
+      setSchemaAvailability(true);
       renderTables(payload);
       renderSummary(payload);
       buildDiagram(payload);

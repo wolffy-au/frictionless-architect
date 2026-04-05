@@ -173,7 +173,8 @@ async def test_returns_cached_payload_when_build_unavailable(tmp_path: Path) -> 
     service = SchemaPayloadService(settings, parser, loader, cache)
     payload = await service.get_payload(force_reload=True)
     assert payload == {"model": {"identifier": "cached"}}
-    assert service.get_status()["last_warning"] == settings.warning_text
+    warning_text = service.get_status()["last_warning"]
+    assert warning_text.startswith(settings.warning_text)
 
 
 @pytest.mark.asyncio

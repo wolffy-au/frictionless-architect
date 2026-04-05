@@ -7,6 +7,7 @@ import logging
 import time
 from datetime import datetime, timezone
 from functools import lru_cache
+from pathlib import Path
 from typing import Annotated, Any
 from xml.etree.ElementTree import ParseError
 
@@ -17,6 +18,9 @@ from frictionless_architect.visualizer.cache import SchemaCache
 from frictionless_architect.visualizer.config import VisualizerSettings, get_visualizer_settings
 from frictionless_architect.visualizer.data_loader import DataLoader, DataLoaderError
 from frictionless_architect.visualizer.sample_parser import SampleParser, SampleParseResult
+from frictionless_architect.visualizer.sample_validator import (
+    validate_sample_against_schema,
+)
 
 
 class PayloadUnavailable(Exception):
@@ -113,6 +117,7 @@ class SchemaPayloadService:
         start = time.monotonic()
         warnings: list[str] = []
         seen: set[str] = set()
+        schema_xsd_path = Path(__file__).resolve().parents[3] / "sample-data/schema/archimate3_Model.xsd"
 
         def add_warning(text: str) -> None:
             if not text or text in seen:
@@ -125,8 +130,17 @@ class SchemaPayloadService:
             sample_result = self.parser.parse()
             sample_status = "loaded"
         except (FileNotFoundError, ParseError):
-            add_warning(self.settings.warning_text)
+            add_warning(
+                f"{self.settings.warning_text} (looked for {self.settings.sample_model_path})"
+            )
             sample_result = SampleParseResult.empty(self.settings.sample_model_path)
+        else:
+            validation_issues = validate_sample_against_schema(
+                self.settings.sample_model_path,
+                schema_xsd_path,
+            )
+            for issue in validation_issues:
+                add_warning(issue)
 
         schema_status = "disabled"
         schema_payload: dict[str, list[dict[str, Any]]] = {"elements": [], "relationships": [], "views": []}
@@ -141,8 +155,9 @@ class SchemaPayloadService:
             schema_status = "disabled"
 
         if not schema_payload["elements"] and not sample_result.elements:
+            sample_path = self.settings.sample_model_path
             raise PayloadUnavailable(
-                "Schema data unavailable; no Neo4j connection or sample data.",
+                f"Schema data unavailable; no Neo4j connection or sample file at {sample_path}.",
                 warnings=list(warnings),
             )
 
@@ -176,6 +191,8 @@ class SchemaPayloadService:
             "views": views,
             "warnings": warnings,
         }
+        payload["schema_status"] = schema_status
+        payload["sample_file_status"] = sample_status
         payload["latency_ms"] = int((time.monotonic() - start) * 1000)
         return payload, schema_status, sample_status, warnings, payload["latency_ms"]
 

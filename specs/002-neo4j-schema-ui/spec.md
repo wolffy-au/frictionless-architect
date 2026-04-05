@@ -65,6 +65,7 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 - How does the visualiser behave if `Test Model.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers?
 - What if the schema files are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes?
 - What warning should appear if `sample-data/sample-00/Test Model.xml` cannot be loaded so analysts understand why sample instances are unavailable without being blocked?
+- How should the UI behave if the schema entries are unavailable because the sample file can't be parsed—should the schema summary disappear while the warning persists?
 
 ## Requirements *(mandatory)*
 
@@ -77,7 +78,7 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 - **FR-003**: Users MUST be able to switch between a diagram-centric overview (respecting the stored x/y/w/h styling) and a tabular schema breakdown that lists element/relationship attributes, ensuring consistent presentation across formats (Principle IX: Cross-Platform Consistency).
 - **FR-004**: System MUST expose the source schema file name (e.g., `archimate3_Model.xsd`, `archimate3_View.xsd`) alongside each displayed type so updates to those files immediately surface in the UI and reviewers can trace back definitions (Principle IX / Interoperability).
 - **FR-005**: System MUST highlight schema coverage gaps by flagging any defined type that lacks a sample entry, providing a clear call-out so data stewards can address missing nodes before further modeling work (Principle VII: Data Accuracy and verification).
-- **FR-006**: System MUST display a non-blocking warning when the sample data file is missing or unreadable, yet keep the schema summary accessible so users can continue investigation without being forced to restore the sample first (Principle IX: Cross-Platform Consistency).
+- **FR-006**: System MUST display a non-blocking warning when the sample data file is missing or unreadable and temporarily hide the schema summary, making it clear the functionality is degraded while still offering the warning text on Principle IX: Cross-Platform Consistency.
 - **FR-007**: System MUST enforce the Neo4j read permission model for the visualiser so access mirrors the existing data guardrails without introducing an additional authentication layer (Principle VII: Data Accuracy and Access Control).
 
 ### Key Entities *(include if feature involves data)*

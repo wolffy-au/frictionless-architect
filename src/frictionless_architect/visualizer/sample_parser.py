@@ -88,6 +88,7 @@ class SampleParser:
                 "nodes": [],
                 "connections": [],
             }
+            node_lookup: dict[str, str] = {}
             for node in view.findall(f"{{{ARCHIMATE_NS}}}node"):
                 bounds = self._extract_bounds(node)
                 label = self._lookup_label(node.attrib.get("elementRef"), elements)
@@ -99,12 +100,18 @@ class SampleParser:
                         "label": label,
                     }
                 )
+                identifier = node.attrib.get("identifier")
+                element_ref = node.attrib.get("elementRef")
+                if identifier and element_ref:
+                    node_lookup[identifier] = element_ref
             for connection in view.findall(f"{{{ARCHIMATE_NS}}}connection"):
+                source_id = connection.attrib.get("source")
+                target_id = connection.attrib.get("target")
                 connection_dict = {
                     "identifier": connection.attrib.get("identifier"),
                     "relationshipRef": connection.attrib.get("relationshipRef"),
-                    "source": connection.attrib.get("source"),
-                    "target": connection.attrib.get("target"),
+                    "source": node_lookup.get(source_id) if source_id else source_id,
+                    "target": node_lookup.get(target_id) if target_id else target_id,
                 }
                 view_dict["connections"].append(connection_dict)
             views.append(view_dict)
