@@ -49,8 +49,8 @@ def get_rel_macro(rel_type: str) -> str:
         return rel_type
 
     mapping = {
-        "TRIGGERS":      "Rel_Triggering",
-        "FLOWS_TO":      "Rel_Flow",
+        "TRIGGERS":      "Rel_Triggering_Up",
+        "FLOWS_TO":      "Rel_Flow_Up",
         "ASSIGNED_TO":   "Rel_Assignment",
         "ACCESSES":      "Rel_Access",
         "REALIZES":      "Rel_Realization_Up",
@@ -102,15 +102,25 @@ def generate_visualisation(uri, user, password):
                     MATCH (s)-[r]->(t)
                     WHERE (any(l IN labels(s) WHERE l STARTS WITH 'Business_') OR s:Strategy_Capability)
                       AND (any(l IN labels(t) WHERE l STARTS WITH 'Business_') OR t:Strategy_Capability)
-                    RETURN s.identifier as source, t.identifier as target, type(r) as type, r.name as name
+                    RETURN s.identifier as source, t.identifier as target, type(r) as type, r.name as name, r.mode as mode
                     ORDER BY type(r), s.identifier
                 """)
                 for record in rels:
-                    macro = get_rel_macro(record["type"])
                     src = sanitize_id(record["source"])
                     tgt = sanitize_id(record["target"])
                     name = escape_puml(record.get("name"))
-                    label_text = f", '{name}'" if name else ""
+                    mode = record.get("mode")
+                    if record["type"] == "ACCESSES":
+                        access_map = {
+                            "read":      "Rel_Access_r",
+                            "write":     "Rel_Access_w",
+                            "readwrite": "Rel_Access_rw",
+                        }
+                        macro = access_map.get(mode, "Rel_Access")
+                        label_text = f", '{name}'" if name else ""
+                    else:
+                        macro = get_rel_macro(record["type"])
+                        label_text = f", '{name}'" if name else ""
                     puml.append(f"{macro}({src}, {tgt}{label_text})")
 
         puml.append("")
