@@ -1,0 +1,317 @@
+- label: Motivation_Stakeholder
+  identifier: stakeholder-cio
+  properties:
+    name: Chief Information Officer
+    role: Chief Information Officer
+    description: Primary Sponsor
+- label: Motivation_Stakeholder
+  identifier: stakeholder-cto
+  properties:
+    name: Chief Technology Officer
+    role: Chief Technology Officer
+    description: Owner
+- label: Motivation_Stakeholder
+  identifier: stakeholder-cdo
+  properties:
+    name: Chief Data & AI Officer
+    role: Chief Data & AI Officer
+    description: Secondary/Influencer
+- label: Motivation_Stakeholder
+  identifier: stakeholder-cro
+  properties:
+    name: Chief Risk Officer
+    role: Chief Risk Officer
+    description: Secondary/Influencer
+- label: Motivation_Stakeholder
+  identifier: stakeholder-ciso
+  properties:
+    name: Chief Information Security Officer
+    role: Chief Information Security Officer
+    description: Secondary/Influencer
+- label: Motivation_Stakeholder
+  identifier: stakeholder-coo
+  properties:
+    name: Chief Operations Officer
+    role: Chief Operations Officer
+    description: Secondary/Influencer
+- label: Motivation_Driver
+  identifier: driver-agility
+  properties:
+    name: Market Agility & Competitive Pressure
+    description: In a hyper-competitive, AI-driven landscape, the "Cost of Delay" has become an existential threat. If the bank cannot deliver features as fast as a startup or a tech giant, it loses market share
+    additional_info: The need to respond to customer needs and competitor moves at the speed of thought, rather than the speed of a committee. Frictionless delivery is the means to survive this external pressure.
+- label: Motivation_Driver
+  identifier: driver-compliance
+  properties:
+    name: Regulatory Resiliency & Social License
+    description: As a major financial institution(Westpac), non-compliance with APRA(CPS 230/234) isn't just a fine—it’s a threat to the banking license. Manual compliance is too slow and error-prone for an AI-speed world.
+    additional_info: The absolute requirement to maintain institutional trust and regulatory standing while accelerating delivery. We automate compliance because "vibe-coding" at scale is a governance catastrophe waiting to happen.
+- label: Motivation_Driver
+  identifier: driver-sustainability
+  properties:
+    name: Systemic Sustainability & Complexity Management
+    description: Unmanaged architectural drift creates 'hidden debt' that makes systems fragile, leading to outages and ballooning maintenance costs. If we don't manage drift, the system eventually becomes too complex to change at any speed.
+    additional_info: The need to ensure the bank's digital foundations remain stable and understandable over decades. We mitigate drift to prevent 'entropy at scale,' which would eventually grind all innovation to a halt.
+- label: Motivation_Driver
+  identifier: driver-scaling
+  properties:
+    name: Human-to-Machine Operational Scaling
+    description: Human architects are a finite resource and a bottleneck. As AI agents begin producing code and changes at machine speed, it is physically impossible for humans to review it all using traditional methods.
+    additional_info: The need to scale architectural oversight without a proportional increase in human headcount or a loss of control. We move to 'executable intent' because human-only governance cannot keep pace with AI-driven delivery.
+- label: Motivation_Assessment
+  identifier: assessment-bottleneck
+  properties:
+    name: Human-centric SDLC is a Delivery Bottleneck
+    type: Weakness
+    description: If the SDLC remains designed for humans, the bank simply cannot compete with the speed of AI-accelerated delivery. This is the primary blocker to frictionless delivery.
+- label: Motivation_Assessment
+  identifier: assessment-vibecoding
+  properties:
+    name: '"Vibe-Coding" at Machine Speed is a Governance Failure'
+    type: Threat
+    description: In a regulated bank(Westpac), the biggest threat is not "moving slow"—it is "moving fast and breaking the law." Manual compliance (the "folder hunt") is physically impossible to perform at the rate AI agents generate code.
+- label: Motivation_Assessment
+  identifier: assessment-drifting
+  properties:
+    name: Undetected Architectural Drift creates Systemic Fragility
+    type: Weakness
+    description: Architecture "drifts" quietly until it fails catastrophically. In an AI-driven environment, this drift compounds in weeks rather than years. Without real-time detection (the Drift Dashboard), the system becomes a "black box" that no one understands or can safely change.
+- label: Motivation_Assessment
+  identifier: assessment-scaling
+  properties:
+    name: AI Agents can consume Executable Specifications
+    type: Opportunity
+    description: This is your core thesis. You cannot hire enough architects to review AI-generated code. The only way to scale is to move from "documents for humans" to "specs for agents." This turns architecture from a constraint into a scaling tool.
+- label: Motivation_Assessment
+  identifier: assessment-knowledge
+  properties:
+    name: Deep Institutional Knowledge and Established Frameworks
+    type: Strength
+    description: A solid foundation of institutional knowledge and well-established security and governance frameworks. This is a critical strength that can be leveraged to implement frictionless delivery in a way that maintains trust and compliance.
+- label: Motivation_Principle
+  identifier: principle-executable-intel
+  properties:
+    name: Architecture as Executable Intelligence
+    description: Transform architecture from passive documentation into executable system intelligence.
+- label: Motivation_Principle
+  identifier: principle-human-accountability
+  properties:
+    name: Deterministic Human Accountability
+    description: AI is advisory; the specification is deterministic; a human holds sign-off.
+- label: Motivation_Principle
+  identifier: principle-forensic-audit
+  properties:
+    name: Forensic Auditability
+    description: Ability to reconstruct not just what happened but why a decision was made.
+- label: Motivation_Principle
+  identifier: principle-policy-as-code
+  properties:
+    name: Policy as Code
+    description: All governance rules, compliance mappings, and architectural guardrails are expressed as version-controlled, machine-executable policy, not prose documents.
+- label: Motivation_Goal
+  identifier: goal-frictionless
+  properties:
+    name: Frictionless Technology Delivery
+    description: A desired end state where technology change flows without manual intervention.
+- label: Motivation_Goal
+  identifier: goal-regulatory
+  properties:
+    name: Automated Regulatory Traceability
+    description: A high-level intent to ensure all technical changes are automatically mapped to regulatory obligations (e.g., APRA).
+- label: Motivation_Goal
+  identifier: goal-integrity
+  properties:
+    name: Real-time Architectural Integrity
+    description: The desired state where the "as-built" system is continuously reconciled with the "as-designed" intent.
+- label: Motivation_Goal
+  identifier: goal-intent
+  properties:
+    name: Executable Architectural Intent
+    description: A direction to shift architecture from human-readable documents to machine-consumable specifications.
+- label: Motivation_Outcome
+  identifier: outcome-frictionless-lead-time
+  properties:
+    name: Reduced Lead Time to Production
+    result: Cycle time for a change (from 'Spec Approved' to 'Live') drops from weeks to hours.
+- label: Motivation_Outcome
+  identifier: outcome-frictionless-automated-gates
+  properties:
+    name: 100% Automated Deployment Gates
+    result: Zero manual 'CAB' or architectural review board interventions for standard, compliant changes.
+- label: Motivation_Outcome
+  identifier: outcome-regulatory-audit-evidence
+  properties:
+    name: Real-Time Audit Evidence Base
+    result: A queryable, immutable ledger that proves compliance (e.g., CPS 230/234) without manual 'folder hunts.'
+- label: Motivation_Outcome
+  identifier: outcome-regulatory-violation-detection
+  properties:
+    name: Pre-emptive Regulatory Violation Detection
+    result: Non-compliant changes are identified and blocked before they reach a test environment, not during a post-implementation audit.
+- label: Motivation_Outcome
+  identifier: outcome-integrity-alignment
+  properties:
+    name: Near-Zero Deviation Between Design and Reality
+    result: The 'As-Built' system telemetry continuously reflects the 'As-Designed' Knowledge Graph intent with near-zero undetected deviation.
+    metric: "≥99% alignment score between knowledge graph and observed telemetry"
+- label: Motivation_Outcome
+  identifier: outcome-integrity-strategic-drift
+  properties:
+    name: Strategic Drift (Delivery vs. Strategy)
+    result: Delivery remains aligned with strategic direction through continuous discovery.
+- label: Motivation_Outcome
+  identifier: outcome-integrity-agentic-drift
+  properties:
+    name: Agentic Drift (Behavior vs. Guardrails)
+    result: Agent behavior stays within intended boundaries and patterns.
+- label: Motivation_Outcome
+  identifier: outcome-intent-agent-alignment
+  properties:
+    name: Deterministic AI Agent Alignment
+    result: Autonomous development agents consistently generate code that stays within the guardrails of the machine-readable specification.
+- label: Motivation_Outcome
+  identifier: outcome-intent-oversight-coverage
+  properties:
+    name: Scaled Architectural Oversight
+    result: The ability to govern an exponential increase in AI-generated code without increasing the headcount of human architects.
+    metric: 10x oversight coverage (code changes per architect) while maintaining or improving compliance and quality metrics.
+- label: Motivation_Requirement
+  identifier: req-auto-spec-generation
+  properties:
+    name: Automated Specification Generation from Graph
+    type: Functional
+    description: For every approved change request, the system must automatically derive a complete, executable architectural specification from the knowledge graph — with zero manual authoring by an architect.
+- label: Motivation_Requirement
+  identifier: req-regulatory-mapping
+  properties:
+    name: Automated Regulatory Obligation Mapping
+    type: Functional
+    description: Every technical change must be automatically mapped to its applicable APRA CPS 230/234 obligations before a deployment gate is passed. No change may proceed without a resolved compliance mapping.
+- label: Motivation_Requirement
+  identifier: req-pre-deploy-gate
+  properties:
+    name: Pre-Deployment Compliance Gate Enforcement
+    type: Functional
+    description: The supervisory control plane must intercept and evaluate all agent-generated changes against the executable specification before they reach any test or production environment. Non-compliant changes must be blocked, not flagged retrospectively.
+- label: Motivation_Requirement
+  identifier: req-continuous-reconciliation
+  properties:
+    name: Continuous As-Built vs. As-Designed Reconciliation
+    type: Functional
+    description: The system must continuously reconcile observed system state (telemetry, deployed artefacts) against the knowledge graph's as-designed intent and surface any deviation as a classified drift event.
+- label: Motivation_Requirement
+  identifier: req-human-signoff
+  properties:
+    name: Mandatory Human Sign-off for Non-Standard Changes
+    type: Functional
+    description: Any change that cannot be deterministically validated against the executable specification must be escalated to a named human architect for explicit approval. The system must prevent autonomous resolution of ambiguous compliance cases.
+- label: Motivation_Constraint
+  identifier: const-apra
+  properties:
+    name: APRA CPS 230/234 Compliance
+    description: Operational resilience and prudential standards.
+- label: Motivation_Constraint
+  identifier: const-model-risk
+  properties:
+    name: Model Risk Management Framework
+    description: Manages risks associated with models and agentic decision-making.
+- label: Motivation_Constraint
+  identifier: const-privacy
+  properties:
+    name: Australian Privacy Act (APP)
+    description: Data privacy and protection regulations.
+- label: Motivation_Constraint
+  identifier: const-cloud-policy
+  properties:
+    name: Cloud & Data Sovereignty Policy
+    description: Governance and compliance policies for cloud-based operations.
+- label: Motivation_Constraint
+  identifier: const-model-governance
+  properties:
+    name: SR 11-7 / APRA Model Risk Guidance
+    description: Governance requirements for model development, validation, and deployment.
+- label: Motivation_Requirement
+  identifier: req-nfr-drift-latency
+  properties:
+    name: Drift Detection Latency
+    type: Non-Functional
+    description: Architectural drift must be detected and surfaced within 5 minutes of a deployment event completing. Detection latency exceeding this threshold invalidates the real-time integrity guarantee.
+    traces_to:
+    - goal-integrity
+    - cap-drift-dashboard
+    - outcome-integrity-alignment
+- label: Motivation_Requirement
+  identifier: req-nfr-ledger-immutability
+  properties:
+    name: Audit Ledger Immutability & Tamper Evidence
+    type: Non-Functional
+    description: The forensic ledger must be cryptographically tamper-evident. Any post-write modification must be detectable and must invalidate the affected record. This is a hard requirement for APRA evidentiary standards.
+    traces_to:
+    - const-apra
+    - cap-forensic-ledger
+    - outcome-regulatory-audit-evidence
+- label: Motivation_Requirement
+  identifier: req-nfr-spec-determinism
+  properties:
+    name: Specification Generation Determinism
+    type: Non-Functional
+    description: Identical knowledge graph state and change request inputs must always produce byte-identical executable specifications. Non-deterministic output breaks agent alignment and audit reproducibility.
+    traces_to:
+    - principle-forensic-audit
+    - cap-spec-engine
+    - outcome-intent-agent-alignment
+- label: Motivation_Requirement
+  identifier: req-nfr-control-plane-availability
+  properties:
+    name: Supervisory Control Plane Availability
+    type: Non-Functional
+    description: The supervisory control plane must maintain ≥99.95% availability. Downtime must never default to 'allow all' — any control plane outage must fail-closed, halting agentic deployments until restored.
+    traces_to:
+    - const-apra
+    - cap-control-plane
+    - driver-compliance
+- label: Motivation_Requirement
+  identifier: req-nfr-audit-query-performance
+  properties:
+    name: Regulatory Audit Query Response Time
+    type: Non-Functional
+    description: Any compliance evidence query (e.g., 'show all changes touching CPS 234 controls in the last 90 days') must return a complete, exportable result within 30 seconds to support regulator examination scenarios.
+    traces_to:
+    - const-apra
+    - cap-forensic-ledger
+    - outcome-regulatory-audit-evidence
+- label: Motivation_Requirement
+  identifier: req-nfr-knowledge-graph-freshness
+  properties:
+    name: Knowledge Graph Freshness SLA
+    type: Non-Functional
+    description: The digital twin knowledge graph must reflect production system state within 15 minutes of any infrastructure or configuration change. A stale graph produces stale specs, which breaks the entire governance chain.
+    traces_to:
+    - goal-integrity
+    - cap-digital-twin
+    - outcome-integrity-alignment
+- label: Strategy_Capability
+  identifier: cap-digital-twin
+  properties:
+    name: Digital Twin Knowledge Graph
+    description: The ability to maintain a live, queryable graph of the enterprise technology landscape — its components, policies, relationships, and regulatory mappings — as the authoritative source of architectural truth.
+- label: Strategy_Capability
+  identifier: cap-spec-engine
+  properties:
+    name: Executable Specification Generation
+    description: The ability to deterministically produce machine-consumable architectural specifications from the knowledge graph, which AI agents and CI/CD pipelines can consume as guardrails rather than human-readable documents.
+- label: Strategy_Capability
+  identifier: cap-control-plane
+  properties:
+    name: Agentic Supervisory Control
+    description: The ability to constrain, monitor, and intervene in the behaviour of autonomous development agents in real time, enforcing architectural and regulatory boundaries before code reaches any environment.
+- label: Strategy_Capability
+  identifier: cap-forensic-ledger
+  properties:
+    name: Forensic Audit & Compliance Ledger
+    description: The ability to record every agent action, gate decision, and specification evaluation into an immutable, queryable ledger that serves as contemporaneous evidence for regulatory examination.
+- label: Strategy_Capability
+  identifier: cap-drift-dashboard
+  properties:
+    name: Architectural Drift Detection & Reconciliation
+    description: The ability to continuously compare observed system telemetry against the as-designed knowledge graph and surface deviations — strategic, structural, or agentic — in real time.
