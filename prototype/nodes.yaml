@@ -326,3 +326,119 @@
   properties:
     name: Real-time Data Ingestion & Synchronization
     description: The ability to establish and manage efficient, low-latency data pipelines that continuously ingest and synchronize production system state telemetry into the digital twin knowledge graph, ensuring it adheres to the 15-minute freshness SLA and directly enabling the 'live' aspect of the digital twin.
+
+# ===========================================================
+# Business Layer — Active Structure (Business_Role)
+# ===========================================================
+- label: Business_Role
+  identifier: role-ba
+  properties:
+    name: Business Analyst
+    description: Defines requirements and acceptance criteria for change requests.
+    worker_type: human
+- label: Business_Role
+  identifier: role-sa
+  properties:
+    name: Solution Architect
+    description: Provides design input and ensures pattern integrity through the specification process.
+    worker_type: human
+- label: Business_Role
+  identifier: role-sec-comp
+  properties:
+    name: Security & Compliance
+    description: Defines security and compliance requirements; oversees regulatory controls across the SDLC.
+    worker_type: human
+- label: Business_Role
+  identifier: role-dev
+  properties:
+    name: Developer
+    description: Manages delivery aspects of the agentic crew; accountable for code generation quality.
+    worker_type: human
+- label: Business_Role
+  identifier: role-te
+  properties:
+    name: Test Engineer
+    description: Manages quality aspects of the agentic crew; accountable for test suite coverage.
+    worker_type: human
+- label: Business_Role
+  identifier: role-devops
+  properties:
+    name: DevOps / Release
+    description: AI-driven autonomous agent that deploys artefacts and executes release processes.
+    worker_type: ai
+- label: Business_Role
+  identifier: role-code-quality
+  properties:
+    name: Code Quality
+    description: AI-driven autonomous agent performing continuous quality enforcement across generated code.
+    worker_type: ai
+- label: Business_Role
+  identifier: role-refactoring
+  properties:
+    name: Refactoring
+    description: AI-driven autonomous agent performing structural improvement and simplification of code.
+    worker_type: ai
+- label: Business_Role
+  identifier: role-debt-analyst
+  properties:
+    name: Debt Analyst
+    description: AI-driven autonomous agent that detects and triages technical debt.
+    worker_type: ai
+
+# ===========================================================
+# Business Layer — Behavior (Business_Event, Business_Process)
+# ===========================================================
+- label: Business_Event
+  identifier: event-change-request
+  properties:
+    name: Business Idea / Change Request
+    description: The entry point into the SDLC. Encompasses net-new features, regulatory uplifts, vulnerability remediations, and strangler migration initiatives.
+- label: Business_Process
+  identifier: process-spec-generation
+  properties:
+    name: Deterministic Spec Generation
+    description: Scripted, template-driven generation of executable architectural specifications from the knowledge graph. AI recommends scope; human holds sign-off. Output is the deterministic intent consumed by the agentic crew.
+- label: Business_Process
+  identifier: process-agentic-crew
+  properties:
+    name: Agentic Crew
+    description: Autonomous agent crew operating under supervisory control plane constraints. Consumes regulation, policy, patterns, and controls from the knowledge graph to generate code, test suites, and deployment manifests.
+- label: Business_Process
+  identifier: process-release
+  properties:
+    name: Production Release
+    description: Compliant, traceable-to-spec deployment through the CICD pipeline. Automatically auditable end-to-end. All gate outcomes logged to the immutable ledger.
+- label: Business_Process
+  identifier: process-state-discovery
+  properties:
+    name: Current State Discovery
+    description: Continuous reconciliation of actual system state against architectural intent. Gaps surface as classified drift events; knowledge graph updated via human-reviewed write path.
+
+# ===========================================================
+# Business Layer — Passive Structure (Business_Object)
+# ===========================================================
+- label: Business_Object
+  identifier: object-executable-spec
+  properties:
+    name: Executable Specification
+    description: The deterministic artefact of architectural intent. Machine-consumable. Version-controlled. The contract between design intent and the agentic crew.
+- label: Business_Object
+  identifier: object-regulation
+  properties:
+    name: Regulation / Policy / Controls
+    description: Regulatory requirements (APRA CPS 230/234, CPG 235), internal policy, and governance rules consumed by the agentic crew and compliance gates.
+- label: Business_Object
+  identifier: object-strategic-intent
+  properties:
+    name: Strategic & Architectural Intent
+    description: Long-term vision, design principles, and system architecture targets that inform specification generation and drift assessment.
+- label: Business_Object
+  identifier: object-technical-backlog
+  properties:
+    name: Technical Backlog / Future Work
+    description: Identified gaps, remediation items, and next-cycle improvements surfaced by state discovery and drift detection.
+- label: Business_Object
+  identifier: object-business-value
+  properties:
+    name: Business Outcome / Customer Value
+    description: The desired business impact and stakeholder value delivered through compliant, traceable production releases.

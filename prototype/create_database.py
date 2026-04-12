@@ -28,6 +28,10 @@ CONSTRAINTS = [
     "CREATE CONSTRAINT requirement_id IF NOT EXISTS FOR (n:Motivation_Requirement) REQUIRE n.identifier IS UNIQUE",
     "CREATE CONSTRAINT constraint_id IF NOT EXISTS FOR (n:Motivation_Constraint) REQUIRE n.identifier IS UNIQUE",
     "CREATE CONSTRAINT capability_id IF NOT EXISTS FOR (n:Strategy_Capability) REQUIRE n.identifier IS UNIQUE",
+    "CREATE CONSTRAINT business_role_id IF NOT EXISTS FOR (n:Business_Role) REQUIRE n.identifier IS UNIQUE",
+    "CREATE CONSTRAINT business_event_id IF NOT EXISTS FOR (n:Business_Event) REQUIRE n.identifier IS UNIQUE",
+    "CREATE CONSTRAINT business_process_id IF NOT EXISTS FOR (n:Business_Process) REQUIRE n.identifier IS UNIQUE",
+    "CREATE CONSTRAINT business_object_id IF NOT EXISTS FOR (n:Business_Object) REQUIRE n.identifier IS UNIQUE",
 ]
 
 def load_environment() -> None:
