@@ -33,7 +33,7 @@ def get_puml_macro(label: str) -> str:
         "Motivation_Stakeholder": "Motivation_Stakeholder",
         "Motivation_Driver": "Motivation_Driver",
         "Motivation_Assessment": "Motivation_Assessment",
-        "Motivate_Goal": "Motivation_Goal",
+        "Motivation_Goal": "Motivation_Goal",
         "Motivation_Outcome": "Motivation_Outcome",
         "Motivation_Principle": "Motivation_Principle",
         "Motivation_Requirement": "Motivation_Requirement",
@@ -55,6 +55,7 @@ def get_rel_macro(rel_type: str) -> str:
     mapping = {
         "REALIZES": "Rel_Realization_Up",
         "ASSOCIATED_WITH": "Rel_Association",
+        "INFLUENCES": "Rel_Influence"
     }
     return mapping.get(rel_type, "Rel_Association")
 
