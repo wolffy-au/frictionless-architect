@@ -229,3 +229,144 @@
 - source: cap-realtime-data-sync
   target: req-nfr-knowledge-graph-freshness
   type: REALIZES
+
+# ===========================================================
+# Business Layer — Behavioral Flow
+# ===========================================================
+- source: event-change-request
+  target: process-spec-generation
+  type: TRIGGERS
+  name: initiates
+- source: process-spec-generation
+  target: process-agentic-crew
+  type: FLOWS_TO
+  name: produces specification for
+- source: process-agentic-crew
+  target: process-release
+  type: TRIGGERS
+  name: governs & triggers
+- source: process-release
+  target: process-state-discovery
+  type: TRIGGERS
+  name: runs system for
+
+# ===========================================================
+# Business Layer — Role Assignments
+# ===========================================================
+- source: role-ba
+  target: event-change-request
+  type: ASSIGNED_TO
+  name: defines requirements for
+- source: role-sa
+  target: process-spec-generation
+  type: ASSIGNED_TO
+  name: provides design input for
+- source: role-sec-comp
+  target: process-spec-generation
+  type: ASSIGNED_TO
+  name: defines security requirements for
+- source: role-sec-comp
+  target: process-agentic-crew
+  type: ASSIGNED_TO
+  name: oversees compliance in
+- source: role-sec-comp
+  target: process-state-discovery
+  type: ASSIGNED_TO
+  name: analyzes compliance via
+- source: role-dev
+  target: process-agentic-crew
+  type: ASSIGNED_TO
+  name: manages delivery aspects of
+- source: role-te
+  target: process-agentic-crew
+  type: ASSIGNED_TO
+  name: manages quality aspects of
+- source: role-devops
+  target: process-release
+  type: ASSIGNED_TO
+  name: executes
+- source: role-code-quality
+  target: process-release
+  type: ASSIGNED_TO
+  name: gates quality for
+- source: role-debt-analyst
+  target: process-state-discovery
+  type: ASSIGNED_TO
+  name: identifies gaps via
+- source: role-refactoring
+  target: process-state-discovery
+  type: ASSIGNED_TO
+  name: simplifies code via
+
+# ===========================================================
+# Business Layer — Object Access
+# ===========================================================
+- source: process-spec-generation
+  target: object-strategic-intent
+  type: ACCESSES
+  mode: read
+- source: process-spec-generation
+  target: object-technical-backlog
+  type: ACCESSES
+  mode: read
+- source: process-spec-generation
+  target: object-executable-spec
+  type: ACCESSES
+  mode: write
+- source: process-agentic-crew
+  target: object-executable-spec
+  type: ACCESSES
+  mode: read
+- source: process-agentic-crew
+  target: object-regulation
+  type: ACCESSES
+  mode: read
+- source: process-state-discovery
+  target: object-technical-backlog
+  type: ACCESSES
+  mode: write
+
+# ===========================================================
+# Business Layer — Process Realization
+# ===========================================================
+- source: process-release
+  target: object-business-value
+  type: REALIZES
+  name: delivers
+
+# ===========================================================
+# Cross-Layer: Business Layer → Strategy_Capability (REALIZES)
+# Business processes/roles are the concrete realization of abstract capabilities
+# ===========================================================
+- source: process-spec-generation
+  target: cap-spec-engine
+  type: REALIZES
+  name: realizes
+- source: process-agentic-crew
+  target: cap-control-plane
+  type: REALIZES
+  name: realizes
+- source: role-sa
+  target: cap-human-approval-workflow
+  type: REALIZES
+  name: accountable approver
+- source: role-sec-comp
+  target: cap-human-approval-workflow
+  type: REALIZES
+  name: compliance sign-off
+- source: process-release
+  target: cap-forensic-ledger
+  type: REALIZES
+  name: audited by
+- source: process-state-discovery
+  target: cap-drift-dashboard
+  type: REALIZES
+  name: realizes
+- source: process-spec-generation
+  target: cap-digital-twin
+  type: REALIZES
+  name: consumes
+- source: process-state-discovery
+  target: cap-digital-twin
+  type: REALIZES
+  name: updates
