@@ -3,6 +3,11 @@ title ArchiMate Motivation View
 !include <archimate/archimate>
 ' skinparam linetype ortho
 
+Motivation_Requirement(req_nfr_ledger_immutability, 'Audit Ledger Immutability & Tamper Evidence')
+Motivation_Requirement(req_nfr_spec_determinism, 'Specification Generation Determinism')
+Motivation_Requirement(req_nfr_control_plane_availability, 'Supervisory Control Plane Availability')
+Motivation_Requirement(req_nfr_audit_query_performance, 'Regulatory Audit Query Response Time')
+Motivation_Requirement(req_nfr_knowledge_graph_freshness, 'Knowledge Graph Freshness SLA')
 Motivation_Constraint(const_apra, 'APRA CPS 230/234 Compliance')
 Motivation_Constraint(const_model_risk, 'Model Risk Management Framework')
 Motivation_Constraint(const_privacy, 'Australian Privacy Act (APP)')
@@ -47,6 +52,7 @@ Motivation_Outcome(outcome_frictionless_lead_time, 'Reduced Lead Time to Product
 Motivation_Outcome(outcome_frictionless_automated_gates, '100% Automated Deployment Gates')
 Motivation_Outcome(outcome_regulatory_audit_evidence, 'Real-Time Audit Evidence Base')
 Motivation_Outcome(outcome_regulatory_violation_detection, 'Pre-emptive Regulatory Violation Detection')
+Motivation_Outcome(outcome_regulatory_policy_drift, 'Policy Drift Detection')
 Motivation_Outcome(outcome_integrity_alignment, 'Near-Zero Deviation Between Design and Reality')
 Motivation_Outcome(outcome_integrity_strategic_drift, 'Strategic Drift (Delivery vs. Strategy)')
 Motivation_Outcome(outcome_integrity_agentic_drift, 'Agentic Drift (Behavior vs. Guardrails)')
@@ -58,11 +64,6 @@ Motivation_Requirement(req_pre_deploy_gate, 'Pre-Deployment Compliance Gate Enfo
 Motivation_Requirement(req_continuous_reconciliation, 'Continuous As-Built vs. As-Designed Reconciliation')
 Motivation_Requirement(req_human_signoff, 'Mandatory Human Sign-off for Non-Standard Changes')
 Motivation_Requirement(req_nfr_drift_latency, 'Drift Detection Latency')
-Motivation_Requirement(req_nfr_ledger_immutability, 'Audit Ledger Immutability & Tamper Evidence')
-Motivation_Requirement(req_nfr_spec_determinism, 'Specification Generation Determinism')
-Motivation_Requirement(req_nfr_control_plane_availability, 'Supervisory Control Plane Availability')
-Motivation_Requirement(req_nfr_audit_query_performance, 'Regulatory Audit Query Response Time')
-Motivation_Requirement(req_nfr_knowledge_graph_freshness, 'Knowledge Graph Freshness SLA')
 
 Rel_Association(stakeholder_cdo, driver_scaling, 'concerned_with')
 Rel_Association(stakeholder_cio, driver_sustainability, 'concerned_with')
@@ -101,6 +102,7 @@ Rel_Realization_Up(outcome_frictionless_lead_time, goal_frictionless, 'quantifie
 Rel_Realization_Up(outcome_frictionless_automated_gates, goal_frictionless, 'quantifies')
 Rel_Realization_Up(outcome_regulatory_audit_evidence, goal_regulatory, 'quantifies')
 Rel_Realization_Up(outcome_regulatory_violation_detection, goal_regulatory, 'quantifies')
+Rel_Realization_Up(outcome_regulatory_policy_drift, goal_regulatory, 'quantifies')
 Rel_Realization_Up(outcome_integrity_alignment, goal_integrity, 'quantifies')
 Rel_Realization_Up(outcome_integrity_strategic_drift, goal_integrity, 'quantifies')
 Rel_Realization_Up(outcome_integrity_agentic_drift, goal_integrity, 'quantifies')

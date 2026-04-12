@@ -149,6 +149,12 @@
     name: Pre-emptive Regulatory Violation Detection
     result: Non-compliant changes are identified and blocked before they reach a test environment, not during a post-implementation audit.
 - label: Motivation_Outcome
+  identifier: outcome-regulatory-policy-drift
+  properties:
+    name: Policy Drift Detection
+    result: Deviations between deployed system behaviour and current regulatory policy are detected and surfaced continuously.
+    metric: "100% of policy-relevant changes trigger a compliance drift scan within 24 hours"
+- label: Motivation_Outcome
   identifier: outcome-integrity-alignment
   properties:
     name: Near-Zero Deviation Between Design and Reality
@@ -386,6 +392,12 @@
     name: Debt Analyst
     description: AI-driven autonomous agent that detects and triages technical debt.
     worker_type: ai
+- label: Business_Role
+  identifier: role-woven-control-plane
+  properties:
+    name: Woven Control Plane
+    description: Automated enforcement agent embedded within the CICD pipeline. Evaluates each artefact against the executable specification and policy-as-code gates, blocking release on violation and raising exceptions for human review.
+    worker_type: automated
 
 # ===========================================================
 # Business Layer — Behavior (Business_Event, Business_Process)
@@ -406,15 +418,25 @@
     name: Agentic Development Execution
     description: The supervised execution of AI-driven development by the agentic crew, operating within supervisory control plane constraints. Consumes the executable specification, regulation, policy, patterns, and controls from the knowledge graph to generate code, test suites, and deployment manifests.
 - label: Business_Process
+  identifier: process-cicd-pipeline
+  properties:
+    name: Automated CICD/ACP Gate Execution
+    description: The CI/CD pipeline with the Agentic Control Plane (ACP) woven in. Evaluates every artefact from the agentic crew against the executable specification and policy-as-code gates before a release is permitted. Blocks on violation; escalates exceptions for human review; logs all gate outcomes to the immutable ledger.
+- label: Business_Process
   identifier: process-release
   properties:
     name: Production Release
-    description: Compliant, traceable-to-spec deployment through the CICD pipeline. Automatically auditable end-to-end. All gate outcomes logged to the immutable ledger.
+    description: Compliant, traceable-to-spec deployment to production, triggered only after all CICD/ACP gates have cleared. Automatically auditable end-to-end.
 - label: Business_Process
   identifier: process-state-discovery
   properties:
     name: Current State Discovery
-    description: Continuous reconciliation of actual system state against architectural intent. Gaps surface as classified drift events; knowledge graph updated via human-reviewed write path.
+    description: Continuous, automated reconciliation of actual system state against architectural intent. Surfaces classified drift events for human review; does not write directly to the backlog.
+- label: Business_Process
+  identifier: process-drift-review
+  properties:
+    name: Drift Review & Triage Gate
+    description: Human-gated review of drift findings before they are committed as backlog work items. A Solution Architect approves architectural drift; Security & Compliance approves regulatory drift. Ensures only validated, prioritised findings enter the delivery pipeline.
 
 # ===========================================================
 # Business Layer — Passive Structure (Business_Object)
