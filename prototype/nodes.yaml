@@ -236,60 +236,36 @@
     name: Drift Detection Latency
     type: Non-Functional
     description: Architectural drift must be detected and surfaced within 5 minutes of a deployment event completing. Detection latency exceeding this threshold invalidates the real-time integrity guarantee.
-    traces_to:
-    - goal-integrity
-    - cap-drift-dashboard
-    - outcome-integrity-alignment
 - label: Motivation_Requirement
   identifier: req-nfr-ledger-immutability
   properties:
     name: Audit Ledger Immutability & Tamper Evidence
     type: Non-Functional
     description: The forensic ledger must be cryptographically tamper-evident. Any post-write modification must be detectable and must invalidate the affected record. This is a hard requirement for APRA evidentiary standards.
-    traces_to:
-    - const-apra
-    - cap-forensic-ledger
-    - outcome-regulatory-audit-evidence
 - label: Motivation_Requirement
   identifier: req-nfr-spec-determinism
   properties:
     name: Specification Generation Determinism
     type: Non-Functional
     description: Identical knowledge graph state and change request inputs must always produce byte-identical executable specifications. Non-deterministic output breaks agent alignment and audit reproducibility.
-    traces_to:
-    - principle-forensic-audit
-    - cap-spec-engine
-    - outcome-intent-agent-alignment
 - label: Motivation_Requirement
   identifier: req-nfr-control-plane-availability
   properties:
     name: Supervisory Control Plane Availability
     type: Non-Functional
     description: The supervisory control plane must maintain ≥99.95% availability. Downtime must never default to 'allow all' — any control plane outage must fail-closed, halting agentic deployments until restored.
-    traces_to:
-    - const-apra
-    - cap-control-plane
-    - driver-compliance
 - label: Motivation_Requirement
   identifier: req-nfr-audit-query-performance
   properties:
     name: Regulatory Audit Query Response Time
     type: Non-Functional
     description: Any compliance evidence query (e.g., 'show all changes touching CPS 234 controls in the last 90 days') must return a complete, exportable result within 30 seconds to support regulator examination scenarios.
-    traces_to:
-    - const-apra
-    - cap-forensic-ledger
-    - outcome-regulatory-audit-evidence
 - label: Motivation_Requirement
   identifier: req-nfr-knowledge-graph-freshness
   properties:
     name: Knowledge Graph Freshness SLA
     type: Non-Functional
     description: The digital twin knowledge graph must reflect production system state within 15 minutes of any infrastructure or configuration change. A stale graph produces stale specs, which breaks the entire governance chain.
-    traces_to:
-    - goal-integrity
-    - cap-digital-twin
-    - outcome-integrity-alignment
 - label: Strategy_Capability
   identifier: cap-digital-twin
   properties:
