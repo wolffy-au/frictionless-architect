@@ -32,43 +32,43 @@
   name: concerned_with
 - source: driver-agility
   target: assessment-bottleneck
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: causes
 - source: driver-compliance
   target: assessment-vibecoding
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: causes
 - source: driver-sustainability
   target: assessment-drifting
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: causes
 - source: driver-scaling
   target: assessment-scaling
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: enables
 - source: driver-compliance
   target: assessment-knowledge
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: supports
 - source: assessment-bottleneck
   target: goal-frictionless
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: addressed_by
 - source: assessment-vibecoding
   target: goal-regulatory
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: mitigated_by
 - source: assessment-knowledge
   target: goal-regulatory
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: mitigated_by
 - source: assessment-drifting
   target: goal-integrity
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: mitigated_by
 - source: assessment-scaling
   target: goal-intent
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: exploited_by
 - source: outcome-frictionless-lead-time
   target: goal-frictionless
@@ -110,8 +110,24 @@
   target: goal-intent
   type: INFLUENCES
   name: guides
+- source: principle-executable-intel
+  target: goal-frictionless
+  type: INFLUENCES
+  name: guides
+- source: principle-executable-intel
+  target: goal-integrity
+  type: INFLUENCES
+  name: guides
 - source: principle-human-accountability
   target: goal-regulatory
+  type: INFLUENCES
+  name: guides
+- source: principle-human-accountability
+  target: goal-frictionless
+  type: INFLUENCES
+  name: guides
+- source: principle-human-accountability
+  target: goal-intent
   type: INFLUENCES
   name: guides
 - source: principle-forensic-audit
@@ -120,6 +136,14 @@
   name: guides
 - source: principle-policy-as-code
   target: goal-regulatory
+  type: INFLUENCES
+  name: guides
+- source: principle-policy-as-code
+  target: goal-frictionless
+  type: INFLUENCES
+  name: guides
+- source: principle-policy-as-code
+  target: goal-intent
   type: INFLUENCES
   name: guides
 - source: req-auto-spec-generation
@@ -163,7 +187,7 @@
 - source: cap-spec-engine
   target: req-auto-spec-generation
   type: REALIZES
-- source: cap-forensic-ledger
+- source: cap-spec-engine
   target: req-regulatory-mapping
   type: REALIZES
 - source: cap-control-plane
@@ -239,16 +263,16 @@
   name: initiates
 - source: process-spec-generation
   target: process-agentic-crew
-  type: FLOWS_TO
+  type: TRIGGERS
   name: produces specification for
 - source: process-agentic-crew
   target: process-release
   type: TRIGGERS
-  name: governs & triggers
+  name: produces artefacts for
 - source: process-release
   target: process-state-discovery
   type: TRIGGERS
-  name: runs system for
+  name: initiates discovery for
 
 # ===========================================================
 # Business Layer — Role Assignments
@@ -257,6 +281,10 @@
   target: event-change-request
   type: ASSIGNED_TO
   name: defines requirements for
+- source: role-ba
+  target: process-spec-generation
+  type: ASSIGNED_TO
+  name: validates requirements against
 - source: role-sa
   target: process-spec-generation
   type: ASSIGNED_TO
@@ -286,6 +314,10 @@
   type: ASSIGNED_TO
   name: executes
 - source: role-code-quality
+  target: process-agentic-crew
+  type: ASSIGNED_TO
+  name: enforces quality during
+- source: role-code-quality
   target: process-release
   type: ASSIGNED_TO
   name: gates quality for
@@ -301,6 +333,10 @@
 # ===========================================================
 # Business Layer — Object Access
 # ===========================================================
+- source: process-spec-generation
+  target: object-regulation
+  type: ACCESSES
+  mode: read
 - source: process-spec-generation
   target: object-strategic-intent
   type: ACCESSES
@@ -354,19 +390,7 @@
   target: cap-human-approval-workflow
   type: REALIZES
   name: compliance sign-off
-- source: process-release
-  target: cap-forensic-ledger
-  type: REALIZES
-  name: audited by
 - source: process-state-discovery
   target: cap-drift-dashboard
   type: REALIZES
   name: realizes
-- source: process-spec-generation
-  target: cap-digital-twin
-  type: REALIZES
-  name: consumes
-- source: process-state-discovery
-  target: cap-digital-twin
-  type: REALIZES
-  name: updates

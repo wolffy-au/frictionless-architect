@@ -39,25 +39,25 @@
   properties:
     name: Market Agility & Competitive Pressure
     description: In a hyper-competitive, AI-driven landscape, the "Cost of Delay" has become an existential threat. If the bank cannot deliver features as fast as a startup or a tech giant, it loses market share
-    additional_info: The need to respond to customer needs and competitor moves at the speed of thought, rather than the speed of a committee. Frictionless delivery is the means to survive this external pressure.
+    rationale: The need to respond to customer needs and competitor moves at the speed of thought, rather than the speed of a committee. Frictionless delivery is the means to survive this external pressure.
 - label: Motivation_Driver
   identifier: driver-compliance
   properties:
     name: Regulatory Resiliency & Social License
     description: As a major financial institution(Westpac), non-compliance with APRA(CPS 230/234) isn't just a fine—it’s a threat to the banking license. Manual compliance is too slow and error-prone for an AI-speed world.
-    additional_info: The absolute requirement to maintain institutional trust and regulatory standing while accelerating delivery. We automate compliance because "vibe-coding" at scale is a governance catastrophe waiting to happen.
+    rationale: The absolute requirement to maintain institutional trust and regulatory standing while accelerating delivery. We automate compliance because "vibe-coding" at scale is a governance catastrophe waiting to happen.
 - label: Motivation_Driver
   identifier: driver-sustainability
   properties:
     name: Systemic Sustainability & Complexity Management
     description: Unmanaged architectural drift creates 'hidden debt' that makes systems fragile, leading to outages and ballooning maintenance costs. If we don't manage drift, the system eventually becomes too complex to change at any speed.
-    additional_info: The need to ensure the bank's digital foundations remain stable and understandable over decades. We mitigate drift to prevent 'entropy at scale,' which would eventually grind all innovation to a halt.
+    rationale: The need to ensure the bank's digital foundations remain stable and understandable over decades. We mitigate drift to prevent 'entropy at scale,' which would eventually grind all innovation to a halt.
 - label: Motivation_Driver
   identifier: driver-scaling
   properties:
     name: Human-to-Machine Operational Scaling
     description: Human architects are a finite resource and a bottleneck. As AI agents begin producing code and changes at machine speed, it is physically impossible for humans to review it all using traditional methods.
-    additional_info: The need to scale architectural oversight without a proportional increase in human headcount or a loss of control. We move to 'executable intent' because human-only governance cannot keep pace with AI-driven delivery.
+    rationale: The need to scale architectural oversight without a proportional increase in human headcount or a loss of control. We move to 'executable intent' because human-only governance cannot keep pace with AI-driven delivery.
 - label: Motivation_Assessment
   identifier: assessment-bottleneck
   properties:
@@ -112,7 +112,7 @@
   identifier: goal-frictionless
   properties:
     name: Frictionless Technology Delivery
-    description: A desired end state where technology change flows without manual intervention.
+    description: A desired end state where compliant technology change flows without unnecessary manual intervention — with human oversight applied deliberately at accountability checkpoints rather than as a default gate.
 - label: Motivation_Goal
   identifier: goal-regulatory
   properties:
@@ -127,7 +127,7 @@
   identifier: goal-intent
   properties:
     name: Executable Architectural Intent
-    description: A direction to shift architecture from human-readable documents to machine-consumable specifications.
+    description: The desired state where architectural intent is expressed as machine-consumable specifications that autonomous agents can consume as executable guardrails.
 - label: Motivation_Outcome
   identifier: outcome-frictionless-lead-time
   properties:
@@ -159,11 +159,13 @@
   properties:
     name: Strategic Drift (Delivery vs. Strategy)
     result: Delivery remains aligned with strategic direction through continuous discovery.
+    metric: "<5% of delivery items deviate from current strategic direction per quarter"
 - label: Motivation_Outcome
   identifier: outcome-integrity-agentic-drift
   properties:
     name: Agentic Drift (Behavior vs. Guardrails)
     result: Agent behavior stays within intended boundaries and patterns.
+    metric: "0 undetected agentic boundary violations per release cycle"
 - label: Motivation_Outcome
   identifier: outcome-intent-agent-alignment
   properties:
@@ -228,8 +230,8 @@
 - label: Motivation_Constraint
   identifier: const-model-governance
   properties:
-    name: SR 11-7 / APRA Model Risk Guidance
-    description: Governance requirements for model development, validation, and deployment.
+    name: Model Risk Standards (SR 11-7 / APRA)
+    description: External standards governing model risk management. SR 11-7 (US Federal Reserve) is the de facto global standard adopted by major banks internationally; APRA's operational resilience guidance sets the Australian prudential expectation. Together they define the validation, documentation, and oversight obligations for agentic decision-making.
 - label: Motivation_Requirement
   identifier: req-nfr-drift-latency
   properties:
@@ -352,13 +354,13 @@
   identifier: role-dev
   properties:
     name: Developer
-    description: Manages delivery aspects of the agentic crew; accountable for code generation quality.
+    description: Supervises and is accountable for the code generation output of the agentic crew. Reviews agent-generated artefacts at exception escalation points.
     worker_type: human
 - label: Business_Role
   identifier: role-te
   properties:
     name: Test Engineer
-    description: Manages quality aspects of the agentic crew; accountable for test suite coverage.
+    description: Supervises and is accountable for test suite coverage produced by the agentic crew. Reviews agent-generated test artefacts at exception escalation points.
     worker_type: human
 - label: Business_Role
   identifier: role-devops
@@ -401,8 +403,8 @@
 - label: Business_Process
   identifier: process-agentic-crew
   properties:
-    name: Agentic Crew
-    description: Autonomous agent crew operating under supervisory control plane constraints. Consumes regulation, policy, patterns, and controls from the knowledge graph to generate code, test suites, and deployment manifests.
+    name: Agentic Development Execution
+    description: The supervised execution of AI-driven development by the agentic crew, operating within supervisory control plane constraints. Consumes the executable specification, regulation, policy, patterns, and controls from the knowledge graph to generate code, test suites, and deployment manifests.
 - label: Business_Process
   identifier: process-release
   properties:
