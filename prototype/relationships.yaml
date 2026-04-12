@@ -86,6 +86,10 @@
   target: goal-regulatory
   type: REALIZES
   name: quantifies
+- source: outcome-regulatory-policy-drift
+  target: goal-regulatory
+  type: REALIZES
+  name: quantifies
 - source: outcome-integrity-alignment
   target: goal-integrity
   type: REALIZES
@@ -266,13 +270,21 @@
   type: TRIGGERS
   name: produces specification for
 - source: process-agentic-crew
+  target: process-cicd-pipeline
+  type: TRIGGERS
+  name: submits artefacts to
+- source: process-cicd-pipeline
   target: process-release
   type: TRIGGERS
-  name: produces artefacts for
+  name: gates and passes to
 - source: process-release
   target: process-state-discovery
   type: TRIGGERS
   name: initiates discovery for
+- source: process-state-discovery
+  target: process-drift-review
+  type: TRIGGERS
+  name: surfaces findings for
 
 # ===========================================================
 # Business Layer — Role Assignments
@@ -310,6 +322,10 @@
   type: ASSIGNED_TO
   name: manages quality aspects of
 - source: role-devops
+  target: process-cicd-pipeline
+  type: ASSIGNED_TO
+  name: owns pipeline configuration for
+- source: role-devops
   target: process-release
   type: ASSIGNED_TO
   name: executes
@@ -318,9 +334,13 @@
   type: ASSIGNED_TO
   name: enforces quality during
 - source: role-code-quality
-  target: process-release
+  target: process-cicd-pipeline
   type: ASSIGNED_TO
-  name: gates quality for
+  name: enforces quality gates within
+- source: role-woven-control-plane
+  target: process-cicd-pipeline
+  type: ASSIGNED_TO
+  name: enforces gates within
 - source: role-debt-analyst
   target: process-state-discovery
   type: ASSIGNED_TO
@@ -329,6 +349,14 @@
   target: process-state-discovery
   type: ASSIGNED_TO
   name: simplifies code via
+- source: role-sa
+  target: process-drift-review
+  type: ASSIGNED_TO
+  name: approves architectural drift in
+- source: role-sec-comp
+  target: process-drift-review
+  type: ASSIGNED_TO
+  name: approves regulatory drift in
 
 # ===========================================================
 # Business Layer — Object Access
@@ -357,10 +385,18 @@
   target: object-regulation
   type: ACCESSES
   mode: read
-- source: process-state-discovery
+- source: process-drift-review
   target: object-technical-backlog
   type: ACCESSES
   mode: write
+- source: process-cicd-pipeline
+  target: object-executable-spec
+  type: ACCESSES
+  mode: read
+- source: process-cicd-pipeline
+  target: object-regulation
+  type: ACCESSES
+  mode: read
 
 # ===========================================================
 # Business Layer — Process Realization
@@ -378,10 +414,10 @@
   target: cap-spec-engine
   type: REALIZES
   name: realizes
-- source: process-agentic-crew
+- source: process-cicd-pipeline
   target: cap-control-plane
   type: REALIZES
-  name: realizes
+  name: woven enforcement
 - source: role-sa
   target: cap-human-approval-workflow
   type: REALIZES
