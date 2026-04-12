@@ -109,6 +109,11 @@
     name: Policy as Code
     description: All governance rules, compliance mappings, and architectural guardrails are expressed as version-controlled, machine-executable policy, not prose documents.
 - label: Motivation_Goal
+  identifier: goal-kg-maturity
+  properties:
+    name: Digital Twin Operational Maturity
+    description: The desired state where the Digital Twin Knowledge Graph progresses through connect, enrich, and serve phases to become the authoritative, real-time source of truth for all architectural, regulatory, and observational data.
+- label: Motivation_Goal
   identifier: goal-frictionless
   properties:
     name: Frictionless Technology Delivery
@@ -183,6 +188,24 @@
     name: Scaled Architectural Oversight
     result: The ability to govern an exponential increase in AI-generated code without increasing the headcount of human architects.
     metric: 10x oversight coverage (code changes per architect) while maintaining or improving compliance and quality metrics.
+- label: Motivation_Outcome
+  identifier: outcome-kg-connected
+  properties:
+    name: Sources Connected
+    result: Raw data from all source systems flows continuously into the knowledge graph with no manual ingestion steps.
+    metric: "≥3 source system types ingested; As-Built plane populated within 15-minute freshness SLA"
+- label: Motivation_Outcome
+  identifier: outcome-kg-enriched
+  properties:
+    name: Graph Semantically Enriched
+    result: All three KG planes are populated and cross-referenced with ArchiMate relationships, regulatory obligations mapped, and design intent encoded.
+    metric: "100% of active regulatory obligations mapped; all cross-plane relationships queryable"
+- label: Motivation_Outcome
+  identifier: outcome-kg-serving
+  properties:
+    name: Graph Serving at Capacity
+    result: The knowledge graph serves spec generation, gate evaluation, and drift detection within defined SLAs at production scale.
+    metric: "Spec generation <5 min; drift detection within SLA; compliance query <30 sec"
 - label: Motivation_Requirement
   identifier: req-auto-spec-generation
   properties:
@@ -334,6 +357,26 @@
   properties:
     name: Real-time Data Ingestion & Synchronization
     description: The ability to establish and manage efficient, low-latency data pipelines that continuously ingest and synchronize production system state telemetry into the digital twin knowledge graph, ensuring it adheres to the 15-minute freshness SLA and directly enabling the 'live' aspect of the digital twin.
+- label: Strategy_ValueStream
+  identifier: vs-kg-evolution
+  properties:
+    name: "KG Evolution: Connect → Enrich → Serve"
+    description: The maturity progression through which the Digital Twin Knowledge Graph transitions from raw source connectivity to full operational capability. Each stage is a prerequisite for the next and realizes progressively more of the digital twin capability.
+- label: Strategy_CourseOfAction
+  identifier: action-kg-connect
+  properties:
+    name: "Connect: Ingest Sources"
+    description: Establish data pipelines from source systems — code repositories, deployment manifests, telemetry streams, and regulatory document stores — into the knowledge graph. Outcome is a continuously populated As-Built plane.
+- label: Strategy_CourseOfAction
+  identifier: action-kg-enrich
+  properties:
+    name: "Enrich: Semantic Mapping"
+    description: Encode ArchiMate relationships, regulatory obligations, and design intent across all three KG planes. Build cross-plane references so that as-designed, as-built, and as-governed data are queryable as a unified graph.
+- label: Strategy_CourseOfAction
+  identifier: action-kg-serve
+  properties:
+    name: "Serve: Operational Digital Twin"
+    description: The knowledge graph is queryable at production scale, serving spec generation, gate evaluation, and drift detection within defined SLAs. The digital twin becomes the authoritative, real-time source of truth for the entire delivery pipeline.
 
 # ===========================================================
 # Business Layer — Active Structure (Business_Role)
@@ -344,60 +387,70 @@
     name: Business Analyst
     description: Defines requirements and acceptance criteria for change requests.
     worker_type: human
+    provenance: existing
 - label: Business_Role
   identifier: role-sa
   properties:
     name: Solution Architect
     description: Provides design input and ensures pattern integrity through the specification process.
     worker_type: human
+    provenance: existing
 - label: Business_Role
   identifier: role-sec-comp
   properties:
     name: Security & Compliance
     description: Defines security and compliance requirements; oversees regulatory controls across the SDLC.
     worker_type: human
+    provenance: existing
 - label: Business_Role
   identifier: role-dev
   properties:
     name: Developer
     description: Supervises and is accountable for the code generation output of the agentic crew. Reviews agent-generated artefacts at exception escalation points.
     worker_type: human
+    provenance: extended
 - label: Business_Role
   identifier: role-te
   properties:
     name: Test Engineer
     description: Supervises and is accountable for test suite coverage produced by the agentic crew. Reviews agent-generated test artefacts at exception escalation points.
     worker_type: human
+    provenance: extended
 - label: Business_Role
   identifier: role-devops
   properties:
     name: DevOps / Release
     description: AI-driven autonomous agent that deploys artefacts and executes release processes.
     worker_type: ai
+    provenance: novel
 - label: Business_Role
   identifier: role-code-quality
   properties:
     name: Code Quality
     description: AI-driven autonomous agent performing continuous quality enforcement across generated code.
     worker_type: ai
+    provenance: novel
 - label: Business_Role
   identifier: role-refactoring
   properties:
     name: Refactoring
     description: AI-driven autonomous agent performing structural improvement and simplification of code.
     worker_type: ai
+    provenance: novel
 - label: Business_Role
   identifier: role-debt-analyst
   properties:
     name: Debt Analyst
     description: AI-driven autonomous agent that detects and triages technical debt.
     worker_type: ai
+    provenance: novel
 - label: Business_Role
   identifier: role-woven-control-plane
   properties:
     name: Woven Control Plane
     description: Automated enforcement agent embedded within the CICD pipeline. Evaluates each artefact against the executable specification and policy-as-code gates, blocking release on violation and raising exceptions for human review.
     worker_type: automated
+    provenance: novel
 
 # ===========================================================
 # Business Layer — Behavior (Business_Event, Business_Process)
@@ -466,3 +519,23 @@
   properties:
     name: Business Outcome / Customer Value
     description: The desired business impact and stakeholder value delivered through compliant, traceable production releases.
+- label: Business_Object
+  identifier: object-forensic-ledger
+  properties:
+    name: Immutable Forensic Audit Ledger
+    description: Append-only, cryptographically assured record of all gate decisions, spec approvals, deployment events, and drift review outcomes. The primary evidence base for CPS 230/234 regulatory audit.
+- label: Business_Object
+  identifier: object-kg-as-designed
+  properties:
+    name: KG — As-Designed Plane
+    description: Graph-encoded architectural patterns, standards, and approved specifications representing the intended target state of all systems. The authoritative source of design intent consumed by spec generation and gate evaluation.
+- label: Business_Object
+  identifier: object-kg-as-built
+  properties:
+    name: KG — As-Built Plane
+    description: Continuously updated graph of observed system state derived from telemetry, code analysis, and deployment manifests. The factual record of what is actually running, used for drift detection and reconciliation.
+- label: Business_Object
+  identifier: object-kg-as-governed
+  properties:
+    name: KG — As-Governed Plane
+    description: Graph-encoded active regulatory rules, policy controls, and compliance obligations structured for machine evaluation. The source of truth for automated gate enforcement and regulatory mapping.

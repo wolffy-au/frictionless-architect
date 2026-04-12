@@ -110,6 +110,41 @@
   target: goal-intent
   type: REALIZES
   name: quantifies
+# KG Maturity outcomes → goal
+- source: outcome-kg-connected
+  target: goal-kg-maturity
+  type: REALIZES
+  name: quantifies
+- source: outcome-kg-enriched
+  target: goal-kg-maturity
+  type: REALIZES
+  name: quantifies
+- source: outcome-kg-serving
+  target: goal-kg-maturity
+  type: REALIZES
+  name: quantifies
+# KG Maturity goal → delivery goals it enables
+- source: goal-kg-maturity
+  target: goal-intent
+  type: INFLUENCES
+  name: enables
+- source: goal-kg-maturity
+  target: goal-integrity
+  type: INFLUENCES
+  name: enables
+# Outcomes cross-reference CourseOfAction phases
+- source: outcome-kg-connected
+  target: action-kg-connect
+  type: ASSOCIATED_WITH
+  name: achieved by
+- source: outcome-kg-enriched
+  target: action-kg-enrich
+  type: ASSOCIATED_WITH
+  name: achieved by
+- source: outcome-kg-serving
+  target: action-kg-serve
+  type: ASSOCIATED_WITH
+  name: achieved by
 - source: principle-executable-intel
   target: goal-intent
   type: INFLUENCES
@@ -188,6 +223,41 @@
   target: goal-intent
   type: INFLUENCES
   name: governs
+# ===========================================================
+# Strategy Layer — KG Evolution ValueStream
+# ===========================================================
+- source: vs-kg-evolution
+  target: action-kg-connect
+  type: ASSOCIATED_WITH
+  name: stage 1
+- source: vs-kg-evolution
+  target: action-kg-enrich
+  type: ASSOCIATED_WITH
+  name: stage 2
+- source: vs-kg-evolution
+  target: action-kg-serve
+  type: ASSOCIATED_WITH
+  name: stage 3
+- source: action-kg-connect
+  target: action-kg-enrich
+  type: TRIGGERS
+  name: enables
+- source: action-kg-enrich
+  target: action-kg-serve
+  type: TRIGGERS
+  name: enables
+- source: action-kg-connect
+  target: cap-realtime-data-sync
+  type: REALIZES
+  name: initial ingestion
+- source: action-kg-enrich
+  target: cap-digital-twin
+  type: REALIZES
+  name: semantic completeness
+- source: action-kg-serve
+  target: cap-digital-twin
+  type: REALIZES
+  name: operational readiness
 - source: cap-spec-engine
   target: req-auto-spec-generation
   type: REALIZES
@@ -397,6 +467,64 @@
   target: object-regulation
   type: ACCESSES
   mode: read
+- source: process-spec-generation
+  target: object-forensic-ledger
+  type: ACCESSES
+  mode: write
+- source: process-cicd-pipeline
+  target: object-forensic-ledger
+  type: ACCESSES
+  mode: write
+- source: process-release
+  target: object-forensic-ledger
+  type: ACCESSES
+  mode: write
+- source: process-drift-review
+  target: object-forensic-ledger
+  type: ACCESSES
+  mode: write
+- source: role-sec-comp
+  target: object-forensic-ledger
+  type: ACCESSES
+  mode: read
+# KG plane access — raw inputs feed the graph
+- source: object-strategic-intent
+  target: object-kg-as-designed
+  type: ASSOCIATED_WITH
+  name: ingested as graph-encoded intent
+- source: object-regulation
+  target: object-kg-as-governed
+  type: ASSOCIATED_WITH
+  name: encoded as active policy rules
+# KG plane access — processes
+- source: process-spec-generation
+  target: object-kg-as-designed
+  type: ACCESSES
+  mode: readwrite
+- source: process-spec-generation
+  target: object-kg-as-governed
+  type: ACCESSES
+  mode: read
+- source: process-cicd-pipeline
+  target: object-kg-as-designed
+  type: ACCESSES
+  mode: read
+- source: process-cicd-pipeline
+  target: object-kg-as-governed
+  type: ACCESSES
+  mode: read
+- source: process-cicd-pipeline
+  target: object-kg-as-built
+  type: ACCESSES
+  mode: read
+- source: process-state-discovery
+  target: object-kg-as-built
+  type: ACCESSES
+  mode: read
+- source: process-drift-review
+  target: object-kg-as-built
+  type: ACCESSES
+  mode: write
 
 # ===========================================================
 # Business Layer — Process Realization
@@ -405,6 +533,22 @@
   target: object-business-value
   type: REALIZES
   name: delivers
+- source: object-forensic-ledger
+  target: cap-forensic-ledger
+  type: REALIZES
+  name: realizes
+- source: object-kg-as-designed
+  target: cap-digital-twin
+  type: REALIZES
+  name: as-designed plane
+- source: object-kg-as-built
+  target: cap-digital-twin
+  type: REALIZES
+  name: as-built plane
+- source: object-kg-as-governed
+  target: cap-digital-twin
+  type: REALIZES
+  name: as-governed plane
 
 # ===========================================================
 # Cross-Layer: Business Layer → Strategy_Capability (REALIZES)

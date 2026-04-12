@@ -92,6 +92,9 @@ def generate_visualisation(uri, user, password):
                     macro = get_puml_macro(label)
                     id_clean = sanitize_id(node["identifier"])
                     name = escape_puml(node.get("name", node["identifier"]))
+                    provenance = node.get("provenance")
+                    if provenance and provenance != "existing":
+                        name = f"{name}\\n«{provenance}»"
                     puml.append(f"{macro}({id_clean}, '{name}')")
 
                 puml.append("")
