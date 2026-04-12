@@ -140,10 +140,6 @@
   target: goal-regulatory
   type: REALIZES
   name: enforces
-- source: req-human-signoff
-  target: goal-regulatory
-  type: REALIZES
-  name: enforces
 - source: const-apra
   target: goal-regulatory
   type: INFLUENCES
@@ -194,6 +190,9 @@
 - source: cap-digital-twin
   target: req-nfr-knowledge-graph-freshness
   type: REALIZES
+- source: cap-human-approval-workflow
+  target: req-human-signoff
+  type: REALIZES
 - source: req-nfr-drift-latency
   target: goal-integrity
   type: REALIZES
@@ -212,7 +211,21 @@
 - source: req-nfr-knowledge-graph-freshness
   target: goal-integrity
   type: REALIZES
-- source: req-human-signoff
-  target: goal-regulatory
+- source: cap-realtime-detection-surfacing
+  target: req-nfr-drift-latency
   type: REALIZES
-  name: enforces
+- source: cap-cryptographic-integrity-enforcement
+  target: req-nfr-ledger-immutability
+  type: REALIZES
+- source: cap-spec-determinism-validation
+  target: req-nfr-spec-determinism
+  type: REALIZES
+- source: cap-resilient-control-plane-infra
+  target: req-nfr-control-plane-availability
+  type: REALIZES
+- source: cap-optimized-audit-querying
+  target: req-nfr-audit-query-performance
+  type: REALIZES
+- source: cap-realtime-data-sync
+  target: req-nfr-knowledge-graph-freshness
+  type: REALIZES

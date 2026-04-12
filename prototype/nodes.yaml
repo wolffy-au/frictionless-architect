@@ -291,3 +291,38 @@
   properties:
     name: Architectural Drift Detection & Reconciliation
     description: The ability to continuously compare observed system telemetry against the as-designed knowledge graph and surface deviations — strategic, structural, or agentic — in real time.
+- label: Strategy_Capability
+  identifier: cap-human-approval-workflow
+  properties:
+    name: Human Oversight & Approval Workflow
+    description: The ability to identify, route, and manage human architect approval for changes that deviate from deterministic specifications or present ambiguous compliance scenarios. This capability ensures that exceptions to automated gates are handled through a defined, auditable human sign-off process, preventing autonomous resolution of such cases and upholding the principle-human-accountability. It will integrate with cap-control-plane and cap-forensic-ledger.
+- label: Strategy_Capability
+  identifier: cap-realtime-detection-surfacing
+  properties:
+    name: Real-time Detection & Surfacing
+    description: The ability to process system telemetry and reconciliation data with ultra-low latency to ensure drift events are detected and surfaced within the defined 5-minute SLA. This capability is dedicated to guaranteeing the speed at which deviations are identified and made visible, enabling prompt intervention.
+- label: Strategy_Capability
+  identifier: cap-cryptographic-integrity-enforcement
+  properties:
+    name: Cryptographic Integrity Enforcement
+    description: The ability to implement and manage cryptographic techniques (e.g., hashing, digital signatures, blockchain principles) that ensure the immutable and tamper-evident nature of the forensic ledger, meeting strict evidentiary standards and directly guaranteeing this non-functional requirement.
+- label: Strategy_Capability
+  identifier: cap-spec-determinism-validation
+  properties:
+    name: Specification Determinism Validation
+    description: The ability to continuously test and validate the deterministic output of the specification generation engine. This includes establishing test harnesses that feed identical inputs to verify byte-for-byte consistency of generated specifications across different execution runs and environments.
+- label: Strategy_Capability
+  identifier: cap-resilient-control-plane-infra
+  properties:
+    name: Resilient Control Plane Infrastructure
+    description: The ability to design, implement, and operate highly available and resilient infrastructure for the supervisory control plane, incorporating redundancy, automated fail-over, and disaster recovery mechanisms to explicitly guarantee the ≥99.95% availability SLA and fail-closed behavior.
+- label: Strategy_Capability
+  identifier: cap-optimized-audit-querying
+  properties:
+    name: Optimized Audit Querying
+    description: The ability to develop and maintain an optimized query layer for the forensic ledger. This capability focuses on ensuring that complex compliance evidence queries can be executed and completed within the specified 30-second performance SLA, directly addressing the performance aspect of the requirement.
+- label: Strategy_Capability
+  identifier: cap-realtime-data-sync
+  properties:
+    name: Real-time Data Ingestion & Synchronization
+    description: The ability to establish and manage efficient, low-latency data pipelines that continuously ingest and synchronize production system state telemetry into the digital twin knowledge graph, ensuring it adheres to the 15-minute freshness SLA and directly enabling the 'live' aspect of the digital twin.
