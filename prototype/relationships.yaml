@@ -108,53 +108,69 @@
   name: quantifies
 - source: principle-executable-intel
   target: goal-intent
-  type: REALIZES
+  type: INFLUENCES
   name: guides
 - source: principle-human-accountability
   target: goal-regulatory
-  type: REALIZES
+  type: INFLUENCES
   name: guides
 - source: principle-forensic-audit
   target: goal-regulatory
-  type: REALIZES
+  type: INFLUENCES
   name: guides
-- source: req-auto-spec-generation
-  target: goal-intent
-  type: REALIZES
-- source: req-regulatory-mapping
+- source: principle-policy-as-code
   target: goal-regulatory
-  type: REALIZES
-- source: req-pre-deploy-gate
-  target: outcome-regulatory-violation-detection
-  type: REALIZES
-- source: req-continuous-reconciliation
-  target: outcome-integrity-alignment
-  type: REALIZES
-- source: req-human-signoff
-  target: const-model-risk
-  type: REALIZES
-  name: evidences
-- source: req-human-signoff
-  target: principle-human-accountability
-  type: REALIZES
-  name: evidences
+  type: INFLUENCES
+  name: guides
+# - source: req-auto-spec-generation
+#   target: goal-intent
+#   type: REALIZES
+# - source: req-regulatory-mapping
+#   target: goal-regulatory
+#   type: REALIZES
+# - source: req-pre-deploy-gate
+#   target: outcome-regulatory-violation-detection
+#   type: REALIZES
+# - source: req-continuous-reconciliation
+#   target: outcome-integrity-alignment
+#   type: REALIZES
+# - source: req-human-signoff
+#   target: const-model-risk
+#   type: REALIZES
+#   name: evidences
+# - source: req-human-signoff
+#   target: principle-human-accountability
+#   type: REALIZES
+#   name: evidences
 - source: const-apra
   target: goal-regulatory
-  type: ASSOCIATED_WITH
+  type: INFLUENCES
   name: governs
 - source: const-model-risk
-  target: outcome-intent-agent-alignment
-  type: ASSOCIATED_WITH
+  target: goal-intent
+  type: INFLUENCES
   name: governs
-- source: cap-spec-engine
-  target: req-auto-spec-generation
-  type: REALIZES
-- source: cap-forensic-ledger
-  target: req-regulatory-mapping
-  type: REALIZES
-- source: cap-control-plane
-  target: req-pre-deploy-gate
-  type: REALIZES
-- source: cap-drift-dashboard
-  target: req-continuous-reconciliation
-  type: REALIZES
+- source: const-privacy
+  target: goal-regulatory
+  type: INFLUENCES
+  name: governs
+- source: const-cloud-policy
+  target: goal-regulatory
+  type: INFLUENCES
+  name: governs
+- source: const-model-governance
+  target: goal-intent
+  type: INFLUENCES
+  name: governs
+# - source: cap-spec-engine
+#   target: req-auto-spec-generation
+#   type: REALIZES
+# - source: cap-forensic-ledger
+#   target: req-regulatory-mapping
+#   type: REALIZES
+# - source: cap-control-plane
+#   target: req-pre-deploy-gate
+#   type: REALIZES
+# - source: cap-drift-dashboard
+#   target: req-continuous-reconciliation
+#   type: REALIZES

@@ -67,33 +67,48 @@ def seed_database(uri: str, user: str, pword: str) -> None:
                 for statement in CONSTRAINTS:
                     session.run(statement)
 
-                # 2. Add objects (Nodes)
-                logger.info(f"Creating {len(nodes_data)} prototype nodes...")
-                for node in nodes_data:
-                    label = node["label"]
-                    session.run(
-                        f"MERGE (n:{label} {{identifier: $id}}) SET n += $props",
-                        id=node["identifier"],
-                        props=node["properties"],
-                    )
+                # 2. Add objects (Nodes) in bulk using UNWIND
+                logger.info(f"Creating {len(nodes_data)} prototype nodes in bulk...")
+                if nodes_data:
+                    # Group nodes by label (Cypher labels can't be parameterized)
+                    by_label = {}
+                    for node in nodes_data:
+                        label = node["label"]
+                        by_label.setdefault(label, []).append({
+                            "id": node["identifier"],
+                            "props": node["properties"]
+                        })
+                    
+                    for label, batch in by_label.items():
+                        session.run(f"""
+                            UNWIND $batch AS data
+                            MERGE (n:{label} {{identifier: data.id}})
+                            SET n += data.props
+                        """, batch=batch)
 
-                # 3. Relate them
-                logger.info(f"Creating {len(relationships_data)} prototype relationships...")
-                for rel in relationships_data:
-                    rel_type = rel["type"]
-                    # Extract properties other than source, target, type
-                    props = {k: v for k, v in rel.items() if k not in ("source", "target", "type")}
-                    session.run(
-                        f"""
-                        MATCH (source {{identifier: $source}})
-                        MATCH (target {{identifier: $target}})
-                        MERGE (source)-[r:{rel_type}]->(target)
-                        SET r += $props
-                        """,
-                        source=rel["source"],
-                        target=rel["target"],
-                        props=props,
-                    )
+                # 3. Relate them in bulk using UNWIND
+                logger.info(f"Creating {len(relationships_data)} prototype relationships in bulk...")
+                if relationships_data:
+                    # Group by relationship type (Relationship types can't be parameterized)
+                    by_type = {}
+                    for rel in relationships_data:
+                        rel_type = rel["type"]
+                        # Extract extra properties (e.g., 'name')
+                        extra_props = {k: v for k, v in rel.items() if k not in ("source", "target", "type")}
+                        by_type.setdefault(rel_type, []).append({
+                            "source": rel["source"],
+                            "target": rel["target"],
+                            "props": extra_props
+                        })
+                    
+                    for rel_type, batch in by_type.items():
+                        session.run(f"""
+                            UNWIND $batch AS data
+                            MATCH (src {{identifier: data.source}})
+                            MATCH (tgt {{identifier: data.target}})
+                            MERGE (src)-[r:{rel_type}]->(tgt)
+                            SET r += data.props
+                        """, batch=batch)
 
                 logger.info("Successfully seeded prototype data.")
 
