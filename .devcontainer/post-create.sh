@@ -19,11 +19,25 @@ run_command() {
         
         exit $exit_code
     fi
+    return 0
+}
+
+# Prints the tag_name of a GitHub repo's latest release, or nothing if it
+# can't be resolved.
+github_latest_release_tag() {
+    local repo="$1"   # e.g. github/spec-kit
+    curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+        | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/'
 }
 
 # Installing UV (Python package manager)
 echo -e "\n🐍 Installing UV - Python Package Manager..."
 run_command "pip install uv"
+echo "✅ Done"
+
+# Installing Poetry (Python package manager)
+echo -e "\n🐍 Installing Poetry - Python Package Manager..."
+run_command "pip install poetry"
 echo "✅ Done"
 
 # Installing CLI-based AI Agents
@@ -40,31 +54,98 @@ echo -e "\n🤖 Installing Gemini CLI..."
 run_command "npm install -g @google/gemini-cli@latest"
 echo "✅ Done"
 
+echo -e "\n🤖 Installing Claude CLI..."
+run_command "curl -fsSL https://claude.ai/install.sh | bash"
+echo "✅ Done"
+
+echo -e "\n🤖 Installing Herdr CLI..."
+run_command "curl -fsSL https://herdr.dev/install.sh | sh"
+echo "✅ Done"
+
 echo -e "\n🤖 Installing Specify CLI..."
-run_command "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
-echo "✅ Done"
-
-if [ -f /workspaces/frictionless-architect/frontend/package.json ]; then
-    echo -e "\n🌐 Installing frontend dependencies and Playwright browser..."
-    run_command "cd /workspaces/frictionless-architect/frontend && npm config set bin-links false && npm install && node ./node_modules/playwright/cli.js install --with-deps chromium"
-    echo "✅ Done"
+SPEC_KIT_TAG=$(github_latest_release_tag "github/spec-kit") || SPEC_KIT_TAG=""
+if [[ -z "$SPEC_KIT_TAG" ]]; then
+    echo "⚠️  Could not resolve latest spec-kit release — falling back to main"
+    run_command "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
+else
+    run_command "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@${SPEC_KIT_TAG}"
 fi
-
-# Installing commitizen
-echo -e "\n🛠️ Installing commitizen..."
-run_command "pip install commitizen"
 echo "✅ Done"
 
-# Installing SonarQube
-echo -e "\n🔍 Installing SonarQube Scanner..."
-run_command "sudo apt-get update && sudo apt-get install -y default-jre"
-run_command "sudo apt-get install -y libatk1.0-0 at-spi2-common libatk-bridge2.0-0 libgtk-3-0 libgtk-4-1 libgdk-pixbuf-xlib-2.0-0 libasound2 libasound2-data libcups2 libx11-xcb1 libxcomposite1 libxrandr2 libxss1 libwayland-client0 libwayland-egl1 libxdamage1 libxkbcommon0 libxshmfence1 libdbus-1-3 libdrm2 libegl1 libgbm1 libgl1-mesa-dri libgstreamer1.0-0"
+# Installing PlantUML
+echo -e "\n🌱 Installing PlantUML..."
+run_command "sudo apt-get install -y plantuml"
+run_command "sudo curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /usr/share/plantuml/plantuml.jar"
+echo "✅ Done"
+
+# Installing GitHub CLI
+echo -e "\n🐙 Installing GitHub CLI..."
+run_command "curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg"
+run_command "sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg"
+run_command "echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main' | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null"
+run_command "sudo apt-get update && sudo apt install -y gh"
 echo "✅ Done"
 
 # Installing Snyk CLI
 echo -e "\n🔒 Installing Snyk CLI..."
 run_command "npm install -g snyk@latest"
 echo "✅ Done"
+
+# Installing Claude Code Skills
+# Skills are pulled from each project's latest GitHub *release* tag (not a
+# branch, since raw.githubusercontent.com 404s on paths that only exist on
+# main/master) and the whole skill directory is copied so any supporting
+# files (references/, README, etc.) come along with SKILL.md.
+echo -e "\n🧠 Installing Claude Code Skills..."
+
+install_skill_from_release() {
+    local repo="$1"          # e.g. JuliusBrussee/caveman
+    local skill_path="$2"    # path of the skill dir inside the repo
+    local dest_dir="$3"      # e.g. .claude/skills/caveman
+    local label="$4"
+
+    local tag
+    tag=$(github_latest_release_tag "$repo") || tag=""
+
+    if [[ -z "$tag" ]]; then
+        echo "⚠️  ${label}: could not resolve latest release — using repo version"
+        return 0
+    fi
+
+    local tmp
+    tmp=$(mktemp -d)
+    local extracted_root=""
+    if curl -fsSL "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz" -o "${tmp}/skill.tar.gz" \
+        && tar -xzf "${tmp}/skill.tar.gz" -C "${tmp}"; then
+        extracted_root=$(find "${tmp}" -mindepth 1 -maxdepth 1 -type d | head -1)
+    fi
+
+    if [[ -n "$extracted_root" && -d "${extracted_root}/${skill_path}" ]]; then
+        mkdir -p "$(dirname "$dest_dir")"
+        rm -rf "$dest_dir"
+        cp -r "${extracted_root}/${skill_path}" "$dest_dir"
+        echo "✅ ${label}@${tag} installed"
+    else
+        echo "⚠️  ${label}@${tag} download failed — using repo version"
+    fi
+    rm -rf "$tmp"
+}
+
+install_skill_from_release "JuliusBrussee/caveman" "skills/caveman" ".claude/skills/caveman" "caveman"
+install_skill_from_release "REMvisual/claude-handoff" "skills/handoff" ".claude/skills/session-handoff" "session-handoff"
+echo "✅ Done"
+
+# # Installing Git Hooks
+# echo -e "\n🪝 Installing Git Hooks..."
+# run_command "pip install pre-commit"
+# run_command "pre-commit install --hook-type pre-commit --hook-type pre-push"
+# echo "✅ Done"
+
+if [ -f /workspaces/frictionless-architect/frontend/package.json ]; then
+    echo -e "\n🌐 Installing frontend dependencies and Playwright browser..."
+    run_command "cd /workspaces/frictionless-architect/frontend && npm config set bin-links false && npm install && node ./node_modules/playwright/cli.js install --with-deps chromium"
+    echo "✅ Done"
+fi
 
 echo -e "\n🧹 Cleaning cache..."
 run_command "sudo apt-get autoclean"
