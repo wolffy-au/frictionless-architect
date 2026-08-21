@@ -30,6 +30,12 @@ github_latest_release_tag() {
         | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/'
 }
 
+# Refresh apt package lists so subsequent apt-get installs (e.g. PlantUML)
+# can resolve packages against a current index.
+echo -e "\n📦 Refreshing apt package lists..."
+run_command "sudo apt-get update"
+echo "✅ Done"
+
 # Installing UV (Python package manager)
 echo -e "\n🐍 Installing UV - Python Package Manager..."
 run_command "pip install uv"
