@@ -1,0 +1,485 @@
+openapi: 3.0.0
+info:
+  title: Frictionless Architecture Governance API
+  version: 1.0.0
+  description: >
+    Contract for the core governance engine: Architecture Decision Records, the semantic
+    system model, compliance traceability, drift monitoring, and incident break-glass.
+
+    Technology-agnostic pass (2026-08-28): endpoints describe capabilities and payload
+    *shapes*, not the products or protocols behind them. Items still to be decided during
+    the architecture rework are marked "DEFERRED SOLUTION DECISION".
+
+servers:
+  - url: /api/v1
+
+security:
+  - governanceAuth: []
+
+paths:
+  /auth/session:
+    post:
+      summary: Establish an authenticated session
+      description: >
+        Exchanges caller credentials for a session credential used on subsequent requests.
+        DEFERRED SOLUTION DECISION: credential format, lifetime, and refresh model.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                principal:
+                  type: string
+                  description: User or agent identifier
+                secret:
+                  type: string
+              required: [principal, secret]
+      responses:
+        "200":
+          description: Session established
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_credential:
+                    type: string
+                  expires_at:
+                    type: string
+                    format: date-time
+        "401":
+          description: Invalid credentials
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /adrs:
+    post:
+      summary: Create a new ADR
+      description: Creates an Architecture Decision Record, optionally AI-drafted from a transcript.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ADRInput"
+      responses:
+        "201":
+          description: ADR created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ADR"
+        "400":
+          description: Invalid input
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: List ADRs
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Draft, Under Review, Approved, Superseded]
+          description: Filter ADRs by lifecycle state
+      responses:
+        "200":
+          description: List of ADRs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ADR"
+
+  /adrs/{id}:
+    get:
+      summary: Get a specific ADR
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ADR details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ADR"
+        "404":
+          description: ADR not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /adrs/{id}/attestation:
+    put:
+      summary: Attest to an ADR
+      description: >
+        Records a human architect's verifiable cryptographic attestation of the ADR's
+        content. DEFERRED SOLUTION DECISION: signature scheme and identity/certificate model.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ADR attested
+        "403":
+          description: Caller not authorized to attest
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: ADR not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /adrs/{id}/transcript:
+    post:
+      summary: Attach a transcript for AI-assisted drafting
+      description: Supplies raw unstructured text (e.g. chat, whiteboard) for AI analysis.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        "202":
+          description: Transcript accepted for processing
+        "400":
+          description: Invalid input
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: ADR not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /model/semantic:
+    get:
+      summary: Query the semantic system model
+      description: >
+        Natural-language query over technical components, data domains, CBS, and regulations.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Query results
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Result shape depends on the query
+        "400":
+          description: Invalid query
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /model/cbs:
+    get:
+      summary: List Critical Business Services
+      responses:
+        "200":
+          description: List of CBS
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CBS"
+
+  /compliance/matrix:
+    get:
+      summary: Query the Regulatory Traceability Matrix
+      description: Natural-language query for compliance evidence.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Compliance query results
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Result shape depends on the query
+        "400":
+          description: Invalid query
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Service temporarily unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /compliance/regulations:
+    get:
+      summary: List supported regulations
+      responses:
+        "200":
+          description: List of supported regulations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /status/drift:
+    get:
+      summary: Get architectural drift status
+      description: Real-time deviation of the as-built state from the as-designed state.
+      responses:
+        "200":
+          description: Drift status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_drifting:
+                    type: boolean
+                  deviations:
+                    type: array
+                    items:
+                      type: string
+        "503":
+          description: Monitoring service unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /incident/break-glass:
+    post:
+      summary: Request a Break-Glass exception
+      description: >
+        Authorises intentional, temporary drift during a P1 incident. Requires justification;
+        always logged; always time-bounded.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                justification:
+                  type: string
+                duration_hours:
+                  type: integer
+                  default: 48
+              required: [justification]
+      responses:
+        "202":
+          description: Exception request accepted
+        "400":
+          description: Invalid request (e.g. missing justification)
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Break-Glass already active or not permitted
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /logs/audit:
+    get:
+      summary: Read audit logs
+      description: Retrieves governance-relevant events (operations, changes, exceptions).
+      parameters:
+        - name: start_time
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLogEntry"
+
+components:
+  securitySchemes:
+    governanceAuth:
+      type: http
+      scheme: bearer
+      description: >
+        Session credential from POST /auth/session, presented as a bearer token.
+        DEFERRED SOLUTION DECISION: whether the final mechanism is a bearer token, mTLS,
+        or another scheme.
+
+  schemas:
+    Error:
+      type: object
+      description: >
+        Consistent structured error shape. DEFERRED SOLUTION DECISION: exact field set /
+        standard to adopt.
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+      required: [title, status]
+
+    ADRInput:
+      type: object
+      properties:
+        title:
+          type: string
+        transcript:
+          type: string
+          description: Raw text transcript for AI analysis (optional)
+      required:
+        - title
+
+    ADR:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          type: string
+          enum: [Draft, Under Review, Approved, Superseded]
+        date:
+          type: string
+          format: date-time
+        rationale:
+          type: string
+        decision:
+          type: string
+        consequences:
+          type: string
+        human_attestation:
+          type: object
+          nullable: true
+          properties:
+            signer_id:
+              type: string
+            signature:
+              type: string
+              description: Opaque verifiable signature; scheme is a deferred solution decision
+            timestamp:
+              type: string
+              format: date-time
+        transcript_processed:
+          type: boolean
+      required:
+        - id
+        - title
+        - status
+        - date
+        - rationale
+        - decision
+        - consequences
+
+    CBS:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        impact_tolerances:
+          type: object
+          properties:
+            rto:
+              type: string
+              description: Human-readable string with units, e.g. "4 hours"
+            rpo:
+              type: string
+              description: Human-readable string with units, e.g. "1 hour"
+        mapped_technical_components:
+          type: array
+          items:
+            type: string
+            description: Reference to a technical component ID
+        associated_regulations:
+          type: array
+          items:
+            type: string
+            description: Reference to a regulation ID or name
+      required:
+        - id
+        - name
+        - impact_tolerances
+
+    AuditLogEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        event_type:
+          type: string
+          description: e.g. "ADR_CREATED", "BREAK_GLASS_REQUESTED", "SESSION_ESTABLISHED"
+        user_id:
+          type: string
+        details:
+          type: object
+          description: Additional context about the event
+      required:
+        - timestamp
+        - event_type
