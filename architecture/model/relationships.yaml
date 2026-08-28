@@ -1,0 +1,58 @@
+# Relationships among the skeleton nodes only (13 of the prototype's 143).
+# The other 130 edges wired the skeleton to speculative detail nodes and are
+# left on tag `archive/prototype-neo4j`. That sparseness is the point: the
+# dense connectivity of the full model was mostly scaffolding for detail that
+# should not have been modelled centrally yet.
+
+# --- Capability realizes its functional requirement (candidate component -> contract) ---
+- source: cap-spec-engine
+  target: req-auto-spec-generation
+  type: REALIZES
+- source: cap-spec-engine
+  target: req-regulatory-mapping
+  type: REALIZES
+- source: cap-control-plane
+  target: req-pre-deploy-gate
+  type: REALIZES
+- source: cap-drift-dashboard
+  target: req-continuous-reconciliation
+  type: REALIZES
+- source: cap-human-approval-workflow
+  target: req-human-signoff
+  type: REALIZES
+
+# --- Process realizes capability (orchestration flow -> component) ---
+- source: process-spec-generation
+  target: cap-spec-engine
+  type: REALIZES
+  name: realizes
+- source: process-cicd-pipeline
+  target: cap-control-plane
+  type: REALIZES
+  name: woven enforcement
+- source: process-state-discovery
+  target: cap-drift-dashboard
+  type: REALIZES
+  name: realizes
+
+# --- Process chain (the end-to-end choreography) ---
+- source: process-spec-generation
+  target: process-agentic-crew
+  type: TRIGGERS
+  name: produces specification for
+- source: process-agentic-crew
+  target: process-cicd-pipeline
+  type: TRIGGERS
+  name: submits artefacts to
+- source: process-cicd-pipeline
+  target: process-release
+  type: TRIGGERS
+  name: gates and passes to
+- source: process-release
+  target: process-state-discovery
+  type: TRIGGERS
+  name: initiates discovery for
+- source: process-state-discovery
+  target: process-drift-review
+  type: TRIGGERS
+  name: surfaces findings for

@@ -1,0 +1,190 @@
+# Frictionless Architecture & Governance Platform — architecture skeleton
+#
+# The load-bearing subset of the prototype-neo4j model: the nodes that stay
+# true regardless of how the component boundaries finally land. Detailed
+# enterprise modelling (stakeholders, assessments, goals, outcomes+metrics,
+# non-functional requirements, enabler capabilities, business roles/objects,
+# the KG value stream) is deliberately left on tag `archive/prototype-neo4j`
+# and is rebuilt per-component once boundaries lock. See README.md.
+#
+# Format is kept graph-loadable (label / identifier / properties) so this can
+# be seeded into a graph later without reshaping.
+
+# ===========================================================
+# Motivation — Drivers (why the platform exists)
+# ===========================================================
+- label: Motivation_Driver
+  identifier: driver-agility
+  properties:
+    name: Market Agility & Competitive Pressure
+    description: In an AI-driven landscape the "cost of delay" is existential. If the bank cannot deliver features as fast as a startup or a tech giant, it loses market share.
+- label: Motivation_Driver
+  identifier: driver-compliance
+  properties:
+    name: Regulatory Resiliency & Social License
+    description: For a major financial institution, non-compliance with APRA CPS 230/234 is a threat to the banking license. Manual compliance is too slow and error-prone for an AI-speed world.
+- label: Motivation_Driver
+  identifier: driver-sustainability
+  properties:
+    name: Systemic Sustainability & Complexity Management
+    description: Unmanaged architectural drift creates hidden debt that makes systems fragile. Left unchecked, the system eventually becomes too complex to change at any speed.
+- label: Motivation_Driver
+  identifier: driver-scaling
+  properties:
+    name: Human-to-Machine Operational Scaling
+    description: Human architects are a finite bottleneck. As AI agents produce changes at machine speed, it is physically impossible to review it all with traditional methods.
+
+# ===========================================================
+# Motivation — Principles (constitution-level; cross-binding)
+# ===========================================================
+- label: Motivation_Principle
+  identifier: principle-executable-intel
+  properties:
+    name: Architecture as Executable Intelligence
+    description: Transform architecture from passive documentation into executable system intelligence.
+- label: Motivation_Principle
+  identifier: principle-human-accountability
+  properties:
+    name: Deterministic Human Accountability
+    description: AI is advisory; the specification is deterministic; a human holds sign-off.
+- label: Motivation_Principle
+  identifier: principle-forensic-audit
+  properties:
+    name: Forensic Auditability
+    description: Ability to reconstruct not just what happened but why a decision was made.
+- label: Motivation_Principle
+  identifier: principle-policy-as-code
+  properties:
+    name: Policy as Code
+    description: All governance rules, compliance mappings, and architectural guardrails are expressed as version-controlled, machine-executable policy, not prose documents.
+
+# ===========================================================
+# Motivation — Constraints (regulatory envelope every component inherits)
+# ===========================================================
+- label: Motivation_Constraint
+  identifier: const-apra
+  properties:
+    name: APRA CPS 230/234 Compliance
+    description: Operational resilience and prudential standards.
+- label: Motivation_Constraint
+  identifier: const-model-risk
+  properties:
+    name: Model Risk Management Framework
+    description: Manages risks associated with models and agentic decision-making.
+- label: Motivation_Constraint
+  identifier: const-privacy
+  properties:
+    name: Australian Privacy Act (APP)
+    description: Data privacy and protection regulations.
+- label: Motivation_Constraint
+  identifier: const-cloud-policy
+  properties:
+    name: Cloud & Data Sovereignty Policy
+    description: Governance and compliance policies for cloud-based operations.
+- label: Motivation_Constraint
+  identifier: const-model-governance
+  properties:
+    name: Model Risk Standards (SR 11-7 / APRA)
+    description: External standards governing model risk management. SR 11-7 is the de facto global standard adopted by major banks; APRA's operational resilience guidance sets the Australian prudential expectation. Together they define validation, documentation, and oversight obligations for agentic decision-making.
+
+# ===========================================================
+# Motivation — Functional Requirements (each one is a component contract)
+# ===========================================================
+- label: Motivation_Requirement
+  identifier: req-auto-spec-generation
+  properties:
+    name: Automated Specification Generation from Graph
+    type: Functional
+    description: For every approved change request, the system must automatically derive a complete, executable architectural specification from the knowledge graph — with zero manual authoring by an architect.
+- label: Motivation_Requirement
+  identifier: req-regulatory-mapping
+  properties:
+    name: Automated Regulatory Obligation Mapping
+    type: Functional
+    description: Every technical change must be automatically mapped to its applicable APRA CPS 230/234 obligations before a deployment gate is passed. No change may proceed without a resolved compliance mapping.
+- label: Motivation_Requirement
+  identifier: req-pre-deploy-gate
+  properties:
+    name: Pre-Deployment Compliance Gate Enforcement
+    type: Functional
+    description: The supervisory control plane must intercept and evaluate all agent-generated changes against the executable specification before they reach any test or production environment. Non-compliant changes must be blocked, not flagged retrospectively.
+- label: Motivation_Requirement
+  identifier: req-continuous-reconciliation
+  properties:
+    name: Continuous As-Built vs. As-Designed Reconciliation
+    type: Functional
+    description: The system must continuously reconcile observed system state (telemetry, deployed artefacts) against the knowledge graph's as-designed intent and surface any deviation as a classified drift event.
+- label: Motivation_Requirement
+  identifier: req-human-signoff
+  properties:
+    name: Mandatory Human Sign-off for Non-Standard Changes
+    type: Functional
+    description: Any change that cannot be deterministically validated against the executable specification must be escalated to a named human architect for explicit approval. The system must prevent autonomous resolution of ambiguous compliance cases.
+
+# ===========================================================
+# Strategy — Primary Capabilities (candidate component boundaries)
+# ===========================================================
+- label: Strategy_Capability
+  identifier: cap-digital-twin
+  properties:
+    name: Digital Twin Knowledge Graph
+    description: Maintain a live, queryable graph of the enterprise technology landscape — its components, policies, relationships, and regulatory mappings — as the authoritative source of architectural truth.
+- label: Strategy_Capability
+  identifier: cap-spec-engine
+  properties:
+    name: Executable Specification Generation
+    description: Deterministically produce machine-consumable architectural specifications from the knowledge graph, which AI agents and CI/CD pipelines consume as guardrails rather than human-readable documents.
+- label: Strategy_Capability
+  identifier: cap-control-plane
+  properties:
+    name: Agentic Supervisory Control
+    description: Constrain, monitor, and intervene in the behaviour of autonomous development agents in real time, enforcing architectural and regulatory boundaries before code reaches any environment.
+- label: Strategy_Capability
+  identifier: cap-forensic-ledger
+  properties:
+    name: Forensic Audit & Compliance Ledger
+    description: Record every agent action, gate decision, and specification evaluation into an immutable, queryable ledger that serves as contemporaneous evidence for regulatory examination.
+- label: Strategy_Capability
+  identifier: cap-drift-dashboard
+  properties:
+    name: Architectural Drift Detection & Reconciliation
+    description: Continuously compare observed system telemetry against the as-designed knowledge graph and surface deviations — strategic, structural, or agentic — in real time.
+- label: Strategy_Capability
+  identifier: cap-human-approval-workflow
+  properties:
+    name: Human Oversight & Approval Workflow
+    description: Identify, route, and manage human architect approval for changes that deviate from deterministic specifications or present ambiguous compliance scenarios, through a defined, auditable sign-off process that upholds principle-human-accountability.
+
+# ===========================================================
+# Business — Processes (the orchestration choreography between components)
+# ===========================================================
+- label: Business_Process
+  identifier: process-spec-generation
+  properties:
+    name: Deterministic Spec Generation
+    description: Scripted, template-driven generation of executable architectural specifications from the knowledge graph. AI recommends scope; human holds sign-off. Output is the deterministic intent consumed by the agentic crew.
+- label: Business_Process
+  identifier: process-agentic-crew
+  properties:
+    name: Agentic Development Execution
+    description: Supervised execution of AI-driven development within supervisory control plane constraints. Consumes the executable specification, regulation, policy, patterns, and controls from the knowledge graph to generate code, test suites, and deployment manifests.
+- label: Business_Process
+  identifier: process-cicd-pipeline
+  properties:
+    name: Automated CICD Gate Execution
+    description: The CI/CD pipeline with the agentic control plane woven in. Evaluates every artefact against the executable specification and policy-as-code gates before a release is permitted. Blocks on violation; escalates exceptions for human review; logs all gate outcomes to the immutable ledger.
+- label: Business_Process
+  identifier: process-release
+  properties:
+    name: Production Release
+    description: Compliant, traceable-to-spec deployment to production, triggered only after all gates have cleared. Automatically auditable end-to-end.
+- label: Business_Process
+  identifier: process-state-discovery
+  properties:
+    name: Current State Discovery
+    description: Continuous, automated reconciliation of actual system state against architectural intent. Surfaces classified drift events for human review; does not write directly to the backlog.
+- label: Business_Process
+  identifier: process-drift-review
+  properties:
+    name: Drift Review & Triage Gate
+    description: Human-gated review of drift findings before they are committed as backlog work items. A Solution Architect approves architectural drift; Security & Compliance approves regulatory drift. Ensures only validated, prioritised findings enter the delivery pipeline.
