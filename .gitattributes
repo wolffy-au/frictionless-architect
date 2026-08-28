@@ -1,0 +1,10 @@
+# Files that MUST be LF in the working tree on every platform, because a
+# trailing CR breaks the tools that read them (shell interprets `\r` as part
+# of the command / shebang; uv & pyenv read the literal version string).
+*.sh            text eol=lf
+*.bash          text eol=lf
+.python-version text eol=lf
+
+# Windows-only scripts stay CRLF.
+*.bat           text eol=crlf
+*.cmd           text eol=crlf

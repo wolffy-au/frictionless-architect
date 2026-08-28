@@ -21,27 +21,116 @@ run_command() {
     fi
 }
 
+# Prints the tag_name of a GitHub repo's latest release, or nothing if it
+# can't be resolved.
+github_latest_release_tag() {
+    local repo="$1"   # e.g. github/spec-kit
+    curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+        | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/'
+}
+
 # Installing UV (Python package manager)
 echo -e "\n🐍 Installing UV - Python Package Manager..."
 run_command "pip install uv"
 echo "✅ Done"
 
+# Installing Poetry (Python package manager)
+echo -e "\n🐍 Installing Poetry - Python Package Manager..."
+run_command "pip install poetry"
+echo "✅ Done"
+
 # Installing CLI-based AI Agents
 
-echo -e "\n🤖 Installing Copilot CLI..."
-run_command "npm install -g @github/copilot@latest"
+# echo -e "\n🤖 Installing Copilot CLI..."
+# run_command "npm install -g @github/copilot@latest"
+# echo "✅ Done"
+
+# echo -e "\n🤖 Installing Codex CLI..."
+# run_command "npm install -g @openai/codex@latest"
+# echo "✅ Done"
+
+# echo -e "\n🤖 Installing Gemini CLI..."
+# run_command "npm install -g @google/gemini-cli@latest"
+# echo "✅ Done"
+
+echo -e "\n🤖 Installing Claude CLI..."
+run_command "curl -fsSL https://claude.ai/install.sh | bash"
 echo "✅ Done"
 
-echo -e "\n🤖 Installing Codex CLI..."
-run_command "npm install -g @openai/codex@latest"
+echo -e "\n🤖 Installing Specify CLI (latest release)..."
+SPEC_KIT_TAG=$(github_latest_release_tag "github/spec-kit") || SPEC_KIT_TAG=""
+if [[ -z "$SPEC_KIT_TAG" ]]; then
+    echo "⚠️  Could not resolve latest spec-kit release — falling back to main"
+    run_command "uv tool install --force specify-cli --from git+https://github.com/github/spec-kit.git"
+else
+    run_command "uv tool install --force specify-cli --from git+https://github.com/github/spec-kit.git@${SPEC_KIT_TAG}"
+fi
 echo "✅ Done"
 
-echo -e "\n🤖 Installing Gemini CLI..."
-run_command "npm install -g @google/gemini-cli@latest"
+# ── Spec Kit scaffolding: regenerate to match the installed CLI ──────────────
+# .specify/{templates,scripts,integrations} and .agents/skills/speckit-* are
+# git-ignored and rebuilt here. .specify/speckit.lock (tracked) pins the version;
+# if a rebuild changes it, the working tree goes dirty so the bump gets reviewed
+# and committed. .specify/memory/ is hand-owned and never touched.
+echo -e "\n🧩 Regenerating Spec Kit scaffolding..."
+export PATH="$HOME/.local/bin:$PATH"
+WORKSPACE_DIR="/workspaces/frictionless-architect"
+SPECKIT_MANIFEST="$WORKSPACE_DIR/.specify/integrations/speckit.manifest.json"
+LOCK_FILE="$WORKSPACE_DIR/.specify/speckit.lock"
+
+LOCKED_VERSION=$(jq -r '.speckit_version // "none"' "$LOCK_FILE" 2>/dev/null || echo "none")
+
+# Guard the hand-owned governance files against any tooling side effects.
+cp -r "$WORKSPACE_DIR/.specify/memory" /tmp/speckit-memory.bak 2>/dev/null || true
+
+if [[ -f "$SPECKIT_MANIFEST" ]]; then
+    # Existing scaffolding present → diff-aware upgrade (blocks on modified managed files).
+    specify integration upgrade codex --script sh \
+        || echo "⚠️  'specify integration upgrade' did not complete cleanly — run 'specify integration status'."
+else
+    # Fresh clone (scaffolding is git-ignored and absent) → scaffold from bundled assets.
+    specify init --here --force --non-interactive --ignore-agent-tools \
+        --integration codex --integration-options "--skills" \
+        || echo "⚠️  'specify init' did not complete cleanly."
+fi
+
+# Restore the governance files if anything changed them.
+if [[ -d /tmp/speckit-memory.bak ]] && ! diff -rq /tmp/speckit-memory.bak "$WORKSPACE_DIR/.specify/memory" >/dev/null 2>&1; then
+    cp -rf /tmp/speckit-memory.bak/. "$WORKSPACE_DIR/.specify/memory/"
+    echo "ℹ️  Restored hand-owned .specify/memory/ (tooling had modified it)."
+fi
+
+NEW_VERSION=$(jq -r '.version // "none"' "$SPECKIT_MANIFEST" 2>/dev/null || echo "none")
+
+if [[ "$NEW_VERSION" != "none" && "$NEW_VERSION" != "$LOCKED_VERSION" ]]; then
+    jq --arg v "$NEW_VERSION" '.speckit_version = $v' "$LOCK_FILE" > "$LOCK_FILE.tmp" \
+        && mv "$LOCK_FILE.tmp" "$LOCK_FILE"
+    echo ""
+    echo "════════════════════════════════════════════════════════════════════════"
+    echo " ⚠️  Spec Kit version changed: ${LOCKED_VERSION} → ${NEW_VERSION}"
+    echo "     .specify/speckit.lock has been bumped. Review the regenerated"
+    echo "     scaffolding and skills, then commit the lock change."
+    echo "════════════════════════════════════════════════════════════════════════"
+    if [[ -n "${CI:-}" ]]; then
+        echo "CI: exiting non-zero so the version bump is reviewed deliberately."
+        exit 1
+    fi
+fi
 echo "✅ Done"
 
-echo -e "\n🤖 Installing Specify CLI..."
-run_command "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
+# Installing PlantUML
+echo -e "\n🌱 Installing PlantUML..."
+run_command "sudo apt-get update"
+run_command "sudo apt-get install -y plantuml"
+run_command "sudo curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /usr/share/plantuml/plantuml.jar"
+echo "✅ Done"
+
+# Installing GitHub CLI
+echo -e "\n🐙 Installing GitHub CLI..."
+run_command "curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg"
+run_command "sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg"
+run_command "echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main' | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null"
+run_command "sudo apt-get update && sudo apt install -y gh"
 echo "✅ Done"
 
 if [ -f /workspaces/frictionless-architect/frontend/package.json ]; then
@@ -50,20 +139,59 @@ if [ -f /workspaces/frictionless-architect/frontend/package.json ]; then
     echo "✅ Done"
 fi
 
-# Installing commitizen
-echo -e "\n🛠️ Installing commitizen..."
-run_command "pip install commitizen"
-echo "✅ Done"
-
-# Installing SonarQube
-echo -e "\n🔍 Installing SonarQube Scanner..."
-run_command "sudo apt-get update && sudo apt-get install -y default-jre"
-run_command "sudo apt-get install -y libatk1.0-0 at-spi2-common libatk-bridge2.0-0 libgtk-3-0 libgtk-4-1 libgdk-pixbuf-xlib-2.0-0 libasound2 libasound2-data libcups2 libx11-xcb1 libxcomposite1 libxrandr2 libxss1 libwayland-client0 libwayland-egl1 libxdamage1 libxkbcommon0 libxshmfence1 libdbus-1-3 libdrm2 libegl1 libgbm1 libgl1-mesa-dri libgstreamer1.0-0"
-echo "✅ Done"
-
 # Installing Snyk CLI
 echo -e "\n🔒 Installing Snyk CLI..."
 run_command "npm install -g snyk@latest"
+echo "✅ Done"
+
+# Installing Claude Code Skills
+# Skills are pulled from each project's latest GitHub *release* tag (not a
+# branch, since raw.githubusercontent.com 404s on paths that only exist on
+# main/master) and the whole skill directory is copied so any supporting
+# files (references/, README, etc.) come along with SKILL.md.
+echo -e "\n🧠 Installing Claude Code Skills..."
+
+install_skill_from_release() {
+    local repo="$1"          # e.g. JuliusBrussee/caveman
+    local skill_path="$2"    # path of the skill dir inside the repo
+    local dest_dir="$3"      # e.g. .claude/skills/caveman
+    local label="$4"
+
+    local tag
+    tag=$(github_latest_release_tag "$repo") || tag=""
+
+    if [[ -z "$tag" ]]; then
+        echo "⚠️  ${label}: could not resolve latest release — using repo version"
+        return 0
+    fi
+
+    local tmp
+    tmp=$(mktemp -d)
+    local extracted_root=""
+    if curl -fsSL "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz" -o "${tmp}/skill.tar.gz" \
+        && tar -xzf "${tmp}/skill.tar.gz" -C "${tmp}"; then
+        extracted_root=$(find "${tmp}" -mindepth 1 -maxdepth 1 -type d | head -1)
+    fi
+
+    if [[ -n "$extracted_root" && -d "${extracted_root}/${skill_path}" ]]; then
+        mkdir -p "$(dirname "$dest_dir")"
+        rm -rf "$dest_dir"
+        cp -r "${extracted_root}/${skill_path}" "$dest_dir"
+        echo "✅ ${label}@${tag} installed"
+    else
+        echo "⚠️  ${label}@${tag} download failed — using repo version"
+    fi
+    rm -rf "$tmp"
+}
+
+install_skill_from_release "JuliusBrussee/caveman" "skills/caveman" ".claude/skills/caveman" "caveman"
+install_skill_from_release "REMvisual/claude-handoff" "skills/handoff" ".claude/skills/session-handoff" "session-handoff"
+echo "✅ Done"
+
+# Installing Git Hooks
+echo -e "\n🪝 Installing Git Hooks..."
+run_command "pip install pre-commit"
+run_command "pre-commit install --hook-type pre-commit --hook-type pre-push"
 echo "✅ Done"
 
 echo -e "\n🧹 Cleaning cache..."
