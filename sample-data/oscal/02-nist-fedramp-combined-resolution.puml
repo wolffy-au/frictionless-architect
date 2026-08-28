@@ -1,0 +1,44 @@
+@startuml NIST FedRAMP Combined Resolution
+title 2. Two dimensions: NIST baseline and FedRAMP baseline combined for one component
+
+artifact "NIST/NIST_SP-800-53_rev5_catalog.yaml\n(catalog)" as catalog
+artifact "NIST/NIST_..._HIGH-baseline_profile.yaml\n(profile — NIST's own\nHIGH baseline)" as nist_high
+artifact "FedRAMP/FedRAMP_..._HIGH-baseline_profile.yaml\n(profile — FedRAMP's HIGH\nbaseline, tailored independently)" as fedramp_high
+artifact "combining-profile.yaml\n(profile, imports both)" as combiner
+artifact "combined-resolved-catalog.yaml\n(resolved catalog)" as combined
+artifact "example-component-mongodb-fedramp-high.yaml\nMongoDB (service)" as component
+
+catalog --> nist_high : import + tailor
+catalog --> fedramp_high : import + tailor
+
+nist_high --> combiner : import #1
+fedramp_high --> combiner : import #2
+
+combiner --> combined : merge + modify\n(reconcile conflicts)
+combined --> component : implements
+
+note right of combiner
+  Both profiles tailor the same NIST
+  catalog, so overlapping control IDs
+  (e.g. ac-2.3) can collide. merge.combine
+  method plus explicit modify.set-parameters
+  decide which value wins.
+end note
+
+note right of component
+  Two control-implementations, one
+  per source profile, both against
+  control-id ac-2.3 — the same
+  collision the note above calls
+  out. NIST HIGH leaves the disable/
+  inactivity timers organization-
+  defined; FedRAMP HIGH fixes them
+  to 24h/35 days and adds a JAB/AO-
+  approved requirement for non-user
+  and device-identifier accounts.
+  No merged catalog file exists;
+  the component cites both source
+  profiles directly instead.
+end note
+
+@enduml

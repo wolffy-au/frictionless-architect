@@ -1,0 +1,53 @@
+@startuml NIST Baseline Resolution
+title 1. One dimension, plus an optional privacy add-on
+
+artifact "NIST/NIST_SP-800-53_rev5_catalog.yaml\n(catalog)" as catalog
+artifact "NIST/NIST_..._MODERATE-baseline_profile.yaml\n(profile — pick exactly one:\nLOW / MODERATE / HIGH)" as profile
+artifact "NIST/NIST_SP-800-53_rev5_PRIVACY-\nbaseline_profile.yaml\n(profile — optional add-on,\nnot mutually exclusive)" as privacy
+artifact "combining-profile.yaml\n(profile, imports baseline\n+ privacy if selected)" as combiner
+artifact "NIST/...-baseline-resolved-\nprofile_catalog.yaml\n(resolved catalog)" as resolved
+artifact "example-component-mongodb.yaml\nMongoDB (service)" as mongodb
+artifact "example-component-basic-auth.yaml\ntest component 1 (software)" as basicauth
+
+catalog --> profile : import + tailor\n(select controls,\nset parameters)
+catalog ..> privacy : import + tailor\n(optional, if system\nprocesses PII)
+
+profile --> combiner : import #1
+privacy ..> combiner : import #2\n(if selected)
+
+combiner --> resolved : merge + modify\n(reconcile conflicts,\nsame mechanism as diagram 2)
+
+resolved --> mongodb : implements\n<b>SC-8, SC-8(1), SA-4(9)</b>
+resolved --> basicauth : implements <b>AC-2(3)</b>
+
+note right of profile
+  The exclusive dimension: pick
+  exactly one of LOW / MODERATE /
+  HIGH, based on FIPS 199 impact.
+end note
+
+note left of mongodb
+  MongoDB cites the MODERATE
+  profile directly as its sole
+  source — a clean single-
+  dimension example, no
+  raw-catalog hop.
+end note
+
+note right of privacy
+  PRIVACY isn't a 4th exclusive
+  option — it's an orthogonal,
+  optional layer on top of
+  whichever baseline was picked,
+  used when the system processes
+  PII.
+
+  Real overlap with MODERATE: 43
+  shared controls, 53 privacy-only
+  additions — so combining it in
+  still needs an intermediate
+  profile, even when only one
+  source is actually selected.
+end note
+
+@enduml
