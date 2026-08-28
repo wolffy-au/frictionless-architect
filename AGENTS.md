@@ -29,4 +29,10 @@ Python 3.12 (per `pyproject.toml` and repo README).: Follow standard conventions
 - 002-neo4j-schema-ui: Added Python 3.12 (per `pyproject.toml` and repo README). + FastAPI 0.128.x, uvicorn for serving, `neo4j` 5.x driver, `python-dotenv`, `pydantic` v2 for settings/data validation, `httpx`/`pytest` for tests, `ruff`/`pyright`/`mypy` for quality checks.
 
 <!-- MANUAL ADDITIONS START -->
+
+## Skills & Workflows
+
+Available skills/workflows are cataloged in [`.agents/skills/README.md`](.agents/skills/README.md).
+Invoke each by its directory name (e.g. `speckit-plan`, `fork-sync`).
+
 <!-- MANUAL ADDITIONS END -->

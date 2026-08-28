@@ -1,0 +1,39 @@
+# fork-sync manifest — the single source of truth for forked dependencies.
+#
+# Add a fork by appending an entry under `forks:`. Remove one by deleting its
+# entry (the clone under `workspace` is left alone; delete it by hand if you want).
+
+workspace: ~/forks            # where fork clones live (one dir per fork `name`)
+
+defaults:
+  upstream_branch: main
+  dist_branch: dist
+  fix_branches: []            # branches you intend to PR upstream, applied first
+  private_branches: []        # branches upstream will never take, applied last
+  test_cmd: ""                # shell command run in the candidate; "" = skip tests
+  security_paths:             # conflicts touching these globs are NEVER auto-resolved
+    - "**/auth/**"
+    - "**/authn/**"
+    - "**/authz/**"
+    - "**/security/**"
+    - "**/crypto/**"
+    - "**/tls/**"
+    - "**/*secret*"
+    - "**/*password*"
+
+# Per-fork keys override defaults; list keys (fix_branches, private_branches,
+# security_paths) are MERGED with the defaults, not replaced.
+forks: []
+  # - name: oscal-cli
+  #   upstream: https://github.com/usnistgov/oscal-cli
+  #   fork: git@github.com:stephanborg6/oscal-cli.git
+  #   upstream_branch: main
+  #   dist_branch: dist
+  #   fix_branches:
+  #     - fix/tls-verify
+  #     - fix/dep-cve-bump
+  #   private_branches:
+  #     - private/config-defaults
+  #   test_cmd: "mvn -q -DskipITs test"
+  #   security_paths:
+  #     - "src/main/java/**/crypto/**"
