@@ -1,0 +1,369 @@
+# Repository Architecture & Topology
+
+Canonical description of how this repository is structured and the target it is being
+restructured toward. Read alongside `PROJECT_SPECIFICATION.md` (the product vision),
+`PROJECT_CONSTITUTION.md`, and `TECHNICAL.md`.
+
+**Status:** target adopted; migration in progress (see §8).
+
+---
+
+## 1. Principle
+
+All application code lives **one level below** the repository root. The root is a thin
+**governance / orchestration layer**: vision, constitution, cross-cutting specs,
+coordination scripts, submodule pointers, and the CI that fans out to components. It holds
+**no application code**.
+
+This is a packaging decision only. The product vision in `PROJECT_SPECIFICATION.md` — an
+8-component Frictionless Architecture & Governance Platform automating APRA CPS 230 / 234
+compliance — is unchanged. The spec's "single-user, locally run MVP" line is treated as an
+early scoping compromise, not a constraint on the topology.
+
+---
+
+## 2. Current state
+
+```plantuml
+@startuml
+title Current state — one flat repo, one narrow slice built
+skinparam componentStyle rectangle
+
+package "frictionless-architect (repo root)" {
+  [Governance docs\nPROJECT_SPECIFICATION / CONSTITUTION\nNONFUNCTIONALS / TECHNICAL] as docs
+  [.specify/ SpecKit machinery\n(constitution, templates, bash scripts)] as speckit
+  [specs/002-neo4j-schema-ui] as spec002
+
+  package "src/frictionless_architect/" {
+    [visualizer/api.py\nFastAPI app] as api
+    [visualizer/static + templates\n(embedded UI)] as ui
+    [visualizer/cache / config / data_loader] as vsupport
+    [visualizer/sample_parser.py\nArchiMate XML -> graph] as parser
+    [schema/manager.py\nNeo4j schema reader] as schema
+  }
+
+  [sample-data/\nOSCAL catalogs + ArchiMate model] as sampledata
+  [tests/ (unit / api / features)] as tests
+}
+
+[Neo4j] as neo4j
+api --> ui : serves HTML+JS
+api --> vsupport
+api --> schema
+schema --> neo4j
+api --> parser
+parser --> sampledata
+
+note bottom of docs
+  Vision = 8-component platform.
+  Built  = this one box (spec 002).
+  Heritage cruft: repo spun from an
+  accounting SpecKit template; README /
+  TECHNICAL / PROJECT_CONSTITUTION still
+  reference "python-accounting" / "X-Accountant".
+end note
+@enduml
+```
+
+**Branch → state matrix:**
+
+| Branch | Spec | Impl | Notes |
+|---|---|---|---|
+| `main` | 002 only | visualiser only | baseline |
+| `develop` | 002 only | visualiser only | ≈ main + 2 commits (dotenv override, debug logging) |
+| `001-governance-platform` | full spec + `contracts/api.yaml` | **none** | |
+| `002-arch-kg-semantics` | SpecKit template stub | none | never fleshed out |
+| `prototype-neo4j` | — | KG model, DB seeding, ArchiMate layers, forensic ledger | not merged, exploratory |
+| `feat/oscal-sample-data` | — | sample data only | current branch |
+
+---
+
+## 3. Target state
+
+### 3.1 Shape
+
+- **Root repo = governance + orchestration only. Zero application code.**
+- **First-party components live as packages in a single `uv` workspace monorepo**
+  (`platform/`). One tree, per-package `pyproject.toml`, one shared lockfile, independent
+  build/publish.
+- **Vendored upstream forks are git submodules under `third_party/`, and only there.**
+  They are low-touch (rebased customisation branch, periodic `fork-sync`), so submodule
+  pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
+- **Frontend(s)** are packages too — a `pnpm`/Vite sub-tree inside the same monorepo, not
+  a separate repo, until JS weight demands `turborepo`.
+
+### 3.2 Target directory layout
+
+```
+frictionless-architect/                 # ROOT — governance & orchestration
+├── PROJECT_SPECIFICATION.md             # vision (stays)
+├── PROJECT_CONSTITUTION.md              # platform constitution (de-accounting'd)
+├── ARCHITECTURE.md  NONFUNCTIONALS.md  TECHNICAL.md
+├── .specify/                            # PLATFORM SpecKit: constitution + epic templates
+├── specs/                               # EPIC / cross-cutting specs only  (see §6)
+│   └── EPIC-xxx-.../
+├── orchestration/
+│   ├── compose/                         # docker-compose for Neo4j + Postgres + OPA (dev)
+│   └── scripts/                         # cross-component coordination
+├── third_party/                        # git submodules — vendored forks ONLY
+│   ├── <archimate-parser-fork>/
+│   └── <oscal-tooling-fork>/
+└── platform/                            # the uv workspace (the "level below")
+    ├── pyproject.toml                   # [tool.uv.workspace] members = ["packages/*"]
+    ├── uv.lock                          # single shared lock
+    └── packages/
+        ├── governance-engine/           # component 1
+        ├── pii-gateway/                 #   (1.2 — split candidate)
+        ├── knowledge-graph/             # component 2
+        ├── decision-capture/            # component 3
+        ├── policy-enforcement/          # component 4
+        ├── drift-management/            # component 5
+        ├── audit-query/                 # component 6
+        ├── dashboard/                   # component 7 — Vite/pnpm sub-tree
+        ├── security-foundations/        # component 8 (largely cross-cutting lib)
+        └── schema-visualizer-api/       # first extraction (from today's src/)
+```
+
+Each `packages/<name>/` carries its own `pyproject.toml`, `src/`, `tests/`, `README.md`,
+and `specs/` (per-component feature specs — see §6).
+
+### 3.3 Target diagram
+
+```plantuml
+@startuml
+title Target — root orchestrates; components live one level down
+skinparam componentStyle rectangle
+
+package "frictionless-architect (root: governance + orchestration)" as root {
+  [PROJECT_SPECIFICATION / CONSTITUTION] as vision
+  [.specify/ — platform constitution + epic specs] as pspeckit
+  [orchestration/ — compose, fan-out CI, coord scripts] as orch
+  [third_party/ — git submodules: vendored forks] as forks
+}
+
+package "platform/ (uv workspace)" as ws {
+  [governance-engine] as c1
+  [pii-gateway] as c1b
+  [knowledge-graph] as c2
+  [decision-capture] as c3
+  [policy-enforcement] as c4
+  [drift-management] as c5
+  [audit-query] as c6
+  [dashboard (Vite/pnpm)] as c7
+  [security-foundations] as c8
+  [schema-visualizer-api] as cv
+}
+
+cloud "External systems" {
+  [Neo4j] as neo4j
+  [Postgres] as pg
+  [OPA / Rego] as opa
+  [Backstage portal] as backstage
+}
+
+root --> ws : versions, coordinates,\nfans out CI
+forks ..> c2 : vendored parser consumed as dep
+forks ..> c4 : vendored OSCAL tooling
+c2 --> neo4j
+c1 --> pg
+c4 --> opa
+c7 --> backstage : embeds
+c7 --> c6 : queries
+cv --> neo4j
+c6 --> c2
+c3 --> c2
+c5 --> c2
+@enduml
+```
+
+---
+
+## 4. Component → package mapping
+
+Components are the eight from `PROJECT_SPECIFICATION.md` "Proposed Grouping".
+
+| # | Component | Home | Build vs wrap | Notes |
+|---|---|---|---|---|
+| 1 | Core Governance Service + PII handling | `packages/governance-engine` (+ optional `packages/pii-gateway`) | **build** | Python CLI/service, Specify lifecycle. PII gateway may split later — one package to start. |
+| 2 | Architecture Knowledge Graph & Semantic Model | `packages/knowledge-graph` | **build**, wraps forked ArchiMate parser | Absorbs today's `schema/manager.py`, `sample_parser.py`; port `prototype-neo4j` seeding ideas (§7). |
+| 3 | AI-Assisted Decision Capture & Attestation | `packages/decision-capture` | **build** | ADR gen, conflict detection, sign-off. Attestation *UI* belongs to dashboard (7). |
+| 4 | Automated Policy & Compliance Enforcement | `packages/policy-enforcement` | **build**, wraps OPA + forked OSCAL tooling | CPS 230 / 234. The OSCAL sample-data work belongs here. |
+| 5 | Real-Time Monitoring & Drift Management | `packages/drift-management` | **build** | Drift detect, Break-Glass, managed-drift tickets. |
+| 6 | Compliance Audit & Query Interface | `packages/audit-query` | **build** | Traceability matrix + NL-to-graph. Backend for dashboard queries. |
+| 7 | Architecture Governance Dashboard | `packages/dashboard` | **build** (Vite, pnpm sub-tree) | Backstage-embedded target unconfirmed — see §10. |
+| 8 | Security Foundations | `packages/security-foundations` | **build** (mostly a shared lib) | RBAC/ABAC, encryption helpers, threat-model scanning. Consumed by all others. |
+| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | First extraction. Its embedded UI folds into `dashboard` or ships as a small `schema-visualizer-ui` package. |
+
+**Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
+
+- An ArchiMate Exchange Format / `.archimate` parser (consumed by `knowledge-graph`).
+- OSCAL tooling — catalog resolution / component-definition handling (consumed by
+  `policy-enforcement`); the `sample-data/oscal/*.puml` resolution artefacts imply a
+  resolver is already in the loop.
+
+Confirm the exact upstreams before creating submodules.
+
+---
+
+## 5. Monorepo tooling
+
+**`uv` workspace** for the first-party Python packages.
+
+| Option | Verdict | Why |
+|---|---|---|
+| **`uv` workspace** | **Chosen** | Python-centric project. Native multi-package workspace, one resolved `uv.lock`, per-package `pyproject.toml`, fast, no extra meta-tooling. Migrates cleanly off the current Poetry `[project]`-table setup. |
+| `pnpm` + `turborepo` | Later, if JS grows | Right tool once `dashboard` + shared UI libs justify a task graph. Nest a pnpm workspace under `packages/dashboard*` now; promote only when needed. |
+| Meta-repo tool (`meta`, `mu-repo`, `git-subrepo`) | No | Solves polyrepo coordination we are deliberately avoiding for first-party code. |
+| Submodules for everything | No | Pointer-commit churn makes day-to-day multi-package dev miserable. Forks only. |
+| Nx | No | JS-first; heavier than the Python weight warrants. |
+
+**Poetry → uv migration:** current build is Poetry + `poetry-dynamic-versioning` +
+`packages = [{include = "frictionless_architect", from = "src"}]`. Moving to `uv` means
+`[tool.uv.workspace]` in `platform/pyproject.toml`; each package picks a build backend
+(`hatchling` is the least-effort path); git-derived dynamic versioning is replaced
+per-package (`hatch-vcs`) or dropped for manual `0.x` until releases matter. Commitizen
+config moves to the root and targets the workspace.
+
+---
+
+## 6. Spec numbering (two-tier)
+
+Current: flat `specs/NNN-*` across the whole platform — `001-governance-platform`,
+`002-neo4j-schema-ui`, `002-arch-kg-semantics` (already a collision).
+
+Target:
+
+- **Root `specs/`** holds only **epic / cross-cutting** specs, prefixed `EPIC-`:
+  e.g. `specs/EPIC-001-platform-restructure/`, `specs/EPIC-002-cps230-234-traceability/`.
+- **Each `packages/<name>/specs/`** restarts its own `NNN-` sequence, scoped to that
+  component: e.g. `packages/knowledge-graph/specs/001-neo4j-schema-ui/`.
+- **Existing specs re-home as:**
+  - `001-governance-platform` → `EPIC-001`, or retire in favour of
+    `PROJECT_SPECIFICATION.md` + per-component specs (§10).
+  - `002-neo4j-schema-ui` → `packages/schema-visualizer-api/specs/001-*`
+    (and/or `packages/knowledge-graph/specs/001-*`).
+  - `002-arch-kg-semantics` (stub) → `packages/knowledge-graph/specs/002-*`, or delete.
+- **`.specify/scripts/bash/`** (`create-new-feature.sh`, `setup-plan.sh`,
+  `update-agent-context.sh`, `check-prerequisites.sh`) assume one repo / one `specs/`.
+  Add a `--package <name>` arg that targets `packages/<name>/specs/` — one source of
+  truth, rather than per-package copies.
+- Root keeps `.specify/memory/constitution.md` as the **platform** constitution;
+  per-component constitutions are optional lighter addenda (§10).
+
+---
+
+## 7. `prototype-neo4j` disposition
+
+Branch has: KG model, UNWIND bulk seeding, ArchiMate business/motivation layers,
+layer-scoped visualisers, forensic ledger / KG planes. Diverged early → more rewrite than
+cherry-pick.
+
+Treat it as a **reference, not a merge source**. When `packages/knowledge-graph` is
+scaffolded, port the model + seeding ideas deliberately into the new structure. Tag the
+branch `archive/prototype-neo4j` before it rots. Do not block the restructure on it.
+
+---
+
+## 8. Migration sequence
+
+```plantuml
+@startuml
+title Restructure sequence
+(*) --> "0. De-accounting cruft pass\n(README / TECHNICAL / PROJECT_CONSTITUTION)"
+--> "1. Create platform/ uv workspace skeleton\n(empty, CI green)"
+--> "2. FIRST EXTRACTION:\nvisualiser API/UI split ->\npackages/schema-visualizer-api"
+--> "3. Prove pattern: root CI fans out,\nworkspace lock resolves, tests pass"
+--> "4. Scaffold knowledge-graph;\nport prototype-neo4j ideas"
+--> "5. Vendor confirmed forks into third_party/\n(submodules) + wire fork-sync"
+--> "6. Re-home specs to two-tier scheme;\npatch .specify scripts"
+--> "7. Extract remaining components as work reaches them"
+--> (*)
+@enduml
+```
+
+### 8.1 First extraction — visualiser API/UI split
+
+Today one FastAPI app (`visualizer/api.py`) serves both JSON and the HTML/JS UI
+(`static/schema_visualizer.js`, `templates/schema_visualizer.html`).
+
+```plantuml
+@startuml
+title Visualiser split
+skinparam componentStyle rectangle
+
+package "BEFORE  src/frictionless_architect/visualizer/" {
+  [api.py  routes:\n/schema-visualizer (HTML)\n/schema-payload (+/refresh /status)] as before_api
+  [static/ + templates/] as before_ui
+  before_api --> before_ui : Jinja + static mount
+}
+
+package "AFTER" {
+  package "packages/schema-visualizer-api" {
+    [api.py — JSON only:\n/schema-payload /refresh /status] as after_api
+    [cache.py config.py data_loader.py\nsample_parser.py schema/manager.py] as after_lib
+    after_api --> after_lib
+  }
+  package "packages/schema-visualizer-ui  (or fold into dashboard)" {
+    [Vite app\nfetches /schema-payload] as after_ui
+  }
+  after_ui ..> after_api : HTTP (CORS / dev proxy)
+}
+@enduml
+```
+
+Checklist:
+- Move `visualizer/{api,cache,config,data_loader,sample_parser}.py` + `schema/manager.py`
+  into `packages/schema-visualizer-api/src/`.
+- Drop the HTML route + Jinja/static mounts from `api.py`; keep `/schema-payload*`.
+- Move `static/` + `templates/` into a Vite project; replace the server-rendered bootstrap
+  with a `fetch('/schema-payload')` call; add a dev proxy.
+- Add CORS config to the API (same-origin today, so none).
+- `tests/api/*` and `tests/unit/visualizer/*` move with the package.
+- Keep the `FRICTIONLESS_ARCHITECT_` env prefix as-is for this extraction; rename is its
+  own epic (§9).
+- Entry point `uvicorn frictionless_architect.visualizer:app` →
+  `uvicorn schema_visualizer_api:app`; update `quickstart.md` / `README.md`.
+
+---
+
+## 9. Cross-cutting migration risks
+
+- **`FRICTIONLESS_ARCHITECT_` env prefix + `frictionless_architect` package name** —
+  referenced across `config.py`, docs, `.env*`. Any rename is its own epic; do not fold it
+  into a component extraction.
+- **Poetry → uv build/version migration** (§5) touches every `pyproject.toml` and the
+  commitizen / dynamic-versioning setup.
+- **`.specify/` bash scripts** need the `--package` arg before per-component specs work.
+- **SonarQube / SonarCloud / Snyk** config (`sonar-project.properties`, `.sonar/`,
+  `.sonarlint/`) is single-project — needs per-package `sonar.projectKey`s or a monorepo
+  Sonar setup.
+- **`tests/features/` (behave)** + `[tool.behave]` + `[tool.pytest.ini_options]`
+  `testpaths` are root-absolute — re-home per package.
+- **CI** (`.github/`) assumes one package; needs a matrix/fan-out over workspace members.
+
+---
+
+## 10. Open questions
+
+1. Does anything ever leave the monorepo for its own repo, or is "package forever" the
+   rule? (Leaning: package forever; split only if a component is open-sourced standalone.)
+2. Root `.specify/` as the platform constitution with lighter per-component constitutions
+   beneath, or one constitution only?
+3. Dashboard: Backstage-embedded plugin, or standalone SPA? Changes package 7's build shape.
+4. Which upstreams get forked (ArchiMate parser? which OSCAL tool?).
+5. Does `pii-gateway` start as its own package or split out of `governance-engine` later?
+6. `001-governance-platform` spec: promote to `EPIC-001`, or retire in favour of
+   `PROJECT_SPECIFICATION.md` + per-component specs?
+7. Keep `src/frictionless_architect/` importable as an umbrella namespace package during
+   the transition, or hard-cut per extraction?
+
+---
+
+## 11. Locked decisions
+
+- Restructuring is aligned with the original vision; proceed. Not a pivot.
+- Root repo = governance / orchestration, **zero application code**.
+- First-party code → **one `uv` workspace monorepo** (`platform/`). Forks → **git
+  submodules under `third_party/` only**.
+- **Visualiser API/UI split is the first extraction.**
+- De-accounting cruft cleanup happens first (§8 step 0).
