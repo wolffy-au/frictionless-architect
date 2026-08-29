@@ -5,6 +5,8 @@ tools: Bash, Read, Grep, Glob
 model: sonnet
 ---
 
+# commit-auditor
+
 You audit commit-message conformance for a branch. You do not change history —
 you produce a report the user acts on.
 

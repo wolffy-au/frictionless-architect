@@ -35,4 +35,10 @@ Python 3.12 (per `pyproject.toml` and repo README).: Follow standard conventions
 Available skills/workflows are cataloged in [`.agents/skills/README.md`](.agents/skills/README.md).
 Invoke each by its directory name (e.g. `speckit-plan`, `fork-sync`).
 
+Subagents are cataloged in [`.agents/agents/README.md`](.agents/agents/README.md)
+(e.g. `quality-uplift`, `coverage-uplift`, `acceptance-author`, `docs-uplift`,
+`refactor-analyst`, `spec-alignment`, `vulnerability-remediator`, `release-runner`,
+`commit-auditor`).
+The end-to-end release procedure lives in [`RELEASE.md`](RELEASE.md).
+
 <!-- MANUAL ADDITIONS END -->
