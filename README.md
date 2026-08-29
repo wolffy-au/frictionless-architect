@@ -1,13 +1,16 @@
-
 # frictionless-architect Development Setup
 
-This document outlines the steps to set up the development environment for the frictionless-architect project.
+This document outlines the steps to set up the development environment for the
+frictionless-architect project. The repository currently ships one built slice: the
+**Neo4j schema visualiser** (a FastAPI service that renders an ArchiMate/Neo4j schema
+as a diagram, table, and summary). See `PROJECT_SPECIFICATION.md` for the full platform
+vision and `ARCHITECTURE.md` for the target repository topology.
 
 ## Prerequisites
 
-- Python 3.12
-- pip
-- virtualenv (or equivalent)
+- Python 3.12 (project supports `>=3.10,<3.14`)
+- [Poetry](https://python-poetry.org/) for dependency management
+- A reachable Neo4j instance (optional — the visualiser falls back to bundled sample data)
 
 ## Installation
 
@@ -18,106 +21,55 @@ This document outlines the steps to set up the development environment for the f
     cd frictionless-architect
     ```
 
-2. **Set up a virtual environment:**
+2. **Install dependencies with Poetry:**
 
     ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
+    poetry install --with dev,tests,lint,docs
     ```
 
-3. **Upgrade pip:**
-
-    ```bash
-    pip install --upgrade pip
-    ```
-
-4. **Install core dependencies:**
-
-  ```bash
-  pip install fastapi uvicorn sqlalchemy psycopg2-binary python-accounting pydantic
-  ```
+    This creates the virtual environment and installs the project plus its
+    dependency groups. Prefix commands with `poetry run` (e.g. `poetry run pytest`)
+    or spawn a shell with `poetry shell`.
 
 ## Configuration
 
-The project uses `pydantic`-backed settings to drive environment-specific values.
-You can override the defaults by exporting these variables before running the app:
+The project uses `pydantic-settings` to drive environment-specific values. Override the
+defaults by exporting these variables (or placing them in a `.env` file at the project
+root, which is loaded automatically when present):
 
-- `FRICTIONLESS_ARCHITECT_DATABASE_URL` – SQLAlchemy URL for the application's database (default: `sqlite:///./frictionless_architect.db`).
-- `FRICTIONLESS_ARCHITECT_DATABASE_ECHO` – Enable SQLAlchemy logging when debugging (default `false`).
-- `FRICTIONLESS_ARCHITECT_LOG_LEVEL` – Default log level consumed by the structured logger (`INFO`, `DEBUG`, etc.).
-- `FRICTIONLESS_ARCHITECT_JWT_SECRET` and `FRICTIONLESS_ARCHITECT_JWT_ALGORITHM` – Placeholders for the future JWT authentication layer.
-- `FRICTIONLESS_ARCHITECT_ENCRYPTION_KEY` – Symmetric key used when encrypting sensitive account metadata at rest.
-- `FRICTIONLESS_ARCHITECT_SECURITY_ENABLED` – Toggle JWT/RBAC enforcement (`false` by default for local development).
+- `FRICTIONLESS_ARCHITECT_LOG_LEVEL` – default log level for the structured logger
+  (`INFO`, `DEBUG`, etc.).
+- `FRICTIONLESS_ARCHITECT_NEO4J_URI` – Bolt URI for the Neo4j instance
+  (e.g. `bolt://localhost:7687`). Leave empty to run purely against sample data.
+- `FRICTIONLESS_ARCHITECT_NEO4J_USER` / `FRICTIONLESS_ARCHITECT_NEO4J_PASSWORD` – Neo4j
+  credentials.
+- `FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR` – directory holding the sample ArchiMate
+  model used when Neo4j is unavailable (default: `sample-data`).
+- `FRICTIONLESS_ARCHITECT_CACHE_DIR` – directory for the visualiser payload cache
+  (default: `.cache/visualiser`).
+- `FRICTIONLESS_ARCHITECT_WARNING_TEXT` – banner text shown when sample data is
+  unavailable.
 
-Settings are automatically loaded from a `.env` file in the project root when present.
+## Running the Tests
 
-1. **Configure Database:**
-    The project is configured to use SQLite for development purposes. The database connection string is defined in `src/core/config.py`.
-
-    **For Production Environments (Reliability & Recovery)**:
-    For production deployments, a PostgreSQL database is highly recommended to meet reliability (T052) and recovery (T053) non-functional requirements. The `psycopg2-binary` driver is already included.
-
-    To configure PostgreSQL, set the `FRICTIONLESS_ARCHITECT_DATABASE_URL` environment variable to your PostgreSQL connection string, e.g.:
-    `export FRICTIONLESS_ARCHITECT_DATABASE_URL="postgresql://user:password@host:port/dbname"`
-
-    *Note: Ensure your PostgreSQL instance is properly secured and backed up according to your RPO/RTO requirements.*
-
-2. **Run Tests:**
-    All tests can be run using pytest:
-
-    ```bash
-    pytest
-    ```
-
-## API Pytest Quickstart
-
-The dedicated API regression suite lives under `tests/api` and exercises the FastAPI endpoints through `httpx` clients. Follow these steps to run it:
-
-1. **Prepare the environment**
-   - Activate your virtual environment (e.g., `source .venv/bin/activate`).
-   - Install project dependencies via the configured tooling (e.g., `poetry sync` or `pip install -r requirements.txt`).
-   - Ensure the local API is running and reachable (`uvicorn src.main:app --reload` by default).
-
-2. **Set required environment variables**
-   - `FRICTIONLESS_ARCHITECT_SECURITY_ENABLED=true` (enforces JWT auth during the suite).
-   - `FRICTIONLESS_ARCHITECT_JWT_SECRET` and `FRICTIONLESS_ARCHITECT_JWT_ALGORITHM=HS256` (match the fixtures’ expectations).
-   - Optionally adjust `FRICTIONLESS_ARCHITECT_DATABASE_URL` if you want to run against a specific database.
-
-3. **Run the API tests**
-
-   ```bash
-   pytest tests/api
-   ```
-
-   These tests seed deterministic accounts, rely on JWT-authenticated requests, and clean up after each scenario. Failures indicate regressions in account creation, listings, adjustments, or validation behavior.
-
-4. **Key API endpoints covered by tests:**
-   - Transaction management: `POST /transactions/` (tested in `tests/api/test_transactions.py`)
-   - QuickFill suggestions and approvals: `GET /quickfill/`, `POST /quickfill/templates/{template_id}/approve` (tested in `tests/api/test_quickfill.py`)
-   - Duplicate detection and merging: `GET /duplicates/`, `POST /duplicates/merge` (tested in `tests/api/test_duplicates.py`)
-   - Account merging: `POST /accounts/merge` (tested in `tests/api/test_accounts.py`)
-
-5. **Interpret results**
-   - Passing suite: all acceptance criteria (account creation, hierarchy balances, validation errors, authentication guards) are satisfied.
-   - Failing test: inspect the HTTP response payload logged by pytest; it pinpoints the endpoint or fixture needing attention.
-
-6. **Optional workflows**
-   - Run individual tests for faster iteration: `pytest tests/api/test_accounts.py::test_create_and_get_account`.
-   - Use `-k` filters (e.g., `pytest tests/api -k balance`) to scope the suite.
-
-## Running the Application
-
-The application can be run using uvicorn:
+All tests run through pytest:
 
 ```bash
-uvicorn src.main:app --reload
+poetry run pytest
 ```
 
-The API will be available at `http://127.0.0.1:8000`.
+- Unit tests live under `tests/unit/...` (one `test_<module>.py` per production module).
+- API integration tests live under `tests/api/` and exercise the FastAPI app in-process
+  via `httpx.AsyncClient` + `ASGITransport` — no external server required.
+- BDD scenarios live under `tests/features/` (behave).
+
+Scope the run with `-k` (e.g. `poetry run pytest tests/api -k schema`) or target a single
+test (`poetry run pytest tests/api/test_schema_payload.py::<test_name>`).
 
 ## Schema Visualiser
 
-The Neo4j schema visualiser ships with its own FastAPI entry point. To explore it:
+The Neo4j schema visualiser ships as its own FastAPI entry point
+(`frictionless_architect.visualizer:app`, titled "Neo4j Schema Visualiser").
 
 1. Point your `.env` at the Neo4j instance and sample data:
 
@@ -131,26 +83,29 @@ The Neo4j schema visualiser ships with its own FastAPI entry point. To explore i
    ```
 
 2. Start the visualiser service:
-  
-```bash
-   uvicorn frictionless_architect.visualizer:app --reload --port 8100
+
+   ```bash
+   poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
    ```
 
-1. Visit `http://127.0.0.1:8100/schema-visualizer` to see the diagram, table, and schema summary driven by `/schema-payload`.
+3. Visit `http://127.0.0.1:8100/schema-visualizer` to see the diagram, table, and
+   schema summary driven by `/schema-payload`.
 
-The interface keeps the schema list visible even when the banner reads “Sample data unavailable,” exposes `/schema-payload/refresh` for guaranteed freshness, and posts status info at `/schema-payload/status` so you can monitor cache age, Neo4j health, and warnings.
+### Endpoints
 
-## Benchmarking
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/schema-visualizer` | HTML page (diagram + table + summary) |
+| `GET` | `/schema-payload` | JSON schema payload; `?force_reload=true` bypasses the cache |
+| `POST` | `/schema-payload/refresh` | Trigger an asynchronous cache refresh (`202`; `409` if one is already running) |
+| `GET` | `/schema-payload/status` | Cache age, Neo4j health, and active warnings |
 
-Use `python scripts/benchmark_workflow.py` to gather average timings for creation, adjustments, and hierarchy queries. The script runs against an in-memory SQLite database and prints the per-operation latency so you can compare before/after tuning.
+The interface keeps the schema list visible even when the banner reads
+"Sample data unavailable", so you can still inspect the last known model while a
+refresh is in flight.
 
-## Notes on API Tests
+## Related Tooling
 
-The API regression suite is located under `tests/api/` and utilizes `pytest` to exercise the FastAPI endpoints via `httpx` clients.
-
-To run these tests:
-1. Ensure your virtual environment is active and project dependencies are installed (e.g., `poetry sync`).
-2. Set the required environment variables: `FRICTIONLESS_ARCHITECT_SECURITY_ENABLED=true`, `FRICTIONLESS_ARCHITECT_JWT_SECRET`, and `FRICTIONLESS_ARCHITECT_JWT_ALGORITHM=HS256`.
-3. Execute `pytest tests/api` in your project's root directory.
-
-Key API coverage includes the schema payload, status, refresh endpoints, and the authentication guards around them. These tests seed deterministic data, rely on JWT-authenticated requests, and clean up after each scenario. Failures indicate regressions and should be investigated by inspecting the logged HTTP response payload. For more advanced filtering or running individual tests, refer to the `pytest` documentation or use its `-k` flag (e.g., `pytest tests/api -k schema`).
+- `scripts/neo4j_schema.py` – helper for inspecting the live Neo4j schema.
+- `scripts/pre_commit_checks.sh` / `scripts/pre_merge_checks.sh` – run the markdown,
+  ruff, pyright, mypy, behave, and pytest gates locally before committing or merging.

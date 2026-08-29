@@ -104,49 +104,44 @@ The following patterns and practices have been established for API-level integra
 
 ### Test Infrastructure Architecture
 
-- **In-Process ASGI Testing**: Use `httpx.AsyncClient` with `ASGITransport` to test FastAPI applications without spinning up external servers. This provides realistic full-stack coverage with minimal overhead (~2-3 seconds for 7 tests).
+- **In-Process ASGI Testing**: Use `httpx.AsyncClient` with `ASGITransport` to test FastAPI applications without spinning up external servers. This provides realistic full-stack coverage with minimal overhead (a few seconds for the current suite).
 - **Deterministic Fixtures**: Create seeded test data via pytest fixtures that:
-  - Set up known, repeatable account hierarchies (visible, hidden, placeholder accounts)
-  - Provide explicit cleanup (teardown) hooks to ensure test isolation
-  - Use fixture-scoped cleanup to prevent test pollution
+  - Set up a known, repeatable input model (e.g. a fixed sample ArchiMate `.xml` under `sample-data/`) and reload the config/parser/api modules so settings are picked up
+  - Point the fixture at an isolated `tmp_path` cache directory and clear any `lru_cache`d accessors (`get_visualizer_settings`, `get_schema_service`) between tests
+  - Provide explicit teardown so no cache or client state leaks across tests
 
-### JWT Token Management in Tests
+### Environment-Driven Configuration in Tests
 
-- **JWT Helper Utilities**: Create a dedicated `jwt_utils.py` module that:
-  - Generates short-lived test tokens matching app configuration
-  - Uses the same algorithm/secret as the application (read from environment)
-  - Allows test-specific payload customization (user ID, roles, etc.)
-  - Does not share implementation with production JWT code to avoid circular dependencies
-- **Environment-Driven Configuration**: Read JWT settings from environment variables (`FRICTIONLESS_ARCHITECT_JWT_SECRET`, `FRICTIONLESS_ARCHITECT_JWT_ALGORITHM`) in `conftest.py` so tests adapt to runtime configuration
+- Drive the app entirely through `FRICTIONLESS_ARCHITECT_*` environment variables set with `monkeypatch.setenv` in `conftest.py` (empty `FRICTIONLESS_ARCHITECT_NEO4J_URI` forces the sample-data fallback path).
+- Reload the affected modules (`importlib.reload`) after mutating the environment so `pydantic-settings` re-reads it.
 
 ### Test Data Cleanup and Isolation
 
 - **Fixture Cleanup Strategy**: Use pytest `yield` fixtures with explicit cleanup blocks to:
-  - Delete test-created accounts after each test
-  - Reset database state (SQLite) to clean slate
+  - Use a per-test `tmp_path` cache directory so nothing is shared on disk
+  - Call `*.cache_clear()` on cached accessors before and after each test
   - Ensure tests are truly independent and can run in any order
 
 ### Test Assertion Helpers
 
-- **Shared Assertion Utilities**: Create a `helpers.py` module with reusable validators:
-  - `assert_http_status(response, expected_code)` - Verify HTTP status without exposing full response details
-  - `assert_payload_contains(response, required_keys)` - Validate response structure
-  - `reset_test_database(db_session)` - Clean state between tests
+- **Shared Assertion Utilities**: Factor reusable validators into a helpers module:
+  - `assert_http_status(response, expected_code)` - verify HTTP status without exposing full response details
+  - `assert_payload_contains(response, required_keys)` - validate response structure (e.g. the schema payload shape)
   - These helpers reduce duplication and provide consistent error messaging
 
 ### Test Module Organization
 
-- **Three-Tier Test Coverage**:
-  - **test_accounts.py**: Happy-path and filtering for core resources (2-3 tests)
-  - **test_transactions.py**: Business logic and hierarchy effects (2-3 tests)
-  - **test_validation.py**: Error paths, auth failures, and edge cases (3-4 tests)
+- **Tiered Test Coverage** (mirrors the current `tests/api/` layout):
+  - **test_schema_payload.py**: happy-path payload retrieval and `force_reload` behaviour
+  - **test_schema_status.py**: cache-age / Neo4j-health / warning reporting
+  - **test_schema_view_consistency.py**: HTML view and JSON payload stay in sync
 - **Test Naming Convention**: Use explicit, action-oriented names:
-  - `test_create_and_get_account` (setup + verify)
-  - `test_list_accounts_filters` (feature-specific)
-  - `test_unauthorized_request_returns_401` (error case)
+  - `test_schema_payload_returns_model` (setup + verify)
+  - `test_force_reload_bypasses_cache` (feature-specific)
+  - `test_payload_unavailable_returns_503` (error case)
 - **Parallel Execution**: Organize tests so they can run concurrently:
   - Tests should not share mutable state
-  - Use unique IDs for created resources
+  - Use per-test `tmp_path` directories for any generated artifacts
   - Rely on cleanup fixtures, not test ordering
 
 ### CI/CD Integration
@@ -168,13 +163,12 @@ The following patterns and practices have been established for API-level integra
 - **Flakiness Prevention**:
   - Use `pytest-asyncio` with `asyncio_mode = "auto"` for async test handling
   - Avoid hardcoded timeouts; use application-defined values
-  - Ensure database cleanup is deterministic (not time-dependent)
+  - Ensure cache cleanup is deterministic (not time-dependent)
   - Run full suite multiple times locally before committing to verify consistency
-- **Code Coverage**: Expect 60-70% coverage for integration tests (more granular coverage via unit tests):
-  - API endpoints: 70-80%
-  - Models: 90-95%
-  - Schemas (DTOs): 100%
-  - Services: 50-60% (complementary unit tests for edge cases)
+- **Code Coverage**: Expect 60-70% coverage from integration tests alone (more granular coverage via unit tests):
+  - API endpoints / routers: 70-80%
+  - Pydantic payload models: 100%
+  - Services (cache, loader, parser): 50-60% from integration; complement with unit tests for edge cases
 
 ### Requirements Traceability
 
@@ -272,7 +266,7 @@ The following patterns and practices have been established for API-level integra
 - **Avoiding Circular Imports**: Be mindful of import dependencies between modules. A common pitfall occurs when module A imports from module B, and module B simultaneously imports from module A, leading to `ImportError`. Refactor code to break these cycles, often by moving shared logic or type hints to a separate, lower-level module.
 - **Import Style for `src` Layouts**: For projects using a `src` layout (where application code resides in a `src` directory), ensure `src` is correctly added to `PYTHONPATH` (e.g., via `pyproject.toml` or build tools). Subsequently, remove redundant `src.` prefixes from import statements (e.g., use `from frictionless_architect.models.module import ...` instead of `from src.models.module import ...`) for cleaner, more idiomatic Python.
 - **Mypy Configuration for `src` Layouts**: For projects utilizing a `src` directory structure, correctly configuring `mypy` in `pyproject.toml` is crucial to avoid "Duplicate module named" or `[import-untyped]` errors.
-  - **Module Name Collisions**: Ensure that Python files within different subdirectories of `src` (e.g., `src/models/account.py` and `src/schemas/account.py`) do not share the same base filename (e.g., `account.py`). If they do, rename one (e.g., `account_schema.py`) and update all corresponding import statements to prevent `mypy` from flagging duplicate module names.
+  - **Module Name Collisions**: Ensure that Python files within different subdirectories of `src` (e.g., `src/frictionless_architect/schema/manager.py` and a hypothetical `src/frictionless_architect/cache/manager.py`) do not share the same base filename (e.g., `manager.py`). If they do, rename one (e.g., `cache_manager.py`) and update all corresponding import statements to prevent `mypy` from flagging duplicate module names.
   - **Package Discovery**: Use `mypy_path = "src"` to instruct `mypy` to find top-level modules (like `models`, `schemas`, `services`, `api`) directly within `src`.
   - **Explicit Package Listing**: Combine `mypy_path = "src"` with `packages = ["models", "schemas", "services", "api", "tests"]` within the `[tool.mypy]` section to explicitly tell `mypy` which packages (relative to `mypy_path`) to type-check, including the `tests` directory. Avoid `files = ["src", "tests"]` when using `mypy_path` and `packages` as it can lead to duplicate processing.
 
@@ -424,10 +418,10 @@ Experience from implementing feature 002-add-api-pytests has revealed critical p
   - Serves as implementation verification checklist
 - **Update Strategy**: Maintain the matrix in tasks.md as the primary reference. Update it whenever requirements change, new tasks are added, or mappings are discovered incorrect.
 - **Example Structure**:
-  
+
   ```markdown
   | FR-001 | API test infrastructure | T001-T006 | Setup | SC-001, SC-002 |
-  | FR-002 | Account creation endpoint | T007-T010 | US1 | SC-002 |
+  | FR-002 | Schema payload endpoint | T007-T010 | US1 | SC-002 |
   ```
 
 ### Documentation-First Approach

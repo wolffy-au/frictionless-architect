@@ -57,10 +57,6 @@ parser --> sampledata
 note bottom of docs
   Vision = 8-component platform.
   Built  = this one box (spec 002).
-  Heritage cruft: repo spun from an
-  accounting SpecKit template; README /
-  TECHNICAL / PROJECT_CONSTITUTION still
-  reference "python-accounting" / "X-Accountant".
 end note
 @enduml
 ```
@@ -97,7 +93,7 @@ end note
 ```
 frictionless-architect/                 # ROOT — governance & orchestration
 ├── PROJECT_SPECIFICATION.md             # vision (stays)
-├── PROJECT_CONSTITUTION.md              # platform constitution (de-accounting'd)
+├── PROJECT_CONSTITUTION.md              # platform constitution
 ├── ARCHITECTURE.md  NONFUNCTIONALS.md  TECHNICAL.md
 ├── .specify/                            # PLATFORM SpecKit: constitution + epic templates
 ├── specs/                               # EPIC / cross-cutting specs only  (see §6)
@@ -269,8 +265,7 @@ branch `archive/prototype-neo4j` before it rots. Do not block the restructure on
 ```plantuml
 @startuml
 title Restructure sequence
-(*) --> "0. De-accounting cruft pass\n(README / TECHNICAL / PROJECT_CONSTITUTION)"
---> "1. Create platform/ uv workspace skeleton\n(empty, CI green)"
+(*) --> "1. Create platform/ uv workspace skeleton\n(empty, CI green)"
 --> "2. FIRST EXTRACTION:\nvisualiser API/UI split ->\npackages/schema-visualizer-api"
 --> "3. Prove pattern: root CI fans out,\nworkspace lock resolves, tests pass"
 --> "4. Scaffold knowledge-graph;\nport prototype-neo4j ideas"
@@ -366,4 +361,3 @@ Checklist:
 - First-party code → **one `uv` workspace monorepo** (`platform/`). Forks → **git
   submodules under `third_party/` only**.
 - **Visualiser API/UI split is the first extraction.**
-- De-accounting cruft cleanup happens first (§8 step 0).

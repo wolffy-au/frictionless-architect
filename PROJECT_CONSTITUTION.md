@@ -1,4 +1,4 @@
-# Project Principles for Frictionless Architect (X-Accountant)
+# Project Principles for Frictionless Architect
 
 This document outlines the additional principles guiding the development of the architecture modelling experience, ensuring a consistent vision and high standards for every contribution.
 
