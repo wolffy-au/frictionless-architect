@@ -36,7 +36,17 @@ prints a notice so the transition gets reviewed and committed. `.specify/memory/
 |-------|---------|
 | `fork-sync` | Keep forked GitHub dependencies in sync with upstream: rebase `fix/*` + `private/*` branches, rebuild a `dist-candidate`, run tests, flag security-relevant upstream changes, escalate conflicts. See `fork-sync/SKILL.md`. |
 | `commit-message` | Write and check git commit messages against Conventional Commits + this repo's internal conventions (types, package/area scopes, `v$version` tags, commitizen config). Authoritative ruleset in `commit-message/references/standard.md`. Paired agent: `commit-auditor` (branch-wide pre-PR audit). See `commit-message/SKILL.md`. |
+
+### Diagrams & architecture models
+
+| Skill | Purpose |
+|-------|---------|
 | `diagram-plantuml` | Default workflow for authoring, validating, and rendering PlantUML diagrams. Validates against the local `plantuml` binary, falls back to the public PlantUML server; the online docs at `plantuml.com` are the syntax fallback. See `diagram-plantuml/SKILL.md`. |
+| `model-archimate` | Author, edit, and validate ArchiMate models (`.archimate` / Open Group `.xml`) with pyArchimate's metamodel + referential-integrity checks. The conformance gate every ArchiMate/C4 diagram is generated from. See `model-archimate/SKILL.md`. |
+| `diagram-archimate` | Render an ArchiMate view (or whole model) as PlantUML using the bundled `<archimate/Archimate>` stdlib; generates the `.puml` from a validated model, then renders via `diagram-plantuml`. See `diagram-archimate/SKILL.md`. |
+| `diagram-c4` | Generate a C4 Context/Container diagram as C4-PlantUML, projected from a validated ArchiMate model via the fixed mapping in `diagram-c4/references/archimate-to-c4-mapping.md`. See `diagram-c4/SKILL.md`. |
+
+Dependency chain: `diagram-c4` / `diagram-archimate` → `model-archimate` (validated model) → `diagram-plantuml` (render). pyArchimate is not a repo dependency — the skills invoke it ephemerally via `uv run --no-project --with 'pyArchimate==1.12.3'`.
 
 ## Ephemeral skills (not tracked)
 

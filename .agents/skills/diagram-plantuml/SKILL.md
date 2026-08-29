@@ -55,6 +55,13 @@ official docs — do not consult them for routine diagrams:
 If offline, fall back to known syntax and flag the diagram as
 docs-unverified.
 
+## Related skills
+
+- **ArchiMate diagrams** → `diagram-archimate` (generates the `.puml` from a
+  validated ArchiMate model, then hands it back here to render).
+- **C4 model diagrams** → `diagram-c4` (projects a C4 view from an ArchiMate
+  model). Don't hand-author C4-PlantUML when a model exists.
+
 ## Conventions
 
 - One diagram per `.puml` file; name it after what it shows.
