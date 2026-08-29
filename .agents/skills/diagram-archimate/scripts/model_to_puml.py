@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Generate an ArchiMate PlantUML diagram from a validated ArchiMate model.
 
-    uv run --no-project --with 'pyArchimate==1.12.3' --python 3.12 \
-        python model_to_puml.py MODEL[.archimate|.xml] [--view NAME] [-o OUT.puml]
+    poetry run python model_to_puml.py MODEL[.archimate|.xml] [--view NAME] [-o OUT.puml]
 
 Emits PlantUML using the bundled `<archimate/Archimate>` stdlib. With
 --view, only the elements/relationships shown on that ArchiMate view are
@@ -20,7 +19,7 @@ import sys
 try:
     from pyArchimate import Model
 except ImportError:
-    sys.stderr.write("run via: uv run --no-project --with 'pyArchimate==1.12.3' --python 3.12 python ...\n")
+    sys.stderr.write("pyArchimate not importable — run via: poetry run python model_to_puml.py ...\n")
     raise SystemExit(2) from None
 
 # ArchiMate element type (pyArchimate bare name) -> <archimate/Archimate> macro.

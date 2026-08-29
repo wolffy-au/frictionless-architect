@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Validate an ArchiMate model with pyArchimate's metamodel checks.
 
-Run ephemerally:
+Run under the project env (pyArchimate is a dev dependency):
 
-    uv run --with 'pyArchimate==1.12.3' --python 3.12 \
-        python validate.py MODEL[.archimate|.xml] [--json]
+    poetry run python validate.py MODEL[.archimate|.xml] [--json]
 
 Exit 0 = clean, 1 = violations found, 2 = could not load the model.
 """
@@ -18,8 +17,8 @@ try:
     from pyArchimate import Model, check_valid_relationship
 except ImportError:
     sys.stderr.write(
-        "pyArchimate not importable. Run via:\n"
-        "  uv run --with 'pyArchimate==1.12.3' --python 3.12 python validate.py ...\n"
+        "pyArchimate not importable — it's a dev dependency. Run via:\n"
+        "  poetry run python validate.py ...   (or: poetry install --with dev)\n"
     )
     raise SystemExit(2) from None
 

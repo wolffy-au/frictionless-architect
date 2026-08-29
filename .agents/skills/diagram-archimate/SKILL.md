@@ -18,8 +18,7 @@ skill only renders.
 2. **Generate the `.puml`** with `scripts/model_to_puml.py`:
 
    ```bash
-   uv run --no-project --with 'pyArchimate==1.12.3' --python 3.12 \
-     python .agents/skills/diagram-archimate/scripts/model_to_puml.py \
+   poetry run python .agents/skills/diagram-archimate/scripts/model_to_puml.py \
      MODEL.archimate [--view "View Name"] -o OUT.puml
    ```
 

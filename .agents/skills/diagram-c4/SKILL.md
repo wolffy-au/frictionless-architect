@@ -26,8 +26,7 @@ and relabels it into C4-PlantUML using the mapping in
 2. **Generate** with `scripts/model_to_c4.py`:
 
    ```bash
-   uv run --no-project --with 'pyArchimate==1.12.3' --python 3.12 \
-     python .agents/skills/diagram-c4/scripts/model_to_c4.py \
+   poetry run python .agents/skills/diagram-c4/scripts/model_to_c4.py \
      MODEL.archimate --system "Payments Platform" \
      --level container [--layout TOP_DOWN] -o OUT.puml
    ```

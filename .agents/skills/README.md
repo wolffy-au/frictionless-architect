@@ -46,7 +46,7 @@ prints a notice so the transition gets reviewed and committed. `.specify/memory/
 | `diagram-archimate` | Render an ArchiMate view (or whole model) as PlantUML using the bundled `<archimate/Archimate>` stdlib; generates the `.puml` from a validated model, then renders via `diagram-plantuml`. See `diagram-archimate/SKILL.md`. |
 | `diagram-c4` | Generate a C4 Context/Container diagram as C4-PlantUML, projected from a validated ArchiMate model via the fixed mapping in `diagram-c4/references/archimate-to-c4-mapping.md`. See `diagram-c4/SKILL.md`. |
 
-Dependency chain: `diagram-c4` / `diagram-archimate` → `model-archimate` (validated model) → `diagram-plantuml` (render). pyArchimate is not a repo dependency — the skills invoke it ephemerally via `uv run --no-project --with 'pyArchimate==1.12.3'`.
+Dependency chain: `diagram-c4` / `diagram-archimate` → `model-archimate` (validated model) → `diagram-plantuml` (render). `pyarchimate` is a `dev` dependency in `pyproject.toml`; run the skill scripts with `poetry run python …`.
 
 ## Ephemeral skills (not tracked)
 

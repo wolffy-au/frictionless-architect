@@ -11,15 +11,14 @@ projections that must not be generated from an unvalidated model.
 
 ## Toolchain
 
-`pyArchimate` (not a repo dependency — invoke ephemerally):
-
-```bash
-uv run --no-project --with 'pyArchimate==1.12.3' --python 3.12 python <script> ...
-```
+`pyArchimate` is a `dev` dependency (`pyproject.toml`). Run the scripts and
+any snippets under the project env — `poetry run python <script> …` (or a
+plain `python` if the env is already active).
 
 Readers/writers auto-detect by extension: `.archimate` → Archi native,
 `.xml` → Open Group Exchange Format. Match whatever the target repo already
-uses (the samples under `sample-data/**` are Archi native).
+uses (`sample-data/` carries both — `.archimate` from Archi, `.xml` in Open
+Group Exchange Format).
 
 ## Authoring
 
@@ -47,8 +46,7 @@ m.write("model.archimate")
 Run `scripts/validate.py`:
 
 ```bash
-uv run --no-project --with 'pyArchimate==1.12.3' --python 3.12 \
-  python .agents/skills/model-archimate/scripts/validate.py model.archimate
+poetry run python .agents/skills/model-archimate/scripts/validate.py model.archimate
 ```
 
 It reports and exits non-zero on any of:
