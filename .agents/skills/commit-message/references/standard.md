@@ -52,6 +52,7 @@ Use the package directory name, not the Python module name.
 - `specs` — feature specs under `specs/` or `packages/*/specs/`
 - `architecture` — `ARCHITECTURE.md` and structural decisions
 - `sample-data` — fixture/sample models
+- `wiki` — the generated `wiki/` (content produced by the `wiki-librarian` skill)
 - `ci` — release/versioning plumbing
 - `deps` — dependency bumps (`chore(deps):`, `build(deps):`)
 
