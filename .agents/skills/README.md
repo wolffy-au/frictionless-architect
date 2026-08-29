@@ -36,6 +36,7 @@ prints a notice so the transition gets reviewed and committed. `.specify/memory/
 |-------|---------|
 | `fork-sync` | Keep forked GitHub dependencies in sync with upstream: rebase `fix/*` + `private/*` branches, rebuild a `dist-candidate`, run tests, flag security-relevant upstream changes, escalate conflicts. See `fork-sync/SKILL.md`. |
 | `commit-message` | Write and check git commit messages against Conventional Commits + this repo's internal conventions (types, package/area scopes, `v$version` tags, commitizen config). Authoritative ruleset in `commit-message/references/standard.md`. Paired agent: `commit-auditor` (branch-wide pre-PR audit). See `commit-message/SKILL.md`. |
+| `diagram-plantuml` | Default workflow for authoring, validating, and rendering PlantUML diagrams. Validates against the local `plantuml` binary, falls back to the public PlantUML server; the online docs at `plantuml.com` are the syntax fallback. See `diagram-plantuml/SKILL.md`. |
 
 ## Ephemeral skills (not tracked)
 
