@@ -8,15 +8,15 @@ run_command() {
     local command_to_run="$*"
     local output
     local exit_code
-    
+
     # Capture all output (stdout and stderr)
     output=$(eval "$command_to_run" 2>&1) || exit_code=$?
     exit_code=${exit_code:-0}
-    
+
     if [ $exit_code -ne 0 ]; then
         echo -e "\033[0;31m[ERROR] Command failed (Exit Code $exit_code): $command_to_run\033[0m" >&2
         echo -e "\033[0;31m$output\033[0m" >&2
-        
+
         exit $exit_code
     fi
 }
@@ -206,7 +206,7 @@ echo "✅ Done"
 # Installing Git Hooks
 echo -e "\n🪝 Installing Git Hooks..."
 run_command "pip install pre-commit"
-run_command "pre-commit install --hook-type pre-commit --hook-type pre-push"
+run_command "pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg"
 echo "✅ Done"
 
 echo -e "\n🧹 Cleaning cache..."

@@ -1,0 +1,87 @@
+# Pre-commit framework configuration.
+#
+# Two stages, mirroring scripts/pre_commit_checks.sh / pre_merge_checks.sh:
+#   pre-commit  — fast, autofixing, staged files only
+#   pre-push    — the thorough type-check + test suite
+#   commit-msg  — Conventional Commits enforcement (commitizen)
+#
+# Install: pre-commit install --hook-type pre-commit --hook-type pre-push \
+#                             --hook-type commit-msg
+# See TECHNICAL.md for the tool-by-tool rationale.
+
+repos:
+  # ── pre-commit stage: fast, runs on staged files ─────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]   # keep two-space markdown line breaks
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: mixed-line-ending
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.9            # matches the pinned ruff in pyproject.toml
+    hooks:
+      - id: ruff            # lint + complexity gate — auto-fixes where possible
+      - id: ruff-format     # formatter — auto-reformats staged files
+
+  - repo: local
+    hooks:
+      - id: pymarkdown
+        name: pymarkdown lint
+        entry: poetry run pymarkdownlnt fix
+        language: system
+        types: [markdown]
+        # specs/ and the SpecKit / codex-generated skill docs are managed by
+        # tooling and are not ours to reformat.
+        exclude: ^(specs/|\.specify/|\.agents/skills/speckit-|CHANGELOG\.md)
+        stages: [pre-commit]
+
+  # ── commit-msg stage: Conventional Commits ───────────────────────────────
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.13.9           # matches the pinned commitizen in pyproject.toml
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+  # ── pre-push stage: thorough ────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright type check
+        entry: poetry run pyright
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: mypy
+        name: mypy type check
+        entry: poetry run mypy
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: behave
+        name: BDD acceptance tests
+        entry: poetry run behave
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: pytest-unit
+        name: pytest unit
+        entry: poetry run pytest tests/unit/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: pytest-api
+        name: pytest api
+        entry: poetry run pytest tests/api/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
