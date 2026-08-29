@@ -11,8 +11,8 @@ topics:
           sha256: 043c75a926f3809235d43243fdce7b46cfe65b605e11f3e5711967ef3e45cdef
           lines: 251
         README.md:
-          sha256: c89c7e4b5b24371752b4d06022cbd0790db690a3af6ea65ed45638784cfe3fe4
-          lines: 156
+          sha256: 719d3eeb0ba02bfdf5cb54debd5cf5e029d88cb377ae73a8189f13909773bed4
+          lines: 111
   governance-and-constitution:
     title: Governance & Constitution
     page: wiki/governance-and-constitution.md
@@ -23,7 +23,7 @@ topics:
           sha256: b0955b02dd8f859af955d2cdeef674e4c50a864063be23aef4eef47954d869d3
           lines: 128
         PROJECT_CONSTITUTION.md:
-          sha256: f95c9004aa53ae4ca71c691b07838c591bc0a779f071ff885bcdff3ba671b9a1
+          sha256: 753d3f3e2db8c227ea2fe559bb8054ad9367da09adfa1683eae9cc2d7b5d34c6
           lines: 28
   architecture:
     title: Architecture Overview
@@ -32,11 +32,11 @@ topics:
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: 4c4359217a3dfae0edfd18c641b25ba85cfad8aa8086c87d5ac7224a9b640f84
-          lines: 369
+          sha256: b6a33e2b2b6e4b37c9e5de0047ab9d1749eb5c76af1d778d122a6349625310aa
+          lines: 367
         TECHNICAL.md:
-          sha256: b7e72fe1a7f64d037a8df465bd8f49091b981564a7aee3ca7b99f7b93af92f67
-          lines: 456
+          sha256: b76e9161f7f436e397372078c7c0a63f10336a2cb37f6f5181ad90de02eeca18
+          lines: 403
   architecture-model:
     title: Architecture Model Skeleton
     page: wiki/architecture-model.md

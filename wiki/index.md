@@ -17,8 +17,8 @@ generator: claude-sonnet-5
   Constitution (principles I–IX), the Specify→Plan→Implement→Verify workflow,
   and quality gates.
 - [Architecture Overview](architecture.md) — the governance-layer-at-root
-  principle, current vs. target state, the component→package map, the `uv`
-  workspace decision, and the migration sequence.
+  principle, current vs. target state, the component→package map, the Poetry
+  monorepo decision, and the migration sequence.
 - [Architecture Model Skeleton](architecture-model.md) — the ~30-node
   load-bearing ArchiMate subset in `architecture/model/` used as decomposition
   input: drivers, principles, constraints, six primary capabilities, and the
@@ -45,9 +45,11 @@ generator: claude-sonnet-5
 
 ## A note on source quality
 
-Several root documents (`README.md`, `TECHNICAL.md`, `PROJECT_CONSTITUTION.md`,
-`AGENTS.md`, the `quickstart.md` files) are partly stale or carried over from
-an accounting-domain SpecKit template. Where they conflict with
+The repo began from an accounting-domain SpecKit template. Most of that
+heritage has been cleared from `README.md`, `TECHNICAL.md`, `ARCHITECTURE.md`,
+`PROJECT_CONSTITUTION.md`, and `.env.sample` (see
+[Project Overview](project-overview.md) §"Heritage cleanup"). `AGENTS.md` and
+the `quickstart.md` files are still thin or stale (e.g. `quickstart.md` still
+recommends `uv` and `requirements.txt`); where they conflict with
 `ARCHITECTURE.md`, `pyproject.toml`, or the code, the pages here flag it and
-defer to the latter. See [Project Overview](project-overview.md) §"Heritage
-cruft warning".
+defer to the latter.

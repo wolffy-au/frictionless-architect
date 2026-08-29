@@ -78,7 +78,7 @@ skill performs.
 Two PlantUML artifact diagrams documenting how NIST SP 800-53 rev5 control
 baselines are resolved into a component's control set. These illustrate the
 kind of OSCAL tooling the `policy-enforcement` component would wrap
-(`ARCHITECTURE.md:190`, `ARCHITECTURE.md:201-202`).
+(`ARCHITECTURE.md` §4 and its "Forks to vendor" list).
 
 - **`01-nist-baseline-resolution.puml`** — "one dimension, plus an optional
   privacy add-on". A catalog is imported and tailored into exactly one of

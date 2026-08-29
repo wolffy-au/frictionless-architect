@@ -17,7 +17,7 @@ thin **governance / orchestration layer** — vision, constitution, cross-cuttin
 specs, coordination scripts, submodule pointers, and fan-out CI — and holds
 **no application code** (`ARCHITECTURE.md` §1). This is described as a packaging
 decision that does not change the product vision. Status: "target adopted;
-migration in progress" (`ARCHITECTURE.md:7`).
+migration in progress" (`ARCHITECTURE.md` §1).
 
 ## Current state
 
@@ -26,7 +26,7 @@ One flat repo with a single narrow slice built: the Neo4j Schema Visualiser
 governance docs, `.specify/` SpecKit machinery, `sample-data/`, and tests
 (`ARCHITECTURE.md` §2). See [Visualizer Service](visualizer-service.md).
 
-Branch → state (`ARCHITECTURE.md:70-77`): `main` / `develop` carry spec 002 and
+Branch → state (`ARCHITECTURE.md` §2, branch matrix): `main` / `develop` carry spec 002 and
 the visualiser only; `001-governance-platform` has the full spec and an API
 contract but no implementation; `prototype-neo4j` is an unmerged exploratory
 branch with a knowledge-graph model, DB seeding, ArchiMate layers, and a
@@ -35,15 +35,15 @@ forensic ledger.
 ## Target state
 
 - Root repo = governance + orchestration only, zero application code
-  (`ARCHITECTURE.md:85`, `ARCHITECTURE.md:365`).
-- First-party components become packages in a **single `uv` workspace monorepo**
-  at `platform/` — one tree, per-package `pyproject.toml`, one shared
-  `uv.lock` (`ARCHITECTURE.md:86-88`, §5).
+  (`ARCHITECTURE.md` §3.1, §11).
+- First-party components become packages in a **single Poetry monorepo** at
+  `platform/` — one tree, per-package `pyproject.toml`, one shared
+  `poetry.lock` (`ARCHITECTURE.md` §3.1, §5).
 - Vendored upstream forks are **git submodules under `third_party/` only** —
   never a submodule for actively-developed first-party code
-  (`ARCHITECTURE.md:89-91`).
+  (`ARCHITECTURE.md` §3.1).
 - Frontends are a `pnpm`/Vite sub-tree inside the same monorepo until JS weight
-  justifies `turborepo` (`ARCHITECTURE.md:92-94`).
+  justifies `turborepo` (`ARCHITECTURE.md` §3.1).
 
 Target layout and the eight component packages are enumerated in
 `ARCHITECTURE.md` §3.2 and §4.
@@ -67,16 +67,24 @@ The eight components come from `PROJECT_SPECIFICATION.md` "Proposed Grouping"
 
 **Forks to vendor** are candidates, not confirmed: an ArchiMate Exchange
 Format / `.archimate` parser (for `knowledge-graph`) and OSCAL catalog-resolution
-tooling (for `policy-enforcement`) (`ARCHITECTURE.md:197-204`).
+tooling (for `policy-enforcement`) (`ARCHITECTURE.md` §4).
 
 ## Monorepo tooling decision
 
-`uv` workspace is **chosen** over `pnpm`+`turborepo` (later, if JS grows), Nx,
-meta-repo tools, and "submodules for everything" (`ARCHITECTURE.md` §5). The
-current build is Poetry + `poetry-dynamic-versioning`; migration means
-`[tool.uv.workspace]` in `platform/pyproject.toml`, each package picking a build
-backend (`hatchling` is the least-effort path), and git-derived dynamic
-versioning replaced per-package or dropped for manual `0.x`.
+**Poetry monorepo is chosen** — the tool the repo already uses
+(`poetry-dynamic-versioning`, commitizen, `poetry.lock`). `uv` was evaluated
+and is **not adopted**: "`uv sync` failed repeatedly in this environment, and
+there is no benefit large enough to justify migrating a working build off
+Poetry" — `uv` sits in an "on hold" row, to be revisited only if Poetry's
+monorepo story becomes a real drag (`ARCHITECTURE.md` §5). `pnpm`+`turborepo`
+is "later, if JS grows"; Nx, meta-repo tools, and "submodules for everything"
+are rejected.
+
+Layout under Poetry: `platform/pyproject.toml` is the root project and each
+`packages/<name>/` depends on its siblings via path dependencies
+(`{ path = "../knowledge-graph", develop = true }`). Dynamic versioning and
+the commitizen config move to the root; packages keep their current build
+backend — no build-backend churn (`ARCHITECTURE.md` §5).
 
 ## Spec numbering (two-tier target)
 
@@ -89,20 +97,22 @@ specs work.
 
 ## Migration sequence
 
-`ARCHITECTURE.md` §8: (0) de-accounting cruft pass → (1) empty `platform/`
-workspace with green CI → (2) **first extraction: visualiser API/UI split** →
-(3) prove the fan-out pattern → (4) scaffold `knowledge-graph`, port
-`prototype-neo4j` ideas → (5) vendor confirmed forks → (6) re-home specs →
-(7) extract remaining components as work reaches them. §8.1 has a detailed
-checklist for the visualiser split.
+`ARCHITECTURE.md` §8: (1) empty `platform/` Poetry monorepo skeleton with
+green CI → (2) **first extraction: visualiser API/UI split** → (3) prove the
+fan-out pattern → (4) scaffold `knowledge-graph`, port `prototype-neo4j`
+ideas → (5) vendor confirmed forks → (6) re-home specs → (7) extract
+remaining components as work reaches them. §8.1 has a detailed checklist for
+the visualiser split. (An earlier "step 0: de-accounting cruft pass" is
+gone — that cleanup has since landed; see [Project Overview](project-overview.md).)
 
 ## Cross-cutting risks and open questions
 
 Risks (`ARCHITECTURE.md` §9): the `FRICTIONLESS_ARCHITECT_` env prefix and
 `frictionless_architect` package name are referenced everywhere (any rename is
-its own epic); Poetry→uv migration touches every `pyproject.toml`; SonarQube /
-Snyk config is single-project; `behave` and `pytest` `testpaths` are
-root-absolute; CI assumes one package.
+its own epic); splitting the single `pyproject.toml` into per-package projects
+touches the commitizen / dynamic-versioning setup and every package's path
+dependencies; SonarQube / Snyk config is single-project; `behave` and `pytest`
+`testpaths` are root-absolute; CI assumes one package.
 
 Open questions (`ARCHITECTURE.md` §10) include whether anything ever leaves the
 monorepo, one constitution vs. per-component addenda, dashboard as Backstage
@@ -113,8 +123,9 @@ starts as its own package.
 
 `ARCHITECTURE.md` §11: restructuring is aligned with the original vision (not a
 pivot); root = governance/orchestration with zero application code; first-party
-code → one `uv` workspace; forks → submodules under `third_party/` only;
-visualiser API/UI split is the first extraction; de-accounting happens first.
+code → one Poetry monorepo; forks → submodules under `third_party/` only;
+**package manager is Poetry, not `uv`** ("`uv sync` broke repeatedly in this
+env"); visualiser API/UI split is the first extraction.
 
 ## Technical standards
 
@@ -131,7 +142,7 @@ entities with governed lifecycles, with action-based endpoints
 contexts, aggregates) and an "Automated Code Uplift" concept using `git
 worktree` + an AI assistant driven by static analysis and coverage tools.
 
-> Note: `TECHNICAL.md` predates the `uv` decision and is internally
-> inconsistent — its "Dependency Installation" section lists `uv` as
-> preferred but pastes Poetry commands under `uv` labels (e.g. "uv:
-> `poetry update`"). `ARCHITECTURE.md` §5 is the current position.
+`TECHNICAL.md` §"Dependency Installation" and §"Utilities and Frameworks" now
+name **Poetry** as the package manager (`poetry install`, `poetry.lock`,
+`poetry run`), explicitly "do not use `uv`", pointing at `ARCHITECTURE.md` §5
+for the decision.

@@ -16,7 +16,7 @@ Frictionless Architect is the working name for a **Frictionless Architecture &
 Governance Platform** — a system that keeps a bank's architecture as a live,
 machine-readable model and automates governance on top of it, targeting APRA
 **CPS 230** (operational resilience) and **CPS 234** (information security)
-compliance (`PROJECT_SPECIFICATION.md` §"Phase 1", `ARCHITECTURE.md:19`). The
+compliance (`PROJECT_SPECIFICATION.md` §"Phase 1", `ARCHITECTURE.md` §1). The
 stated purpose is "a digital twin of the bank's architecture that automates
 governance and eliminates SDLC friction" (`PROJECT_SPECIFICATION.md` §"Phase 2").
 
@@ -66,24 +66,22 @@ The sources disagree on scope, and this is a known tension:
 
 - `PROJECT_SPECIFICATION.md:9` sets an MVP target of "a single-user, locally run
   application … without requiring multi-user or hosted infrastructure."
-- `ARCHITECTURE.md:20-21` treats that line as "an early scoping compromise, not a
+- `ARCHITECTURE.md` §1 treats that line as "an early scoping compromise, not a
   constraint on the topology," and plans a multi-package platform.
 
 Only one narrow slice is built today: the Neo4j Schema Visualiser (see
 [Visualizer Service](visualizer-service.md) and [Platform Specification & API](platform-spec.md)).
 
-## Heritage cruft warning
+## Heritage cleanup
 
-The repo was spun from an accounting-domain SpecKit template, and several
-root documents were never fully cleaned up. `README.md` still documents an
-accounting API (transactions, quickfill, duplicate-account merging, JWT auth
-fixtures) that does **not** correspond to any code in this repo, and
-`PROJECT_CONSTITUTION.md` is still titled "X-Accountant"
-(`ARCHITECTURE.md:57-64`, `ARCHITECTURE.md:331-333`). Treat `README.md`'s
-"API Pytest Quickstart", "Running the Application" (`uvicorn src.main:app`),
-and "Benchmarking" sections as template residue, not a description of this
-project. A "de-accounting cruft pass" is the first planned migration step
-(`ARCHITECTURE.md` §11).
+The repo was spun from an accounting-domain SpecKit template. That heritage
+has largely been cleared: `README.md` and `TECHNICAL.md` were rewritten around
+the schema visualiser and Poetry, `PROJECT_CONSTITUTION.md` dropped its
+"(X-Accountant)" title, and `ARCHITECTURE.md` removed its "heritage cruft"
+note and its "step 0: de-accounting" migration step (commits `56b8567`,
+`425083d`, `6420daf` on the `skills-and-agents` line). `PROJECT_SPECIFICATION.md`
+is left as historical background and still carries the original template's
+phase-numbering gap (see below).
 
 ## Not covered by current sources
 

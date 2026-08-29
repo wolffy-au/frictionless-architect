@@ -17,7 +17,7 @@ sources:
 > and rebuild rather than editing this page.
 
 The schema visualiser is the **only implemented slice** of the platform
-(`ARCHITECTURE.md:71-73`). It is a single FastAPI app that pairs the ArchiMate
+(`ARCHITECTURE.md` §2). It is a single FastAPI app that pairs the ArchiMate
 schema with sample data and serves both a JSON payload and an embedded HTML/JS
 UI. Its spec is `002-neo4j-schema-ui` — see
 [Platform Specification & API](platform-spec.md); the graph shape it reads is in
@@ -31,7 +31,7 @@ JSON-only `schema-visualizer-api` package plus a separate Vite UI.
 the API router, mounts `static/` at `/schema-visualizer/static`, and renders
 `templates/schema_visualizer.html` at `GET /schema-visualizer`
 (`src/frictionless_architect/visualizer/__init__.py:23-38`). Run it with
-`uvicorn frictionless_architect.visualizer:app --reload --port 8100`
+`poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100`
 (`README.md` §"Schema Visualiser"). On shutdown, `lifespan` closes the Neo4j
 driver (`src/frictionless_architect/visualizer/__init__.py:17-20`).
 
@@ -142,6 +142,8 @@ Cypher statements are passed through `_run_literal()` which casts to
 - Parser library: implemented with `xml.etree.ElementTree`; the research doc
   chose `lxml` + `xmlschema` (`specs/002-neo4j-schema-ui/research.md:8-11`).
 - ArchiMate namespace version — see [Data Model](data-model.md).
-- `README.md` §"Running the Application" (`uvicorn src.main:app`) and its
-  accounting API sections do not correspond to this service — see
-  [Project Overview](project-overview.md).
+
+`README.md` §"Schema Visualiser" now documents this service directly
+(`poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100`,
+plus the endpoint table) — the earlier accounting-template run instructions
+have been removed.
