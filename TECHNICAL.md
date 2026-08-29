@@ -282,7 +282,17 @@ The following patterns and practices have been established for API-level integra
 
 ## Testing Layout
 
-Unit tests live under `tests/unit/...`, so there is one `test_<module>.py` file per production module.
+The `tests/unit/` tree **mirrors the `src/` package layout** so it is obvious which test
+file covers which source file. The test for
+`src/frictionless_architect/<pkg>/<module>.py` lives at
+`tests/unit/<pkg>/test_<module>.py` — same relative path, one `test_<module>.py` per
+production module, `test_` prefix. New test subdirectories get an `__init__.py` to match.
+
+Examples: `visualizer/cache.py` → `tests/unit/visualizer/test_cache.py`;
+`schema/manager.py` → `tests/unit/schema/test_manager.py`.
+
+API integration tests live under `tests/api/`; `behave` acceptance features under
+`tests/features/` (see the `acceptance-author` agent).
 
 ## Dependency Installation
 
