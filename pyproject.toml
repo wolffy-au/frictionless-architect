@@ -171,6 +171,9 @@ paths = [
 ]
 
 [tool.pymarkdown]
+# Parse YAML front matter so the closing `---` is not read as a setext heading
+# (which otherwise triggers a storm of MD003/MD022 in skill/agent instruction files).
+extensions.front-matter.enabled = true
 # MD010 - no hard tabs
 plugins.md010.enabled = true
 # MD007 - unordered list indentation
@@ -180,6 +183,7 @@ plugins.md004.style = "dash"
 
 [tool.pymarkdown.plugins.md013]
 line_length = 120
+code_block_line_length = 120
 
 [build-system]
 requires = ["poetry-core>=2.0.0", "poetry-dynamic-versioning>=1.6.0,<2.0.0"]
