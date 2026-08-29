@@ -21,6 +21,9 @@ build/
 # FastAPI/SQLAlchemy specific
 *.sqlite3
 
+# wiki-librarian semantic index (semsearch.py)
+index.sqlite
+
 # Testing ignore patterns
 .pytest_cache/
 .mypy_cache/

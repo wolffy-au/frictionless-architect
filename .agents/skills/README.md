@@ -48,6 +48,16 @@ prints a notice so the transition gets reviewed and committed. `.specify/memory/
 
 Dependency chain: `diagram-c4` / `diagram-archimate` → `model-archimate` (validated model) → `diagram-plantuml` (render). `pyarchimate` is a `dev` dependency in `pyproject.toml`; run the skill scripts with `poetry run python …`.
 
+### Project wiki
+
+`wiki/` is a **derived cache**: `wiki/sources.yaml` declares topics and their sources (repo file globs + external URLs), and each topic is regenerated as one synthesized `wiki/<name>.md` page with citations. `wiki/.build-log.yaml` fingerprints every source so a rebuild only touches pages whose sources changed. Deps: `pyyaml` (all tools), plus `numpy` + `fastembed` for the local semantic index (`index.sqlite`, git-ignored).
+
+| Skill / agent | Purpose |
+|-------|---------|
+| `wiki-librarian` | Build or refresh the wiki: scaffold `wiki/` when absent, resolve `sources.yaml`, diff sources against the build log, and regenerate the NEW/STALE topic pages. Tools under `wiki-librarian/tools/` (`resolve_sources`, `build_status`, `verify_wiki`, `semsearch`). See `wiki-librarian/SKILL.md`. |
+| `wiki-editor` | Formatting/consistency pass over the generated pages — heading hierarchy, citation-link and frontmatter hygiene, dead internal links — without changing technical meaning. See `wiki-editor/SKILL.md`. |
+| `wiki-maintenance` (agent) | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Flags for a librarian run; never regenerates pages itself. See `.agents/agents/wiki-maintenance.md`. |
+
 ## Ephemeral skills (not tracked)
 
 Pulled fresh from their upstream releases by `.devcontainer/post-create.sh` on
