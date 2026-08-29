@@ -39,8 +39,9 @@ repos:
         # specs/ and the SpecKit / codex-generated skill docs are managed by
         # tooling and are not ours to reformat. .agents/ skill + agent files are
         # instruction docs (YAML front matter + one long description line) linted
-        # by their own conventions, not prose-doc rules.
-        exclude: ^(specs/|\.specify/|\.agents/|CHANGELOG\.md)
+        # by their own conventions, not prose-doc rules. The
+        # wiki-librarian-generated wiki/ is likewise tooling-managed.
+        exclude: ^(specs/|\.specify/|\.agents/|wiki/|CHANGELOG\.md)
         stages: [pre-commit]
 
   # ── commit-msg stage: Conventional Commits ───────────────────────────────
