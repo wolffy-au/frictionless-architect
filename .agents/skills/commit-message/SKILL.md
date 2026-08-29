@@ -38,13 +38,13 @@ Prefer the tool if it is installed, fall back to the manual checklist otherwise.
 
 ```bash
 # single message (string or file)
-uv run cz check --message "$(git log -1 --pretty=%B)"      # last commit
-uv run cz check --message "feat(agents): add commit-message skill"
+poetry run cz check --message "$(git log -1 --pretty=%B)"      # last commit
+poetry run cz check --message "feat(agents): add commit-message skill"
 # a range, e.g. everything this branch adds over main
-uv run cz check --rev-range "$(git merge-base main HEAD)..HEAD"
+poetry run cz check --rev-range "$(git merge-base main HEAD)..HEAD"
 ```
 
-If `cz` is unavailable (`uv run cz` / `uvx commitizen` both fail), check by hand
+If `cz` is unavailable (`poetry run cz` fails), check by hand
 against `references/standard.md`:
 
 - subject matches `^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .+`

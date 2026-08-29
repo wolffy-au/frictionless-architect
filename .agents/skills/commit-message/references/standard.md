@@ -39,7 +39,7 @@ change and forces a major bump regardless of type.
 
 Optional but expected when a change is localised. Lower-case, `[a-z0-9-]+`.
 
-**Package scopes** — a member of the `platform/` uv workspace, named by its
+**Package scopes** — a member of the `platform/` Poetry monorepo, named by its
 directory under `platform/packages/` (e.g. `knowledge-graph`, `schema-visualizer`).
 Use the package directory name, not the Python module name.
 
@@ -93,12 +93,11 @@ in the same commit that first needs it.
 ## Tooling
 
 ```bash
-uv run cz check --message "<msg>"                 # lint one message
-uv run cz check --rev-range <base>..HEAD          # lint a range
-uv run cz commit                                  # interactive prompt
-uvx commitizen check ...                          # if cz isn't in the venv
+poetry run cz check --message "<msg>"             # lint one message
+poetry run cz check --rev-range <base>..HEAD      # lint a range
+poetry run cz commit                              # interactive prompt
 ```
 
-commitizen is declared in the `dev` dependency group. If neither `uv run cz` nor
-`uvx commitizen` works, fall back to the regex/checklist in the `commit-message`
-skill.
+commitizen is declared in the `dev` dependency group (`poetry install --with dev`).
+If `poetry run cz` does not work, fall back to the regex/checklist in the
+`commit-message` skill.

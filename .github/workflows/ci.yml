@@ -32,11 +32,8 @@ jobs:
       - name: Install Poetry
         run: pip install --upgrade poetry
 
-      - name: Sync dependencies
+      - name: Lock dependencies
         run: poetry lock
-
-      - name: Install uv CLI
-        run: pip install --upgrade uv
 
       - name: Sync dependencies
         run: poetry update

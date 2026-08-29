@@ -24,9 +24,8 @@ Ensure you have the following installed:
 2. **Set Up Python Environment**:
 
     ```bash
-    python -m venv .venv
-    source .venv/bin/activate # On Windows use `.venv\Scripts\activate`
-    uv install -r requirements.txt # (Assuming a requirements.txt will be generated)
+    pipx install poetry # or: pip install --user poetry
+    poetry install --with dev
     ```
 
 3. **Initialize Feature Specification (if needed)**:

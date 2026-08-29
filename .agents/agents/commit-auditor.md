@@ -17,8 +17,7 @@ you produce a report the user acts on.
 ## Steps
 
 1. Resolve the range and list it: `git log --format='%H %s' <base>..<target>`.
-2. Try the tool: `uv run cz check --rev-range <base>..<target>` (fall back to
-   `uvx commitizen check --rev-range ...`). Capture its output.
+2. Try the tool: `poetry run cz check --rev-range <base>..<target>`. Capture its output.
 3. Whether or not `cz` ran, evaluate **each** commit against `references/standard.md`:
    - subject regex, imperative mood, lower-case, no period, ≤ 72 chars
    - scope (if present) is in the allowed list; flag unknown scopes
