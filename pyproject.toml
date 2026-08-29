@@ -67,7 +67,12 @@ version = "0.0.0"
 name = "cz_conventional_commits"
 tag_format = "v$version"
 version_scheme = "pep440"
-version_provider = "poetry"
+# Git tags are the single source of truth (poetry-dynamic-versioning derives the
+# runtime version from them, and [tool.poetry] version is a frozen 0.0.0 placeholder).
+# "scm" makes cz read the current version from the latest tag to compute the bump.
+version_provider = "scm"
+major_version_zero = true
+annotated_tag = true
 update_changelog_on_bump = true
 
 [tool.poetry-dynamic-versioning]
