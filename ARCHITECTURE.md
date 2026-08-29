@@ -79,9 +79,9 @@ end note
 ### 3.1 Shape
 
 - **Root repo = governance + orchestration only. Zero application code.**
-- **First-party components live as packages in a single `uv` workspace monorepo**
-  (`platform/`). One tree, per-package `pyproject.toml`, one shared lockfile, independent
-  build/publish.
+- **First-party components live as packages in a single Poetry monorepo**
+  (`platform/`). One tree, per-package `pyproject.toml`, one shared `poetry.lock`,
+  independent build/publish.
 - **Vendored upstream forks are git submodules under `third_party/`, and only there.**
   They are low-touch (rebased customisation branch, periodic `fork-sync`), so submodule
   pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
@@ -104,9 +104,9 @@ frictionless-architect/                 # ROOT — governance & orchestration
 ├── third_party/                        # git submodules — vendored forks ONLY
 │   ├── <archimate-parser-fork>/
 │   └── <oscal-tooling-fork>/
-└── platform/                            # the uv workspace (the "level below")
-    ├── pyproject.toml                   # [tool.uv.workspace] members = ["packages/*"]
-    ├── uv.lock                          # single shared lock
+└── platform/                            # the Poetry monorepo (the "level below")
+    ├── pyproject.toml                   # root project; packages/* as path dependencies
+    ├── poetry.lock                      # single shared lock
     └── packages/
         ├── governance-engine/           # component 1
         ├── pii-gateway/                 #   (1.2 — split candidate)
@@ -137,7 +137,7 @@ package "frictionless-architect (root: governance + orchestration)" as root {
   [third_party/ — git submodules: vendored forks] as forks
 }
 
-package "platform/ (uv workspace)" as ws {
+package "platform/ (Poetry monorepo)" as ws {
   [governance-engine] as c1
   [pii-gateway] as c1b
   [knowledge-graph] as c2
@@ -203,22 +203,25 @@ Confirm the exact upstreams before creating submodules.
 
 ## 5. Monorepo tooling
 
-**`uv` workspace** for the first-party Python packages.
+**Poetry** for the first-party Python packages — the tool the repo already uses.
+`uv` was evaluated and is **not adopted**: `uv sync` failed repeatedly in this
+environment, and there is no benefit large enough to justify migrating a working
+build off Poetry. Revisit only if Poetry's monorepo story becomes a real drag.
 
 | Option | Verdict | Why |
 |---|---|---|
-| **`uv` workspace** | **Chosen** | Python-centric project. Native multi-package workspace, one resolved `uv.lock`, per-package `pyproject.toml`, fast, no extra meta-tooling. Migrates cleanly off the current Poetry `[project]`-table setup. |
+| **Poetry monorepo** | **Chosen** | Already in use (`poetry-dynamic-versioning`, commitizen, `poetry.lock`). Root `pyproject.toml` aggregates `packages/*` as path dependencies; each package keeps its own `pyproject.toml` and build backend; one shared `poetry.lock`. No migration cost. |
+| `uv` workspace | On hold | Faster resolver and a native workspace model, but `uv sync` broke repeatedly here and migrating every `pyproject.toml` + the versioning setup buys little today. Re-evaluate if that changes. |
 | `pnpm` + `turborepo` | Later, if JS grows | Right tool once `dashboard` + shared UI libs justify a task graph. Nest a pnpm workspace under `packages/dashboard*` now; promote only when needed. |
 | Meta-repo tool (`meta`, `mu-repo`, `git-subrepo`) | No | Solves polyrepo coordination we are deliberately avoiding for first-party code. |
 | Submodules for everything | No | Pointer-commit churn makes day-to-day multi-package dev miserable. Forks only. |
 | Nx | No | JS-first; heavier than the Python weight warrants. |
 
-**Poetry → uv migration:** current build is Poetry + `poetry-dynamic-versioning` +
-`packages = [{include = "frictionless_architect", from = "src"}]`. Moving to `uv` means
-`[tool.uv.workspace]` in `platform/pyproject.toml`; each package picks a build backend
-(`hatchling` is the least-effort path); git-derived dynamic versioning is replaced
-per-package (`hatch-vcs`) or dropped for manual `0.x` until releases matter. Commitizen
-config moves to the root and targets the workspace.
+**Multi-package layout under Poetry:** `platform/pyproject.toml` is the root project;
+each `packages/<name>/` is a Poetry project depending on its siblings via path
+dependencies (`{ path = "../knowledge-graph", develop = true }`). Dynamic versioning
+and the commitizen config move to the root and target the whole tree. No build-backend
+churn — packages keep the current setup.
 
 ---
 
@@ -265,7 +268,7 @@ branch `archive/prototype-neo4j` before it rots. Do not block the restructure on
 ```plantuml
 @startuml
 title Restructure sequence
-(*) --> "1. Create platform/ uv workspace skeleton\n(empty, CI green)"
+(*) --> "1. Create platform/ Poetry monorepo skeleton\n(empty, CI green)"
 --> "2. FIRST EXTRACTION:\nvisualiser API/UI split ->\npackages/schema-visualizer-api"
 --> "3. Prove pattern: root CI fans out,\nworkspace lock resolves, tests pass"
 --> "4. Scaffold knowledge-graph;\nport prototype-neo4j ideas"
@@ -326,8 +329,8 @@ Checklist:
 - **`FRICTIONLESS_ARCHITECT_` env prefix + `frictionless_architect` package name** —
   referenced across `config.py`, docs, `.env*`. Any rename is its own epic; do not fold it
   into a component extraction.
-- **Poetry → uv build/version migration** (§5) touches every `pyproject.toml` and the
-  commitizen / dynamic-versioning setup.
+- **Splitting the single `pyproject.toml` into per-package projects** (§5) touches the
+  commitizen / dynamic-versioning setup and every package's path dependencies.
 - **`.specify/` bash scripts** need the `--package` arg before per-component specs work.
 - **SonarQube / SonarCloud / Snyk** config (`sonar-project.properties`, `.sonar/`,
   `.sonarlint/`) is single-project — needs per-package `sonar.projectKey`s or a monorepo
@@ -358,6 +361,7 @@ Checklist:
 
 - Restructuring is aligned with the original vision; proceed. Not a pivot.
 - Root repo = governance / orchestration, **zero application code**.
-- First-party code → **one `uv` workspace monorepo** (`platform/`). Forks → **git
+- First-party code → **one Poetry monorepo** (`platform/`). Forks → **git
   submodules under `third_party/` only**.
+- **Package manager is Poetry, not `uv`** (`uv sync` broke repeatedly in this env).
 - **Visualiser API/UI split is the first extraction.**

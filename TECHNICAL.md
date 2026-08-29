@@ -252,8 +252,8 @@ The following patterns and practices have been established for API-level integra
 - **Testing Frameworks**: `pytest`, `pytest-mock`, `behave` (for BDD)
 - **Linters/Formatters**: `Ruff`
 - **Type Checkers**: `MyPy`, `PyRight`
-- **Build/Dependency Management**: Prefer `uv` for dependency installation and resolution from `pyproject.toml`. Avoid use of `requirements.txt`. Only use `poetry` when `uv` has no equivalent option.
-- **Package Installation/Running**: `UV`
+- **Build/Dependency Management**: `Poetry` (`poetry install`, `poetry.lock`). Do not use `uv` — `uv sync` has failed repeatedly in this environment; see `ARCHITECTURE.md` §5. Avoid `requirements.txt`.
+- **Package Installation/Running**: `Poetry` (`poetry install`, `poetry run`)
 - **API Framework**: `FastAPI`
 - **UI Frameworks**: `Streamlit`, `Chainlit` (for building interactive UIs and LLM-based applications)
 - **Messaging/Orchestration**: `CrewAI` (implied by usage context)
@@ -286,77 +286,30 @@ Unit tests live under `tests/unit/...`, so there is one `test_<module>.py` file 
 
 ## Dependency Installation
 
-To set up `uv`, run:
+Package manager is **Poetry**, not `uv` — `uv sync` has failed repeatedly in this
+environment. `ARCHITECTURE.md` §5 is the canonical record of that decision and of the
+conditions under which `uv` would be re-evaluated.
 
 ```bash
-sudo apt-get update
-pip install --upgrade uv
+pipx install poetry            # or: pip install --user poetry
+poetry install --sync          # create/refresh the venv from poetry.lock
 ```
 
-- Initialize a project
-  Use this when starting a new Python project.
-  - Create a new project with a pyproject.toml.
-  `uv init`
-  `uv init my-project`
-  `uv init --package`
-  `uv init --app`
+Common tasks:
 
-- Env / venv management (uv venv namespace)
-  - List venvs: `uv venv list`
-  - Create venv: `uv venv create [--python <python>] [--path <path>]`
-  - Use/select venv: `uv venv use <name-or-path>`
-  - Remove venv: `uv venv remove <name>`
-  - Show venv info: `uv venv show <name>`
-  - Activate shell for specific venv: `uv venv shell <name>`
+| Task | Command |
+|---|---|
+| Add a dependency | `poetry add <pkg>` (`--group dev` / `--group tests` / …) |
+| Remove a dependency | `poetry remove <pkg>` |
+| Sync env to the lock (incl. groups) | `poetry install --sync --with dev,tests,lint,docs` |
+| Update one / all packages | `poetry update <pkg>` / `poetry update` |
+| Regenerate the lockfile only | `poetry lock --no-update` |
+| Show dependency tree | `poetry show --tree` |
+| Run a command / script in the venv | `poetry run <cmd>` (e.g. `poetry run pytest`) |
+| Spawn a shell in the venv | `poetry shell` |
+| Build / publish | `poetry build` / `poetry publish` |
 
-- Add dependency
-  - uv: `uv add <package> [--group <group>] [--dev] [--version <constraint>]`
-  - examples: `uv add requests`, `uv add pytest --group dev`
-
-- Remove dependency
-  - uv: `uv remove <package>`
-
-- Install / sync including all groups / extras
-  - uv: `poetry update`
-  - or to include specific groups: `uv sync --upgrade --groups dev,tests,lint,docs`
-
-- Update dependencies
-  - Upgrade one package:
-  `uv lock --upgrade-package requests`
-  - Upgrade all packages:
-  `uv lock --upgrade`
-  - Then sync:
-  `uv sync`
-
-- Lock dependencies / generate lockfile
-  - uv: `uv lock [--no-update]`
-
-- Show dependencies / tree
-  - uv: `uv show [--tree] [<package>]`
-
-- Run a command in the venv, run scripts / entry points defined in pyproject
-  - uv: `poetry run -- <command>` or `poetry run <command> [args...]`
-  - example: `poetry run python`, `poetry run pytest`
-  - uv: `poetry run <script-name>` (scripts exposed via project config)
-
-- Spawn a shell in the venv
-  - uv: `uv shell`
-
-- Build package
-  - uv: `uv build [--format wheel,sdist]`
-
-- Publish package
-  - uv: `uv publish [--repository <repo>]`
-
-- Show project info / metadata
-  - uv: `uv info`
-
-- Security audit
-  - uv: `uv audit`
-
-Notes:
-
-- Flags/option names above follow the uv CLI documented patterns (e.g., `--all`, `--groups`, `--python`). Use `uv <command> --help` for full option lists and exact formatting for your uv version.
+Use `poetry <command> --help` for full option lists.
 
 ## SonarQube
 
