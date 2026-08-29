@@ -188,6 +188,21 @@ install_skill_from_release "JuliusBrussee/caveman" "skills/caveman" ".claude/ski
 install_skill_from_release "REMvisual/claude-handoff" "skills/handoff" ".claude/skills/session-handoff" "session-handoff"
 echo "✅ Done"
 
+# Linking repo-tracked skills & agents into .claude/
+# .agents/skills/* and .agents/agents are the tracked source of truth; Claude
+# Code only discovers skills/agents under .claude/ (which is git-ignored), so
+# mirror them there as relative symlinks on every create. Externally-sourced
+# skills above (caveman, session-handoff) are real dirs and are left alone.
+echo -e "\n🔗 Linking .agents skills and agents into .claude/..."
+mkdir -p .claude/skills
+for skill_dir in .agents/skills/*/; do
+    [ -f "${skill_dir}SKILL.md" ] || continue
+    name=$(basename "$skill_dir")
+    ln -sfn "../../.agents/skills/${name}" ".claude/skills/${name}"
+done
+ln -sfn "../.agents/agents" ".claude/agents"
+echo "✅ Done"
+
 # Installing Git Hooks
 echo -e "\n🪝 Installing Git Hooks..."
 run_command "pip install pre-commit"
