@@ -115,8 +115,8 @@ Not wired into the FastAPI app — a standalone controller for Neo4j
 constraints, ingestion, migrations, and audits (`src/frictionless_architect/schema/manager.py:53-54`).
 
 - **`apply_constraints()`** — creates 6 uniqueness constraints and 5 indexes
-  (`src/frictionless_architect/schema/manager.py:13-28, 63-66`). See [Data Model](data-model.md) for the
-  graph shape.
+  (`src/frictionless_architect/schema/manager.py:13-28`, applied by
+  `apply_constraints()`). See [Data Model](data-model.md) for the graph shape.
 - **`ingest_payload(payload)`** — MERGEs `elements`, `relationships`, `views`,
   `diagrams`. A sanitised element-type string is added as a second node label
   (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:37-50`). Relationship ingestion
