@@ -74,7 +74,7 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
    (`src/frictionless_architect/visualizer/api.py:155-165`).
 3. **`request_refresh()`** — spawns a background `asyncio` task that rebuilds
    and re-caches; raises `RefreshInProgress` (→ HTTP 409) if one is already
-   running; the estimate returned is `max(500, last_latency_ms * 2)`
+   running; the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
    (`src/frictionless_architect/visualizer/api.py:68-95`).
 4. **`get_status()`** — reports `cache_age_seconds`, `neo4j_status`
    (`disabled`/`available`/`unavailable`), `sample_file_status`

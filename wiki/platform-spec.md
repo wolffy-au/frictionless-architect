@@ -68,7 +68,7 @@ Highlights (`specs/001-governance-platform/spec.md:114-154`):
 P1 core governance (Break-Glass exception, ADR attestation, traceability-matrix
 query); P2 specification lifecycle (developer initiates a spec, gets an
 AI-drafted ADR); P3 platform operations (admin inspects KPIs)
-(`specs/001-governance-platform/spec.md:41-99`). Edge cases cover an architect
+(`specs/001-governance-platform/spec.md:41-108`). Edge cases cover an architect
 refusing to attest, two conflicting ADRs, and a single consistent structured
 error shape.
 
@@ -83,16 +83,16 @@ are "provisional benchmarks carried from the original draft."
 
 ### API contract
 
-`specs/001-governance-platform/contracts/api.yaml` is an OpenAPI 1.0.0
-document, "Frictionless Architecture Governance API"
-(`specs/001-governance-platform/contracts/api.yaml:3-4`). It is a design
+`specs/001-governance-platform/contracts/api.yaml` is an OpenAPI **3.0.0**
+document (API version 1.0.0), "Frictionless Architecture Governance API"
+(`specs/001-governance-platform/contracts/api.yaml:1-4`). It is a design
 artifact — no implementation exists on any branch (`ARCHITECTURE.md:74`).
 Endpoints:
 
 | Path | Verbs | Area |
 |---|---|---|
 | `/auth/session` | POST | authentication |
-| `/adrs`, `/adrs/{id}` | POST, GET | ADR CRUD / listing |
+| `/adrs`, `/adrs/{id}` | POST, GET | create / get / list ADRs |
 | `/adrs/{id}/attestation` | PUT | apply cryptographic attestation (FR-006) |
 | `/adrs/{id}/transcript` | POST | ingest transcript for AI-drafted ADR (FR-003) |
 | `/model/semantic`, `/model/cbs` | GET | semantic model + CBS listing |
@@ -152,7 +152,7 @@ From `specs/002-neo4j-schema-ui/contracts/api.md`, as implemented in
 
 | Method & path | Purpose | Responses |
 |---|---|---|
-| `GET /schema-payload` | Aggregated model/element/relationship/view payload for both views. Query `force_reload` (alias of `force_reload`, default `false`) bypasses the cache. | `200` with `{model, elements, relationships, views, warnings[], latency_ms}`; `503` when neither Neo4j nor sample data is available and no cache exists |
+| `GET /schema-payload` | Aggregated model/element/relationship/view payload for both views. Query param `force_reload` (boolean, default `false`) bypasses the cache. | `200` with `{model, elements, relationships, views, warnings[], latency_ms}`; `503` when neither Neo4j nor sample data is available and no cache exists |
 | `POST /schema-payload/refresh` | Kicks off an async cache rebuild; returns immediately. Optional body `{source}`. | `202` `{status: "refresh_started", estimated_completion_ms}`; `409` if a refresh is already running |
 | `GET /schema-payload/status` | Cache freshness + connection state for the warning banner | `200` `{cache_age_seconds, neo4j_status, sample_file_status, last_warning, refresh_in_progress, ...}` |
 | `GET /schema-visualizer` | Server-rendered HTML page (Jinja) that hosts the UI | `200` HTML |

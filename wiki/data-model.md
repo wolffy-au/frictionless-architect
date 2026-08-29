@@ -38,9 +38,10 @@ The [Platform Specification & API](platform-spec.md) `001` spec adds
 
 `Draft → Under Review → Approved → Superseded`, a governed state machine
 (`data-model.md` §"State Transitions"). Approved/Superseded require a mandatory
-human cryptographic sign-off (`data-model.md` §"Validation Rules Summary"). This
-is the kind of entity `TECHNICAL.md` says to model as an FSM with action-based
-endpoints — see [Architecture Overview](architecture.md).
+human cryptographic sign-off (`data-model.md` §"Architecture Decision Record
+(ADR)" validation rules; the §"Validation Rules Summary" line names only
+"approved"). This is the kind of entity `TECHNICAL.md` says to model as an FSM
+with action-based endpoints — see [Architecture Overview](architecture.md).
 
 ### Relationships
 
@@ -57,9 +58,12 @@ The canonical schema files under `sample-data/schema/` are the published
 `archimate3_View.xsd`, `archimate3_Diagram.xsd`), used verbatim — author
 "The Open Group ArchiMate Exchange Team", `version="3.1"`,
 `targetNamespace="http://www.opengroup.org/xsd/archimate/3.1/"`
-(`sample-data/schema/archimate3_View.xsd:1-9`). They define a `model` root
-containing `elements`, `relationships`, `organizations`,
-`propertyDefinitions`, and `views/diagrams`. Element and relationship types
+(`sample-data/schema/archimate3_View.xsd:1-21`). `archimate3_Model.xsd`'s
+`ModelType` defines a `model` root containing `metadata`, `name`, `elements`,
+`relationships`, `organizations`, and `propertyDefinitions`
+(`sample-data/schema/archimate3_Model.xsd:314-362`); `archimate3_View.xsd`
+adds `views/diagrams` (`sample-data/schema/archimate3_View.xsd:45`). Element
+and relationship types
 are carried on the `xsi:type` attribute; view nodes carry required `x`/`y`
 (`LocationGroup`) and `w`/`h` (`SizeGroup`) integer bounds plus `style`
 (`sample-data/schema/archimate3_Diagram.xsd`, `LocationGroup`/`SizeGroup`).
@@ -93,7 +97,8 @@ visualiser serves (see [Visualizer Service](visualizer-service.md) and
 ### Neo4j graph shape (as implemented)
 
 The visualiser's Neo4j reader and the schema manager assume a specific graph
-(`src/frictionless_architect/schema/manager.py:13-28`,
+(constraints/indexes `src/frictionless_architect/schema/manager.py:13-28`,
+ingestion `src/frictionless_architect/schema/manager.py:88-266`, reads
 `src/frictionless_architect/visualizer/data_loader.py:49-91`):
 
 - `(:Element {identifier, type, name, layer, documentation})` — unique on
@@ -103,7 +108,10 @@ The visualiser's Neo4j reader and the schema manager assume a specific graph
   parallel `[:ARCHIMATE_RELATIONSHIP]` edge between the two `Element` nodes,
   and `[:SOURCE_ELEMENT]`/`[:TARGET_ELEMENT]` edges from the fact node.
 - `(:View {identifier, name, viewpoint, viewpointRef})`,
-  `(:Diagram)`, `(:Viewpoint)`, `(:SchemaVersion {name, applied_at})`.
+  `(:Diagram)`, `(:SchemaVersion {name, applied_at})`. A `(:Viewpoint)`
+  uniqueness constraint is declared
+  (`src/frictionless_architect/schema/manager.py:18`) but no code path
+  creates the node.
 - `[:INCLUDES]`, `[:HAS_RELATIONSHIP]`, `[:REPRESENTS_VIEW]`, `[:HAS_NODE]`,
   `[:HAS_CONNECTION]` wire views and diagrams to elements and relationship facts.
 
