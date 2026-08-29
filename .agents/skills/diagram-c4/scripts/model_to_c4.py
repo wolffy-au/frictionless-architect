@@ -7,6 +7,7 @@
 Applies the mapping in references/archimate-to-c4-mapping.md. Exit 0 = wrote
 output, 2 = load/lookup error.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -23,7 +24,12 @@ PERSON_TYPES = {"BusinessActor", "BusinessRole"}
 STORE_TYPES = {"DataObject", "Artifact"}
 DEPLOY_TYPES = {"Node", "Device", "SystemSoftware", "CommunicationNetwork", "Path", "Equipment", "Facility"}
 STRUCTURAL_RELS = {"Realization", "Assignment", "Composition", "Aggregation", "Specialization"}
-ACCESS_LABEL = {"Read": "reads from", "Write": "writes to", "ReadWrite": "reads from and writes to", "Access": "accesses"}
+ACCESS_LABEL = {
+    "Read": "reads from",
+    "Write": "writes to",
+    "ReadWrite": "reads from and writes to",
+    "Access": "accesses",
+}
 
 
 def alias(uuid: str) -> str:
@@ -74,7 +80,7 @@ def generate(path: str, system_name: str, level: str, layout: str) -> tuple[str,
         "@startuml",
         f"!include <C4/{include}>",
         "",
-        f'title {esc(system.name)} — C4 {level.capitalize()}',
+        f"title {esc(system.name)} — C4 {level.capitalize()}",
         f"LAYOUT_{layout}()",
         "",
     ]

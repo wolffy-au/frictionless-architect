@@ -10,6 +10,7 @@ a plain `rectangle` and are reported on stderr.
 
 Exit 0 = wrote output, 2 = load/lookup error.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,50 +27,86 @@ except ImportError:
 # Verified against PlantUML 1.2026.7's bundled stdlib.
 ELEMENT_MACRO = {
     # Business
-    "BusinessActor": "Business_Actor", "BusinessRole": "Business_Role",
-    "BusinessCollaboration": "Business_Collaboration", "BusinessInterface": "Business_Interface",
-    "BusinessProcess": "Business_Process", "BusinessFunction": "Business_Function",
-    "BusinessInteraction": "Business_Interaction", "BusinessEvent": "Business_Event",
-    "BusinessService": "Business_Service", "BusinessObject": "Business_Object",
-    "Contract": "Business_Contract", "Representation": "Business_Representation",
+    "BusinessActor": "Business_Actor",
+    "BusinessRole": "Business_Role",
+    "BusinessCollaboration": "Business_Collaboration",
+    "BusinessInterface": "Business_Interface",
+    "BusinessProcess": "Business_Process",
+    "BusinessFunction": "Business_Function",
+    "BusinessInteraction": "Business_Interaction",
+    "BusinessEvent": "Business_Event",
+    "BusinessService": "Business_Service",
+    "BusinessObject": "Business_Object",
+    "Contract": "Business_Contract",
+    "Representation": "Business_Representation",
     "Product": "Business_Product",
     # Application
-    "ApplicationComponent": "Application_Component", "ApplicationCollaboration": "Application_Collaboration",
-    "ApplicationInterface": "Application_Interface", "ApplicationFunction": "Application_Function",
-    "ApplicationInteraction": "Application_Interaction", "ApplicationProcess": "Application_Process",
-    "ApplicationEvent": "Application_Event", "ApplicationService": "Application_Service",
+    "ApplicationComponent": "Application_Component",
+    "ApplicationCollaboration": "Application_Collaboration",
+    "ApplicationInterface": "Application_Interface",
+    "ApplicationFunction": "Application_Function",
+    "ApplicationInteraction": "Application_Interaction",
+    "ApplicationProcess": "Application_Process",
+    "ApplicationEvent": "Application_Event",
+    "ApplicationService": "Application_Service",
     "DataObject": "Application_DataObject",
     # Technology
-    "Node": "Technology_Node", "Device": "Technology_Device", "SystemSoftware": "Technology_SystemSoftware",
-    "TechnologyCollaboration": "Technology_Collaboration", "TechnologyInterface": "Technology_Interface",
-    "Path": "Technology_Path", "CommunicationNetwork": "Technology_CommunicationNetwork",
-    "TechnologyFunction": "Technology_Function", "TechnologyProcess": "Technology_Process",
-    "TechnologyInteraction": "Technology_Interaction", "TechnologyEvent": "Technology_Event",
-    "TechnologyService": "Technology_Service", "Artifact": "Technology_Artifact",
+    "Node": "Technology_Node",
+    "Device": "Technology_Device",
+    "SystemSoftware": "Technology_SystemSoftware",
+    "TechnologyCollaboration": "Technology_Collaboration",
+    "TechnologyInterface": "Technology_Interface",
+    "Path": "Technology_Path",
+    "CommunicationNetwork": "Technology_CommunicationNetwork",
+    "TechnologyFunction": "Technology_Function",
+    "TechnologyProcess": "Technology_Process",
+    "TechnologyInteraction": "Technology_Interaction",
+    "TechnologyEvent": "Technology_Event",
+    "TechnologyService": "Technology_Service",
+    "Artifact": "Technology_Artifact",
     # Physical
-    "Equipment": "Physical_Equipment", "Facility": "Physical_Facility",
-    "DistributionNetwork": "Physical_DistributionNetwork", "Material": "Physical_Material",
+    "Equipment": "Physical_Equipment",
+    "Facility": "Physical_Facility",
+    "DistributionNetwork": "Physical_DistributionNetwork",
+    "Material": "Physical_Material",
     # Motivation
-    "Stakeholder": "Motivation_Stakeholder", "Driver": "Motivation_Driver",
-    "Assessment": "Motivation_Assessment", "Goal": "Motivation_Goal", "Outcome": "Motivation_Outcome",
-    "Principle": "Motivation_Principle", "Requirement": "Motivation_Requirement",
-    "Constraint": "Motivation_Constraint", "Meaning": "Motivation_Meaning", "Value": "Motivation_Value",
+    "Stakeholder": "Motivation_Stakeholder",
+    "Driver": "Motivation_Driver",
+    "Assessment": "Motivation_Assessment",
+    "Goal": "Motivation_Goal",
+    "Outcome": "Motivation_Outcome",
+    "Principle": "Motivation_Principle",
+    "Requirement": "Motivation_Requirement",
+    "Constraint": "Motivation_Constraint",
+    "Meaning": "Motivation_Meaning",
+    "Value": "Motivation_Value",
     # Strategy
-    "Resource": "Strategy_Resource", "Capability": "Strategy_Capability",
-    "CourseOfAction": "Strategy_CourseOfAction", "ValueStream": "Strategy_ValueStream",
+    "Resource": "Strategy_Resource",
+    "Capability": "Strategy_Capability",
+    "CourseOfAction": "Strategy_CourseOfAction",
+    "ValueStream": "Strategy_ValueStream",
     # Implementation & Migration
-    "WorkPackage": "Implementation_WorkPackage", "Deliverable": "Implementation_Deliverable",
-    "ImplementationEvent": "Implementation_Event", "Plateau": "Implementation_Plateau",
+    "WorkPackage": "Implementation_WorkPackage",
+    "Deliverable": "Implementation_Deliverable",
+    "ImplementationEvent": "Implementation_Event",
+    "Plateau": "Implementation_Plateau",
     "Gap": "Implementation_Gap",
     # Composite
     "Grouping": "Grouping",
 }
 
 REL_MACRO = {
-    "Composition": "Rel_Composition", "Aggregation": "Rel_Aggregation", "Assignment": "Rel_Assignment",
-    "Realization": "Rel_Realization", "Serving": "Rel_Serving", "Access": "Rel_Access",
-    "Influence": "Rel_Influence", "Triggering": "Rel_Triggering", "Flow": "Rel_Flow",
-    "Specialization": "Rel_Specialization", "Association": "Rel_Association",
+    "Composition": "Rel_Composition",
+    "Aggregation": "Rel_Aggregation",
+    "Assignment": "Rel_Assignment",
+    "Realization": "Rel_Realization",
+    "Serving": "Rel_Serving",
+    "Access": "Rel_Access",
+    "Influence": "Rel_Influence",
+    "Triggering": "Rel_Triggering",
+    "Flow": "Rel_Flow",
+    "Specialization": "Rel_Specialization",
+    "Association": "Rel_Association",
 }
 
 
@@ -100,16 +137,14 @@ def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
 
         walk(views[0].nodes)
         elements = [e for e in model.elements if e.uuid in wanted]
-        relationships = [
-            r for r in model.relationships if r.source.uuid in wanted and r.target.uuid in wanted
-        ]
+        relationships = [r for r in model.relationships if r.source.uuid in wanted and r.target.uuid in wanted]
         title = view_name
     else:
         elements = list(model.elements)
         relationships = list(model.relationships)
         title = model.name or path
 
-    lines = ["@startuml", "!include <archimate/Archimate>", "", f'title {esc(title)}', ""]
+    lines = ["@startuml", "!include <archimate/Archimate>", "", f"title {esc(title)}", ""]
 
     for e in elements:
         macro = ELEMENT_MACRO.get(e.type)

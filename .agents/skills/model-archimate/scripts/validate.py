@@ -7,6 +7,7 @@ Run under the project env (pyArchimate is a dev dependency):
 
 Exit 0 = clean, 1 = violations found, 2 = could not load the model.
 """
+
 from __future__ import annotations
 
 import argparse

@@ -146,7 +146,7 @@ asyncio_default_fixture_loop_scope = "module"
 addopts = """
 --cov=src
 --cov-report=xml:build/coverage.xml
---cov-report=term-missing 
+--cov-report=term-missing
 --junitxml=build/unit-tests.xml
 """
 asyncio_mode = "auto"
@@ -184,4 +184,3 @@ line_length = 120
 [build-system]
 requires = ["poetry-core>=2.0.0", "poetry-dynamic-versioning>=1.6.0,<2.0.0"]
 build-backend = "poetry_dynamic_versioning.backend"
-
