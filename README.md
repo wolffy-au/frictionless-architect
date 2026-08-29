@@ -105,9 +105,6 @@ poetry run pytest
 Scope a run with `-k` (e.g. `poetry run pytest tests/api -k schema`) or target one
 test (`poetry run pytest tests/api/test_schema_payload.py::<test_name>`).
 
-`scripts/pre_commit_checks.sh` runs the fast local gate (lock refresh, pymarkdown
-fix, `ruff check --fix`, pyright, mypy, `tests/unit/`); `scripts/pre_merge_checks.sh`
-adds behave, the full coverage-gated pytest run, and the frontend UI harness.
-
-See [`AGENTS.md`](AGENTS.md) for workflow conventions and [`TECHNICAL.md`](TECHNICAL.md)
-for the testing layout and coding standards.
+Doing development work on this repo? [`AGENTS.md`](AGENTS.md) covers the toolchain,
+layout, local quality gates, and commit conventions; [`TECHNICAL.md`](TECHNICAL.md)
+covers the testing layout and coding standards.
