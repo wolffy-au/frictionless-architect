@@ -367,7 +367,7 @@ sudo apt-get update && sudo apt-get install -y default-jre
 pysonar --sonar-token=<token-from-.secrets>
 ```
 
-You can also query SonarCloud�s public API for the current critical issues list; the token value is stored in the project `.secrets` directory (look for the Sonar token key there) and should not be committed.
+You can also query SonarCloud's public API for the current critical issues list; the token value is stored in the project `.secrets` directory (look for the Sonar token key there) and should not be committed.
 
 ```
 https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&ps=50&p=1&token=<token-from-.secrets>
@@ -394,7 +394,7 @@ snyk test --command=python3
 
 ## Specification and Requirements Management
 
-Experience from implementing feature 002-add-api-pytests has revealed critical practices for managing specifications, plans, and tasks effectively:
+Experience from implementing feature 002-neo4j-schema-ui has revealed critical practices for managing specifications, plans, and tasks effectively:
 
 ### Artifact Consistency and Traceability
 
@@ -437,7 +437,7 @@ Experience from implementing feature 002-add-api-pytests has revealed critical p
   - Durability & Interoperability (VIII): Protect data continuity and integration contracts
   - Cross-Platform Consistency (IX): Avoid OS-specific code and verify UI/behavioral parity
   - Code Quality (I), Testing (II), Security (V): Build in from day 1
-- **Constitution Violations**: Any conflict must be resolved *before* implementation starts�never proceed if a constitution principle is violated.
+- **Constitution Violations**: Any conflict must be resolved *before* implementation starts — never proceed if a constitution principle is violated.
 
 ### Quality Gate Patterns
 
