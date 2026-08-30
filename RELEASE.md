@@ -87,6 +87,9 @@ Clear findings with the `vulnerability-remediator` agent.
 #   run the  docs-uplift  agent
 # spec-vs-code gap check:
 #   run the  spec-alignment  agent   (report only — action its findings if material)
+# decision-log check:
+#   run the  adr-auditor  agent   (opens a draft PR with proposed ADR stubs +
+#   stale-status edits — review, flesh out, and merge before tagging if material)
 ```
 
 Commit any regenerated artefacts:

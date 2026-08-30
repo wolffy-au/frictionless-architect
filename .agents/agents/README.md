@@ -18,6 +18,7 @@ instructions. Agents that support it expose each by its `name`.
 | `vulnerability-remediator` | branch + PR | Resolve Dependabot / Snyk / SonarCloud security findings; bump or pin fixed versions, patch vulnerable code, verify gates. |
 | `refactor-analyst` | read-only | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations, no code changes. |
 | `spec-alignment` | read-only | Traceability gap report: code vs `PROJECT_SPECIFICATION.md`, `specs/**`, constitution. |
+| `adr-auditor` | branch + draft PR | Audit `docs/adr/` against the decision-bearing docs and the code; report missing / stale / misaligned / superseded records, and draft `Status:Proposed` ADR stubs plus status edits. Never fleshes out or attests a decision. |
 | `release-runner` | branch + tag + release | Run `RELEASE.md` end to end: gates, `cz bump`, tag, GitHub release, merge back. Stops on any red gate. |
 
 The write-capable agents push a branch, open a PR against `develop`, then watch CI
@@ -26,6 +27,8 @@ CI gates (SonarQube, Snyk, coverage) routinely surface things the local pass mis
 They mark the PR ready but **never merge** — that stays a human decision. They hand back
 early only when a failure is outside their remit (unrelated flake, missing secret).
 `release-runner` pushes the tag and creates the release only after an explicit go-ahead.
+`adr-auditor` is the exception: it opens a **draft** PR and leaves it draft, because its
+proposed ADR stubs are deliberately incomplete — a human writes the decision and attests it.
 
 ## Conventions
 
