@@ -320,10 +320,10 @@ topics:
           sha256: c92342ca9128d4869e2a2596c54811bf0e2148fa040cdf7e302d12397f93af6a
           lines: 61
         .agents/agents/wiki-maintenance.md:
-          sha256: 18e4c06e95554040c05959546a2a64ae19a5dba4267e6a3862b38d79a1e52d9c
-          lines: 59
+          sha256: aa9cfdd81bdea927a1d7c2f19c05e69a5a00b315191bdb3ac60314bef489a24d
+          lines: 61
         .agents/skills/README.md:
-          sha256: cb625c4215675d4d52aff9bf339867e1bb56dee66f09d2141433f80e2a7f0a16
+          sha256: 8fb61e229e298f03b1447102b04e04e650bfbaecf5b7ca8f414b4b537274c89d
           lines: 70
         .agents/skills/commit-message/SKILL.md:
           sha256: 4dc191c20403f330b4c923231e019e12cb95b7d986b00043b0e6fc64fe6f6a21
@@ -377,5 +377,5 @@ topics:
           sha256: 0ebf7c6f99fe2a0f445f198b50e0485ab448e8b1fa6667a23f5753abc3f9de0e
           lines: 65
         .agents/skills/wiki-librarian/SKILL.md:
-          sha256: 62e09358665b6f536f7cb37df78e3f837c27cf04bbd4334f67f31f0f1030e625
-          lines: 255
+          sha256: f35c0ea71d20ec89e5beb3af56a70d221ac3ed93a4f2858c9acebe0b8d0f7034
+          lines: 266
