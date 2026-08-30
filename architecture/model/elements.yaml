@@ -7,7 +7,7 @@
 # Schema:  type / id / name / desc? / props?
 #   type   bare ArchiMate 3.2 concept name (pyArchimate.ArchiType), case-insensitive
 #   id     stable kebab id -> deterministic UUID (never renumber a live id)
-#   props  str->str; c4 hints, `includes`, requirement-type, artefact metadata
+#   props  str->str; c4 hints, requirement-type, artefact metadata
 #
 # Sections:
 #   A. Motivation + Strategy + Business — the load-bearing skeleton
@@ -47,14 +47,28 @@
     methods.
 
 # =====================================================================
-# A. MOTIVATION — Principles (constitution-level; cross-binding)
+# A. MOTIVATION — Goal & Outcome (the aim, and the end result that realizes it)
+#    Drivers influence the goal; the Governed Architecture Delivery value
+#    stream realizes the outcome; the outcome realizes the goal.
 # =====================================================================
-- type: Principle
-  id: principle-executable-intel
+- type: Goal
+  id: goal-frictionless-architecture
+  name: Frictionless Architecture & Governance at Machine Speed
+  desc: >-
+    Sustain architecturally-sound, provably-compliant change at the speed and
+    volume of AI-driven delivery — without a human review bottleneck and
+    without accumulating unmanaged architectural drift.
+- type: Outcome
+  id: outcome-executable-intelligence
   name: Architecture as Executable Intelligence
   desc: >-
-    Transform architecture from passive documentation into executable system
-    intelligence.
+    Architecture has moved from passive documentation to executable system
+    intelligence: the specification, the controls, and the guardrails are
+    machine-readable artefacts that AI agents and pipelines consume directly.
+
+# =====================================================================
+# A. MOTIVATION — Principles (constitution-level; cross-binding)
+# =====================================================================
 - type: Principle
   id: principle-human-accountability
   name: Deterministic Human Accountability
@@ -81,8 +95,13 @@
   desc: Operational resilience and prudential standards.
 - type: Constraint
   id: const-model-risk
-  name: Model Risk Management Framework
-  desc: Manages risks associated with models and agentic decision-making.
+  name: Model Risk Management (SR 11-7 / APRA)
+  desc: >-
+    Validation, documentation, and oversight obligations for models and agentic
+    decision-making. SR 11-7 is the de facto global standard adopted by major
+    banks; APRA's prudential and operational-resilience guidance sets the
+    Australian expectation. Together they govern how autonomous decisions are
+    validated, evidenced, and supervised.
 - type: Constraint
   id: const-privacy
   name: Australian Privacy Act (APP)
@@ -91,15 +110,6 @@
   id: const-cloud-policy
   name: Cloud & Data Sovereignty Policy
   desc: Governance and compliance policies for cloud-based operations.
-- type: Constraint
-  id: const-model-governance
-  name: Model Risk Standards (SR 11-7 / APRA)
-  desc: >-
-    External standards governing model risk management. SR 11-7 is the de facto
-    global standard adopted by major banks; APRA's operational resilience
-    guidance sets the Australian prudential expectation. Together they define
-    validation, documentation, and oversight obligations for agentic
-    decision-making.
 
 # =====================================================================
 # A. MOTIVATION — Functional Requirements (each one is a component contract)
@@ -151,17 +161,59 @@
     compliance cases.
   props:
     requirement-type: Functional
+- type: Requirement
+  id: req-control-catalog
+  name: Maintained Machine-Readable Control Catalog
+  desc: >-
+    The platform must maintain the full set of applicable regulatory obligations,
+    policies and standards as version-controlled, machine-readable control
+    definitions (OSCAL Catalogs and Profiles), kept synchronised with upstream
+    regulatory content sources.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-reusable-architecture
+  name: Curated Reusable Architecture Library
+  desc: >-
+    The platform must maintain a curated library of technology-agnostic
+    architecture patterns, implementation blueprints and composed solution
+    designs — each mapped to its applicable controls and threat model — as the
+    reuse basis for all new solution architecture and specification generation.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-authoritative-twin
+  name: Authoritative Digital Twin of System State
+  desc: >-
+    The platform must maintain a live, queryable graph of enterprise technology
+    state — an intent plane and an as-built digital twin plane — as the single
+    authoritative source of architectural truth that every other capability
+    reads from.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-immutable-audit-ledger
+  name: Immutable Forensic Audit Ledger
+  desc: >-
+    Every agent action, gate decision, specification evaluation and governed
+    state transition must be recorded to an append-only, queryable ledger
+    usable as contemporaneous evidence for regulatory examination.
+  props:
+    requirement-type: Functional
 
 # =====================================================================
-# A. STRATEGY — Primary Capabilities (candidate component boundaries)
+# A. STRATEGY — Primary Capabilities
+#    Named as abilities, not the artefact they own. Each is realized by one
+#    subsystem (section B) and realizes at least one functional requirement.
 # =====================================================================
 - type: Capability
   id: cap-digital-twin
-  name: Digital Twin Knowledge Graph
+  name: Architecture Knowledge Management
   desc: >-
     Maintain a live, queryable graph of the enterprise technology landscape —
-    its components, policies, relationships, and regulatory mappings — as the
-    authoritative source of architectural truth.
+    its components, policies, relationships, and regulatory mappings, across an
+    intent plane and an as-built twin plane — as the authoritative source of
+    architectural truth.
 - type: Capability
   id: cap-spec-engine
   name: Executable Specification Generation
@@ -171,14 +223,14 @@
     guardrails rather than human-readable documents.
 - type: Capability
   id: cap-control-plane
-  name: Agentic Supervisory Control
+  name: Agentic Development Supervision
   desc: >-
     Constrain, monitor, and intervene in the behaviour of autonomous development
     agents in real time, enforcing architectural and regulatory boundaries
     before code reaches any environment.
 - type: Capability
   id: cap-forensic-ledger
-  name: Forensic Audit & Compliance Ledger
+  name: Forensic Audit Recording
   desc: >-
     Record every agent action, gate decision, and specification evaluation into
     an immutable, queryable ledger that serves as contemporaneous evidence for
@@ -192,12 +244,78 @@
     in real time.
 - type: Capability
   id: cap-human-approval-workflow
-  name: Human Oversight & Approval Workflow
+  name: Human Oversight & Approval
   desc: >-
     Identify, route, and manage human architect approval for changes that
     deviate from deterministic specifications or present ambiguous compliance
     scenarios, through a defined, auditable sign-off process that upholds
-    principle-human-accountability.
+    deterministic human accountability.
+- type: Capability
+  id: cap-control-catalog
+  name: Control & Obligation Management
+  desc: >-
+    Maintain the authoritative, version-controlled library of control and
+    compliance content — external regulatory obligations and the
+    organisation's own policies, standards and controls alike — as OSCAL
+    Catalogs and Profiles kept synchronised with upstream regulatory sources,
+    and map every governed change to its applicable obligations.
+- type: Capability
+  id: cap-reusable-architecture
+  name: Reusable Architecture Curation
+  desc: >-
+    Curate technology-agnostic architecture patterns, implementation blueprints
+    and composed solution designs — with control mappings and threat models — as
+    the reusable basis for new solution architecture and specification
+    generation, and model candidate and future-state architecture options for
+    governance decisions.
+
+# =====================================================================
+# A. STRATEGY — Value stream (outcome-oriented view of governed delivery;
+#    each stage is served by the capabilities that enable it)
+# =====================================================================
+- type: ValueStream
+  id: vs-governed-delivery
+  name: Governed Architecture Delivery
+  desc: >-
+    End-to-end value stream that turns an approved change into a compliant,
+    twin-reconciled production release: baseline, specify, build, prove,
+    release, reconcile.
+- type: ValueStream
+  id: vss-baseline
+  name: Establish Control & Reuse Baseline
+  desc: >-
+    Curated controls, obligations, patterns and blueprints are in place to
+    build the change against.
+- type: ValueStream
+  id: vss-specify
+  name: Specify the Change
+  desc: >-
+    A deterministic, executable specification is derived from the knowledge
+    graph for the approved change.
+- type: ValueStream
+  id: vss-build
+  name: Build Under Supervision
+  desc: >-
+    Development agents produce code, tests and manifests within enforced
+    architectural and regulatory boundaries.
+- type: ValueStream
+  id: vss-prove
+  name: Prove Compliance
+  desc: >-
+    The release candidate is evaluated against the specification and the
+    expected controls; non-compliant changes are blocked, not flagged later.
+- type: ValueStream
+  id: vss-release
+  name: Release & Attest
+  desc: >-
+    A compliant release is deployed, human sign-off is captured where required,
+    and every decision is recorded to the forensic ledger.
+- type: ValueStream
+  id: vss-reconcile
+  name: Reconcile & Remediate
+  desc: >-
+    Observed state is continuously reconciled against intent and classified
+    drift is routed to remediation.
 
 # =====================================================================
 # A. BUSINESS — Processes (the orchestration choreography between components)
@@ -250,8 +368,8 @@
 # =====================================================================
 # B. APPLICATION — the platform and its six subsystems
 #    (c4=system on the Grouping -> C4 System_Boundary; the ApplicationComponents
-#     it composes -> C4 Containers; `includes` lists the fine-grained
-#     capabilities folded into each subsystem)
+#     it composes -> C4 Containers; each subsystem's fine-grained functions are
+#     the section-C ApplicationFunctions Assignment-linked to it)
 # =====================================================================
 - type: Grouping
   id: sys-platform
@@ -265,66 +383,39 @@
   desc: >-
     Authors custom policies and standards and converts them to OSCAL Catalogs
     and Profiles.
-  props:
-    includes: >-
-      Policy & Standards Authoring Workspace (Trestle Markdown catalogs);
-      Trestle Conversion Service (Markdown <-> OSCAL Catalogs & Profiles).
 - type: ApplicationComponent
   id: sub-library
   name: Reusable Architecture Library
   desc: >-
     Composable patterns, blueprints and solution designs with OSCAL references,
-    plus threat modelling.
-  props:
-    includes: >-
-      Architecture Pattern Library (technology-agnostic; -> OSCAL Profiles);
-      Implementation Blueprint Library (parent/child of patterns; -> OSCAL
-      Components); Solution Design Composer (SolutionComponents under a
-      SolutionDesign; -> OSCAL SSP); Threat Modelling Service (attaches threats
-      & mitigations).
+    threat modelling, and modelling of candidate / future-state options for
+    governance to decide on.
 - type: ApplicationComponent
   id: sub-twin
   name: Digital Twin & Knowledge Graph
   desc: >-
     Maintains the Architecture Knowledge Graph: an intent plane and a
     current-state digital twin plane.
-  props:
-    includes: >-
-      Digital Twin Ingestion Service (builds the current-state plane from live
-      infra & pipeline data).
 - type: ApplicationComponent
   id: sub-governance
   name: Architecture Governance
   desc: >-
-    Models candidate future-state / solution options, evaluates them, decides,
-    and archives the rest with reasons.
-  props:
-    includes: >-
-      Future-State & Options Modeller (one or more candidate architectures, e.g.
-      RFP vendor responses); Architecture Governance Service (comparative
-      evaluation, impact assessment, ADR decisions, archival of rejected options
-      with rationale).
+    Comparative evaluation of candidate options, impact assessment, the decision
+    and its ADR, and archival of the rejected options with reasons. Pure
+    decision-making — the options themselves are modelled in the Reusable
+    Architecture Library.
 - type: ApplicationComponent
   id: sub-assurance
   name: Conformance & Drift Assurance
   desc: >-
     Enforces controls at release, monitors effectiveness in BAU, and detects and
     reports architecture drift.
-  props:
-    includes: >-
-      Controls Enforcement Gate (release-time); Controls Effectiveness Monitor
-      (BAU); Drift & Deviation Engine (intent vs twin); Architecture Drift
-      Dashboard & Backlog.
 - type: ApplicationComponent
   id: sub-modelling
   name: Modelling & Specification
   desc: >-
     Out-of-the-box ArchiMate / C4 / UML modelling, and generation of development
     specifications.
-  props:
-    includes: >-
-      Modelling & Notation Engine (ArchiMate, C4, UML); Specification Generator
-      (specs from patterns, blueprints & designs for spec-driven development).
 
 # --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
 - type: DataObject
@@ -343,6 +434,13 @@
   id: store-frameworks
   name: Framework Pack Library
   desc: NIST / FedRAMP baselines; ArchiMate / C4 / UML metamodels.
+- type: DataObject
+  id: store-ledger
+  name: Forensic Audit Ledger
+  desc: >-
+    Append-only, immutable record of agent actions, gate decisions,
+    specification evaluations and governed state transitions, kept as
+    contemporaneous evidence for regulatory examination.
 
 # --- B. People (BusinessRole -> C4 Person) ---
 - type: BusinessRole
@@ -446,6 +544,12 @@
   desc: >-
     Attach threats and mitigations to patterns, blueprints and solution
     designs.
+- type: ApplicationFunction
+  id: fn-options-model
+  name: Future-State & Options Modelling
+  desc: >-
+    Model one or more candidate future-state architectures, including competing
+    vendor / RFP responses, as decision input for Architecture Governance.
 
 # --- C. Functions: Digital Twin & Knowledge Graph ---
 - type: ApplicationFunction
@@ -454,14 +558,15 @@
   desc: >-
     Build the current-state digital twin plane from live infrastructure state
     and deployment events.
+- type: ApplicationFunction
+  id: fn-ledger-record
+  name: Forensic Ledger Recording
+  desc: >-
+    Append every agent action, gate decision, specification evaluation and
+    governed state transition to the append-only Forensic Audit Ledger as
+    contemporaneous evidence for regulatory examination.
 
 # --- C. Functions: Architecture Governance ---
-- type: ApplicationFunction
-  id: fn-options-model
-  name: Future-State & Options Modelling
-  desc: >-
-    Model one or more candidate future-state architectures, including competing
-    vendor / RFP responses.
 - type: ApplicationFunction
   id: fn-governance-eval
   name: Comparative Evaluation & Decision
@@ -526,3 +631,4 @@
 - {type: DataObject, id: art-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
 - {type: DataObject, id: art-dev-spec, name: Development Specification, desc: Executable spec derived from patterns, blueprints and designs.}
 - {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
+- {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: A single immutable forensic record — actor, action, target artefact, timestamp, outcome.}

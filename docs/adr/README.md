@@ -55,7 +55,7 @@ narrative docs.
 - **A** — [0009](0009-c4-diagrams-generated-from-archimate.md) — C4 diagrams are
   generated from the ArchiMate model
 - **A** — [0010](0010-load-bearing-skeleton-only.md) — Central model is a
-  ~30-node load-bearing skeleton only
+  load-bearing skeleton only (contents extended by 0027)
 - **A\*** — [0011](0011-six-subsystem-decomposition.md) — Platform decomposes
   into 6 subsystems (replacing the 8-component grouping)
 - **A** — [0012](0012-adr-as-attested-fsm.md) — ADRs are an attested
@@ -88,3 +88,5 @@ narrative docs.
   Commits + commitizen; SCM-derived versions; branch model
 - **A** — [0026](0026-fsm-action-endpoints-for-governed-entities.md) —
   Governed-lifecycle entities are FSMs with action-based endpoints
+- **P** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
+  Capability layer carries a value stream and an explicit motivation spine

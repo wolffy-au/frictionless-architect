@@ -1,0 +1,26 @@
+@startuml
+!include <archimate/Archimate>
+
+title Delivery Choreography
+
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
+Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
+Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
+Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
+Business_Process(e_id9459a13c29ec5d, "Production Release")
+Business_Process(e_id3a7a27eefeb751, "Current State Discovery")
+Business_Process(e_id33612ed603b85e, "Drift Review & Triage Gate")
+
+Rel_Serving(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
+Rel_Realization(e_id65467a0befb959, e_idafba1b4ab1e756, "realizes")
+Rel_Realization(e_id799f46ebb7e15b, e_id4a1c34ab69d151, "woven enforcement")
+Rel_Realization(e_id3a7a27eefeb751, e_id41aa3eb894c852, "realizes")
+Rel_Triggering(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
+Rel_Triggering(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
+Rel_Triggering(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")
+Rel_Triggering(e_id9459a13c29ec5d, e_id3a7a27eefeb751, "initiates discovery for")
+Rel_Triggering(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
+
+@enduml

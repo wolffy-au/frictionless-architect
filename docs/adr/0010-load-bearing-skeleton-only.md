@@ -1,6 +1,6 @@
-# ADR-0010: Central model is a ~30-node load-bearing skeleton only
+# ADR-0010: Central model is a load-bearing skeleton only
 
-- **Status:** Accepted
+- **Status:** Accepted; skeleton contents extended by [ADR-0027](0027-capability-value-stream-and-motivation-spine.md)
 - **Date:** unknown (pre-dates this log; recorded in `architecture/model/README.md`)
 - **Sources:** `architecture/model/README.md`
 
@@ -14,11 +14,16 @@ still being decided (ADR-0011).
 
 ## Decision
 
-The centrally maintained model is the **load-bearing subset only** — ~30 nodes
-(4 drivers, 4 principles, 5 constraints, 5 functional requirements, 6 primary
-capabilities, 6 business processes) plus 13 edges. It is **decomposition input**,
-not the final architecture. The 6 primary capabilities map ~1:1 onto the platform
-grouping and are trusted as the skeleton.
+The centrally maintained model is the **load-bearing subset only** — the
+motivation, strategy, and business-process backbone that stays true regardless
+of how component boundaries finally land. It is **decomposition input**, not the
+final architecture. The primary capabilities map ~1:1 onto the platform grouping
+and are trusted as the skeleton.
+
+As of [ADR-0027](0027-capability-value-stream-and-motivation-spine.md) the
+skeleton (section A of `architecture/model/elements.yaml`) holds: 4 drivers,
+1 goal, 1 outcome, 3 principles, 4 constraints, 9 functional requirements,
+8 primary capabilities, a 7-element value stream, and 6 business processes.
 
 ## Consequences
 
@@ -27,3 +32,6 @@ grouping and are trusted as the skeleton.
 - The full prototype model stays on tag `archive/prototype-neo4j`.
 - Wording is verbatim from the prototype except where product-specific terms were
   generalised; a full technology-agnostic pass is still owed.
+- The skeleton may grow to carry genuine structural traceability (the motivation
+  spine, the value stream) — ADR-0027 — but not the speculative detail this ADR
+  excluded.

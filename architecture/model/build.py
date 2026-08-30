@@ -33,6 +33,7 @@ from typing import Any
 
 import yaml
 from pyArchimate import ArchiType, Model
+from pyArchimate.view.layout import LayoutConfig, apply_format, apply_layout
 
 HERE = Path(__file__).parent
 OUT = HERE / "frictionless-architect.xml"
@@ -66,8 +67,8 @@ def load(name: str, optional: bool = False) -> list[dict]:
     return data
 
 
-def add_elements(m: Model, elements: list[dict], errors: list[str]) -> dict[str, object]:
-    by_id: dict[str, object] = {}
+def add_elements(m: Model, elements: list[dict], errors: list[str]) -> dict[str, Any]:
+    by_id: dict[str, Any] = {}
     for e in elements:
         yid = e.get("id")
         if not yid or "type" not in e or "name" not in e:
@@ -88,7 +89,7 @@ def add_elements(m: Model, elements: list[dict], errors: list[str]) -> dict[str,
     return by_id
 
 
-def add_relationships(m: Model, rels: list[dict], by_id: dict[str, object], errors: list[str]) -> None:
+def add_relationships(m: Model, rels: list[dict], by_id: dict[str, Any], errors: list[str]) -> None:
     for r in rels:
         if "type" not in r or "source" not in r or "target" not in r:
             errors.append(f"relationship missing type/source/target: {r!r}")
@@ -112,23 +113,45 @@ def add_relationships(m: Model, rels: list[dict], by_id: dict[str, object], erro
             rel.prop(str(k), str(v))
 
 
-def add_views(m: Model, views: list[dict], elements: list[dict], by_id: dict[str, object], errors: list[str]) -> None:
+def add_views(m: Model, views: list[dict], elements: list[dict], by_id: dict[str, Any], errors: list[str]) -> None:
     """Minimal view scoping for the diagram-archimate skill: a view lists
     `members` (element ids) and/or `include_types` (every element of those
-    ArchiMate types). The richer view schema is still deferred."""
+    ArchiMate types). `build.py` adds a node for every matching element and a
+    connection for every model relationship whose *both* endpoints are on the
+    view — the same in-scope rule `model_to_puml.py` applies when rendering —
+    then runs pyArchimate's grid auto-layout + format so the view is usable
+    when opened directly in Archi (the diagram skills re-lay-out via PlantUML
+    and ignore these coordinates). The richer view schema (view kind,
+    auto-membership rules) is still deferred."""
     for v in views:
         if "id" not in v or "name" not in v:
             errors.append(f"view missing id/name: {v!r}")
             continue
         want = set(v.get("members") or [])
         types = {canon(t) for t in (v.get("include_types") or [])}
-        view: Any = m.get_or_create_view(v["name"], create_view=True)
+        # Deterministic view/node/connection uuids (via det_id) so the <views>
+        # block of the generated XML does not churn on every build. add() below
+        # bypasses get_or_create_view() only because that wrapper has no uuid arg.
+        view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
+        on_view: set[str] = set()  # element uuids with a node on this view
         for e in elements:
             if e["id"] in want or (types and canon(e["type"]) in types):
-                view.add(ref=by_id[e["id"]])
+                el = by_id[e["id"]]
+                view.add(ref=el, uuid=det_id(v["id"], "node", el.uuid))
+                on_view.add(el.uuid)
+        for rel in m.relationships:
+            if rel.source.uuid in on_view and rel.target.uuid in on_view:
+                view.add_connection(ref=rel, uuid=det_id(v["id"], "conn", rel.uuid))
         missing = [mid for mid in want if mid not in by_id]
         if missing:
             errors.append(f"view {v['id']} references unknown ids: {missing}")
+            continue
+        # Grid layout is deterministic (layer-ordered row-major placement);
+        # apply_format then applies the ArchiMate per-category node sizes.
+        cfg = LayoutConfig(alignment="grid", layer_direction="vertical")
+        for res in (apply_layout(view, cfg), apply_format(view, cfg)):
+            if not res.success:
+                errors.append(f"view {v['id']} {res.algorithm_used} failed: {res.error_message}")
 
 
 def main() -> int:

@@ -13,7 +13,26 @@
 
 - id: view-skeleton
   name: Architecture Skeleton
-  include_types: [Driver, Principle, Constraint, Requirement, Capability, BusinessProcess]
+  include_types: [Driver, Goal, Outcome, Principle, Constraint, Requirement, Capability]
+
+# The capability layer in focus: capability-to-capability value chains, the
+# Governed Architecture Delivery value stream and its stages, and the outcome /
+# goal the stream realizes.
+- id: view-capability-map
+  name: Capability Map & Value Stream
+  include_types: [Capability, ValueStream]
+  members:
+    - outcome-executable-intelligence
+    - goal-frictionless-architecture
+
+# The end-to-end delivery choreography and the capabilities the processes realize.
+- id: view-delivery
+  name: Delivery Choreography
+  include_types: [BusinessProcess]
+  members:
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-drift-dashboard
 
 # The whole ecosystem is better seen as the C4 container diagram (diagram-c4).
 # This view isolates just the subsystem -> strategy-capability realization, the
@@ -27,6 +46,8 @@
     - sub-governance
     - sub-assurance
     - sub-modelling
+    - cap-control-catalog
+    - cap-reusable-architecture
     - cap-digital-twin
     - cap-forensic-ledger
     - cap-spec-engine
@@ -71,8 +92,10 @@
   members:
     - sub-twin
     - sub-governance
+    - sub-library
     - sub-modelling
     - fn-twin-ingest
+    - fn-ledger-record
     - fn-options-model
     - fn-governance-eval
     - fn-notation-engine
@@ -87,8 +110,10 @@
     - art-impact-assessment
     - art-adr
     - art-archived-option
+    - art-ledger-entry
     - art-metamodel
     - store-akg
+    - store-ledger
 
 - id: view-artefact-assurance-spec
   name: Artefact Flow — Assurance & Specification

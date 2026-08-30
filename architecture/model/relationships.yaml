@@ -14,12 +14,13 @@
 
 # =====================================================================
 # A. Capability realizes its functional requirement (component -> contract)
+#    Every capability realizes at least one requirement.
 # =====================================================================
 - type: Realization
   source: cap-spec-engine
   target: req-auto-spec-generation
 - type: Realization
-  source: cap-spec-engine
+  source: cap-control-catalog          # obligation mapping is a catalog concern
   target: req-regulatory-mapping
 - type: Realization
   source: cap-control-plane
@@ -30,6 +31,76 @@
 - type: Realization
   source: cap-human-approval-workflow
   target: req-human-signoff
+- type: Realization
+  source: cap-control-catalog
+  target: req-control-catalog
+- type: Realization
+  source: cap-reusable-architecture
+  target: req-reusable-architecture
+- type: Realization
+  source: cap-digital-twin
+  target: req-authoritative-twin
+- type: Realization
+  source: cap-forensic-ledger
+  target: req-immutable-audit-ledger
+
+# =====================================================================
+# A. Motivation spine: drivers -> goal; outcome -> goal; value stream -> outcome
+# =====================================================================
+- {type: Influence, source: driver-agility, target: goal-frictionless-architecture}
+- {type: Influence, source: driver-compliance, target: goal-frictionless-architecture}
+- {type: Influence, source: driver-sustainability, target: goal-frictionless-architecture}
+- {type: Influence, source: driver-scaling, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-executable-intelligence, target: goal-frictionless-architecture}
+- {type: Realization, source: vs-governed-delivery, target: outcome-executable-intelligence}
+
+# =====================================================================
+# A. Drivers influence the functional requirements they motivate
+#    (Principle / Constraint -> Requirement wiring is a deferred second pass)
+# =====================================================================
+- {type: Influence, source: driver-agility, target: req-auto-spec-generation}
+- {type: Influence, source: driver-agility, target: req-reusable-architecture}
+- {type: Influence, source: driver-compliance, target: req-regulatory-mapping}
+- {type: Influence, source: driver-compliance, target: req-pre-deploy-gate}
+- {type: Influence, source: driver-compliance, target: req-control-catalog}
+- {type: Influence, source: driver-sustainability, target: req-continuous-reconciliation}
+- {type: Influence, source: driver-sustainability, target: req-reusable-architecture}
+- {type: Influence, source: driver-sustainability, target: req-authoritative-twin}
+- {type: Influence, source: driver-scaling, target: req-auto-spec-generation}
+- {type: Influence, source: driver-scaling, target: req-pre-deploy-gate}
+- {type: Influence, source: driver-scaling, target: req-human-signoff}
+
+# =====================================================================
+# A. Value stream: composition of stages, and the capabilities that serve each
+# =====================================================================
+- {type: Composition, source: vs-governed-delivery, target: vss-baseline}
+- {type: Composition, source: vs-governed-delivery, target: vss-specify}
+- {type: Composition, source: vs-governed-delivery, target: vss-build}
+- {type: Composition, source: vs-governed-delivery, target: vss-prove}
+- {type: Composition, source: vs-governed-delivery, target: vss-release}
+- {type: Composition, source: vs-governed-delivery, target: vss-reconcile}
+- {type: Serving, source: cap-control-catalog, target: vss-baseline}
+- {type: Serving, source: cap-reusable-architecture, target: vss-baseline}
+- {type: Serving, source: cap-digital-twin, target: vss-specify}
+- {type: Serving, source: cap-spec-engine, target: vss-specify}
+- {type: Serving, source: cap-control-plane, target: vss-build}
+- {type: Serving, source: cap-control-plane, target: vss-prove}
+- {type: Serving, source: cap-spec-engine, target: vss-prove}
+- {type: Serving, source: cap-forensic-ledger, target: vss-release}
+- {type: Serving, source: cap-human-approval-workflow, target: vss-release}
+- {type: Serving, source: cap-drift-dashboard, target: vss-reconcile}
+- {type: Serving, source: cap-digital-twin, target: vss-reconcile}
+
+# =====================================================================
+# A. Capability value chains — the dependency order between capabilities
+# =====================================================================
+- {type: Serving, source: cap-digital-twin, target: cap-spec-engine, label: authoritative graph}
+- {type: Serving, source: cap-digital-twin, target: cap-drift-dashboard, label: as-designed intent}
+- {type: Serving, source: cap-reusable-architecture, target: cap-spec-engine, label: patterns & blueprints}
+- {type: Serving, source: cap-control-catalog, target: cap-reusable-architecture, label: control mappings}
+- {type: Serving, source: cap-control-catalog, target: cap-control-plane, label: expected controls}
+- {type: Serving, source: cap-spec-engine, target: cap-control-plane, label: executable spec}
+- {type: Serving, source: cap-forensic-ledger, target: cap-human-approval-workflow, label: decision evidence}
 
 # =====================================================================
 # A. Process realizes capability (orchestration flow -> component)
@@ -84,10 +155,13 @@
 - {type: Composition, source: sys-platform, target: store-patterns}
 - {type: Composition, source: sys-platform, target: store-akg}
 - {type: Composition, source: sys-platform, target: store-frameworks}
+- {type: Composition, source: sys-platform, target: store-ledger}
 
 # =====================================================================
 # B. Subsystem realizes strategy capability (ties the C4 view to the skeleton)
 # =====================================================================
+- {type: Realization, source: sub-catalog, target: cap-control-catalog}
+- {type: Realization, source: sub-library, target: cap-reusable-architecture}
 - {type: Realization, source: sub-twin, target: cap-digital-twin}
 - {type: Realization, source: sub-twin, target: cap-forensic-ledger}
 - {type: Realization, source: sub-modelling, target: cap-spec-engine}
@@ -99,10 +173,10 @@
 # B. Subsystems serve the people (Serving subsystem -> role; C4 reverses it)
 # =====================================================================
 - {type: Serving, source: sub-catalog, target: role-compliance, label: authors control content in}
-- {type: Serving, source: sub-library, target: role-ea, label: curates patterns in}
+- {type: Serving, source: sub-library, target: role-ea, label: curates patterns & models future-state options in}
 - {type: Serving, source: sub-library, target: role-sa, label: composes blueprints & designs in}
 - {type: Serving, source: sub-library, target: role-sec, label: runs threat models in}
-- {type: Serving, source: sub-governance, target: role-ea, label: models options & records decisions in}
+- {type: Serving, source: sub-governance, target: role-ea, label: evaluates options & records decisions in}
 - {type: Serving, source: sub-governance, target: role-compliance, label: verifies traceability in}
 - {type: Serving, source: sub-assurance, target: role-ea, label: reviews drift in}
 - {type: Serving, source: sub-assurance, target: role-sa, label: reviews drift in}
@@ -143,8 +217,10 @@
 - type: Access
   source: sub-library
   target: store-akg
-  label: publishes approved patterns (intent plane)
+  label: publishes approved patterns & candidate options (intent plane)
   props: {access_type: Write}
+- {type: Flow, source: ext-rfp, target: sub-library, label: candidate solution inputs}
+- {type: Serving, source: sub-modelling, target: sub-library, label: renders candidate & solution models with}
 - {type: Serving, source: ext-llm, target: sub-library, label: requests threat narratives from}
 
 # =====================================================================
@@ -157,20 +233,24 @@
   target: store-akg
   label: writes the digital twin plane
   props: {access_type: Write}
+- type: Access
+  source: sub-twin
+  target: store-ledger
+  label: appends forensic records
+  props: {access_type: Write}
 
 # =====================================================================
-# B. Architecture Governance: options, evaluation, decisions
+# B. Architecture Governance: evaluation, decisions
+#    (candidate options are modelled in the Reusable Architecture Library)
 # =====================================================================
-- {type: Flow, source: ext-rfp, target: sub-governance, label: candidate solution inputs}
 - type: Access
   source: sub-governance
   target: store-akg
   label: reads intent & twin for impact; writes decisions, impacts & archived options (intent plane)
   props: {access_type: ReadWrite}
-- {type: Association, source: sub-governance, target: sub-library, label: governs patterns & assesses solution designs}
+- {type: Association, source: sub-governance, target: sub-library, label: governs patterns & assesses candidate options}
 - {type: Flow, source: sub-governance, target: sub-library, label: hands chosen solution to Composer for detailed design}
 - {type: Serving, source: ext-llm, target: sub-governance, label: requests ADR & evaluation drafts from}
-- {type: Serving, source: sub-modelling, target: sub-governance, label: renders candidate models with}
 
 # =====================================================================
 # B. Conformance & Drift Assurance
@@ -215,8 +295,9 @@
 - {type: Assignment, source: sub-library, target: fn-blueprint-authoring}
 - {type: Assignment, source: sub-library, target: fn-solution-compose}
 - {type: Assignment, source: sub-library, target: fn-threat-model}
+- {type: Assignment, source: sub-library, target: fn-options-model}
 - {type: Assignment, source: sub-twin, target: fn-twin-ingest}
-- {type: Assignment, source: sub-governance, target: fn-options-model}
+- {type: Assignment, source: sub-twin, target: fn-ledger-record}
 - {type: Assignment, source: sub-governance, target: fn-governance-eval}
 - {type: Assignment, source: sub-assurance, target: fn-enforcement-gate}
 - {type: Assignment, source: sub-assurance, target: fn-effectiveness-monitor}
@@ -273,6 +354,14 @@
 - {type: Serving, source: fn-notation-engine, target: fn-options-model, label: renders candidate models for}
 
 # =====================================================================
+# C. Forensic ledger — every governed action lands an immutable record
+# =====================================================================
+- {type: Access, source: fn-ledger-record, target: art-ledger-entry, label: appends, props: {access_type: Write}}
+- {type: Flow, source: fn-governance-eval, target: fn-ledger-record, label: records decisions to}
+- {type: Flow, source: fn-enforcement-gate, target: fn-ledger-record, label: records gate outcomes to}
+- {type: Flow, source: fn-drift-engine, target: fn-ledger-record, label: records drift events to}
+
+# =====================================================================
 # C. Stage 4 — Assurance & Specification
 # =====================================================================
 - {type: Access, source: fn-spec-generator, target: art-pattern, label: reads, props: {access_type: Read}}
@@ -316,3 +405,4 @@
 - {type: Aggregation, source: store-akg, target: art-effectiveness-evidence}
 - {type: Aggregation, source: store-frameworks, target: art-baseline}
 - {type: Aggregation, source: store-frameworks, target: art-metamodel}
+- {type: Aggregation, source: store-ledger, target: art-ledger-entry}
