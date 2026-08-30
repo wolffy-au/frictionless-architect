@@ -96,3 +96,77 @@ def test_add_views_reports_unknown_member_id() -> None:
         errors,
     )
     assert any("references unknown ids: ['missing']" in e for e in errors)
+
+
+def _model_with(elements: list[dict], rels: list[dict]) -> tuple[Model, list[dict], dict, dict, list[str]]:
+    model = Model("t")
+    errors: list[str] = []
+    by_id, types = build.add_elements(model, elements, errors)
+    build.add_relationships(model, rels, by_id, errors)
+    assert errors == []
+    return model, elements, by_id, types, errors
+
+
+def test_add_views_passes_a_conforming_viewpoint() -> None:
+    els = [
+        {"id": "cap", "type": "capability", "name": "Cap"},
+        {"id": "vs", "type": "value-stream", "name": "VS"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, [{"type": "serving", "source": "cap", "target": "vs"}])
+    build.add_views(
+        model,
+        [{"id": "v1", "name": "V1", "members": ["cap", "vs"], "viewpoint": "value_stream"}],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+    assert errors == []
+
+
+def test_add_views_flags_a_concept_outside_the_declared_viewpoint() -> None:
+    els = [
+        {"id": "cap", "type": "capability", "name": "Cap"},
+        {"id": "goal", "type": "goal", "name": "Goal"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, [])
+    build.add_views(
+        model,
+        [{"id": "v1", "name": "V1", "members": ["cap", "goal"], "viewpoint": "value_stream"}],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+    assert any("value_stream viewpoint" in e and "Goal" in e for e in errors)
+
+
+def test_add_views_reports_an_unknown_viewpoint_slug() -> None:
+    els = [{"id": "cap", "type": "capability", "name": "Cap"}]
+    model, elements, by_id, types, errors = _model_with(els, [])
+    build.add_views(
+        model,
+        [{"id": "v1", "name": "V1", "members": ["cap"], "viewpoint": "not-a-viewpoint"}],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+    assert any("unknown viewpoint 'not-a-viewpoint'" in e for e in errors)
+
+
+def test_add_views_custom_viewpoint_skips_the_check() -> None:
+    els = [
+        {"id": "cap", "type": "capability", "name": "Cap"},
+        {"id": "node", "type": "node", "name": "N"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, [])
+    build.add_views(
+        model,
+        [{"id": "v1", "name": "V1", "members": ["cap", "node"], "viewpoint": "custom"}],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+    assert errors == []

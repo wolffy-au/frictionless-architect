@@ -41,6 +41,66 @@ m.write("model.archimate")
 - Full language is in scope — business, application, technology, physical,
   motivation, strategy, implementation & migration.
 
+## Viewpoints
+
+A **view** should declare the **viewpoint** it is drawn to. The authority for
+which concepts a viewpoint may show is `reference/archi-viewpoints.xml` — a
+verbatim copy of Archi's viewpoint file, the closest freely-available
+machine-readable form of the ArchiMate 3.2 §14 viewpoint tables. See
+`reference/README.md`. `scripts/viewpoints.py` parses it (expanding Archi's
+`$…Elements$` collection tokens and applying Archi's allow-list semantics):
+
+```bash
+poetry run python .agents/skills/model-archimate/scripts/viewpoints.py list
+poetry run python .agents/skills/model-archimate/scripts/viewpoints.py show value_stream
+poetry run python .agents/skills/model-archimate/scripts/viewpoints.py \
+  check MODEL.xml --view "Value Stream — …" --viewpoint value_stream
+```
+
+Semantics (from Archi's `ViewpointManager` / `Viewpoint`):
+
+- An **empty allow-set means unrestricted** — `layered` allows everything, and
+  every current viewpoint has an empty *relationship* set, so relationships
+  are not filtered in practice (only elements are).
+- `Junction` and `Grouping` are always allowed.
+- A relationship shows only if both endpoints are allowed — the rule
+  `build.py` already applies by drawing only connections with both endpoints
+  on the view.
+
+Choosing one — `reference/viewpoints-guidance.yaml` (advisory, ArchiMate 3.2
+§14.2) has purpose / abstraction / concerns / stakeholders per slug:
+
+- **Purpose** — *designing* (architects, detailed), *deciding* (managers,
+  cross-cutting, often tabular), *informing* (everyone, illustrative).
+- **Abstraction** — *detail* (one element / one layer), *coherence* (across
+  layers, for architects), *overview* (high level, for enterprise architects
+  and CxO).
+- **Early / vision stage** favours the overview strategy and motivation
+  viewpoints: `stakeholder`, `motivation`, `goal_realization`, `strategy`,
+  `capability`, `value_stream`, `outcome_realization`. Leave
+  `application_cooperation`, `technology`, `implementation_deployment`,
+  `migration` etc. until there is something designed to put in them.
+
+When a repo model tags views (`architecture/model/views.yaml`'s `viewpoint:`
+key), the build holds each tagged view to its allow-set and fails on a stray
+concept. Use `viewpoint: custom` for a deliberate cross-layer view —
+consciously, not as the default.
+
+**The viewpoint tag is a conformance gate, not a projection filter.** The
+renderer draws whatever the view's `members` / `include_types` put in scope;
+two views with the same membership produce the same diagram whatever their
+tags say. Differentiate views by *scoping membership to the concepts that
+viewpoint is about* — and if two standard viewpoints only differ by an
+element type the model doesn't have yet (e.g. `strategy` vs `value_stream`
+differ by `Resource`/`CourseOfAction` vs `Stakeholder`), add those elements or
+the views will be identical.
+
+**Tooling limits:** pyArchimate (pinned) cannot round-trip a view-level
+property, so the viewpoint is *not* written into the generated `.archimate` /
+`.xml` — the model's YAML source stays authoritative. pyArchimate's own
+`set_primary_viewpoint` accepts only a non-standard 13-slug list; don't use
+it.
+
 ## Validation (always run before handing back, and before any diagram)
 
 Run `scripts/validate.py`:

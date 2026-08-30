@@ -18,6 +18,8 @@ Schema (see ``architecture/model/README.md``):
   ``props`` (optional; ``access_type`` for Access, ``c4-label`` overrides
   ``label`` in the C4 projection only)
 * view: ``id`` / ``name`` / ``members`` (element ids) and/or ``include_types``
+  / ``viewpoint`` (optional standard-viewpoint slug; see the model-archimate
+  skill's ``reference/archi-viewpoints.xml`` — a declared viewpoint is enforced)
 
 ``id`` values are hashed to deterministic UUIDs so regeneration does not churn
 identifiers (and therefore diagrams).
@@ -37,7 +39,13 @@ from pyArchimate.view.layout import LayoutConfig, apply_format, apply_layout
 
 HERE = Path(__file__).parent
 OUT = HERE / "frictionless-architect.xml"
-VALIDATOR = HERE.parents[1] / ".agents/skills/model-archimate/scripts/validate.py"
+SKILL_SCRIPTS = HERE.parents[1] / ".agents/skills/model-archimate/scripts"
+VALIDATOR = SKILL_SCRIPTS / "validate.py"
+
+# The model-archimate skill owns the standard-viewpoint reference and the
+# conformance check a view is held to when it declares `viewpoint:`.
+sys.path.insert(0, str(SKILL_SCRIPTS))
+from viewpoints import UNRESTRICTED, check_conformance, get_viewpoint, known_slugs  # noqa: E402
 
 # Fixed namespace — do not change; it anchors every generated identifier.
 NS = uuid.UUID("6f4c0d2e-1a3b-5c7d-8e9f-0a1b2c3d4e5f")
@@ -136,6 +144,19 @@ def add_relationships(m: Model, rels: list[dict[str, Any]], by_id: dict[str, Ele
             rel.prop(str(k), str(v))
 
 
+def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[str], errors: list[str]) -> None:
+    """Hold a view that declares `viewpoint:` to that standard viewpoint's allow lists."""
+    slug = v.get("viewpoint")
+    if not slug or slug == UNRESTRICTED:
+        return
+    vp = get_viewpoint(slug)
+    if vp is None:
+        errors.append(f"view {v['id']}: unknown viewpoint {slug!r} (known: {', '.join(known_slugs())})")
+        return
+    for msg in check_conformance(vp, el_types, rel_types):
+        errors.append(f"view {v['id']} ({slug} viewpoint): {msg}")
+
+
 def add_views(
     m: Model,
     views: list[dict[str, Any]],
@@ -151,8 +172,17 @@ def add_views(
     view — the same in-scope rule `model_to_puml.py` applies when rendering —
     then runs pyArchimate's grid auto-layout + format so the view is usable
     when opened directly in Archi (the diagram skills re-lay-out via PlantUML
-    and ignore these coordinates). The richer view schema (view kind,
-    auto-membership rules) is still deferred."""
+    and ignore these coordinates).
+
+    A view may also declare `viewpoint: <slug>` (see the model-archimate
+    skill's `reference/archi-viewpoints.xml`). When it does — and the slug is
+    not `custom` — every element type placed on the view is held to that
+    standard ArchiMate viewpoint's allow-set, and a stray concept fails the
+    build. The declaration is not written into the generated XML (pyArchimate
+    cannot round-trip view-level properties in the pinned version);
+    `views.yaml` stays the source of truth for it.
+
+    The richer view schema (auto-membership rules) is still deferred."""
     for v in views:
         if "id" not in v or "name" not in v:
             errors.append(f"view missing id/name: {v!r}")
@@ -168,19 +198,24 @@ def add_views(
         # bypasses get_or_create_view() only because that wrapper has no uuid arg.
         view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
         on_view: set[str] = set()  # element uuids with a node on this view
+        view_el_types: set[str] = set()
         for e in elements:
             selected = e["id"] in want or (types and types_by_id.get(e["id"]) in types)
             if selected and e["id"] in by_id:
                 el = by_id[e["id"]]
                 view.add(ref=el, uuid=det_id(v["id"], "node", el.uuid))
                 on_view.add(el.uuid)
+                view_el_types.add(types_by_id[e["id"]])
+        view_rel_types: set[str] = set()
         for rel in m.relationships:
             if rel.source.uuid in on_view and rel.target.uuid in on_view:
                 view.add_connection(ref=rel, uuid=det_id(v["id"], "conn", rel.uuid))
+                view_rel_types.add(rel.type)
         missing = [mid for mid in want if mid not in by_id]
         if missing:
             errors.append(f"view {v['id']} references unknown ids: {missing}")
             continue
+        check_view_viewpoint(v, view_el_types, view_rel_types, errors)
         # Grid layout is deterministic (layer-ordered row-major placement);
         # apply_format then applies the ArchiMate per-category node sizes.
         cfg = LayoutConfig(alignment="grid", layer_direction="vertical")

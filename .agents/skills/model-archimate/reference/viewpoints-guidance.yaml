@@ -1,0 +1,215 @@
+# Advisory guidance for choosing an ArchiMate viewpoint — ArchiMate 3.2 §14.2.
+#
+# Keyed by the slug (Archi viewpoint id) in archi-viewpoints.xml. This file is
+# annotation only: it does NOT affect conformance checking (that is driven
+# purely by archi-viewpoints.xml). Slugs with no entry here simply have no
+# guidance attached.
+#
+#   purpose      subset of [designing, deciding, informing]
+#                  designing  — architects/designers, from sketch to detail
+#                  deciding   — managers; cross-cutting, often tabular/heat-map
+#                  informing  — everyone; illustrative, for buy-in
+#   abstraction  detail | coherence | overview
+#   since        ArchiMate version the viewpoint first appeared in
+
+guidance:
+
+  stakeholder:
+    purpose: [designing, deciding]
+    abstraction: overview
+    concerns: Who the stakeholders are, the drivers/assessments pressing on them, and the top goals and outcomes — the case for change.
+    stakeholders: [stakeholders, business management, enterprise architects]
+    adm_phase: "Preliminary / A (Architecture Vision)"
+    since: "3.0"
+
+  motivation:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: The full motivation model — stakeholders, drivers, assessments, goals, outcomes, principles, requirements, constraints — and how they relate.
+    stakeholders: [stakeholders, business management, enterprise architects]
+    adm_phase: "A (Architecture Vision); B–D requirements"
+    since: "3.0"
+
+  goal_realization:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How high-level goals refine into outcomes, and how principles, requirements and constraints realize them.
+    stakeholders: [business management, enterprise architects]
+    adm_phase: "A (Architecture Vision)"
+    since: "3.0"
+
+  requirements_realization:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How requirements and constraints are realized by capabilities, courses of action, and core structure/behaviour.
+    stakeholders: [enterprise architects, solution architects, developers]
+    adm_phase: "B–D (Business / IS / Technology)"
+    since: "3.0"
+
+  strategy:
+    purpose: [designing, deciding]
+    abstraction: overview
+    concerns: How the enterprise creates value — capabilities, resources, and the courses of action developing them toward goals and outcomes.
+    stakeholders: [enterprise architects, business architects, strategists, CxO]
+    adm_phase: "A (Architecture Vision)"
+    since: "3.1"
+
+  capability:
+    purpose: [deciding, informing]
+    abstraction: overview
+    concerns: A structured overview of the enterprise's capabilities, implementation-independent — the backdrop for heat-mapping investment, maturity or risk.
+    stakeholders: [enterprise architects, portfolio managers, CxO]
+    adm_phase: "A (Architecture Vision)"
+    since: "3.1"
+
+  value_stream:
+    purpose: [deciding, informing]
+    abstraction: overview
+    concerns: How end-to-end value is produced for a stakeholder — the sequence of value-adding stages and the capabilities that enable each (the value-stream / capability cross-map).
+    stakeholders: [enterprise architects, business architects, business managers]
+    adm_phase: "A (Architecture Vision)"
+    since: "3.1"
+
+  resource:
+    purpose: [deciding, informing]
+    abstraction: overview
+    concerns: A structured overview of the enterprise's resources and the capabilities they support.
+    stakeholders: [enterprise architects, portfolio managers, CxO]
+    adm_phase: "A (Architecture Vision)"
+    since: "3.1"
+
+  outcome_realization:
+    purpose: [designing, informing]
+    abstraction: coherence
+    concerns: How concrete outcomes are produced by capabilities, courses of action and core behaviour, and how they contribute to goals and value.
+    stakeholders: [enterprise architects, business architects, business managers]
+    adm_phase: "A (Architecture Vision)"
+    since: "3.1"
+
+  organization:
+    purpose: [designing, deciding, informing]
+    abstraction: coherence
+    concerns: The internal organizational structure — actors, roles, collaborations, interfaces, and how they are grouped or located.
+    stakeholders: [enterprise architects, business architects, business managers]
+    adm_phase: "B (Business Architecture)"
+    since: "1.0"
+
+  business_process_cooperation:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How business processes/functions/interactions cooperate to deliver business services, and the application support behind them.
+    stakeholders: [business architects, process owners, enterprise architects]
+    adm_phase: "B (Business Architecture)"
+    since: "1.0"
+
+  product:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: The composition of a product from services and contracts, the value it offers, and the actors and processes that deliver it.
+    stakeholders: [product managers, business architects]
+    adm_phase: "B (Business Architecture)"
+    since: "1.0"
+
+  application_cooperation:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: The application landscape — components, the services they expose, the data they exchange, and their mutual dependencies.
+    stakeholders: [enterprise architects, application/solution architects]
+    adm_phase: "C (Information Systems Architecture)"
+    since: "1.0"
+
+  application_structure:
+    purpose: [designing]
+    abstraction: detail
+    concerns: The internal structure of one application or a small set — components, collaborations, interfaces, and the data they own.
+    stakeholders: [application/solution architects, developers]
+    adm_phase: "C (Information Systems Architecture)"
+    since: "1.0"
+
+  application_usage:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How business processes and actors use application services — the demand side of the application layer.
+    stakeholders: [application architects, process owners]
+    adm_phase: "C (Information Systems Architecture)"
+    since: "1.0"
+
+  technology:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: The technology infrastructure — nodes, devices, system software, paths and networks, and the technology services they realize.
+    stakeholders: [infrastructure architects, operations]
+    adm_phase: "D (Technology Architecture)"
+    since: "1.0"
+
+  technology_usage:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How applications depend on technology services — the demand side of the technology layer.
+    stakeholders: [application architects, infrastructure architects]
+    adm_phase: "D (Technology Architecture)"
+    since: "1.0"
+
+  implementation_deployment:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How application components are realized by artifacts and deployed onto the technology infrastructure.
+    stakeholders: [solution architects, infrastructure architects, operations]
+    adm_phase: "C–D (IS / Technology Architecture)"
+    since: "1.0"
+
+  physical:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: Equipment, facilities, materials and distribution networks, and the technology that controls or runs on them.
+    stakeholders: [operations, facilities, manufacturing engineers]
+    adm_phase: "D (Technology Architecture)"
+    since: "3.0"
+
+  information_structure:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: The information the enterprise deals with — business objects, their data-object and artifact realizations, representations and meaning.
+    stakeholders: [information architects, data architects]
+    adm_phase: "C (Data Architecture)"
+    since: "1.0"
+
+  service_realization:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: How business services are realized by the processes, functions and application services behind them.
+    stakeholders: [business architects, application architects]
+    adm_phase: "B–C (Business / IS Architecture)"
+    since: "1.0"
+
+  project:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: The work packages and deliverables that implement the architecture, who is assigned, and the goals/requirements they satisfy.
+    stakeholders: [programme/project managers, enterprise architects]
+    adm_phase: "E–F (Opportunities & Solutions / Migration Planning)"
+    since: "1.0"
+
+  migration:
+    purpose: [designing, deciding]
+    abstraction: overview
+    concerns: The transition path — the sequence of plateaus from baseline to target and the gaps between them.
+    stakeholders: [enterprise architects, programme managers]
+    adm_phase: "F (Migration Planning)"
+    since: "2.0"
+
+  implementation_migration:
+    purpose: [designing, deciding]
+    abstraction: coherence
+    concerns: Work packages and deliverables set against the plateaus and gaps of the migration, linked to the goals and requirements driving them.
+    stakeholders: [enterprise architects, programme managers]
+    adm_phase: "E–F (Opportunities & Solutions / Migration Planning)"
+    since: "2.0"
+
+  layered:
+    purpose: [designing, deciding, informing]
+    abstraction: coherence
+    concerns: All layers and aspects in one picture, stacked — how motivation, strategy, business, application and technology line up.
+    stakeholders: [enterprise architects]
+    adm_phase: "A–D (all)"
+    since: "1.0"
