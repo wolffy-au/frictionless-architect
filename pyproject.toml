@@ -93,7 +93,7 @@ reportUnknownMemberType = false
 
 [tool.mypy]
 strict = true
-mypy_path = "src"
+mypy_path = ["src", ".agents/skills/wiki-librarian/tools", "architecture/model"]
 packages = ["frictionless_architect", "tests"]
 show_error_codes = true
 ignore_missing_imports = false
@@ -109,6 +109,16 @@ warn_unreachable = true
 plugins = [
   "pydantic.mypy"
 ]
+
+# Skill / build tooling lives outside src/ and is exercised by tests/tools/.
+# Type-check the tests, not these script modules pulled in through them.
+[[tool.mypy.overrides]]
+module = ["wiki_common", "verify_wiki", "build_status", "resolve_sources", "semsearch", "build"]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["pyArchimate.*"]
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120
@@ -147,8 +157,8 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.pytest.ini_options]
-pythonpath = "src"
-testpaths = ["./tests/unit", "./tests/security", "./tests/integration", "./tests/api"]
+pythonpath = ["src", ".agents/skills/wiki-librarian/tools", "architecture/model"]
+testpaths = ["./tests/unit", "./tests/security", "./tests/integration", "./tests/api", "./tests/tools"]
 python_files = "*_test.py test_*.py *_spec.py"
 asyncio_default_fixture_loop_scope = "module"
 addopts = """

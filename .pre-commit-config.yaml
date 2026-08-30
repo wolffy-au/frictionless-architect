@@ -85,3 +85,10 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
+
+      - id: pytest-tools
+        name: pytest tooling
+        entry: poetry run pytest tests/tools/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
