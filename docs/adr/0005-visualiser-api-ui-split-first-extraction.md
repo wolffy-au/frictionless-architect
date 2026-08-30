@@ -30,3 +30,30 @@ The **first extraction** splits the visualiser:
   it is its own epic (`ARCHITECTURE.md` §9).
 - Subsequent sequence: scaffold `knowledge-graph` → vendor forks → re-home specs
   → extract remaining components as work reaches them.
+
+## Amendment (2026-08-30)
+
+Raised by the `refactor-analyst` assessment (session-recorded).
+
+- **`schema/manager.py` does not move in the first extraction.** The Consequences
+  above list it moving into `packages/schema-visualizer-api`; that contradicts
+  `ARCHITECTURE.md` §4, which has `packages/knowledge-graph` absorb
+  `schema/manager.py` and `sample_parser.py`. `manager.py` is the Neo4j
+  write / migrate / audit controller — the visualiser needs read-only access,
+  not that.
+- Placement of `manager.py`, the Neo4j **read** path (today in
+  `visualizer/data_loader.py`), and `sample_parser.py` is **deferred to the
+  `knowledge-graph` extraction** and is not yet settled.
+- Revised first-extraction scope: move `visualizer/{api,cache,config}.py` + the
+  visualiser's own payload / coverage-merge logic + the FastAPI router into
+  `packages/schema-visualizer-api`; stand up the UI package; drop the
+  server-rendered HTML route — **confirmed: no consumer today**.
+- Open questions to resolve before the extraction starts (also in
+  `ARCHITECTURE.md` §10):
+  - Does `schema-visualizer-api` consume `knowledge-graph` as a path-dependency
+    library (its own Neo4j connection) or over HTTP? `ARCHITECTURE.md` §3.3
+    implies a library.
+  - Is `sample_parser.py` visualiser-specific, or generic ArchiMate ingestion?
+    If generic it belongs in `knowledge-graph` and the API package stays thin.
+- Unchanged: the API/UI split is still the first extraction; the
+  `FRICTIONLESS_ARCHITECT_` prefix stays; the rename is its own epic.

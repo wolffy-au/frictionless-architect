@@ -303,7 +303,7 @@ package "BEFORE  src/frictionless_architect/visualizer/" {
 package "AFTER" {
   package "packages/schema-visualizer-api" {
     [api.py — JSON only:\n/schema-payload /refresh /status] as after_api
-    [cache.py config.py data_loader.py\nsample_parser.py schema/manager.py] as after_lib
+    [cache.py config.py\npayload + coverage-merge logic] as after_lib
     after_api --> after_lib
   }
   package "packages/schema-visualizer-ui  (or fold into dashboard)" {
@@ -315,13 +315,19 @@ package "AFTER" {
 ```
 
 Checklist:
-- Move `visualizer/{api,cache,config,data_loader,sample_parser}.py` + `schema/manager.py`
-  into `packages/schema-visualizer-api/src/`.
+- Move `visualizer/{api,cache,config}.py` + the visualiser's own payload /
+  coverage-merge logic + the FastAPI router into
+  `packages/schema-visualizer-api/src/`.
+- `data_loader.py` (Neo4j read), `sample_parser.py`, and `schema/manager.py` are
+  **not** part of this step — their home is deferred to the `knowledge-graph`
+  extraction (see ADR-0005 → Amendment 2026-08-30, and §4).
 - Drop the HTML route + Jinja/static mounts from `api.py`; keep `/schema-payload*`.
 - Move `static/` + `templates/` into a Vite project; replace the server-rendered bootstrap
   with a `fetch('/schema-payload')` call; add a dev proxy.
 - Add CORS config to the API (same-origin today, so none).
-- `tests/api/*` and `tests/unit/visualizer/*` move with the package.
+- `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the
+  package; `test_data_loader.py` / `test_sample_parser.py` follow their code to
+  `knowledge-graph`.
 - Keep the `FRICTIONLESS_ARCHITECT_` env prefix as-is for this extraction; rename is its
   own epic (§9).
 - Entry point `uvicorn frictionless_architect.visualizer:app` →
@@ -359,6 +365,11 @@ Checklist:
    `PROJECT_SPECIFICATION.md` + per-component specs?
 7. Keep `src/frictionless_architect/` importable as an umbrella namespace package during
    the transition, or hard-cut per extraction?
+8. Does `schema-visualizer-api` consume `knowledge-graph` as a path-dependency library
+   (its own Neo4j connection, per §3.3) or over HTTP? (Blocks the first extraction —
+   ADR-0005 Amendment.)
+9. Is `sample_parser.py` visualiser-specific or generic ArchiMate ingestion? If generic
+   it moves to `knowledge-graph` with the forked parser (§4) and the API package stays thin.
 
 ---
 
