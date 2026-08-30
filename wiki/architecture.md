@@ -32,6 +32,7 @@ sources:
   - docs/adr/0024-single-user-local-mvp.md
   - docs/adr/0025-conventional-commits-scm-versioning.md
   - docs/adr/0026-fsm-action-endpoints-for-governed-entities.md
+  - docs/adr/0027-capability-value-stream-and-motivation-spine.md
   - docs/adr/README.md
 ---
 
@@ -146,6 +147,19 @@ pattern → (4) scaffold `knowledge-graph`, port `prototype-neo4j` ideas →
 components as work reaches them. §8.1 has a detailed checklist for the visualiser
 split (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
 
+The **first extraction** now moves only `visualizer/{api,cache,config}.py` plus
+the visualiser's own payload / coverage-merge logic and the FastAPI router;
+`data_loader.py` (Neo4j read), `sample_parser.py` and `schema/manager.py` are
+**deferred to the `knowledge-graph` extraction**. ADR-0005's original
+Consequences put `schema/manager.py` in the visualiser package, which
+contradicted `ARCHITECTURE.md` §4 (`knowledge-graph` absorbs it); the ADR-0005
+**Amendment (2026-08-30)** records the conflict and defers the placement rather
+than resolving it (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
+§Amendment; `ARCHITECTURE.md` §8.1). Two questions now block the extraction:
+whether `schema-visualizer-api` consumes `knowledge-graph` as a library or over
+HTTP, and whether `sample_parser.py` is visualiser-specific or generic ArchiMate
+ingestion (`ARCHITECTURE.md` §10).
+
 ## Cross-cutting risks and open questions
 
 Risks (`ARCHITECTURE.md` §9): the `FRICTIONLESS_ARCHITECT_` env prefix and
@@ -158,7 +172,9 @@ CI assumes one package.
 Open questions (`ARCHITECTURE.md` §10): whether anything ever leaves the
 monorepo; one constitution vs. per-component addenda; dashboard as Backstage
 plugin vs. standalone SPA; which upstreams to fork; whether `pii-gateway` starts
-as its own package.
+as its own package; whether `src/frictionless_architect/` stays importable as an
+umbrella namespace package during the transition; and the two ADR-0005 questions
+above (library-vs-HTTP `knowledge-graph` consumption; `sample_parser.py`'s home).
 
 ## Decision log
 
@@ -178,7 +194,7 @@ not re-ratified in a spec).
 | 0007 | Architecture model stored as graph-loadable YAML; `.xml` exchange format; everything else generated | A |
 | 0008 | Model `type` = bare ArchiMate 3.2 concept name | A |
 | 0009 | C4 context/container diagrams generated from the ArchiMate model | A |
-| 0010 | Central model is a ~30-node load-bearing skeleton only | A |
+| 0010 | Central model is a load-bearing skeleton only (element counts extended by 0027) | A |
 | 0011 | Platform decomposes into 6 subsystems (replacing the 8-component grouping) | A\* |
 | 0012 | ADRs are an attested finite-state machine (`Draft→Under Review→Approved→Superseded`) | A |
 | 0013 | Authorization is a dedicated policy component, separate from authentication | A |
@@ -195,13 +211,19 @@ not re-ratified in a spec).
 | 0024 | MVP is single-user and locally run (scoping compromise) | A |
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
+| 0027 | Capability layer carries a value stream and an explicit motivation spine | P |
 
-The **P** rows exist because `specs/001-governance-platform` deliberately
-de-specified premature product choices — persistence technologies, the
-authorization model and policy language, the ADR cryptographic scheme, accepted
-serialization formats, and the API error wire format are all listed there as
-"deferred solution decisions" to be re-decided intentionally (`specs/001`
-§"Deferred solution decisions"; see [Platform Specification & API](platform-spec.md)).
+Most **P** rows (0017–0020) exist because `specs/001-governance-platform`
+deliberately de-specified premature product choices — persistence technologies,
+the authorization model and policy language, the ADR cryptographic scheme,
+accepted serialization formats, and the API error wire format are all listed
+there as "deferred solution decisions" to be re-decided intentionally
+(`specs/001` §"Deferred solution decisions"; see
+[Platform Specification & API](platform-spec.md)). ADR-0027 is **P** for a
+different reason: the change is already reflected in the
+[Architecture Model](architecture-model.md) (value stream, motivation spine,
+renamed capabilities) but the ADR itself is not yet attested
+(`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).
 
@@ -219,7 +241,11 @@ Principles"; `docs/adr/0026-fsm-action-endpoints-for-governed-entities.md`).
 `TECHNICAL.md` also carries DDD guidance and an "Automated Code Uplift" concept
 using `git worktree` + an AI assistant driven by static analysis and coverage
 tools — realised as the maintenance agents in
-[Agent Skills & Workflows](agent-workflows.md).
+[Agent Skills & Workflows](agent-workflows.md). Its Ubiquitous Language section
+now fixes the spelling split: identifiers, paths and route segments use
+`visualizer` (`-z-`), running prose uses "visualiser" (`-s-`), and the two in
+one sentence is intentional (`TECHNICAL.md` §"Domain-Driven Design";
+`AGENTS.md` §Conventions).
 
 `TECHNICAL.md` §"Dependency Installation" / §"Utilities and Frameworks" name
 **Poetry** as the package manager (`poetry install`, `poetry.lock`,

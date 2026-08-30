@@ -32,11 +32,11 @@ topics:
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: f40253a36ebcfba549f6d03d9d0aabb255517c9b392b23e854a9eaec11ecf9f2
-          lines: 372
+          sha256: 47561d0d156cba9fc43024b096f8bb151c5ac4f98517df12ce9a83c44d07099c
+          lines: 383
         TECHNICAL.md:
-          sha256: dd324221391b5e68f6182978379119ad718c6eee3e59c76f3e3661b5b847be08
-          lines: 413
+          sha256: 48b3abcc278fb94f9c7216b86ff4d56650ddce3b99d58acdf91e6a6dadc3114a
+          lines: 418
         docs/adr/0000-adr-template.md:
           sha256: 3ce41307064083f9f60169e6f2a16749ce69a985d16c905faccb389daebb2802
           lines: 23
@@ -53,8 +53,8 @@ topics:
           sha256: 0446070947d0f41d22af9a91394e3c6e399347c616b06fff3becf24b98297c6c
           lines: 29
         docs/adr/0005-visualiser-api-ui-split-first-extraction.md:
-          sha256: 0bff2a49a272efa713162c2de84ad884b0a8709fa33582fa12fd4eb44e05adea
-          lines: 32
+          sha256: e761ddf5c846ccb2acbf5ef1cf216a408ebfb0ca582c8ef0aca5b087c9584aa4
+          lines: 59
         docs/adr/0006-prototype-neo4j-reference-only.md:
           sha256: 950230b7595c1d513d807c27c11eff5717df5ce0a6050a233799e11a7495d088
           lines: 26
@@ -68,8 +68,8 @@ topics:
           sha256: 7b4cdaace5d0c8888cb38bccba8dae46f4e2483d7f04f8e7a27555f3948d0a44
           lines: 30
         docs/adr/0010-load-bearing-skeleton-only.md:
-          sha256: d9b5fb54c55e1521fcb30ae59903d97e45df73b3cd288ef000c80fa3518ea0a8
-          lines: 29
+          sha256: ef8f7a9af4f55b4cc1339c9a159f8ed9228bf4ff95b43b00555b08233a93be57
+          lines: 37
         docs/adr/0011-six-subsystem-decomposition.md:
           sha256: acbd9b2299e9ab6a9939dd83aae3eb9c3af5f5fbb7f00fcf16248889e24a9f4a
           lines: 41
@@ -118,9 +118,12 @@ topics:
         docs/adr/0026-fsm-action-endpoints-for-governed-entities.md:
           sha256: c3fe3f5853e023d90b6e42f05df1b970c33d6d74f35009d4af2c568b9e243d2a
           lines: 27
+        docs/adr/0027-capability-value-stream-and-motivation-spine.md:
+          sha256: 9e0fdecea907e528a2d134e8d4447b3ff953a45373aec64d150fae28a0dfc459
+          lines: 91
         docs/adr/README.md:
-          sha256: 257e243b46ec218200061c28941a79bb0f108e271fa7564077f3222018e8a347
-          lines: 90
+          sha256: c35cf1ddffaea927dcb303fd5ee47d73e2acef2770caf7986eed6f04df2ad287
+          lines: 92
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
@@ -128,17 +131,17 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: 0f107cb8f5190e0778996b19e6122a26f9eb961ab840b455a927e073db94847b
-          lines: 81
+          sha256: 3833baf43486bac6e5acfcbd6bbef79261f2987e4731d6f9308ddc3dacea3a1a
+          lines: 114
         architecture/model/elements.yaml:
-          sha256: 51919885d2d0b1e77d180bb453349fb45f13a68f125566703746dea6377d1f38
-          lines: 528
+          sha256: b67d8ded4ceccb982a5dde7b8ff4b26b004e46ef1dcfa95559ac1fa4078b3efb
+          lines: 634
         architecture/model/relationships.yaml:
-          sha256: 4ed86121418b9d09e29b46ec2bcefb9de46ca14e7ba0e74281ed692694c3598c
-          lines: 318
+          sha256: 29572cab7dcd1990e433d0a475b28c86aeecda239b69f2de3855b3f5be458e30
+          lines: 432
         architecture/model/views.yaml:
-          sha256: 763ae2a244bea1626afc8fb891acf2a21410a04772751d25fc5c182b0d15aad9
-          lines: 117
+          sha256: d20031e1f8a07bf6b47777623af0157cd9d5661e7e3195c4be706e7d68ac0369
+          lines: 142
   data-model:
     title: Data Model
     page: wiki/data-model.md
@@ -230,14 +233,14 @@ topics:
     sources:
       files:
         AGENTS.md:
-          sha256: 6be4f239f99ddd09c190cd61dfc314ca684cdfa2eefe1bd5e49fc12034241904
-          lines: 99
+          sha256: 42f369b0f26e993304007d73f35212cb02b1c5556c05986f865df9d2ac435541
+          lines: 104
         RELEASE.md:
           sha256: 053ee3d964384bcdfdf5ee7422a34114bc476ca6d7d19d831f51711ef967a9b5
           lines: 213
         quickstart.md:
-          sha256: 4449dd8a9de776db1d6f8e709a0165f40f1dfaf02f62e1a9d0b108300cdcb8cd
-          lines: 84
+          sha256: fd9f71aa6a995867e5a0389658de4a2a838c1016f15ef669096ed3c73a5abcef
+          lines: 85
         specs/002-neo4j-schema-ui/quickstart.md:
           sha256: 34d2c45d8b462bef28612d75b6965cd0e4612099ac3afd846900bc74d78f32f2
           lines: 46

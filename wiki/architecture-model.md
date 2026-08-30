@@ -17,11 +17,11 @@ sources:
 `architecture/model/` holds the **canonical** architecture model for the
 platform, stored as graph-loadable YAML. Every other form — the ArchiMate XML,
 the C4 / PlantUML diagrams, and (later) the Neo4j seed — is a generated
-projection of these files (`architecture/model/README.md` §"Architecture model").
-The decision and its rationale are recorded in
-[ADR-0007](architecture.md) (graph-loadable YAML canonical; `.xml` exchange
-format chosen over Archi-native `.archimate` for diff legibility) and
-[ADR-0008](architecture.md) (`type` is a bare ArchiMate 3.2 concept name).
+projection of these files (`architecture/model/README.md` §"Architecture
+model"). The decision and its rationale are recorded in
+[ADR-0007](architecture.md) (graph-loadable YAML is canonical; the `.xml`
+exchange format is chosen over Archi-native `.archimate` for diff legibility)
+and [ADR-0008](architecture.md) (`type` is a bare ArchiMate 3.2 concept name).
 
 ```text
 elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
@@ -33,9 +33,10 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 (`architecture/model/README.md` §"Architecture model"). `build.py` runs
 `.agents/skills/model-archimate/scripts/validate.py`, which holds the **whole**
 model to the ArchiMate 3.2 relationship matrix
-(`architecture/model/README.md` §"Schema"). The generated
-`frictionless-architect.xml` is committed but never hand-edited, same status as
-the `.puml` / `.svg` diagrams.
+(`architecture/model/README.md` §"Schema"). The current model is 108 elements,
+227 relationships and 8 views (`architecture/model/build.py` output). The
+generated `frictionless-architect.xml` is committed but never hand-edited —
+same status as the `.puml` / `.svg` diagrams.
 
 ## Files and schema
 
@@ -48,163 +49,232 @@ the `.puml` / `.svg` diagrams.
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
 | `diagrams/` | **Generated** `.puml` / `.svg` |
 
-Schema rules (`architecture/model/README.md` §"Schema"):
+Schema rules (`architecture/model/README.md` §"Schema";
+`architecture/model/elements.yaml:7-10`):
 
-- **`type`** — a bare ArchiMate 3.2 concept name (`Driver`, `Capability`,
-  `BusinessProcess`, `ApplicationComponent`, `ApplicationFunction`, `DataObject`,
-  `Realization`, `Access`, …). Case-insensitive; `build.py` canonicalises
-  against `pyArchimate.ArchiType` and hard-errors on a typo.
+- **`type`** — a bare ArchiMate 3.2 concept name (`Driver`, `Goal`, `Outcome`,
+  `Principle`, `Constraint`, `Requirement`, `Capability`, `ValueStream`,
+  `BusinessProcess`, `ApplicationComponent`, `ApplicationFunction`,
+  `DataObject`, `Grouping`, …). Case-insensitive; `build.py` canonicalises
+  against `pyArchimate.ArchiType`.
 - **`id`** — a stable kebab id, hashed to a deterministic UUID so regeneration
   never churns identifiers or diagrams. *Never renumber a live id.*
 - **`name` / `desc`** — top-level keys, not inside `props`.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
-  `includes` for the subsystem capability lists, `access_type`
-  (`Read`|`Write`|`ReadWrite`) on `Access` relationships, `requirement-type`.
+  `access_type` (`Read` | `Write` | `ReadWrite`) on `Access` relationships,
+  `requirement-type`.
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 
+`build.py` accumulates every validation problem (unknown concept name,
+duplicate id, dangling relationship reference, unknown view member) and reports
+them together rather than aborting on the first
+(`architecture/model/build.py` — `canon()` / `load()`).
+
 ## Model contents — three layered sections
 
-One model spans three sections (`architecture/model/README.md` §"Model
-contents"; `architecture/model/elements.yaml:12-16`).
+One model spans three sections in `elements.yaml`
+(`architecture/model/elements.yaml:12-16`).
 
 ### A. Skeleton — the load-bearing subset
 
-The motivation, strategy, and business layer that stays true regardless of how
-component boundaries finally land ([ADR-0010](architecture.md)). View:
-`Architecture Skeleton` (`architecture/model/views.yaml:14-16`).
+The motivation, strategy and business layer that stays true regardless of how
+component boundaries finally land ([ADR-0010](architecture.md)). It is
+**decomposition input, not the final architecture**, but it may carry genuine
+structural traceability — the motivation spine and the value stream — added by
+[ADR-0027](architecture.md). Views: `Architecture Skeleton` (motivation only),
+`Capability Map & Value Stream`, `Delivery Choreography`
+(`architecture/model/views.yaml:14-35`).
 
 **Drivers** — why the platform exists
 (`architecture/model/elements.yaml:20-47`): Market Agility & Competitive
 Pressure, Regulatory Resiliency & Social License, Systemic Sustainability &
 Complexity Management, Human-to-Machine Operational Scaling.
 
+**Goal and Outcome** — the motivation spine's endpoints
+(`architecture/model/elements.yaml:54-67`). All four drivers `Influence` the
+goal *Frictionless Architecture & Governance at Machine Speed*; the outcome
+*Architecture as Executable Intelligence* `Realization`-links to that goal; and
+the value stream `Realization`-links to the outcome — giving the layer a spine
+`drivers → goal ← outcome ← value stream`
+(`architecture/model/relationships.yaml:47-55`; `architecture/model/README.md`
+§"Model contents"). "Architecture as Executable Intelligence" is modelled as an
+`Outcome`, not a `Principle` ([ADR-0027](architecture.md) §4).
+
 **Principles** — constitution-level
-(`architecture/model/elements.yaml:52-73`): Architecture as Executable
-Intelligence, Deterministic Human Accountability ("AI is advisory; the
-specification is deterministic; a human holds sign-off"), Forensic Auditability,
-Policy as Code.
+(`architecture/model/elements.yaml:72-87`): Deterministic Human Accountability
+("AI is advisory; the specification is deterministic; a human holds sign-off"),
+Forensic Auditability, Policy as Code.
 
 **Constraints** — the regulatory envelope every component inherits
-(`architecture/model/elements.yaml:78-102`): APRA CPS 230/234, Model Risk
-Management Framework, Australian Privacy Act (APP), Cloud & Data Sovereignty
-Policy, Model Risk Standards (SR 11-7 / APRA).
+(`architecture/model/elements.yaml:92-112`): APRA CPS 230/234, Model Risk
+Management (SR 11-7 / APRA), Australian Privacy Act (APP), Cloud & Data
+Sovereignty Policy. `const-model-governance` was merged into `const-model-risk`
+([ADR-0027](architecture.md) §6).
 
-**Functional requirements** — each one is a component contract
-(`architecture/model/elements.yaml:107-153`): automated specification generation
-from the graph, automated regulatory-obligation mapping, pre-deployment
-compliance gate enforcement, continuous as-built vs. as-designed reconciliation,
-and mandatory human sign-off for non-standard changes.
+**Functional requirements** — nine; each one is a component contract
+(`architecture/model/elements.yaml:117-202`): automated specification
+generation from the graph, automated regulatory-obligation mapping,
+pre-deployment compliance-gate enforcement, continuous as-built vs. as-designed
+reconciliation, mandatory human sign-off for non-standard changes, a maintained
+machine-readable control catalog, a curated reusable architecture library, an
+authoritative digital twin of system state, and an immutable forensic audit
+ledger.
 
-**Primary capabilities** — candidate component boundaries
-(`architecture/model/elements.yaml:158-200`): Digital Twin Knowledge Graph
-(`cap-digital-twin`), Executable Specification Generation (`cap-spec-engine`),
-Agentic Supervisory Control (`cap-control-plane`), Forensic Audit & Compliance
-Ledger (`cap-forensic-ledger`), Architectural Drift Detection & Reconciliation
-(`cap-drift-dashboard`), Human Oversight & Approval Workflow
-(`cap-human-approval-workflow`).
+**Primary capabilities** — eight, named as *abilities* rather than the artefact
+they own ([ADR-0027](architecture.md) §2;
+`architecture/model/elements.yaml:209-270`):
 
-**Business processes** — the end-to-end choreography
-(`architecture/model/elements.yaml:205-248`,
-`architecture/model/relationships.yaml:53-72`):
+| Capability (`id`) | Realizes |
+|---|---|
+| Architecture Knowledge Management (`cap-digital-twin`) | `req-authoritative-twin` |
+| Executable Specification Generation (`cap-spec-engine`) | `req-auto-spec-generation` |
+| Agentic Development Supervision (`cap-control-plane`) | `req-pre-deploy-gate` |
+| Forensic Audit Recording (`cap-forensic-ledger`) | `req-immutable-audit-ledger` |
+| Architectural Drift Detection & Reconciliation (`cap-drift-dashboard`) | `req-continuous-reconciliation` |
+| Human Oversight & Approval (`cap-human-approval-workflow`) | `req-human-signoff` |
+| Control & Obligation Management (`cap-control-catalog`) | `req-regulatory-mapping`, `req-control-catalog` |
+| Reusable Architecture Curation (`cap-reusable-architecture`) | `req-reusable-architecture` |
+
+Every capability realizes at least one requirement
+(`architecture/model/relationships.yaml:15-45`). `Capability → Capability`
+`Serving` edges record the dependency order — e.g. Architecture Knowledge
+Management serves Executable Specification Generation ("authoritative graph")
+and Drift Detection ("as-designed intent")
+(`architecture/model/relationships.yaml:118-127`).
+
+**Value stream** — the outcome-oriented view of governed delivery
+(`architecture/model/elements.yaml:276-318`). `vs-governed-delivery` "Governed
+Architecture Delivery" is a `Composition` of six stages:
+
+```text
+Establish Control & Reuse Baseline
+  → Specify the Change
+  → Build Under Supervision
+  → Prove Compliance
+  → Release & Attest
+  → Reconcile & Remediate
+```
+
+Each stage is `Serving`-linked from the capabilities that enable it — e.g.
+Control & Obligation Management and Reusable Architecture Curation serve
+"Establish Control & Reuse Baseline"; Agentic Development Supervision serves
+both "Build Under Supervision" and "Prove Compliance"
+(`architecture/model/relationships.yaml:97-116`).
+
+**Business processes** — six; the orchestration choreography between components,
+carried by the `Delivery Choreography` view, not the skeleton
+(`architecture/model/elements.yaml:323-366`,
+`architecture/model/relationships.yaml:145-167`):
 
 ```text
 Deterministic Spec Generation
-  → Agentic Development Execution     (produces specification for)
-  → Automated CICD Gate Execution    (submits artefacts to)
-  → Production Release               (gates and passes to)
-  → Current State Discovery          (initiates discovery for)
-  → Drift Review & Triage Gate       (surfaces findings for)
+  → Agentic Development Execution   (produces specification for)
+  → Automated CICD Gate Execution  (submits artefacts to)
+  → Production Release             (gates and passes to)
+  → Current State Discovery        (initiates discovery for)
+  → Drift Review & Triage Gate     (surfaces findings for)
 ```
 
 Drift review is human-gated: a Solution Architect approves architectural drift,
 Security & Compliance approves regulatory drift, and only validated findings
-enter the delivery pipeline (`architecture/model/elements.yaml:241-248`).
-`cap-spec-engine` realizes both `req-auto-spec-generation` and
-`req-regulatory-mapping`; each other capability realizes one requirement; three
-processes realize their capability
-(`architecture/model/relationships.yaml:18-48`).
+enter the pipeline (`architecture/model/elements.yaml:359-366`). Three
+processes `Realization`-link to the capability they realise
+(`architecture/model/relationships.yaml:129-143`).
 
 ### B. Ecosystem — the six subsystems
 
-The platform `Grouping` (`sys-platform`, `props: c4=system`), its six subsystems
-(`ApplicationComponent`s → C4 containers), four shared stores (`DataObject`s →
-C4 databases), six business roles (→ C4 persons), and seven external systems
-(`ApplicationComponent`s outside the grouping → C4 external systems)
-(`architecture/model/elements.yaml:250-403`). This is the decomposition that
-[ADR-0011](architecture.md) adopts in place of the eight components still
-documented in [Architecture Overview](architecture.md). Views: `Subsystems &
-Capabilities` and the generated C4 context + container
-([ADR-0009](architecture.md)).
+The platform `Grouping` (`sys-platform`, `props: c4=system`), its six
+subsystems (`ApplicationComponent`s → C4 containers), five shared stores
+(`DataObject`s → C4 databases), six business roles (→ C4 persons), and seven
+external systems (`ApplicationComponent`s outside the grouping → C4 external
+systems) (`architecture/model/elements.yaml:368-501`). This is the
+decomposition [ADR-0011](architecture.md) adopts in place of the
+eight-component grouping still documented in
+[Architecture Overview](architecture.md). Views: `Subsystems & Capabilities`
+and the generated C4 context + container ([ADR-0009](architecture.md)).
 
 | Subsystem (`id`) | Scope | Realizes |
 |---|---|---|
-| Controls & Compliance Catalog (`sub-catalog`) | Authors policies/standards, converts to OSCAL Catalogs & Profiles (Trestle) | — |
-| Reusable Architecture Library (`sub-library`) | Patterns, blueprints, solution designs with OSCAL refs; threat modelling | — |
+| Controls & Compliance Catalog (`sub-catalog`) | Authors policies/standards, converts them to OSCAL Catalogs & Profiles | `cap-control-catalog` |
+| Reusable Architecture Library (`sub-library`) | Patterns, blueprints, solution designs with OSCAL refs; threat modelling; models candidate/future-state options | `cap-reusable-architecture` |
 | Digital Twin & Knowledge Graph (`sub-twin`) | The Architecture Knowledge Graph: intent plane + current-state twin plane | `cap-digital-twin`, `cap-forensic-ledger` |
-| Architecture Governance (`sub-governance`) | Models candidate/vendor options, evaluates, decides, archives rejected options with rationale | `cap-human-approval-workflow` |
+| Architecture Governance (`sub-governance`) | Comparative evaluation, the decision + its ADR, archival of rejected options — pure decision-making (options are modelled in the Library) | `cap-human-approval-workflow` |
 | Conformance & Drift Assurance (`sub-assurance`) | Release-time controls gate, BAU effectiveness monitor, drift engine + dashboard | `cap-control-plane`, `cap-drift-dashboard` |
 | Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation | `cap-spec-engine` |
 
-Each subsystem carries an `includes` property listing its fine-grained
-capabilities (`architecture/model/elements.yaml:262-327`). Shared stores:
-OSCAL Repository (`store-oscal`), Pattern & Blueprint Repository
-(`store-patterns`), Architecture Knowledge Graph (`store-akg`, "one graph store,
-two planes: Architecture Intent and Current-State Digital Twin"), Framework Pack
-Library (`store-frameworks`) (`architecture/model/elements.yaml:330-345`).
-External systems: Source Control, CI/CD Pipeline, Cloud & Infrastructure
-Platforms, IT Service Management / Backlog, Regulatory Content Sources, LLM
-Provider, RFP / Vendor Submissions
-(`architecture/model/elements.yaml:374-403`).
+Every subsystem `Realization`-links to a section-A capability, tying the C4
+view back to the skeleton (`architecture/model/relationships.yaml:184-194`).
+Shared stores (`architecture/model/elements.yaml:420-443`): OSCAL Repository
+(`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
+Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
+Architecture Intent and Current-State Digital Twin"), Framework Pack Library
+(`store-frameworks`), Forensic Audit Ledger (`store-ledger`). External systems
+(`architecture/model/elements.yaml:471-501`): Source Control, CI/CD Pipeline,
+Cloud & Infrastructure Platforms, IT Service Management / Backlog, Regulatory
+Content Sources, LLM Provider, RFP / Vendor Submissions.
+
+The subsystem `includes` free-text property was removed — the same
+decomposition is carried by the section-C `ApplicationFunction`s and their
+`Assignment` edges ([ADR-0027](architecture.md) §Consequences).
 
 ### C. Artefact flow — the input/output pipeline
 
-14 `ApplicationFunction`s assigned to their subsystem, each reading input
-artefacts and writing output artefacts (25 `DataObject`s) via `Access`
+15 `ApplicationFunction`s `Assignment`-linked to their subsystem, each reading
+input artefacts and writing output artefacts (25 `DataObject`s) via `Access`
 relationships qualified `Read` / `Write` / `ReadWrite`; the shared stores
 `Aggregation`-link the persistent artefacts, tying section C back to section B
-(`architecture/model/elements.yaml:405-528`,
-`architecture/model/relationships.yaml:209-318`). Four per-stage views scope it
-(`architecture/model/views.yaml:37-117`):
+(`architecture/model/elements.yaml:503-634`,
+`architecture/model/relationships.yaml:313-432`). A dedicated Forensic Ledger
+Recording function (`fn-ledger-record` → `art-ledger-entry`) receives `Flow`
+edges from governance, gate and drift functions so every governed action lands
+an immutable record (`architecture/model/relationships.yaml:380-386`).
+
+Four per-stage views scope it (`architecture/model/views.yaml:58-143`):
 
 | View | Covers |
 |---|---|
 | `Artefact Flow — Controls & OSCAL` | Policy authoring → OSCAL catalog/profile generation from authored Markdown + upstream baselines |
 | `Artefact Flow — Library & Design` | Pattern → blueprint → solution-design composition, OSCAL Component/SSP emission, threat modelling |
-| `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; notation rendering |
+| `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering |
 | `Artefact Flow — Assurance & Specification` | Spec generation; release-time enforcement gate; BAU effectiveness monitoring; drift detection → remediation backlog |
 
-Notable artefacts (`architecture/model/elements.yaml:504-528`): OSCAL
+Notable artefacts (`architecture/model/elements.yaml:609-634`): OSCAL
 Catalog/Profile/Component/SSP, Architecture Pattern, Implementation Blueprint,
 Solution Design, Threat Model, Current-State Digital Twin, Candidate
 Architecture Option, Architecture Decision Record, Archived Rejected Option,
-Release Candidate, Gate Decision, Classified Drift Finding, Development
-Specification, Notation Metamodel.
+Release Candidate, Gate Decision, Classified Drift Finding, Remediation Backlog
+Item, Development Specification, Notation Metamodel, Ledger Entry.
+
+## Views and diagrams
+
+Eight ArchiMate views are declared in `views.yaml`; the C4 context and
+container diagrams are **not** views — `diagram-c4` projects them from the XML
+with `--system "Frictionless Architecture Platform"`
+(`architecture/model/views.yaml:9-10`). The regeneration commands (one C4 loop,
+one loop over the eight view→slug mappings, then `plantuml -tsvg`) are in
+`architecture/model/README.md` §"Regenerate". Rendered `.puml` / `.svg` land
+under `architecture/model/diagrams/`.
 
 ## Regenerating
 
 ```bash
-poetry run python architecture/model/build.py            # YAML → xml → validate
-
-for lvl in context container; do                          # C4 projections
-  poetry run python .agents/skills/diagram-c4/scripts/model_to_c4.py \
-    architecture/model/frictionless-architect.xml \
-    --system "Frictionless Architecture Platform" --level $lvl \
-    -o architecture/model/diagrams/frictionless-architect-c4-$lvl.puml
-done
-
-plantuml -tsvg architecture/model/diagrams/*.puml        # render
+poetry run python architecture/model/build.py     # YAML → xml → validate
+# then the C4 and per-view diagram loops from README.md §"Regenerate"
+plantuml -tsvg architecture/model/diagrams/*.puml
 ```
-
-(`architecture/model/README.md` §"Regenerate".)
 
 ## Provenance
 
-Section A was migrated from the old `nodes.yaml` (itself extracted from
-`prototype/nodes.yaml` at `prototype-neo4j` commit `d0c30b4`), with
-`Motivation_Driver`→`Driver`, `REALIZES`→`Realization`, and `name`/`desc`
-promoted out of `properties`. Section B was ported from the retired
-`sample-data/archimate/build_frictionless_architect.py` (now deleted). Section C
-was authored 2026-08-30. Full history is in the ADR log — see
-[Architecture Overview](architecture.md) (`architecture/model/README.md`
-§"Provenance").
+Section A was extracted from `prototype/nodes.yaml` at `prototype-neo4j`
+(`d0c30b4`); section B was ported from the retired
+`sample-data/archimate/build_frictionless_architect.py`; section C was authored
+2026-08-30. A later pass ([ADR-0027](architecture.md)) renamed the capabilities
+as abilities, added `req-authoritative-twin` / `req-immutable-audit-ledger` so
+every capability has a contract, moved `req-regulatory-mapping` to
+`cap-control-catalog`, added the `Governed Architecture Delivery` value stream
+and the driver→goal→outcome spine plus the driver/principle/constraint →
+requirement influences, merged `const-model-governance` into `const-model-risk`,
+and remodelled "Architecture as Executable Intelligence" as an `Outcome`. Full
+history is in the ADR log — see [Architecture Overview](architecture.md)
+(`architecture/model/README.md` §"Provenance").

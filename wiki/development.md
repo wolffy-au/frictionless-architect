@@ -14,11 +14,12 @@ sources:
 
 ## Caveat on the quickstart docs
 
-`quickstart.md` (repo root) is a stale SpecKit template — it still says
-"Python 3.11 or higher", tells you to install **UV**, and shows
-`uvicorn main:app`. Where it conflicts with `pyproject.toml`, `README.md`,
-`AGENTS.md`, or `ARCHITECTURE.md`, those win. The disagreements are flagged
-inline below. The `002` feature quickstart
+`quickstart.md` (repo root) is a partly-stale SpecKit template — it still says
+"Python 3.11 or higher" and tells you to install **UV**. Its run command was
+fixed to `poetry run uvicorn frictionless_architect.visualizer:app --port 8100`
+(`quickstart.md` §"Core Service"). Where it still conflicts with
+`pyproject.toml`, `README.md`, `AGENTS.md`, or `ARCHITECTURE.md`, those win; the
+disagreements are flagged inline below. The `002` feature quickstart
 (`specs/002-neo4j-schema-ui/quickstart.md`) is the accurate one for running the
 visualiser.
 
@@ -109,19 +110,25 @@ The constitution's "Quality Gates" (see
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
 | `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |
-| `behave` | BDD acceptance |
+| `behave` | BDD acceptance — **not currently gated** (see note below the table) |
 | `commitizen` | Conventional Commits + version inference |
 | `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token in `.secrets/`) |
 | `snyk` | dependency / security scan (`TECHNICAL.md` §"Snyk") |
 
 ```bash
 bash scripts/pre_commit_checks.sh   # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
-bash scripts/pre_merge_checks.sh    # + behave, coverage-gated pytest, frontend UI harness
+bash scripts/pre_merge_checks.sh    # + coverage-gated pytest, frontend UI harness
 ```
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on
 commit, type/test suite on push, Conventional Commits check on the message
 (`AGENTS.md` §"Working on the code").
+
+`behave` is **not currently gated**: `tests/features/` holds only a placeholder
+scenario, so the behave pre-push hook and the `pre_merge_checks.sh` step were
+dropped until `acceptance-author` writes real scenarios
+(`.pre-commit-config.yaml`; CI still runs `behave` non-blocking). `RELEASE.md`
+§2 still lists it and has not caught up.
 
 ## Conventions
 
@@ -132,6 +139,10 @@ commit, type/test suite on push, Conventional Commits check on the message
   [Architecture Overview](architecture.md) ADR-0025).
 - Work on `feature/**` or `bugfix/**` branches — never directly on `main` or
   `develop`.
+- **Spelling "visualiser":** identifiers, module/package names, paths, route
+  segments and the wiki topic slug use `visualizer` (`-z-`); running prose uses
+  the en-GB "visualiser" (`-s-`); both in one sentence is intentional
+  (`AGENTS.md` §"Conventions").
 - Feature work is spec-driven: `speckit-specify` → `speckit-plan` →
   `speckit-tasks` → `speckit-implement`, against
   `.specify/memory/constitution.md`.
