@@ -56,7 +56,6 @@
 
 # =====================================================================
 # A. Drivers influence the functional requirements they motivate
-#    (Principle / Constraint -> Requirement wiring is a deferred second pass)
 # =====================================================================
 - {type: Influence, source: driver-agility, target: req-auto-spec-generation}
 - {type: Influence, source: driver-agility, target: req-reusable-architecture}
@@ -69,6 +68,31 @@
 - {type: Influence, source: driver-scaling, target: req-auto-spec-generation}
 - {type: Influence, source: driver-scaling, target: req-pre-deploy-gate}
 - {type: Influence, source: driver-scaling, target: req-human-signoff}
+
+# =====================================================================
+# A. Principles guide the requirements that operationalise them
+# =====================================================================
+- {type: Influence, source: principle-human-accountability, target: req-pre-deploy-gate}
+- {type: Influence, source: principle-human-accountability, target: req-human-signoff}
+- {type: Influence, source: principle-forensic-audit, target: req-immutable-audit-ledger}
+- {type: Influence, source: principle-forensic-audit, target: req-human-signoff}
+- {type: Influence, source: principle-policy-as-code, target: req-regulatory-mapping}
+- {type: Influence, source: principle-policy-as-code, target: req-pre-deploy-gate}
+- {type: Influence, source: principle-policy-as-code, target: req-control-catalog}
+
+# =====================================================================
+# A. Constraints shape the requirements that must satisfy them
+# =====================================================================
+- {type: Influence, source: const-apra, target: req-pre-deploy-gate}
+- {type: Influence, source: const-apra, target: req-continuous-reconciliation}
+- {type: Influence, source: const-apra, target: req-immutable-audit-ledger}
+- {type: Influence, source: const-model-risk, target: req-pre-deploy-gate}
+- {type: Influence, source: const-model-risk, target: req-human-signoff}
+- {type: Influence, source: const-model-risk, target: req-immutable-audit-ledger}
+- {type: Influence, source: const-privacy, target: req-regulatory-mapping}
+- {type: Influence, source: const-privacy, target: req-control-catalog}
+- {type: Influence, source: const-cloud-policy, target: req-authoritative-twin}
+- {type: Influence, source: const-cloud-policy, target: req-continuous-reconciliation}
 
 # =====================================================================
 # A. Value stream: composition of stages, and the capabilities that serve each

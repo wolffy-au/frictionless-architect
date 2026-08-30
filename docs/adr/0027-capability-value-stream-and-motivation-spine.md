@@ -56,9 +56,11 @@ The architecture model's Strategy and Motivation layers were under-connected:
    stream `Realization`-links to the outcome. This gives the motivation layer a
    spine: drivers → goal ← outcome ← value stream.
 
-5. **Drivers `Influence` the functional requirements they motivate** (11 edges).
-   `Principle → Requirement` and `Constraint → Requirement` wiring is a deliberate
-   **deferred second pass**, to be done once this change is verified.
+5. **Drivers, principles and constraints `Influence` the functional
+   requirements they motivate / guide / shape** — 11 driver edges, 7 principle
+   edges, 10 constraint edges. (The principle and constraint edges landed as a
+   verified second pass immediately after the rest of this ADR.) No motivation
+   element is left unconnected.
 
 6. **`const-model-governance` merged into `const-model-risk`** —
    *Model Risk Management (SR 11-7 / APRA)*.
@@ -71,8 +73,8 @@ The architecture model's Strategy and Motivation layers were under-connected:
 - Two new views: **Capability Map & Value Stream** and **Delivery
   Choreography** (the latter carries the business-process chain, which was
   dropped from the now motivation-only skeleton view).
-- Principle and Constraint elements are still only partially connected until the
-  deferred second pass lands.
+- Every motivation element (driver, goal, outcome, principle, constraint,
+  requirement) is now connected; the skeleton view has no orphan boxes.
 - `includes` free-text properties were removed from the six subsystems — the
   same decomposition is already carried by the section-C `ApplicationFunction`
   elements and their `Assignment` edges (unrelated cleanup, done in the same
@@ -85,7 +87,5 @@ The architecture model's Strategy and Motivation layers were under-connected:
 - **Keep the business-process chain as the only delivery view** — rejected: it is
   choreography between components, not an outcome view; the value stream answers
   "what value, in what order" and the two coexist cleanly.
-- **Wire principles/constraints in the same pass** — deferred by explicit choice
-  to keep this change reviewable.
 - **Leave the two unlinked capabilities as "foundational, no contract"** —
   rejected: both are load-bearing and deserve an explicit requirement.

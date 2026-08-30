@@ -54,9 +54,10 @@ Three layered sections in one model:
 
 Every capability is realized by one subsystem and realizes at least one
 functional requirement; capability-to-capability `Serving` edges and the value
-stream's stage `Serving` edges record the delivery dependency order. The four
-drivers `Influence` the goal and the requirements they motivate.
-`Principle`/`Constraint` → `Requirement` wiring is a deferred second pass
+stream's stage `Serving` edges record the delivery dependency order. Every
+motivation element is connected: the four drivers `Influence` the goal, and
+drivers, principles and constraints all `Influence` the requirements they
+motivate, guide or shape
 ([ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md)).
 
 ## Regenerate
