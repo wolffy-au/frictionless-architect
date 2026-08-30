@@ -29,6 +29,10 @@ class VisualizerSettings(BaseSettings):
         return self.sample_data_dir / "sample-00" / "Test Model Full.xml"
 
     @property
+    def schema_model_xsd_path(self) -> Path:
+        return self.sample_data_dir / "schema" / "archimate3_Model.xsd"
+
+    @property
     def cache_path(self) -> Path:
         return self.cache_dir / "schema_payload.json"
 

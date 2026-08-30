@@ -16,6 +16,7 @@ from frictionless_architect.visualizer.cache import SchemaCache
 from frictionless_architect.visualizer.config import VisualizerSettings, get_visualizer_settings
 from frictionless_architect.visualizer.data_loader import DataLoader, DataLoaderError
 from frictionless_architect.visualizer.sample_parser import SampleParser, SampleParseResult
+from frictionless_architect.visualizer.sample_validator import validate_sample_against_schema
 
 
 class PayloadUnavailable(Exception):
@@ -126,6 +127,12 @@ class SchemaPayloadService:
         except (FileNotFoundError, ParseError):
             add_warning(self.settings.warning_text)
             sample_result = SampleParseResult.empty(self.settings.sample_model_path)
+        else:
+            for issue in validate_sample_against_schema(
+                self.settings.sample_model_path,
+                self.settings.schema_model_xsd_path,
+            ):
+                add_warning(issue)
 
         schema_status = "disabled"
         schema_payload: dict[str, list[dict[str, Any]]] = {"elements": [], "relationships": [], "views": []}
