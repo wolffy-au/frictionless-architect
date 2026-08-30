@@ -16,8 +16,8 @@ scripts/pre_commit_checks.sh
 # echo "Running security scan..."
 # poetry run snyk test --package-manager=poetry || true
 
-echo "Running behave acceptance tests..."
-poetry run behave tests/features/
+# behave (BDD acceptance) is not gated while tests/features/ is a placeholder.
+# Re-add `poetry run behave tests/features/` here once real scenarios exist.
 
 echo "Running pytest suites..."
 poetry run pytest --cov-fail-under=90 --cov=src --cov-report=term-missing
