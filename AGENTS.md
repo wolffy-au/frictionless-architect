@@ -87,8 +87,13 @@ Invoke each by its directory name (e.g. `speckit-plan`, `fork-sync`).
 
 Subagents are cataloged in [`.agents/agents/README.md`](.agents/agents/README.md)
 (e.g. `quality-uplift`, `coverage-uplift`, `acceptance-author`, `docs-uplift`,
-`refactor-analyst`, `spec-alignment`, `vulnerability-remediator`, `release-runner`,
-`commit-auditor`).
+`refactor-analyst`, `spec-alignment`, `adr-auditor`, `vulnerability-remediator`,
+`release-runner`, `commit-auditor`).
+
+Architecture decisions are recorded as MADR files under
+[`docs/adr/`](docs/adr/README.md) — `ARCHITECTURE.md` is the narrative, the ADR log
+is the index. File an ADR for any load-bearing choice; `adr-auditor` sweeps for
+decisions that were made without one.
 The end-to-end release procedure lives in [`RELEASE.md`](RELEASE.md).
 
 <!-- MANUAL ADDITIONS END -->

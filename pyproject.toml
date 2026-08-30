@@ -192,6 +192,7 @@ plugins.md004.style = "dash"
 [tool.pymarkdown.plugins.md013]
 line_length = 120
 code_block_line_length = 120
+heading_line_length = 120
 
 [build-system]
 requires = ["poetry-core>=2.0.0", "poetry-dynamic-versioning>=1.6.0,<2.0.0"]

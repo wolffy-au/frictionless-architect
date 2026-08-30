@@ -6,6 +6,11 @@ restructured toward. Read alongside `PROJECT_SPECIFICATION.md` (the product visi
 
 **Status:** target adopted; migration in progress (see §8).
 
+The load-bearing decisions behind this document — and the platform's other
+decisions gleaned from the specs, constitution, and `TECHNICAL.md` — are now
+recorded as individual MADR records under [`docs/adr/`](docs/adr/README.md).
+This document remains the narrative; the ADR log is the decision index.
+
 ---
 
 ## 1. Principle
