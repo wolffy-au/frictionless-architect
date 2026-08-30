@@ -1,0 +1,117 @@
+# ArchiMate views — minimal scoping for the diagram-archimate skill.
+#
+# Each view: id / name / (members: [element ids] and/or include_types: [types]).
+# `build.py` creates the view and adds the matching element nodes; the
+# diagram-archimate skill renders one with:
+#   poetry run python .agents/skills/diagram-archimate/scripts/model_to_puml.py \
+#     architecture/model/frictionless-architect.xml --view "<name>" -o <out>.puml
+#
+# The C4 context / container diagrams are NOT views — they are projected by
+# diagram-c4 with --system "Frictionless Architecture Platform".
+#
+# (The richer view schema — kind, auto-membership rules — is deferred.)
+
+- id: view-skeleton
+  name: Architecture Skeleton
+  include_types: [Driver, Principle, Constraint, Requirement, Capability, BusinessProcess]
+
+# The whole ecosystem is better seen as the C4 container diagram (diagram-c4).
+# This view isolates just the subsystem -> strategy-capability realization, the
+# bridge between the application view and the skeleton.
+- id: view-subsystem-capabilities
+  name: Subsystems & Capabilities
+  members:
+    - sub-catalog
+    - sub-library
+    - sub-twin
+    - sub-governance
+    - sub-assurance
+    - sub-modelling
+    - cap-digital-twin
+    - cap-forensic-ledger
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+
+- id: view-artefact-oscal
+  name: Artefact Flow — Controls & OSCAL
+  members:
+    - sub-catalog
+    - fn-policy-authoring
+    - fn-oscal-conversion
+    - ext-regsources
+    - art-policy-doc
+    - art-baseline
+    - art-oscal-catalog
+    - art-oscal-profile
+    - store-oscal
+
+- id: view-artefact-library
+  name: Artefact Flow — Library & Design
+  members:
+    - sub-library
+    - fn-pattern-authoring
+    - fn-blueprint-authoring
+    - fn-solution-compose
+    - fn-threat-model
+    - art-oscal-catalog
+    - art-oscal-profile
+    - art-oscal-component
+    - art-oscal-ssp
+    - art-pattern
+    - art-blueprint
+    - art-solution-design
+    - art-threat-model
+    - store-patterns
+    - store-oscal
+
+- id: view-artefact-twin-governance
+  name: Artefact Flow — Digital Twin & Governance
+  members:
+    - sub-twin
+    - sub-governance
+    - sub-modelling
+    - fn-twin-ingest
+    - fn-options-model
+    - fn-governance-eval
+    - fn-notation-engine
+    - ext-cloud
+    - ext-cicd
+    - ext-rfp
+    - art-infra-state
+    - art-deploy-event
+    - art-twin
+    - art-solution-design
+    - art-candidate-arch
+    - art-impact-assessment
+    - art-adr
+    - art-archived-option
+    - art-metamodel
+    - store-akg
+
+- id: view-artefact-assurance-spec
+  name: Artefact Flow — Assurance & Specification
+  members:
+    - sub-assurance
+    - sub-modelling
+    - fn-spec-generator
+    - fn-enforcement-gate
+    - fn-effectiveness-monitor
+    - fn-drift-engine
+    - ext-cicd
+    - ext-scm
+    - ext-itsm
+    - art-pattern
+    - art-blueprint
+    - art-solution-design
+    - art-dev-spec
+    - art-oscal-ssp
+    - art-oscal-catalog
+    - art-release-candidate
+    - art-gate-decision
+    - art-effectiveness-evidence
+    - art-twin
+    - art-adr
+    - art-drift-report
+    - art-remediation-item

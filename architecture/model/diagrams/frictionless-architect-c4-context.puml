@@ -1,0 +1,38 @@
+@startuml
+' GENERATED from architecture/model/frictionless-architect.xml by diagram-c4 (model_to_c4.py) — do not edit; fix the ArchiMate model.
+!include <C4/C4_Context>
+
+title Frictionless Architecture Platform — C4 Context
+LAYOUT_WITH_LEGEND()
+
+System(n_id54dd4701dbf151, "Frictionless Architecture Platform", "Governs architecture from authored policy through to BAU control effectiveness.")
+Person(n_id2b5394f913985a, "Enterprise Architect", "Owns principles, target patterns, options and governance decisions.")
+Person(n_ide2cb7f3efa6256, "Solution Architect", "Composes blueprints into solution designs.")
+Person(n_id10a12f8c7cac51, "Security Architect / Threat Modeller", "Runs threat models over patterns, blueprints and designs.")
+Person(n_id2c72565ddd6c52, "Developer", "Consumes generated specifications for delivery.")
+Person(n_id5e264d2f4bb551, "Compliance Officer / Auditor", "Authors control content and verifies traceability.")
+Person(n_id2c489ee6594253, "Platform Operations (BAU)", "Watches control effectiveness and drift in run.")
+System_Ext(n_id4a7b9c4171d855, "Source Control", "Git repositories for specifications and delivery code.")
+System_Ext(n_iddc67769c419e5d, "CI/CD Pipeline", "Builds, tests and releases; invokes the enforcement gate.")
+System_Ext(n_idd9989f19521155, "Cloud & Infrastructure Platforms", "Runtime platforms whose live state feeds the digital twin.")
+System_Ext(n_idaabfebfc7b9858, "IT Service Management / Backlog", "Delivery backlog and ticketing (e.g. Jira).")
+System_Ext(n_id13f9d5fb47b650, "Regulatory Content Sources", "Upstream NIST OSCAL content and FedRAMP baselines.")
+System_Ext(n_id2610ae0cc2cc50, "LLM Provider", "Language model used for drafting specs, ADRs, evaluations and threat narratives.")
+System_Ext(n_idaf80425d61fd58, "RFP / Vendor Submissions", "Requests for proposal and competing vendor solution responses assessed at engagement time.")
+
+Rel(n_id5e264d2f4bb551, n_id54dd4701dbf151, "authors control content in\nverifies traceability in\nwatches control status in")
+Rel(n_id2b5394f913985a, n_id54dd4701dbf151, "curates patterns in\nmodels options & records decisions in\nreviews drift in\nmodels with")
+Rel(n_ide2cb7f3efa6256, n_id54dd4701dbf151, "composes blueprints & designs in\nreviews drift in\nmodels with")
+Rel(n_id10a12f8c7cac51, n_id54dd4701dbf151, "runs threat models in")
+Rel(n_id2c489ee6594253, n_id54dd4701dbf151, "watches control effectiveness & drift in")
+Rel(n_id2c72565ddd6c52, n_id54dd4701dbf151, "consumes specifications from")
+Rel(n_id13f9d5fb47b650, n_id54dd4701dbf151, "baseline catalogs")
+Rel(n_id54dd4701dbf151, n_id2610ae0cc2cc50, "requests threat narratives from\nrequests ADR & evaluation drafts from\nrequests draft specifications from")
+Rel(n_idd9989f19521155, n_id54dd4701dbf151, "current-state configuration\nruntime control signals")
+Rel(n_iddc67769c419e5d, n_id54dd4701dbf151, "deployment events\nrelease candidate")
+Rel(n_idaf80425d61fd58, n_id54dd4701dbf151, "candidate solution inputs")
+Rel(n_id54dd4701dbf151, n_iddc67769c419e5d, "gate decision")
+Rel(n_id54dd4701dbf151, n_idaabfebfc7b9858, "remediation backlog items")
+Rel(n_id54dd4701dbf151, n_id4a7b9c4171d855, "specifications")
+
+@enduml

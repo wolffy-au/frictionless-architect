@@ -51,11 +51,21 @@ def prop(obj, key: str) -> str | None:
 
 
 def contained_by_system(model: Model, system_uuid: str) -> set[str]:
-    """UUIDs composed/aggregated (transitively) by the system in focus."""
+    """UUIDs composed/aggregated (transitively) by the system in focus.
+
+    Only *structural containers* (the system, application components,
+    collaborations, groupings) expand further — a contained ``DataObject`` /
+    ``Artifact`` that in turn aggregates other data objects does not drag them
+    into the boundary (that is a data-model relationship, not containment).
+    """
+    by_uuid = {e.uuid: e for e in model.elements}
+    expandable = {"ApplicationComponent", "ApplicationCollaboration", "Grouping"}
     inside: set[str] = set()
     frontier = [system_uuid]
     while frontier:
         cur = frontier.pop()
+        if cur != system_uuid and getattr(by_uuid.get(cur), "type", None) not in expandable:
+            continue
         for r in model.relationships:
             if r.type in {"Composition", "Aggregation"} and r.source.uuid == cur and r.target.uuid not in inside:
                 inside.add(r.target.uuid)
@@ -78,6 +88,7 @@ def generate(path: str, system_name: str, level: str, layout: str) -> tuple[str,
     include = "C4_Container" if level == "container" else "C4_Context"
     lines = [
         "@startuml",
+        f"' GENERATED from {path} by diagram-c4 (model_to_c4.py) — do not edit; fix the ArchiMate model.",
         f"!include <C4/{include}>",
         "",
         f"title {esc(system.name)} — C4 {level.capitalize()}",
@@ -147,14 +158,14 @@ def generate(path: str, system_name: str, level: str, layout: str) -> tuple[str,
         return None
 
     lines.append("")
-    seen_edges: set[tuple[str, str, str]] = set()
+    raw: list[tuple[str, str, str, str]] = []  # (source, target, label, technology)
     for r in model.relationships:
         if r.type in STRUCTURAL_RELS:
             continue
         s, t = endpoint(r.source.uuid), endpoint(r.target.uuid)
         if not s or not t or s == t:
             continue
-        label = prop(r, "c4-label")
+        label = prop(r, "c4-label") or (getattr(r, "name", "") or None)
         tech = esc(prop(r, "c4-technology") or "")
         if r.type == "Serving":
             s, t = t, s  # served party depends on the server
@@ -170,14 +181,45 @@ def generate(path: str, system_name: str, level: str, layout: str) -> tuple[str,
         else:
             warns.append(f"relationship type {r.type!r} not in C4 mapping — drawn as generic Rel")
             label = label or r.type.lower()
-        edge = (s, t, label or "")
-        if edge in seen_edges:
-            continue
-        seen_edges.add(edge)
-        args = f'{s}, {t}, "{esc(label)}"'
-        if tech:
-            args += f', "{tech}"'
-        lines.append(f"Rel({args})")
+        raw.append((s, t, label or "", tech))
+
+    if level == "context":
+        # Every interaction with an inside-element folds onto the one system
+        # box, so many container-level relationships collapse onto the same
+        # (source, target) pair. Merge each pair into a single Rel that lists
+        # its distinct labels one per line, rather than drawing a fan of
+        # near-duplicate arrows.
+        merged: dict[tuple[str, str], tuple[list[str], str]] = {}
+        order: list[tuple[str, str]] = []
+        for s, t, label, tech in raw:
+            key = (s, t)
+            if key not in merged:
+                merged[key] = ([], tech)
+                order.append(key)
+            labels, kept_tech = merged[key]
+            if label and label not in labels:
+                labels.append(label)
+            if tech and not kept_tech:
+                merged[key] = (labels, tech)
+        for s, t in order:
+            labels, tech = merged[(s, t)]
+            joined = "\\n".join(esc(x) for x in labels)
+            args = f'{s}, {t}, "{joined}"'
+            if tech:
+                args += f', "{tech}"'
+            lines.append(f"Rel({args})")
+    else:
+        # Container level: keep distinct labels as separate arrows; drop only
+        # exact duplicates.
+        seen: set[tuple[str, str, str]] = set()
+        for s, t, label, tech in raw:
+            if (s, t, label) in seen:
+                continue
+            seen.add((s, t, label))
+            args = f'{s}, {t}, "{esc(label)}"'
+            if tech:
+                args += f', "{tech}"'
+            lines.append(f"Rel({args})")
 
     lines += ["", "@enduml", ""]
     return "\n".join(lines), warns

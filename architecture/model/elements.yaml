@@ -1,0 +1,528 @@
+# Frictionless Architecture & Governance Platform — model elements
+#
+# Canonical source of truth. `build.py` projects this + relationships.yaml into
+# frictionless-architect.xml (Open Group Exchange Format); every diagram is a
+# projection of that. Do not hand-edit the generated XML.
+#
+# Schema:  type / id / name / desc? / props?
+#   type   bare ArchiMate 3.2 concept name (pyArchimate.ArchiType), case-insensitive
+#   id     stable kebab id -> deterministic UUID (never renumber a live id)
+#   props  str->str; c4 hints, `includes`, requirement-type, artefact metadata
+#
+# Sections:
+#   A. Motivation + Strategy + Business — the load-bearing skeleton
+#   B. Application — the six-subsystem ecosystem (C4 context / container views)
+#   C. Application — the artefact input/output pipeline (functions + artefacts)
+
+# =====================================================================
+# A. MOTIVATION — Drivers (why the platform exists)
+# =====================================================================
+- type: Driver
+  id: driver-agility
+  name: Market Agility & Competitive Pressure
+  desc: >-
+    In an AI-driven landscape the "cost of delay" is existential. If the bank
+    cannot deliver features as fast as a startup or a tech giant, it loses
+    market share.
+- type: Driver
+  id: driver-compliance
+  name: Regulatory Resiliency & Social License
+  desc: >-
+    For a major financial institution, non-compliance with APRA CPS 230/234 is a
+    threat to the banking license. Manual compliance is too slow and error-prone
+    for an AI-speed world.
+- type: Driver
+  id: driver-sustainability
+  name: Systemic Sustainability & Complexity Management
+  desc: >-
+    Unmanaged architectural drift creates hidden debt that makes systems
+    fragile. Left unchecked, the system eventually becomes too complex to change
+    at any speed.
+- type: Driver
+  id: driver-scaling
+  name: Human-to-Machine Operational Scaling
+  desc: >-
+    Human architects are a finite bottleneck. As AI agents produce changes at
+    machine speed, it is physically impossible to review it all with traditional
+    methods.
+
+# =====================================================================
+# A. MOTIVATION — Principles (constitution-level; cross-binding)
+# =====================================================================
+- type: Principle
+  id: principle-executable-intel
+  name: Architecture as Executable Intelligence
+  desc: >-
+    Transform architecture from passive documentation into executable system
+    intelligence.
+- type: Principle
+  id: principle-human-accountability
+  name: Deterministic Human Accountability
+  desc: AI is advisory; the specification is deterministic; a human holds sign-off.
+- type: Principle
+  id: principle-forensic-audit
+  name: Forensic Auditability
+  desc: >-
+    Ability to reconstruct not just what happened but why a decision was made.
+- type: Principle
+  id: principle-policy-as-code
+  name: Policy as Code
+  desc: >-
+    All governance rules, compliance mappings, and architectural guardrails are
+    expressed as version-controlled, machine-executable policy, not prose
+    documents.
+
+# =====================================================================
+# A. MOTIVATION — Constraints (regulatory envelope every component inherits)
+# =====================================================================
+- type: Constraint
+  id: const-apra
+  name: APRA CPS 230/234 Compliance
+  desc: Operational resilience and prudential standards.
+- type: Constraint
+  id: const-model-risk
+  name: Model Risk Management Framework
+  desc: Manages risks associated with models and agentic decision-making.
+- type: Constraint
+  id: const-privacy
+  name: Australian Privacy Act (APP)
+  desc: Data privacy and protection regulations.
+- type: Constraint
+  id: const-cloud-policy
+  name: Cloud & Data Sovereignty Policy
+  desc: Governance and compliance policies for cloud-based operations.
+- type: Constraint
+  id: const-model-governance
+  name: Model Risk Standards (SR 11-7 / APRA)
+  desc: >-
+    External standards governing model risk management. SR 11-7 is the de facto
+    global standard adopted by major banks; APRA's operational resilience
+    guidance sets the Australian prudential expectation. Together they define
+    validation, documentation, and oversight obligations for agentic
+    decision-making.
+
+# =====================================================================
+# A. MOTIVATION — Functional Requirements (each one is a component contract)
+# =====================================================================
+- type: Requirement
+  id: req-auto-spec-generation
+  name: Automated Specification Generation from Graph
+  desc: >-
+    For every approved change request, the system must automatically derive a
+    complete, executable architectural specification from the knowledge graph —
+    with zero manual authoring by an architect.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-regulatory-mapping
+  name: Automated Regulatory Obligation Mapping
+  desc: >-
+    Every technical change must be automatically mapped to its applicable APRA
+    CPS 230/234 obligations before a deployment gate is passed. No change may
+    proceed without a resolved compliance mapping.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-pre-deploy-gate
+  name: Pre-Deployment Compliance Gate Enforcement
+  desc: >-
+    The supervisory control plane must intercept and evaluate all
+    agent-generated changes against the executable specification before they
+    reach any test or production environment. Non-compliant changes must be
+    blocked, not flagged retrospectively.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-continuous-reconciliation
+  name: Continuous As-Built vs. As-Designed Reconciliation
+  desc: >-
+    The system must continuously reconcile observed system state (telemetry,
+    deployed artefacts) against the knowledge graph's as-designed intent and
+    surface any deviation as a classified drift event.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-human-signoff
+  name: Mandatory Human Sign-off for Non-Standard Changes
+  desc: >-
+    Any change that cannot be deterministically validated against the executable
+    specification must be escalated to a named human architect for explicit
+    approval. The system must prevent autonomous resolution of ambiguous
+    compliance cases.
+  props:
+    requirement-type: Functional
+
+# =====================================================================
+# A. STRATEGY — Primary Capabilities (candidate component boundaries)
+# =====================================================================
+- type: Capability
+  id: cap-digital-twin
+  name: Digital Twin Knowledge Graph
+  desc: >-
+    Maintain a live, queryable graph of the enterprise technology landscape —
+    its components, policies, relationships, and regulatory mappings — as the
+    authoritative source of architectural truth.
+- type: Capability
+  id: cap-spec-engine
+  name: Executable Specification Generation
+  desc: >-
+    Deterministically produce machine-consumable architectural specifications
+    from the knowledge graph, which AI agents and CI/CD pipelines consume as
+    guardrails rather than human-readable documents.
+- type: Capability
+  id: cap-control-plane
+  name: Agentic Supervisory Control
+  desc: >-
+    Constrain, monitor, and intervene in the behaviour of autonomous development
+    agents in real time, enforcing architectural and regulatory boundaries
+    before code reaches any environment.
+- type: Capability
+  id: cap-forensic-ledger
+  name: Forensic Audit & Compliance Ledger
+  desc: >-
+    Record every agent action, gate decision, and specification evaluation into
+    an immutable, queryable ledger that serves as contemporaneous evidence for
+    regulatory examination.
+- type: Capability
+  id: cap-drift-dashboard
+  name: Architectural Drift Detection & Reconciliation
+  desc: >-
+    Continuously compare observed system telemetry against the as-designed
+    knowledge graph and surface deviations — strategic, structural, or agentic —
+    in real time.
+- type: Capability
+  id: cap-human-approval-workflow
+  name: Human Oversight & Approval Workflow
+  desc: >-
+    Identify, route, and manage human architect approval for changes that
+    deviate from deterministic specifications or present ambiguous compliance
+    scenarios, through a defined, auditable sign-off process that upholds
+    principle-human-accountability.
+
+# =====================================================================
+# A. BUSINESS — Processes (the orchestration choreography between components)
+# =====================================================================
+- type: BusinessProcess
+  id: process-spec-generation
+  name: Deterministic Spec Generation
+  desc: >-
+    Scripted, template-driven generation of executable architectural
+    specifications from the knowledge graph. AI recommends scope; human holds
+    sign-off. Output is the deterministic intent consumed by the agentic crew.
+- type: BusinessProcess
+  id: process-agentic-crew
+  name: Agentic Development Execution
+  desc: >-
+    Supervised execution of AI-driven development within supervisory control
+    plane constraints. Consumes the executable specification, regulation,
+    policy, patterns, and controls from the knowledge graph to generate code,
+    test suites, and deployment manifests.
+- type: BusinessProcess
+  id: process-cicd-pipeline
+  name: Automated CICD Gate Execution
+  desc: >-
+    The CI/CD pipeline with the agentic control plane woven in. Evaluates every
+    artefact against the executable specification and policy-as-code gates
+    before a release is permitted. Blocks on violation; escalates exceptions for
+    human review; logs all gate outcomes to the immutable ledger.
+- type: BusinessProcess
+  id: process-release
+  name: Production Release
+  desc: >-
+    Compliant, traceable-to-spec deployment to production, triggered only after
+    all gates have cleared. Automatically auditable end-to-end.
+- type: BusinessProcess
+  id: process-state-discovery
+  name: Current State Discovery
+  desc: >-
+    Continuous, automated reconciliation of actual system state against
+    architectural intent. Surfaces classified drift events for human review;
+    does not write directly to the backlog.
+- type: BusinessProcess
+  id: process-drift-review
+  name: Drift Review & Triage Gate
+  desc: >-
+    Human-gated review of drift findings before they are committed as backlog
+    work items. A Solution Architect approves architectural drift; Security &
+    Compliance approves regulatory drift. Ensures only validated, prioritised
+    findings enter the delivery pipeline.
+
+# =====================================================================
+# B. APPLICATION — the platform and its six subsystems
+#    (c4=system on the Grouping -> C4 System_Boundary; the ApplicationComponents
+#     it composes -> C4 Containers; `includes` lists the fine-grained
+#     capabilities folded into each subsystem)
+# =====================================================================
+- type: Grouping
+  id: sys-platform
+  name: Frictionless Architecture Platform
+  desc: Governs architecture from authored policy through to BAU control effectiveness.
+  props:
+    c4: system
+- type: ApplicationComponent
+  id: sub-catalog
+  name: Controls & Compliance Catalog
+  desc: >-
+    Authors custom policies and standards and converts them to OSCAL Catalogs
+    and Profiles.
+  props:
+    includes: >-
+      Policy & Standards Authoring Workspace (Trestle Markdown catalogs);
+      Trestle Conversion Service (Markdown <-> OSCAL Catalogs & Profiles).
+- type: ApplicationComponent
+  id: sub-library
+  name: Reusable Architecture Library
+  desc: >-
+    Composable patterns, blueprints and solution designs with OSCAL references,
+    plus threat modelling.
+  props:
+    includes: >-
+      Architecture Pattern Library (technology-agnostic; -> OSCAL Profiles);
+      Implementation Blueprint Library (parent/child of patterns; -> OSCAL
+      Components); Solution Design Composer (SolutionComponents under a
+      SolutionDesign; -> OSCAL SSP); Threat Modelling Service (attaches threats
+      & mitigations).
+- type: ApplicationComponent
+  id: sub-twin
+  name: Digital Twin & Knowledge Graph
+  desc: >-
+    Maintains the Architecture Knowledge Graph: an intent plane and a
+    current-state digital twin plane.
+  props:
+    includes: >-
+      Digital Twin Ingestion Service (builds the current-state plane from live
+      infra & pipeline data).
+- type: ApplicationComponent
+  id: sub-governance
+  name: Architecture Governance
+  desc: >-
+    Models candidate future-state / solution options, evaluates them, decides,
+    and archives the rest with reasons.
+  props:
+    includes: >-
+      Future-State & Options Modeller (one or more candidate architectures, e.g.
+      RFP vendor responses); Architecture Governance Service (comparative
+      evaluation, impact assessment, ADR decisions, archival of rejected options
+      with rationale).
+- type: ApplicationComponent
+  id: sub-assurance
+  name: Conformance & Drift Assurance
+  desc: >-
+    Enforces controls at release, monitors effectiveness in BAU, and detects and
+    reports architecture drift.
+  props:
+    includes: >-
+      Controls Enforcement Gate (release-time); Controls Effectiveness Monitor
+      (BAU); Drift & Deviation Engine (intent vs twin); Architecture Drift
+      Dashboard & Backlog.
+- type: ApplicationComponent
+  id: sub-modelling
+  name: Modelling & Specification
+  desc: >-
+    Out-of-the-box ArchiMate / C4 / UML modelling, and generation of development
+    specifications.
+  props:
+    includes: >-
+      Modelling & Notation Engine (ArchiMate, C4, UML); Specification Generator
+      (specs from patterns, blueprints & designs for spec-driven development).
+
+# --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
+- type: DataObject
+  id: store-oscal
+  name: OSCAL Repository
+  desc: OSCAL Catalogs, Profiles, Components and SSPs.
+- type: DataObject
+  id: store-patterns
+  name: Pattern & Blueprint Repository
+  desc: Architecture patterns, implementation blueprints and solution designs.
+- type: DataObject
+  id: store-akg
+  name: Architecture Knowledge Graph
+  desc: "One graph store, two planes: Architecture Intent and Current-State Digital Twin."
+- type: DataObject
+  id: store-frameworks
+  name: Framework Pack Library
+  desc: NIST / FedRAMP baselines; ArchiMate / C4 / UML metamodels.
+
+# --- B. People (BusinessRole -> C4 Person) ---
+- type: BusinessRole
+  id: role-ea
+  name: Enterprise Architect
+  desc: Owns principles, target patterns, options and governance decisions.
+- type: BusinessRole
+  id: role-sa
+  name: Solution Architect
+  desc: Composes blueprints into solution designs.
+- type: BusinessRole
+  id: role-sec
+  name: Security Architect / Threat Modeller
+  desc: Runs threat models over patterns, blueprints and designs.
+- type: BusinessRole
+  id: role-dev
+  name: Developer
+  desc: Consumes generated specifications for delivery.
+- type: BusinessRole
+  id: role-compliance
+  name: Compliance Officer / Auditor
+  desc: Authors control content and verifies traceability.
+- type: BusinessRole
+  id: role-ops
+  name: Platform Operations (BAU)
+  desc: Watches control effectiveness and drift in run.
+
+# --- B. External systems (ApplicationComponent outside the Grouping -> C4 System_Ext) ---
+- type: ApplicationComponent
+  id: ext-scm
+  name: Source Control
+  desc: Git repositories for specifications and delivery code.
+- type: ApplicationComponent
+  id: ext-cicd
+  name: CI/CD Pipeline
+  desc: Builds, tests and releases; invokes the enforcement gate.
+- type: ApplicationComponent
+  id: ext-cloud
+  name: Cloud & Infrastructure Platforms
+  desc: Runtime platforms whose live state feeds the digital twin.
+- type: ApplicationComponent
+  id: ext-itsm
+  name: IT Service Management / Backlog
+  desc: Delivery backlog and ticketing (e.g. Jira).
+- type: ApplicationComponent
+  id: ext-regsources
+  name: Regulatory Content Sources
+  desc: Upstream NIST OSCAL content and FedRAMP baselines.
+- type: ApplicationComponent
+  id: ext-llm
+  name: LLM Provider
+  desc: Language model used for drafting specs, ADRs, evaluations and threat narratives.
+- type: ApplicationComponent
+  id: ext-rfp
+  name: RFP / Vendor Submissions
+  desc: >-
+    Requests for proposal and competing vendor solution responses assessed at
+    engagement time.
+
+# =====================================================================
+# C. APPLICATION — the artefact input/output pipeline
+#    ApplicationFunctions (the generators/transformers) assigned to their
+#    subsystem, reading input artefacts and writing output artefacts via Access.
+#    Artefacts are DataObjects, aggregated into the shared stores from section B.
+# =====================================================================
+
+# --- C. Functions: Controls & Compliance Catalog ---
+- type: ApplicationFunction
+  id: fn-policy-authoring
+  name: Policy & Standards Authoring
+  desc: Author custom policy and standard content as Trestle Markdown catalogs.
+- type: ApplicationFunction
+  id: fn-oscal-conversion
+  name: OSCAL Catalog & Profile Generation
+  desc: >-
+    Convert authored Markdown and upstream baselines into OSCAL Catalogs and
+    Profiles (Trestle round-trip).
+
+# --- C. Functions: Reusable Architecture Library ---
+- type: ApplicationFunction
+  id: fn-pattern-authoring
+  name: Pattern Authoring & Control Mapping
+  desc: >-
+    Author technology-agnostic architecture patterns and map them to OSCAL
+    Profiles.
+- type: ApplicationFunction
+  id: fn-blueprint-authoring
+  name: Blueprint Authoring & Component Mapping
+  desc: >-
+    Derive implementation blueprints from patterns and map them to OSCAL
+    Component Definitions.
+- type: ApplicationFunction
+  id: fn-solution-compose
+  name: Solution Design Composition
+  desc: >-
+    Compose blueprints and patterns into a solution design and emit its OSCAL
+    System Security Plan.
+- type: ApplicationFunction
+  id: fn-threat-model
+  name: Threat Modelling
+  desc: >-
+    Attach threats and mitigations to patterns, blueprints and solution
+    designs.
+
+# --- C. Functions: Digital Twin & Knowledge Graph ---
+- type: ApplicationFunction
+  id: fn-twin-ingest
+  name: Digital Twin Ingestion
+  desc: >-
+    Build the current-state digital twin plane from live infrastructure state
+    and deployment events.
+
+# --- C. Functions: Architecture Governance ---
+- type: ApplicationFunction
+  id: fn-options-model
+  name: Future-State & Options Modelling
+  desc: >-
+    Model one or more candidate future-state architectures, including competing
+    vendor / RFP responses.
+- type: ApplicationFunction
+  id: fn-governance-eval
+  name: Comparative Evaluation & Decision
+  desc: >-
+    Compare candidate options, assess impact against intent and twin, record the
+    ADR, and archive rejected options with rationale.
+
+# --- C. Functions: Conformance & Drift Assurance ---
+- type: ApplicationFunction
+  id: fn-enforcement-gate
+  name: Controls Enforcement Gate
+  desc: >-
+    Evaluate a release candidate against the expected controls and the solution
+    design at release time; block or pass.
+- type: ApplicationFunction
+  id: fn-effectiveness-monitor
+  name: Controls Effectiveness Monitoring
+  desc: >-
+    Monitor whether deployed controls remain effective in BAU and record the
+    evidence.
+- type: ApplicationFunction
+  id: fn-drift-engine
+  name: Drift & Deviation Detection
+  desc: >-
+    Diff as-designed intent against the current-state twin and classify
+    deviations as drift findings.
+
+# --- C. Functions: Modelling & Specification ---
+- type: ApplicationFunction
+  id: fn-notation-engine
+  name: Modelling & Notation Rendering
+  desc: Render ArchiMate / C4 / UML models against the bundled metamodels.
+- type: ApplicationFunction
+  id: fn-spec-generator
+  name: Specification Generation
+  desc: >-
+    Generate development specifications from patterns, blueprints and solution
+    designs for spec-driven delivery.
+
+# --- C. Artefacts (DataObject) ---
+- {type: DataObject, id: art-policy-doc, name: Policy / Standard Document, desc: Custom policy or standard authored as Trestle Markdown.}
+- {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: Upstream NIST OSCAL catalog / FedRAMP baseline.}
+- {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
+- {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
+- {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable component.}
+- {type: DataObject, id: art-oscal-ssp, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
+- {type: DataObject, id: art-pattern, name: Architecture Pattern, desc: Technology-agnostic, reusable design with mapped controls.}
+- {type: DataObject, id: art-blueprint, name: Implementation Blueprint, desc: Technology-specific realisation of one or more patterns.}
+- {type: DataObject, id: art-solution-design, name: Solution Design, desc: Composed solution — SolutionComponents under a SolutionDesign.}
+- {type: DataObject, id: art-threat-model, name: Threat Model, desc: Threats and mitigations attached to a pattern, blueprint or design.}
+- {type: DataObject, id: art-infra-state, name: Live Infrastructure State, desc: Observed configuration of the running platforms.}
+- {type: DataObject, id: art-deploy-event, name: Deployment Event, desc: A release / deployment recorded by the pipeline.}
+- {type: DataObject, id: art-twin, name: Current-State Digital Twin, desc: The as-built plane of the Architecture Knowledge Graph.}
+- {type: DataObject, id: art-candidate-arch, name: Candidate Architecture Option, desc: A proposed future-state or vendor solution under evaluation.}
+- {type: DataObject, id: art-adr, name: Architecture Decision Record, desc: The chosen option with its rationale and trade-offs.}
+- {type: DataObject, id: art-impact-assessment, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
+- {type: DataObject, id: art-archived-option, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
+- {type: DataObject, id: art-release-candidate, name: Release Candidate, desc: A build submitted to the enforcement gate.}
+- {type: DataObject, id: art-gate-decision, name: Gate Decision, desc: Pass / block outcome with the controls evaluated.}
+- {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working.}
+- {type: DataObject, id: art-drift-report, name: Classified Drift Finding, desc: A deviation of current state from intent, classified and prioritised.}
+- {type: DataObject, id: art-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
+- {type: DataObject, id: art-dev-spec, name: Development Specification, desc: Executable spec derived from patterns, blueprints and designs.}
+- {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}

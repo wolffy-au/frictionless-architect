@@ -1,58 +1,318 @@
-# Relationships among the skeleton nodes only (13 of the prototype's 143).
-# The other 130 edges wired the skeleton to speculative detail nodes and are
-# left on tag `archive/prototype-neo4j`. That sparseness is the point: the
-# dense connectivity of the full model was mostly scaffolding for detail that
-# should not have been modelled centrally yet.
+# Frictionless Architecture & Governance Platform — model relationships
+#
+# Schema:  type / source / target / label? / props?
+#   type    ArchiMate 3.2 relationship name (Realization, Triggering, Serving,
+#           Flow, Access, Association, Composition, Aggregation, Assignment,
+#           Influence, Specialization), case-insensitive
+#   source  element id      target  element id
+#   label   optional text shown on ArchiMate diagrams / used as the C4 edge label
+#   props   access_type (Read|Write|ReadWrite) for Access;
+#           c4-label overrides `label` in the C4 projection only
+#
+# Every (source, type, target) pair is held to the ArchiMate 3.2 relationship
+# matrix by `.agents/skills/model-archimate/scripts/validate.py` (run by build.py).
 
-# --- Capability realizes its functional requirement (candidate component -> contract) ---
-- source: cap-spec-engine
+# =====================================================================
+# A. Capability realizes its functional requirement (component -> contract)
+# =====================================================================
+- type: Realization
+  source: cap-spec-engine
   target: req-auto-spec-generation
-  type: REALIZES
-- source: cap-spec-engine
+- type: Realization
+  source: cap-spec-engine
   target: req-regulatory-mapping
-  type: REALIZES
-- source: cap-control-plane
+- type: Realization
+  source: cap-control-plane
   target: req-pre-deploy-gate
-  type: REALIZES
-- source: cap-drift-dashboard
+- type: Realization
+  source: cap-drift-dashboard
   target: req-continuous-reconciliation
-  type: REALIZES
-- source: cap-human-approval-workflow
+- type: Realization
+  source: cap-human-approval-workflow
   target: req-human-signoff
-  type: REALIZES
 
-# --- Process realizes capability (orchestration flow -> component) ---
-- source: process-spec-generation
+# =====================================================================
+# A. Process realizes capability (orchestration flow -> component)
+# =====================================================================
+- type: Realization
+  source: process-spec-generation
   target: cap-spec-engine
-  type: REALIZES
-  name: realizes
-- source: process-cicd-pipeline
+  label: realizes
+- type: Realization
+  source: process-cicd-pipeline
   target: cap-control-plane
-  type: REALIZES
-  name: woven enforcement
-- source: process-state-discovery
+  label: woven enforcement
+- type: Realization
+  source: process-state-discovery
   target: cap-drift-dashboard
-  type: REALIZES
-  name: realizes
+  label: realizes
 
-# --- Process chain (the end-to-end choreography) ---
-- source: process-spec-generation
+# =====================================================================
+# A. Process chain (the end-to-end choreography)
+# =====================================================================
+- type: Triggering
+  source: process-spec-generation
   target: process-agentic-crew
-  type: TRIGGERS
-  name: produces specification for
-- source: process-agentic-crew
+  label: produces specification for
+- type: Triggering
+  source: process-agentic-crew
   target: process-cicd-pipeline
-  type: TRIGGERS
-  name: submits artefacts to
-- source: process-cicd-pipeline
+  label: submits artefacts to
+- type: Triggering
+  source: process-cicd-pipeline
   target: process-release
-  type: TRIGGERS
-  name: gates and passes to
-- source: process-release
+  label: gates and passes to
+- type: Triggering
+  source: process-release
   target: process-state-discovery
-  type: TRIGGERS
-  name: initiates discovery for
-- source: process-state-discovery
+  label: initiates discovery for
+- type: Triggering
+  source: process-state-discovery
   target: process-drift-review
-  type: TRIGGERS
-  name: surfaces findings for
+  label: surfaces findings for
+
+# =====================================================================
+# B. Platform composes its subsystems and shared stores
+# =====================================================================
+- {type: Composition, source: sys-platform, target: sub-catalog}
+- {type: Composition, source: sys-platform, target: sub-library}
+- {type: Composition, source: sys-platform, target: sub-twin}
+- {type: Composition, source: sys-platform, target: sub-governance}
+- {type: Composition, source: sys-platform, target: sub-assurance}
+- {type: Composition, source: sys-platform, target: sub-modelling}
+- {type: Composition, source: sys-platform, target: store-oscal}
+- {type: Composition, source: sys-platform, target: store-patterns}
+- {type: Composition, source: sys-platform, target: store-akg}
+- {type: Composition, source: sys-platform, target: store-frameworks}
+
+# =====================================================================
+# B. Subsystem realizes strategy capability (ties the C4 view to the skeleton)
+# =====================================================================
+- {type: Realization, source: sub-twin, target: cap-digital-twin}
+- {type: Realization, source: sub-twin, target: cap-forensic-ledger}
+- {type: Realization, source: sub-modelling, target: cap-spec-engine}
+- {type: Realization, source: sub-assurance, target: cap-control-plane}
+- {type: Realization, source: sub-assurance, target: cap-drift-dashboard}
+- {type: Realization, source: sub-governance, target: cap-human-approval-workflow}
+
+# =====================================================================
+# B. Subsystems serve the people (Serving subsystem -> role; C4 reverses it)
+# =====================================================================
+- {type: Serving, source: sub-catalog, target: role-compliance, label: authors control content in}
+- {type: Serving, source: sub-library, target: role-ea, label: curates patterns in}
+- {type: Serving, source: sub-library, target: role-sa, label: composes blueprints & designs in}
+- {type: Serving, source: sub-library, target: role-sec, label: runs threat models in}
+- {type: Serving, source: sub-governance, target: role-ea, label: models options & records decisions in}
+- {type: Serving, source: sub-governance, target: role-compliance, label: verifies traceability in}
+- {type: Serving, source: sub-assurance, target: role-ea, label: reviews drift in}
+- {type: Serving, source: sub-assurance, target: role-sa, label: reviews drift in}
+- {type: Serving, source: sub-assurance, target: role-ops, label: watches control effectiveness & drift in}
+- {type: Serving, source: sub-assurance, target: role-compliance, label: watches control status in}
+- {type: Serving, source: sub-modelling, target: role-ea, label: models with}
+- {type: Serving, source: sub-modelling, target: role-sa, label: models with}
+- {type: Serving, source: sub-modelling, target: role-dev, label: consumes specifications from}
+
+# =====================================================================
+# B. Authoring / OSCAL chain
+# =====================================================================
+- {type: Flow, source: ext-regsources, target: sub-catalog, label: baseline catalogs}
+- type: Access
+  source: sub-catalog
+  target: store-oscal
+  label: writes Catalogs & Profiles
+  props: {access_type: Write}
+- type: Access
+  source: sub-catalog
+  target: store-frameworks
+  label: reads NIST / FedRAMP packs
+  props: {access_type: Read}
+
+# =====================================================================
+# B. Reusable Architecture Library
+# =====================================================================
+- type: Access
+  source: sub-library
+  target: store-oscal
+  label: references Profiles & Components; emits SSP
+  props: {access_type: ReadWrite}
+- type: Access
+  source: sub-library
+  target: store-patterns
+  label: stores patterns, blueprints & designs
+  props: {access_type: Write}
+- type: Access
+  source: sub-library
+  target: store-akg
+  label: publishes approved patterns (intent plane)
+  props: {access_type: Write}
+- {type: Serving, source: ext-llm, target: sub-library, label: requests threat narratives from}
+
+# =====================================================================
+# B. Digital Twin & Knowledge Graph
+# =====================================================================
+- {type: Flow, source: ext-cloud, target: sub-twin, label: current-state configuration}
+- {type: Flow, source: ext-cicd, target: sub-twin, label: deployment events}
+- type: Access
+  source: sub-twin
+  target: store-akg
+  label: writes the digital twin plane
+  props: {access_type: Write}
+
+# =====================================================================
+# B. Architecture Governance: options, evaluation, decisions
+# =====================================================================
+- {type: Flow, source: ext-rfp, target: sub-governance, label: candidate solution inputs}
+- type: Access
+  source: sub-governance
+  target: store-akg
+  label: reads intent & twin for impact; writes decisions, impacts & archived options (intent plane)
+  props: {access_type: ReadWrite}
+- {type: Association, source: sub-governance, target: sub-library, label: governs patterns & assesses solution designs}
+- {type: Flow, source: sub-governance, target: sub-library, label: hands chosen solution to Composer for detailed design}
+- {type: Serving, source: ext-llm, target: sub-governance, label: requests ADR & evaluation drafts from}
+- {type: Serving, source: sub-modelling, target: sub-governance, label: renders candidate models with}
+
+# =====================================================================
+# B. Conformance & Drift Assurance
+# =====================================================================
+- type: Access
+  source: sub-assurance
+  target: store-oscal
+  label: reads control baselines & expected controls
+  props: {access_type: Read}
+- {type: Flow, source: ext-cicd, target: sub-assurance, label: release candidate}
+- {type: Flow, source: sub-assurance, target: ext-cicd, label: gate decision}
+- {type: Flow, source: ext-cloud, target: sub-assurance, label: runtime control signals}
+- type: Access
+  source: sub-assurance
+  target: store-akg
+  label: diffs intent vs twin; writes effectiveness evidence
+  props: {access_type: ReadWrite}
+- {type: Flow, source: sub-assurance, target: ext-itsm, label: remediation backlog items}
+
+# =====================================================================
+# B. Modelling & Specification
+# =====================================================================
+- type: Access
+  source: sub-modelling
+  target: store-frameworks
+  label: reads ArchiMate / C4 / UML metamodels
+  props: {access_type: Read}
+- type: Access
+  source: sub-modelling
+  target: store-patterns
+  label: reads patterns, blueprints & designs
+  props: {access_type: Read}
+- {type: Serving, source: ext-llm, target: sub-modelling, label: requests draft specifications from}
+- {type: Flow, source: sub-modelling, target: ext-scm, label: specifications}
+
+# =====================================================================
+# C. Subsystem assigns its functions
+# =====================================================================
+- {type: Assignment, source: sub-catalog, target: fn-policy-authoring}
+- {type: Assignment, source: sub-catalog, target: fn-oscal-conversion}
+- {type: Assignment, source: sub-library, target: fn-pattern-authoring}
+- {type: Assignment, source: sub-library, target: fn-blueprint-authoring}
+- {type: Assignment, source: sub-library, target: fn-solution-compose}
+- {type: Assignment, source: sub-library, target: fn-threat-model}
+- {type: Assignment, source: sub-twin, target: fn-twin-ingest}
+- {type: Assignment, source: sub-governance, target: fn-options-model}
+- {type: Assignment, source: sub-governance, target: fn-governance-eval}
+- {type: Assignment, source: sub-assurance, target: fn-enforcement-gate}
+- {type: Assignment, source: sub-assurance, target: fn-effectiveness-monitor}
+- {type: Assignment, source: sub-assurance, target: fn-drift-engine}
+- {type: Assignment, source: sub-modelling, target: fn-notation-engine}
+- {type: Assignment, source: sub-modelling, target: fn-spec-generator}
+
+# =====================================================================
+# C. Stage 1 — Controls & OSCAL
+# =====================================================================
+- {type: Access, source: fn-policy-authoring, target: art-policy-doc, label: authors, props: {access_type: Write}}
+- {type: Access, source: ext-regsources, target: art-baseline, label: supplies, props: {access_type: Write}}
+- {type: Access, source: fn-oscal-conversion, target: art-policy-doc, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-oscal-conversion, target: art-baseline, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-oscal-conversion, target: art-oscal-catalog, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-oscal-conversion, target: art-oscal-profile, label: generates, props: {access_type: Write}}
+
+# =====================================================================
+# C. Stage 2 — Library & Design
+# =====================================================================
+- {type: Access, source: fn-pattern-authoring, target: art-oscal-catalog, label: references, props: {access_type: Read}}
+- {type: Access, source: fn-pattern-authoring, target: art-pattern, label: authors, props: {access_type: Write}}
+- {type: Access, source: fn-pattern-authoring, target: art-oscal-profile, label: maps pattern to, props: {access_type: Write}}
+- {type: Access, source: fn-blueprint-authoring, target: art-pattern, label: refines, props: {access_type: Read}}
+- {type: Access, source: fn-blueprint-authoring, target: art-blueprint, label: authors, props: {access_type: Write}}
+- {type: Access, source: fn-blueprint-authoring, target: art-oscal-component, label: maps blueprint to, props: {access_type: Write}}
+- {type: Access, source: fn-solution-compose, target: art-blueprint, label: composes, props: {access_type: Read}}
+- {type: Access, source: fn-solution-compose, target: art-pattern, label: composes, props: {access_type: Read}}
+- {type: Access, source: fn-solution-compose, target: art-solution-design, label: produces, props: {access_type: Write}}
+- {type: Access, source: fn-solution-compose, target: art-oscal-ssp, label: emits, props: {access_type: Write}}
+- {type: Access, source: fn-threat-model, target: art-pattern, label: assesses, props: {access_type: Read}}
+- {type: Access, source: fn-threat-model, target: art-blueprint, label: assesses, props: {access_type: Read}}
+- {type: Access, source: fn-threat-model, target: art-solution-design, label: assesses, props: {access_type: Read}}
+- {type: Access, source: fn-threat-model, target: art-threat-model, label: produces, props: {access_type: Write}}
+
+# =====================================================================
+# C. Stage 3 — Digital Twin & Governance
+# =====================================================================
+- {type: Access, source: ext-cloud, target: art-infra-state, label: reports, props: {access_type: Write}}
+- {type: Access, source: ext-cicd, target: art-deploy-event, label: records, props: {access_type: Write}}
+- {type: Access, source: fn-twin-ingest, target: art-infra-state, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-twin-ingest, target: art-deploy-event, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-twin-ingest, target: art-twin, label: builds, props: {access_type: Write}}
+- {type: Access, source: ext-rfp, target: art-candidate-arch, label: submits, props: {access_type: Write}}
+- {type: Access, source: fn-options-model, target: art-solution-design, label: draws on, props: {access_type: Read}}
+- {type: Access, source: fn-options-model, target: art-candidate-arch, label: models, props: {access_type: Write}}
+- {type: Access, source: fn-governance-eval, target: art-candidate-arch, label: evaluates, props: {access_type: Read}}
+- {type: Access, source: fn-governance-eval, target: art-twin, label: reads for impact, props: {access_type: Read}}
+- {type: Access, source: fn-governance-eval, target: art-impact-assessment, label: produces, props: {access_type: Write}}
+- {type: Access, source: fn-governance-eval, target: art-adr, label: records, props: {access_type: Write}}
+- {type: Access, source: fn-governance-eval, target: art-archived-option, label: archives with rationale, props: {access_type: Write}}
+- {type: Access, source: fn-notation-engine, target: art-metamodel, label: constrained by, props: {access_type: Read}}
+- {type: Access, source: fn-notation-engine, target: art-candidate-arch, label: renders, props: {access_type: Read}}
+- {type: Serving, source: fn-notation-engine, target: fn-options-model, label: renders candidate models for}
+
+# =====================================================================
+# C. Stage 4 — Assurance & Specification
+# =====================================================================
+- {type: Access, source: fn-spec-generator, target: art-pattern, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: art-blueprint, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: art-solution-design, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: art-dev-spec, label: generates, props: {access_type: Write}}
+- {type: Access, source: ext-scm, target: art-dev-spec, label: consumes, props: {access_type: Read}}
+- {type: Access, source: ext-cicd, target: art-release-candidate, label: submits, props: {access_type: Write}}
+- {type: Access, source: fn-enforcement-gate, target: art-release-candidate, label: evaluates, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-dev-spec, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-oscal-ssp, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-oscal-catalog, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-gate-decision, label: issues, props: {access_type: Write}}
+- {type: Access, source: ext-cicd, target: art-gate-decision, label: acts on, props: {access_type: Read}}
+- {type: Access, source: fn-effectiveness-monitor, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
+- {type: Access, source: fn-effectiveness-monitor, target: art-twin, label: observes, props: {access_type: Read}}
+- {type: Access, source: fn-effectiveness-monitor, target: art-effectiveness-evidence, label: records, props: {access_type: Write}}
+- {type: Access, source: fn-drift-engine, target: art-twin, label: reads current state, props: {access_type: Read}}
+- {type: Access, source: fn-drift-engine, target: art-adr, label: reads intent, props: {access_type: Read}}
+- {type: Access, source: fn-drift-engine, target: art-drift-report, label: classifies, props: {access_type: Write}}
+- {type: Access, source: fn-drift-engine, target: art-remediation-item, label: promotes to, props: {access_type: Write}}
+- {type: Access, source: ext-itsm, target: art-remediation-item, label: schedules, props: {access_type: Read}}
+
+# =====================================================================
+# C. Stores aggregate the persistent artefacts (ties C back to section B)
+# =====================================================================
+- {type: Aggregation, source: store-oscal, target: art-oscal-catalog}
+- {type: Aggregation, source: store-oscal, target: art-oscal-profile}
+- {type: Aggregation, source: store-oscal, target: art-oscal-component}
+- {type: Aggregation, source: store-oscal, target: art-oscal-ssp}
+- {type: Aggregation, source: store-patterns, target: art-pattern}
+- {type: Aggregation, source: store-patterns, target: art-blueprint}
+- {type: Aggregation, source: store-patterns, target: art-solution-design}
+- {type: Aggregation, source: store-patterns, target: art-threat-model}
+- {type: Aggregation, source: store-akg, target: art-twin}
+- {type: Aggregation, source: store-akg, target: art-candidate-arch}
+- {type: Aggregation, source: store-akg, target: art-adr}
+- {type: Aggregation, source: store-akg, target: art-impact-assessment}
+- {type: Aggregation, source: store-akg, target: art-archived-option}
+- {type: Aggregation, source: store-akg, target: art-drift-report}
+- {type: Aggregation, source: store-akg, target: art-effectiveness-evidence}
+- {type: Aggregation, source: store-frameworks, target: art-baseline}
+- {type: Aggregation, source: store-frameworks, target: art-metamodel}

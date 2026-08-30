@@ -72,8 +72,20 @@ ArchiMate relationship whose **both** endpoints survived mapping:
 | `Realization`, `Assignment`, `Composition`, `Aggregation` | not drawn (structural, already expressed by nesting) | — |
 | `Association` | `Rel(A, B)` dashed | "related to" |
 
-Override any label with a `c4-label` property on the relationship, and the
-technology string with `c4-technology`.
+Edge label resolution: `c4-label` property → the relationship's ArchiMate
+`name` → the type default above. Override the technology string with a
+`c4-technology` property.
+
+### Parallel edges
+
+- **Container level** — distinct labels between the same ordered pair are kept
+  as separate arrows; only exact `(source, target, label)` duplicates are
+  dropped.
+- **Context level** — every interaction with an inside-element folds onto the
+  one system box, so many container-level relationships collapse onto the same
+  ordered pair. These are **merged into a single `Rel`** whose label lists each
+  distinct sub-label on its own line. Give the relationships a shared
+  `c4-label` in the model if you want a single tidy phrase instead.
 
 ## Layout
 

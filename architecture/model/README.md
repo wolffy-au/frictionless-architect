@@ -1,57 +1,81 @@
-# Architecture skeleton
+# Architecture model
 
-The load-bearing subset of the ArchiMate model prototyped on branch
-`prototype-neo4j` — the ~30 nodes that stay true regardless of how the platform's
-component boundaries finally land. This is **decomposition input**, not the final
-architecture: it feeds the component split in [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md).
+The **canonical** architecture model for the Frictionless Architecture &
+Governance Platform, stored as graph-loadable YAML. Every other form — the
+ArchiMate XML, the C4 / PlantUML diagrams, and (later) the Neo4j seed — is a
+generated projection of these files. See [ADR-0007](../../docs/adr/0007-architecture-model-as-graph-loadable-yaml.md)
+and [ADR-0008](../../docs/adr/0008-model-type-is-bare-archimate-name.md).
+
+```text
+elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
+   └─▶ build.py ─▶ frictionless-architect.xml ─▶ validate.py
+                        ├─▶ diagram-c4     ─▶ diagrams/*-c4-*.puml / .svg
+                        └─▶ diagram-archimate ─▶ diagrams/*-<view>.puml / .svg
+```
 
 ## Files
 
 | File | Contents |
 |---|---|
-| `nodes.yaml` | 4 drivers · 4 principles · 5 constraints · 5 functional requirements · 6 primary capabilities · 6 business processes |
-| `relationships.yaml` | 13 edges: capability→requirement realization, process→capability realization, and the end-to-end process chain |
+| `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
+| `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
+| `views.yaml` | Minimal view scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`) |
+| `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
+| `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
+| `diagrams/` | **Generated** `.puml` / `.svg` |
 
-Format is kept graph-loadable (`label` / `identifier` / `properties`) so it can be
-seeded into a graph later without reshaping.
+## Schema
 
-## What was deliberately left out
+- **`type`** — a bare ArchiMate 3.2 concept name (`Driver`, `Capability`,
+  `BusinessProcess`, `ApplicationComponent`, `ApplicationFunction`,
+  `DataObject`, `Realization`, `Access`, …). Case-insensitive; `build.py`
+  canonicalises against `pyArchimate.ArchiType` and hard-errors on a typo.
+- **`id`** — stable kebab id. Hashed to a deterministic UUID, so regeneration
+  never churns identifiers (or diagrams). **Never renumber a live id.**
+- **`name` / `desc`** — top-level keys, not inside `props`.
+- **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
+  `includes` for the subsystem capability lists, `access_type`
+  (`Read`|`Write`|`ReadWrite`) on `Access` relationships, `requirement-type`.
+- **`label`** on a relationship shows on ArchiMate diagrams and is the default
+  C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 
-The full prototype had **95 nodes / 143 relationships** across three ArchiMate
-layers. The rest lives on tag `archive/prototype-neo4j` and is **not** carried
-forward centrally:
+`build.py` runs `.agents/skills/model-archimate/scripts/validate.py`, which
+holds the **whole** model to the ArchiMate 3.2 relationship matrix.
 
-- Stakeholders, assessments (SWOT), goals
-- Outcomes with target metrics (e.g. "≥99% alignment score", "10× oversight coverage") — placeholder numbers pending real baselines
-- Non-functional requirements (drift latency, ledger immutability, spec determinism, control-plane availability, audit-query performance, KG freshness)
-- The 6 "enabler" capabilities — each existed only to realize one NFR of one primary capability; they are implementation detail, not architecture-level
-- 10 business roles (incl. speculative named AI agents), 9 business objects, the KG "Connect → Enrich → Serve" value stream
+## Model contents
 
-**Why:** the detailed model was running ahead of the decisions. NFR targets,
-agent rosters, and enabler capabilities should be rebuilt inside each package's
-own spec *when that package is real* — not modelled centrally against boundaries
-that are still being decided.
+Three layered sections in one model:
 
-## Mapping to the 8-component grouping
+| Section | What | Views |
+|---|---|---|
+| **A. Skeleton** | Motivation (4 drivers, 4 principles, 5 constraints, 5 functional requirements), Strategy (6 capabilities), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md)) | `Architecture Skeleton` |
+| **B. Ecosystem** | The platform `Grouping` (`c4=system`), its 6 subsystems, 4 shared stores, 6 roles, 7 external systems; subsystems `Realization`-linked to the section-A capabilities ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities`; C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
+| **C. Artefact flow** | 14 `ApplicationFunction`s assigned to their subsystem, reading input artefacts and writing output artefacts (25 `DataObject`s) via `Access`; stores `Aggregation`-link the persistent artefacts | `Artefact Flow — Controls & OSCAL` / `— Library & Design` / `— Digital Twin & Governance` / `— Assurance & Specification` |
 
-The 6 primary capabilities map almost 1:1 onto the platform grouping in
-`PROJECT_SPECIFICATION.md`, which is part of why they are trusted as the skeleton:
+## Regenerate
 
-| Capability | Component |
-|---|---|
-| `cap-digital-twin` | knowledge-graph |
-| `cap-spec-engine` | governance-engine |
-| `cap-control-plane` | policy-enforcement |
-| `cap-drift-dashboard` | drift-management |
-| `cap-forensic-ledger` | audit-query |
-| `cap-human-approval-workflow` | decision-capture |
+```bash
+poetry run python architecture/model/build.py
 
-`cap-digital-twin` and `cap-forensic-ledger` have no edges in `relationships.yaml`
-— their realization targets were NFRs, which were left on the archive branch.
+# C4 context + container
+for lvl in context container; do
+  poetry run python .agents/skills/diagram-c4/scripts/model_to_c4.py \
+    architecture/model/frictionless-architect.xml \
+    --system "Frictionless Architecture Platform" --level $lvl \
+    --layout $([ $lvl = container ] && echo LEFT_RIGHT || echo WITH_LEGEND) \
+    -o architecture/model/diagrams/frictionless-architect-c4-$lvl.puml
+done
+
+# one ArchiMate view
+poetry run python .agents/skills/diagram-archimate/scripts/model_to_puml.py \
+  architecture/model/frictionless-architect.xml --view "Artefact Flow — Controls & OSCAL" \
+  -o architecture/model/diagrams/frictionless-architect-artefact-oscal.puml
+
+# then render: plantuml -tsvg architecture/model/diagrams/*.puml
+```
 
 ## Provenance
 
-Extracted from `prototype/nodes.yaml` and `prototype/relationships.yaml` at
-`prototype-neo4j` (commit `d0c30b4`). Wording is verbatim from the source except
-where a product-specific term ("Woven Control Plane", "ACP") was generalised;
-a full technology-agnostic pass is still owed.
+Section A extracted from `prototype/nodes.yaml` at `prototype-neo4j` (`d0c30b4`);
+section B ported from the retired `sample-data/archimate/build_frictionless_architect.py`;
+section C authored 2026-08-30. Full history in the ADR log.
