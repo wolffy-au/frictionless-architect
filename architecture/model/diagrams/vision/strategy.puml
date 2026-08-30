@@ -1,0 +1,45 @@
+@startuml
+!include <archimate/Archimate>
+
+title Strategy
+
+Motivation_Outcome(e_idfbcf1e02e62655, "Architecture as Executable Intelligence")
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
+Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
+Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Strategy_CourseOfAction(e_ida9babe1fe97050, "Shift Governance Into the Pipeline")
+Strategy_CourseOfAction(e_id78f58d32222658, "Operate a Living Architecture Twin")
+Strategy_CourseOfAction(e_id0b01ce08664e58, "Curate Reuse Before Build")
+Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
+  Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+}
+Strategy_Resource(e_id689bf38e5d8a56, "AI Delivery Agents") {
+  Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+}
+Strategy_Resource(e_ida1f0927bfc4e50, "OSCAL Control Content") {
+  Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
+}
+Strategy_Resource(e_id55d6b63f66465b, "Enterprise Architecture Practice") {
+  Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+}
+Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery")
+
+Rel_Realization(e_idafba1b4ab1e756, e_ida9babe1fe97050, "")
+Rel_Realization(e_id4a1c34ab69d151, e_ida9babe1fe97050, "")
+Rel_Realization(e_id72468b5b403450, e_ida9babe1fe97050, "")
+Rel_Realization(e_id08f340a094e552, e_ida9babe1fe97050, "")
+Rel_Realization(e_idc29413a2099958, e_ida9babe1fe97050, "")
+Rel_Realization(e_id18ec07397a9d5f, e_id78f58d32222658, "")
+Rel_Realization(e_id41aa3eb894c852, e_id78f58d32222658, "")
+Rel_Realization(e_id752d1de3794f5f, e_id0b01ce08664e58, "")
+Rel_Realization(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
+Rel_Serving(e_id18ec07397a9d5f, e_idafba1b4ab1e756, "authoritative graph")
+Rel_Serving(e_id18ec07397a9d5f, e_id41aa3eb894c852, "as-designed intent")
+Rel_Serving(e_id752d1de3794f5f, e_idafba1b4ab1e756, "patterns & blueprints")
+Rel_Serving(e_id72468b5b403450, e_id752d1de3794f5f, "control mappings")
+Rel_Serving(e_id72468b5b403450, e_id4a1c34ab69d151, "expected controls")
+Rel_Serving(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
+Rel_Serving(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
+
+@enduml

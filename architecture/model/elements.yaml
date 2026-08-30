@@ -47,6 +47,61 @@
     methods.
 
 # =====================================================================
+# A. MOTIVATION — Stakeholders (who holds the drivers) and Assessments
+#    (the analysis of the current situation that makes each driver urgent).
+#    Stakeholder viewpoint: stakeholders -> drivers -> goal/outcome.
+# =====================================================================
+- type: Stakeholder
+  id: stk-exec
+  name: Executive Leadership & Board
+  desc: >-
+    Accountable for the banking licence, market position and the enterprise
+    risk appetite. Holds the agility and compliance drivers.
+- type: Stakeholder
+  id: stk-regulator
+  name: Prudential Regulator (APRA)
+  desc: >-
+    External stakeholder. Requires demonstrable, continuous compliance with
+    CPS 230/234 and sound model risk management.
+- type: Stakeholder
+  id: stk-architecture
+  name: Enterprise Architecture Function
+  desc: >-
+    Owns architectural coherence and the target state; carries the
+    sustainability and complexity-management concern.
+- type: Stakeholder
+  id: stk-delivery
+  name: Delivery Organisation
+  desc: >-
+    Human engineers and AI delivery agents producing change at machine speed;
+    holds the operational-scaling concern.
+- type: Stakeholder
+  id: stk-risk-compliance
+  name: Risk & Compliance Function
+  desc: >-
+    Second-line assurance. Needs provable, auditable control effectiveness
+    rather than after-the-fact manual evidence.
+
+- type: Assessment
+  id: assess-review-bottleneck
+  name: Human review cannot keep pace with AI-speed delivery
+  desc: >-
+    Change volume from AI agents already exceeds what human architects and
+    reviewers can inspect; the gap widens monthly.
+- type: Assessment
+  id: assess-drift-debt
+  name: Architectural drift is accumulating as unmanaged risk
+  desc: >-
+    As-built systems diverge from intent with no systematic detection; hidden
+    architectural debt is compounding.
+- type: Assessment
+  id: assess-manual-compliance
+  name: Manual compliance evidence is too slow and error-prone
+  desc: >-
+    Control mapping and evidence collection are manual, lag delivery by weeks,
+    and cannot be trusted at AI-delivery cadence.
+
+# =====================================================================
 # A. MOTIVATION — Goal & Outcome (the aim, and the end result that realizes it)
 #    Drivers influence the goal; the Governed Architecture Delivery value
 #    stream realizes the outcome; the outcome realizes the goal.
@@ -268,6 +323,48 @@
     the reusable basis for new solution architecture and specification
     generation, and model candidate and future-state architecture options for
     governance decisions.
+
+# =====================================================================
+# A. STRATEGY — Courses of action (the strategic initiatives the capabilities
+#    are being built to realize) and Resources (the assets behind them).
+#    Strategy viewpoint: resources -> capabilities -> courses of action.
+# =====================================================================
+- type: CourseOfAction
+  id: coa-executable-governance
+  name: Shift Governance Into the Pipeline
+  desc: >-
+    Replace document-and-meeting governance with machine-readable
+    specifications, controls and enforcement gates that run inline with
+    delivery.
+- type: CourseOfAction
+  id: coa-living-twin
+  name: Operate a Living Architecture Twin
+  desc: >-
+    Maintain an authoritative, continuously-reconciled model of intended and
+    actual architecture as the single source both humans and agents work from.
+- type: CourseOfAction
+  id: coa-reuse-first
+  name: Curate Reuse Before Build
+  desc: >-
+    Make curated patterns, blueprints and control mappings the default
+    starting point for every change, rather than bespoke design.
+
+- type: Resource
+  id: res-akg
+  name: Architecture Knowledge Graph
+  desc: Intangible resource — the graph of intent, controls, patterns and as-built state.
+- type: Resource
+  id: res-ai-agents
+  name: AI Delivery Agents
+  desc: Human-equivalent resource — the agentic crew that produces change at machine speed.
+- type: Resource
+  id: res-control-content
+  name: OSCAL Control Content
+  desc: Intangible resource — the machine-readable regulatory and control corpus.
+- type: Resource
+  id: res-ea-practice
+  name: Enterprise Architecture Practice
+  desc: Human resource — the architects who curate patterns and hold governance decisions.
 
 # =====================================================================
 # A. STRATEGY — Value stream (outcome-oriented view of governed delivery;

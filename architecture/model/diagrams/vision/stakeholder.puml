@@ -1,0 +1,36 @@
+@startuml
+!include <archimate/Archimate>
+
+title Stakeholder
+
+Motivation_Driver(e_ida87011c08f1e5a, "Market Agility & Competitive Pressure")
+Motivation_Driver(e_idffe4063e121e5d, "Regulatory Resiliency & Social License")
+Motivation_Driver(e_idb3458ded88aa5a, "Systemic Sustainability & Complexity Management")
+Motivation_Driver(e_ida75d463a748254, "Human-to-Machine Operational Scaling")
+Motivation_Stakeholder(e_id19419ed668d556, "Executive Leadership & Board")
+Motivation_Stakeholder(e_idbd4abc7ec42554, "Prudential Regulator (APRA)")
+Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")
+Motivation_Stakeholder(e_idb1fdf098c7c056, "Delivery Organisation")
+Motivation_Stakeholder(e_id133bbac4b3e450, "Risk & Compliance Function")
+Motivation_Assessment(e_idb87589e2f37157, "Human review cannot keep pace with AI-speed delivery")
+Motivation_Assessment(e_id62397473120e57, "Architectural drift is accumulating as unmanaged risk")
+Motivation_Assessment(e_idca6274daf5c552, "Manual compliance evidence is too slow and error-prone")
+Motivation_Goal(e_id76f6d8b4d70151, "Frictionless Architecture & Governance at Machine Speed")
+Motivation_Outcome(e_idfbcf1e02e62655, "Architecture as Executable Intelligence")
+
+Rel_Association(e_id19419ed668d556, e_ida87011c08f1e5a, "")
+Rel_Association(e_id19419ed668d556, e_idffe4063e121e5d, "")
+Rel_Association(e_idbd4abc7ec42554, e_idffe4063e121e5d, "")
+Rel_Association(e_id3bf463ccf22a53, e_idb3458ded88aa5a, "")
+Rel_Association(e_idb1fdf098c7c056, e_ida75d463a748254, "")
+Rel_Association(e_id133bbac4b3e450, e_idffe4063e121e5d, "")
+Rel_Influence(e_idb87589e2f37157, e_ida75d463a748254, "")
+Rel_Influence(e_id62397473120e57, e_idb3458ded88aa5a, "")
+Rel_Influence(e_idca6274daf5c552, e_idffe4063e121e5d, "")
+Rel_Influence(e_ida87011c08f1e5a, e_id76f6d8b4d70151, "")
+Rel_Influence(e_idffe4063e121e5d, e_id76f6d8b4d70151, "")
+Rel_Influence(e_idb3458ded88aa5a, e_id76f6d8b4d70151, "")
+Rel_Influence(e_ida75d463a748254, e_id76f6d8b4d70151, "")
+Rel_Realization(e_idfbcf1e02e62655, e_id76f6d8b4d70151, "")
+
+@enduml

@@ -19,10 +19,11 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 |---|---|
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | Minimal view scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`) |
+| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram`) |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
+| `render_diagrams.py` | `frictionless-architect.xml` → every `.puml` / `.svg` (view `diagram:` key + C4) |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
-| `diagrams/` | **Generated** `.puml` / `.svg` |
+| `diagrams/` | **Generated** `.puml` / `.svg`. `diagrams/vision/` holds the TOGAF ADM Phase A views |
 
 ## Schema
 
@@ -42,57 +43,46 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 `build.py` runs `.agents/skills/model-archimate/scripts/validate.py`, which
 holds the **whole** model to the ArchiMate 3.2 relationship matrix.
 
+- **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
+  from `.agents/skills/model-archimate/reference/archi-viewpoints.xml` (run
+  `scripts/viewpoints.py list`). `build.py` holds that view to the
+  viewpoint's allowed concepts and fails on a stray one. `custom` = a
+  deliberate cross-layer view (not checked); omitting the key also skips the
+  check. The tag lives only here — pyArchimate (pinned) cannot round-trip it
+  into the generated XML.
+
 ## Model contents
 
 Three layered sections in one model:
 
 | Section | What | Views |
 |---|---|---|
-| **A. Skeleton** | Motivation (4 drivers, 1 goal, 1 outcome, 3 principles, 4 constraints, 9 functional requirements), Strategy (8 capabilities + the 7-element `Governed Architecture Delivery` value stream), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md)) | `Architecture Skeleton`, `Capability Map & Value Stream`, `Delivery Choreography` |
+| **A. Skeleton** | Motivation (5 stakeholders, 3 assessments, 4 drivers, 1 goal, 1 outcome, 3 principles, 4 constraints, 9 functional requirements), Strategy (8 capabilities, 3 courses of action, 4 resources + the 7-element `Governed Architecture Delivery` value stream), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md)) | **Vision (Phase A):** `Stakeholder`, `Motivation`, `Goal Realization`, `Strategy`, `Capability Map`, `Value Stream — Governed Architecture Delivery`, `Outcome Realization`. Also `Architecture Skeleton` (custom), `Delivery Choreography` |
 | **B. Ecosystem** | The platform `Grouping` (`c4=system`), its 6 subsystems, 5 shared stores, 6 roles, 7 external systems; every subsystem `Realization`-linked to a section-A capability ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities`; C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
 | **C. Artefact flow** | 15 `ApplicationFunction`s assigned to their subsystem, reading input artefacts and writing output artefacts (25 `DataObject`s) via `Access`; stores `Aggregation`-link the persistent artefacts | `Artefact Flow — Controls & OSCAL` / `— Library & Design` / `— Digital Twin & Governance` / `— Assurance & Specification` |
 
 Every capability is realized by one subsystem and realizes at least one
 functional requirement; capability-to-capability `Serving` edges and the value
-stream's stage `Serving` edges record the delivery dependency order. Every
-motivation element is connected: the four drivers `Influence` the goal, and
-drivers, principles and constraints all `Influence` the requirements they
-motivate, guide or shape
+stream's stage `Serving` edges record the delivery dependency order, and the
+stages themselves are `Triggering`-linked in sequence with a `Flow` feedback
+edge from `Reconcile & Remediate` back to `Specify the Change`. Every
+motivation element is connected: each stakeholder is `Association`-linked to
+the drivers it holds, each assessment `Influence`s the driver it analyses, the
+four drivers `Influence` the goal, and drivers, principles and constraints all
+`Influence` the requirements they motivate, guide or shape
 ([ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md)).
 
 ## Regenerate
 
 ```bash
-poetry run python architecture/model/build.py
-
-# C4 context + container
-for lvl in context container; do
-  poetry run python .agents/skills/diagram-c4/scripts/model_to_c4.py \
-    architecture/model/frictionless-architect.xml \
-    --system "Frictionless Architecture Platform" --level $lvl \
-    --layout $([ $lvl = container ] && echo LEFT_RIGHT || echo WITH_LEGEND) \
-    -o architecture/model/diagrams/frictionless-architect-c4-$lvl.puml
-done
-
-# every ArchiMate view (name -> diagram slug)
-declare -A V=(
-  ["Architecture Skeleton"]=skeleton
-  ["Capability Map & Value Stream"]=capability-map
-  ["Delivery Choreography"]=delivery
-  ["Subsystems & Capabilities"]=subsystem-capabilities
-  ["Artefact Flow — Controls & OSCAL"]=artefact-oscal
-  ["Artefact Flow — Library & Design"]=artefact-library
-  ["Artefact Flow — Digital Twin & Governance"]=artefact-twin-governance
-  ["Artefact Flow — Assurance & Specification"]=artefact-assurance-spec
-)
-for name in "${!V[@]}"; do
-  poetry run python .agents/skills/diagram-archimate/scripts/model_to_puml.py \
-    architecture/model/frictionless-architect.xml --view "$name" \
-    -o "architecture/model/diagrams/frictionless-architect-${V[$name]}.puml"
-done
-
-# then render: plantuml -tsvg architecture/model/diagrams/*.puml
+poetry run python architecture/model/build.py           # YAML -> XML (+ validate)
+poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .svg
 ```
+
+`render_diagrams.py` reads the `diagram:` key on each view in `views.yaml`
+(one `.puml`/`.svg` pair per view, TOGAF Phase A views under `diagrams/vision/`)
+plus the two C4 diagrams. `--check` fails if any committed diagram is stale
+(CI / pre-commit); `--no-svg` skips the PlantUML render.
 
 ## Provenance
 

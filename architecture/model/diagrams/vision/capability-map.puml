@@ -1,0 +1,23 @@
+@startuml
+!include <archimate/Archimate>
+
+title Capability Map
+
+Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
+Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
+Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
+Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+
+Rel_Serving(e_id18ec07397a9d5f, e_idafba1b4ab1e756, "authoritative graph")
+Rel_Serving(e_id18ec07397a9d5f, e_id41aa3eb894c852, "as-designed intent")
+Rel_Serving(e_id752d1de3794f5f, e_idafba1b4ab1e756, "patterns & blueprints")
+Rel_Serving(e_id72468b5b403450, e_id752d1de3794f5f, "control mappings")
+Rel_Serving(e_id72468b5b403450, e_id4a1c34ab69d151, "expected controls")
+Rel_Serving(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
+Rel_Serving(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
+
+@enduml

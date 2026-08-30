@@ -45,6 +45,42 @@
   target: req-immutable-audit-ledger
 
 # =====================================================================
+# A. Strategy chain: resources -> capabilities -> courses of action -> goal;
+#    the value stream delivers value to its recipient stakeholders
+# =====================================================================
+- {type: Assignment, source: res-akg, target: cap-digital-twin}
+- {type: Assignment, source: res-ai-agents, target: cap-control-plane}
+- {type: Assignment, source: res-control-content, target: cap-control-catalog}
+- {type: Assignment, source: res-ea-practice, target: cap-reusable-architecture}
+- {type: Realization, source: cap-spec-engine, target: coa-executable-governance}
+- {type: Realization, source: cap-control-plane, target: coa-executable-governance}
+- {type: Realization, source: cap-control-catalog, target: coa-executable-governance}
+- {type: Realization, source: cap-human-approval-workflow, target: coa-executable-governance}
+- {type: Realization, source: cap-forensic-ledger, target: coa-executable-governance}
+- {type: Realization, source: cap-digital-twin, target: coa-living-twin}
+- {type: Realization, source: cap-drift-dashboard, target: coa-living-twin}
+- {type: Realization, source: cap-reusable-architecture, target: coa-reuse-first}
+- {type: Influence, source: coa-executable-governance, target: goal-frictionless-architecture}
+- {type: Influence, source: coa-living-twin, target: goal-frictionless-architecture}
+- {type: Influence, source: coa-reuse-first, target: goal-frictionless-architecture}
+- {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
+- {type: Association, source: stk-architecture, target: vs-governed-delivery, label: sustained coherence}
+- {type: Association, source: stk-risk-compliance, target: vs-governed-delivery, label: provable compliance}
+
+# =====================================================================
+# A. Stakeholders hold drivers; assessments analyse the drivers they bear on
+# =====================================================================
+- {type: Association, source: stk-exec, target: driver-agility}
+- {type: Association, source: stk-exec, target: driver-compliance}
+- {type: Association, source: stk-regulator, target: driver-compliance}
+- {type: Association, source: stk-architecture, target: driver-sustainability}
+- {type: Association, source: stk-delivery, target: driver-scaling}
+- {type: Association, source: stk-risk-compliance, target: driver-compliance}
+- {type: Influence, source: assess-review-bottleneck, target: driver-scaling}
+- {type: Influence, source: assess-drift-debt, target: driver-sustainability}
+- {type: Influence, source: assess-manual-compliance, target: driver-compliance}
+
+# =====================================================================
 # A. Motivation spine: drivers -> goal; outcome -> goal; value stream -> outcome
 # =====================================================================
 - {type: Influence, source: driver-agility, target: goal-frictionless-architecture}
@@ -114,6 +150,17 @@
 - {type: Serving, source: cap-human-approval-workflow, target: vss-release}
 - {type: Serving, source: cap-drift-dashboard, target: vss-reconcile}
 - {type: Serving, source: cap-digital-twin, target: vss-reconcile}
+
+# Stage sequence. The stream is a linear pipeline — no parallel stages. The
+# one non-linear edge is the feedback Flow: Reconcile classifies drift and
+# routes remediation items, which re-enter the stream as a new change to
+# Specify.
+- {type: Triggering, source: vss-baseline, target: vss-specify}
+- {type: Triggering, source: vss-specify, target: vss-build}
+- {type: Triggering, source: vss-build, target: vss-prove}
+- {type: Triggering, source: vss-prove, target: vss-release}
+- {type: Triggering, source: vss-release, target: vss-reconcile}
+- {type: Flow, source: vss-reconcile, target: vss-specify, label: drift remediation re-enters}
 
 # =====================================================================
 # A. Capability value chains — the dependency order between capabilities

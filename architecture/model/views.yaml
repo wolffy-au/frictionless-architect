@@ -1,44 +1,138 @@
-# ArchiMate views — minimal scoping for the diagram-archimate skill.
+# ArchiMate views — scoping for the diagram-archimate skill.
 #
-# Each view: id / name / (members: [element ids] and/or include_types: [types]).
-# `build.py` creates the view and adds the matching element nodes; the
-# diagram-archimate skill renders one with:
-#   poetry run python .agents/skills/diagram-archimate/scripts/model_to_puml.py \
-#     architecture/model/frictionless-architect.xml --view "<name>" -o <out>.puml
+# Each view: id / name / (members: [element ids] and/or include_types: [types])
+#            / viewpoint? / diagram?
 #
-# The C4 context / container diagrams are NOT views — they are projected by
-# diagram-c4 with --system "Frictionless Architecture Platform".
+# `build.py` creates the view, adds the matching element nodes, and (if
+# `viewpoint:` is set and not `custom`) holds it to that standard ArchiMate
+# viewpoint's allowed concepts — a stray concept fails the build. Slugs and
+# allow lists:
+#   .agents/skills/model-archimate/reference/archi-viewpoints.xml
+#   (list them: poetry run python .agents/skills/model-archimate/scripts/viewpoints.py list)
+# `viewpoint: custom` = a deliberate cross-layer view; omitting the key skips
+# the check.
 #
-# (The richer view schema — kind, auto-membership rules — is deferred.)
+# `diagram:` is the output path (no extension) under diagrams/ used by
+# `render_diagrams.py`. Vision-phase (TOGAF ADM Phase A) views render under
+# diagrams/vision/.
+#
+# The C4 context / container diagrams are NOT views — render_diagrams.py
+# projects them via diagram-c4 with --system "Frictionless Architecture Platform".
+
+# =====================================================================
+# TOGAF ADM Phase A — Architecture Vision
+# =====================================================================
+
+- id: view-stakeholder
+  name: Stakeholder
+  viewpoint: stakeholder
+  diagram: vision/stakeholder
+  # The case for change: who holds which driver, the assessments that make each
+  # driver urgent, and the goal + outcome they drive toward.
+  include_types: [Stakeholder, Assessment, Driver, Goal, Outcome]
+
+- id: view-motivation
+  name: Motivation
+  viewpoint: motivation
+  diagram: vision/motivation
+  # The whole motivation model — stakeholders, assessments, drivers, goal,
+  # outcome, principles, requirements, constraints — and how they relate.
+  include_types:
+    [Stakeholder, Assessment, Driver, Goal, Outcome, Principle, Requirement, Constraint]
+
+- id: view-goal-realization
+  name: Goal Realization
+  viewpoint: goal_realization
+  diagram: vision/goal-realization
+  # How the goal refines into the outcome, and how principles, requirements and
+  # constraints realize it.
+  include_types: [Goal, Outcome, Principle, Requirement, Constraint]
+
+- id: view-strategy
+  name: Strategy
+  viewpoint: strategy
+  diagram: vision/strategy
+  # Overview: resources -> capabilities -> courses of action, the value stream
+  # as a single element, and the outcome. Stage decomposition and the
+  # recipient stakeholders belong to the Value Stream view; the goal linkage
+  # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
+  # stops at the strategy layer — see Goal Realization for that.
+  include_types: [Capability, CourseOfAction, Resource]
+  members:
+    - vs-governed-delivery
+    - outcome-executable-intelligence
+
+- id: view-capability
+  name: Capability Map
+  viewpoint: capability
+  diagram: vision/capability-map
+  # The eight abilities and the Serving dependency order between them.
+  include_types: [Capability]
+
+- id: view-value-stream
+  name: Value Stream — Governed Architecture Delivery
+  viewpoint: value_stream
+  diagram: vision/value-stream
+  # The stream and its six stages (Composition + Triggering sequence, with the
+  # Reconcile→Specify feedback Flow), the capabilities that Serve each stage,
+  # the recipient stakeholders the stream delivers value to, and the Outcome it
+  # Realizes. Resources and courses of action belong to the Strategy view.
+  include_types: [ValueStream]
+  members:
+    - cap-control-catalog
+    - cap-reusable-architecture
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-human-approval-workflow
+    - cap-drift-dashboard
+    - stk-delivery
+    - stk-architecture
+    - stk-risk-compliance
+    - outcome-executable-intelligence
+
+- id: view-outcome-realization
+  name: Outcome Realization
+  viewpoint: outcome_realization
+  diagram: vision/outcome-realization
+  # How business processes realize capabilities, which serve the value stream,
+  # which realizes the outcome — the end-to-end realization chain.
+  include_types: [Capability, ValueStream, BusinessProcess]
+  members:
+    - outcome-executable-intelligence
+
+# =====================================================================
+# Cross-cutting / later-phase views
+# =====================================================================
 
 - id: view-skeleton
   name: Architecture Skeleton
+  diagram: frictionless-architect-skeleton
+  # The load-bearing subset (ADR-0010): motivation spine + the capabilities it
+  # drives. A deliberate cross-layer cut — no standard viewpoint spans
+  # motivation elements and Capability together.
+  viewpoint: custom
   include_types: [Driver, Goal, Outcome, Principle, Constraint, Requirement, Capability]
 
-# The capability layer in focus: capability-to-capability value chains, the
-# Governed Architecture Delivery value stream and its stages, and the outcome /
-# goal the stream realizes.
-- id: view-capability-map
-  name: Capability Map & Value Stream
-  include_types: [Capability, ValueStream]
-  members:
-    - outcome-executable-intelligence
-    - goal-frictionless-architecture
-
-# The end-to-end delivery choreography and the capabilities the processes realize.
 - id: view-delivery
   name: Delivery Choreography
+  diagram: frictionless-architect-delivery
+  # Business Process Cooperation in spirit, but it also shows the capabilities
+  # the processes realize (not a Business Process Cooperation concept).
+  viewpoint: custom
   include_types: [BusinessProcess]
   members:
     - cap-spec-engine
     - cap-control-plane
     - cap-drift-dashboard
 
-# The whole ecosystem is better seen as the C4 container diagram (diagram-c4).
-# This view isolates just the subsystem -> strategy-capability realization, the
-# bridge between the application view and the skeleton.
 - id: view-subsystem-capabilities
   name: Subsystems & Capabilities
+  diagram: frictionless-architect-subsystem-capabilities
+  # Application Component -> Strategy Capability realization: a bridge view
+  # that spans the application and strategy layers by design.
+  viewpoint: custom
   members:
     - sub-catalog
     - sub-library
@@ -57,6 +151,8 @@
 
 - id: view-artefact-oscal
   name: Artefact Flow — Controls & OSCAL
+  viewpoint: application_cooperation
+  diagram: frictionless-architect-artefact-oscal
   members:
     - sub-catalog
     - fn-policy-authoring
@@ -70,6 +166,8 @@
 
 - id: view-artefact-library
   name: Artefact Flow — Library & Design
+  viewpoint: application_cooperation
+  diagram: frictionless-architect-artefact-library
   members:
     - sub-library
     - fn-pattern-authoring
@@ -89,6 +187,8 @@
 
 - id: view-artefact-twin-governance
   name: Artefact Flow — Digital Twin & Governance
+  viewpoint: application_cooperation
+  diagram: frictionless-architect-artefact-twin-governance
   members:
     - sub-twin
     - sub-governance
@@ -117,6 +217,8 @@
 
 - id: view-artefact-assurance-spec
   name: Artefact Flow — Assurance & Specification
+  viewpoint: application_cooperation
+  diagram: frictionless-architect-artefact-assurance-spec
   members:
     - sub-assurance
     - sub-modelling
