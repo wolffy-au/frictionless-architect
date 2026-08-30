@@ -35,8 +35,10 @@ this repo's deps (`pyyaml` for all tools; `numpy` + `fastembed` for
 `semsearch.py`) live in the Poetry venv, not the system interpreter, so bare
 `python` fails with `ModuleNotFoundError` (`AGENTS.md` — "run everything through
 `poetry run`"). `semsearch.py`'s model cache lands outside the repo — override
-with `$SEMSEARCH_CACHE`; its embed batch size is `$SEMSEARCH_EMBED_BATCH`
-(default 64).
+with `$SEMSEARCH_CACHE`. It sizes its embedding worker pool to free RAM and
+core count automatically; `$SEMSEARCH_PARALLEL` overrides it (`1` = force
+single in-process, `0` = all cores), `$SEMSEARCH_EMBED_BATCH` sets the batch /
+commit granularity (default 32).
 
 ```bash
 poetry run python tools/resolve_sources.py         # sources.yaml -> resolved files/URLs per topic, unmatched globs
@@ -121,10 +123,11 @@ For each topic to build:
    user. Do not report a page as built on the strength of having written a log
    entry.
 4. Run `poetry run python tools/semsearch.py index --scope all` so the next run
-   and the `wiki-maintenance` agent search a current index. In a memory-capped
-   container the embed step is slow but no longer OOMs (it batches); if it is
-   still killed, drop `$SEMSEARCH_EMBED_BATCH` or fall back to `--scope wiki`
-   and say so in the report.
+   and the `wiki-maintenance` agent search a current index. The embed step is
+   CPU-bound (order minutes for a full `--scope all`); it auto-sizes its worker
+   pool to available RAM so it should not OOM. If it still is, set
+   `$SEMSEARCH_PARALLEL=1` or fall back to `--scope wiki`, and say so in the
+   report.
 5. Report what was built/skipped/removed, any unmatched globs, any failed
    URL fetches, and — if a page crossed ~500 lines — suggest a split (see
    "Oversized pages"). If several pages were regenerated, suggest

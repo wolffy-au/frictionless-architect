@@ -34,11 +34,58 @@ from pathlib import Path
 MODEL = "BAAI/bge-small-en-v1.5"
 DIM = 384
 
-# Embed in small single-process batches, committing as we go. fastembed will
-# otherwise fork one model worker per core for a large document count, which
-# OOM-kills the process in a memory-capped container (e.g. `--scope all`, ~750
-# chunks). Override with $SEMSEARCH_EMBED_BATCH.
-EMBED_BATCH = int(os.environ.get("SEMSEARCH_EMBED_BATCH", "64"))
+# bge-small on CPU embeds real-length chunks at only ~1.5/s per process on a
+# typical dev box, so `index --scope all` (~750 chunks) is an ~8-minute job
+# single-process. fastembed can fan that out across worker *processes*
+# (`parallel=N`), but each worker reloads the full ONNX model (~0.7 GB
+# resident), so an unbounded fan-out OOM-kills a memory-capped container.
+# `_pick_workers()` sizes the pool to free RAM and core count; override with
+# $SEMSEARCH_PARALLEL (1 = force in-process; 0 = all cores, fastembed's rule).
+EMBED_BATCH = int(os.environ.get("SEMSEARCH_EMBED_BATCH", "32"))
+
+# Measured peak RSS of one fastembed worker at EMBED_BATCH<=32. Override with
+# $SEMSEARCH_WORKER_MB if your model or batch size differs.
+WORKER_RSS = int(os.environ.get("SEMSEARCH_WORKER_MB", "750")) * 1024 * 1024
+
+
+def _available_bytes() -> int:
+    """Best-effort free memory: cgroup hard limit headroom if capped, else the
+    host's MemAvailable. 0 means 'could not tell' (caller falls back to 1 worker)."""
+    try:  # cgroup v2
+        cap = Path("/sys/fs/cgroup/memory.max").read_text().strip()
+        if cap != "max":
+            used = int(Path("/sys/fs/cgroup/memory.current").read_text())
+            return max(0, int(cap) - used)
+    except (OSError, ValueError):
+        pass
+    try:  # cgroup v1
+        cap_v1 = int(Path("/sys/fs/cgroup/memory/memory.limit_in_bytes").read_text())
+        if cap_v1 < (1 << 62):
+            used = int(Path("/sys/fs/cgroup/memory/memory.usage_in_bytes").read_text())
+            return max(0, cap_v1 - used)
+    except (OSError, ValueError):
+        pass
+    try:
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            if line.startswith("MemAvailable:"):
+                return int(line.split()[1]) * 1024
+    except OSError:
+        pass
+    return 0
+
+
+def _pick_workers(n_chunks: int) -> int:
+    """Fastembed worker count: min of core count, RAM budget (60% of free /
+    per-worker RSS), and 'enough batches to be worth a fork'. $SEMSEARCH_PARALLEL
+    overrides (passed straight to fastembed: 1 forces in-process, 0 = all cores)."""
+    override = os.environ.get("SEMSEARCH_PARALLEL")
+    if override is not None:
+        return max(0, int(override))
+    cores = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    avail = _available_bytes()
+    by_mem = int(avail * 0.6 // WORKER_RSS) if avail else 1
+    by_work = -(-n_chunks // (EMBED_BATCH * 4))  # want each worker to get a few batches
+    return max(1, min(cores, by_mem or 1, by_work))
 
 
 def _default_root() -> Path:
@@ -379,25 +426,33 @@ def cmd_index(args: argparse.Namespace) -> int:
         )
     db.commit()
 
+    workers = _pick_workers(len(all_chunks))
+    # fastembed quirk: parallel=1 still forks one worker (model reload, no gain),
+    # so map "1 worker" onto parallel=None, which embeds in this process.
+    parallel = None if workers == 1 else workers
+    pool_desc = "in-process" if parallel is None else f"{'all-core' if parallel == 0 else parallel} workers"
     print(
         f"embedding {len(all_chunks)} chunks from {len(todo)} changed file(s) using {MODEL} "
-        f"(local, batch={EMBED_BATCH})...",
+        f"(local, {pool_desc}, batch={EMBED_BATCH})...",
         file=sys.stderr,
     )
     model = load_model()
-    for i in range(0, len(all_chunks), EMBED_BATCH):
-        batch = all_chunks[i : i + EMBED_BATCH]
-        # parallel=1 forces single-process embedding — no per-core model workers.
-        vectors = model.embed([c.embed_text() for c in batch], batch_size=EMBED_BATCH, parallel=1)
-        for c, v in zip(batch, vectors, strict=True):
-            v = np.asarray(v, dtype=np.float32)
-            v /= np.linalg.norm(v) or 1.0
-            db.execute(
-                "INSERT INTO chunks(path, start_line, end_line, heading, text, vector) VALUES(?,?,?,?,?,?)",
-                (c.path, c.start_line, c.end_line, c.heading, c.text, v.tobytes()),
-            )
-        db.commit()
-        print(f"  {min(i + EMBED_BATCH, len(all_chunks))}/{len(all_chunks)} chunks embedded", file=sys.stderr)
+    # embed() streams results in input order; commit every EMBED_BATCH rows so an
+    # interrupted run just leaves the tail un-indexed (picked up next run).
+    vectors = model.embed([c.embed_text() for c in all_chunks], batch_size=EMBED_BATCH, parallel=parallel)
+    done = 0
+    for c, v in zip(all_chunks, vectors, strict=True):
+        v = np.asarray(v, dtype=np.float32)
+        v /= np.linalg.norm(v) or 1.0
+        db.execute(
+            "INSERT INTO chunks(path, start_line, end_line, heading, text, vector) VALUES(?,?,?,?,?,?)",
+            (c.path, c.start_line, c.end_line, c.heading, c.text, v.tobytes()),
+        )
+        done += 1
+        if done % EMBED_BATCH == 0:
+            db.commit()
+            print(f"  {done}/{len(all_chunks)} chunks embedded", file=sys.stderr)
+    db.commit()
 
     total = db.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
     files = db.execute("SELECT COUNT(*) FROM files").fetchone()[0]
