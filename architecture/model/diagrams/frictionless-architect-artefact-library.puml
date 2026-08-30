@@ -3,28 +3,27 @@
 
 title Artefact Flow — Library & Design
 
-Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library")
-Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository")
-Application_DataObject(e_idb9264b9a2b5a50, "Pattern & Blueprint Repository")
-Application_Function(e_iddd11da366c175c, "Pattern Authoring & Control Mapping")
-Application_Function(e_ide1ad558dbdf859, "Blueprint Authoring & Component Mapping")
-Application_Function(e_idf6a4f65b28fc5e, "Solution Design Composition")
-Application_Function(e_iddc37081ec05957, "Threat Modelling")
-Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
-Application_DataObject(e_id9659a679544058, "OSCAL Profile")
-Application_DataObject(e_id192cc75cb2785d, "OSCAL Component Definition")
-Application_DataObject(e_id20c3b0ad770d57, "OSCAL System Security Plan")
-Application_DataObject(e_idd89db32a51b55a, "Architecture Pattern")
-Application_DataObject(e_id6599578e1d1057, "Implementation Blueprint")
-Application_DataObject(e_id506d57a987bb51, "Solution Design")
-Application_DataObject(e_id4e26a4b745705e, "Threat Model")
+Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
+  Application_Function(e_iddd11da366c175c, "Pattern Authoring & Control Mapping")
+  Application_Function(e_ide1ad558dbdf859, "Blueprint Authoring & Component Mapping")
+  Application_Function(e_idf6a4f65b28fc5e, "Solution Design Composition")
+  Application_Function(e_iddc37081ec05957, "Threat Modelling")
+}
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
+  Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
+  Application_DataObject(e_id9659a679544058, "OSCAL Profile")
+  Application_DataObject(e_id192cc75cb2785d, "OSCAL Component Definition")
+  Application_DataObject(e_id20c3b0ad770d57, "OSCAL System Security Plan")
+}
+Application_DataObject(e_idb9264b9a2b5a50, "Pattern & Blueprint Repository") {
+  Application_DataObject(e_idd89db32a51b55a, "Architecture Pattern")
+  Application_DataObject(e_id6599578e1d1057, "Implementation Blueprint")
+  Application_DataObject(e_id506d57a987bb51, "Solution Design")
+  Application_DataObject(e_id4e26a4b745705e, "Threat Model")
+}
 
 Rel_Access(e_id3b0beba52b5a5c, e_idb18c37abc9ff51, "references Profiles & Components; emits SSP")
 Rel_Access(e_id3b0beba52b5a5c, e_idb9264b9a2b5a50, "stores patterns, blueprints & designs")
-Rel_Assignment(e_id3b0beba52b5a5c, e_iddd11da366c175c, "")
-Rel_Assignment(e_id3b0beba52b5a5c, e_ide1ad558dbdf859, "")
-Rel_Assignment(e_id3b0beba52b5a5c, e_idf6a4f65b28fc5e, "")
-Rel_Assignment(e_id3b0beba52b5a5c, e_iddc37081ec05957, "")
 Rel_Access(e_iddd11da366c175c, e_idddf65887d53f57, "references")
 Rel_Access(e_iddd11da366c175c, e_idd89db32a51b55a, "authors")
 Rel_Access(e_iddd11da366c175c, e_id9659a679544058, "maps pattern to")
@@ -39,13 +38,5 @@ Rel_Access(e_iddc37081ec05957, e_idd89db32a51b55a, "assesses")
 Rel_Access(e_iddc37081ec05957, e_id6599578e1d1057, "assesses")
 Rel_Access(e_iddc37081ec05957, e_id506d57a987bb51, "assesses")
 Rel_Access(e_iddc37081ec05957, e_id4e26a4b745705e, "produces")
-Rel_Aggregation(e_idb18c37abc9ff51, e_idddf65887d53f57, "")
-Rel_Aggregation(e_idb18c37abc9ff51, e_id9659a679544058, "")
-Rel_Aggregation(e_idb18c37abc9ff51, e_id192cc75cb2785d, "")
-Rel_Aggregation(e_idb18c37abc9ff51, e_id20c3b0ad770d57, "")
-Rel_Aggregation(e_idb9264b9a2b5a50, e_idd89db32a51b55a, "")
-Rel_Aggregation(e_idb9264b9a2b5a50, e_id6599578e1d1057, "")
-Rel_Aggregation(e_idb9264b9a2b5a50, e_id506d57a987bb51, "")
-Rel_Aggregation(e_idb9264b9a2b5a50, e_id4e26a4b745705e, "")
 
 @enduml

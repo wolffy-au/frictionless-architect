@@ -3,27 +3,25 @@
 
 title Artefact Flow — Controls & OSCAL
 
-Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog")
-Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository")
+Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
+  Application_Function(e_id6ac934f170cd5f, "Policy & Standards Authoring")
+  Application_Function(e_id8926bd09002459, "OSCAL Catalog & Profile Generation")
+}
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
+  Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
+  Application_DataObject(e_id9659a679544058, "OSCAL Profile")
+}
 Application_Component(e_id13f9d5fb47b650, "Regulatory Content Sources")
-Application_Function(e_id6ac934f170cd5f, "Policy & Standards Authoring")
-Application_Function(e_id8926bd09002459, "OSCAL Catalog & Profile Generation")
 Application_DataObject(e_id51129996aed75b, "Policy / Standard Document")
 Application_DataObject(e_ida95982eb78095a, "Regulatory Baseline Catalog")
-Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
-Application_DataObject(e_id9659a679544058, "OSCAL Profile")
 
 Rel_Flow(e_id13f9d5fb47b650, e_ide4bef3733af65a, "baseline catalogs")
 Rel_Access(e_ide4bef3733af65a, e_idb18c37abc9ff51, "writes Catalogs & Profiles")
-Rel_Assignment(e_ide4bef3733af65a, e_id6ac934f170cd5f, "")
-Rel_Assignment(e_ide4bef3733af65a, e_id8926bd09002459, "")
 Rel_Access(e_id6ac934f170cd5f, e_id51129996aed75b, "authors")
 Rel_Access(e_id13f9d5fb47b650, e_ida95982eb78095a, "supplies")
 Rel_Access(e_id8926bd09002459, e_id51129996aed75b, "reads")
 Rel_Access(e_id8926bd09002459, e_ida95982eb78095a, "reads")
 Rel_Access(e_id8926bd09002459, e_idddf65887d53f57, "generates")
 Rel_Access(e_id8926bd09002459, e_id9659a679544058, "generates")
-Rel_Aggregation(e_idb18c37abc9ff51, e_idddf65887d53f57, "")
-Rel_Aggregation(e_idb18c37abc9ff51, e_id9659a679544058, "")
 
 @enduml

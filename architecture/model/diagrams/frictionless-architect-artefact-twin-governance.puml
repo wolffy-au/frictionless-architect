@@ -3,30 +3,36 @@
 
 title Artefact Flow — Digital Twin & Governance
 
-Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library")
-Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph")
-Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance")
-Application_Component(e_id82f04fecbdd85e, "Modelling & Specification")
-Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph")
-Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger")
+Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
+  Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")
+}
+Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
+  Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
+  Application_Function(e_id1877d57ef1ec5e, "Forensic Ledger Recording")
+}
+Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance") {
+  Application_Function(e_id26722845c7215d, "Comparative Evaluation & Decision")
+}
+Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
+}
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_id20c5428a37355f, "Current-State Digital Twin")
+  Application_DataObject(e_id4ed126dd41c75e, "Candidate Architecture Option")
+  Application_DataObject(e_idecfad6920d135b, "Architecture Decision Record")
+  Application_DataObject(e_id0bb0f3fe363353, "Impact Assessment")
+  Application_DataObject(e_idf87e41c1164f5a, "Archived Rejected Option")
+}
+Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger") {
+  Application_DataObject(e_id4142f84585a559, "Ledger Entry")
+}
 Application_Component(e_iddc67769c419e5d, "CI/CD Pipeline")
 Application_Component(e_idd9989f19521155, "Cloud & Infrastructure Platforms")
 Application_Component(e_idaf80425d61fd58, "RFP / Vendor Submissions")
-Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")
-Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
-Application_Function(e_id1877d57ef1ec5e, "Forensic Ledger Recording")
-Application_Function(e_id26722845c7215d, "Comparative Evaluation & Decision")
-Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
 Application_DataObject(e_id506d57a987bb51, "Solution Design")
 Application_DataObject(e_id40481deb648b5d, "Live Infrastructure State")
 Application_DataObject(e_ide423f4c2160f5d, "Deployment Event")
-Application_DataObject(e_id20c5428a37355f, "Current-State Digital Twin")
-Application_DataObject(e_id4ed126dd41c75e, "Candidate Architecture Option")
-Application_DataObject(e_idecfad6920d135b, "Architecture Decision Record")
-Application_DataObject(e_id0bb0f3fe363353, "Impact Assessment")
-Application_DataObject(e_idf87e41c1164f5a, "Archived Rejected Option")
 Application_DataObject(e_id63466da133155e, "Notation Metamodel")
-Application_DataObject(e_id4142f84585a559, "Ledger Entry")
 
 Rel_Access(e_id3b0beba52b5a5c, e_id989d401ffdae55, "publishes approved patterns & candidate options (intent plane)")
 Rel_Flow(e_idaf80425d61fd58, e_id3b0beba52b5a5c, "candidate solution inputs")
@@ -38,11 +44,6 @@ Rel_Access(e_id3da203d482f955, e_ida4a5b51705f555, "appends forensic records")
 Rel_Access(e_id0d5bd02b5ffe5e, e_id989d401ffdae55, "reads intent & twin for impact; writes decisions, impacts & archived options (intent plane)")
 Rel_Association(e_id0d5bd02b5ffe5e, e_id3b0beba52b5a5c, "governs patterns & assesses candidate options")
 Rel_Flow(e_id0d5bd02b5ffe5e, e_id3b0beba52b5a5c, "hands chosen solution to Composer for detailed design")
-Rel_Assignment(e_id3b0beba52b5a5c, e_id2ef30ba1d68054, "")
-Rel_Assignment(e_id3da203d482f955, e_id1ca5384e28155c, "")
-Rel_Assignment(e_id3da203d482f955, e_id1877d57ef1ec5e, "")
-Rel_Assignment(e_id0d5bd02b5ffe5e, e_id26722845c7215d, "")
-Rel_Assignment(e_id82f04fecbdd85e, e_id3a42c87ebb235a, "")
 Rel_Access(e_idd9989f19521155, e_id40481deb648b5d, "reports")
 Rel_Access(e_iddc67769c419e5d, e_ide423f4c2160f5d, "records")
 Rel_Access(e_id1ca5384e28155c, e_id40481deb648b5d, "reads")
@@ -61,11 +62,5 @@ Rel_Access(e_id3a42c87ebb235a, e_id4ed126dd41c75e, "renders")
 Rel_Serving(e_id3a42c87ebb235a, e_id2ef30ba1d68054, "renders candidate models for")
 Rel_Access(e_id1877d57ef1ec5e, e_id4142f84585a559, "appends")
 Rel_Flow(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
-Rel_Aggregation(e_id989d401ffdae55, e_id20c5428a37355f, "")
-Rel_Aggregation(e_id989d401ffdae55, e_id4ed126dd41c75e, "")
-Rel_Aggregation(e_id989d401ffdae55, e_idecfad6920d135b, "")
-Rel_Aggregation(e_id989d401ffdae55, e_id0bb0f3fe363353, "")
-Rel_Aggregation(e_id989d401ffdae55, e_idf87e41c1164f5a, "")
-Rel_Aggregation(e_ida4a5b51705f555, e_id4142f84585a559, "")
 
 @enduml

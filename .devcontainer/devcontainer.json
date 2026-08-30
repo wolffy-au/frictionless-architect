@@ -51,6 +51,8 @@
             "settings": {
                 "debug.javascript.autoAttachFilter": "disabled",
                 "git.autofetch": true,
+                "plantuml.jar": "/usr/share/plantuml/plantuml.jar",
+                "plantuml.render": "Local",
                 "chat.promptFilesRecommendations": {
                     "speckit.constitution": true,
                     "speckit.specify": true,

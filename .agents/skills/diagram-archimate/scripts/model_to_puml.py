@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from typing import Any
 
 try:
     from pyArchimate import Model
@@ -109,6 +110,12 @@ REL_MACRO = {
     "Association": "Rel_Association",
 }
 
+# Relationship types rendered as containment (child nested in parent's box) rather
+# than an arrow. source = whole/container/active-structure, target = part/behaviour.
+# A child is only nested if it has exactly one such parent on the diagram and the
+# nesting introduces no cycle; otherwise the relationship stays a plain arrow.
+NEST_RELS = {"Composition", "Aggregation", "Assignment"}
+
 
 def alias(uuid: str) -> str:
     return "e_" + re.sub(r"[^0-9a-zA-Z]", "", uuid)[:16]
@@ -116,6 +123,91 @@ def alias(uuid: str) -> str:
 
 def esc(text: str | None) -> str:
     return (text or "").replace('"', "'").replace("\n", " ").strip()
+
+
+def _view_concepts(view: Any) -> set[str]:
+    """UUIDs of every concept placed on an ArchiMate view, walking nested nodes."""
+    wanted: set[str] = set()
+    stack = list(view.nodes)
+    while stack:
+        n = stack.pop()
+        if getattr(n, "concept", None) is not None:
+            wanted.add(n.concept.uuid)
+        stack.extend(getattr(n, "nodes", []) or [])
+    return wanted
+
+
+def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str, list[str]], set[str], set[int]]:
+    """Fold containment relationships into nesting.
+
+    Returns (children, roots-excluded set, ``id()``s of the folded relationships).
+    A part is nested under a whole only if it has exactly one containment parent
+    on the diagram and the nesting introduces no cycle.
+    """
+    by_uuid = {e.uuid: e for e in elements}
+
+    # Pass 1: gather the legal containment edges and count each part's parents.
+    candidates: list[tuple[str, str, Any]] = []
+    parent_count: dict[str, int] = {}
+    for r in relationships:
+        if r.type not in NEST_RELS:
+            continue
+        whole, part = r.source.uuid, r.target.uuid
+        if whole not in by_uuid or part not in by_uuid or whole == part:
+            continue
+        candidates.append((whole, part, r))
+        parent_count[part] = parent_count.get(part, 0) + 1
+
+    # Pass 2: nest a part only when it has exactly one container on the diagram
+    # and the nesting introduces no cycle; every other containment stays an arrow.
+    parent_of: dict[str, str] = {}
+    children: dict[str, list[str]] = {}
+    nested: set[int] = set()
+
+    def is_descendant(node: str, of: str) -> bool:
+        cur: str | None = of
+        while cur is not None:
+            if cur == node:
+                return True
+            cur = parent_of.get(cur)
+        return False
+
+    for whole, part, r in candidates:
+        if parent_count[part] != 1 or is_descendant(part, whole):
+            continue
+        parent_of[part] = whole
+        children.setdefault(whole, []).append(part)
+        nested.add(id(r))
+    return children, set(parent_of), nested
+
+
+def _element_lines(
+    elements: list[Any], children: dict[str, list[str]], contained: set[str], warnings: list[str]
+) -> list[str]:
+    by_uuid = {e.uuid: e for e in elements}
+    out: list[str] = []
+
+    def emit(e: Any, depth: int) -> None:
+        pad = "  " * depth
+        macro = ELEMENT_MACRO.get(e.type)
+        if macro:
+            head = f'{pad}{macro}({alias(e.uuid)}, "{esc(e.name) or e.type}")'
+        else:
+            warnings.append(f"unmapped element type {e.type!r} ({e.name!r}) -> plain rectangle")
+            head = f'{pad}rectangle "{esc(e.name) or e.type}" as {alias(e.uuid)}'
+        kids = children.get(e.uuid, [])
+        if not kids:
+            out.append(head)
+            return
+        out.append(head + " {")
+        for k in kids:
+            emit(by_uuid[k], depth + 1)
+        out.append(pad + "}")
+
+    for e in elements:
+        if e.uuid not in contained:
+            emit(e, 0)
+    return out
 
 
 def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
@@ -127,15 +219,7 @@ def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
         views = [v for v in model.views if v.name == view_name]
         if not views:
             raise KeyError(f"no view named {view_name!r}; have: {[v.name for v in model.views]}")
-        wanted = set()
-
-        def walk(nodes):
-            for n in nodes:
-                if getattr(n, "concept", None) is not None:
-                    wanted.add(n.concept.uuid)
-                walk(getattr(n, "nodes", []) or [])
-
-        walk(views[0].nodes)
+        wanted = _view_concepts(views[0])
         elements = [e for e in model.elements if e.uuid in wanted]
         relationships = [r for r in model.relationships if r.source.uuid in wanted and r.target.uuid in wanted]
         title = view_name
@@ -144,18 +228,15 @@ def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
         relationships = list(model.relationships)
         title = model.name or path
 
-    lines = ["@startuml", "!include <archimate/Archimate>", "", f"title {esc(title)}", ""]
+    children, contained, nested = _nest_tree(elements, relationships)
 
-    for e in elements:
-        macro = ELEMENT_MACRO.get(e.type)
-        if macro:
-            lines.append(f'{macro}({alias(e.uuid)}, "{esc(e.name) or e.type}")')
-        else:
-            warnings.append(f"unmapped element type {e.type!r} ({e.name!r}) -> plain rectangle")
-            lines.append(f'rectangle "{esc(e.name) or e.type}" as {alias(e.uuid)}')
+    lines = ["@startuml", "!include <archimate/Archimate>", "", f"title {esc(title)}", ""]
+    lines += _element_lines(elements, children, contained, warnings)
     lines.append("")
 
     for r in relationships:
+        if id(r) in nested:
+            continue
         macro = REL_MACRO.get(r.type)
         s, t = alias(r.source.uuid), alias(r.target.uuid)
         if macro:

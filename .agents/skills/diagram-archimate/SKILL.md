@@ -39,6 +39,23 @@ skill only renders.
 4. **Report** the model path, the view rendered, output file(s), any
    unmapped-type warnings, and how validation/rendering was done.
 
+## Nested notation
+
+`Composition`, `Aggregation` and `Assignment` relationships render as
+containment — the target is nested inside the source's box and the arrow is
+dropped — matching the ArchiMate nested-notation convention (functions inside
+their component, stages inside their value stream, artefacts inside their
+store). A target keeps its arrow when it has more than one such parent on the
+diagram, or when nesting would form a cycle. Edit `NEST_RELS` in the script
+to change the set.
+
+Nested `<archimate/Archimate>` element macros (`Application_Component(...) {
+... }`) need a recent PlantUML: 1.2026.7 renders them, 1.2024.3 errors on the
+opening brace. `post-create.sh` installs the current release at
+`/usr/share/plantuml/plantuml.jar`; the VS Code `jebbs.plantuml` extension
+ships its own older jar, so `.devcontainer/devcontainer.json` points
+`plantuml.jar` at the system one.
+
 ## Layout
 
 The generator emits declarations only — no positions. PlantUML auto-lays
