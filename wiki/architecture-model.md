@@ -216,7 +216,7 @@ Content Sources, LLM Provider, RFP / Vendor Submissions.
 
 The subsystem `includes` free-text property was removed — the same
 decomposition is carried by the section-C `ApplicationFunction`s and their
-`Assignment` edges ([ADR-0027](architecture.md) §Consequences).
+`Assignment` edges ([ADR-0027](architecture.md) §"Consequences").
 
 ### C. Artefact flow — the input/output pipeline
 

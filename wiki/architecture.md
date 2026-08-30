@@ -155,7 +155,8 @@ Consequences put `schema/manager.py` in the visualiser package, which
 contradicted `ARCHITECTURE.md` §4 (`knowledge-graph` absorbs it); the ADR-0005
 **Amendment (2026-08-30)** records the conflict and defers the placement rather
 than resolving it (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
-§Amendment; `ARCHITECTURE.md` §8.1). Two questions now block the extraction:
+§"Amendment (2026-08-30)"; `ARCHITECTURE.md` §8.1). Two questions now block the
+extraction:
 whether `schema-visualizer-api` consumes `knowledge-graph` as a library or over
 HTTP, and whether `sample_parser.py` is visualiser-specific or generic ArchiMate
 ingestion (`ARCHITECTURE.md` §10).
@@ -242,10 +243,10 @@ Principles"; `docs/adr/0026-fsm-action-endpoints-for-governed-entities.md`).
 using `git worktree` + an AI assistant driven by static analysis and coverage
 tools — realised as the maintenance agents in
 [Agent Skills & Workflows](agent-workflows.md). Its Ubiquitous Language section
-now fixes the spelling split: identifiers, paths and route segments use
+records the spelling split: identifiers, paths and route segments use
 `visualizer` (`-z-`), running prose uses "visualiser" (`-s-`), and the two in
-one sentence is intentional (`TECHNICAL.md` §"Domain-Driven Design";
-`AGENTS.md` §Conventions).
+one sentence is intentional (`TECHNICAL.md` §"Domain-Driven Design (DDD)";
+`AGENTS.md` §"Conventions").
 
 `TECHNICAL.md` §"Dependency Installation" / §"Utilities and Frameworks" name
 **Poetry** as the package manager (`poetry install`, `poetry.lock`,

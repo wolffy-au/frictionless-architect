@@ -17,7 +17,7 @@ sources:
 `quickstart.md` (repo root) is a partly-stale SpecKit template — it still says
 "Python 3.11 or higher" and tells you to install **UV**. Its run command was
 fixed to `poetry run uvicorn frictionless_architect.visualizer:app --port 8100`
-(`quickstart.md` §"Core Service"). Where it still conflicts with
+(`quickstart.md` §"Core Service (CLI/API)"). Where it still conflicts with
 `pyproject.toml`, `README.md`, `AGENTS.md`, or `ARCHITECTURE.md`, those win; the
 disagreements are flagged inline below. The `002` feature quickstart
 (`specs/002-neo4j-schema-ui/quickstart.md`) is the accurate one for running the
@@ -180,7 +180,7 @@ Until then, releases stop at step 9 (tag + GitHub release, no artifact upload).
 ## Spec-driven workflow (SpecKit)
 
 The repo uses GitHub **Spec Kit**. The lifecycle is Specify → Plan → Implement →
-Verify (`quickstart.md:78-83`;
+Verify (`quickstart.md` §"Development Workflow";
 [Governance & Constitution](governance-and-constitution.md)). `.specify/` holds
 the constitution, templates, and bash scripts (`check-prerequisites.sh`,
 `create-new-feature.sh`, `setup-plan.sh`, `setup-tasks.sh`, …); the skill
