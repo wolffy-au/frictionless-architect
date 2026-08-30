@@ -21,7 +21,7 @@ logger = logging.getLogger("schema_cli")
 def load_env() -> None:
     dotenv_path = Path(__file__).resolve().parents[1] / ".env"
     if dotenv_path.exists():
-        load_dotenv(dotenv_path)
+        load_dotenv(dotenv_path, override=True)
 
 
 def build_parser() -> argparse.ArgumentParser:
