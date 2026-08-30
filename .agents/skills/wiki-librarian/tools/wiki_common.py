@@ -48,6 +48,19 @@ IGNORE_DIRS = {
 }
 
 
+def apply_root(cli_root: str | None) -> None:
+    """`chdir` to an explicit knowledge-base root, if one was given.
+
+    Every tool resolves paths relative to the current directory, which must be
+    the repo root (the directory holding `wiki/`). `--root` on the CLI or
+    `$WIKI_ROOT` in the environment overrides that -- and because everything is
+    CWD-relative, a `chdir` is the whole of it. No-op when neither is set.
+    """
+    root = cli_root or os.environ.get("WIKI_ROOT")
+    if root:
+        os.chdir(os.path.expanduser(root))
+
+
 def load_yaml(path: str, default=None):
     if not os.path.exists(path):
         return default
@@ -71,6 +84,12 @@ def load_build_log() -> dict:
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def sha256_file(path: str) -> str:
+    """Hex sha256 of a file's bytes. The one place the tooling hashes a file."""
+    with open(path, "rb") as fh:
+        return sha256_bytes(fh.read())
 
 
 def file_fingerprint(path: str) -> dict | None:

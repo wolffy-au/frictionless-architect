@@ -22,6 +22,7 @@ REVIEW  a URL cache file on disk that no topic references
 
 from __future__ import annotations
 
+import argparse
 import io
 import os
 import re
@@ -29,8 +30,8 @@ import sys
 
 import wiki_common as wc
 
-errors: list[tuple[str, str]] = []
-reviews: list[tuple[str, str]] = []
+# (level, name, detail) -- level is "ERROR" or "REVIEW".
+Finding = tuple[str, str, str]
 
 
 def _read(path: str) -> str:
@@ -54,76 +55,95 @@ def _frontmatter_sources(text: str) -> list[str]:
     return out
 
 
-def _check_topic_page_log(resolved: dict, pages: dict, log_topics: dict) -> None:
+def check_topic_page_log(resolved: dict, pages: dict, log_topics: dict) -> list[Finding]:
+    found: list[Finding] = []
     for name in resolved:
         if name not in pages:
-            errors.append((name, "topic has no page file wiki/%s.md" % name))
+            found.append(("ERROR", name, "topic has no page file wiki/%s.md" % name))
         elif name not in log_topics:
-            errors.append((name, "page exists but no .build-log.yaml entry"))
+            found.append(("ERROR", name, "page exists but no .build-log.yaml entry"))
     for name in pages:
         if name not in resolved:
-            errors.append((name, "page wiki/%s.md has no topic in sources.yaml" % name))
+            found.append(("ERROR", name, "page wiki/%s.md has no topic in sources.yaml" % name))
     for name in log_topics:
         if name not in resolved:
-            errors.append((name, "in .build-log.yaml but not sources.yaml (orphan)"))
+            found.append(("ERROR", name, "in .build-log.yaml but not sources.yaml (orphan)"))
+    return found
 
 
-def _check_index_links(resolved: dict, pages: dict) -> None:
+def check_index_links(resolved: dict, pages: dict) -> list[Finding]:
     index_text = _read(wc.INDEX_FILE) if os.path.isfile(wc.INDEX_FILE) else ""
     linked = set(re.findall(r"\]\(\s*([A-Za-z0-9._-]+)\.md\s*\)", index_text))
-    for name in resolved:
-        if name in pages and name not in linked:
-            errors.append((name, "not linked from wiki/index.md"))
+    return [
+        ("ERROR", name, "not linked from wiki/index.md") for name in resolved if name in pages and name not in linked
+    ]
 
 
-def _check_page(name: str, path: str, resolved: dict) -> None:
+def check_page(name: str, path: str, resolved: dict) -> list[Finding]:
+    found: list[Finding] = []
     text = _read(path)
     cites = wc.CITE_FILE_RE.findall(text)
     if name in resolved and not cites:
-        reviews.append((name, "page has no repo-file citations"))
+        found.append(("REVIEW", name, "page has no repo-file citations"))
     for rel in sorted(set(cites)):
         if not os.path.isfile(rel):
-            errors.append((name, "citation points at missing path: %s" % rel))
+            found.append(("ERROR", name, "citation points at missing path: %s" % rel))
     if name in resolved:
         declared_ok = set(resolved[name]["files"]) | {u["url"] for u in resolved[name]["urls"]}
         for s in _frontmatter_sources(text):
             if s not in declared_ok:
-                reviews.append((name, "frontmatter source not in resolved set: %s" % s))
+                found.append(("REVIEW", name, "frontmatter source not in resolved set: %s" % s))
+    return found
 
 
-def _check_stray_caches(resolved: dict) -> None:
+def check_stray_caches(resolved: dict) -> list[Finding]:
     if not os.path.isdir(wc.CACHE_DIR):
-        return
+        return []
     referenced = {wc.url_cache_path(u["url"]) for r in resolved.values() for u in r["urls"]}
+    found: list[Finding] = []
     for f in sorted(os.listdir(wc.CACHE_DIR)):
         p = os.path.join(wc.CACHE_DIR, f)
         if p not in referenced:
-            reviews.append(("(cache)", "unreferenced URL cache file: %s" % p))
+            found.append(("REVIEW", "(cache)", "unreferenced URL cache file: %s" % p))
+    return found
 
 
-def main() -> int:
-    if not os.path.isdir(wc.WIKI_DIR):
-        print("no wiki/ -- run from the repo root", file=sys.stderr)
-        return 1
-
+def collect_findings() -> list[Finding]:
     resolved = {r["name"]: r for r in wc.resolve_all()}
     log_topics = wc.load_build_log().get("topics") or {}
     pages = {os.path.basename(p)[:-3]: p for p in wc.iter_wiki_pages()}
 
-    _check_topic_page_log(resolved, pages, log_topics)
-    _check_index_links(resolved, pages)
+    found = check_topic_page_log(resolved, pages, log_topics)
+    found += check_index_links(resolved, pages)
     for name, path in pages.items():
-        _check_page(name, path, resolved)
-    _check_stray_caches(resolved)
+        found += check_page(name, path, resolved)
+    found += check_stray_caches(resolved)
 
-    print("topics: %d   pages: %d   build-log entries: %d" % (len(resolved), len(pages), len(log_topics)))
+    counts = (len(resolved), len(pages), len(log_topics))
+    print("topics: %d   pages: %d   build-log entries: %d" % counts)
+    return found
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--root", help="repo root (dir holding wiki/); default: $WIKI_ROOT or the current directory")
+    args = ap.parse_args()
+    wc.apply_root(args.root)
+
+    if not os.path.isdir(wc.WIKI_DIR):
+        print("no wiki/ -- run from the repo root", file=sys.stderr)
+        return 1
+
+    found = collect_findings()
+    errors = [f for f in found if f[0] == "ERROR"]
+    reviews = [f for f in found if f[0] == "REVIEW"]
+
     print("=" * 72)
     print("ERRORS: %d     REVIEW: %d" % (len(errors), len(reviews)))
     print("=" * 72)
-    for label, rows in (("ERROR ", errors), ("REVIEW", reviews)):
-        for name, detail in rows:
-            print("  %s %-22s %s" % (label, name, detail))
-    if not errors and not reviews:
+    for level, name, detail in errors + reviews:
+        print("  %-6s %-22s %s" % (level, name, detail))
+    if not found:
         print("  every topic has a linked page, and every citation resolves")
     return 1 if errors else 0
 

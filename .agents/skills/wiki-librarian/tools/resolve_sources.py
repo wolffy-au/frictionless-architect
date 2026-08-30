@@ -23,7 +23,9 @@ import wiki_common as wc
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--root", help="repo root (dir holding wiki/); default: $WIKI_ROOT or the current directory")
     args = ap.parse_args()
+    wc.apply_root(args.root)
 
     if not os.path.isfile(wc.SOURCES_FILE):
         print(f"no {wc.SOURCES_FILE} -- run the librarian to scaffold it", file=sys.stderr)

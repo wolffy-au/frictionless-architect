@@ -24,12 +24,13 @@ answers -- small embedding models are weak on direction and negation.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import os
 import re
 import sqlite3
 import sys
 from pathlib import Path
+
+import wiki_common as wc
 
 MODEL = "BAAI/bge-small-en-v1.5"
 DIM = 384
@@ -317,8 +318,6 @@ def collect(scope: str) -> list[Path]:
         if cache.is_dir():
             paths += sorted(cache.glob("*.md"))
     if scope in ("sources", "all"):
-        import wiki_common as wc
-
         for rel in wc.all_source_files():
             p = REPO / rel
             if p.is_file():
@@ -365,7 +364,7 @@ def connect() -> sqlite3.Connection:
 
 
 def digest_of(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return wc.sha256_file(str(path))
 
 
 def load_model():
@@ -538,10 +537,12 @@ def main() -> int:
 
     args = ap.parse_args()
 
-    if args.root:
-        global REPO, DB_PATH
-        REPO = Path(args.root).expanduser().resolve()
-        DB_PATH = REPO / "index.sqlite"
+    # `--root` / `$WIKI_ROOT` chdir to the knowledge-base root; everything here
+    # is CWD-relative, so re-derive REPO / DB_PATH from the (possibly new) CWD.
+    global REPO, DB_PATH
+    wc.apply_root(args.root)
+    REPO = _default_root()
+    DB_PATH = REPO / "index.sqlite"
 
     return args.func(args)
 
