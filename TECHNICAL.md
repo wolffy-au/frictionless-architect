@@ -244,6 +244,11 @@ The following patterns and practices have been established for API-level integra
 ## Domain-Driven Design (DDD)
 
 - **Ubiquitous Language**: Establish and use a common language shared by developers and domain experts throughout the project.
+- **Spelling — "visualiser":** identifiers, module and package names, filesystem paths,
+  URL route segments, and the wiki topic slug are spelled `visualizer` (`-z-`), matching
+  Python/FastAPI ecosystem convention and the planned `schema-visualizer-api` package.
+  Running prose uses en-GB "visualiser" (`-s-`). A single sentence carrying both — "the
+  visualiser is the app in `visualizer/`" — is deliberate.
 - **Bounded Contexts**: Define clear boundaries for different parts of the domain model, managing complexity and allowing for independent evolution.
 - **Aggregates and Entities**: Design domain models around aggregates to enforce invariants and manage consistency. FSMs often complement DDD by managing the state of aggregates or entities.
 

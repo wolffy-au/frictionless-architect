@@ -76,6 +76,11 @@ type/test suite on push, Conventional Commits check on the message.
   the ruleset and `commit-auditor` to check a branch before a PR. Tags are `v$version`;
   `cz bump` owns `CHANGELOG.md` and the tag (`version_provider = "scm"`).
 - Work on `feature/**` or `bugfix/**` branches — never directly on `main` or `develop`.
+- **Spelling of "visualiser":** code identifiers, module/package names, paths, route
+  segments and the wiki topic slug use `visualizer` (`-z-`, matching the Python/FastAPI
+  ecosystem and the future `schema-visualizer-api` package). Running prose uses the
+  en-GB "visualiser" (`-s-`). Both spellings appearing in one sentence
+  (e.g. "the visualiser lives in `visualizer/`") is intentional, not a typo.
 - Feature work is spec-driven: `speckit-specify` → `speckit-plan` → `speckit-tasks` →
   `speckit-implement`, against `.specify/memory/constitution.md`.
 - Releases follow [`RELEASE.md`](RELEASE.md) (or the `release-runner` agent).

@@ -44,19 +44,20 @@ This platform consists of a core Python service and potentially other microservi
 
 ### Core Service (CLI/API)
 
-The core service is likely a Python application using FastAPI.
+The one runnable slice today is the Neo4j schema visualiser, a FastAPI app.
 
 1. **Set up databases (if applicable)**:
     Refer to the database-specific setup instructions (e.g., Docker Compose for PostgreSQL and Neo4j).
+    The visualiser also runs without Neo4j, falling back to bundled sample data.
 
 2. **Run the core service**:
 
     ```bash
-    # Example command - actual command may vary
-    uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
     ```
 
-    (This assumes a FastAPI application named `app` in `main.py`)
+    Then open `http://127.0.0.1:8100/schema-visualizer`. See `README.md` for the
+    full set of endpoints and settings.
 
 ### Running Specifications and Planning
 
