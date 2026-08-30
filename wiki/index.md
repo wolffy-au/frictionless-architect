@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-08-29
+generated: 2026-08-30
 generator: claude-sonnet-5
 ---
 
@@ -12,17 +12,19 @@ generator: claude-sonnet-5
 ## Topics
 
 - [Project Overview](project-overview.md) — what Frictionless Architect is, who
-  it's for, the eight-component vision, and which parts are actually built.
+  it's for, the platform vision (now six subsystems, formerly eight components),
+  and which parts are actually built.
 - [Governance & Constitution](governance-and-constitution.md) — the SpecKit
   Constitution (principles I–IX), the Specify→Plan→Implement→Verify workflow,
   and quality gates.
 - [Architecture Overview](architecture.md) — the governance-layer-at-root
-  principle, current vs. target state, the component→package map, the Poetry
-  monorepo decision, and the migration sequence.
-- [Architecture Model Skeleton](architecture-model.md) — the ~30-node
-  load-bearing ArchiMate subset in `architecture/model/` used as decomposition
-  input: drivers, principles, constraints, six primary capabilities, and the
-  end-to-end process chain.
+  principle, current vs. target state, the component decomposition (8 → 6), the
+  Poetry monorepo decision, the migration sequence, and the full `docs/adr/`
+  decision log.
+- [Architecture Model](architecture-model.md) — the canonical graph-loadable
+  YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
+  generated: the load-bearing skeleton, the six-subsystem ecosystem, and the
+  artefact input/output pipeline.
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.
@@ -41,7 +43,8 @@ generator: claude-sonnet-5
   Archi CSV exports, and the OSCAL profile-resolution diagrams.
 - [Agent Skills & Workflows](agent-workflows.md) — the repo's coding-agent
   skills (`speckit-*`, `commit-message`, `fork-sync`, the diagram/model chain,
-  the wiki skills) and paired agents.
+  the wiki skills) and the maintenance-agent fleet (`quality-uplift`,
+  `coverage-uplift`, `docs-uplift`, `adr-auditor`, `release-runner`, …).
 
 ## A note on source quality
 

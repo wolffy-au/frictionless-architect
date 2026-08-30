@@ -32,14 +32,16 @@ topics:
     sources:
       - path: ARCHITECTURE.md
       - path: TECHNICAL.md
+      - path: docs/adr/*.md
 
   - name: architecture-model
-    title: Architecture Model Skeleton
-    description: The load-bearing ArchiMate node/relationship subset used as decomposition input.
+    title: Architecture Model
+    description: The canonical graph-loadable YAML model (skeleton + 6 subsystems + artefact flow) that every ArchiMate/C4 diagram is generated from.
     sources:
       - path: architecture/model/README.md
-      - path: architecture/model/nodes.yaml
+      - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
 
   - name: data-model
     title: Data Model
@@ -79,6 +81,7 @@ topics:
     sources:
       - path: quickstart.md
       - path: AGENTS.md
+      - path: RELEASE.md
       - path: specs/002-neo4j-schema-ui/quickstart.md
 
   - name: sample-data

@@ -1,6 +1,6 @@
 ---
 title: Project Overview
-generated: 2026-08-29
+generated: 2026-08-30
 generator: claude-sonnet-5
 sources:
   - README.md
@@ -16,9 +16,13 @@ Frictionless Architect is the working name for a **Frictionless Architecture &
 Governance Platform** — a system that keeps a bank's architecture as a live,
 machine-readable model and automates governance on top of it, targeting APRA
 **CPS 230** (operational resilience) and **CPS 234** (information security)
-compliance (`PROJECT_SPECIFICATION.md` §"Phase 1", `ARCHITECTURE.md` §1). The
-stated purpose is "a digital twin of the bank's architecture that automates
-governance and eliminates SDLC friction" (`PROJECT_SPECIFICATION.md` §"Phase 2").
+compliance (`PROJECT_SPECIFICATION.md` §"Phase 1"). The stated purpose is "a
+digital twin of the bank's architecture that automates governance and eliminates
+SDLC friction" (`PROJECT_SPECIFICATION.md` §"Phase 2").
+
+`README.md` frames the same thing more narrowly as the repo stands today: "a
+platform for describing, validating, and visualising enterprise architecture
+models (ArchiMate) backed by a graph database" (`README.md` §intro).
 
 The product vision has two connected halves:
 
@@ -52,13 +56,36 @@ From `PROJECT_SPECIFICATION.md` §"Phase 2" / §"Phase 4":
   ADRs, with automatic PII scrubbing and conflict detection against prior ADRs.
 - **Drift & emergency management** — real-time monitoring with a "Break-Glass"
   protocol for intentional, time-bounded drift during P1 incidents, and
-  "Managed Drift" that auto-raises technical-debt tickets when a policy is bypassed.
+  "Managed Drift" that auto-raises technical-debt tickets when a policy is
+  bypassed.
 - **Automated audit** — a queryable Regulatory Traceability Matrix and
   natural-language-to-graph queries (e.g. "encryption status of every service
   supporting the Instant Payments CBS").
 
-The platform decomposes into **eight components** — see [Architecture Overview](architecture.md)
-and the "Proposed Grouping" in `PROJECT_SPECIFICATION.md`.
+## Governing principles
+
+`PROJECT_SPECIFICATION.md` §"Phase 1" states four (now recorded in the decision
+log — see [Architecture Overview](architecture.md)):
+
+- **Machine-Readability First** — all artifacts are executable or structured data
+  (JSON/Markdown).
+- **Regulatory Compliance by Design** — automated CPS 230 / 234 enforcement.
+- **Human-Attested, AI-Accelerated** — AI drafts and monitors; a human
+  cryptographically signs off on ADRs to keep a legal audit trail.
+- **The "Why" Over the "What"** — every technical change links to an ADR that
+  captures trade-offs.
+
+## How the platform is drawn
+
+The C4 Context and Container views are **generated from the ArchiMate model**,
+not hand-drawn in the spec: the model is `architecture/model/` (canonical YAML →
+`frictionless-architect.xml`), and the diagrams are regenerated via the
+`diagram-c4` skill (`PROJECT_SPECIFICATION.md` §"C4 Context Diagram"). The
+platform decomposes into **six subsystems** in the current model — see
+[Architecture Model](architecture-model.md) — although
+`PROJECT_SPECIFICATION.md` §"Proposed Grouping" and `ARCHITECTURE.md` §3–4 still
+describe the older **eight-component** grouping. See
+[Architecture Overview](architecture.md) for that tension.
 
 ## MVP scope vs. platform vision
 
@@ -69,22 +96,22 @@ The sources disagree on scope, and this is a known tension:
 - `ARCHITECTURE.md` §1 treats that line as "an early scoping compromise, not a
   constraint on the topology," and plans a multi-package platform.
 
-Only one narrow slice is built today: the Neo4j Schema Visualiser (see
-[Visualizer Service](visualizer-service.md) and [Platform Specification & API](platform-spec.md)).
+Only one narrow slice is built today: the Neo4j Schema Visualiser — a FastAPI
+service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
+bundled sample model and renders it as a diagram, a table, and a schema summary,
+falling back to `sample-data/` when Neo4j is unreachable (`README.md` §"What is
+built today"). See [Visualizer Service](visualizer-service.md) and
+[Platform Specification & API](platform-spec.md).
 
 ## Heritage cleanup
 
-The repo was spun from an accounting-domain SpecKit template. That heritage
-has largely been cleared: `README.md` and `TECHNICAL.md` were rewritten around
-the schema visualiser and Poetry, `PROJECT_CONSTITUTION.md` dropped its
-"(X-Accountant)" title, and `ARCHITECTURE.md` removed its "heritage cruft"
-note and its "step 0: de-accounting" migration step (commits `56b8567`,
-`425083d`, `6420daf` on the `skills-and-agents` line). `PROJECT_SPECIFICATION.md`
-is left as historical background and still carries the original template's
-phase-numbering gap (see below).
-
-## Not covered by current sources
-
-`PROJECT_SPECIFICATION.md` skips from "Phase 7" to "Phase 11" and refers to
-scalability testing "for environments with  nodes" (a dropped number) — the
-original numeric targets are incomplete in the source.
+The repo was spun from an accounting-domain SpecKit template. That heritage has
+largely been cleared: `README.md` and `TECHNICAL.md` were rewritten around the
+schema visualiser and Poetry, `PROJECT_CONSTITUTION.md` dropped its
+"(X-Accountant)" title, and `ARCHITECTURE.md` removed its "heritage cruft" note
+and its "step 0: de-accounting" migration step. `PROJECT_SPECIFICATION.md` is
+left as historical background — "use this document as background input when
+drafting new specs; do not edit … except to document historical context"
+(`PROJECT_SPECIFICATION.md:3`) — and still carries the original template's
+phase-numbering gap (it skips from Phase 7 to Phase 11) and a dropped
+scalability figure ("environments with  nodes").

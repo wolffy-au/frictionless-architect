@@ -100,5 +100,7 @@ kind of OSCAL tooling the `policy-enforcement` component would wrap
 
 The diagram skills in [Agent Skills & Workflows](agent-workflows.md)
 (`model-archimate`, `diagram-archimate`, `diagram-c4`, `diagram-plantuml`)
-operate on exactly these formats. `sample-data/archimate/frictionless-architect.archimate`
-is the project's own ArchiMate model (not in this topic).
+operate on exactly these formats. The project's own architecture model lives
+under `architecture/model/` (canonical YAML → generated
+`frictionless-architect.xml`) and is covered by
+[Architecture Model](architecture-model.md), not this topic.
