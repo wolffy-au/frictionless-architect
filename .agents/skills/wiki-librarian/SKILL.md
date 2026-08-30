@@ -30,17 +30,21 @@ listed in `wiki/sources.yaml`), never the wiki.
 
 Scripts ship under `tools/` (shared `wiki_common.py`). They operate on `wiki/`
 **relative to the current directory** — run them from the repo root (the
-directory holding `wiki/`). Dependencies: `pyyaml` for all; plus `numpy` and
-`fastembed` for `semsearch.py` (model cache lands outside the repo — override
-with `$SEMSEARCH_CACHE`).
+directory holding `wiki/`). **Always invoke them with `poetry run python`** —
+this repo's deps (`pyyaml` for all tools; `numpy` + `fastembed` for
+`semsearch.py`) live in the Poetry venv, not the system interpreter, so bare
+`python` fails with `ModuleNotFoundError` (`AGENTS.md` — "run everything through
+`poetry run`"). `semsearch.py`'s model cache lands outside the repo — override
+with `$SEMSEARCH_CACHE`; its embed batch size is `$SEMSEARCH_EMBED_BATCH`
+(default 64).
 
 ```bash
-python tools/resolve_sources.py           # sources.yaml -> resolved files/URLs per topic, unmatched globs
-python tools/build_status.py              # per topic: FRESH / STALE / NEW / ORPHAN vs .build-log.yaml
-python tools/build_status.py --check      # same, exit non-zero if anything needs a rebuild
-python tools/build_status.py --coverage   # also list repo docs matched by no topic
-python tools/verify_wiki.py               # pages exist, linked from index, citations resolve, log consistent
-python tools/semsearch.py index --scope all
+poetry run python tools/resolve_sources.py         # sources.yaml -> resolved files/URLs per topic, unmatched globs
+poetry run python tools/build_status.py            # per topic: FRESH / STALE / NEW / ORPHAN vs .build-log.yaml
+poetry run python tools/build_status.py --check    # same, exit non-zero if anything needs a rebuild
+poetry run python tools/build_status.py --coverage # also list repo docs matched by no topic
+poetry run python tools/verify_wiki.py             # pages exist, linked from index, citations resolve, log consistent
+poetry run python tools/semsearch.py index --scope all
 ```
 
 `build_status.py` and `verify_wiki.py` are read-only. Page generation is done
@@ -69,10 +73,10 @@ On a repo that already has `wiki/sources.yaml`, skip this step entirely.
 
 ### 2. Resolve and diff
 
-1. Run `python tools/resolve_sources.py` and read it. Report any unmatched
-   globs to the user — a glob matching nothing is usually a typo or a moved
-   file, not intentional.
-2. Run `python tools/build_status.py`. It classifies each topic:
+1. Run `poetry run python tools/resolve_sources.py` and read it. Report any
+   unmatched globs to the user — a glob matching nothing is usually a typo or a
+   moved file, not intentional.
+2. Run `poetry run python tools/build_status.py`. It classifies each topic:
    - **NEW** — no build-log entry; must be built.
    - **STALE** — a source file's fingerprint changed, a source was
      added/removed, or a URL's cached content changed; must be rebuilt.
@@ -111,12 +115,16 @@ For each topic to build:
    `sources.yaml` order.
 2. Set/update the top of `.build-log.yaml`: `generated` (today),
    `generator` (your model id, e.g. `claude-sonnet-5`).
-3. Run `python tools/verify_wiki.py` and `python tools/build_status.py
-   --check`. Act on every finding — a run is not done until both exit clean
-   or every remaining finding has been explained to the user. Do not report
-   a page as built on the strength of having written a log entry.
-4. Run `python tools/semsearch.py index --scope all` so the next run and the
-   `wiki-maintenance` agent search a current index.
+3. Run `poetry run python tools/verify_wiki.py` and `poetry run python
+   tools/build_status.py --check`. Act on every finding — a run is not done
+   until both exit clean or every remaining finding has been explained to the
+   user. Do not report a page as built on the strength of having written a log
+   entry.
+4. Run `poetry run python tools/semsearch.py index --scope all` so the next run
+   and the `wiki-maintenance` agent search a current index. In a memory-capped
+   container the embed step is slow but no longer OOMs (it batches); if it is
+   still killed, drop `$SEMSEARCH_EMBED_BATCH` or fall back to `--scope wiki`
+   and say so in the report.
 5. Report what was built/skipped/removed, any unmatched globs, any failed
    URL fetches, and — if a page crossed ~500 lines — suggest a split (see
    "Oversized pages"). If several pages were regenerated, suggest
@@ -228,8 +236,8 @@ vectors in a gitignored `index.sqlite`) — no part of the corpus leaves the
 machine.
 
 ```bash
-python tools/semsearch.py search "how are OSCAL profiles resolved" --scope all -k 8
-python tools/semsearch.py index --scope all      # refresh; skips unchanged files
+poetry run python tools/semsearch.py search "how are OSCAL profiles resolved" --scope all -k 8
+poetry run python tools/semsearch.py index --scope all   # refresh; skips unchanged files
 ```
 
 Use it alongside `Grep`, not instead of it: `Grep` for literal names, paths,

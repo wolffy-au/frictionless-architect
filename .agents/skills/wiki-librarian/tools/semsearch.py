@@ -34,6 +34,12 @@ from pathlib import Path
 MODEL = "BAAI/bge-small-en-v1.5"
 DIM = 384
 
+# Embed in small single-process batches, committing as we go. fastembed will
+# otherwise fork one model worker per core for a large document count, which
+# OOM-kills the process in a memory-capped container (e.g. `--scope all`, ~750
+# chunks). Override with $SEMSEARCH_EMBED_BATCH.
+EMBED_BATCH = int(os.environ.get("SEMSEARCH_EMBED_BATCH", "64"))
+
 
 def _default_root() -> Path:
     """Knowledge-base root: the directory containing wiki/ and raw/.
@@ -361,13 +367,9 @@ def cmd_index(args: argparse.Namespace) -> int:
     for p, _ in todo:
         all_chunks.extend(chunk_file(p))
 
-    print(
-        f"embedding {len(all_chunks)} chunks from {len(todo)} changed file(s) using {MODEL} (local)...",
-        file=sys.stderr,
-    )
-    model = load_model()
-    vectors = list(model.embed([c.embed_text() for c in all_chunks]))
-
+    # Clear the old chunks for every changed file and record its new digest up
+    # front, so an interrupted embed just leaves those files un-indexed (picked
+    # up next run) rather than half-indexed.
     for p, d in todo:
         rel = p.relative_to(REPO).as_posix()
         db.execute("DELETE FROM chunks WHERE path = ?", (rel,))
@@ -375,16 +377,28 @@ def cmd_index(args: argparse.Namespace) -> int:
             "INSERT INTO files(path, digest) VALUES(?, ?) ON CONFLICT(path) DO UPDATE SET digest = excluded.digest",
             (rel, d),
         )
-
-    for c, v in zip(all_chunks, vectors, strict=True):
-        v = np.asarray(v, dtype=np.float32)
-        v /= np.linalg.norm(v) or 1.0
-        db.execute(
-            "INSERT INTO chunks(path, start_line, end_line, heading, text, vector) VALUES(?,?,?,?,?,?)",
-            (c.path, c.start_line, c.end_line, c.heading, c.text, v.tobytes()),
-        )
-
     db.commit()
+
+    print(
+        f"embedding {len(all_chunks)} chunks from {len(todo)} changed file(s) using {MODEL} "
+        f"(local, batch={EMBED_BATCH})...",
+        file=sys.stderr,
+    )
+    model = load_model()
+    for i in range(0, len(all_chunks), EMBED_BATCH):
+        batch = all_chunks[i : i + EMBED_BATCH]
+        # parallel=1 forces single-process embedding — no per-core model workers.
+        vectors = model.embed([c.embed_text() for c in batch], batch_size=EMBED_BATCH, parallel=1)
+        for c, v in zip(batch, vectors, strict=True):
+            v = np.asarray(v, dtype=np.float32)
+            v /= np.linalg.norm(v) or 1.0
+            db.execute(
+                "INSERT INTO chunks(path, start_line, end_line, heading, text, vector) VALUES(?,?,?,?,?,?)",
+                (c.path, c.start_line, c.end_line, c.heading, c.text, v.tobytes()),
+            )
+        db.commit()
+        print(f"  {min(i + EMBED_BATCH, len(all_chunks))}/{len(all_chunks)} chunks embedded", file=sys.stderr)
+
     total = db.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
     files = db.execute("SELECT COUNT(*) FROM files").fetchone()[0]
     print(f"indexed {len(all_chunks)} chunks from {len(todo)} file(s); {total} chunks across {files} files total")

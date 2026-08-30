@@ -50,7 +50,7 @@ Dependency chain: `diagram-c4` / `diagram-archimate` → `model-archimate` (vali
 
 ### Project wiki
 
-`wiki/` is a **derived cache**: `wiki/sources.yaml` declares topics and their sources (repo file globs + external URLs), and each topic is regenerated as one synthesized `wiki/<name>.md` page with citations. `wiki/.build-log.yaml` fingerprints every source so a rebuild only touches pages whose sources changed. Deps: `pyyaml` (all tools), plus `numpy` + `fastembed` for the local semantic index (`index.sqlite`, git-ignored).
+`wiki/` is a **derived cache**: `wiki/sources.yaml` declares topics and their sources (repo file globs + external URLs), and each topic is regenerated as one synthesized `wiki/<name>.md` page with citations. `wiki/.build-log.yaml` fingerprints every source so a rebuild only touches pages whose sources changed. Deps: `pyyaml` (all tools), plus `numpy` + `fastembed` for the local semantic index (`index.sqlite`, git-ignored) — all in the Poetry venv, so run the tools under `wiki-librarian/tools/` with `poetry run python …`.
 
 | Skill / agent | Purpose |
 |-------|---------|

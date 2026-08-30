@@ -11,30 +11,32 @@ what needs a librarian run.
 
 The wiki is a derived cache: `wiki/sources.yaml` declares topics and sources,
 each topic becomes one synthesized `wiki/<name>.md`, and `wiki/.build-log.yaml`
-fingerprints every source. Run all commands from the repo root.
+fingerprints every source. Run all commands from the repo root, and always as
+`poetry run python …` — the tools' deps (`pyyaml`, and `numpy`/`fastembed` for
+`semsearch.py`) are in the Poetry venv, not the system interpreter (`AGENTS.md`).
 
 ## Checks to run
 
-1. **Staleness** — run `python .agents/skills/wiki-librarian/tools/build_status.py`.
+1. **Staleness** — run `poetry run python .agents/skills/wiki-librarian/tools/build_status.py`.
    Report every topic that comes back NEW, STALE (with the reasons — which
    source changed), or ORPHAN. This is the main check; a stale page is a page
    whose sources moved on without it.
-2. **Unmatched globs** — run `python .agents/skills/wiki-librarian/tools/resolve_sources.py`.
+2. **Unmatched globs** — run `poetry run python .agents/skills/wiki-librarian/tools/resolve_sources.py`.
    Flag any `UNMATCHED GLOB` line — usually a typo or a moved/renamed file.
-3. **Coverage gaps** — run `build_status.py --coverage`. Review the repo docs
+3. **Coverage gaps** — run `poetry run python .agents/skills/wiki-librarian/tools/build_status.py --coverage`. Review the repo docs
    that no topic covers. Some are deliberately out of scope (changelogs,
    licences); flag the ones that look like real knowledge missing from the
    wiki, as a suggestion for a new topic. Don't edit `sources.yaml` yourself.
-4. **Structural integrity** — run `python .agents/skills/wiki-librarian/tools/verify_wiki.py`.
+4. **Structural integrity** — run `poetry run python .agents/skills/wiki-librarian/tools/verify_wiki.py`.
    Report its ERRORs (missing page for a topic, page with no topic, page not
    linked from index, citation pointing at a missing path, build-log
-   inconsistency) and REVIEWs (page with no citations, frontmatter source
+   inconsistency) and REVIEWs (page with no repo-file citations, frontmatter source
    drift). Fix a missing `index.md` link directly — that is mechanical
    bookkeeping. Everything else: flag for the librarian.
 5. **Duplicate/overlapping topics** — if two topics look like they cover the
    same subject, flag them as a merge candidate. Use the local semantic
    index rather than judging from titles:
-   `python .agents/skills/wiki-librarian/tools/semsearch.py search "<topic in a line>" --scope wiki -k 8`
+   `poetry run python .agents/skills/wiki-librarian/tools/semsearch.py search "<topic in a line>" --scope wiki -k 8`
    and look for a high-scoring hit (0.70+, standing clear of the rest) on a
    *different* page. A flat cluster around 0.6 means nothing matched. Don't
    merge; flag.
