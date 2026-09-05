@@ -667,3 +667,18 @@
 - {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-release-define-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
 - {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-implement-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
 - {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-publish-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+
+# --- Bridge: this platform's own capabilities aligned to IT4IT capabilities
+#     (props: {source: it4it-alignment}, distinct from the it4it-internal and
+#     it4it-derived tags above, so this bridge layer can be filtered/hidden
+#     on its own). Curated by semantic overlap, not exhaustive. ---
+- {type: Association, source: cap-digital-twin, target: it4it-cap-config-mgmt, label: twin's current-state plane is functionally a CMS, props: {source: it4it-alignment}}
+- {type: Association, source: cap-digital-twin, target: it4it-cap-architecture-mgmt, label: intent plane holds the same living architecture model, props: {source: it4it-alignment}}
+- {type: Association, source: cap-reusable-architecture, target: it4it-cap-architecture-mgmt, label: curates the architecture patterns this capability owns, props: {source: it4it-alignment}}
+- {type: Association, source: cap-reusable-architecture, target: it4it-cap-product-design-mgmt, label: blueprints & solution designs are product-design artefacts, props: {source: it4it-alignment}}
+- {type: Association, source: cap-spec-engine, target: it4it-cap-requirements-mgmt, label: generates the spec that operationalises captured requirements, props: {source: it4it-alignment}}
+- {type: Association, source: cap-control-plane, target: it4it-cap-release-mgmt, label: supervises agent-built change through to a controlled release, props: {source: it4it-alignment}}
+- {type: Association, source: cap-drift-dashboard, target: it4it-cap-event-mgmt, label: telemetry-vs-intent comparison is continuous event detection, props: {source: it4it-alignment}}
+- {type: Association, source: cap-drift-dashboard, target: it4it-cap-config-mgmt, label: drift is measured against the same configuration baseline, props: {source: it4it-alignment}}
+- {type: Association, source: cap-drift-dashboard, target: it4it-cap-problem-mgmt, label: classified drift findings are root-cause problems to diagnose, props: {source: it4it-alignment}}
+- {type: Association, source: cap-control-catalog, target: it4it-cap-policy-mgmt, label: owns the same policy & standards content, props: {source: it4it-alignment}}
