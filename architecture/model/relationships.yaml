@@ -677,7 +677,7 @@
 - {type: Association, source: cap-reusable-architecture, target: it4it-cap-architecture-mgmt, label: curates the architecture patterns this capability owns, props: {source: it4it-alignment}}
 - {type: Association, source: cap-reusable-architecture, target: it4it-cap-product-design-mgmt, label: blueprints & solution designs are product-design artefacts, props: {source: it4it-alignment}}
 - {type: Association, source: cap-spec-engine, target: it4it-cap-requirements-mgmt, label: generates the spec that operationalises captured requirements, props: {source: it4it-alignment}}
-- {type: Association, source: cap-control-plane, target: it4it-cap-release-mgmt, label: supervises agent-built change through to a controlled release, props: {source: it4it-alignment}}
+- {type: Association, source: cap-control-plane, target: it4it-integrate-build-test, label: constrains and monitors agent behaviour in real time during build, integrate, and test, props: {source: it4it-alignment}}
 - {type: Association, source: cap-drift-dashboard, target: it4it-cap-event-mgmt, label: telemetry-vs-intent comparison is continuous event detection, props: {source: it4it-alignment}}
 - {type: Association, source: cap-drift-dashboard, target: it4it-cap-config-mgmt, label: drift is measured against the same configuration baseline, props: {source: it4it-alignment}}
 - {type: Association, source: cap-control-catalog, target: it4it-cap-policy-mgmt, label: owns the same policy & standards content, props: {source: it4it-alignment}}
