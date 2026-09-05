@@ -729,3 +729,62 @@
 - {type: DataObject, id: art-dev-spec, name: Development Specification, desc: Executable spec derived from patterns, blueprints and designs.}
 - {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
 - {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: A single immutable forensic record — actor, action, target artefact, timestamp, outcome.}
+
+# =====================================================================
+# D. IT4IT ALIGNMENT — the IT4IT 3.0 value-stream skeleton, sourced from the
+#    Open Group's own reference model (it4it-fixed.xml): the root "IT4IT
+#    Value Streams" wrapper, its 7 value streams (a Flow network, not a
+#    pipeline), their 28 stages, and the one Outcome the root realizes.
+#    Lightweight traceability only — not the platform's own model. Tagged
+#    `props: {source: it4it}` and id-prefixed `it4it-` so they can be
+#    grepped/filtered/hidden independently of everything above. Not
+#    referenced by any existing view — see view-it4it-alignment in
+#    views.yaml. Deliberately left unconnected to this platform's own
+#    capabilities for now (props: {source: it4it} marks every element that
+#    would need a bridge relationship added later).
+# =====================================================================
+- {type: ValueStream, id: it4it-vs-root, name: "IT4IT: Value Streams", desc: The root wrapper composing all 7 IT4IT value streams., props: {source: it4it}}
+- {type: Outcome, id: it4it-outcome-digital-product, name: "IT4IT: Digital Product", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-vs-explore, name: "IT4IT: Explore", desc: Investigate, design and roadmap a digital product idea., props: {source: it4it}}
+- {type: ValueStream, id: it4it-vs-evaluate, name: "IT4IT: Evaluate", desc: Govern the portfolio — gaps, mandates and investment decisions., props: {source: it4it}}
+- {type: ValueStream, id: it4it-vs-integrate, name: "IT4IT: Integrate", desc: Plan, design, build and publish a product release., props: {source: it4it}}
+- {type: ValueStream, id: it4it-vs-deploy, name: "IT4IT: Deploy", desc: Plan, fulfil, validate and observe a deployment., props: {source: it4it}}
+- {type: ValueStream, id: it4it-vs-release, name: "IT4IT: Release", desc: Define, implement and publish a consumable service offer., props: {source: it4it}}
+- {type: ValueStream, id: it4it-vs-operate, name: "IT4IT: Operate", desc: Detect, diagnose and resolve an issue in a running product., props: {source: it4it}}
+- {type: ValueStream, id: it4it-vs-consume, name: "IT4IT: Consume", desc: Agree, subscribe to, and support a consumed service offer., props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-explore-architecture, name: "Explore: Define Digital Product Architecture", props: {source: it4it}}
+- {type: ValueStream, id: it4it-explore-refine-backlog, name: "Explore: Refine Product Backlog", props: {source: it4it}}
+- {type: ValueStream, id: it4it-explore-prioritize-backlog, name: "Explore: Prioritize Backlog Items", props: {source: it4it}}
+- {type: ValueStream, id: it4it-explore-roadmap, name: "Explore: Finalize Roadmap & Scope Agreement", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-evaluate-influencers, name: "Evaluate: Gather Influencers", props: {source: it4it}}
+- {type: ValueStream, id: it4it-evaluate-backlog-mandates, name: "Evaluate: Define Backlog Mandates", props: {source: it4it}}
+- {type: ValueStream, id: it4it-evaluate-governance, name: "Evaluate: Ensure Governance", props: {source: it4it}}
+- {type: ValueStream, id: it4it-evaluate-gaps, name: "Evaluate: Identify Gaps", props: {source: it4it}}
+- {type: ValueStream, id: it4it-evaluate-investments, name: "Evaluate: Propose Investments", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-integrate-plan-release, name: "Integrate: Plan Product Release", props: {source: it4it}}
+- {type: ValueStream, id: it4it-integrate-design-develop, name: "Integrate: Design & Develop", props: {source: it4it}}
+- {type: ValueStream, id: it4it-integrate-build-test, name: "Integrate: Build, Integrate, & Test", props: {source: it4it}}
+- {type: ValueStream, id: it4it-integrate-accept-publish, name: "Integrate: Accept & Publish Release", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-deploy-plan-approve, name: "Deploy: Plan & Approve Deployment", props: {source: it4it}}
+- {type: ValueStream, id: it4it-deploy-fulfill, name: "Deploy: Fulfill Deployment", props: {source: it4it}}
+- {type: ValueStream, id: it4it-deploy-observe, name: "Deploy: Observe Deployment", props: {source: it4it}}
+- {type: ValueStream, id: it4it-deploy-validate, name: "Deploy: Validate Deployment", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-release-define-offer, name: "Release: Define Service Offer", props: {source: it4it}}
+- {type: ValueStream, id: it4it-release-implement-offer, name: "Release: Implement Service Offer", props: {source: it4it}}
+- {type: ValueStream, id: it4it-release-publish-offer, name: "Release: Publish Service Offer", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-operate-detect, name: "Operate: Detect Issue", props: {source: it4it}}
+- {type: ValueStream, id: it4it-operate-diagnose, name: "Operate: Diagnose Issue", props: {source: it4it}}
+- {type: ValueStream, id: it4it-operate-resolve, name: "Operate: Resolve Issue", props: {source: it4it}}
+
+- {type: ValueStream, id: it4it-consume-publish-status, name: "Consume: Publish Service Status", props: {source: it4it}}
+- {type: ValueStream, id: it4it-consume-support, name: "Consume: Provide Service Support", props: {source: it4it}}
+- {type: ValueStream, id: it4it-consume-agree-offer, name: "Consume: Agree to Service Offer", props: {source: it4it}}
+- {type: ValueStream, id: it4it-consume-subscribe-offer, name: "Consume: Subscribe to Service Offer", props: {source: it4it}}
+- {type: ValueStream, id: it4it-consume-select-offer, name: "Consume: Select an Offer", props: {source: it4it}}
