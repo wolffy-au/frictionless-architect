@@ -5,6 +5,12 @@ tests/unit/schema/test_manager.py could not catch, because those tests replace
 the transaction with a dummy that never parses the query string. Only a real
 Neo4j engine rejects invalid Cypher, so these audit queries need to run
 against one.
+
+ADR-0028 dropped the RelationshipFact node in favour of storing relationships
+as bare edges, with View/Diagram referencing them via relationshipIds /
+connectionIds identifier lists. These tests were updated accordingly: the
+"missing" check now looks for a list entry with no matching edge, rather than
+an edge with a missing endpoint (which can no longer happen).
 """
 
 from __future__ import annotations
@@ -60,22 +66,44 @@ def test_find_orphan_views_is_valid_cypher(manager):
     assert isinstance(orphan, list)
 
 
-def test_find_missing_relationship_targets_detects_missing_endpoint(manager):
+def test_find_missing_relationship_targets_detects_dangling_view_reference(manager):
     with manager.driver.session() as session:
         session.run(
-            "MERGE (rel:RelationshipFact {identifier: $identifier}) "
-            "SET rel.type = 'Test', rel.source_id = null, rel.target_id = 'target-1'",
-            identifier="test-missing-rel",
+            "MERGE (v:View {identifier: $identifier}) "
+            "SET v.name = 'Dangling ref test view', v.relationshipIds = ['does-not-exist']",
+            identifier="test-dangling-view",
         )
     try:
         missing, _ = manager.run_audit_checks()
-        identifiers = {row["identifier"] for row in missing}
-        assert "test-missing-rel" in identifiers
+        matches = [row for row in missing if row["identifier"] == "test-dangling-view"]
+        assert matches
+        assert matches[0]["kind"] == "view"
+        assert matches[0]["missing"] == "does-not-exist"
     finally:
         with manager.driver.session() as session:
             session.run(
-                "MATCH (rel:RelationshipFact {identifier: $identifier}) DETACH DELETE rel",
-                identifier="test-missing-rel",
+                "MATCH (v:View {identifier: $identifier}) DETACH DELETE v",
+                identifier="test-dangling-view",
+            )
+
+
+def test_find_missing_relationship_targets_detects_dangling_diagram_reference(manager):
+    with manager.driver.session() as session:
+        session.run(
+            "MERGE (d:Diagram {identifier: $identifier}) "
+            "SET d.name = 'Dangling ref test diagram', d.connectionIds = ['does-not-exist']",
+            identifier="test-dangling-diagram",
+        )
+    try:
+        missing, _ = manager.run_audit_checks()
+        matches = [row for row in missing if row["identifier"] == "test-dangling-diagram"]
+        assert matches
+        assert matches[0]["kind"] == "diagram"
+    finally:
+        with manager.driver.session() as session:
+            session.run(
+                "MATCH (d:Diagram {identifier: $identifier}) DETACH DELETE d",
+                identifier="test-dangling-diagram",
             )
 
 

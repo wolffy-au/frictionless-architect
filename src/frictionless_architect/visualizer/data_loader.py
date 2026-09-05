@@ -64,11 +64,11 @@ class DataLoader:
     def _fetch_relationships(tx: Any) -> list[dict[str, Any]]:
         result = tx.run(
             """
-            MATCH (r:RelationshipFact)
+            MATCH (source:Element)-[r:ARCHIMATE_RELATIONSHIP]->(target:Element)
             RETURN r.identifier AS identifier,
                    r.type AS type,
-                   r.source_id AS source,
-                   r.target_id AS target,
+                   source.identifier AS source,
+                   target.identifier AS target,
                    properties(r) AS properties
             """
         )

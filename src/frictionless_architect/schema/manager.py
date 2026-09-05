@@ -12,7 +12,6 @@ from neo4j import GraphDatabase, ManagedTransaction, basic_auth
 
 CONSTRAINTS = [
     "CREATE CONSTRAINT element_identifier IF NOT EXISTS FOR (e:Element) REQUIRE e.identifier IS UNIQUE",
-    "CREATE CONSTRAINT relationship_identifier IF NOT EXISTS FOR (r:RelationshipFact) REQUIRE r.identifier IS UNIQUE",
     "CREATE CONSTRAINT view_identifier IF NOT EXISTS FOR (v:View) REQUIRE v.identifier IS UNIQUE",
     "CREATE CONSTRAINT diagram_identifier IF NOT EXISTS FOR (d:Diagram) REQUIRE d.identifier IS UNIQUE",
     "CREATE CONSTRAINT viewpoint_identifier IF NOT EXISTS FOR (vp:Viewpoint) REQUIRE vp.identifier IS UNIQUE",
@@ -22,7 +21,8 @@ CONSTRAINTS = [
 INDEXES = [
     "CREATE INDEX element_type_index IF NOT EXISTS FOR (e:Element) ON (e.type)",
     "CREATE INDEX element_layer_index IF NOT EXISTS FOR (e:Element) ON (e.layer)",
-    "CREATE INDEX relationship_type_index IF NOT EXISTS FOR (r:RelationshipFact) ON (r.type)",
+    "CREATE INDEX relationship_identifier_index IF NOT EXISTS FOR ()-[r:ARCHIMATE_RELATIONSHIP]-() ON (r.identifier)",
+    "CREATE INDEX relationship_type_index IF NOT EXISTS FOR ()-[r:ARCHIMATE_RELATIONSHIP]-() ON (r.type)",
     "CREATE INDEX view_name_index IF NOT EXISTS FOR (v:View) ON (v.name)",
     "CREATE INDEX diagram_name_index IF NOT EXISTS FOR (d:Diagram) ON (d.name)",
 ]
@@ -148,21 +148,6 @@ SET rel.type = $type, rel += $properties""",
                 properties=rel_properties,
             )
 
-            _run_literal(
-                tx,
-                """MERGE (meta:RelationshipFact {identifier:$identifier})
-SET meta.type = $type, meta.source_id = $source, meta.target_id = $target, meta += $properties
-WITH meta
-MATCH (source:Element {identifier:$source}), (target:Element {identifier:$target})
-MERGE (meta)-[:SOURCE_ELEMENT]->(source)
-MERGE (meta)-[:TARGET_ELEMENT]->(target)""",
-                identifier=identifier,
-                type=rel_type,
-                source=source_id,
-                target=target_id,
-                properties=rel_properties,
-            )
-
     @staticmethod
     def _ingest_views(tx: ManagedTransaction, views: Iterable[Mapping[str, Any]]) -> None:
         for view in views:
@@ -171,12 +156,14 @@ MERGE (meta)-[:TARGET_ELEMENT]->(target)""",
             _run_literal(
                 tx,
                 """MERGE (v:View {identifier:$identifier})
-SET v.name = $name, v.viewpoint = $viewpoint, v.viewpointRef = $viewpointRef
+SET v.name = $name, v.viewpoint = $viewpoint, v.viewpointRef = $viewpointRef,
+    v.relationshipIds = $relationship_ids
 SET v += $properties""",
                 identifier=identifier,
                 name=view.get("name"),
                 viewpoint=view.get("viewpoint"),
                 viewpointRef=view.get("viewpointRef"),
+                relationship_ids=list(view.get("relationships", [])),
                 properties=view_props,
             )
 
@@ -190,16 +177,6 @@ MERGE (v)-[:INCLUDES]->(element)""",
                     element_id=element_id,
                 )
 
-            for relationship_id in view.get("relationships", []):
-                _run_literal(
-                    tx,
-                    """MATCH (v:View {identifier:$view_id})
-MATCH (relationship:RelationshipFact {identifier:$relationship_id})
-MERGE (v)-[:HAS_RELATIONSHIP]->(relationship)""",
-                    view_id=identifier,
-                    relationship_id=relationship_id,
-                )
-
     @staticmethod
     def _ingest_diagrams(tx: ManagedTransaction, diagrams: Iterable[Mapping[str, Any]]) -> None:
         for diagram in diagrams:
@@ -208,12 +185,14 @@ MERGE (v)-[:HAS_RELATIONSHIP]->(relationship)""",
             _run_literal(
                 tx,
                 """MERGE (d:Diagram {identifier:$identifier})
-SET d.name = $name, d.viewRef = $view_ref, d.viewpoint = $viewpoint
+SET d.name = $name, d.viewRef = $view_ref, d.viewpoint = $viewpoint,
+    d.connectionIds = $connection_ids
 SET d += $properties""",
                 identifier=identifier,
                 name=diagram.get("name"),
                 view_ref=diagram.get("viewRef"),
                 viewpoint=diagram.get("viewpoint"),
+                connection_ids=list(diagram.get("connections", [])),
                 properties=diagram_props,
             )
 
@@ -235,16 +214,6 @@ MATCH (element:Element {identifier:$node_id})
 MERGE (d)-[:HAS_NODE]->(element)""",
                     diagram_id=identifier,
                     node_id=node_id,
-                )
-
-            for connection_id in diagram.get("connections", []):
-                _run_literal(
-                    tx,
-                    """MATCH (d:Diagram {identifier:$diagram_id})
-MATCH (relationship:RelationshipFact {identifier:$connection_id})
-MERGE (d)-[:HAS_CONNECTION]->(relationship)""",
-                    diagram_id=identifier,
-                    connection_id=connection_id,
                 )
 
     def record_schema_version(self, name: str) -> None:
@@ -269,13 +238,30 @@ SET sv.applied_at = datetime($timestamp)""",
 
     @staticmethod
     def _find_missing_relationship_targets(tx: ManagedTransaction) -> list[dict[str, Any]]:
+        """Find View/Diagram relationship references that point at no real edge.
+
+        Relationships are stored only as edges now (ADR-0028), so an edge can
+        never have a missing endpoint - Neo4j won't create one. The integrity
+        gap this design does introduce is on the other side: a View or
+        Diagram's relationshipIds/connectionIds list is a plain string list,
+        not a graph edge, so it can silently reference an identifier that
+        does not correspond to any ARCHIMATE_RELATIONSHIP edge.
+        """
         result = _run_literal(
             tx,
-            """MATCH (rel:RelationshipFact)
-WITH rel, rel.source_id IS NULL AS sourceMissing, rel.target_id IS NULL AS targetMissing
-WHERE sourceMissing OR targetMissing
-RETURN rel.identifier AS identifier,
-       CASE WHEN sourceMissing THEN 'source' ELSE '' END + CASE WHEN targetMissing THEN ' target' ELSE '' END AS missing""",
+            """MATCH (v:View) WHERE v.relationshipIds IS NOT NULL
+UNWIND v.relationshipIds AS relId
+OPTIONAL MATCH ()-[rel:ARCHIMATE_RELATIONSHIP {identifier: relId}]->()
+WITH v.identifier AS identifier, 'view' AS kind, relId, rel
+WHERE rel IS NULL
+RETURN identifier, kind, relId AS missing
+UNION ALL
+MATCH (d:Diagram) WHERE d.connectionIds IS NOT NULL
+UNWIND d.connectionIds AS relId
+OPTIONAL MATCH ()-[rel:ARCHIMATE_RELATIONSHIP {identifier: relId}]->()
+WITH d.identifier AS identifier, 'diagram' AS kind, relId, rel
+WHERE rel IS NULL
+RETURN identifier, kind, relId AS missing""",
         )
         return [row.data() for row in result]
 
@@ -285,7 +271,7 @@ RETURN rel.identifier AS identifier,
             tx,
             """MATCH (v:View)
 WITH v, COUNT { (v)-[:INCLUDES]->(:Element) } AS elements,
-     COUNT { (v)-[:HAS_RELATIONSHIP]->(:RelationshipFact) } AS relationships
+     size(coalesce(v.relationshipIds, [])) AS relationships
 WHERE elements = 0 OR relationships = 0
 RETURN v.identifier AS identifier,
        CASE WHEN elements = 0 THEN 'elements' ELSE 'relationships' END AS kind""",
