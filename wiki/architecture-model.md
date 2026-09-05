@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-08-30
+generated: 2026-09-05
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -65,6 +65,15 @@ Schema rules (`architecture/model/README.md` §"Schema";
   `requirement-type`.
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
+- **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
+  from `.agents/skills/model-archimate/reference/archi-viewpoints.xml`
+  (`poetry run python .agents/skills/model-archimate/scripts/viewpoints.py
+  list`). `build.py` holds that view to the viewpoint's allowed concepts and
+  fails on a stray one; `viewpoint: custom` marks a deliberate cross-layer view
+  (not checked), and omitting the key also skips the check
+  (`architecture/model/README.md` §"Schema"). The tag lives only in
+  `views.yaml` — pyArchimate (pinned) cannot round-trip it into the generated
+  XML.
 
 `build.py` accumulates every validation problem (unknown concept name,
 duplicate id, dangling relationship reference, unknown view member) and reports
@@ -80,11 +89,27 @@ One model spans three sections in `elements.yaml`
 
 The motivation, strategy and business layer that stays true regardless of how
 component boundaries finally land ([ADR-0010](architecture.md)). It is
-**decomposition input, not the final architecture**, but it may carry genuine
-structural traceability — the motivation spine and the value stream — added by
-[ADR-0027](architecture.md). Views: `Architecture Skeleton` (motivation only),
-`Capability Map & Value Stream`, `Delivery Choreography`
-(`architecture/model/views.yaml:14-35`).
+**decomposition input, not the final architecture**, but it now carries a full
+TOGAF ADM Phase A vision: stakeholders and assessments driving the motivation,
+and a strategy layer (courses of action, resources) between capabilities and
+the goal — added by [ADR-0027](architecture.md) and the follow-on vision-view
+work. Views: seven Phase A views (below) plus the cross-cutting
+`Architecture Skeleton` and `Delivery Choreography`
+(`architecture/model/views.yaml`).
+
+**Stakeholders** — five roles the vision is drawn for
+(`architecture/model/elements.yaml:54-78`): Delivery (`stk-delivery`),
+Architecture (`stk-architecture`), Risk & Compliance (`stk-risk-compliance`),
+Executive (`stk-exec`), Regulator (`stk-regulator`). Each is `Association`-linked
+to the driver(s) it holds and, for the three delivery-facing stakeholders, to
+the value stream itself (`architecture/model/relationships.yaml:66-78`).
+
+**Assessments** — three findings that make a driver urgent
+(`architecture/model/elements.yaml:85-97`): the manual-review bottleneck
+`Influence`s the scaling driver, architecture drift & technical debt
+`Influence`s the sustainability driver, and manual/inconsistent compliance
+evidence `Influence`s the compliance driver
+(`architecture/model/relationships.yaml:79-81`).
 
 **Drivers** — why the platform exists
 (`architecture/model/elements.yaml:20-47`): Market Agility & Competitive
@@ -142,6 +167,16 @@ Every capability realizes at least one requirement
 Management serves Executable Specification Generation ("authoritative graph")
 and Drift Detection ("as-designed intent")
 (`architecture/model/relationships.yaml:118-127`).
+
+**Courses of action & resources** — the strategy layer between capabilities and
+the goal (`architecture/model/elements.yaml:332-366`): three courses of action
+— Executable Governance (`coa-executable-governance`, realized by five
+capabilities), Living Twin (`coa-living-twin`), Reuse-First Delivery
+(`coa-reuse-first`) — each `Influence`s the goal in turn
+(`architecture/model/relationships.yaml:55-65`). Four resources are
+`Assignment`-linked to the capability they equip: the Architecture Knowledge
+Graph, an AI agent fleet, curated control content, and the EA practice/tooling
+(`architecture/model/relationships.yaml:51-54`).
 
 **Value stream** — the outcome-oriented view of governed delivery
 (`architecture/model/elements.yaml:276-318`). `vs-governed-delivery` "Governed
@@ -248,33 +283,57 @@ Item, Development Specification, Notation Metamodel, Ledger Entry.
 
 ## Views and diagrams
 
-Eight ArchiMate views are declared in `views.yaml`; the C4 context and
-container diagrams are **not** views — `diagram-c4` projects them from the XML
-with `--system "Frictionless Architecture Platform"`
-(`architecture/model/views.yaml:9-10`). The regeneration commands (one C4 loop,
-one loop over the eight view→slug mappings, then `plantuml -tsvg`) are in
-`architecture/model/README.md` §"Regenerate". Rendered `.puml` / `.svg` land
-under `architecture/model/diagrams/`.
+Twelve ArchiMate views are declared in `views.yaml`; the C4 context and
+container diagrams are **not** views — `render_diagrams.py` projects them via
+`diagram-c4` with `--system "Frictionless Architecture Platform"`
+(`architecture/model/README.md` §"Regenerate"). Seven of the twelve are a
+TOGAF ADM Phase A "Architecture Vision" set, each held to its matching standard
+ArchiMate viewpoint and rendered under `diagrams/vision/`:
+
+| View | Viewpoint | Covers |
+|---|---|---|
+| Stakeholder | `stakeholder` | Who holds which driver, the assessments that make each urgent, and the goal + outcome they drive toward |
+| Motivation | `motivation` | The whole motivation model: stakeholders, assessments, drivers, goal, outcome, principles, requirements, constraints |
+| Goal Realization | `goal_realization` | Goal → outcome, and how principles/requirements/constraints realize it |
+| Strategy | `strategy` | Resources → capabilities → courses of action, the value stream as a single element, and the outcome |
+| Capability Map | `capability` | The eight capabilities and their `Serving` dependency order |
+| Value Stream — Governed Architecture Delivery | `value_stream` | The stream's six stages (`Composition` + `Triggering` sequence, with a `Reconcile → Specify` feedback `Flow`), the capabilities that `Serve` each stage, the recipient stakeholders, and the outcome it `Realizes` |
+| Outcome Realization | `outcome_realization` | Business processes → capabilities → value stream → outcome, the end-to-end realization chain |
+
+The remaining five are cross-cutting and marked `viewpoint: custom` (a
+deliberate cross-layer cut, not held to a standard allow-list) or
+`application_cooperation`: `Architecture Skeleton`, `Delivery Choreography`,
+`Subsystems & Capabilities`, and the four per-stage `Artefact Flow — …` views
+(`architecture/model/views.yaml`). Rendered `.puml` / `.svg` land under
+`architecture/model/diagrams/` (vision views under `diagrams/vision/`).
 
 ## Regenerating
 
 ```bash
-poetry run python architecture/model/build.py     # YAML → xml → validate
-# then the C4 and per-view diagram loops from README.md §"Regenerate"
-plantuml -tsvg architecture/model/diagrams/*.puml
+poetry run python architecture/model/build.py           # YAML -> XML (+ validate)
+poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .svg
 ```
+
+`render_diagrams.py` reads each view's `diagram:` key (one `.puml`/`.svg` pair
+per view) plus the two C4 diagrams. `--check` fails if any committed diagram is
+stale (CI / pre-commit); `--no-svg` skips the PlantUML render. It replaces the
+earlier manual per-view `plantuml` loop.
 
 ## Provenance
 
 Section A was extracted from `prototype/nodes.yaml` at `prototype-neo4j`
 (`d0c30b4`); section B was ported from the retired
 `sample-data/archimate/build_frictionless_architect.py`; section C was authored
-2026-08-30. A later pass ([ADR-0027](architecture.md)) renamed the capabilities
-as abilities, added `req-authoritative-twin` / `req-immutable-audit-ledger` so
-every capability has a contract, moved `req-regulatory-mapping` to
-`cap-control-catalog`, added the `Governed Architecture Delivery` value stream
-and the driver→goal→outcome spine plus the driver/principle/constraint →
-requirement influences, merged `const-model-governance` into `const-model-risk`,
-and remodelled "Architecture as Executable Intelligence" as an `Outcome`. Full
-history is in the ADR log — see [Architecture Overview](architecture.md)
+2026-08-30. A 2026-08-30 pass ([ADR-0027](architecture.md)) renamed the
+capabilities as abilities, added `req-authoritative-twin` /
+`req-immutable-audit-ledger` so every capability has a contract, moved
+`req-regulatory-mapping` to `cap-control-catalog`, added the `Governed
+Architecture Delivery` value stream and the driver→goal→outcome spine, merged
+`const-model-governance` into `const-model-risk`, and remodelled "Architecture
+as Executable Intelligence" as an `Outcome`. A follow-on pass added the
+stakeholder/assessment layer and the strategy layer (courses of action,
+resources), wired principles and constraints to the requirements they shape,
+and introduced the seven TOGAF Phase A vision views plus `render_diagrams.py`
+(replacing the earlier per-view manual regeneration). Full history is in the
+ADR log — see [Architecture Overview](architecture.md)
 (`architecture/model/README.md` §"Provenance").
