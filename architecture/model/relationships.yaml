@@ -680,5 +680,4 @@
 - {type: Association, source: cap-control-plane, target: it4it-cap-release-mgmt, label: supervises agent-built change through to a controlled release, props: {source: it4it-alignment}}
 - {type: Association, source: cap-drift-dashboard, target: it4it-cap-event-mgmt, label: telemetry-vs-intent comparison is continuous event detection, props: {source: it4it-alignment}}
 - {type: Association, source: cap-drift-dashboard, target: it4it-cap-config-mgmt, label: drift is measured against the same configuration baseline, props: {source: it4it-alignment}}
-- {type: Association, source: cap-drift-dashboard, target: it4it-cap-problem-mgmt, label: classified drift findings are root-cause problems to diagnose, props: {source: it4it-alignment}}
 - {type: Association, source: cap-control-catalog, target: it4it-cap-policy-mgmt, label: owns the same policy & standards content, props: {source: it4it-alignment}}
