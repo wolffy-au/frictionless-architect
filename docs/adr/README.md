@@ -88,5 +88,5 @@ narrative docs.
   Commits + commitizen; SCM-derived versions; branch model
 - **A** — [0026](0026-fsm-action-endpoints-for-governed-entities.md) —
   Governed-lifecycle entities are FSMs with action-based endpoints
-- **P** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
+- **A** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
   Capability layer carries a value stream and an explicit motivation spine
