@@ -545,3 +545,125 @@
 - {type: Flow, source: it4it-vs-explore, target: it4it-vs-evaluate, props: {source: it4it}}
 - {type: Flow, source: it4it-vs-integrate, target: it4it-vs-evaluate, props: {source: it4it}}
 - {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-deploy, props: {source: it4it}}
+
+# --- Derived: Capability --Serving--> Stage, collapsed from the source
+#     model's own chain (DataObject --Realization--> Stage;
+#     DataObject --Realization--> Resource; Resource --Assignment-->
+#     Capability) — Serving chosen as the weakest/most-representative
+#     type in that chain, matching the Capability-serves-Stage
+#     convention used elsewhere in this model. Not a relationship
+#     present verbatim in the source; marked <<derived>> and
+#     props: {derived: "true"} so it can be told apart from the
+#     source-verbatim edges above. ---
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-consume-agree-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-consume-agree-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-financial-mgmt, target: it4it-consume-publish-status, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-incident-mgmt, target: it4it-consume-publish-status, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-procurement-mgmt, target: it4it-consume-publish-status, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-consume-publish-status, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-consume-publish-status, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-vendor-mgmt, target: it4it-consume-publish-status, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-consume-select-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-consume-select-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-asset-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-financial-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-procurement-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-vendor-mgmt, target: it4it-consume-subscribe-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-incident-mgmt, target: it4it-consume-support, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-consume-support, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-asset-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-measurement-reporting, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-operations-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-problem-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-procurement-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-release-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-deploy-fulfill, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-deploy-plan-approve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-procurement-mgmt, target: it4it-deploy-plan-approve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-release-mgmt, target: it4it-deploy-plan-approve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-deploy-plan-approve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-deploy-plan-approve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-asset-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-operations-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-problem-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-procurement-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-release-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-deploy-validate, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-architecture-mgmt, target: it4it-evaluate-backlog-mandates, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-demand-mgmt, target: it4it-evaluate-backlog-mandates, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-policy-mgmt, target: it4it-evaluate-backlog-mandates, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-portfolio-mgmt, target: it4it-evaluate-backlog-mandates, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-architecture-mgmt, target: it4it-evaluate-influencers, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-demand-mgmt, target: it4it-evaluate-influencers, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-policy-mgmt, target: it4it-evaluate-influencers, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-portfolio-mgmt, target: it4it-evaluate-influencers, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-architecture-mgmt, target: it4it-evaluate-investments, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-demand-mgmt, target: it4it-evaluate-investments, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-policy-mgmt, target: it4it-evaluate-investments, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-portfolio-mgmt, target: it4it-evaluate-investments, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-architecture-mgmt, target: it4it-explore-prioritize-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-demand-mgmt, target: it4it-explore-prioritize-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-policy-mgmt, target: it4it-explore-prioritize-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-design-mgmt, target: it4it-explore-prioritize-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-portfolio-mgmt, target: it4it-explore-prioritize-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-requirements-mgmt, target: it4it-explore-prioritize-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-demand-mgmt, target: it4it-explore-refine-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-policy-mgmt, target: it4it-explore-refine-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-backlog-mgmt, target: it4it-explore-refine-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-design-mgmt, target: it4it-explore-refine-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-portfolio-mgmt, target: it4it-explore-refine-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-requirements-mgmt, target: it4it-explore-refine-backlog, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-demand-mgmt, target: it4it-explore-roadmap, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-financial-mgmt, target: it4it-explore-roadmap, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-policy-mgmt, target: it4it-explore-roadmap, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-backlog-mgmt, target: it4it-explore-roadmap, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-design-mgmt, target: it4it-explore-roadmap, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-portfolio-mgmt, target: it4it-explore-roadmap, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-defect-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-procurement-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-backlog-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-release-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-requirements-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-test-mgmt, target: it4it-integrate-accept-publish, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-development, target: it4it-integrate-build-test, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-release-mgmt, target: it4it-integrate-build-test, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-defect-mgmt, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-backlog-mgmt, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-design-mgmt, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-development, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-requirements-mgmt, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-test-mgmt, target: it4it-integrate-design-develop, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-product-backlog-mgmt, target: it4it-integrate-plan-release, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-requirements-mgmt, target: it4it-integrate-plan-release, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-test-mgmt, target: it4it-integrate-plan-release, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-operate-detect, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-event-mgmt, target: it4it-operate-detect, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-incident-mgmt, target: it4it-operate-detect, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-measurement-reporting, target: it4it-operate-detect, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-operate-detect, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-operate-detect, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-operate-diagnose, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-event-mgmt, target: it4it-operate-diagnose, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-incident-mgmt, target: it4it-operate-diagnose, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-operations-mgmt, target: it4it-operate-diagnose, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-problem-mgmt, target: it4it-operate-diagnose, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-operate-diagnose, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-config-mgmt, target: it4it-operate-resolve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-event-mgmt, target: it4it-operate-resolve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-incident-mgmt, target: it4it-operate-resolve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-operations-mgmt, target: it4it-operate-resolve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-request-mgmt, target: it4it-operate-resolve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-operate-resolve, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-release-mgmt, target: it4it-release-define-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-define-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-level-mgmt, target: it4it-release-define-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-implement-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
+- {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-publish-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}

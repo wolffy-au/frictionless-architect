@@ -218,10 +218,12 @@
 - id: view-it4it-alignment
   name: IT4IT Alignment
   diagram: frictionless-architect-it4it-alignment
-  # The IT4IT 3.0 value-stream skeleton only — see section D of elements.yaml
-  # / relationships.yaml (props: {source: it4it}). Not yet bridged to this
-  # platform's own capabilities. Deliberately excluded from every other view;
-  # render/hide this one independently.
+  # The IT4IT 3.0 value-stream skeleton, plus the 24 IT4IT capabilities
+  # reachable from a stage via the source model's own DataObject -> Resource
+  # -> Capability chain (see relationships.yaml section D, the <<derived>>
+  # Serving edges). Not yet bridged to this platform's own capabilities.
+  # Deliberately excluded from every other view; render/hide this one
+  # independently.
   viewpoint: value_stream
   members:
     - it4it-vs-root
@@ -261,6 +263,30 @@
     - it4it-consume-agree-offer
     - it4it-consume-subscribe-offer
     - it4it-consume-select-offer
+    - it4it-cap-architecture-mgmt
+    - it4it-cap-asset-mgmt
+    - it4it-cap-config-mgmt
+    - it4it-cap-defect-mgmt
+    - it4it-cap-demand-mgmt
+    - it4it-cap-event-mgmt
+    - it4it-cap-financial-mgmt
+    - it4it-cap-incident-mgmt
+    - it4it-cap-measurement-reporting
+    - it4it-cap-operations-mgmt
+    - it4it-cap-policy-mgmt
+    - it4it-cap-problem-mgmt
+    - it4it-cap-procurement-mgmt
+    - it4it-cap-product-backlog-mgmt
+    - it4it-cap-product-design-mgmt
+    - it4it-cap-product-development
+    - it4it-cap-product-portfolio-mgmt
+    - it4it-cap-release-mgmt
+    - it4it-cap-request-mgmt
+    - it4it-cap-requirements-mgmt
+    - it4it-cap-service-catalog-mgmt
+    - it4it-cap-service-level-mgmt
+    - it4it-cap-test-mgmt
+    - it4it-cap-vendor-mgmt
 
 - id: view-artefact-assurance-spec
   name: Artefact Flow — Assurance & Specification
