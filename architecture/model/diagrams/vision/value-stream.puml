@@ -1,6 +1,8 @@
 @startuml
 !include <archimate/Archimate>
 
+left to right direction
+
 title Value Stream — Governed Architecture Delivery
 
 Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")
@@ -28,17 +30,12 @@ Rel_Association(e_idb1fdf098c7c056, e_idcd5e1d4017725d, "compliant releases at s
 Rel_Association(e_id3bf463ccf22a53, e_idcd5e1d4017725d, "sustained coherence")
 Rel_Association(e_id133bbac4b3e450, e_idcd5e1d4017725d, "provable compliance")
 Rel_Realization(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
-Rel_Serving(e_id72468b5b403450, e_id447909387df55c, "")
 Rel_Serving(e_id752d1de3794f5f, e_id447909387df55c, "")
-Rel_Serving(e_id18ec07397a9d5f, e_id01dab436206551, "")
 Rel_Serving(e_idafba1b4ab1e756, e_id01dab436206551, "")
 Rel_Serving(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
 Rel_Serving(e_id4a1c34ab69d151, e_idb542830057125a, "")
-Rel_Serving(e_idafba1b4ab1e756, e_idb542830057125a, "")
-Rel_Serving(e_idc29413a2099958, e_idf362f39778065d, "")
 Rel_Serving(e_id08f340a094e552, e_idf362f39778065d, "")
 Rel_Serving(e_id41aa3eb894c852, e_iddd4585a6a08153, "")
-Rel_Serving(e_id18ec07397a9d5f, e_iddd4585a6a08153, "")
 Rel_Triggering(e_id447909387df55c, e_id01dab436206551, "")
 Rel_Triggering(e_id01dab436206551, e_id36fbfe00214758, "")
 Rel_Triggering(e_id36fbfe00214758, e_idb542830057125a, "")

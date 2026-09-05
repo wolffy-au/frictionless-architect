@@ -101,6 +101,46 @@ property, so the viewpoint is *not* written into the generated `.archimate` /
 `set_primary_viewpoint` accepts only a non-standard 13-slug list; don't use
 it.
 
+## Avoiding derived relationships
+
+ArchiMate 3.2 §3.5 defines a **derivation rule**: given `A --r1--> B --r2--> C`,
+a relationship `A --r3--> C` may be *derived* rather than modelled, where
+`r3` is the weaker of `r1`/`r2` on the standard strength order:
+
+```
+Composition > Aggregation > Assignment > Realization > Serving >
+Access > Influence > Triggering > Flow > Specialization > Association
+```
+
+Don't add an explicit relationship that a derivation already covers — it's
+redundant, and it's exactly the kind of thing that goes stale (the chain
+changes, the shortcut doesn't). **If a request would add one, say so and
+don't add it**, unless the user confirms they want it captured anyway (e.g.
+it carries its own label/props distinct from the chain, or the view needs
+the direct edge for readability — both legitimate reasons to keep it).
+
+`scripts/check_derived.py` catches the well-behaved subset of the rule —
+`Composition`/`Aggregation`/`Assignment`/`Realization`/`Serving`/
+`Triggering`/`Flow` chained through one intermediate element — and is
+advisory only (exit 0 always, findings to review by hand):
+
+```bash
+poetry run python .agents/skills/model-archimate/scripts/check_derived.py model.archimate
+```
+
+It deliberately does **not** check `Access`, `Influence`, `Specialization` or
+`Association` — their derivation conditions (read/write direction,
+motivation semantics, generalisation) aren't a simple "weakest link," and a
+naive check would get them wrong. Judge those by hand.
+
+Expect false positives even in the checked subset: chained `Serving`
+relationships in particular are often modelled explicitly on purpose (e.g.
+in a capability map or value-stream view, for readability), even though the
+chain technically derives them. Treat every finding as "worth asking about,"
+not "must remove."
+
+Run it whenever adding relationships, alongside `validate.py`.
+
 ## Validation (always run before handing back, and before any diagram)
 
 Run `scripts/validate.py`:
@@ -120,7 +160,9 @@ It reports and exits non-zero on any of:
 Add `--json` for machine-readable output. **Note:** pyArchimate does *not*
 perform derivation-rule inference (implied relationships across intermediate
 elements) — see pyArchimate#139. Model explicit relationships; don't rely on
-derived ones being synthesised.
+derived ones being synthesised — and see "Avoiding derived relationships"
+above for the opposite failure mode: an explicit relationship that only
+duplicates what a chain already implies.
 
 Fix every violation and re-validate until clean. If a relationship is
 flagged, `get_default_rel_type(src_type, tgt_type)` gives a legal

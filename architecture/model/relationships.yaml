@@ -139,17 +139,12 @@
 - {type: Composition, source: vs-governed-delivery, target: vss-prove}
 - {type: Composition, source: vs-governed-delivery, target: vss-release}
 - {type: Composition, source: vs-governed-delivery, target: vss-reconcile}
-- {type: Serving, source: cap-control-catalog, target: vss-baseline}
 - {type: Serving, source: cap-reusable-architecture, target: vss-baseline}
-- {type: Serving, source: cap-digital-twin, target: vss-specify}
 - {type: Serving, source: cap-spec-engine, target: vss-specify}
 - {type: Serving, source: cap-control-plane, target: vss-build}
 - {type: Serving, source: cap-control-plane, target: vss-prove}
-- {type: Serving, source: cap-spec-engine, target: vss-prove}
-- {type: Serving, source: cap-forensic-ledger, target: vss-release}
 - {type: Serving, source: cap-human-approval-workflow, target: vss-release}
 - {type: Serving, source: cap-drift-dashboard, target: vss-reconcile}
-- {type: Serving, source: cap-digital-twin, target: vss-reconcile}
 
 # Stage sequence. The stream is a linear pipeline — no parallel stages. The
 # one non-linear edge is the feedback Flow: Reconcile classifies drift and
@@ -253,8 +248,6 @@
 - {type: Serving, source: sub-assurance, target: role-sa, label: reviews drift in}
 - {type: Serving, source: sub-assurance, target: role-ops, label: watches control effectiveness & drift in}
 - {type: Serving, source: sub-assurance, target: role-compliance, label: watches control status in}
-- {type: Serving, source: sub-modelling, target: role-ea, label: models with}
-- {type: Serving, source: sub-modelling, target: role-sa, label: models with}
 - {type: Serving, source: sub-modelling, target: role-dev, label: consumes specifications from}
 
 # =====================================================================
@@ -292,7 +285,6 @@
   props: {access_type: Write}
 - {type: Flow, source: ext-rfp, target: sub-library, label: candidate solution inputs}
 - {type: Serving, source: sub-modelling, target: sub-library, label: renders candidate & solution models with}
-- {type: Serving, source: ext-llm, target: sub-library, label: requests threat narratives from}
 
 # =====================================================================
 # B. Digital Twin & Knowledge Graph
