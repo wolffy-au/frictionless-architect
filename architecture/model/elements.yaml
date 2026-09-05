@@ -746,74 +746,562 @@
 - {type: ValueStream, id: it4it-vs-root, name: "IT4IT: Value Streams", desc: The root wrapper composing all 7 IT4IT value streams., props: {source: it4it}}
 - {type: Outcome, id: it4it-outcome-digital-product, name: "IT4IT: Digital Product", props: {source: it4it}}
 
-- {type: ValueStream, id: it4it-vs-explore, name: "IT4IT: Explore", desc: Investigate, design and roadmap a digital product idea., props: {source: it4it}}
-- {type: ValueStream, id: it4it-vs-evaluate, name: "IT4IT: Evaluate", desc: Govern the portfolio — gaps, mandates and investment decisions., props: {source: it4it}}
-- {type: ValueStream, id: it4it-vs-integrate, name: "IT4IT: Integrate", desc: Plan, design, build and publish a product release., props: {source: it4it}}
-- {type: ValueStream, id: it4it-vs-deploy, name: "IT4IT: Deploy", desc: Plan, fulfil, validate and observe a deployment., props: {source: it4it}}
-- {type: ValueStream, id: it4it-vs-release, name: "IT4IT: Release", desc: Define, implement and publish a consumable service offer., props: {source: it4it}}
-- {type: ValueStream, id: it4it-vs-operate, name: "IT4IT: Operate", desc: Detect, diagnose and resolve an issue in a running product., props: {source: it4it}}
-- {type: ValueStream, id: it4it-vs-consume, name: "IT4IT: Consume", desc: Agree, subscribe to, and support a consumed service offer., props: {source: it4it}}
+- type: ValueStream
+  id: it4it-vs-explore
+  name: "IT4IT: Explore"
+  desc: >-
+    The value stream "Explore" is performed on the Scope Agreements developed in
+    the Evaluate value stream. It ensures that all planned and accepted Portfolio
+    Backlog Items are further detailed, budgeted, and sourced for Digital
+    Products. This value stream continuously explores new features and/or future
+    directions of a Digital Product aligned with strategic direction and business
+    needs. It ensures that the Product Design evolves to facilitate innovation and
+    optimize business outcomes.
+  props: {source: it4it}
+
+- type: ValueStream
+  id: it4it-vs-evaluate
+  name: "IT4IT: Evaluate"
+  desc: >-
+    The value stream "Evaluate" contributes to the business strategy and portfolio
+    planning activities. It provides a blueprint for optimizing products,
+    services, and investment Portfolio Management. This value stream is focused on
+    the continuous assessment and evaluation of the entire Digital Product
+    Portfolio to optimize co-creation and alignment of business and technology
+    Strategic Objectives.
+  props: {source: it4it}
+
+- type: ValueStream
+  id: it4it-vs-integrate
+  name: "IT4IT: Integrate"
+  desc: >-
+    The value stream "Integrate" creates a new Product Release. It covers the
+    planning, design, development (or configuration), and testing of a new Product
+    Release (in non-production environments), and makes the Product Release
+    available for deployment and release into production. A new Product Release
+    can also be related to an emergency fix needed to resolve a production issue
+    (such as resolving vulnerabilities and critical bugs).
+  props: {source: it4it}
+
+- type: ValueStream
+  id: it4it-vs-deploy
+  name: "IT4IT: Deploy"
+  desc: >-
+    The value stream "Deploy" is installing a Product Release into production. It
+    can also imply the removal, disposal, or updating of an existing installed
+    Product Release, so it is made available or unavailable to the customer. Many
+    possible strategies for deploying a Product Release can be scenarios within
+    the Deploy value stream; for example, deployment to a targeted audience, or
+    deployment using a dark launch in which functionality is not directly released
+    to consumers. If the user requirements and/or the characteristics of the
+    Digital Product demand that the installed Product Release is improved,
+    released, and deployed frequently, a drive to automate these value streams can
+    emerge. To comply with regulatory requirements, organizations can require
+    approvals and an audit trail of all the Changes made in production
+    environments. The Deploy value stream ensures that all changes are tracked and
+    related to a specific Product Release.
+  props: {source: it4it}
+
+- type: ValueStream
+  id: it4it-vs-release
+  name: "IT4IT: Release"
+  desc: >-
+    The value stream "Release" ensures that the Service Offers for ordering a new,
+    a change in, or the decommissioning of an Actual Product Instance or its
+    support to them are offered to consumers. The Release value stream maintains
+    the Service Offer Catalog, the catalog views, and the Service Offer promotion
+    and information of available Service Offers to the consumer base so that the
+    individual consumer can find and order Digital Products, or support for them.
+    Service Offers should be made available for viewing and requests for access
+    over multiple channels. This value stream publishes the Service Offers based
+    on various triggers and inputs, such as:
+  props: {source: it4it}
+
+- type: ValueStream
+  id: it4it-vs-operate
+  name: "IT4IT: Operate"
+  desc: >-
+    The value stream "Operate" monitors and ensures that the availability and
+    performance of Actual Product Instances are within the boundaries of their
+    agreed Service Contract and Key Performance Indicator (KPI) targets. The scope
+    of this value stream includes managing any compliance and security aspects of
+    running Digital Product Instances and underlying systems that may result from
+    deployment and/or fulfillment. The IT4IT Standard describes how to achieve
+    this using integrated, automated, or fully autonomous data flows between the
+    event monitoring (Event, Incident, Change, Configuration, and Problem
+    Management) functions of the digital services. In addition, the data flows may
+    be designed to be reactive, proactive, or predictive, and include a
+    retrospective.
+  props: {source: it4it}
+
+- type: ValueStream
+  id: it4it-vs-consume
+  name: "IT4IT: Consume"
+  desc: >-
+    The value stream "Consume" manages the lifecycle of consuming a Digital
+    Product. Digital Products are consumed as services and the lifecycle is
+    managed as a Subscription to the service.
+  props: {source: it4it}
 
 - {type: ValueStream, id: it4it-explore-architecture, name: "Explore: Define Digital Product Architecture", props: {source: it4it}}
-- {type: ValueStream, id: it4it-explore-refine-backlog, name: "Explore: Refine Product Backlog", props: {source: it4it}}
-- {type: ValueStream, id: it4it-explore-prioritize-backlog, name: "Explore: Prioritize Backlog Items", props: {source: it4it}}
-- {type: ValueStream, id: it4it-explore-roadmap, name: "Explore: Finalize Roadmap & Scope Agreement", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-explore-refine-backlog
+  name: "Explore: Refine Product Backlog"
+  desc: >-
+    The purpose of the value stream stage "Refine Product Backlog" is to translate
+    a Scope Agreement into smaller pieces of work that can be assigned to product
+    level features and linked to the product backlog. This includes organizing
+    assigned backlog items into work packages and adjusting the Scope Agreement,
+    business case, and budget as needed. The deliverables for this value stream
+    stage are established Architecture Roadmap Items.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-explore-prioritize-backlog
+  name: "Explore: Prioritize Backlog Items"
+  desc: >-
+    The purpose of the value stream stage "Prioritize Backlog Items" is to refine
+    qualified Portfolio Backlog Items and mandates for new or existing Digital
+    Product investment decisions. The budget allocated in the Evaluate value
+    stream for the Product Portfolio is used to explore Digital Product ideas and
+    determine feasibility. This should include ensuring that scoped Product
+    Backlog Items deliver value, mitigate risks, and meet governance criteria
+    (technology, security, reliability, supportability, etc.). The deliverables
+    for this value stream stage are a Scope Agreement with prioritized Product
+    Backlog Items; scope and timing refined.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-explore-roadmap
+  name: "Explore: Finalize Roadmap & Scope Agreement"
+  desc: >-
+    The purpose of the value stream stage "Finalize Roadmap & Scope Agreement" is
+    to assign work and begin to conduct planning meetings on a regular cadence.
+    Stakeholder buy-in and agreement to the Release roadmap and outcomes must be
+    obtained. This includes setting up tracking and reporting on progress. The
+    deliverables for this value stream stage are an approved Architecture Roadmap
+    and outcomes.
+  props: {source: it4it}
 
-- {type: ValueStream, id: it4it-evaluate-influencers, name: "Evaluate: Gather Influencers", props: {source: it4it}}
-- {type: ValueStream, id: it4it-evaluate-backlog-mandates, name: "Evaluate: Define Backlog Mandates", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-evaluate-influencers
+  name: "Evaluate: Gather Influencers"
+  desc: >-
+    The purpose of the value stream stage "Gather Influencers" is to bring
+    together inputs for a planning cycle. Typical inputs include: consumer demand,
+    improvement ideas, new technology opportunities, technology lifecycle events
+    (e.g., end-of-life), and any known policy (legal and regulatory demands) or
+    budget constraints for the Digital Product Portfolio. Other inputs may include
+    an internal and/or external environmental scan to identify strengths,
+    weaknesses, opportunities, and threats. Discussion with the business is
+    centered on Digital Product value delivery for consumers and corresponding
+    policy requirements. The deliverable for this value stream stage is new or
+    updated Strategic Themes and/or Strategic Objectives.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-evaluate-backlog-mandates
+  name: "Evaluate: Define Backlog Mandates"
+  desc: >-
+    The purpose of the value stream stage "Define Backlog Mandates" is to
+    determine if there are any mandates or directives that will impact the Product
+    Portfolio, and to ensure mandates are clearly defined in backlog items and
+    related in Scope Agreements. This should include a review of the existing
+    portfolio and managed service provider agreements. Portfolio rationalization
+    to balance the portfolio should be completed regularly and may generate
+    backlog items that are bundled into Scope Agreements. Upon approval to proceed
+    on a Scope Agreement, initial funding is allocated to the Explore value stream
+    to identify concerns specific to a Digital Product and determine feasibility.
+    The deliverables for this value stream stage are refined Scope Agreements to
+    reflect mandates and defined Architecture Roadmap Items.
+  props: {source: it4it}
 - {type: ValueStream, id: it4it-evaluate-governance, name: "Evaluate: Ensure Governance", props: {source: it4it}}
 - {type: ValueStream, id: it4it-evaluate-gaps, name: "Evaluate: Identify Gaps", props: {source: it4it}}
-- {type: ValueStream, id: it4it-evaluate-investments, name: "Evaluate: Propose Investments", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-evaluate-investments
+  name: "Evaluate: Propose Investments"
+  desc: >-
+    The purpose of the value stream stage "Propose Investments" is to prioritize a
+    list of opportunities and associated Scope Agreements. The prioritization
+    should be based on a scoring method that considers business value, risk,
+    costs, time, and resource availability. Scope Agreements are evaluated to
+    determine if there is already a solution in the Product Portfolio that can be
+    used or modified to satisfy the business need. If it is determined that there
+    is not an existing solution and the new demand is in alignment with the
+    digital strategy, the Scope Agreement is assessed against other work in the
+    Portfolio Backlog and prioritized accordingly. The prioritization criteria
+    should also consider factors like urgency and the impact of opportunities. The
+    deliverable for this value stream stage is updated Scope Agreements with
+    clarifications discovered during a prioritization of opportunities.
+  props: {source: it4it}
 
-- {type: ValueStream, id: it4it-integrate-plan-release, name: "Integrate: Plan Product Release", props: {source: it4it}}
-- {type: ValueStream, id: it4it-integrate-design-develop, name: "Integrate: Design & Develop", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-integrate-plan-release
+  name: "Integrate: Plan Product Release"
+  desc: >-
+    The purpose of the value stream stage "Plan Product Release" is to plan all
+    development and testing activities required for creating the Product Release.
+    Multiple teams may be needed, and different development methodologies may be
+    used. This value stream stage is revisited as it oversees the other value
+    stream stages in this value stream to cater for changes in the planning and
+    iterations of the Design & Develop value stream stage.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-integrate-design-develop
+  name: "Integrate: Design & Develop"
+  desc: >-
+    The purpose of the value stream stage "Design & Develop" is to analyze the
+    requirements, create (or update) the design artifacts, and develop the changes
+    (and associated Test Cases) for the Product Release. This includes the coding
+    and configuration of software and related infrastructure (e.g., infrastructure
+    as code).
+  props: {source: it4it}
 - {type: ValueStream, id: it4it-integrate-build-test, name: "Integrate: Build, Integrate, & Test", props: {source: it4it}}
-- {type: ValueStream, id: it4it-integrate-accept-publish, name: "Integrate: Accept & Publish Release", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-integrate-accept-publish
+  name: "Integrate: Accept & Publish Release"
+  desc: >-
+    The purpose of the value stream stage "Accept and Publish Release" is to
+    accept the Product Release as a candidate for deployment into production. The
+    required change authority, such as the Product Manager, accepts the Product
+    Release for deployment and/or release into production. The Product Manager
+    accepts the Product Release after engaging with relevant stakeholders, which
+    includes reviewing test results to accept or reject the list of remaining
+    Defects, and reviewing the collateral produced. In a DevOps model, Operations
+    has been participating all along but at this point an approval is given for
+    the Product Release to be deployed into production.
+  props: {source: it4it}
 
-- {type: ValueStream, id: it4it-deploy-plan-approve, name: "Deploy: Plan & Approve Deployment", props: {source: it4it}}
-- {type: ValueStream, id: it4it-deploy-fulfill, name: "Deploy: Fulfill Deployment", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-deploy-plan-approve
+  name: "Deploy: Plan & Approve Deployment"
+  desc: >-
+    The purpose of the value stream stage "Plan & Approve Deployment" is to create
+    a deployment plan for a Digital Product and, based on this plan, to sign it
+    off with all relevant stakeholders.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-deploy-fulfill
+  name: "Deploy: Fulfill Deployment"
+  desc: >-
+    The purpose of the value stream stage "Fulfill Deployment" is to execute the
+    Fulfillment Orchestration when the change window for deployment is open. The
+    Fulfillment Orchestration is documented in the change records and can be coded
+    as part of the Product Release to automate the Fulfillment Orchestration.
+  props: {source: it4it}
 - {type: ValueStream, id: it4it-deploy-observe, name: "Deploy: Observe Deployment", props: {source: it4it}}
-- {type: ValueStream, id: it4it-deploy-validate, name: "Deploy: Validate Deployment", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-deploy-validate
+  name: "Deploy: Validate Deployment"
+  desc: >-
+    The purpose of the value stream stage "Validate Deployment" is to ensure that
+    all aspects of the deployment activities were correctly executed. This
+    includes checking that the Product Instance is indeed running and configured
+    according to plan, and that the monitoring and documentation associated is
+    configured and made available.
+  props: {source: it4it}
 
-- {type: ValueStream, id: it4it-release-define-offer, name: "Release: Define Service Offer", props: {source: it4it}}
-- {type: ValueStream, id: it4it-release-implement-offer, name: "Release: Implement Service Offer", props: {source: it4it}}
-- {type: ValueStream, id: it4it-release-publish-offer, name: "Release: Publish Service Offer", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-release-define-offer
+  name: "Release: Define Service Offer"
+  desc: >-
+    The purpose of the value stream stage "Define Service Offer" is to obtain the
+    Service Offer information from the Integrate value stream and to plan the
+    creation and publication of Service Offers to Consumers. Offers can also
+    represent the consumption of cloud services making the Service catalog an
+    Aggregation catalog between their own and cloud services; planning should take
+    place to identify which cloud Service Offers would be made available.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-release-implement-offer
+  name: "Release: Implement Service Offer"
+  desc: >-
+    The purpose of the value stream stage "Implement Service Offer" is to onboard
+    the Service Offer into the Service Offer Catalog and to prepare all that is
+    needed so that the Service Offer can be published.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-release-publish-offer
+  name: "Release: Publish Service Offer"
+  desc: >-
+    The purpose of the value stream stage "Publish Service Offer" is to activate
+    or release the Service Offer so that it can be ordered by consumers.
+  props: {source: it4it}
 
-- {type: ValueStream, id: it4it-operate-detect, name: "Operate: Detect Issue", props: {source: it4it}}
-- {type: ValueStream, id: it4it-operate-diagnose, name: "Operate: Diagnose Issue", props: {source: it4it}}
-- {type: ValueStream, id: it4it-operate-resolve, name: "Operate: Resolve Issue", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-operate-detect
+  name: "Operate: Detect Issue"
+  desc: >-
+    The purpose of the value stream stage "Detect Issue" is to detect issues in an
+    Actual Product Instance or system that has caused or may cause degradation of
+    the service or breach the agreed service levels, then to prioritize and assign
+    them for further diagnosis in a structured and repeatable manner.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-operate-diagnose
+  name: "Operate: Diagnose Issue"
+  desc: >-
+    The purpose of the value stream stage "Diagnose Issue" is to prepare the
+    best/quickest course of action to retain or restore normal operations. Further
+    diagnosis can be performed to identify the root cause(s) of a potential or
+    detected issue.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-operate-resolve
+  name: "Operate: Resolve Issue"
+  desc: >-
+    The purpose of the value stream stage "Resolve Issue" is to execute the
+    (prepared) course of action to retain, restore, and confirm normal service
+    operations.
+  props: {source: it4it}
 
 - {type: ValueStream, id: it4it-consume-publish-status, name: "Consume: Publish Service Status", props: {source: it4it}}
 - {type: ValueStream, id: it4it-consume-support, name: "Consume: Provide Service Support", props: {source: it4it}}
-- {type: ValueStream, id: it4it-consume-agree-offer, name: "Consume: Agree to Service Offer", props: {source: it4it}}
-- {type: ValueStream, id: it4it-consume-subscribe-offer, name: "Consume: Subscribe to Service Offer", props: {source: it4it}}
-- {type: ValueStream, id: it4it-consume-select-offer, name: "Consume: Select an Offer", props: {source: it4it}}
+- type: ValueStream
+  id: it4it-consume-agree-offer
+  name: "Consume: Agree to Service Offer"
+  desc: >-
+    The purpose of the value stream stage "Agree to Service Offer" is to get
+    agreement from the customer to the terms and conditions of the Service
+    Contract.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-consume-subscribe-offer
+  name: "Consume: Subscribe to Service Offer"
+  desc: >-
+    The purpose of the value stream stage "Subscribe to Service Offer" is to make
+    the Actual Product Instance, as result of the Order and Desired Product
+    Instance, available to the customer, in such a way that the customer is able
+    to consume the Digital Product.
+  props: {source: it4it}
+- type: ValueStream
+  id: it4it-consume-select-offer
+  name: "Consume: Select an Offer"
+  desc: >-
+    The purpose of the value stream stage "Select an Offer" is to help the
+    customer to select the Digital Product Service Offers(s) best suited to their
+    needs.
+  props: {source: it4it}
 
 # --- Capabilities reachable from a stage via the source model's own
 #     DataObject -> Resource -> Capability chain (Realization; Realization;
 #     Assignment) — see relationships.yaml section D for the derived
 #     Stage<-Capability edges these back. ---
-- {type: Capability, id: it4it-cap-architecture-mgmt, name: "IT4IT: Architecture Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-asset-mgmt, name: "IT4IT: Asset Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-config-mgmt, name: "IT4IT: Configuration Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-defect-mgmt, name: "IT4IT: Defect Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-demand-mgmt, name: "IT4IT: Demand Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-event-mgmt, name: "IT4IT: Event Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-financial-mgmt, name: "IT4IT: Financial Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-incident-mgmt, name: "IT4IT: Incident Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-measurement-reporting, name: "IT4IT: Measurement & Reporting", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-operations-mgmt, name: "IT4IT: Operations Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-policy-mgmt, name: "IT4IT: Policy Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-problem-mgmt, name: "IT4IT: Problem Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-procurement-mgmt, name: "IT4IT: Procurement Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-product-backlog-mgmt, name: "IT4IT: Product Backlog Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-product-design-mgmt, name: "IT4IT: Product Design Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-product-development, name: "IT4IT: Product Development", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-product-portfolio-mgmt, name: "IT4IT: Product Portfolio Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-release-mgmt, name: "IT4IT: Release Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-request-mgmt, name: "IT4IT: Request Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-requirements-mgmt, name: "IT4IT: Requirements Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-service-catalog-mgmt, name: "IT4IT: Service Catalog Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-service-level-mgmt, name: "IT4IT: Service Level Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-test-mgmt, name: "IT4IT: Test Management", props: {source: it4it}}
-- {type: Capability, id: it4it-cap-vendor-mgmt, name: "IT4IT: Vendor Management", props: {source: it4it}}
+- type: Capability
+  id: it4it-cap-architecture-mgmt
+  name: "IT4IT: Architecture Management"
+  desc: >-
+    The ability to manage architecture is required to effectively describe the
+    as-is and target architecture or 'blueprints' of the enterprise, to define the
+    policies and standards used by it, and govern solution compliance to the
+    defined architecture, policies, and standards. At an enterprise level, it
+    includes enterprise architecture, the sub-domain specialties of enterprise
+    architecture; at a tactical or service level, it includes solution
+    architecture, service architecture, and systems (technology) architecture. The
+    purpose of the Manage Architecture Capability is to use architecture policies
+    and artifacts to provide the organization: - The ability to steer strategic
+    decisions toward wanted positions and business outcomes (the future state) -
+    The ability to proactively and holistically lead enterprise responses to
+    business strategies and external drivers. - The ability to present business
+    and IT leaders with recommendations to achieve target business outcomes and
+    secure implementation of the transition roadmap.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-asset-mgmt
+  name: "IT4IT: Asset Management"
+  desc: >-
+    The ability to track and report the value and ownership of capital assets
+    throughout their life cycle.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-config-mgmt
+  name: "IT4IT: Configuration Management"
+  desc: >-
+    The ability to maintain information about Configuration Items required to
+    deliver an IT Service, including their Relationships. This information is
+    managed throughout the Lifecycle of the CI.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-defect-mgmt
+  name: "IT4IT: Defect Management"
+  desc: >-
+    The ability to keep track of all Defects by registering Defects of all types
+    (including security-related Defects). It analyzes Defects and finds
+    resolutions. It also associates Defects with Requirements.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-demand-mgmt
+  name: "IT4IT: Demand Management"
+  desc: >-
+    The ability to understand and influence Customer demand for Services and the
+    provision of Capacity to meet these demands. At a Strategic level Demand
+    Management can involve analysis of Patterns of Business Activity and User
+    Profiles. At a tactical level it can involve use of Differential Charging to
+    encourage Customers to use IT Services at less busy times.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-event-mgmt
+  name: "IT4IT: Event Management"
+  desc: >-
+    The capability to manage Events throughout their Lifecycle. Event Management
+    is one of the main Activities of IT Operations.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-financial-mgmt
+  name: "IT4IT: Financial Management"
+  desc: >-
+    The ability to manage an IT Service Provider’s financial accounts and to bill
+    for and accept payment for services, or to make payment for services purchased
+    and rendered. In an external provider archetype, may also include vetting of
+    consumer credit applications and tax accounting.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-incident-mgmt
+  name: "IT4IT: Incident Management"
+  desc: >-
+    The ability responsible for managing the Lifecycle of all Incidents. The
+    primary Objective of Incident Management is to return the IT Service to
+    Customers as quickly as possible.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-measurement-reporting
+  name: "IT4IT: Measurement & Reporting"
+  desc: >-
+    Measurement & Reporting is the ability to consolidate information across the
+    various value streams and functional components, to assess and evaluate
+    metrics and KPIs, and provide service reporting, analytics, dashboards and
+    scorecards.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-operations-mgmt
+  name: "IT4IT: Operations Management"
+  desc: >-
+    The ability to perform activities carried out by IT Operations Control,
+    including Console Management, Job Scheduling, Backup and Restore, and Print
+    and Output Management. IT Operations is also used as a synonym for Service
+    Operation
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-policy-mgmt
+  name: "IT4IT: Policy Management"
+  desc: >-
+    The ability to define and maintain the policies, principles, rules and
+    standards governing the implementation to be compliant towards the target
+    state.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-problem-mgmt
+  name: "IT4IT: Problem Management"
+  desc: >-
+    The ability to manage the Lifecycle of all Problems. The primary objectives of
+    Problem Management are to prevent Incidents from happening, and to minimize
+    the Impact of Incidents that cannot be prevented.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-procurement-mgmt
+  name: "IT4IT: Procurement Management"
+  desc: >-
+    The ability to receive and execute purchase orders for supplies, equipment,
+    products, and services, and to handle purchase exceptions.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-product-backlog-mgmt
+  name: "IT4IT: Product Backlog Management"
+  desc: >-
+    The ability to plan, resource, and execute a sequenced set of activities of
+    prescribed duration that are managed together to achieve a defined scope of
+    deliverables and other outcomes within established time, budget, and quality
+    parameters.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-product-design-mgmt
+  name: "IT4IT: Product Design Management"
+  desc: >-
+    The ability to design new or changed service software functionality and data.
+    Ability to identify the new or existing services required to meet the needs of
+    the Scope Agreement and IT Initiative, including both service systems and
+    service offers.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-product-development
+  name: "IT4IT: Product Development"
+  desc: >-
+    The ability to implement new or changed software services application and data
+    components by coding, code unit verification and defect correction.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-product-portfolio-mgmt
+  name: "IT4IT: Product Portfolio Management"
+  desc: >-
+    The ability to create and manage the portfolio of services in plan,
+    transition, production, and retirement with the aim to deliver the maximal
+    aggregate value to the business objectives.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-release-mgmt
+  name: "IT4IT: Release Management"
+  desc: >-
+    The ability to plan, schedule and control the movement and installation of
+    release configurations to test and live environments, while ensuring that the
+    integrity of the environment is protected and that the correct components are
+    released.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-request-mgmt
+  name: "IT4IT: Request Management"
+  desc: >-
+    The ability to provide a channel for users to request and receive offered
+    services.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-requirements-mgmt
+  name: "IT4IT: Requirements Management"
+  desc: >-
+    The ability to manage requirements through the lifecycle of a service. It
+    collects, refines, scopes, and tracks progress of and maintains requirements
+    before and after an IT Initiative(s) ha(s)(ve) been delivered. It maintains
+    the traceability of each requirement to the original source (demand, IT or
+    business standard or policy, and/or requestor) and to the source (code),
+    solutions and/or test cases throughout the service lifecycle. Requirements can
+    be maintained for different levels. For example: - At an enterprise level,
+    external market business and IT requirements are maintained; - At a tactical
+    or service automation level, software process and service automation
+    requirements are managed; - At an operational level, performance and
+    availability requirements are managed.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-service-catalog-mgmt
+  name: "IT4IT: Service Catalog Management"
+  desc: >-
+    The ability to publish and maintain a database or structured Document with
+    information about all Live IT Services, including those available for
+    deployment. It also includes the set of services available for reuse in the
+    development of applications and other services. The former are contracted for
+    via SLA, the latter by OLA.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-service-level-mgmt
+  name: "IT4IT: Service Level Management"
+  desc: >-
+    The ability to define and negotiate service warranties and qualities of
+    service that comprise standard or custom service level offerings, and to
+    govern compliance to them. SLM is responsible for ensuring that all IT Service
+    Management Processes, Operational Level Agreements, and Underpinning
+    Contracts, are appropriate for the agreed Service Level Targets. SLM monitors
+    and reports on Service Levels, and holds regular Customer reviews.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-test-mgmt
+  name: "IT4IT: Test Management"
+  desc: >-
+    The ability to plan and execute tests that ensure the IT service will support
+    the customer’s requirements at the agreed service levels. It prepares test
+    environment, plans and designs tests, and executes all functional and
+    non-functional tests including performance and stress testing.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-vendor-mgmt
+  name: "IT4IT: Vendor Management"
+  desc: >-
+    The ability to ensure that all Contracts and agreements with Internal and
+    External Service Providers/Suppliers support the needs of the Business, and
+    that all Internal and External Service Providers/Suppliers meet their
+    contractual/agreed commitments.
+  props: {source: it4it}
