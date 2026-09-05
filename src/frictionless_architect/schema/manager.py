@@ -110,9 +110,7 @@ SET node += $additional
             )
 
     @staticmethod
-    def _ingest_relationships(
-        tx: ManagedTransaction, relationships: Iterable[Mapping[str, Any]]
-    ) -> None:
+    def _ingest_relationships(tx: ManagedTransaction, relationships: Iterable[Mapping[str, Any]]) -> None:
         for relationship in relationships:
             identifier = relationship["identifier"]
             source_id = relationship["source"]
@@ -135,9 +133,7 @@ RETURN source IS NOT NULL AS sourceExists, target IS NOT NULL AS targetExists"""
                     missing.append("source")
                 if not existence or not existence["targetExists"]:
                     missing.append("target")
-                raise ValueError(
-                    f"Relationship {identifier} references missing {', '.join(missing)} node(s)."
-                )
+                raise ValueError(f"Relationship {identifier} references missing {', '.join(missing)} node(s).")
 
             _run_literal(
                 tx,
@@ -276,10 +272,10 @@ SET sv.applied_at = datetime($timestamp)""",
         result = _run_literal(
             tx,
             """MATCH (rel:RelationshipFact)
-WITH rel, [(rel.source_id IS NULL) AS sourceMissing, (rel.target_id IS NULL) AS targetMissing]
+WITH rel, rel.source_id IS NULL AS sourceMissing, rel.target_id IS NULL AS targetMissing
 WHERE sourceMissing OR targetMissing
 RETURN rel.identifier AS identifier,
-       CASE WHEN rel.source_id IS NULL THEN 'source' ELSE '' END + CASE WHEN rel.target_id IS NULL THEN ' target' ELSE '' END AS missing""",
+       CASE WHEN sourceMissing THEN 'source' ELSE '' END + CASE WHEN targetMissing THEN ' target' ELSE '' END AS missing""",
         )
         return [row.data() for row in result]
 
@@ -288,8 +284,8 @@ RETURN rel.identifier AS identifier,
         result = _run_literal(
             tx,
             """MATCH (v:View)
-WITH v, size((v)-[:INCLUDES]->(:Element)) AS elements,
-     size((v)-[:HAS_RELATIONSHIP]->(:RelationshipFact)) AS relationships
+WITH v, COUNT { (v)-[:INCLUDES]->(:Element) } AS elements,
+     COUNT { (v)-[:HAS_RELATIONSHIP]->(:RelationshipFact) } AS relationships
 WHERE elements = 0 OR relationships = 0
 RETURN v.identifier AS identifier,
        CASE WHEN elements = 0 THEN 'elements' ELSE 'relationships' END AS kind""",
