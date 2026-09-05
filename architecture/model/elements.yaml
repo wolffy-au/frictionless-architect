@@ -788,3 +788,32 @@
 - {type: ValueStream, id: it4it-consume-agree-offer, name: "Consume: Agree to Service Offer", props: {source: it4it}}
 - {type: ValueStream, id: it4it-consume-subscribe-offer, name: "Consume: Subscribe to Service Offer", props: {source: it4it}}
 - {type: ValueStream, id: it4it-consume-select-offer, name: "Consume: Select an Offer", props: {source: it4it}}
+
+# --- Capabilities reachable from a stage via the source model's own
+#     DataObject -> Resource -> Capability chain (Realization; Realization;
+#     Assignment) — see relationships.yaml section D for the derived
+#     Stage<-Capability edges these back. ---
+- {type: Capability, id: it4it-cap-architecture-mgmt, name: "IT4IT: Architecture Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-asset-mgmt, name: "IT4IT: Asset Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-config-mgmt, name: "IT4IT: Configuration Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-defect-mgmt, name: "IT4IT: Defect Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-demand-mgmt, name: "IT4IT: Demand Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-event-mgmt, name: "IT4IT: Event Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-financial-mgmt, name: "IT4IT: Financial Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-incident-mgmt, name: "IT4IT: Incident Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-measurement-reporting, name: "IT4IT: Measurement & Reporting", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-operations-mgmt, name: "IT4IT: Operations Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-policy-mgmt, name: "IT4IT: Policy Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-problem-mgmt, name: "IT4IT: Problem Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-procurement-mgmt, name: "IT4IT: Procurement Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-product-backlog-mgmt, name: "IT4IT: Product Backlog Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-product-design-mgmt, name: "IT4IT: Product Design Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-product-development, name: "IT4IT: Product Development", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-product-portfolio-mgmt, name: "IT4IT: Product Portfolio Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-release-mgmt, name: "IT4IT: Release Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-request-mgmt, name: "IT4IT: Request Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-requirements-mgmt, name: "IT4IT: Requirements Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-service-catalog-mgmt, name: "IT4IT: Service Catalog Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-service-level-mgmt, name: "IT4IT: Service Level Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-test-mgmt, name: "IT4IT: Test Management", props: {source: it4it}}
+- {type: Capability, id: it4it-cap-vendor-mgmt, name: "IT4IT: Vendor Management", props: {source: it4it}}
