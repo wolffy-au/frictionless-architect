@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: 2026-08-29
+generated: 2026-09-05
 generator: claude-sonnet-5
 sources:
   - src/frictionless_architect/visualizer/__init__.py
@@ -9,6 +9,7 @@ sources:
   - src/frictionless_architect/visualizer/config.py
   - src/frictionless_architect/visualizer/data_loader.py
   - src/frictionless_architect/visualizer/sample_parser.py
+  - src/frictionless_architect/visualizer/sample_validator.py
   - src/frictionless_architect/schema/__init__.py
   - src/frictionless_architect/schema/manager.py
 ---
@@ -50,8 +51,9 @@ driver (`src/frictionless_architect/visualizer/__init__.py:17-20`).
 | `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` |
 
 Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`;
+`schema_model_xsd_path` = `<sample_data_dir>/schema/archimate3_Model.xsd`;
 `cache_path` = `<cache_dir>/schema_payload.json`
-(`src/frictionless_architect/visualizer/config.py:27-33`). `get_visualizer_settings()` is `lru_cache`d.
+(`src/frictionless_architect/visualizer/config.py:27-37`). `get_visualizer_settings()` is `lru_cache`d.
 
 ## Request flow
 
@@ -65,7 +67,10 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
    `force_reload` or no cache exists, in which case it builds. If a build
    fails with `PayloadUnavailable` but a cache exists, the stale cache is
    returned (`src/frictionless_architect/visualizer/api.py:55-66`).
-2. **`_build_payload()`** (run in a thread) — parse the sample XML; if
+2. **`_build_payload()`** (run in a thread) — parse the sample XML; on a
+   successful parse, run `validate_sample_against_schema()` against
+   `schema_model_xsd_path` and add each returned issue as a `warning`
+   (`src/frictionless_architect/visualizer/api.py:130-142`); if
    `neo4j_uri` is set, query Neo4j via `DataLoader`; merge schema entries with
    sample entries per identifier; emit a `warning` for every schema type with
    no sample instance; raise `PayloadUnavailable` only if **both** Neo4j and
@@ -96,6 +101,18 @@ Extracts: elements (`identifier`, `xsi:type`, `name`), relationships
 and views with `node` bounds (`x`/`y`/`w`/`h`, parsed via `int(float(...))`)
 and `connection` refs. `SampleParseResult.empty()` yields a blank result used
 when the file is missing (`src/frictionless_architect/visualizer/sample_parser.py:22-24`).
+
+### `sample_validator` (`src/frictionless_architect/visualizer/sample_validator.py`)
+
+`validate_sample_against_schema(sample_path, schema_path)` cross-checks the
+sample XML against the ArchiMate schema XSD and returns a list of issue
+strings (empty when consistent). It flags: element/relationship
+`xsi:type` values with no matching `<xsd:element>`/`<xsd:complexType>` in the
+schema; relationships whose `source`/`target` id isn't among the sample's
+element ids; and view `node`/`connection` refs pointing at a missing
+element/relationship id (`src/frictionless_architect/visualizer/sample_validator.py:69-88`).
+Called from `_build_payload()` above — every returned issue surfaces as a
+payload `warning`, it never raises.
 
 ### `DataLoader` (`src/frictionless_architect/visualizer/data_loader.py`)
 

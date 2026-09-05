@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-08-30
+generated: 2026-09-05
 generator: claude-sonnet-5
 sources:
   - .agents/agents/README.md
@@ -136,9 +136,32 @@ scripts with `poetry run python …`.
 | Skill | Purpose |
 |---|---|
 | `model-archimate` | Author, edit, and **validate** ArchiMate models (`.archimate` Archi-native or Open Group Exchange `.xml`). Runs pyArchimate's metamodel checks — relationship-matrix legality plus referential integrity — "the conformance gate every ArchiMate/C4 diagram is generated from" (`.agents/skills/model-archimate/SKILL.md`). |
-| `diagram-archimate` | Projects a validated model into ArchiMate-notation PlantUML via `scripts/model_to_puml.py` (optionally `--view "Name"`), mapping element types to `<archimate/Archimate>` macros, then renders via `diagram-plantuml`. |
+| `diagram-archimate` | Projects a validated model into ArchiMate-notation PlantUML via `scripts/model_to_puml.py` (optionally `--view "Name"`), mapping element types to `<archimate/Archimate>` macros, nesting `Composition`/`Aggregation`/`Assignment` targets inside their source box (dropping the arrow) per ArchiMate's nested-notation convention, then renders via `diagram-plantuml`. |
 | `diagram-c4` | Projects a validated model into C4-PlantUML (Context or Container) via `scripts/model_to_c4.py <model.xml> --system "…" --level context\|container`, using the fixed mapping in `diagram-c4/references/archimate-to-c4-mapping.md`. |
 | `diagram-plantuml` | Default workflow for authoring, validating, and rendering any PlantUML diagram. Validates against the local `plantuml` binary, falls back to the public PlantUML server (noting source leaves the machine), then to eyeballing; `plantuml.com` docs are the syntax fallback. |
+
+`model-archimate` also carries a **viewpoint** checker
+(`scripts/viewpoints.py`, backed by a verbatim copy of Archi's viewpoint file
+in `reference/archi-viewpoints.xml` plus advisory guidance in
+`reference/viewpoints-guidance.yaml`): a view tagged `viewpoint: <slug>` in
+`architecture/model/views.yaml` is held by `build.py` to that viewpoint's
+allowed concepts (`viewpoint: custom` opts out for a deliberate cross-layer
+view). The tag is a conformance gate, not a projection filter — two views
+with identical `members`/`include_types` render identically regardless of
+their tags — so the tag only bites if scoping is chosen to match it. The tag
+also can't round-trip into the generated `.archimate`/`.xml` (pyArchimate
+limitation); it lives only in `views.yaml`.
+
+`model-archimate` also has `scripts/check_derived.py`, an advisory (always
+exit 0) checker for **derived relationships** — ArchiMate 3.2 §3.5's rule that
+`A --r1--> B --r2--> C` can imply a weaker `A --r3--> C` that shouldn't also be
+modelled explicitly. It only checks the well-behaved
+`Composition`/`Aggregation`/`Assignment`/`Realization`/`Serving`/`Triggering`/`Flow`
+chains through one intermediate element — `Access`, `Influence`,
+`Specialization` and `Association` are judged by hand. Findings are "worth
+asking about," not "must remove" (e.g. chained `Serving` edges are often kept
+explicit on purpose, for readability in a capability-map or value-stream
+view).
 
 The project's own model is built with this chain: `architecture/model/build.py`
 projects the canonical YAML to `frictionless-architect.xml`, then the diagram
