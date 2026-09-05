@@ -127,21 +127,21 @@ topics:
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-08-30'
+    built: '2026-09-05'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 3833baf43486bac6e5acfcbd6bbef79261f2987e4731d6f9308ddc3dacea3a1a
-          lines: 114
+          sha256: f55d0ac6abaf2b11380556825dba27d4cd907d81cc1a76f8d1539b3663a7de48
+          lines: 104
         architecture/model/elements.yaml:
-          sha256: b67d8ded4ceccb982a5dde7b8ff4b26b004e46ef1dcfa95559ac1fa4078b3efb
-          lines: 634
+          sha256: bd4a1d6fd02e827e84306833f67a89f78750ae8997bad18a0a45a602f0e544fe
+          lines: 731
         architecture/model/relationships.yaml:
-          sha256: 29572cab7dcd1990e433d0a475b28c86aeecda239b69f2de3855b3f5be458e30
-          lines: 432
+          sha256: 19d690b8c77540ce1871b603036cf7c51b1fd4210c2c419ad013e5efc828070f
+          lines: 471
         architecture/model/views.yaml:
-          sha256: d20031e1f8a07bf6b47777623af0157cd9d5661e7e3195c4be706e7d68ac0369
-          lines: 142
+          sha256: 305de737434252dd8c45c597ae3241de2d9a19b1790240af1140852fcba8bbc1
+          lines: 244
   data-model:
     title: Data Model
     page: wiki/data-model.md
@@ -199,7 +199,7 @@ topics:
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
-    built: '2026-08-29'
+    built: '2026-09-05'
     sources:
       files:
         src/frictionless_architect/schema/__init__.py:
@@ -212,20 +212,23 @@ topics:
           sha256: e3a39b6e99552e9637fcd42b3ad50144b31ebb40d5b4cb31b0f742e95e088561
           lines: 38
         src/frictionless_architect/visualizer/api.py:
-          sha256: 54fb2f131c4eea642d449e6943e6493767c82dee0d3a07b56c9b1de79f12ba6f
+          sha256: 5973c437d5bf86dbdc78df8fc3c6e816361ad0eac14bde0f14f9651f36dc984c
           lines: 314
         src/frictionless_architect/visualizer/cache.py:
           sha256: 7c96a3ee4eb63be70fecc1618a71b7d3083953555bb270f6c7fae608bcdea559
           lines: 29
         src/frictionless_architect/visualizer/config.py:
-          sha256: 961aae3d760702d994f34f1dd996f1074094949a6a31cc55e90cd89e060629a9
-          lines: 38
+          sha256: 34b5be4cf3e0048fb30aa999ea4b4a963c7a40b8da8afccb3e0b18ee1e26127f
+          lines: 42
         src/frictionless_architect/visualizer/data_loader.py:
           sha256: 2f75eb010838c6422ef087aaa846c9279bfba20cbd85b913506911d048c9440b
           lines: 91
         src/frictionless_architect/visualizer/sample_parser.py:
           sha256: 0fc57618bfe3f090cdab3946897cf76b2a69bbaa332bd534afb0efcc9b9a6f7e
           lines: 137
+        src/frictionless_architect/visualizer/sample_validator.py:
+          sha256: 061efe35b6613e9244e3dd1ac682f1d482069d8921a759263893ddc7d57a8ba1
+          lines: 88
   development:
     title: Development & Quickstart
     page: wiki/development.md
@@ -286,7 +289,7 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-08-30'
+    built: '2026-09-05'
     sources:
       files:
         .agents/agents/README.md:
@@ -332,8 +335,8 @@ topics:
           sha256: 4dc191c20403f330b4c923231e019e12cb95b7d986b00043b0e6fc64fe6f6a21
           lines: 76
         .agents/skills/diagram-archimate/SKILL.md:
-          sha256: 9e2f0b9089cc0730e7c37b14a8a9a22d4db00b88a72689cf1982d2abba0535b7
-          lines: 55
+          sha256: 90ad238636f50c85d8df8d57c58f2db9648e547a1ff8e2f200aa181298e9c260
+          lines: 72
         .agents/skills/diagram-c4/SKILL.md:
           sha256: a00a8f3b64857491aeb2aff694b04c95745d2663367deb08e65ffb966c76f138
           lines: 64
@@ -344,8 +347,8 @@ topics:
           sha256: cafd25948d559cf328c0d6bf87a6f1d543bf9fc3cca4dca1a84ea652fd5231ae
           lines: 103
         .agents/skills/model-archimate/SKILL.md:
-          sha256: a23de2e15192aca9494fe08ababc6cdf16a1ee2f855c642ecf2c7ffc64a59e8c
-          lines: 73
+          sha256: 4a0015efda64a7d318ee8a105ca717bde224f240779754fec0c8c483bfb4345e
+          lines: 175
         .agents/skills/speckit-analyze/SKILL.md:
           sha256: a84a54c4701706a711bf23c59817bc659bd6e484488fd7402a908496992af217
           lines: 259
