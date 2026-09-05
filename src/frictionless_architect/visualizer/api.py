@@ -38,7 +38,9 @@ VIEW_SCHEMA_FILE = "archimate3_View.xsd"
 
 
 class SchemaPayloadService:
-    def __init__(self, settings: "VisualizerSettings", parser: SampleParser, loader: DataLoader, cache: SchemaCache) -> None:
+    def __init__(
+        self, settings: "VisualizerSettings", parser: SampleParser, loader: DataLoader, cache: SchemaCache
+    ) -> None:
         self.settings = settings
         self.parser = parser
         self.loader = loader
@@ -163,11 +165,10 @@ class SchemaPayloadService:
             add_warning,
             relationship_ids,
         )
-        relationships = self._merge_relationships(schema_payload["relationships"], sample_result.relationships, add_warning)
-        views = [
-            {**view, "source_file": VIEW_SCHEMA_FILE}
-            for view in sample_result.views
-        ]
+        relationships = self._merge_relationships(
+            schema_payload["relationships"], sample_result.relationships, add_warning
+        )
+        views = [{**view, "source_file": VIEW_SCHEMA_FILE} for view in sample_result.views]
 
         payload: dict[str, Any] = {
             "model": model_payload,
@@ -187,9 +188,7 @@ class SchemaPayloadService:
         relationship_ids: set[str],
     ) -> list[dict[str, Any]]:
         model_file = MODEL_SCHEMA_FILE
-        schema_map = {
-            el.get("identifier"): el for el in schema_elements if el.get("identifier")
-        }
+        schema_map = {el.get("identifier"): el for el in schema_elements if el.get("identifier")}
         ids = sorted(
             identifier
             for identifier in set(schema_map) | set(sample_elements)
@@ -225,14 +224,8 @@ class SchemaPayloadService:
         add_warning: Any,
     ) -> list[dict[str, Any]]:
         model_file = MODEL_SCHEMA_FILE
-        schema_map = {
-            rel.get("identifier"): rel for rel in schema_relationships if rel.get("identifier")
-        }
-        ids = sorted(
-            identifier
-            for identifier in set(schema_map) | set(sample_relationships)
-            if identifier is not None
-        )
+        schema_map = {rel.get("identifier"): rel for rel in schema_relationships if rel.get("identifier")}
+        ids = sorted(identifier for identifier in set(schema_map) | set(sample_relationships) if identifier is not None)
         result = []
         for identifier in ids:
             schema_entry = schema_map.get(identifier, {})
