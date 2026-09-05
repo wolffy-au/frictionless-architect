@@ -215,6 +215,53 @@
     - store-akg
     - store-ledger
 
+- id: view-it4it-alignment
+  name: IT4IT Alignment
+  diagram: frictionless-architect-it4it-alignment
+  # The IT4IT 3.0 value-stream skeleton only — see section D of elements.yaml
+  # / relationships.yaml (props: {source: it4it}). Not yet bridged to this
+  # platform's own capabilities. Deliberately excluded from every other view;
+  # render/hide this one independently.
+  viewpoint: value_stream
+  members:
+    - it4it-vs-root
+    - it4it-outcome-digital-product
+    - it4it-vs-explore
+    - it4it-vs-evaluate
+    - it4it-vs-integrate
+    - it4it-vs-deploy
+    - it4it-vs-release
+    - it4it-vs-operate
+    - it4it-vs-consume
+    - it4it-explore-architecture
+    - it4it-explore-refine-backlog
+    - it4it-explore-prioritize-backlog
+    - it4it-explore-roadmap
+    - it4it-evaluate-influencers
+    - it4it-evaluate-backlog-mandates
+    - it4it-evaluate-governance
+    - it4it-evaluate-gaps
+    - it4it-evaluate-investments
+    - it4it-integrate-plan-release
+    - it4it-integrate-design-develop
+    - it4it-integrate-build-test
+    - it4it-integrate-accept-publish
+    - it4it-deploy-plan-approve
+    - it4it-deploy-fulfill
+    - it4it-deploy-observe
+    - it4it-deploy-validate
+    - it4it-release-define-offer
+    - it4it-release-implement-offer
+    - it4it-release-publish-offer
+    - it4it-operate-detect
+    - it4it-operate-diagnose
+    - it4it-operate-resolve
+    - it4it-consume-publish-status
+    - it4it-consume-support
+    - it4it-consume-agree-offer
+    - it4it-consume-subscribe-offer
+    - it4it-consume-select-offer
+
 - id: view-artefact-assurance-spec
   name: Artefact Flow — Assurance & Specification
   viewpoint: application_cooperation

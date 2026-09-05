@@ -469,3 +469,79 @@
 - {type: Aggregation, source: store-frameworks, target: art-baseline}
 - {type: Aggregation, source: store-frameworks, target: art-metamodel}
 - {type: Aggregation, source: store-ledger, target: art-ledger-entry}
+
+# =====================================================================
+# D. IT4IT ALIGNMENT — the IT4IT 3.0 value-stream skeleton (see elements.yaml
+#    section D). Root -> stream and stream -> stage via Composition; the
+#    stream-to-stream network via the exact directed Flow edges from the
+#    source (several pairs flow both ways — that's in the source, not a
+#    modelling error here). All tagged props: {source: it4it}. No bridge
+#    relationships to this platform's own capabilities yet — deliberately
+#    left disconnected.
+# =====================================================================
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-explore, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-integrate, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-deploy, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-release, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-operate, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-root, target: it4it-vs-consume, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-root, target: it4it-outcome-digital-product, props: {source: it4it}}
+- {type: Aggregation, source: it4it-vs-operate, target: it4it-vs-root, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-explore, target: it4it-explore-architecture, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-explore, target: it4it-explore-refine-backlog, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-explore, target: it4it-explore-prioritize-backlog, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-explore, target: it4it-explore-roadmap, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-evaluate, target: it4it-evaluate-influencers, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-evaluate, target: it4it-evaluate-backlog-mandates, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-evaluate, target: it4it-evaluate-governance, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-evaluate, target: it4it-evaluate-gaps, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-evaluate, target: it4it-evaluate-investments, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-integrate, target: it4it-integrate-plan-release, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-integrate, target: it4it-integrate-design-develop, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-integrate, target: it4it-integrate-build-test, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-integrate, target: it4it-integrate-accept-publish, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-deploy, target: it4it-deploy-plan-approve, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-deploy, target: it4it-deploy-fulfill, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-deploy, target: it4it-deploy-observe, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-deploy, target: it4it-deploy-validate, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-release, target: it4it-release-define-offer, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-release, target: it4it-release-implement-offer, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-release, target: it4it-release-publish-offer, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-operate, target: it4it-operate-detect, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-operate, target: it4it-operate-diagnose, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-operate, target: it4it-operate-resolve, props: {source: it4it}}
+
+- {type: Composition, source: it4it-vs-consume, target: it4it-consume-publish-status, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-consume, target: it4it-consume-support, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-consume, target: it4it-consume-agree-offer, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-consume, target: it4it-consume-subscribe-offer, props: {source: it4it}}
+- {type: Composition, source: it4it-vs-consume, target: it4it-consume-select-offer, props: {source: it4it}}
+
+# --- Stream-to-stream network: the exact directed Flow edges from the source
+#     model (several pairs flow both ways — that's in the source, not a
+#     modelling error here). ---
+- {type: Flow, source: it4it-vs-release, target: it4it-vs-consume, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-deploy, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-consume, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-explore, target: it4it-vs-integrate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-consume, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-explore, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-operate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-operate, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-deploy, target: it4it-vs-operate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-consume, target: it4it-vs-operate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-integrate, target: it4it-vs-deploy, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-release, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-release, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-integrate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-integrate, target: it4it-vs-release, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-explore, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-integrate, target: it4it-vs-evaluate, props: {source: it4it}}
+- {type: Flow, source: it4it-vs-evaluate, target: it4it-vs-deploy, props: {source: it4it}}
