@@ -90,10 +90,11 @@ reportMissingImports = true
 reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
 reportUnknownMemberType = false
+extraPaths = ["src", ".agents/skills/wiki-librarian/tools", ".agents/skills/model-archimate/scripts", "architecture/model"]
 
 [tool.mypy]
 strict = true
-mypy_path = ["src", ".agents/skills/wiki-librarian/tools", "architecture/model"]
+mypy_path = ["src", ".agents/skills/wiki-librarian/tools", ".agents/skills/model-archimate/scripts", "architecture/model"]
 packages = ["frictionless_architect", "tests"]
 show_error_codes = true
 ignore_missing_imports = false
@@ -113,7 +114,7 @@ plugins = [
 # Skill / build tooling lives outside src/ and is exercised by tests/tools/.
 # Type-check the tests, not these script modules pulled in through them.
 [[tool.mypy.overrides]]
-module = ["wiki_common", "verify_wiki", "build_status", "resolve_sources", "semsearch", "build"]
+module = ["wiki_common", "verify_wiki", "build_status", "resolve_sources", "semsearch", "build", "viewpoints"]
 ignore_errors = true
 
 [[tool.mypy.overrides]]

@@ -110,6 +110,7 @@ def add_elements(
             desc=e.get("desc"),
             uuid=det_id(yid),
         )
+        assert isinstance(el, Element)  # ct is never ArchiType.View here
         for k, v in (e.get("props") or {}).items():
             el.prop(str(k), str(v))
         by_id[yid] = el

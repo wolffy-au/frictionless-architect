@@ -6,7 +6,9 @@ these never touch elements.yaml / the filesystem.
 
 from __future__ import annotations
 
-from pyArchimate import Model
+from typing import Any
+
+from pyArchimate import Element, Model
 
 import build
 
@@ -98,7 +100,9 @@ def test_add_views_reports_unknown_member_id() -> None:
     assert any("references unknown ids: ['missing']" in e for e in errors)
 
 
-def _model_with(elements: list[dict], rels: list[dict]) -> tuple[Model, list[dict], dict, dict, list[str]]:
+def _model_with(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]]
+) -> tuple[Model, list[dict[str, Any]], dict[str, Element], dict[str, str], list[str]]:
     model = Model("t")
     errors: list[str] = []
     by_id, types = build.add_elements(model, elements, errors)

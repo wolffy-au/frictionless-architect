@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from dotenv import load_dotenv
 
@@ -67,7 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def load_payload(path: Path) -> dict[str, list[dict[str, Any]]]:
     with path.open(encoding="utf-8") as fh:
-        return json.load(fh)
+        return cast("dict[str, list[dict[str, Any]]]", json.load(fh))
 
 
 def configure_logger(debug: bool) -> None:
@@ -120,8 +120,7 @@ def main() -> int:
     try:
         execute_command(manager, args)
     except ValueError as exc:
-        parser.error(str(exc))
-        return 1
+        parser.error(str(exc))  # noreturn: argparse exits the process
     except Exception as exc:  # pragma: no cover - inspect in production
         print(f"Schema command failed: {exc}", file=sys.stderr)
         return 1

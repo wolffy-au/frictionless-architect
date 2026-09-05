@@ -7,6 +7,7 @@ viewpoint slug that build.py would only reject at build time.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import viewpoints
 import yaml
@@ -14,7 +15,7 @@ import yaml
 VIEWS = Path(__file__).resolve().parents[3] / "architecture/model/views.yaml"
 
 
-def _views() -> list[dict]:
+def _views() -> list[dict[str, Any]]:
     return yaml.safe_load(VIEWS.read_text()) or []
 
 

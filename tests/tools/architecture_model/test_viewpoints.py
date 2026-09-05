@@ -15,11 +15,14 @@ def test_parses_the_archi_viewpoint_file() -> None:
     # Archi's ids (not the spec's prose names).
     for slug in ("stakeholder", "strategy", "capability", "value_stream", "application_cooperation", "layered"):
         assert slug in vps, slug
-    assert viewpoints.get_viewpoint("value_stream")["name"] == "Value Stream"
+    vp = viewpoints.get_viewpoint("value_stream")
+    assert vp is not None
+    assert vp["name"] == "Value Stream"
 
 
 def test_value_stream_allow_set_matches_archi() -> None:
     vp = viewpoints.get_viewpoint("value_stream")
+    assert vp is not None
     assert vp["elements"] == {"Capability", "Outcome", "Stakeholder", "ValueStream"}
     assert vp["relationships_unrestricted"] is True
 
@@ -27,10 +30,13 @@ def test_value_stream_allow_set_matches_archi() -> None:
 def test_collection_tokens_are_expanded() -> None:
     # application_cooperation = $ApplicationElements$ + Location
     vp = viewpoints.get_viewpoint("application_cooperation")
+    assert vp is not None
     assert {"ApplicationComponent", "ApplicationFunction", "DataObject", "Location"} <= vp["elements"]
     assert "$ApplicationElements$" not in vp["elements"]
     # strategy = $StrategyElements$ + Outcome
-    assert viewpoints.get_viewpoint("strategy")["elements"] == {
+    strategy_vp = viewpoints.get_viewpoint("strategy")
+    assert strategy_vp is not None
+    assert strategy_vp["elements"] == {
         "Resource",
         "Capability",
         "ValueStream",
@@ -41,6 +47,7 @@ def test_collection_tokens_are_expanded() -> None:
 
 def test_layered_is_unrestricted() -> None:
     vp = viewpoints.get_viewpoint("layered")
+    assert vp is not None
     assert vp["elements_unrestricted"] and vp["relationships_unrestricted"]
     assert viewpoints.check_conformance(vp, ["BusinessActor", "Node", "Gap"], ["Flow"]) == []
 
@@ -52,6 +59,7 @@ def test_get_viewpoint_unknown_is_none() -> None:
 
 def test_check_conformance_clean_and_dirty() -> None:
     vp = viewpoints.get_viewpoint("value_stream")
+    assert vp is not None
     assert viewpoints.check_conformance(vp, ["Capability", "ValueStream", "Outcome"], ["Serving"]) == []
     findings = viewpoints.check_conformance(vp, ["Capability", "Goal"], ["Serving"])
     assert any("Goal" in f for f in findings)
@@ -59,12 +67,14 @@ def test_check_conformance_clean_and_dirty() -> None:
 
 def test_junction_and_grouping_always_allowed() -> None:
     vp = viewpoints.get_viewpoint("stakeholder")  # a restricted element set
+    assert vp is not None
     assert not vp["elements_unrestricted"]
     assert viewpoints.check_conformance(vp, ["Stakeholder", "Grouping", "Junction"], []) == []
 
 
 def test_guidance_overlay_is_attached() -> None:
     vp = viewpoints.get_viewpoint("value_stream")
+    assert vp is not None
     assert vp.get("abstraction") == "overview"
     assert "deciding" in vp.get("purpose", [])
 
