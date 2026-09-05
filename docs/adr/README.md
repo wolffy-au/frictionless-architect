@@ -90,3 +90,6 @@ narrative docs.
   Governed-lifecycle entities are FSMs with action-based endpoints
 - **A** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
   Capability layer carries a value stream and an explicit motivation spine
+- **A** — [0028](0028-relationship-view-refs-not-relationship-fact-node.md) —
+  Relationships are edges only; views reference them by identifier list, not a
+  `RelationshipFact` node

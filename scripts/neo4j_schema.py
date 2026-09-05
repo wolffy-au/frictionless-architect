@@ -97,11 +97,11 @@ def execute_command(manager: SchemaManager, args: argparse.Namespace) -> None:
     if args.command in ("audit", "all"):
         missing, orphan = manager.run_audit_checks()
         if missing:
-            print("Relationships with missing endpoints:")
+            print("Views/diagrams referencing missing relationships:")
             for row in missing:
-                print(f" - {row['identifier']} missing {row['missing']} node(s)")
+                print(f" - {row['kind']} {row['identifier']} references missing relationship {row['missing']}")
         else:
-            print("All relationships point to valid elements.")
+            print("All view/diagram relationship references are valid.")
 
         if orphan:
             print("Views with no members:")

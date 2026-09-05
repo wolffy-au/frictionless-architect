@@ -22,7 +22,7 @@ class DummyTx:
     def run(self, query: str) -> list[DummyRow]:
         if "MATCH (e:Element)" in query:
             return [DummyRow({"identifier": "E1", "type": "Element"})]
-        if "MATCH (r:RelationshipFact)" in query:
+        if "ARCHIMATE_RELATIONSHIP" in query:
             return [DummyRow({"identifier": "R1", "type": "Rel"})]
         return [DummyRow({"identifier": "V1", "name": "View"})]
 
