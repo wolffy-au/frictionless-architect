@@ -1305,3 +1305,204 @@
     that all Internal and External Service Providers/Suppliers meet their
     contractual/agreed commitments.
   props: {source: it4it}
+
+# --- Remaining IT4IT 3.0 capabilities not reached via the derivation chain
+#     above (id-prefixed the same way; not yet linked to any stage or bridge
+#     relationship). 7 of these have no documentation in the source. Excludes
+#     the source model's one placeholder element literally named "Capability"
+#     (no documentation, no relationships — a modelling artefact, not a real
+#     domain concept). ---
+- type: Capability
+  id: it4it-cap-availability-mgmt
+  name: "IT4IT: Availability Management"
+  desc: >-
+    The ability to define, analyze, Plan, measure and improve all aspects of the
+    Availability of IT Services. Availability Management is responsible for
+    ensuring that all IT Infrastructure, Processes, Tools, Roles, etc. are
+    appropriate for the agreed Service Level Targets for Availability.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-capacity-mgmt
+  name: "IT4IT: Capacity Management"
+  desc: >-
+    The ability to ensure that the Capacity of IT Services and the IT
+    Infrastructure is able to deliver agreed Service Level Targets in a Cost
+    Effective and timely manner. Capacity Management considers all Resources
+    required to deliver the IT Service, and plans for short-, medium- and
+    long-term Business Requirements. The Resources used by each IT Service and the
+    pattern of usage over time are collected, recorded, and analyzed for use in
+    the Capacity Plan.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-change-mgmt
+  name: "IT4IT: Change Management"
+  desc: >-
+    The ability to control the lifecycle of all changes from request to
+    resolution. The primary objective of Change Management is to enable beneficial
+    Changes to be made with minimum disruption to Services.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-collaboration
+  name: "IT4IT: Collaboration"
+  desc: >-
+    The Collaboration & Communication function supports many other IT4IT
+    Functional Components by enabling optimal collaboration and communication
+    between the various stakeholders and parties within the ecosystem, including
+    internal and external collaboration with all parties in the digital
+    ecosystem. Source: IT4IT 3.0.1 standard, section 10.6 (undocumented in the
+    ArchiMate exchange file; pulled from the published standard PDF instead).
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-compliance-mgmt
+  name: "IT4IT: Compliance Management"
+  desc: >-
+    Part of the combined IT4IT Governance, Risk, & Compliance function: ensures
+    that security, risk, and compliance are fully embedded into the digital
+    delivery network, including all involved parties and vendors, with
+    transparency and traceability of compliance information — including
+    continuous monitoring of compliance, audit management (performing audits to
+    identify issues and exceptions), and managing deviations/exceptions. Source:
+    IT4IT 3.0.1 standard, section 10.2 (the standard does not define Compliance
+    Management separately from Risk Management — see it4it-cap-risk-mgmt;
+    undocumented in the ArchiMate exchange file).
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-continuity-mgmt
+  name: "IT4IT: Continuity Management"
+  desc: >-
+    The ability to manage improvements to IT Service Management Processes and IT
+    Services. The Performance of the IT Service Provider is continually measured
+    and improvements are made to Processes, IT Services and IT Infrastructure in
+    order to increase Efficiency, Effectiveness, and Cost Effectiveness.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-contract-mgmt
+  name: "IT4IT: Contract Management"
+  desc: >-
+    Manages the Contract — the relationship between provider and consumer
+    created when an Offer is accepted and a Digital Product Instance is created
+    — including all details required for financial recording, governance,
+    measurement, charging, support, and servicing of that instance. Source:
+    IT4IT 3.0.1 standard, sections 2.1 and 4.2.3. Caveat: the standard does not
+    define a distinct "Contract Management" function or capability — this is
+    adapted from its definitions of the Contract concept and the Contract
+    Definition data object; contract management systems are explicitly called
+    out as non-normative Supporting Capabilities supplied externally.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-customer-relationship-mgmt
+  name: "IT4IT: Customer Relationship Management"
+  desc: >-
+    The ability to maintain relationships with service consumers. In an Internal
+    IT Provider archetype, Business Relationship Management or BRM is the the
+    capability to maintain a Relationship with the internal enterprise Line of
+    Business Unit consumers and stakeholders. Business Relationship Management
+    usually includes: - Managing personal Relationships with Business managers;
+    Providing input to Service Portfolio Management - Ensuring that the IT Service
+    Provider is satisfying the Business needs of the Customers. - In an External
+    Service Provider context, Customer Relationship or CRM, which means it is the
+    ability to do the BRM, except it is not with internal but with external
+    customers and organizations.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-customer-support
+  name: "IT4IT: Customer/User Support"
+  desc: >-
+    The ability to assist users with interactions to service support. The support
+    capability is be provided via varity of media (e.g. click, call, face),
+    assists VIP's, allows for self-help, has the ability to list current
+    disruptions and routes interactions to the correct supporting agents.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-deployment-mgmt
+  name: "IT4IT: Deployment Management"
+  desc: >-
+    Inferred, not sourced: the standard names no "Deployment Management"
+    function or functional component anywhere — confirmed absent from both the
+    ArchiMate exchange file and the full published IT4IT 3.0.1 standard PDF,
+    and no definition could be found via web search either. This description
+    is inferred from the Deploy value stream's stages (Plan & Approve, Fulfill,
+    Observe, Validate): the ability to plan, execute, and validate the release
+    of a Release Package into a target environment, and to observe and roll
+    back that deployment if it fails validation. Treat this as a best-effort
+    placeholder, not an authoritative IT4IT definition.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-identity-access-mgmt
+  name: "IT4IT: Identity and Access Management"
+  desc: >-
+    The ability to design, develop manage, and control the security of automation
+    services and information to meet requirements. The capability to ensure the
+    Confidentiality, Integrity and Availability of an Organization’s Assets,
+    information, data and IT Services. Authorization and Access Management usually
+    forms part of an organizational approach to Security Management that has a
+    wider scope than the IT Service Provider, and includes handling of paper,
+    building access, phone calls, etc., for the entire organization.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-knowledge-mgmt
+  name: "IT4IT: Knowledge Management"
+  desc: >-
+    The ability to gather, analyze, store and share knowledge and information
+    within an Organization. The primary purpose of Knowledge Management is to
+    improve Efficiency by reducing the need to rediscover knowledge.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-performance-mgmt
+  name: "IT4IT: Performance Management"
+  desc: >-
+    The ability responsible for day-to-day Performance Management Activities.
+    These include monitoring, threshold detection, Performance analysis and
+    Tuning, and implementing changes related to Performance and Capacity.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-portfolio-backlog-mgmt
+  name: "IT4IT: Portfolio Backlog Management"
+  desc: >-
+    The ability to provide lifecycle management and visibility of Portfolio
+    Backlog Items as grouped into collections of work and prioritized;
+    supports the Evaluate, Explore, and Integrate value streams. Source: IT4IT
+    3.0.1 standard, section 6.2.1 "Portfolio Backlog Functional Component"
+    (undocumented in the ArchiMate exchange file; pulled from the published
+    standard PDF instead).
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-product-sales-mgmt
+  name: "IT4IT: Product Sales Management"
+  desc: >-
+    The ability to generate, accept, approve, and manage customer orders for
+    products and services.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-risk-mgmt
+  name: "IT4IT: Risk Management"
+  desc: >-
+    Part of the combined IT4IT Governance, Risk, & Compliance function: the
+    ability to identify, classify, manage, and mitigate risk in an increasingly
+    complex digital environment, including maintaining a risk register,
+    performing risk assessments (including vendor risk), and defining and
+    implementing mitigation plans. Source: IT4IT 3.0.1 standard, section 10.2
+    (the standard does not define Risk Management separately from Compliance
+    Management — see it4it-cap-compliance-mgmt; undocumented in the ArchiMate
+    exchange file).
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-strategy-mgmt
+  name: "IT4IT: Strategy Management"
+  desc: >-
+    The ability to create establish business strategies and business plans to
+    increase customer value, to lead the direction for the organization into the
+    future, to develop and harmonize the organizations strategic landscape and to
+    develop competitive business strategies.
+  props: {source: it4it}
+- type: Capability
+  id: it4it-cap-workforce-mgmt
+  name: "IT4IT: Workforce Management"
+  desc: >-
+    Supports the HR Management aspects within the digital delivery model,
+    ensuring the resource portfolio, skills, and competencies are aligned with
+    the strategic direction — including onboarding/off-boarding, team
+    administration, resource allocation, and employee career development.
+    Source: IT4IT 3.0.1 standard, section 10.3 (undocumented in the ArchiMate
+    exchange file; pulled from the published standard PDF instead).
+  props: {source: it4it}
