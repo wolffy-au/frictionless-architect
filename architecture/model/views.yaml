@@ -287,6 +287,24 @@
     - it4it-cap-service-level-mgmt
     - it4it-cap-test-mgmt
     - it4it-cap-vendor-mgmt
+    - it4it-cap-availability-mgmt
+    - it4it-cap-capacity-mgmt
+    - it4it-cap-change-mgmt
+    - it4it-cap-collaboration
+    - it4it-cap-compliance-mgmt
+    - it4it-cap-continuity-mgmt
+    - it4it-cap-contract-mgmt
+    - it4it-cap-customer-relationship-mgmt
+    - it4it-cap-customer-support
+    - it4it-cap-deployment-mgmt
+    - it4it-cap-identity-access-mgmt
+    - it4it-cap-knowledge-mgmt
+    - it4it-cap-performance-mgmt
+    - it4it-cap-portfolio-backlog-mgmt
+    - it4it-cap-product-sales-mgmt
+    - it4it-cap-risk-mgmt
+    - it4it-cap-strategy-mgmt
+    - it4it-cap-workforce-mgmt
 
 - id: view-artefact-assurance-spec
   name: Artefact Flow — Assurance & Specification
