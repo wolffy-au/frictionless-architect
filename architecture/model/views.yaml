@@ -194,6 +194,9 @@
     - cap-spec-engine
     - cap-control-plane
     - cap-drift-dashboard
+    - cap-control-catalog
+    - cap-forensic-ledger
+    - cap-human-approval-workflow
 
 - id: view-subsystem-capabilities
   name: Subsystems & Capabilities
@@ -231,6 +234,24 @@
     - art-oscal-catalog
     - art-oscal-profile
     - store-oscal
+
+- id: view-business-controls-catalog
+  name: Business — Controls & Compliance Catalog
+  viewpoint: business_process_cooperation
+  diagram: frictionless-architect-business-controls-catalog
+  # Business-layer-only counterpart of view-artefact-oscal: the Compliance
+  # Officer / Auditor authoring policy and converting it (with upstream
+  # regulatory standards) into OSCAL catalogs/profiles. Trestle is
+  # deliberately not shown — it's the application-layer tool realizing
+  # process-oscal-conversion (see fn-oscal-conversion), not a business actor.
+  members:
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
 
 - id: view-artefact-library
   name: Artefact Flow — Library & Design

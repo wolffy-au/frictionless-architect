@@ -493,6 +493,43 @@
     work items. A Solution Architect approves architectural drift; Security &
     Compliance approves regulatory drift. Ensures only validated, prioritised
     findings enter the delivery pipeline.
+- type: BusinessProcess
+  id: process-policy-authoring
+  name: Policy & Standards Authoring
+  desc: >-
+    The Compliance Officer / Auditor authors custom policy and standard
+    content, informed by upstream regulatory standards. Realized at
+    application layer by fn-policy-authoring (authored as Trestle Markdown).
+- type: BusinessProcess
+  id: process-oscal-conversion
+  name: OSCAL Catalog & Profile Generation
+  desc: >-
+    Converts authored policy content and upstream regulatory standards into
+    OSCAL Catalogs and Profiles. Realized at application layer by
+    fn-oscal-conversion via a Trestle round-trip.
+
+# =====================================================================
+# A. BUSINESS — Objects (business-layer counterparts of the artefacts in
+#    section C; Realization links tie each back to its DataObject)
+# =====================================================================
+- type: BusinessObject
+  id: bo-regulatory-standard
+  name: Regulatory Standard
+  desc: >-
+    Upstream regulatory content consumed by the platform (e.g. NIST OSCAL
+    catalogs, FedRAMP baselines).
+- type: BusinessObject
+  id: bo-policy-doc
+  name: Policy / Standard Document
+  desc: Custom policy or standard authored by the Compliance Officer / Auditor.
+- type: BusinessObject
+  id: bo-oscal-catalog
+  name: OSCAL Catalog
+  desc: Machine-readable control catalog.
+- type: BusinessObject
+  id: bo-oscal-profile
+  name: OSCAL Profile
+  desc: Tailored control selection / baseline.
 
 # =====================================================================
 # B. APPLICATION — the platform and its six subsystems
