@@ -1,0 +1,32 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Stakeholder
+
+Motivation_Stakeholder(e_id4d37f035937d5c, "IT4IT: Business Analyst")
+Motivation_Stakeholder(e_idbd07e613af525e, "IT4IT: Business Stakeholder")
+Motivation_Stakeholder(e_id5655ab0b0f6a50, "IT4IT: Catalog Manager")
+Motivation_Stakeholder(e_idae6f88e907e95f, "IT4IT: Chief Security Officer")
+Motivation_Stakeholder(e_id63d330257bae56, "IT4IT: Compliance Manager")
+Motivation_Stakeholder(e_id686769a5ad1e52, "IT4IT: Consumer")
+Motivation_Stakeholder(e_idf5cf0a9fc0865a, "IT4IT: Data Protection Officer")
+Motivation_Stakeholder(e_id10272d1de34350, "IT4IT: Development Team")
+Motivation_Stakeholder(e_idc5c0bec57f0f5f, "IT4IT: Enterprise Architect")
+Motivation_Stakeholder(e_id7134a45d7d5856, "IT4IT: External Stakeholder")
+Motivation_Stakeholder(e_iddeac186b95c151, "IT4IT: Operations Manager")
+Motivation_Stakeholder(e_id7fde09eb293452, "IT4IT: Product Architect")
+Motivation_Stakeholder(e_id9bf564a48e8859, "IT4IT: Product Manager")
+Motivation_Stakeholder(e_id4c12b4e6040e51, "IT4IT: Product Portfolio Manager")
+Motivation_Stakeholder(e_id519c7c7268405f, "IT4IT: Release & Deployment Manager")
+Motivation_Stakeholder(e_id83b4a7cfcf9b5e, "IT4IT: Risk Analyst")
+Motivation_Stakeholder(e_idac9b5e5d26ad5b, "IT4IT: Scrum Master")
+Motivation_Stakeholder(e_id30032de536dd5b, "IT4IT: Security Analyst")
+Motivation_Stakeholder(e_id5524fcedc95b51, "IT4IT: Security Architect")
+Motivation_Stakeholder(e_idf6dfc008136751, "IT4IT: Security Officer")
+Motivation_Stakeholder(e_idff11595522195c, "IT4IT: Service Desk Agent")
+Motivation_Stakeholder(e_iddf1f9613080f54, "IT4IT: Support Specialist")
+Motivation_Stakeholder(e_id39ba4c5480e15c, "IT4IT: Test Specialist")
+Motivation_Stakeholder(e_id5f3692ae5d7657, "IT4IT: Vendor Manager")
+
+
+@enduml

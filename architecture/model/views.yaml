@@ -29,14 +29,20 @@
   diagram: vision/stakeholder
   # The case for change: who holds which driver, the assessments that make each
   # driver urgent, and the goal + outcome they drive toward.
-  # Outcome is scoped explicitly (not via include_types) because the IT4IT
-  # import added a second Outcome element (it4it-outcome-digital-product) —
-  # an include_types: [..., Outcome] here would pull it into a platform-only
-  # view. Same fix applies everywhere below Outcome/Capability/ValueStream
-  # appear in include_types.
-  include_types: [Stakeholder, Assessment, Driver, Goal]
+  # Outcome and Stakeholder are scoped explicitly (not via include_types)
+  # because the IT4IT import added a second Outcome element
+  # (it4it-outcome-digital-product) and 24 more Stakeholder elements —
+  # an include_types: [..., Outcome/Stakeholder] here would pull them into a
+  # platform-only view. Same fix applies everywhere below
+  # Outcome/Capability/ValueStream/Stakeholder appear in include_types.
+  include_types: [Assessment, Driver, Goal]
   members:
     - outcome-executable-intelligence
+    - stk-exec
+    - stk-regulator
+    - stk-architecture
+    - stk-delivery
+    - stk-risk-compliance
 
 - id: view-motivation
   name: Motivation
@@ -44,10 +50,18 @@
   diagram: vision/motivation
   # The whole motivation model — stakeholders, assessments, drivers, goal,
   # outcome, principles, requirements, constraints — and how they relate.
+  # Stakeholder scoped explicitly (not via include_types), same reason as
+  # view-stakeholder above — the IT4IT import added 24 more Stakeholder
+  # elements that an include_types: [Stakeholder, ...] would pull in here.
   include_types:
-    [Stakeholder, Assessment, Driver, Goal, Principle, Requirement, Constraint]
+    [Assessment, Driver, Goal, Principle, Requirement, Constraint]
   members:
     - outcome-executable-intelligence
+    - stk-exec
+    - stk-regulator
+    - stk-architecture
+    - stk-delivery
+    - stk-risk-compliance
 
 - id: view-goal-realization
   name: Goal Realization
@@ -600,6 +614,39 @@
     - it4it-cap-risk-mgmt
     - it4it-cap-strategy-mgmt
     - it4it-cap-workforce-mgmt
+
+- id: view-it4it-stakeholder
+  name: "IT4IT: Stakeholder"
+  viewpoint: stakeholder
+  diagram: it4it/stakeholder
+  # The 24 named IT4IT stakeholder roles. The source model has no Driver or
+  # Assessment elements to connect them to, so this renders as a catalog —
+  # same situation as view-it4it-capability-map before its domain groupings.
+  members:
+    - it4it-stakeholder-business-analyst
+    - it4it-stakeholder-business-stakeholder
+    - it4it-stakeholder-catalog-manager
+    - it4it-stakeholder-chief-security-officer
+    - it4it-stakeholder-compliance-manager
+    - it4it-stakeholder-consumer
+    - it4it-stakeholder-data-protection-officer
+    - it4it-stakeholder-development-team
+    - it4it-stakeholder-enterprise-architect
+    - it4it-stakeholder-external-stakeholder
+    - it4it-stakeholder-operations-manager
+    - it4it-stakeholder-product-architect
+    - it4it-stakeholder-product-manager
+    - it4it-stakeholder-product-portfolio-manager
+    - it4it-stakeholder-release-deployment-manager
+    - it4it-stakeholder-risk-analyst
+    - it4it-stakeholder-scrum-master
+    - it4it-stakeholder-security-analyst
+    - it4it-stakeholder-security-architect
+    - it4it-stakeholder-security-officer
+    - it4it-stakeholder-service-desk-agent
+    - it4it-stakeholder-support-specialist
+    - it4it-stakeholder-test-specialist
+    - it4it-stakeholder-vendor-manager
 
 - id: view-it4it-capability-bridges
   name: "IT4IT: Capability Bridges"
