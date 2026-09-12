@@ -1,13 +1,24 @@
 @startuml Sample_Platform_ArchiMate
 !include <archimate/Archimate>
 title Sample Platform Archimate
+
 Business_Actor(BusinessActor, "Business Actor\n(A role played by an organisational entity outside the architecture.)")
-Business_Interface(BusinessInterface, "Business Interface\n(Defines the access point exposing business services.)")
-Rel_Serving(BusinessActor, BusinessInterface, "interacts through")
+
 package "sample-platform Boundary" as system_boundary {
-    Application_Component(AppComponent, "Web Application")
-    Application_Interface(AppInterface, "Web Interface")
-    Rel_Composition_Up(AppComponent, AppInterface, "exposes")`
+    Application_Component(AppComponent, "Application Component\n(A modular, deployable and replaceable part of a software system.)")
 }
-Rel_Serving_Up(AppInterface, BusinessInterface, "serves")
+
+Business_Service(BusinessService, "Business Service\n(A business capability offered externally that the system depends on.)")
+Business_Object(BusinessObject, "Business Object\n(Business-layer reference data held by an external registry.)")
+' Person_Ext / SystemQueue_Ext have no ArchiMate type-based default — they
+' only ever come from an explicit c4=personExt / c4=externalQueue property.
+Business_Actor(Person_Ext, "Person_Ext\n(A role or actor external to the organisation that owns the system.)")
+Application_Service(SystemQueue_Ext, "SystemQueue_Ext\n(An external message queue used to exchange asynchronous events.)")
+
+Rel_Serving(BusinessActor, AppComponent, "interacts through")
+Rel_Serving(BusinessService, AppComponent, "serves")
+Rel_Access(AppComponent, BusinessObject, "reads")
+Rel_Serving(Person_Ext, AppComponent, "audits")
+Rel_Flow(AppComponent, SystemQueue_Ext, "publishes events to")
+
 @enduml
