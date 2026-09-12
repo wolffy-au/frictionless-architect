@@ -122,6 +122,14 @@ REL_DIRECTION = {
     "Flow": "Right",
 }
 
+# Access relationship access_type -> stdlib macro suffix (Rel_Access_r/_w/_rw),
+# giving the connector its read/write arrowhead. Undefined/other -> plain Rel_Access.
+ACCESS_TYPE_SUFFIX = {
+    "Read": "r",
+    "Write": "w",
+    "ReadWrite": "rw",
+}
+
 # Relationship types rendered as containment (child nested in parent's box) rather
 # than an arrow. source = whole/container/active-structure, target = part/behaviour.
 # A child is only nested if it has exactly one such parent on the diagram and the
@@ -252,6 +260,10 @@ def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
         macro = REL_MACRO.get(r.type)
         s, t = alias(r.source.uuid), alias(r.target.uuid)
         if macro:
+            if r.type == "Access":
+                suffix = ACCESS_TYPE_SUFFIX.get(getattr(r, "access_type", None))
+                if suffix:
+                    macro = f"{macro}_{suffix}"
             direction = REL_DIRECTION.get(r.type)
             if direction:
                 macro = f"{macro}_{direction}"

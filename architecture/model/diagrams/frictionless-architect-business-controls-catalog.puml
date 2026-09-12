@@ -12,11 +12,11 @@ Business_Role(e_id5e264d2f4bb551, "Compliance Officer / Auditor") {
   Business_Process(e_idfeca8b2013795e, "OSCAL Catalog & Profile Generation")
 }
 
-Rel_Access(e_id14fa9f783d5350, e_ide330e703d24759, "authors")
-Rel_Access(e_idfeca8b2013795e, e_idd915b3e838bf5b, "reads")
-Rel_Access(e_idfeca8b2013795e, e_ide330e703d24759, "reads")
-Rel_Access(e_idfeca8b2013795e, e_id1d03973d3f5b52, "generates")
-Rel_Access(e_idfeca8b2013795e, e_id3a6eb7f6485a55, "generates")
+Rel_Access_w(e_id14fa9f783d5350, e_ide330e703d24759, "authors")
+Rel_Access_r(e_idfeca8b2013795e, e_idd915b3e838bf5b, "reads")
+Rel_Access_r(e_idfeca8b2013795e, e_ide330e703d24759, "reads")
+Rel_Access_w(e_idfeca8b2013795e, e_id1d03973d3f5b52, "generates")
+Rel_Access_w(e_idfeca8b2013795e, e_id3a6eb7f6485a55, "generates")
 Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
 
 @enduml
