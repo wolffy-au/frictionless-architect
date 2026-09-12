@@ -68,7 +68,7 @@
 - {type: Association, source: stk-risk-compliance, target: vs-governed-delivery, label: provable compliance}
 
 # =====================================================================
-# A. Stakeholders hold drivers; assessments analyse the drivers they bear on
+# A. Stakeholders hold drivers; drivers are analysed into assessments
 # =====================================================================
 - {type: Association, source: stk-exec, target: driver-agility}
 - {type: Association, source: stk-exec, target: driver-compliance}
@@ -76,34 +76,50 @@
 - {type: Association, source: stk-architecture, target: driver-sustainability}
 - {type: Association, source: stk-delivery, target: driver-scaling}
 - {type: Association, source: stk-risk-compliance, target: driver-compliance}
-- {type: Influence, source: assess-review-bottleneck, target: driver-scaling}
-- {type: Influence, source: assess-drift-debt, target: driver-sustainability}
-- {type: Influence, source: assess-manual-compliance, target: driver-compliance}
+- {type: Influence, source: driver-agility, target: assess-time-to-market}
+- {type: Influence, source: driver-scaling, target: assess-review-bottleneck}
+- {type: Influence, source: driver-sustainability, target: assess-drift-debt}
+- {type: Influence, source: driver-compliance, target: assess-manual-compliance}
 
 # =====================================================================
-# A. Motivation spine: drivers -> goal; outcome -> goal; value stream -> outcome
+# A. Motivation spine: driver -> assessment -> goal; outcome -> goal;
+#    requirements/constraints -> goal; value stream -> outcome.
 # =====================================================================
-- {type: Influence, source: driver-agility, target: goal-frictionless-architecture}
-- {type: Influence, source: driver-compliance, target: goal-frictionless-architecture}
-- {type: Influence, source: driver-sustainability, target: goal-frictionless-architecture}
-- {type: Influence, source: driver-scaling, target: goal-frictionless-architecture}
+- {type: Influence, source: assess-time-to-market, target: goal-frictionless-architecture}
+- {type: Influence, source: assess-review-bottleneck, target: goal-frictionless-architecture}
+- {type: Influence, source: assess-drift-debt, target: goal-frictionless-architecture}
+- {type: Influence, source: assess-manual-compliance, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-executable-intelligence, target: goal-frictionless-architecture}
 - {type: Realization, source: vs-governed-delivery, target: outcome-executable-intelligence}
+- {type: Realization, source: req-auto-spec-generation, target: goal-frictionless-architecture}
+- {type: Realization, source: req-regulatory-mapping, target: goal-frictionless-architecture}
+- {type: Realization, source: req-pre-deploy-gate, target: goal-frictionless-architecture}
+- {type: Realization, source: req-continuous-reconciliation, target: goal-frictionless-architecture}
+- {type: Realization, source: req-human-signoff, target: goal-frictionless-architecture}
+- {type: Realization, source: req-control-catalog, target: goal-frictionless-architecture}
+- {type: Realization, source: req-reusable-architecture, target: goal-frictionless-architecture}
+- {type: Realization, source: req-authoritative-twin, target: goal-frictionless-architecture}
+- {type: Realization, source: req-immutable-audit-ledger, target: goal-frictionless-architecture}
+# Constraints reach the goal only via the requirements they influence (same
+# pattern as Principle, which never gets a direct ->goal edge either) — a
+# direct Constraint->Goal realization here would just duplicate the
+# const-* -> req-* -> goal path that already exists below.
 
 # =====================================================================
-# A. Drivers influence the functional requirements they motivate
+# A. Assessments influence the functional requirements they motivate
+#    (re-anchored from the driver so the driver's contribution to a specific
+#    requirement carries the same evidenced-urgency step as its contribution
+#    to the goal).
 # =====================================================================
-- {type: Influence, source: driver-agility, target: req-auto-spec-generation}
-- {type: Influence, source: driver-agility, target: req-reusable-architecture}
-- {type: Influence, source: driver-compliance, target: req-regulatory-mapping}
-- {type: Influence, source: driver-compliance, target: req-pre-deploy-gate}
-- {type: Influence, source: driver-compliance, target: req-control-catalog}
-- {type: Influence, source: driver-sustainability, target: req-continuous-reconciliation}
-- {type: Influence, source: driver-sustainability, target: req-reusable-architecture}
-- {type: Influence, source: driver-sustainability, target: req-authoritative-twin}
-- {type: Influence, source: driver-scaling, target: req-auto-spec-generation}
-- {type: Influence, source: driver-scaling, target: req-pre-deploy-gate}
-- {type: Influence, source: driver-scaling, target: req-human-signoff}
+- {type: Influence, source: assess-manual-compliance, target: req-regulatory-mapping}
+- {type: Influence, source: assess-manual-compliance, target: req-pre-deploy-gate}
+- {type: Influence, source: assess-manual-compliance, target: req-control-catalog}
+- {type: Influence, source: assess-drift-debt, target: req-continuous-reconciliation}
+- {type: Influence, source: assess-drift-debt, target: req-reusable-architecture}
+- {type: Influence, source: assess-drift-debt, target: req-authoritative-twin}
+- {type: Influence, source: assess-review-bottleneck, target: req-auto-spec-generation}
+- {type: Influence, source: assess-review-bottleneck, target: req-pre-deploy-gate}
+- {type: Influence, source: assess-review-bottleneck, target: req-human-signoff}
 
 # =====================================================================
 # A. Principles guide the requirements that operationalise them
