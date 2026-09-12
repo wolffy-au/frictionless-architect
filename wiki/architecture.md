@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-08-30
+generated: 2026-09-12
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -33,6 +33,7 @@ sources:
   - docs/adr/0025-conventional-commits-scm-versioning.md
   - docs/adr/0026-fsm-action-endpoints-for-governed-entities.md
   - docs/adr/0027-capability-value-stream-and-motivation-spine.md
+  - docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md
   - docs/adr/README.md
 ---
 
@@ -63,9 +64,13 @@ Branch → state (`ARCHITECTURE.md` §2 branch matrix): `main` / `develop` carry
 spec 002 and the visualiser only; `001-governance-platform` has the full spec
 and an API contract but no implementation; `prototype-neo4j` was an unmerged
 exploratory branch (knowledge-graph model, DB seeding, ArchiMate layers,
-forensic ledger), now preserved only as tag `archive/prototype-neo4j` and
-treated as reference, not a merge source
-(`docs/adr/0006-prototype-neo4j-reference-only.md`).
+forensic ledger), treated as reference, not a merge source
+(`docs/adr/0006-prototype-neo4j-reference-only.md`). The branch itself was
+**deleted on 2026-09-05**; its tag `archive/prototype-neo4j` was moved to the
+branch's final commit (`c78de3d`) first and is now its sole trace. One commit
+past that point (`d703f89`, ArchiMate XML schema validation) was salvaged and
+cherry-picked into `develop` before the deletion
+(`docs/adr/0006-prototype-neo4j-reference-only.md` §Consequences).
 
 ## Target state
 
@@ -148,18 +153,25 @@ components as work reaches them. §8.1 has a detailed checklist for the visualis
 split (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
 
 The **first extraction** now moves only `visualizer/{api,cache,config}.py` plus
-the visualiser's own payload / coverage-merge logic and the FastAPI router;
-`data_loader.py` (Neo4j read), `sample_parser.py` and `schema/manager.py` are
-**deferred to the `knowledge-graph` extraction**. ADR-0005's original
-Consequences put `schema/manager.py` in the visualiser package, which
-contradicted `ARCHITECTURE.md` §4 (`knowledge-graph` absorbs it); the ADR-0005
-**Amendment (2026-08-30)** records the conflict and defers the placement rather
-than resolving it (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
-§"Amendment (2026-08-30)"; `ARCHITECTURE.md` §8.1). Two questions now block the
-extraction:
-whether `schema-visualizer-api` consumes `knowledge-graph` as a library or over
-HTTP, and whether `sample_parser.py` is visualiser-specific or generic ArchiMate
-ingestion (`ARCHITECTURE.md` §10).
+the visualiser's own payload / coverage-merge logic and the FastAPI router,
+dropping the server-rendered HTML route and Jinja/static mounts (no confirmed
+consumer today). `schema/manager.py` (the Neo4j write/migrate/audit
+controller), `visualizer/data_loader.py` (the Neo4j read path) and
+`sample_parser.py` do **not** move into `schema-visualizer-api` — they go to
+`packages/knowledge-graph` instead, because the visualiser only ever needed
+read access and `sample_parser.py` has no visualiser-specific coupling
+(dependency-free stdlib ArchiMate-XML parsing). `schema-visualizer-api`
+consumes `knowledge-graph` as a **path-dependency library** (its own Neo4j
+connection), not over HTTP — no second consumer exists yet, so a service
+contract and internal auth would be premature; this is expected to graduate to
+HTTP later, so the read-path interface must stay narrow and Neo4j-driver-free
+(`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`, revised
+2026-09-05). This **resolves** the two questions the ADR's original
+Consequences (2026-08-30) left open — library-vs-HTTP consumption and
+`sample_parser.py`'s home — which an earlier "Amendment (2026-08-30)" had
+deferred rather than settled. `ARCHITECTURE.md` §10 still lists both as open
+questions and has not been updated to reflect this resolution — a
+narrative/ADR mismatch this page flags rather than silently resolving.
 
 ## Cross-cutting risks and open questions
 
@@ -174,8 +186,11 @@ Open questions (`ARCHITECTURE.md` §10): whether anything ever leaves the
 monorepo; one constitution vs. per-component addenda; dashboard as Backstage
 plugin vs. standalone SPA; which upstreams to fork; whether `pii-gateway` starts
 as its own package; whether `src/frictionless_architect/` stays importable as an
-umbrella namespace package during the transition; and the two ADR-0005 questions
-above (library-vs-HTTP `knowledge-graph` consumption; `sample_parser.py`'s home).
+umbrella namespace package during the transition. `ARCHITECTURE.md` §10 still
+lists the library-vs-HTTP `knowledge-graph` consumption question and
+`sample_parser.py`'s package home as open, but the revised
+`docs/adr/0005-visualiser-api-ui-split-first-extraction.md` (2026-09-05) has
+since answered both — see "Component decomposition" above.
 
 ## Decision log
 
@@ -213,6 +228,7 @@ not re-ratified in a spec).
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
 | 0027 | Capability layer carries a value stream and an explicit motivation spine | P |
+| 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
 
 Most **P** rows (0017–0020) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -225,6 +241,26 @@ different reason: the change is already reflected in the
 [Architecture Model](architecture-model.md) (value stream, motivation spine,
 renamed capabilities) but the ADR itself is not yet attested
 (`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
+
+ADR-0028 rewrites the Neo4j schema `SchemaManager` implements: it previously
+stored every ArchiMate relationship twice — an edge and a reified
+`RelationshipFact` node the node existed only so a `View`/`Diagram` could
+attach to a relationship (Neo4j forbids an edge as the endpoint of another
+relationship). The node also let an `Element` be deleted out from under a
+`RelationshipFact` with nothing to detect it beyond a manual audit query, and
+tripled every relationship write to three statements. The decision: store
+each relationship once as an edge; `View`/`Diagram` reference the
+relationships they depict via an identifier-list property
+(`relationshipIds`/`connectionIds`) instead of a graph edge to a reified node;
+rewrite the two audit checks to scan edges directly. Traded away: the
+view/diagram-to-relationship lookup is no longer index-backed (a two-step
+scan instead of a graph traversal, "O(views) with no index support"), and
+referential integrity on that identifier list is no longer graph-enforced — a
+stale or typo'd id will silently match nothing, which `run_audit_checks`
+should gain a check for as a follow-up
+(`docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md`). See
+[Visualizer Service](visualizer-service.md) for the implementation.
+
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).
 

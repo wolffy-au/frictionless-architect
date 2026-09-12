@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: 2026-09-05
+generated: 2026-09-12
 generator: claude-sonnet-5
 sources:
   - src/frictionless_architect/visualizer/__init__.py
@@ -117,9 +117,12 @@ payload `warning`, it never raises.
 ### `DataLoader` (`src/frictionless_architect/visualizer/data_loader.py`)
 
 Opens a Neo4j driver lazily with `basic_auth`, runs three read queries in a
-session — `(:Element)`, `(:RelationshipFact)`, `(:View)-[:REPRESENTS_VIEW]->(:Diagram)` —
-and wraps `Neo4jError` as `DataLoaderError` (`src/frictionless_architect/visualizer/data_loader.py:27-91`). Returns
-empty lists if `neo4j_uri` is unset.
+session — `(:Element)`, `(source:Element)-[:ARCHIMATE_RELATIONSHIP]->(target:Element)`,
+`(:View)-[:REPRESENTS_VIEW]->(:Diagram)` — and wraps `Neo4jError` as
+`DataLoaderError` (`src/frictionless_architect/visualizer/data_loader.py:27-91`).
+Returns empty lists if `neo4j_uri` is unset. The relationship query now reads
+the edge directly rather than a `RelationshipFact` node — see
+[ADR-0028](architecture.md) below.
 
 ### `SchemaCache` (`src/frictionless_architect/visualizer/cache.py`)
 
@@ -138,14 +141,26 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   `diagrams`. A sanitised element-type string is added as a second node label
   (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:37-50`). Relationship ingestion
   **raises `ValueError`** if either endpoint `Element` is missing
-  (`src/frictionless_architect/schema/manager.py:132-141`) and writes both a direct
-  `[:ARCHIMATE_RELATIONSHIP]` edge and a `(:RelationshipFact)` node with
-  `[:SOURCE_ELEMENT]`/`[:TARGET_ELEMENT]` edges.
+  (`src/frictionless_architect/schema/manager.py:130-136`) and writes **only**
+  a direct `[:ARCHIMATE_RELATIONSHIP {identifier, type, ...}]` edge — as of
+  [ADR-0028](architecture.md), a `View`/`Diagram` no longer gets a
+  `(:RelationshipFact)` node; instead `_ingest_views`/`_ingest_diagrams` set
+  `v.relationshipIds`/`d.connectionIds` as a plain identifier-list property
+  (`src/frictionless_architect/schema/manager.py:152-217`). This drops
+  relationship ingestion from three write statements (existence check, edge
+  `MERGE`, node `MERGE`) to two (existence check, edge `MERGE`).
 - **`record_schema_version(name)`** — MERGEs a `(:SchemaVersion {name})` with
   `applied_at`.
-- **`run_audit_checks()`** — returns relationship facts with a missing
-  source/target id, and "orphan" views with zero elements or zero
-  relationships (`src/frictionless_architect/schema/manager.py:268-297`).
+- **`run_audit_checks()`** — two checks, both rewritten for the edges-only
+  shape: `_find_missing_relationship_targets` now scans every `View`/`Diagram`
+  identifier list for an id with no matching `ARCHIMATE_RELATIONSHIP` edge
+  (an edge itself can never have a missing endpoint post-ADR-0028, since Neo4j
+  won't create one — the integrity gap moved to the identifier-list side,
+  which is a plain string list, not a graph edge, so it can silently reference
+  a non-existent relationship); `_find_orphan_views` flags a `View` with zero
+  `INCLUDES`-linked elements or an empty `relationshipIds` list
+  (`src/frictionless_architect/schema/manager.py:239-279`, docstring on
+  `_find_missing_relationship_targets`).
 
 Cypher statements are passed through `_run_literal()` which casts to
 `LiteralString` for the driver's typed API (`src/frictionless_architect/schema/manager.py:33-34`).

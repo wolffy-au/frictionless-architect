@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-05
+generated: 2026-09-12
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -33,10 +33,13 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 (`architecture/model/README.md` §"Architecture model"). `build.py` runs
 `.agents/skills/model-archimate/scripts/validate.py`, which holds the **whole**
 model to the ArchiMate 3.2 relationship matrix
-(`architecture/model/README.md` §"Schema"). The current model is 108 elements,
-227 relationships and 8 views (`architecture/model/build.py` output). The
-generated `frictionless-architect.xml` is committed but never hand-edited —
-same status as the `.puml` / `.svg` diagrams.
+(`architecture/model/README.md` §"Schema"), plus a project-specific
+`check_motivation_conventions` pass (see "Motivation-layer lint" below). The
+current model is 203 elements, 436 relationships and 25 views
+(`architecture/model/build.py` output) — up sharply from the 108/227/8 recorded
+before the section D IT4IT import (below). The generated
+`frictionless-architect.xml` is committed but never hand-edited — same status
+as the `.puml` / `.svg` diagrams.
 
 ## Files and schema
 
@@ -104,12 +107,33 @@ Executive (`stk-exec`), Regulator (`stk-regulator`). Each is `Association`-linke
 to the driver(s) it holds and, for the three delivery-facing stakeholders, to
 the value stream itself (`architecture/model/relationships.yaml:66-78`).
 
-**Assessments** — three findings that make a driver urgent
-(`architecture/model/elements.yaml:85-97`): the manual-review bottleneck
-`Influence`s the scaling driver, architecture drift & technical debt
-`Influence`s the sustainability driver, and manual/inconsistent compliance
-evidence `Influence`s the compliance driver
-(`architecture/model/relationships.yaml:79-81`).
+**Assessments** — one finding per driver that makes it urgent
+(`architecture/model/elements.yaml:95-120`): time-to-market falling behind
+AI-native competitors (agility), human review unable to keep pace with
+AI-speed delivery (scaling), accumulating architectural drift & technical debt
+(sustainability), and slow/error-prone manual compliance evidence (compliance).
+Each Assessment's `name` is deliberately written in its stakeholder's own
+vocabulary (e.g. "risking market share", not "manual architecture governance")
+— an authoring convention documented in `elements.yaml`'s header comment and
+reviewed by eye, not mechanically checked.
+
+**Motivation-layer lint.** Each driver **must** route every downstream
+influence — to the goal or to a specific requirement — through its own
+Assessment rather than bypassing it; `build.py`'s
+`check_motivation_conventions()` (via `_check_driver_bypasses_assessment`)
+makes a Driver-bypassing-its-Assessment relationship a **hard build error**.
+A second, soft check (`_check_derived_goal_edges`) flags any direct `X → Goal`
+relationship that is *also* reachable through an intermediate element as
+"looks derived, consider removing" — unless some view holds both ends in
+scope without that intermediate, in which case the direct edge is the only
+way that view can show the connection and the checker prints a `note:` instead
+of a `warning:` and keeps it. Both checks were added in the same pass that
+reversed an earlier (backwards) `Assessment → Driver` edge to `Driver →
+Assessment`, added the missing fourth Assessment
+(`assess-time-to-market`), and dropped now-derived `Constraint → Goal`
+`Realization` edges — mirroring the existing `Principle` precedent of never
+carrying a direct edge to the goal
+(`architecture/model/build.py:219-232`; `architecture/model/elements.yaml:17-25`).
 
 **Drivers** — why the platform exists
 (`architecture/model/elements.yaml:20-47`): Market Agility & Competitive
@@ -117,25 +141,39 @@ Pressure, Regulatory Resiliency & Social License, Systemic Sustainability &
 Complexity Management, Human-to-Machine Operational Scaling.
 
 **Goal and Outcome** — the motivation spine's endpoints
-(`architecture/model/elements.yaml:54-67`). All four drivers `Influence` the
-goal *Frictionless Architecture & Governance at Machine Speed*; the outcome
-*Architecture as Executable Intelligence* `Realization`-links to that goal; and
-the value stream `Realization`-links to the outcome — giving the layer a spine
-`drivers → goal ← outcome ← value stream`
-(`architecture/model/relationships.yaml:47-55`; `architecture/model/README.md`
-§"Model contents"). "Architecture as Executable Intelligence" is modelled as an
-`Outcome`, not a `Principle` ([ADR-0027](architecture.md) §4).
+(`architecture/model/elements.yaml:127-140`). Each driver `Influence`s its own
+Assessment, and each Assessment `Influence`s the goal *Frictionless
+Architecture & Governance at Machine Speed* — the driver's contribution is
+evidenced through the Assessment rather than reaching the goal directly. The
+outcome *Architecture as Executable Intelligence* `Realization`-links to that
+goal; the value stream `Realization`-links to the outcome — giving the layer a
+spine `drivers → assessments → goal ← outcome ← value stream`
+(`architecture/model/relationships.yaml:79-102`; `architecture/model/README.md`
+§"Model contents"). Every functional requirement and (indirectly, via those
+requirements) every constraint also `Realization`-links to the goal — a
+`Constraint → Goal` edge is treated as derived and dropped, matching the
+`Principle` precedent (see "Motivation-layer lint" above). "Architecture as
+Executable Intelligence" is modelled as an `Outcome`, not a `Principle`
+([ADR-0027](architecture.md) §4).
 
 **Principles** — constitution-level
 (`architecture/model/elements.yaml:72-87`): Deterministic Human Accountability
 ("AI is advisory; the specification is deterministic; a human holds sign-off"),
 Forensic Auditability, Policy as Code.
 
-**Constraints** — the regulatory envelope every component inherits
-(`architecture/model/elements.yaml:92-112`): APRA CPS 230/234, Model Risk
-Management (SR 11-7 / APRA), Australian Privacy Act (APP), Cloud & Data
-Sovereignty Policy. `const-model-governance` was merged into `const-model-risk`
-([ADR-0027](architecture.md) §6).
+**Constraints** — the platform-limit boundary each functional requirement must
+satisfy (`architecture/model/elements.yaml:165-199`), reworded so each states
+the design limit on *this platform's own architecture*, not a regulation
+summary: No Retrospective Compliance (APRA CPS 230/234) — every change needs a
+resolved, evidenced obligation mapping before the deployment gate, not a
+promise to check later; No Autonomous Self-Validation of Agentic Decisions
+(SR 11-7 / APRA model risk) — an agent may never validate or approve its own
+decision; Privacy Mapping Is Mandatory, Not an Out-of-Band Check (Australian
+Privacy Act / APP); Governed State Confined to Approved Sovereignty Boundary
+(Cloud & Data Sovereignty Policy) — governed state may never be sourced,
+replicated or reconciled outside the approved jurisdiction. IDs and `Influence`
+edges are unchanged by the reword. `const-model-governance` was merged into
+`const-model-risk` earlier ([ADR-0027](architecture.md) §6).
 
 **Functional requirements** — nine; each one is a component contract
 (`architecture/model/elements.yaml:117-202`): automated specification
@@ -281,14 +319,64 @@ Architecture Option, Architecture Decision Record, Archived Rejected Option,
 Release Candidate, Gate Decision, Classified Drift Finding, Remediation Backlog
 Item, Development Specification, Notation Metamodel, Ledger Entry.
 
+### D. IT4IT alignment — a lightweight external reference, not the platform's own model
+
+A new section, sourced verbatim from the Open Group's own IT4IT 3.0 ArchiMate
+exchange file (the vendor reference model, not part of this repo) plus, for a
+handful of undocumented capabilities, the published IT4IT 3.0.1 standard PDF
+(`architecture/model/elements.yaml:766-777`). Every element is id-prefixed
+`it4it-` and tagged `props: {source: it4it}` so it can be grepped, filtered or
+hidden independently of the platform's own model above — this is
+**traceability content, not architecture the platform is committing to**.
+
+- **Value-stream skeleton** — a root wrapper `ValueStream`
+  (`it4it-vs-root`, "IT4IT: Value Streams") that `Composition`-links its 7
+  IT4IT value streams (Explore, Evaluate, Integrate, Deploy, Release, Operate,
+  Consume) and `Realization`-links to one `Outcome`
+  ("IT4IT: Digital Product"); each stream in turn `Composition`-links its
+  stages (28 total). The streams form a **`Flow` network, not a linear
+  pipeline** — several stream pairs flow both ways in the source model, which
+  is preserved as-is, not treated as a modelling error
+  (`architecture/model/relationships.yaml:490-563`).
+- **42 IT4IT capabilities** — 24 reachable from a stage via the source model's
+  own `DataObject → Resource → Capability` chain (collapsed here into a
+  single **derived** `Capability --Serving--> Stage` edge per reachable pair,
+  tagged `props: {derived: "true"}` and labelled `<<derived>>` so it's
+  distinguishable from source-verbatim edges), plus 18 more capabilities the
+  derivation chain doesn't reach, carried for completeness
+  (`architecture/model/elements.yaml:1115-1339`,
+  `architecture/model/relationships.yaml:565-685`). Seven of the 18 have no
+  documentation in the ArchiMate exchange file and were pulled from the
+  published standard PDF instead; one is explicitly marked "inferred, not
+  sourced" (Deployment Management — the standard names no such capability
+  anywhere; the description is inferred from the Deploy stream's own stages).
+  A single placeholder element from the source model literally named
+  "Capability" (no documentation, no relationships) was excluded as a
+  modelling artefact, not a real domain concept.
+- **Bridge to the platform's own capabilities** — 9 `Association` edges, each
+  tagged `props: {source: it4it-alignment}` (a third, distinct tag from the
+  `it4it`-internal and `<<derived>>` ones above, so this layer can be
+  filtered on its own), curated by semantic overlap rather than exhaustively:
+  e.g. `cap-digital-twin` ↔ IT4IT Configuration Management and Architecture
+  Management (the twin's current/intent planes are functionally a CMS and a
+  living architecture model, respectively); `cap-control-plane` ↔ IT4IT
+  Product Development; `cap-forensic-ledger` ↔ IT4IT Compliance Management
+  (`architecture/model/relationships.yaml:687-699`).
+
+Deliberately **excluded from every other view** in the model — the section is
+reachable only through its own dedicated views (below), so it never pollutes a
+platform-only diagram.
+
 ## Views and diagrams
 
-Twelve ArchiMate views are declared in `views.yaml`; the C4 context and
+25 ArchiMate views are declared in `views.yaml` — 14 for the platform's own
+model (sections A–C) plus 11 for the IT4IT reference (section D, below). The
+C4 context and
 container diagrams are **not** views — `render_diagrams.py` projects them via
 `diagram-c4` with `--system "Frictionless Architecture Platform"`
-(`architecture/model/README.md` §"Regenerate"). Seven of the twelve are a
-TOGAF ADM Phase A "Architecture Vision" set, each held to its matching standard
-ArchiMate viewpoint and rendered under `diagrams/vision/`:
+(`architecture/model/README.md` §"Regenerate"). Seven of the platform's own
+14 views are a TOGAF ADM Phase A "Architecture Vision" set, each held to its
+matching standard ArchiMate viewpoint and rendered under `diagrams/vision/`:
 
 | View | Viewpoint | Covers |
 |---|---|---|
@@ -300,12 +388,49 @@ ArchiMate viewpoint and rendered under `diagrams/vision/`:
 | Value Stream — Governed Architecture Delivery | `value_stream` | The stream's six stages (`Composition` + `Triggering` sequence, with a `Reconcile → Specify` feedback `Flow`), the capabilities that `Serve` each stage, the recipient stakeholders, and the outcome it `Realizes` |
 | Outcome Realization | `outcome_realization` | Business processes → capabilities → value stream → outcome, the end-to-end realization chain |
 
-The remaining five are cross-cutting and marked `viewpoint: custom` (a
-deliberate cross-layer cut, not held to a standard allow-list) or
-`application_cooperation`: `Architecture Skeleton`, `Delivery Choreography`,
-`Subsystems & Capabilities`, and the four per-stage `Artefact Flow — …` views
-(`architecture/model/views.yaml`). Rendered `.puml` / `.svg` land under
-`architecture/model/diagrams/` (vision views under `diagrams/vision/`).
+The remaining seven of the 14 platform-model views are cross-cutting and
+marked `viewpoint: custom` (a deliberate cross-layer cut, not held to a
+standard allow-list) or `application_cooperation`: `Architecture Skeleton`,
+`Delivery Choreography`, `Subsystems & Capabilities`, and the four per-stage
+`Artefact Flow — …` views (`architecture/model/views.yaml`). Rendered `.puml` /
+`.svg` land under `architecture/model/diagrams/` (vision views under
+`diagrams/vision/`).
+
+Several of the platform-model views deliberately scope a type by explicit
+`members` rather than `include_types`, because the section-D IT4IT import
+added many more elements of that same ArchiMate type — an `include_types`
+scoping would silently pull IT4IT elements into a platform-only view. This
+affects every view that includes `Outcome` (the IT4IT import added a second
+one, `it4it-outcome-digital-product`), `Capability` (42 more), or `ValueStream`
+(36 more: 7 streams + 29 stages) — e.g. `Stakeholder`, `Strategy`,
+`Capability Map`, `Value Stream — Governed Architecture Delivery`,
+`Outcome Realization` and `Architecture Skeleton` all switched their
+Outcome/Capability/ValueStream scoping to `members` for this reason
+(`architecture/model/views.yaml` — see the inline notes on `view-stakeholder`,
+`view-strategy`, `view-capability`, `view-value-stream`, `view-outcome-realization`,
+`view-skeleton`).
+
+### IT4IT reference views (section D)
+
+11 views cover the IT4IT reference content, all excluded from every other
+view above:
+
+| View | Viewpoint | Covers |
+|---|---|---|
+| IT4IT Alignment | `value_stream` | The complete reference dump: all 7 streams, 28 stages, the outcome, and the 24 derivation-reachable capabilities (79 elements) — kept as the one-stop monolith even after the split below |
+| IT4IT: Value Streams | `value_stream` | The 7 streams and the outcome they jointly realize, no stage decomposition |
+| IT4IT: Explore / Evaluate / Integrate / Deploy / Release / Operate / Consume | `value_stream` | One view per stream, showing just that stream's own stages |
+| IT4IT: Capability Map | `capability` | All 42 IT4IT capabilities — renders as an **unconnected map**, since the source model has no capability-to-capability relationships (the derivation chain runs stage → capability, not capability → capability) |
+| IT4IT: Capability Bridges | `custom` | Just the 9 `props.source: it4it-alignment` associations between this platform's own capabilities and IT4IT capabilities |
+
+The per-stream/capability-map/bridges views were split out of the original
+`IT4IT Alignment` monolith (79 elements — too large to read as one diagram);
+that view stays as the complete reference dump, and its diagram lives outside
+`diagrams/it4it/` (the per-stream views' folder) since it's the one view that
+spans the split. `IT4IT: Capability Bridges` is likewise kept outside
+`diagrams/it4it/` for the same reason — it is a cross-model cut, the same
+convention as `frictionless-architect-subsystem-capabilities`
+(`architecture/model/views.yaml:286-583`).
 
 ## Regenerating
 
@@ -318,6 +443,16 @@ poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .
 per view) plus the two C4 diagrams. `--check` fails if any committed diagram is
 stale (CI / pre-commit); `--no-svg` skips the PlantUML render. It replaces the
 earlier manual per-view `plantuml` loop.
+
+`diagram-archimate` (the skill `render_diagrams.py` calls into for ArchiMate
+notation) now fixes the layout direction for two relationship pairs rather
+than leaving every edge to graphviz auto-layout: `Realization` and `Serving`
+render with the PlantUML stdlib's `_Up` macro variant (the realizing/serving
+element sits below what it realizes/serves, arrow pointing up), and
+`Triggering`/`Flow` render `_Right` (process sequence reads left to right).
+Every other relationship type is unaffected — this is a rendering hint only
+(`REL_DIRECTION` in `model_to_puml.py`), not a change to source/target
+semantics — see [Agent Skills & Workflows](agent-workflows.md).
 
 ## Provenance
 
@@ -334,6 +469,22 @@ as Executable Intelligence" as an `Outcome`. A follow-on pass added the
 stakeholder/assessment layer and the strategy layer (courses of action,
 resources), wired principles and constraints to the requirements they shape,
 and introduced the seven TOGAF Phase A vision views plus `render_diagrams.py`
-(replacing the earlier per-view manual regeneration). Full history is in the
-ADR log — see [Architecture Overview](architecture.md)
-(`architecture/model/README.md` §"Provenance").
+(replacing the earlier per-view manual regeneration).
+
+A subsequent, unrelated series of passes (early September 2026) imported
+section D — the IT4IT 3.0 value-stream skeleton, its derivation-reachable and
+remaining capabilities, and the bridge associations to this platform's own
+capabilities — then iterated on it: refining which capability bridges to
+keep, retargeting the control-plane bridge to the correct IT4IT stage, and
+splitting the 79-element `IT4IT Alignment` monolith view into the one-per-stream
+plus capability-map/bridges views documented above. A final pair of passes
+reframed the four Constraints as platform limits rather than regulation
+summaries, and corrected the motivation-layer chain (driver → assessment → goal
+routing, the fourth Assessment, dropped derived `Constraint → Goal` edges) —
+see "Motivation-layer lint" above. `diagram-archimate`'s default
+`Realization`/`Serving`-up, `Triggering`/`Flow`-right layout hint was added in
+the same window. Full history is in the ADR log — see
+[Architecture Overview](architecture.md) (`architecture/model/README.md`
+§"Provenance"; `git log` on `elements.yaml`/`relationships.yaml`/`views.yaml`
+for the exact commit sequence, which `README.md`'s own Provenance section does
+not yet narrate).

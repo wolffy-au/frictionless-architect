@@ -1,6 +1,6 @@
 ---
 title: Sample Data
-generated: 2026-08-29
+generated: 2026-09-12
 generator: claude-sonnet-5
 sources:
   - sample-data/oscal/01-nist-baseline-resolution.puml
@@ -8,6 +8,7 @@ sources:
   - sample-data/sample-01/sample-1-archimate.puml
   - sample-data/sample-01/sample-1-c4-container.puml
   - sample-data/sample-01/sample-1-c4-context.puml
+  - sample-data/sample-01/sample-1-c4-context-elements.puml
   - sample-data/sample-01/sample-1-elements.csv
   - sample-data/sample-01/sample-1-properties.csv
   - sample-data/sample-01/sample-1-relations.csv
@@ -46,32 +47,41 @@ The same tiny "sample-platform" architecture expressed four ways:
 
 | File | Notation | Contents |
 |---|---|---|
-| `sample-1-archimate.puml` | ArchiMate (PlantUML `<archimate/Archimate>` stdlib) | Business Actor → Business Interface; a boundary containing a Web Application component that exposes a Web Interface; the interface serves the business interface |
-| `sample-1-c4-context.puml` | C4 Context (`<C4/C4_Context>`) | Business Actor (Person) interacting with an "Application Component" system |
-| `sample-1-c4-container.puml` | C4 Container | Same, with the system as a single `Container` |
-| `sample-1-elements.csv` / `-relations.csv` / `-properties.csv` | Archi CSV export | 6 elements (`ArchimateModel`, `BusinessActor`, `BusinessInterface`, `ApplicationComponent`, `ApplicationInterface`, `Grouping`), 5 relations (Assignment, 3× Composition, Serving). `-properties.csv` is empty. |
+| `sample-1-archimate.puml` | ArchiMate (PlantUML `<archimate/Archimate>` stdlib) | A worked example of the `diagram-c4` Context-level business-layer mapping (below): `BusinessActor` (interacts via `Rel_Serving`), an `ApplicationComponent` inside a package boundary, a `BusinessService` that `Serving`-links to it, a `BusinessObject` it reads (`Rel_Access`), plus an explicit `Person_Ext` (`BusinessActor`, audits via `Rel_Serving`) and `SystemQueue_Ext` (`ApplicationService`, `Rel_Flow` "publishes events to") — the two C4 macros with no ArchiMate type-based default |
+| `sample-1-c4-context.puml` | C4 Context (`<C4/C4_Context>`) | The same shape projected: `Person`/`System_Boundary{System}`/`System_Ext`(from `BusinessService`)/`SystemDb_Ext`(from `BusinessObject`)/`Person_Ext`/`SystemQueue_Ext` — demonstrating every type-based default the mapping doc's Context-level table lists, plus both explicit-only overrides |
+| `sample-1-c4-context-elements.puml` | C4 Context (reference diagram) | **New.** Not a real system model — draws every one of `C4_Context.puml`'s 11 element-producing macros (`Person`, `Person_Ext`, `System`, `SystemDb`, `SystemQueue`, `System_Ext`, `SystemDb_Ext`, `SystemQueue_Ext`, `Enterprise_Boundary`, `System_Boundary`, `Boundary`) side by side, each labelled with its own macro name, purely to catalogue the vocabulary — see the `diagram-c4` skill's `archimate-to-c4-mapping.md` for which of these `model_to_c4.py` actually emits and from what ArchiMate source |
+| `sample-1-c4-container.puml` | C4 Container | Same base shape, with the system as a single `Container` |
+| `sample-1-elements.csv` / `-relations.csv` / `-properties.csv` | Archi CSV export | 6 elements (`ArchimateModel`, `BusinessActor`, `BusinessInterface`, `ApplicationComponent`, `ApplicationInterface`, `Grouping`), 5 relations (Assignment, 3× Composition, Serving). `-properties.csv` is empty. Note: this CSV export models `BusinessInterface`/`ApplicationInterface`, a narrower shape than the current `.puml` pair above (`BusinessService`/`BusinessObject`/`Person_Ext`/`SystemQueue_Ext`) — the two were not kept in sync when the `.puml` files were reworked into the Context-level mapping demo. |
 
 The CSVs use Archi-style `id-<hex>` identifiers and the standard Archi export
 columns (`ID,Type,Name,Documentation,Source,Target,Specialization`).
 
-> Both ArchiMate `.puml` files contain a stray backtick after a
-> `Rel_Composition_Up(...)` line (`sample-data/sample-01/sample-1-archimate.puml:11`,
-> `sample-data/sample-02/sample-2-archimate.puml:11`) — a likely
-> copy-paste artefact that would fail PlantUML validation.
+> `sample-02`'s ArchiMate `.puml` still contains a stray backtick after a
+> `Rel_Composition_Up(...)` line (`sample-data/sample-02/sample-2-archimate.puml:11`)
+> — a likely copy-paste artefact that would fail PlantUML validation.
+> `sample-01`'s equivalent file no longer has this issue (fixed when
+> `sample-1-archimate.puml` was reworked into the Context-mapping demo above).
 
 ## `sample-data/sample-02/` — same platform, one layer deeper
 
-Adds a data store and a backend:
+Adds a data store and a backend, still on the **older** shape (Business
+Interface, boundary named "System Context", `Web Interface`) that sample-01
+used before it was reworked into the Context-level mapping demo above — the
+two sample sets are no longer stylistically in sync:
 
 | File | Contents |
 |---|---|
-| `sample-2-archimate.puml` | As sample-01 plus an `Application_DataObject` "Database" that the Web Application `reads/writes` |
-| `sample-2-c4-context.puml` | Identical shape to sample-01's context |
+| `sample-2-archimate.puml` | Business Actor → Business Interface; a `system_context_boundary` containing a Web Application that exposes a Web Interface (`serves` the Business Interface) and an `Application_DataObject` "Database" it `reads/writes` |
+| `sample-2-c4-context.puml` | Business Actor (Person) interacting with the Application Component system, inside a `System_Boundary` |
 | `sample-2-c4-container.puml` | Opened up: Web Application (HTML/CSS/JS) → API Backend (REST) → Database (relational); actor talks to the Web Application over HTTPS/JSON |
 
-sample-01 → sample-02 is a worked example of progressively decomposing one
-system, and of the ArchiMate → C4 projection the [`diagram-c4`](agent-workflows.md)
-skill performs.
+sample-02's ArchiMate file still carries the stray trailing backtick noted
+above (`sample-data/sample-02/sample-2-archimate.puml:11`), and its
+`sample-1`-mirroring name ("Same platform, one layer deeper") predates
+sample-01's own rework — read the two sample sets independently rather than as
+a still-parallel before/after pair. Both remain worked examples of the
+ArchiMate → C4 projection the [`diagram-c4`](agent-workflows.md) skill
+performs, just against different source shapes now.
 
 ## `sample-data/oscal/` — OSCAL profile resolution
 
