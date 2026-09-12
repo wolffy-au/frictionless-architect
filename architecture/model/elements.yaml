@@ -13,6 +13,16 @@
 #   A. Motivation + Strategy + Business — the load-bearing skeleton
 #   B. Application — the six-subsystem ecosystem (C4 context / container views)
 #   C. Application — the artefact input/output pipeline (functions + artefacts)
+#
+# Authoring note — Assessment wording (not mechanically checked, review by eye):
+#   An Assessment's `name` must be written in the vocabulary of the Stakeholder
+#   who holds its Driver, not in architecture/implementation jargon. A board
+#   stakeholder reasons about market position and revenue risk, not "manual
+#   architecture governance" — push the technical cause into `desc` instead of
+#   the headline. (`build.py`'s `check_motivation_conventions` catches
+#   structural mistakes — a Driver bypassing its Assessment, a derived
+#   Constraint/Requirement->Goal edge — but altitude-of-language like this is a
+#   judgement call, not a graph check.)
 
 # =====================================================================
 # A. MOTIVATION — Drivers (why the platform exists)
@@ -82,6 +92,14 @@
     Second-line assurance. Needs provable, auditable control effectiveness
     rather than after-the-fact manual evidence.
 
+- type: Assessment
+  id: assess-time-to-market
+  name: Time-to-market is falling behind AI-native competitors, risking market share
+  desc: >-
+    AI-native challengers ship customer-facing features in days; our
+    human-gated change process takes weeks. Every release cycle the gap
+    persists is a release cycle of lost competitive ground and revenue at
+    risk — a board-level concern, independent of the architectural cause.
 - type: Assessment
   id: assess-review-bottleneck
   name: Human review cannot keep pace with AI-speed delivery
