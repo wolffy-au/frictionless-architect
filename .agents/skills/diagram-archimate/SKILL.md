@@ -58,10 +58,21 @@ ships its own older jar, so `.devcontainer/devcontainer.json` points
 
 ## Layout
 
-The generator emits declarations only — no positions. PlantUML auto-lays
-out. For a faithful reproduction of a hand-drawn Archi view (exact
-coordinates), use pyArchimate's native `view.to_svg()` instead; this skill
-is for regenerating diagrams from the model, not pixel-matching Archi.
+The generator emits declarations only — no positions, except for the fixed
+default directions below. PlantUML/graphviz auto-lays out everything else.
+For a faithful reproduction of a hand-drawn Archi view (exact coordinates),
+use pyArchimate's native `view.to_svg()` instead; this skill is for
+regenerating diagrams from the model, not pixel-matching Archi.
+
+**Default relationship directions.** `Realization` and `Serving` render
+with the stdlib's `_Up` macro variant (`Rel_Realization_Up`,
+`Rel_Serving_Up`) — the realizing/serving element sits below what it
+realizes/serves, arrow pointing up. `Triggering` and `Flow` render with
+`_Right` (`Rel_Triggering_Right`, `Rel_Flow_Right`) — process sequence
+reads left to right. This is a layout hint only (`REL_DIRECTION` in
+`model_to_puml.py`); it doesn't change source/target semantics. Every
+other relationship type uses the plain macro and lets graphviz pick a
+direction.
 
 ## Conventions
 

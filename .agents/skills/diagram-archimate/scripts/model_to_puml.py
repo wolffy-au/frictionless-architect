@@ -110,6 +110,18 @@ REL_MACRO = {
     "Association": "Rel_Association",
 }
 
+# Default layout direction per relationship type, using the stdlib's directional
+# macro variants (e.g. `Rel_Realization_Up`). Realization/Serving read bottom-up
+# (implementation realizing/serving something above it); Triggering/Flow read
+# left-to-right (process sequence). Types not listed here use the plain macro
+# and let graphviz pick a direction.
+REL_DIRECTION = {
+    "Realization": "Up",
+    "Serving": "Up",
+    "Triggering": "Right",
+    "Flow": "Right",
+}
+
 # Relationship types rendered as containment (child nested in parent's box) rather
 # than an arrow. source = whole/container/active-structure, target = part/behaviour.
 # A child is only nested if it has exactly one such parent on the diagram and the
@@ -240,6 +252,9 @@ def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
         macro = REL_MACRO.get(r.type)
         s, t = alias(r.source.uuid), alias(r.target.uuid)
         if macro:
+            direction = REL_DIRECTION.get(r.type)
+            if direction:
+                macro = f"{macro}_{direction}"
             lines.append(f'{macro}({s}, {t}, "{esc(getattr(r, "name", ""))}")')
         else:
             warnings.append(f"unmapped relationship type {r.type!r} -> plain association")
