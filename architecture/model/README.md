@@ -19,7 +19,7 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 |---|---|
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram`) |
+| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?`) |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
 | `render_diagrams.py` | `frictionless-architect.xml` → every `.puml` / `.svg` (view `diagram:` key + C4) |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
@@ -50,6 +50,14 @@ holds the **whole** model to the ArchiMate 3.2 relationship matrix.
   deliberate cross-layer view (not checked); omitting the key also skips the
   check. The tag lives only here — pyArchimate (pinned) cannot round-trip it
   into the generated XML.
+- **`no_direction`** on a view (optional) — a list of relationship types
+  (e.g. `[Flow]`) to render with a plain, undirected macro on this view only,
+  instead of `diagram-archimate`'s default `Up`/`Right` layout hint for that
+  type. Use it where the graph for that type isn't actually a one-way
+  sequence — e.g. edges running both ways between the same pair of elements
+  (a hub-and-spoke or mesh) — which makes the rank hint fight itself and
+  produces a tangled layout (dot silently drops half the constraints as
+  back-edges) no matter how clean the underlying relationship data is.
 
 ## Model contents
 

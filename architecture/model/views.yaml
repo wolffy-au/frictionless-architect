@@ -468,6 +468,12 @@
   diagram: it4it/value-streams
   # The 7 streams and the outcome they jointly realize. No stage
   # decomposition — see the per-stream views below for that.
+  # no_direction: [Flow] because Evaluate has a bidirectional Flow edge to
+  # every other stream (12 of the 18 Flow edges) — a hub-and-spoke, not a
+  # one-way sequence. Forcing the default Rel_Flow_Right rank hint fights
+  # itself (both directions on the same pair), so let graphviz lay it out
+  # freely instead. See architecture/model/README.md.
+  no_direction: [Flow]
   members:
     - it4it-vs-root
     - it4it-vs-explore
@@ -647,6 +653,62 @@
     - it4it-stakeholder-support-specialist
     - it4it-stakeholder-test-specialist
     - it4it-stakeholder-vendor-manager
+
+- id: view-it4it-outcome-realization
+  name: "IT4IT: Outcome Realization"
+  viewpoint: outcome_realization
+  diagram: it4it/outcome-realization
+  # The 7 value streams (plus their root) and the 36 Outcomes they realize —
+  # separate from view-it4it-value-streams so that view can stay focused on
+  # stream-to-stream Flow sequencing without 36 extra outcome boxes.
+  # no_direction: [Flow] for the same reason as view-it4it-value-streams —
+  # Evaluate's Flow edges to the other 6 streams are bidirectional.
+  no_direction: [Flow]
+  members:
+    - it4it-vs-root
+    - it4it-outcome-digital-product
+    - it4it-vs-explore
+    - it4it-outcome-investigate-new-product-idea
+    - it4it-outcome-retire-digital-product
+    - it4it-outcome-product-vision-roadmap
+    - it4it-outcome-optimize-digital-product
+    - it4it-outcome-refine-product-feasibility
+    - it4it-vs-evaluate
+    - it4it-outcome-rationalize-portfolio
+    - it4it-outcome-plan-portfolio-investments
+    - it4it-outcome-perform-product-governance
+    - it4it-outcome-consider-new-product
+    - it4it-outcome-prioritized-portfolio-roadmap
+    - it4it-vs-integrate
+    - it4it-outcome-configure-offtheshelf-saas
+    - it4it-outcome-develop-product-release
+    - it4it-outcome-update-vendor-product
+    - it4it-outcome-new-product-release
+    - it4it-outcome-deliver-emergency-change
+    - it4it-vs-deploy
+    - it4it-outcome-consumable-product-instance
+    - it4it-outcome-deploy-new-release-version
+    - it4it-outcome-deploy-first-release
+    - it4it-outcome-disable-remove-release-instances
+    - it4it-vs-release
+    - it4it-outcome-terminate-service-offer
+    - it4it-outcome-bundle-service-offers
+    - it4it-outcome-orderable-service-offers
+    - it4it-outcome-release-new-service-offer
+    - it4it-outcome-change-service-offer
+    - it4it-vs-operate
+    - it4it-outcome-ensure-disaster-recovery
+    - it4it-outcome-remediate-frontend-issue
+    - it4it-outcome-scheduled-maintenance
+    - it4it-outcome-product-operated-as-expected
+    - it4it-outcome-remediate-major-incident
+    - it4it-outcome-remediate-backend-issue
+    - it4it-vs-consume
+    - it4it-outcome-order-instance-modification
+    - it4it-outcome-order-new-instance
+    - it4it-outcome-order-instance-support
+    - it4it-outcome-order-instance-termination
+    - it4it-outcome-service-subscription
 
 - id: view-it4it-capability-bridges
   name: "IT4IT: Capability Bridges"
