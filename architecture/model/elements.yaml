@@ -146,25 +146,39 @@
 # =====================================================================
 - type: Constraint
   id: const-apra
-  name: APRA CPS 230/234 Compliance
-  desc: Operational resilience and prudential standards.
+  name: No Retrospective Compliance (APRA CPS 230/234)
+  desc: >-
+    The platform must never let a change reach production on a promise to
+    check compliance later — every change requires a resolved, evidenced
+    obligation mapping before the deployment gate, and continuous
+    as-built/as-designed evidence afterward. Retrospective flagging does not
+    satisfy APRA's continuous-assurance expectation.
 - type: Constraint
   id: const-model-risk
-  name: Model Risk Management (SR 11-7 / APRA)
+  name: No Autonomous Self-Validation of Agentic Decisions
   desc: >-
-    Validation, documentation, and oversight obligations for models and agentic
-    decision-making. SR 11-7 is the de facto global standard adopted by major
-    banks; APRA's prudential and operational-resilience guidance sets the
-    Australian expectation. Together they govern how autonomous decisions are
-    validated, evidenced, and supervised.
+    The platform must not allow an AI agent to validate or approve its own
+    agentic decision-making. Wherever SR 11-7 / APRA model-risk obligations
+    apply, validation must be independent of the agent that produced the
+    change, and every validation outcome must be documented as evidence, not
+    inferred after the fact.
 - type: Constraint
   id: const-privacy
-  name: Australian Privacy Act (APP)
-  desc: Data privacy and protection regulations.
+  name: Privacy Mapping Is Mandatory, Not an Out-of-Band Check
+  desc: >-
+    Any change touching personal information must be automatically mapped to
+    its Australian Privacy Act (APP) obligations before the deployment gate,
+    and the control catalog must carry APP requirements as machine-readable
+    entries the mapping checks against — privacy may never be handled as a
+    manual, out-of-band review step.
 - type: Constraint
   id: const-cloud-policy
-  name: Cloud & Data Sovereignty Policy
-  desc: Governance and compliance policies for cloud-based operations.
+  name: Governed State Confined to Approved Sovereignty Boundary
+  desc: >-
+    The knowledge graph, audit ledger and control catalog must be hosted,
+    processed and reconciled only within approved, in-jurisdiction cloud
+    environments. No platform component may source, replicate or reconcile
+    governed system state through infrastructure outside that boundary.
 
 # =====================================================================
 # A. MOTIVATION — Functional Requirements (each one is a component contract)
