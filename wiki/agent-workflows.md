@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-09-05
+generated: 2026-09-12
 generator: claude-sonnet-5
 sources:
   - .agents/agents/README.md
@@ -71,6 +71,13 @@ at container-create time; the pinned version lives in `.specify/speckit.lock`
 | `speckit-taskstoissues` | Translate task lists into issue-tracker-friendly format |
 | `speckit-converge` | Assess the codebase against the feature's spec/plan/tasks and append remaining unbuilt work to `tasks.md` so `speckit-implement` can finish it. Not yet in the `README.md` table. |
 
+Both `speckit-analyze` and `speckit-converge` now call
+`check-prerequisites.sh --json --require-spec --require-tasks --include-tasks`
+(added `--require-spec`) when initializing their context — a small scaffolding
+fix from a September 2026 "speckit cleanup" pass that also removed a batch of
+regenerated `.specify/` files from the tree (consistent with them being
+git-ignored and rebuilt by `.devcontainer/post-create.sh`, below).
+
 These realize the Specify → Plan → Implement → Verify workflow from
 [Governance & Constitution](governance-and-constitution.md).
 
@@ -136,7 +143,7 @@ scripts with `poetry run python …`.
 | Skill | Purpose |
 |---|---|
 | `model-archimate` | Author, edit, and **validate** ArchiMate models (`.archimate` Archi-native or Open Group Exchange `.xml`). Runs pyArchimate's metamodel checks — relationship-matrix legality plus referential integrity — "the conformance gate every ArchiMate/C4 diagram is generated from" (`.agents/skills/model-archimate/SKILL.md`). |
-| `diagram-archimate` | Projects a validated model into ArchiMate-notation PlantUML via `scripts/model_to_puml.py` (optionally `--view "Name"`), mapping element types to `<archimate/Archimate>` macros, nesting `Composition`/`Aggregation`/`Assignment` targets inside their source box (dropping the arrow) per ArchiMate's nested-notation convention, then renders via `diagram-plantuml`. |
+| `diagram-archimate` | Projects a validated model into ArchiMate-notation PlantUML via `scripts/model_to_puml.py` (optionally `--view "Name"`), mapping element types to `<archimate/Archimate>` macros, nesting `Composition`/`Aggregation`/`Assignment` targets inside their source box (dropping the arrow) per ArchiMate's nested-notation convention, then renders via `diagram-plantuml`. The generator emits declarations only (no positions) for graphviz/PlantUML to auto-lay-out, **except** two fixed default directions: `Realization`/`Serving` render with the stdlib's `_Up` macro variant (realizing/serving element below what it realizes/serves, arrow up), and `Triggering`/`Flow` render `_Right` (process sequence reads left to right) — a layout hint only (`REL_DIRECTION` in `model_to_puml.py`), not a change to source/target semantics. For a faithful reproduction of a hand-drawn Archi view (exact coordinates), use pyArchimate's native `view.to_svg()` instead. |
 | `diagram-c4` | Projects a validated model into C4-PlantUML (Context or Container) via `scripts/model_to_c4.py <model.xml> --system "…" --level context\|container`, using the fixed mapping in `diagram-c4/references/archimate-to-c4-mapping.md`. |
 | `diagram-plantuml` | Default workflow for authoring, validating, and rendering any PlantUML diagram. Validates against the local `plantuml` binary, falls back to the public PlantUML server (noting source leaves the machine), then to eyeballing; `plantuml.com` docs are the syntax fallback. |
 
