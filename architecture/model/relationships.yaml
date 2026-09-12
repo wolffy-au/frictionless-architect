@@ -600,7 +600,6 @@
 - {type: Composition, source: it4it-vs-root, target: it4it-vs-operate, props: {source: it4it}}
 - {type: Composition, source: it4it-vs-root, target: it4it-vs-consume, props: {source: it4it}}
 - {type: Realization, source: it4it-vs-root, target: it4it-outcome-digital-product, props: {source: it4it}}
-- {type: Aggregation, source: it4it-vs-operate, target: it4it-vs-root, props: {source: it4it}}
 
 - {type: Composition, source: it4it-vs-explore, target: it4it-explore-architecture, props: {source: it4it}}
 - {type: Composition, source: it4it-vs-explore, target: it4it-explore-refine-backlog, props: {source: it4it}}
