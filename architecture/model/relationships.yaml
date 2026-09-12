@@ -781,6 +781,49 @@
 - {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-implement-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
 - {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-publish-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
 
+# --- Capability --Aggregation--> Domain Grouping, the source model's own
+#     grouping of capabilities into the 4 canonical value-stream domains (the
+#     only genuine cap-to-cap structure IT4IT's own model carries). A
+#     capability aggregates into exactly one domain here so it nests cleanly
+#     on the Capability Map view; the source model's finer, overlapping
+#     sub-groupings (Assure/Develop/Test/Support/Fulfill/Portfolio/Strategy)
+#     were left out as redundant refinements of these same 4. ---
+- {type: Aggregation, source: it4it-domain-strategy-to-portfolio, target: it4it-cap-architecture-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-strategy-to-portfolio, target: it4it-cap-customer-relationship-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-strategy-to-portfolio, target: it4it-cap-demand-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-strategy-to-portfolio, target: it4it-cap-policy-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-strategy-to-portfolio, target: it4it-cap-product-portfolio-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-strategy-to-portfolio, target: it4it-cap-strategy-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-defect-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-product-backlog-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-product-design-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-product-development, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-release-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-requirements-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-test-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-asset-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-customer-support, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-financial-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-procurement-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-product-sales-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-request-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-service-catalog-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-vendor-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-availability-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-capacity-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-change-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-config-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-continuity-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-event-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-identity-access-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-incident-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-knowledge-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-measurement-reporting, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-operations-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-performance-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-problem-mgmt, props: {source: it4it}}
+- {type: Aggregation, source: it4it-domain-detect-to-correct, target: it4it-cap-service-level-mgmt, props: {source: it4it}}
+
 # --- Bridge: this platform's own capabilities aligned to IT4IT capabilities
 #     (props: {source: it4it-alignment}, distinct from the it4it-internal and
 #     it4it-derived tags above, so this bridge layer can be filtered/hidden
