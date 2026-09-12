@@ -1682,3 +1682,35 @@
     The value-stream domain covering the capabilities that detect, diagnose,
     and resolve operational issues to assure service delivery.
   props: {source: it4it}
+
+# --- The 24 named IT4IT stakeholder roles (source model also has an
+#     unnamed/generic "Stakeholder" placeholder element with no properties or
+#     relationships — a stencil artifact, excluded here as noise, same as the
+#     other template elements dropped elsewhere in this import). No Driver or
+#     Assessment elements exist in the source to connect these to (IT4IT's own
+#     motivation layer only has Stakeholder/Goal/Outcome/Value/Requirement),
+#     so left unconnected for now, matching the rest of this IT4IT import. ---
+- {type: Stakeholder, id: it4it-stakeholder-business-analyst, name: "IT4IT: Business Analyst", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-business-stakeholder, name: "IT4IT: Business Stakeholder", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-catalog-manager, name: "IT4IT: Catalog Manager", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-chief-security-officer, name: "IT4IT: Chief Security Officer", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-compliance-manager, name: "IT4IT: Compliance Manager", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-consumer, name: "IT4IT: Consumer", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-data-protection-officer, name: "IT4IT: Data Protection Officer", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-development-team, name: "IT4IT: Development Team", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-enterprise-architect, name: "IT4IT: Enterprise Architect", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-external-stakeholder, name: "IT4IT: External Stakeholder", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-operations-manager, name: "IT4IT: Operations Manager", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-product-architect, name: "IT4IT: Product Architect", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-product-manager, name: "IT4IT: Product Manager", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-product-portfolio-manager, name: "IT4IT: Product Portfolio Manager", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-release-deployment-manager, name: "IT4IT: Release & Deployment Manager", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-risk-analyst, name: "IT4IT: Risk Analyst", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-scrum-master, name: "IT4IT: Scrum Master", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-security-analyst, name: "IT4IT: Security Analyst", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-security-architect, name: "IT4IT: Security Architect", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-security-officer, name: "IT4IT: Security Officer", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-service-desk-agent, name: "IT4IT: Service Desk Agent", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-support-specialist, name: "IT4IT: Support Specialist", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-test-specialist, name: "IT4IT: Test Specialist", props: {source: it4it}}
+- {type: Stakeholder, id: it4it-stakeholder-vendor-manager, name: "IT4IT: Vendor Manager", props: {source: it4it}}
