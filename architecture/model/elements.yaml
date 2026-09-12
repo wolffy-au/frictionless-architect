@@ -1646,3 +1646,39 @@
     Source: IT4IT 3.0.1 standard, section 10.3 (undocumented in the ArchiMate
     exchange file; pulled from the published standard PDF instead).
   props: {source: it4it}
+
+# --- The 4 canonical IT4IT value-stream domains, grouping the capabilities
+#     above by home stream (source model's own Aggregation edges — the only
+#     genuine cap-to-cap structure it carries; see relationships.yaml section D
+#     for the edges and why the finer overlapping sub-groupings, e.g. "Assure"/
+#     "Develop"/"Test", were left out). Grouping carries no layer semantics and
+#     is exempt from viewpoint filtering, so it's safe on the Capability Map
+#     view alongside the strict capability/outcome/resource allow-list. ---
+- type: Grouping
+  id: it4it-domain-strategy-to-portfolio
+  name: "IT4IT: Strategy to Portfolio"
+  desc: >-
+    The value-stream domain covering the capabilities that shape enterprise and
+    solution strategy into a governed portfolio of demand.
+  props: {source: it4it}
+- type: Grouping
+  id: it4it-domain-requirement-to-deploy
+  name: "IT4IT: Requirement to Deploy"
+  desc: >-
+    The value-stream domain covering the capabilities that take a requirement
+    through design, development, and release readiness.
+  props: {source: it4it}
+- type: Grouping
+  id: it4it-domain-request-to-fulfill
+  name: "IT4IT: Request to Fulfill"
+  desc: >-
+    The value-stream domain covering the capabilities that take a customer
+    request through to a fulfilled, billed service.
+  props: {source: it4it}
+- type: Grouping
+  id: it4it-domain-detect-to-correct
+  name: "IT4IT: Detect to Correct"
+  desc: >-
+    The value-stream domain covering the capabilities that detect, diagnose,
+    and resolve operational issues to assure service delivery.
+  props: {source: it4it}

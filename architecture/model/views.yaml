@@ -546,11 +546,18 @@
   name: "IT4IT: Capability Map"
   viewpoint: capability
   diagram: it4it/capability-map
-  # All 42 IT4IT 3.0 capabilities. No relationships exist between them in
-  # the source model (the derivation chain runs stage -> capability, not
-  # capability -> capability), so this renders as an unconnected map —
-  # a catalog, not a dependency graph.
+  # All 42 IT4IT 3.0 capabilities, plus the 4 canonical value-stream domain
+  # Groupings that nest 35 of them (Aggregation, relationships.yaml section D)
+  # — the only genuine cap-to-cap structure the source model carries. The
+  # remaining 7 capabilities (compliance/risk/collaboration/contract/
+  # deployment/portfolio-backlog/workforce-mgmt) sit outside all 4 domains in
+  # the source model too — they only ever appeared in the finer, overlapping
+  # sub-groupings that were deliberately left out (see relationships.yaml).
   members:
+    - it4it-domain-strategy-to-portfolio
+    - it4it-domain-requirement-to-deploy
+    - it4it-domain-request-to-fulfill
+    - it4it-domain-detect-to-correct
     - it4it-cap-architecture-mgmt
     - it4it-cap-asset-mgmt
     - it4it-cap-config-mgmt
