@@ -66,7 +66,10 @@ def render(out_dir: Path, svg: bool) -> None:
             sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
             continue
         puml = out_dir / f"{slug}.puml"
-        jobs.append((slug, [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"], "-o", str(puml)]))
+        cmd = [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"], "-o", str(puml)]
+        for rel_type in v.get("no_direction", []):
+            cmd += ["--no-direction", rel_type]
+        jobs.append((slug, cmd))
 
     for slug, level, layout in C4_DIAGRAMS:
         puml = out_dir / f"{slug}.puml"

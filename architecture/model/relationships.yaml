@@ -780,6 +780,47 @@
 - {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-implement-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
 - {type: Serving, source: it4it-cap-service-catalog-mgmt, target: it4it-release-publish-offer, label: "<<derived>>", props: {source: it4it, derived: "true"}}
 
+# --- ValueStream --Realization--> Outcome, the outcome(s) each of the 7 IT4IT
+#     value streams delivers (distinct from it4it-vs-root's own Realization of
+#     it4it-outcome-digital-product, added earlier). Genuine IT4IT 3.0
+#     reference content — see elements.yaml for why the Goal elements found
+#     alongside these in the source were excluded. ---
+- {type: Realization, source: it4it-vs-explore, target: it4it-outcome-investigate-new-product-idea, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-explore, target: it4it-outcome-retire-digital-product, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-explore, target: it4it-outcome-product-vision-roadmap, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-explore, target: it4it-outcome-optimize-digital-product, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-explore, target: it4it-outcome-refine-product-feasibility, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-evaluate, target: it4it-outcome-rationalize-portfolio, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-evaluate, target: it4it-outcome-plan-portfolio-investments, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-evaluate, target: it4it-outcome-perform-product-governance, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-evaluate, target: it4it-outcome-consider-new-product, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-evaluate, target: it4it-outcome-prioritized-portfolio-roadmap, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-integrate, target: it4it-outcome-configure-offtheshelf-saas, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-integrate, target: it4it-outcome-develop-product-release, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-integrate, target: it4it-outcome-update-vendor-product, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-integrate, target: it4it-outcome-new-product-release, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-integrate, target: it4it-outcome-deliver-emergency-change, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-deploy, target: it4it-outcome-consumable-product-instance, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-deploy, target: it4it-outcome-deploy-new-release-version, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-deploy, target: it4it-outcome-deploy-first-release, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-deploy, target: it4it-outcome-disable-remove-release-instances, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-release, target: it4it-outcome-terminate-service-offer, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-release, target: it4it-outcome-bundle-service-offers, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-release, target: it4it-outcome-orderable-service-offers, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-release, target: it4it-outcome-release-new-service-offer, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-release, target: it4it-outcome-change-service-offer, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-operate, target: it4it-outcome-ensure-disaster-recovery, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-operate, target: it4it-outcome-remediate-frontend-issue, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-operate, target: it4it-outcome-scheduled-maintenance, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-operate, target: it4it-outcome-product-operated-as-expected, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-operate, target: it4it-outcome-remediate-major-incident, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-operate, target: it4it-outcome-remediate-backend-issue, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-consume, target: it4it-outcome-order-instance-modification, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-consume, target: it4it-outcome-order-new-instance, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-consume, target: it4it-outcome-order-instance-support, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-consume, target: it4it-outcome-order-instance-termination, props: {source: it4it}}
+- {type: Realization, source: it4it-vs-consume, target: it4it-outcome-service-subscription, props: {source: it4it}}
+
 # --- Capability --Aggregation--> Domain Grouping, the source model's own
 #     grouping of capabilities into the 4 canonical value-stream domains (the
 #     only genuine cap-to-cap structure IT4IT's own model carries). A

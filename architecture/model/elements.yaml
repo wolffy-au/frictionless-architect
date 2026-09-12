@@ -1714,3 +1714,289 @@
 - {type: Stakeholder, id: it4it-stakeholder-support-specialist, name: "IT4IT: Support Specialist", props: {source: it4it}}
 - {type: Stakeholder, id: it4it-stakeholder-test-specialist, name: "IT4IT: Test Specialist", props: {source: it4it}}
 - {type: Stakeholder, id: it4it-stakeholder-vendor-manager, name: "IT4IT: Vendor Manager", props: {source: it4it}}
+
+# --- The 35 stream-level Outcomes each of the 7 IT4IT value streams realizes
+#     (distinct from it4it-outcome-digital-product, which the root
+#     "IT4IT Value Streams" element realizes — see relationships.yaml section
+#     D). Genuine IT4IT 3.0 reference content, unlike the Goal elements found
+#     alongside them in the source file (traced to a bundled-in ArchiSurance
+#     demo scenario and excluded). ---
+- type: Outcome
+  id: it4it-outcome-investigate-new-product-idea
+  name: "IT4IT: Investigate a New Digital Product Idea"
+  desc: >-
+    The trigger for this scenario is a Scope Agreement and an initial budget
+    allocation to invest in a new Digital Product idea or enhancement that has
+    a strong value proposition and alignment to one or more Strategic
+    Objectives. The outcome is validation that the new product idea has a
+    strong value proposition, alignment to one or more Strategic Themes, and
+    will comply with technology standards and policy.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-retire-digital-product
+  name: "IT4IT: Retire Digital Product"
+  desc: >-
+    The trigger for this scenario is a Scope Agreement and an initial budget
+    allocation that incorporates Portfolio Backlog Items for retiring a
+    Digital Product. The outcome is a decommissioned Digital Product,
+    mitigating negative effects on consumers, impacts to dependencies, the
+    re-allocation of resources, and the archival of data.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-product-vision-roadmap
+  name: "IT4IT: Digital Product Vision, Design, and Product Roadmap"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-optimize-digital-product
+  name: "IT4IT: Optimize a Digital Product"
+  desc: >-
+    The trigger for this scenario is a Scope Agreement and an initial budget
+    allocation that incorporates Portfolio Backlog Items for optimizing a
+    Digital Product. The outcome is an enhanced Digital Product, based on
+    innovating new features and addressing Defects, mandates, and technical
+    debt.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-refine-product-feasibility
+  name: "IT4IT: Refine Digital Product Feasibility"
+  desc: >-
+    The trigger for this scenario is a portfolio-level Scope Agreement with a
+    decision to invest in a new or existing product. Product planning cycles
+    further detail the budget, resource allocation, and feasibility for
+    planned and accepted Portfolio Backlog Items. The outcome is a
+    product-level Scope Agreement that further details the scope and budget
+    for a Product Design and the optimization of business outcomes.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-rationalize-portfolio
+  name: "IT4IT: Rationalize the Product Portfolio"
+  desc: >-
+    The trigger for this scenario is a business requirement to rationalize and
+    balance the Digital Product Portfolio. The outcome is a Scope Agreement
+    and resource allocation focused on Portfolio Backlog Items for the
+    portfolio rationalization types: Retain, Replace, Re-Build, Retire —
+    imperative to maintain a healthy and balanced portfolio by minimizing
+    Digital Product technical debt and capability redundancy.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-plan-portfolio-investments
+  name: "IT4IT: Plan Product Portfolio Investments"
+  desc: >-
+    The trigger for this scenario is a portfolio planning increment (weekly,
+    monthly, or annual). The Product Portfolio provides information about the
+    health of existing Digital Products and new product strategy, supporting
+    decisions for investing or reinvesting. The outcome is a Scope Agreement
+    that provides the required scope and funding for portfolio-related
+    concerns.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-perform-product-governance
+  name: "IT4IT: Perform Digital Product Governance"
+  desc: >-
+    The trigger for this scenario is the Change Management of Digital
+    Products. The outcome is a secure, quality, consumer-friendly,
+    cost-effective Digital Product that aligns with Strategic Objectives,
+    Architecture Principles, technology standards, and financial and policy
+    constraints, ensuring traceability of the Digital Product lifecycle from
+    Strategy to Development and into Operations.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-consider-new-product
+  name: "IT4IT: Consider a New Digital Product"
+  desc: >-
+    The trigger for this scenario is a business requirement for a new Digital
+    Product. The outcome is a Scope Agreement and resource allocation focused
+    on Portfolio Backlog Items and Strategic Objectives, indicating there is a
+    strong business case for a new Digital Product.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-prioritized-portfolio-roadmap
+  name: "IT4IT: Prioritized Digital Product Portfolio and Architecture Roadmap"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-configure-offtheshelf-saas
+  name: "IT4IT: Configure an Off-the-Shelf or SaaS Product for Use"
+  desc: >-
+    Off-the-Shelf applications and SaaS solutions need to be integrated in a
+    business Value Stream and supporting infrastructure environments, which
+    might include the configuration of the application software. The Scope
+    Agreement contains the mandate to contract the software or SaaS solution
+    with the vendor and configure the product to fit the specific business
+    Value Stream and supporting infrastructure.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-develop-product-release
+  name: "IT4IT: Develop a New or Initial Product Release"
+  desc: >-
+    A Product Release is developed — software and/or infrastructure — in-house
+    or (partly) sourced with an external partner, using either a traditional
+    waterfall or an iterative approach inside the Design & Develop value
+    stream stage.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-update-vendor-product
+  name: "IT4IT: Update of a Vendor Product"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-new-product-release
+  name: "IT4IT: New Product Release"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-deliver-emergency-change
+  name: "IT4IT: Deliver an Emergency Change or Hotfix"
+  desc: >-
+    The Integrate value stream can be triggered by the Operate value stream in
+    case a Defect needs to be created. The Build Package of the Digital
+    Product in Operations is changed to fix the Defect, after which a new
+    Product Release is delivered; it is then investigated whether the fix
+    also needs to be backported to the newest Product Release under
+    development, to prevent regression issues.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-consumable-product-instance
+  name: "IT4IT: Consumable Product Instance"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-deploy-new-release-version
+  name: "IT4IT: Deploy a New Product Release Version for a Digital Product"
+  desc: >-
+    Plan, prepare, and update the existing Actual Product Instances to ensure
+    a stable Product Instance after the Deploy value stream is completed. The
+    plan should include a "point of no return" in time and a rollback-to-
+    last-known-good-configuration plan, both practiced during development of
+    the Product Release.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-deploy-first-release
+  name: "IT4IT: Deploy a First Product Release for a New Digital Product"
+  desc: >-
+    Plan, prepare, and execute the deployment of the initial version of the
+    Digital Product. Since no customer is yet using the product, available
+    time slots might include office hours; during execution the Service
+    Contract is activated, requiring instrumentation of the data for the
+    metrics that will measure the Key Performance Indicator (KPI) targets.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-disable-remove-release-instances
+  name: "IT4IT: Disable or Remove Existing Product Release Instances of a Digital Product"
+  desc: >-
+    Completely or partly disable or remove Actual Product Instances of a
+    Digital Product. Removing a Digital Product might require changes to the
+    Product Design, and customer data may have to be retained and made
+    available for the customer to view for a while.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-terminate-service-offer
+  name: "IT4IT: Terminate a Service Offer"
+  desc: >-
+    Remove a Service Offer from the catalog and stop it from being ordered in
+    the future — whether because the all-encompassing Digital Product is
+    terminated, or as part of a normal release cycle when new versions of the
+    Digital Product become available.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-bundle-service-offers
+  name: "IT4IT: Bundle Existing Service Offers"
+  desc: >-
+    Combine multiple existing Service Offers into a single Service Offer, so
+    customers only need to order one Service Offer instead of several.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-orderable-service-offers
+  name: "IT4IT: Orderable Service Offer(s)"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-release-new-service-offer
+  name: "IT4IT: Release a New Service Offer"
+  desc: >-
+    Provide consumers the possibility to request a new Actual Product Instance
+    of a Digital Product, or a new form of support on an Actual Product
+    Instance — linking the Service Offer to existing support/fulfillment
+    plans and promoting its availability.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-change-service-offer
+  name: "IT4IT: Change an Existing Service Offer"
+  desc: >-
+    Maintain an up-to-date Service Offer for consumers — e.g. a change of
+    charged service price, underlying terms and conditions, fulfillment or
+    support plan, or access to the Service Offer.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-ensure-disaster-recovery
+  name: "IT4IT: Ensure Disaster Recovery Objectives"
+  desc: >-
+    Ensure that capabilities listed in the business continuity/disaster
+    recovery plan can work within the boundaries of the Service Contract, so
+    recovery objectives (MAO, RTO, RPO) remain within the agreed Service
+    Contract and BIA.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-remediate-frontend-issue
+  name: "IT4IT: Remediate Consumer Front-End Issue"
+  desc: >-
+    Triggered when an issue is raised by or through the service desk; the
+    outcome is restored consumer experience, normal service operations, and
+    service delivery within the boundaries of the Service Contract.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-scheduled-maintenance
+  name: "IT4IT: Perform Scheduled Maintenance"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-product-operated-as-expected
+  name: "IT4IT: Actual Product operated according to or exceeding expectation"
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-remediate-major-incident
+  name: "IT4IT: Remediate a major Event or Incident"
+  desc: >-
+    Triggered by a major event (e.g. full system outage, significant
+    application failure); its outcome is that the service is restored within
+    the boundaries of the Service Contract, through correlation, diagnosis,
+    and coordinated remediation across multiple teams.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-remediate-backend-issue
+  name: "IT4IT: Remediate an Identified Back-End Issue"
+  desc: >-
+    Triggered by an issue (a breach and/or vulnerability) or a potential
+    future issue in the back-end infrastructure, platforms, applications, or
+    user transactions; the outcome is that the service remains operational
+    without affecting consumer experience and within the boundaries of the
+    Service Contract.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-order-instance-modification
+  name: "IT4IT: Order an Actual Product Instance Modification"
+  desc: >-
+    Look for, select, and obtain a modification to an Actual Product Instance
+    — e.g. changing a Subscription, an asset, or access to a business
+    application, or a lifecycle action such as start/stop/scale.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-order-new-instance
+  name: "IT4IT: Order a New Desired Product Instance"
+  desc: >-
+    Look for, select, and obtain a new Actual Product Instance by ordering a
+    new Desired Product Instance based on an available Service Offer.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-order-instance-support
+  name: "IT4IT: Order an Actual Product Instance Support"
+  desc: >-
+    Look for, select, and obtain support for a running Actual Product Instance
+    — supporting omni-channel access and self-service concepts to limit the
+    interaction flow to people and provide direct remediation.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-order-instance-termination
+  name: "IT4IT: Order an Actual Product Instance Termination"
+  desc: >-
+    Terminate a running Actual Product Instance — e.g. end a Subscription,
+    return or decommission an asset, or end access to an application.
+  props: {source: it4it}
+- type: Outcome
+  id: it4it-outcome-service-subscription
+  name: "IT4IT: Service Subscription"
+  props: {source: it4it}
