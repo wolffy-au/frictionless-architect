@@ -1,8 +1,6 @@
 @startuml
 !include <archimate/Archimate>
 
-left to right direction
-
 title Value Stream — Governed Architecture Delivery
 
 Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")

@@ -1,0 +1,15 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Consume
+
+Strategy_ValueStream(e_idd3ec795635fd51, "IT4IT: Consume") {
+  Strategy_ValueStream(e_id6034216de9d457, "Consume: Publish Service Status")
+  Strategy_ValueStream(e_id960e39e570c95b, "Consume: Provide Service Support")
+  Strategy_ValueStream(e_idb1e9e123fa665a, "Consume: Agree to Service Offer")
+  Strategy_ValueStream(e_id651f82429d3d53, "Consume: Subscribe to Service Offer")
+  Strategy_ValueStream(e_id447d4f6179dc5e, "Consume: Select an Offer")
+}
+
+
+@enduml

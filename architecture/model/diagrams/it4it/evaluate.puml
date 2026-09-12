@@ -1,0 +1,15 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Evaluate
+
+Strategy_ValueStream(e_id587fca1cae9254, "IT4IT: Evaluate") {
+  Strategy_ValueStream(e_idecf3aeb9893450, "Evaluate: Gather Influencers")
+  Strategy_ValueStream(e_id203cb4d955ba5f, "Evaluate: Define Backlog Mandates")
+  Strategy_ValueStream(e_id98e23fd095a153, "Evaluate: Ensure Governance")
+  Strategy_ValueStream(e_id06281c147bed57, "Evaluate: Identify Gaps")
+  Strategy_ValueStream(e_idf47d7e3978f95d, "Evaluate: Propose Investments")
+}
+
+
+@enduml

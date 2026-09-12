@@ -1,0 +1,38 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Capability Bridges
+
+Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
+Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
+Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+Strategy_Capability(e_id4d61fa7927b25a, "IT4IT: Architecture Management")
+Strategy_Capability(e_ided0fa997568f53, "IT4IT: Configuration Management")
+Strategy_Capability(e_id2ef31342d4255f, "IT4IT: Policy Management")
+Strategy_Capability(e_ideeaf0949683a5c, "IT4IT: Product Design Management")
+Strategy_Capability(e_idd778fc8624cb59, "IT4IT: Product Development")
+Strategy_Capability(e_idd6ac415340a950, "IT4IT: Requirements Management")
+Strategy_Capability(e_id84098be1d6b45f, "IT4IT: Change Management")
+Strategy_Capability(e_id2ed06f8de48b51, "IT4IT: Compliance Management")
+
+Rel_Serving(e_id18ec07397a9d5f, e_idafba1b4ab1e756, "authoritative graph")
+Rel_Serving(e_id752d1de3794f5f, e_idafba1b4ab1e756, "patterns & blueprints")
+Rel_Serving(e_id72468b5b403450, e_id752d1de3794f5f, "control mappings")
+Rel_Serving(e_id72468b5b403450, e_id4a1c34ab69d151, "expected controls")
+Rel_Serving(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
+Rel_Serving(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
+Rel_Association(e_id18ec07397a9d5f, e_ided0fa997568f53, "twin's current-state plane is functionally a CMS")
+Rel_Association(e_id18ec07397a9d5f, e_id4d61fa7927b25a, "intent plane holds the same living architecture model")
+Rel_Association(e_id752d1de3794f5f, e_id4d61fa7927b25a, "curates the architecture patterns this capability owns")
+Rel_Association(e_id752d1de3794f5f, e_ideeaf0949683a5c, "blueprints & solution designs are product-design artefacts")
+Rel_Association(e_idafba1b4ab1e756, e_idd6ac415340a950, "generates the spec that operationalises captured requirements")
+Rel_Association(e_id4a1c34ab69d151, e_idd778fc8624cb59, "supervises the AI agents doing the coding")
+Rel_Association(e_id08f340a094e552, e_id84098be1d6b45f, "human sign-off is the approval gate in this capability's change lifecycle")
+Rel_Association(e_id72468b5b403450, e_id2ef31342d4255f, "owns the same policy & standards content")
+Rel_Association(e_idc29413a2099958, e_id2ed06f8de48b51, "the append-only ledger is the audit management evidence this function owns")
+
+@enduml

@@ -29,7 +29,14 @@
   diagram: vision/stakeholder
   # The case for change: who holds which driver, the assessments that make each
   # driver urgent, and the goal + outcome they drive toward.
-  include_types: [Stakeholder, Assessment, Driver, Goal, Outcome]
+  # Outcome is scoped explicitly (not via include_types) because the IT4IT
+  # import added a second Outcome element (it4it-outcome-digital-product) —
+  # an include_types: [..., Outcome] here would pull it into a platform-only
+  # view. Same fix applies everywhere below Outcome/Capability/ValueStream
+  # appear in include_types.
+  include_types: [Stakeholder, Assessment, Driver, Goal]
+  members:
+    - outcome-executable-intelligence
 
 - id: view-motivation
   name: Motivation
@@ -38,7 +45,9 @@
   # The whole motivation model — stakeholders, assessments, drivers, goal,
   # outcome, principles, requirements, constraints — and how they relate.
   include_types:
-    [Stakeholder, Assessment, Driver, Goal, Outcome, Principle, Requirement, Constraint]
+    [Stakeholder, Assessment, Driver, Goal, Principle, Requirement, Constraint]
+  members:
+    - outcome-executable-intelligence
 
 - id: view-goal-realization
   name: Goal Realization
@@ -46,7 +55,9 @@
   diagram: vision/goal-realization
   # How the goal refines into the outcome, and how principles, requirements and
   # constraints realize it.
-  include_types: [Goal, Outcome, Principle, Requirement, Constraint]
+  include_types: [Goal, Principle, Requirement, Constraint]
+  members:
+    - outcome-executable-intelligence
 
 - id: view-strategy
   name: Strategy
@@ -57,17 +68,37 @@
   # recipient stakeholders belong to the Value Stream view; the goal linkage
   # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
   # stops at the strategy layer — see Goal Realization for that.
-  include_types: [Capability, CourseOfAction, Resource]
+  # Capability is scoped via members, not include_types — see the note on
+  # view-stakeholder above; the IT4IT import added 42 more Capability elements.
+  include_types: [CourseOfAction, Resource]
   members:
     - vs-governed-delivery
     - outcome-executable-intelligence
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 - id: view-capability
   name: Capability Map
   viewpoint: capability
   diagram: vision/capability-map
   # The eight abilities and the Serving dependency order between them.
-  include_types: [Capability]
+  # Members, not include_types — the IT4IT import added 42 more Capability
+  # elements (see view-it4it-alignment / the IT4IT capability views for those).
+  members:
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 - id: view-value-stream
   name: Value Stream — Governed Architecture Delivery
@@ -77,8 +108,16 @@
   # Reconcile→Specify feedback Flow), the capabilities that Serve each stage,
   # the recipient stakeholders the stream delivers value to, and the Outcome it
   # Realizes. Resources and courses of action belong to the Strategy view.
-  include_types: [ValueStream]
+  # ValueStream is scoped via members, not include_types — the IT4IT import
+  # added 36 more ValueStream elements (7 streams + 29 stages).
   members:
+    - vs-governed-delivery
+    - vss-baseline
+    - vss-specify
+    - vss-build
+    - vss-prove
+    - vss-release
+    - vss-reconcile
     - cap-control-catalog
     - cap-reusable-architecture
     - cap-digital-twin
@@ -98,9 +137,26 @@
   diagram: vision/outcome-realization
   # How business processes realize capabilities, which serve the value stream,
   # which realizes the outcome — the end-to-end realization chain.
-  include_types: [Capability, ValueStream, BusinessProcess]
+  # Capability/ValueStream scoped via members, not include_types — see notes
+  # above; the IT4IT import added elements of both types.
+  include_types: [BusinessProcess]
   members:
     - outcome-executable-intelligence
+    - vs-governed-delivery
+    - vss-baseline
+    - vss-specify
+    - vss-build
+    - vss-prove
+    - vss-release
+    - vss-reconcile
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 # =====================================================================
 # Cross-cutting / later-phase views
@@ -112,8 +168,20 @@
   # The load-bearing subset (ADR-0010): motivation spine + the capabilities it
   # drives. A deliberate cross-layer cut — no standard viewpoint spans
   # motivation elements and Capability together.
+  # Outcome/Capability scoped via members, not include_types — see the note
+  # on view-stakeholder above; the IT4IT import added elements of both types.
   viewpoint: custom
-  include_types: [Driver, Goal, Outcome, Principle, Constraint, Requirement, Capability]
+  include_types: [Driver, Goal, Principle, Constraint, Requirement]
+  members:
+    - outcome-executable-intelligence
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 - id: view-delivery
   name: Delivery Choreography
@@ -333,3 +401,183 @@
     - art-adr
     - art-drift-report
     - art-remediation-item
+
+# =====================================================================
+# IT4IT 3.0 Reference Model — split out of the single "IT4IT Alignment"
+# monolith (view-it4it-alignment, 79 elements) into one view per value
+# stream, a capability map, and a bridge view, each small enough to
+# actually read. view-it4it-alignment stays as the complete reference
+# dump; these are the ones meant to be looked at.
+# =====================================================================
+
+- id: view-it4it-value-streams
+  name: "IT4IT: Value Streams"
+  viewpoint: value_stream
+  diagram: it4it/value-streams
+  # The 7 streams and the outcome they jointly realize. No stage
+  # decomposition — see the per-stream views below for that.
+  members:
+    - it4it-vs-root
+    - it4it-vs-explore
+    - it4it-vs-evaluate
+    - it4it-vs-integrate
+    - it4it-vs-deploy
+    - it4it-vs-release
+    - it4it-vs-operate
+    - it4it-vs-consume
+    - it4it-outcome-digital-product
+
+- id: view-it4it-explore
+  name: "IT4IT: Explore"
+  viewpoint: value_stream
+  diagram: it4it/explore
+  members:
+    - it4it-vs-explore
+    - it4it-explore-architecture
+    - it4it-explore-refine-backlog
+    - it4it-explore-prioritize-backlog
+    - it4it-explore-roadmap
+
+- id: view-it4it-evaluate
+  name: "IT4IT: Evaluate"
+  viewpoint: value_stream
+  diagram: it4it/evaluate
+  members:
+    - it4it-vs-evaluate
+    - it4it-evaluate-influencers
+    - it4it-evaluate-backlog-mandates
+    - it4it-evaluate-governance
+    - it4it-evaluate-gaps
+    - it4it-evaluate-investments
+
+- id: view-it4it-integrate
+  name: "IT4IT: Integrate"
+  viewpoint: value_stream
+  diagram: it4it/integrate
+  members:
+    - it4it-vs-integrate
+    - it4it-integrate-plan-release
+    - it4it-integrate-design-develop
+    - it4it-integrate-build-test
+    - it4it-integrate-accept-publish
+
+- id: view-it4it-deploy
+  name: "IT4IT: Deploy"
+  viewpoint: value_stream
+  diagram: it4it/deploy
+  members:
+    - it4it-vs-deploy
+    - it4it-deploy-plan-approve
+    - it4it-deploy-fulfill
+    - it4it-deploy-observe
+    - it4it-deploy-validate
+
+- id: view-it4it-release
+  name: "IT4IT: Release"
+  viewpoint: value_stream
+  diagram: it4it/release
+  members:
+    - it4it-vs-release
+    - it4it-release-define-offer
+    - it4it-release-implement-offer
+    - it4it-release-publish-offer
+
+- id: view-it4it-operate
+  name: "IT4IT: Operate"
+  viewpoint: value_stream
+  diagram: it4it/operate
+  members:
+    - it4it-vs-operate
+    - it4it-operate-detect
+    - it4it-operate-diagnose
+    - it4it-operate-resolve
+
+- id: view-it4it-consume
+  name: "IT4IT: Consume"
+  viewpoint: value_stream
+  diagram: it4it/consume
+  members:
+    - it4it-vs-consume
+    - it4it-consume-publish-status
+    - it4it-consume-support
+    - it4it-consume-agree-offer
+    - it4it-consume-subscribe-offer
+    - it4it-consume-select-offer
+
+- id: view-it4it-capability-map
+  name: "IT4IT: Capability Map"
+  viewpoint: capability
+  diagram: it4it/capability-map
+  # All 42 IT4IT 3.0 capabilities. No relationships exist between them in
+  # the source model (the derivation chain runs stage -> capability, not
+  # capability -> capability), so this renders as an unconnected map —
+  # a catalog, not a dependency graph.
+  members:
+    - it4it-cap-architecture-mgmt
+    - it4it-cap-asset-mgmt
+    - it4it-cap-config-mgmt
+    - it4it-cap-defect-mgmt
+    - it4it-cap-demand-mgmt
+    - it4it-cap-event-mgmt
+    - it4it-cap-financial-mgmt
+    - it4it-cap-incident-mgmt
+    - it4it-cap-measurement-reporting
+    - it4it-cap-operations-mgmt
+    - it4it-cap-policy-mgmt
+    - it4it-cap-problem-mgmt
+    - it4it-cap-procurement-mgmt
+    - it4it-cap-product-backlog-mgmt
+    - it4it-cap-product-design-mgmt
+    - it4it-cap-product-development
+    - it4it-cap-product-portfolio-mgmt
+    - it4it-cap-release-mgmt
+    - it4it-cap-request-mgmt
+    - it4it-cap-requirements-mgmt
+    - it4it-cap-service-catalog-mgmt
+    - it4it-cap-service-level-mgmt
+    - it4it-cap-test-mgmt
+    - it4it-cap-vendor-mgmt
+    - it4it-cap-availability-mgmt
+    - it4it-cap-capacity-mgmt
+    - it4it-cap-change-mgmt
+    - it4it-cap-collaboration
+    - it4it-cap-compliance-mgmt
+    - it4it-cap-continuity-mgmt
+    - it4it-cap-contract-mgmt
+    - it4it-cap-customer-relationship-mgmt
+    - it4it-cap-customer-support
+    - it4it-cap-deployment-mgmt
+    - it4it-cap-identity-access-mgmt
+    - it4it-cap-knowledge-mgmt
+    - it4it-cap-performance-mgmt
+    - it4it-cap-portfolio-backlog-mgmt
+    - it4it-cap-product-sales-mgmt
+    - it4it-cap-risk-mgmt
+    - it4it-cap-strategy-mgmt
+    - it4it-cap-workforce-mgmt
+
+- id: view-it4it-capability-bridges
+  name: "IT4IT: Capability Bridges"
+  viewpoint: custom
+  diagram: frictionless-architect-it4it-capability-bridges
+  # The traceability layer: every cap-* <-> IT4IT capability Association
+  # (props.source: it4it-alignment in relationships.yaml). Deliberately NOT
+  # under diagrams/it4it/ — that folder is IT4IT-only content; this view is
+  # a cross-model cut spanning both, same convention as
+  # frictionless-architect-subsystem-capabilities.
+  members:
+    - cap-digital-twin
+    - cap-reusable-architecture
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-forensic-ledger
+    - it4it-cap-config-mgmt
+    - it4it-cap-architecture-mgmt
+    - it4it-cap-product-design-mgmt
+    - it4it-cap-requirements-mgmt
+    - it4it-cap-product-development
+    - it4it-cap-change-mgmt
+    - it4it-cap-policy-mgmt
+    - it4it-cap-compliance-mgmt

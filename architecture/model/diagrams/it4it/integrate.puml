@@ -1,0 +1,14 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Integrate
+
+Strategy_ValueStream(e_id3db0cbb3835a52, "IT4IT: Integrate") {
+  Strategy_ValueStream(e_id05a09249ecd25e, "Integrate: Plan Product Release")
+  Strategy_ValueStream(e_id4d232b4e4d9151, "Integrate: Design & Develop")
+  Strategy_ValueStream(e_id0925fc6db80453, "Integrate: Build, Integrate, & Test")
+  Strategy_ValueStream(e_id6e0b4917897f59, "Integrate: Accept & Publish Release")
+}
+
+
+@enduml
