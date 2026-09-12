@@ -6,6 +6,10 @@ title Frictionless Architecture Platform — C4 Context
 LAYOUT_WITH_LEGEND()
 
 System(n_id54dd4701dbf151, "Frictionless Architecture Platform", "Governs architecture from authored policy through to BAU control effectiveness.")
+SystemDb_Ext(n_idd915b3e838bf5b, "Regulatory Standard", "Upstream regulatory content consumed by the platform (e.g. NIST OSCAL catalogs, FedRAMP baselines).")
+SystemDb_Ext(n_ide330e703d24759, "Policy / Standard Document", "Custom policy or standard authored by the Compliance Officer / Auditor.")
+SystemDb_Ext(n_id1d03973d3f5b52, "OSCAL Catalog", "Machine-readable control catalog.")
+SystemDb_Ext(n_id3a6eb7f6485a55, "OSCAL Profile", "Tailored control selection / baseline.")
 Person(n_id2b5394f913985a, "Enterprise Architect", "Owns principles, target patterns, options and governance decisions.")
 Person(n_ide2cb7f3efa6256, "Solution Architect", "Composes blueprints into solution designs.")
 Person(n_id10a12f8c7cac51, "Security Architect / Threat Modeller", "Runs threat models over patterns, blueprints and designs.")
