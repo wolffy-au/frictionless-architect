@@ -1,0 +1,13 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Release
+
+Strategy_ValueStream(e_id2450fe8b5d985b, "IT4IT: Release") {
+  Strategy_ValueStream(e_id43cdfeb06e1b53, "Release: Define Service Offer")
+  Strategy_ValueStream(e_idda5e39c5b86f5f, "Release: Implement Service Offer")
+  Strategy_ValueStream(e_id7325bf4931935a, "Release: Publish Service Offer")
+}
+
+
+@enduml

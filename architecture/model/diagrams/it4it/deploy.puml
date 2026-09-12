@@ -1,0 +1,14 @@
+@startuml
+!include <archimate/Archimate>
+
+title IT4IT: Deploy
+
+Strategy_ValueStream(e_id2a9a1fcfef0e5f, "IT4IT: Deploy") {
+  Strategy_ValueStream(e_id8a5fa5c4e9f35c, "Deploy: Plan & Approve Deployment")
+  Strategy_ValueStream(e_id409cff1ce21453, "Deploy: Fulfill Deployment")
+  Strategy_ValueStream(e_id890c954b99ef59, "Deploy: Observe Deployment")
+  Strategy_ValueStream(e_id633614d2551b5e, "Deploy: Validate Deployment")
+}
+
+
+@enduml
