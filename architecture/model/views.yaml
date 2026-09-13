@@ -518,12 +518,14 @@
   viewpoint: capability
   diagram: it4it/capability-map
   # All 42 IT4IT 3.0 capabilities, plus the 4 canonical value-stream domain
-  # Groupings that nest 35 of them (Aggregation, relationships.yaml section D)
+  # Groupings that nest 34 of them (Aggregation, relationships.yaml section D)
   # — the only genuine cap-to-cap structure the source model carries. The
-  # remaining 7 capabilities (compliance/risk/collaboration/contract/
-  # deployment/portfolio-backlog/workforce-mgmt) sit outside all 4 domains in
-  # the source model too — they only ever appeared in the finer, overlapping
-  # sub-groupings that were deliberately left out (see relationships.yaml).
+  # remaining 8 capabilities (compliance/risk/collaboration/contract/
+  # deployment/portfolio-backlog/workforce-mgmt/financial-mgmt) sit outside
+  # all 4 domains — the first 7 only ever appeared in the finer, overlapping
+  # sub-groupings that were deliberately left out (see relationships.yaml);
+  # financial-mgmt's only source aggregation was the erroneous
+  # Request-to-Fulfill edge dropped as a bug fix (see relationships.yaml).
   members:
     - it4it-domain-strategy-to-portfolio
     - it4it-domain-requirement-to-deploy
