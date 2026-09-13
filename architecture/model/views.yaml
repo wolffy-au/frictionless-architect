@@ -340,10 +340,11 @@
   diagram: frictionless-architect-it4it-alignment
   # The IT4IT 3.0 value-stream skeleton, plus the 24 IT4IT capabilities
   # reachable from a stage via the source model's own DataObject -> Resource
-  # -> Capability chain (see relationships.yaml section D, the <<derived>>
-  # Serving edges). Not yet bridged to this platform's own capabilities.
-  # Deliberately excluded from every other view; render/hide this one
-  # independently.
+  # -> Capability chain (see third_party/it4it/relationships.yaml, the
+  # <<derived>> Serving edges — vendored per ADR-0029). Not bridged to this
+  # platform's own capabilities on this view — see view-it4it-capability-
+  # bridges / this file's "D. IT4IT TOUCHPOINTS" section for that. Deliberately
+  # excluded from every other view; render/hide this one independently.
   viewpoint: value_stream
   members:
     - it4it-vs-root
@@ -518,7 +519,7 @@
   viewpoint: capability
   diagram: it4it/capability-map
   # All 42 IT4IT 3.0 capabilities, plus the 4 canonical value-stream domain
-  # Groupings that nest 34 of them (Aggregation, relationships.yaml section D)
+  # Groupings that nest 34 of them (Aggregation, third_party/it4it/relationships.yaml)
   # — the only genuine cap-to-cap structure the source model carries. The
   # remaining 8 capabilities (compliance/risk/collaboration/contract/
   # deployment/portfolio-backlog/workforce-mgmt/financial-mgmt) sit outside

@@ -93,5 +93,5 @@ narrative docs.
 - **A** — [0028](0028-relationship-view-refs-not-relationship-fact-node.md) —
   Relationships are edges only; views reference them by identifier list, not a
   `RelationshipFact` node
-- **P** — [0029](0029-it4it-as-vendored-touchpoint-model.md) — IT4IT vendored
+- **A** — [0029](0029-it4it-as-vendored-touchpoint-model.md) — IT4IT vendored
   as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS`
