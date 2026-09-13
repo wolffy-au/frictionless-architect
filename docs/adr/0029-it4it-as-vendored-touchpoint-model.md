@@ -1,6 +1,6 @@
 # ADR-0029: IT4IT vendored as a `third_party/` model, imported at touchpoints
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-09-13
 - **Sources:** conversation record (this ADR is not yet back-filled from any narrative doc)
 
@@ -51,9 +51,14 @@ unique, which is all `det_id()` needs.
   (its own `build.py` / `NS`) instead of raw YAML, this decision no longer
   holds — merging two separately-hashed UUID spaces is the hard version of
   this problem and would need its own ADR.
-- Follow-up: add the IT4IT repo to `.agents/skills/fork-sync/forks.yml`;
-  decide the touchpoint-filtering mechanism (subset file vs. full import) when
-  the vendored repo exists.
+- Implemented: `third_party/it4it` (local-only for now — no upstream GitHub
+  home yet) holds the full IT4IT `elements.yaml`/`relationships.yaml`; there is
+  no touchpoint-filtering — `build.py` imports the whole vendored file, and
+  only the bridge `Association` edges (props: `source: it4it-alignment`) stay
+  first-party, in `relationships.yaml`. It is in
+  `.agents/skills/fork-sync/forks.yml`, though as an authored repo (not a fork
+  of an existing upstream) `fork-sync` on it is a no-op until it has a real
+  upstream.
 
 ## Alternatives considered
 

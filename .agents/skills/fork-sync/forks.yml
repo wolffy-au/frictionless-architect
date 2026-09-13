@@ -23,7 +23,16 @@ defaults:
 
 # Per-fork keys override defaults; list keys (fix_branches, private_branches,
 # security_paths) are MERGED with the defaults, not replaced.
-forks: []
+forks:
+  - name: it4it
+    # Authored, not forked from an existing upstream — there is no third-party
+    # git repo to track yet, so upstream and fork are the same local-only repo
+    # (see ADR-0029 in this repo). Point both at its real GitHub home once one
+    # exists; until then `fork-sync` on this entry is a no-op (nothing to pull).
+    upstream: /home/devcontainer/forks/it4it
+    fork: /home/devcontainer/forks/it4it
+    upstream_branch: master
+    dist_branch: master
   # - name: oscal-cli
   #   upstream: https://github.com/usnistgov/oscal-cli
   #   fork: git@github.com:stephanborg6/oscal-cli.git
