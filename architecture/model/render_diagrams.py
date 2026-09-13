@@ -6,10 +6,12 @@
 Single source of truth for "which view -> which file": the ``diagram:`` key in
 ``views.yaml`` (path under ``diagrams/``, no extension). The two C4 diagrams are
 not views — they are projected by ``diagram-c4`` and listed in ``C4_DIAGRAMS``.
-Pure-IT4IT views (ADR-0029 — a ``diagram:`` slug of ``it4it/...``) render into
-the vendored ``third_party/it4it/diagrams/`` instead of
-``architecture/model/diagrams/``; every other view, including the cross-model
-capability-bridges touchpoint view, stays under ``architecture/model/diagrams/``.
+Vendored views (ADR-0029 — ``third_party/it4it/views.yaml``, loaded alongside
+``views.yaml`` the same way ``build.py`` merges the vendored elements and
+relationships) render into that model's own ``diagrams/`` dir instead of
+``architecture/model/diagrams/``; every view defined in this repo's own
+``views.yaml``, including the cross-model capability-bridges touchpoint view,
+stays under ``architecture/model/diagrams/``.
 
 Run ``build.py`` first (this reads the generated XML, it does not rebuild it).
 
@@ -35,26 +37,10 @@ HERE = Path(__file__).parent
 REPO = HERE.parents[1]
 VIEWS = HERE / "views.yaml"
 DIAGRAMS = HERE / "diagrams"
-# Views that are pure IT4IT reference content (ADR-0029) render into the
-# vendored third_party/it4it repo instead — everything else (including the
-# cross-model "capability bridges" touchpoint view) stays under DIAGRAMS.
-IT4IT_DIAGRAMS = REPO / "third_party/it4it/diagrams"
-
-
-def is_it4it_slug(slug: str) -> bool:
-    return slug.startswith("it4it/")
-
-
-def out_root(slug: str) -> Path:
-    return IT4IT_DIAGRAMS if is_it4it_slug(slug) else DIAGRAMS
-
-
-def rel_path(slug: str) -> str:
-    """Path (no extension) under `out_root(slug)`. The `it4it/` slug prefix
-    only disambiguates within views.yaml — third_party/it4it is already
-    IT4IT-scoped, so drop it rather than nest an `it4it/` dir inside it."""
-    return slug.removeprefix("it4it/") if is_it4it_slug(slug) else slug
-
+# Vendored models (ADR-0029) each carry their own views.yaml, rendering into
+# their own diagrams/ dir — (views file, diagrams dir) pairs, same order as
+# build.py's VENDORED_MODELS.
+VENDORED_VIEW_SOURCES = [(REPO / "third_party/it4it/views.yaml", REPO / "third_party/it4it/diagrams")]
 
 # Repo-relative paths — _run() executes with cwd=REPO.
 MODEL = "architecture/model/frictionless-architect.xml"
@@ -80,23 +66,29 @@ def _run(cmd: list[str]) -> None:
         sys.stderr.write(r.stderr)
 
 
-def render(roots: dict[Path, Path], svg: bool) -> None:
-    """`roots` maps each logical output root (DIAGRAMS / IT4IT_DIAGRAMS) to the
-    actual directory to write into — themselves for a real run, or matching
-    temp dirs for `--check`."""
-    views = yaml.safe_load(VIEWS.read_text()) or []
+def _view_jobs(roots: dict[Path, Path]) -> list[tuple[str, list[str]]]:
     jobs: list[tuple[str, list[str]]] = []
-
-    for v in views:
-        slug = v.get("diagram")
-        if not slug:
-            sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
+    for views_file, logical_root in [(VIEWS, DIAGRAMS), *VENDORED_VIEW_SOURCES]:
+        if not views_file.exists():
             continue
-        puml = roots[out_root(slug)] / f"{rel_path(slug)}.puml"
-        cmd = [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"], "-o", str(puml)]
-        for rel_type in v.get("no_direction", []):
-            cmd += ["--no-direction", rel_type]
-        jobs.append((slug, cmd))
+        for v in yaml.safe_load(views_file.read_text()) or []:
+            slug = v.get("diagram")
+            if not slug:
+                sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
+                continue
+            puml = roots[logical_root] / f"{slug}.puml"
+            cmd = [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"], "-o", str(puml)]
+            for rel_type in v.get("no_direction", []):
+                cmd += ["--no-direction", rel_type]
+            jobs.append((slug, cmd))
+    return jobs
+
+
+def render(roots: dict[Path, Path], svg: bool) -> None:
+    """`roots` maps each logical output root (DIAGRAMS and each vendored
+    model's diagrams dir) to the actual directory to write into — themselves
+    for a real run, or matching temp dirs for `--check`."""
+    jobs = _view_jobs(roots)
 
     for slug, level, layout in C4_DIAGRAMS:
         puml = roots[DIAGRAMS] / f"{slug}.puml"
@@ -150,17 +142,19 @@ def main() -> int:
         sys.stderr.write(f"{MODEL} missing — run build.py first\n")
         return 2
 
+    diagram_roots = [DIAGRAMS] + [d for _, d in VENDORED_VIEW_SOURCES]
+
     if not args.check:
-        render({DIAGRAMS: DIAGRAMS, IT4IT_DIAGRAMS: IT4IT_DIAGRAMS}, svg=not args.no_svg)
-        print(f"rendered diagrams into {DIAGRAMS.relative_to(REPO)} and {IT4IT_DIAGRAMS.relative_to(REPO)}")
+        render({root: root for root in diagram_roots}, svg=not args.no_svg)
+        print("rendered diagrams into " + ", ".join(str(r.relative_to(REPO)) for r in diagram_roots))
         return 0
 
     with tempfile.TemporaryDirectory() as td:
-        tmp_main, tmp_it4it = Path(td) / "main", Path(td) / "it4it"
-        render({DIAGRAMS: tmp_main, IT4IT_DIAGRAMS: tmp_it4it}, svg=not args.no_svg)
+        tmp_by_root = {root: Path(td) / str(i) for i, root in enumerate(diagram_roots)}
+        render(tmp_by_root, svg=not args.no_svg)
         stale: list[str] = []
         orphan: list[str] = []
-        for real, tmp in ((DIAGRAMS, tmp_main), (IT4IT_DIAGRAMS, tmp_it4it)):
+        for real, tmp in tmp_by_root.items():
             want, have = _all_files(tmp), _all_files(real)
             stale += sorted(want - have) + sorted(
                 f for f in want & have if not filecmp.cmp(tmp / f, real / f, shallow=False)
