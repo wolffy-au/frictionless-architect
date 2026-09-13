@@ -1,6 +1,7 @@
 # ADR-0004: Two-tier spec numbering
 
-- **Status:** Accepted
+- **Status:** Accepted; not yet implemented — `specs/` is still the flat
+  pre-migration layout (see Consequences)
 - **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §6)
 - **Sources:** `ARCHITECTURE.md` §6
 
@@ -27,3 +28,8 @@ Per-component work will make this worse.
 - The `.specify` scripts need patching before per-component specs can be created.
 - Root keeps one platform constitution; per-component constitutions are optional
   lighter addenda.
+- **This is outstanding** (2026-09-13): `specs/` still holds the flat, un-migrated
+  `001-governance-platform` / `002-neo4j-schema-ui` layout — no `EPIC-*` specs,
+  no `packages/*/specs/`, and `.specify/scripts/bash/` has no `--package`
+  argument. Blocked on the same `packages/` monorepo layout ADR-0001/ADR-0002
+  still owe.

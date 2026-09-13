@@ -23,7 +23,9 @@ and are trusted as the skeleton.
 As of [ADR-0027](0027-capability-value-stream-and-motivation-spine.md) the
 skeleton (section A of `architecture/model/elements.yaml`) holds: 4 drivers,
 1 goal, 1 outcome, 3 principles, 4 constraints, 9 functional requirements,
-8 primary capabilities, a 7-element value stream, and 6 business processes.
+8 primary capabilities, a 7-element value stream, and 11 business processes
+(count as of 2026-09-13; grown from the original 6 as the process backbone
+was fleshed out — see `git log -- architecture/model/elements.yaml`).
 
 ## Consequences
 

@@ -42,7 +42,7 @@ narrative docs.
 - **A** — [0002](0002-poetry-monorepo-forks-as-submodules.md) — One Poetry
   monorepo for first-party code; forks as `third_party/` submodules
 - **A** — [0003](0003-poetry-not-uv.md) — Poetry is the package manager, not `uv`
-- **A** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
+- **A\*** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
   (`EPIC-` at root, `NNN-` per package)
 - **A** — [0005](0005-visualiser-api-ui-split-first-extraction.md) — Visualiser
   API/UI split is the first extraction
