@@ -56,8 +56,8 @@ The one runnable slice today is the Neo4j schema visualiser, a FastAPI app.
     poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
     ```
 
-    Then open `http://127.0.0.1:8100/schema-visualizer`. See `README.md` for the
-    full set of endpoints and settings.
+    Then fetch `http://127.0.0.1:8100/schema-payload`. The service is JSON-only
+    for now — see `README.md` for the full set of endpoints and settings.
 
 ### Running Specifications and Planning
 

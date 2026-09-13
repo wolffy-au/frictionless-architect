@@ -51,6 +51,22 @@ do **not** move into `schema-visualizer-api`:
 - Placement and library-vs-HTTP questions are settled; the extraction can
   proceed against them without revisiting placement.
 
+## Implementation status (2026-09-13)
+
+The package split itself has not happened: no `packages/` directory exists yet
+(blocked on the ADR-0001/0002 monorepo restructure). The one piece that could
+be actioned standalone — dropping the server-rendered `/schema-visualizer`
+HTML route and its Jinja/static mounts from `visualizer/__init__.py` — has
+now been done, ahead of the rest of the split. Note that "confirmed no
+consumer today" (above) was inaccurate at the time: `README.md` and
+`quickstart.md` documented `/schema-visualizer` as the primary way to run the
+app, and it was the only browser UI in the codebase (built per
+`specs/002-neo4j-schema-ui/tasks.md` T003/T010/T013/T016). Both docs have been
+updated to point at the JSON `/schema-payload` endpoint instead. The app has
+no browser UI until `schema-visualizer-ui` is built; `visualizer/static/` and
+`visualizer/templates/` are now orphaned and can be deleted once that
+replacement exists (or sooner, if desired).
+
 ## Alternatives considered
 
 - **`schema-visualizer-api` calls `knowledge-graph` over HTTP from the start**
