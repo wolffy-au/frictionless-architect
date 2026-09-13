@@ -12,7 +12,7 @@ System_Boundary(n_id54dd4701dbf151, "Frictionless Architecture Platform") {
   Container(n_id0d5bd02b5ffe5e, "Architecture Governance", "", "Comparative evaluation of candidate options, impact assessment, the decision and its ADR, and archival of the rejected options with reasons. Pure decision-making — the options themselves are modelled in the Reusable Architecture Library.")
   Container(n_id492c882252a953, "Conformance & Drift Assurance", "", "Enforces controls at release, monitors effectiveness in BAU, and detects and reports architecture drift.")
   Container(n_id82f04fecbdd85e, "Modelling & Specification", "", "Out-of-the-box ArchiMate / C4 / UML modelling, and generation of development specifications.")
-  ContainerDb(n_idb18c37abc9ff51, "OSCAL Repository", "", "OSCAL Catalogs, Profiles, Components and SSPs.")
+  ContainerDb(n_idb18c37abc9ff51, "OSCAL Repository", "", "OSCAL Catalogs, Profiles, Components, SSPs and Assessment Results.")
   ContainerDb(n_idb9264b9a2b5a50, "Pattern & Blueprint Repository", "", "Architecture patterns, implementation blueprints and solution designs.")
   ContainerDb(n_id989d401ffdae55, "Architecture Knowledge Graph", "", "One graph store, two planes: Architecture Intent and Current-State Digital Twin.")
   ContainerDb(n_ide155670d2bae58, "Framework Pack Library", "", "NIST / FedRAMP baselines; ArchiMate / C4 / UML metamodels.")

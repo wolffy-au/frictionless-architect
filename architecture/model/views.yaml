@@ -252,6 +252,23 @@
     - bo-policy-doc
     - bo-oscal-catalog
     - bo-oscal-profile
+    - role-ea
+    - process-pattern-traceability
+    - bo-architecture-pattern
+    - role-sa
+    - process-blueprint-traceability
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-component
+    - bo-solution-design
+    - bo-oscal-ssp
+    - process-state-discovery
+    - process-cicd-pipeline
+    - bo-release-gate-decision
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-control-effectiveness-evidence
+    - bo-oscal-assessment-results
 
 - id: view-artefact-library
   name: Artefact Flow — Library & Design

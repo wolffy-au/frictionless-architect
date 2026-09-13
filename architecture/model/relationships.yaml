@@ -219,6 +219,14 @@
   source: process-drift-review
   target: cap-human-approval-workflow
   label: realizes
+- type: Realization
+  source: process-pattern-traceability
+  target: cap-reusable-architecture
+  label: realizes
+- type: Realization
+  source: process-blueprint-traceability
+  target: cap-reusable-architecture
+  label: realizes
 
 # =====================================================================
 # A. Process chain (the end-to-end choreography)
@@ -261,6 +269,52 @@
 - {type: Realization, source: art-baseline, target: bo-regulatory-standard}
 - {type: Realization, source: art-oscal-catalog, target: bo-oscal-catalog}
 - {type: Realization, source: art-oscal-profile, target: bo-oscal-profile}
+
+# =====================================================================
+# A. Pattern Control Traceability (business layer, parallel to release enforcement)
+# =====================================================================
+- {type: Assignment, source: role-ea, target: process-pattern-traceability}
+- {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
+- {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
+- {type: Triggering, source: process-oscal-conversion, target: process-pattern-traceability, label: profiles feed traceability mapping}
+- {type: Realization, source: fn-pattern-authoring, target: process-pattern-traceability}
+- {type: Realization, source: art-pattern, target: bo-architecture-pattern}
+- {type: Association, source: bo-architecture-pattern, target: bo-oscal-profile, label: maps to}
+- {type: Assignment, source: role-sa, target: process-blueprint-traceability}
+- {type: Specialization, source: bo-implementation-blueprint, target: bo-architecture-pattern, label: specializes for a technology}
+- {type: Access, source: process-blueprint-traceability, target: bo-architecture-pattern, label: refines, props: {access_type: Read}}
+- {type: Access, source: process-blueprint-traceability, target: bo-oscal-profile, label: checks enablement against, props: {access_type: Read}}
+- {type: Access, source: process-blueprint-traceability, target: bo-implementation-blueprint, label: authors, props: {access_type: Write}}
+- {type: Access, source: process-blueprint-traceability, target: bo-oscal-component, label: maps enablement & gaps to, props: {access_type: Write}}
+- {type: Triggering, source: process-pattern-traceability, target: process-blueprint-traceability, label: mapped pattern feeds blueprint derivation}
+- {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
+- {type: Realization, source: art-blueprint, target: bo-implementation-blueprint}
+- {type: Realization, source: art-oscal-component, target: bo-oscal-component}
+- {type: Aggregation, source: bo-solution-design, target: bo-solution-component, label: composed of}
+- {type: Specialization, source: bo-solution-component, target: bo-implementation-blueprint, label: instance of}
+- {type: Association, source: bo-oscal-ssp, target: bo-solution-design, label: derived from}
+- {type: Access, source: process-state-discovery, target: bo-oscal-ssp, label: reconciles against, props: {access_type: Read}}
+- {type: Realization, source: art-solution-design, target: bo-solution-design}
+- {type: Realization, source: art-oscal-ssp, target: bo-oscal-ssp}
+
+# =====================================================================
+# A. Release Controls Enforcement & BAU Effectiveness (business layer,
+#    the other parallel branch off the OSCAL SSP — two cadences of the same
+#    OSCAL Assessment Results concept)
+# =====================================================================
+- {type: Assignment, source: role-ops, target: process-effectiveness-monitoring}
+- {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
+- {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
+- {type: Access, source: process-effectiveness-monitoring, target: bo-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
+- {type: Access, source: process-effectiveness-monitoring, target: bo-control-effectiveness-evidence, label: records, props: {access_type: Write}}
+- {type: Specialization, source: bo-release-gate-decision, target: bo-oscal-assessment-results, label: pre-release instance}
+- {type: Specialization, source: bo-control-effectiveness-evidence, target: bo-oscal-assessment-results, label: continuous-monitoring instance}
+- {type: Realization, source: fn-enforcement-gate, target: process-cicd-pipeline}
+- {type: Realization, source: fn-effectiveness-monitor, target: process-effectiveness-monitoring}
+- {type: Realization, source: art-gate-decision, target: bo-release-gate-decision}
+- {type: Realization, source: art-effectiveness-evidence, target: bo-control-effectiveness-evidence}
+- {type: Realization, source: art-oscal-ar, target: bo-oscal-assessment-results}
+- {type: Realization, source: process-effectiveness-monitoring, target: cap-drift-dashboard, label: realizes}
 
 # =====================================================================
 # B. Platform composes its subsystems and shared stores
@@ -438,13 +492,15 @@
 - {type: Access, source: fn-pattern-authoring, target: art-oscal-catalog, label: references, props: {access_type: Read}}
 - {type: Access, source: fn-pattern-authoring, target: art-pattern, label: authors, props: {access_type: Write}}
 - {type: Access, source: fn-pattern-authoring, target: art-oscal-profile, label: maps pattern to, props: {access_type: Write}}
+- {type: Association, source: art-pattern, target: art-oscal-profile, label: maps to}
 - {type: Access, source: fn-blueprint-authoring, target: art-pattern, label: refines, props: {access_type: Read}}
 - {type: Access, source: fn-blueprint-authoring, target: art-blueprint, label: authors, props: {access_type: Write}}
 - {type: Access, source: fn-blueprint-authoring, target: art-oscal-component, label: maps blueprint to, props: {access_type: Write}}
 - {type: Access, source: fn-solution-compose, target: art-blueprint, label: composes, props: {access_type: Read}}
 - {type: Access, source: fn-solution-compose, target: art-pattern, label: composes, props: {access_type: Read}}
 - {type: Access, source: fn-solution-compose, target: art-solution-design, label: produces, props: {access_type: Write}}
-- {type: Access, source: fn-solution-compose, target: art-oscal-ssp, label: emits, props: {access_type: Write}}
+- {type: Access, source: fn-solution-compose, target: art-oscal-ssp, label: derives & emits, props: {access_type: Write}}
+- {type: Association, source: art-oscal-ssp, target: art-solution-design, label: derived from}
 - {type: Access, source: fn-threat-model, target: art-pattern, label: assesses, props: {access_type: Read}}
 - {type: Access, source: fn-threat-model, target: art-blueprint, label: assesses, props: {access_type: Read}}
 - {type: Access, source: fn-threat-model, target: art-solution-design, label: assesses, props: {access_type: Read}}
@@ -496,6 +552,8 @@
 - {type: Access, source: fn-effectiveness-monitor, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
 - {type: Access, source: fn-effectiveness-monitor, target: art-twin, label: observes, props: {access_type: Read}}
 - {type: Access, source: fn-effectiveness-monitor, target: art-effectiveness-evidence, label: records, props: {access_type: Write}}
+- {type: Specialization, source: art-gate-decision, target: art-oscal-ar, label: pre-release instance}
+- {type: Specialization, source: art-effectiveness-evidence, target: art-oscal-ar, label: continuous-monitoring instance}
 - {type: Access, source: fn-drift-engine, target: art-twin, label: reads current state, props: {access_type: Read}}
 - {type: Access, source: fn-drift-engine, target: art-adr, label: reads intent, props: {access_type: Read}}
 - {type: Access, source: fn-drift-engine, target: art-drift-report, label: classifies, props: {access_type: Write}}
@@ -509,6 +567,7 @@
 - {type: Aggregation, source: store-oscal, target: art-oscal-profile}
 - {type: Aggregation, source: store-oscal, target: art-oscal-component}
 - {type: Aggregation, source: store-oscal, target: art-oscal-ssp}
+- {type: Aggregation, source: store-oscal, target: art-oscal-ar}
 - {type: Aggregation, source: store-patterns, target: art-pattern}
 - {type: Aggregation, source: store-patterns, target: art-blueprint}
 - {type: Aggregation, source: store-patterns, target: art-solution-design}
