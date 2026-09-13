@@ -1,17 +1,17 @@
-generated: '2026-09-12'
+generated: '2026-09-13'
 generator: claude-sonnet-5
 topics:
   project-overview:
     title: Project Overview
     page: wiki/project-overview.md
-    built: '2026-08-30'
+    built: '2026-09-13'
     sources:
       files:
         PROJECT_SPECIFICATION.md:
           sha256: d079b420726fd875c0735273a3268c35db7679fac130ad7d52a2d48d4aee30d5
           lines: 236
         README.md:
-          sha256: efed8f05029823ffd471de36c2b5eadc855d427b081943a858a8aae037bb1529
+          sha256: bc3751711db1beadddb0f7cb26d8a0d430269aa4e2df55cbf4a8f7aa8ba09ea1
           lines: 110
   governance-and-constitution:
     title: Governance & Constitution
@@ -28,7 +28,7 @@ topics:
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
-    built: '2026-09-12'
+    built: '2026-09-13'
     sources:
       files:
         ARCHITECTURE.md:
@@ -50,14 +50,14 @@ topics:
           sha256: ab0bf4f12298813ee1f2f8599fb3b83cb08ce3a1b8ae3926c657dfdf2c1fde0d
           lines: 25
         docs/adr/0004-two-tier-spec-numbering.md:
-          sha256: 0446070947d0f41d22af9a91394e3c6e399347c616b06fff3becf24b98297c6c
-          lines: 29
+          sha256: 37632d84065249f1f13c6320428bfcf94b3d405d2f0a8d50f91aa42fd1d4c1a5
+          lines: 35
         docs/adr/0005-visualiser-api-ui-split-first-extraction.md:
-          sha256: e76710ccdef0ab404c5fca49324b2254617a53de124e5cc7376e132de3da1a5d
-          lines: 62
+          sha256: 1cc42306ac64878aa4b6d9ae424351d816a924191223be2efab423b930aa8803
+          lines: 79
         docs/adr/0006-prototype-neo4j-reference-only.md:
-          sha256: 08748e6bcb78fd3fd32abeb05bc1513a4dff360c384bd2c7bfb9953527759cda
-          lines: 29
+          sha256: 5de717fb2529ab67323ede189f84e4c157ca5094ade639006d6464f23da73e12
+          lines: 31
         docs/adr/0007-architecture-model-as-graph-loadable-yaml.md:
           sha256: e8fc7afc8a4dfce3ba96801fb4872ccc24850c63b2b1b166d001beffc60b17c6
           lines: 50
@@ -68,8 +68,8 @@ topics:
           sha256: 7b4cdaace5d0c8888cb38bccba8dae46f4e2483d7f04f8e7a27555f3948d0a44
           lines: 30
         docs/adr/0010-load-bearing-skeleton-only.md:
-          sha256: ef8f7a9af4f55b4cc1339c9a159f8ed9228bf4ff95b43b00555b08233a93be57
-          lines: 37
+          sha256: 42d0c7802a88e71c004d3860c3bd324a4ff2949686c395fdb2f80058ae085908
+          lines: 39
         docs/adr/0011-six-subsystem-decomposition.md:
           sha256: acbd9b2299e9ab6a9939dd83aae3eb9c3af5f5fbb7f00fcf16248889e24a9f4a
           lines: 41
@@ -92,8 +92,8 @@ topics:
           sha256: 93fb1667afe18f0ad8a0bd74f7df2a5f86b1433e74fe01b1240c6e5b38eb9004
           lines: 25
         docs/adr/0018-postgres-plus-neo4j-data-layer.md:
-          sha256: 8e54da6728348859a319507d07a1fe667f555b1d88c543edb4fd8f1315fc67a0
-          lines: 26
+          sha256: 924a4a70539cbce4fdada1b74aa24640dd1910e60b9d739484f071a19980ffdf
+          lines: 28
         docs/adr/0019-opa-rego-policy-engine.md:
           sha256: 56d64178e8b1ec6f76b033cf5867776232b2330205bf42b2e00394e4462aee35
           lines: 25
@@ -124,27 +124,30 @@ topics:
         docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md:
           sha256: dcade856d701df397133d737a39c8a8ff1c4680e9e8eacb03e6ccbea0240f004
           lines: 75
+        docs/adr/0029-it4it-as-vendored-touchpoint-model.md:
+          sha256: 7639e8b90396a095023701114c4e912f668a1265415f79706a5c362fc51c617c
+          lines: 73
         docs/adr/README.md:
-          sha256: 250b7f47c6f002e9861019e16a6d36ebfb30ec9995068bc426671ea62218f77a
-          lines: 95
+          sha256: 9443e5fc9215da7e15d42927a569cd810b4b15a54f74f7468f20e45377775b81
+          lines: 97
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-09-12'
+    built: '2026-09-13'
     sources:
       files:
         architecture/model/README.md:
-          sha256: f55d0ac6abaf2b11380556825dba27d4cd907d81cc1a76f8d1539b3663a7de48
-          lines: 104
+          sha256: a61c48a5dd4a7485c7d76b955ba891ce4d951f88eb24beaaaa3affbdb47b5f4d
+          lines: 112
         architecture/model/elements.yaml:
-          sha256: d18e81592023f46f6c86aafba76de52dcdc2cece0fbf465ed432c591811fe2d5
-          lines: 1540
+          sha256: 7c09b144167597ae3eb17a33573a6524fe76c99fcb73a9d2275932e761fb38ba
+          lines: 871
         architecture/model/relationships.yaml:
-          sha256: e4642c28edb8da549b9fd0bd8f0b116663425d81cfc7a6e1cdb438461221d481
-          lines: 699
+          sha256: f1bc58b5093d1727a5c925ec1c86d3447026e566fba47ad71d99bce7cb7f093d
+          lines: 604
         architecture/model/views.yaml:
-          sha256: 66e4cf92cc74cea71f51dce697b1819643523c9f9c90852b4f5c9fbc87f07b3e
-          lines: 583
+          sha256: f881c463b28fc1e34f52e4af9518904f336ad9a1ddcdaceb8f67884ddacd8263
+          lines: 390
   data-model:
     title: Data Model
     page: wiki/data-model.md
@@ -202,7 +205,7 @@ topics:
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
-    built: '2026-09-12'
+    built: '2026-09-13'
     sources:
       files:
         src/frictionless_architect/schema/__init__.py:
@@ -212,8 +215,8 @@ topics:
           sha256: dfc271df35bae03081804d10004af81e49da1a175b27f60d14ae8d8e211510ba
           lines: 279
         src/frictionless_architect/visualizer/__init__.py:
-          sha256: e3a39b6e99552e9637fcd42b3ad50144b31ebb40d5b4cb31b0f742e95e088561
-          lines: 38
+          sha256: 51ca1321cb44bfadb1272e7477e4187cf3dc73f94cb35794fb603c8aa3b1ad2d
+          lines: 20
         src/frictionless_architect/visualizer/api.py:
           sha256: 5973c437d5bf86dbdc78df8fc3c6e816361ad0eac14bde0f14f9651f36dc984c
           lines: 314
@@ -235,7 +238,7 @@ topics:
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-08-30'
+    built: '2026-09-13'
     sources:
       files:
         AGENTS.md:
@@ -245,7 +248,7 @@ topics:
           sha256: 053ee3d964384bcdfdf5ee7422a34114bc476ca6d7d19d831f51711ef967a9b5
           lines: 213
         quickstart.md:
-          sha256: fd9f71aa6a995867e5a0389658de4a2a838c1016f15ef669096ed3c73a5abcef
+          sha256: 77b3d1504c8811b0ba9704d4cb47eda9df71092603c82e05c701799351d9ebbe
           lines: 85
         specs/002-neo4j-schema-ui/quickstart.md:
           sha256: 34d2c45d8b462bef28612d75b6965cd0e4612099ac3afd846900bc74d78f32f2

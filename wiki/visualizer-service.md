@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: 2026-09-12
+generated: 2026-09-13
 generator: claude-sonnet-5
 sources:
   - src/frictionless_architect/visualizer/__init__.py
@@ -19,22 +19,29 @@ sources:
 
 The schema visualiser is the **only implemented slice** of the platform
 (`ARCHITECTURE.md` §2). It is a single FastAPI app that pairs the ArchiMate
-schema with sample data and serves both a JSON payload and an embedded HTML/JS
-UI. Its spec is `002-neo4j-schema-ui` — see
-[Platform Specification & API](platform-spec.md); the graph shape it reads is in
-[Data Model](data-model.md). `ARCHITECTURE.md` §8.1 plans to split it into a
-JSON-only `schema-visualizer-api` package plus a separate Vite UI.
+schema with sample data and serves it as a **JSON payload only** — the
+server-rendered HTML page (`GET /schema-visualizer`, Jinja templates +
+mounted `static/`) that ADR-0005 called for dropping as part of the
+visualiser API/UI split was actually removed on 2026-09-13, standalone,
+ahead of the rest of that extraction: it was the only browser UI in the app,
+so there is none again until `schema-visualizer-ui` is built
+(`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
+§"Implementation status", revised 2026-09-13). Its spec is
+`002-neo4j-schema-ui` — see [Platform Specification & API](platform-spec.md);
+the graph shape it reads is in [Data Model](data-model.md). `ARCHITECTURE.md`
+§8.1 plans to split it into a JSON-only `schema-visualizer-api` package plus a
+separate Vite UI.
 
 ## Entry point
 
 `src/frictionless_architect/visualizer/__init__.py` builds
-`app = FastAPI(title="Neo4j Schema Visualiser", lifespan=lifespan)`, includes
-the API router, mounts `static/` at `/schema-visualizer/static`, and renders
-`templates/schema_visualizer.html` at `GET /schema-visualizer`
-(`src/frictionless_architect/visualizer/__init__.py:23-38`). Run it with
+`app = FastAPI(title="Neo4j Schema Visualiser", lifespan=lifespan)` and
+includes the API router — nothing else; no template/static mounting remains
+(`src/frictionless_architect/visualizer/__init__.py:19-20`). Run it with
 `poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100`
-(`README.md` §"Schema Visualiser"). On shutdown, `lifespan` closes the Neo4j
-driver (`src/frictionless_architect/visualizer/__init__.py:17-20`).
+and fetch `http://127.0.0.1:8100/schema-payload` (`README.md` §"Schema
+Visualiser"). On shutdown, `lifespan` closes the Neo4j driver
+(`src/frictionless_architect/visualizer/__init__.py:13-16`).
 
 ## Configuration
 

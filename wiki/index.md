@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-09-12
+generated: 2026-09-13
 generator: claude-sonnet-5
 ---
 
@@ -24,8 +24,9 @@ generator: claude-sonnet-5
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: the load-bearing skeleton, the six-subsystem ecosystem, the
-  artefact input/output pipeline, and a lightweight IT4IT 3.0 reference
-  alignment (203 elements, 436 relationships, 25 views).
+  artefact input/output pipeline, and the vendored IT4IT 3.0 reference model
+  (`third_party/it4it`, merged in at build time — 285 elements, 566
+  relationships, 20 views).
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.
