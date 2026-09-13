@@ -3,6 +3,7 @@
 
 title IT4IT: Capability Map
 
+Strategy_Capability(e_id9642a3c5a28d5e, "IT4IT: Financial Management")
 Strategy_Capability(e_id363de1889d8e59, "IT4IT: Collaboration")
 Strategy_Capability(e_id2ed06f8de48b51, "IT4IT: Compliance Management")
 Strategy_Capability(e_id34557f35305950, "IT4IT: Contract Management")
@@ -30,7 +31,6 @@ Grouping(e_id4407e2df936d5a, "IT4IT: Requirement to Deploy") {
 Grouping(e_id736e56c348d85b, "IT4IT: Request to Fulfill") {
   Strategy_Capability(e_id5219b08cf00655, "IT4IT: Asset Management")
   Strategy_Capability(e_ided9194c5cf9059, "IT4IT: Customer/User Support")
-  Strategy_Capability(e_id9642a3c5a28d5e, "IT4IT: Financial Management")
   Strategy_Capability(e_id32ee3b308e0755, "IT4IT: Procurement Management")
   Strategy_Capability(e_idf6987f39696952, "IT4IT: Product Sales Management")
   Strategy_Capability(e_idc8adb7317fb55b, "IT4IT: Request Management")
