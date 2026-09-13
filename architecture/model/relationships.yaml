@@ -843,7 +843,6 @@
 - {type: Aggregation, source: it4it-domain-requirement-to-deploy, target: it4it-cap-test-mgmt, props: {source: it4it}}
 - {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-asset-mgmt, props: {source: it4it}}
 - {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-customer-support, props: {source: it4it}}
-- {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-financial-mgmt, props: {source: it4it}}
 - {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-procurement-mgmt, props: {source: it4it}}
 - {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-product-sales-mgmt, props: {source: it4it}}
 - {type: Aggregation, source: it4it-domain-request-to-fulfill, target: it4it-cap-request-mgmt, props: {source: it4it}}
