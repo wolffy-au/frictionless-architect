@@ -144,6 +144,20 @@ cp -r "$WORKSPACE_DIR/.specify/memory" /tmp/speckit-memory.bak 2>/dev/null || tr
 
 if [[ -f "$SPECKIT_MANIFEST" ]]; then
     # Existing scaffolding present → diff-aware upgrade (blocks on modified managed files).
+    #
+    # Deliberately targets "codex", not "claude", even though this devcontainer
+    # is normally driven from Claude Code. Skill content is kept under
+    # .agents/skills/ (the codex integration's layout); .claude/skills/* are
+    # symlinks into that same directory, so Claude Code already reads the
+    # up-to-date skills without a separate "claude" integration install.
+    # `specify integration switch claude` looks tempting but should NOT be
+    # run here: its install step atomically writes shared infra files via
+    # tempfile + chmod + rename, and chmod fails with EPERM on this
+    # drvfs/9p-mounted workspace (see the EPERM note below), leaving the
+    # switch half-applied — it deleted the .agents/skills/*.md files before
+    # failing to install the claude integration. If this was already tried
+    # and left the tree in that state, restore with:
+    #   git checkout -- .agents/skills/ .specify/integration.json .specify/integrations/codex.manifest.json
     specify integration upgrade codex --script sh \
         || echo "⚠️  'specify integration upgrade' did not complete cleanly — run 'specify integration status'."
 else
