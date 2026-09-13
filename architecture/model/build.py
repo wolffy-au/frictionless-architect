@@ -343,7 +343,7 @@ def main() -> int:
     by_id, types_by_id = add_elements(m, elements, errors)
     rels = load("relationships.yaml", errors) + load_vendored("relationships.yaml", errors)
     add_relationships(m, rels, by_id, errors)
-    views = load("views.yaml", errors, optional=True)
+    views = load("views.yaml", errors, optional=True) + load_vendored("views.yaml", errors)
     add_views(m, views, elements, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
 
