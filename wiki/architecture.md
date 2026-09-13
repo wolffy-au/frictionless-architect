@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-09-12
+generated: 2026-09-13
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -34,6 +34,7 @@ sources:
   - docs/adr/0026-fsm-action-endpoints-for-governed-entities.md
   - docs/adr/0027-capability-value-stream-and-motivation-spine.md
   - docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md
+  - docs/adr/0029-it4it-as-vendored-touchpoint-model.md
   - docs/adr/README.md
 ---
 
@@ -117,6 +118,15 @@ canonical architecture model actually encodes — see
 **Forks to vendor** are candidates, not confirmed: an ArchiMate Exchange
 Format / `.archimate` parser (for `knowledge-graph`) and OSCAL
 catalog-resolution tooling (for `policy-enforcement`) (`ARCHITECTURE.md` §4).
+`third_party/` has its first real occupant, though: the IT4IT 3.0
+value-stream reference model, vendored as its own repo (a git submodule,
+local-only for now — no upstream GitHub home yet) per
+[ADR-0029](#decision-log), the same first-party/vendored split
+[ADR-0002](#decision-log) draws for actively co-developed code vs. a
+low-touch external reference. Its `elements.yaml`/`relationships.yaml`
+merge into the canonical model's own `det_id()`/`NS` hashing pass rather
+than getting a separate build step — see
+[Architecture Model](architecture-model.md) §"D. IT4IT alignment".
 
 ## Monorepo tooling
 
@@ -229,6 +239,7 @@ not re-ratified in a spec).
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
 | 0027 | Capability layer carries a value stream and an explicit motivation spine | P |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
+| 0029 | IT4IT vendored as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS` | A |
 
 Most **P** rows (0017–0020) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,

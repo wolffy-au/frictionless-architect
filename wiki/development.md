@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: 2026-08-30
+generated: 2026-09-13
 generator: claude-sonnet-5
 sources:
   - quickstart.md
@@ -69,7 +69,9 @@ FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
 FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300
 
 poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
-# then open http://127.0.0.1:8100/schema-visualizer
+# then fetch http://127.0.0.1:8100/schema-payload — JSON-only for now, the
+# server-rendered /schema-visualizer HTML page was dropped 2026-09-13
+# (see Visualizer Service)
 ```
 
 `scripts/neo4j_schema.py` is a separate CLI that reads its own **unprefixed**

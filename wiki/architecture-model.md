@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-12
+generated: 2026-09-13
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -35,11 +35,13 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see "Motivation-layer lint" below). The
-current model is 203 elements, 436 relationships and 25 views
-(`architecture/model/build.py` output) — up sharply from the 108/227/8 recorded
-before the section D IT4IT import (below). The generated
-`frictionless-architect.xml` is committed but never hand-edited — same status
-as the `.puml` / `.svg` diagrams.
+current model is 285 elements, 566 relationships and 20 views
+(`architecture/model/build.py` output): 143 elements / 331 relationships /
+16 views are this platform's own (sections A–C plus the IT4IT touchpoint
+bridge, below), the rest is the vendored IT4IT reference model merged in at
+build time ([ADR-0029](architecture.md) — see "D. IT4IT alignment"). The
+generated `frictionless-architect.xml` is committed but never hand-edited —
+same status as the `.puml` / `.svg` diagrams.
 
 ## Files and schema
 
@@ -319,63 +321,72 @@ Architecture Option, Architecture Decision Record, Archived Rejected Option,
 Release Candidate, Gate Decision, Classified Drift Finding, Remediation Backlog
 Item, Development Specification, Notation Metamodel, Ledger Entry.
 
-### D. IT4IT alignment — a lightweight external reference, not the platform's own model
+### D. IT4IT alignment — vendored as its own repo, imported at build time
 
-A new section, sourced verbatim from the Open Group's own IT4IT 3.0 ArchiMate
-exchange file (the vendor reference model, not part of this repo) plus, for a
-handful of undocumented capabilities, the published IT4IT 3.0.1 standard PDF
-(`architecture/model/elements.yaml:766-777`). Every element is id-prefixed
-`it4it-` and tagged `props: {source: it4it}` so it can be grepped, filtered or
-hidden independently of the platform's own model above — this is
-**traceability content, not architecture the platform is committing to**.
+The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
+`elements.yaml`/`relationships.yaml`, tagged `props: {source: it4it}` so it
+could be filtered from the platform's own model. [ADR-0029](architecture.md)
+moved it out: it now lives in `third_party/it4it`, a **git submodule**
+(local-only for now — no upstream GitHub home yet), in the same
+`elements.yaml` / `relationships.yaml` / `views.yaml` schema this repo uses.
+`build.py` loads it alongside the first-party YAML and merges both into the
+**same** `det_id()` / `NS` hashing pass — there is no separate build step, no
+separate `.xml`, and no ID-reconciliation machinery. Every IT4IT element and
+relationship keeps the `it4it-` id prefix it always had, and that prefix
+alone is what keeps the merged id space collision-free
+(`architecture/model/build.py` — `VENDORED_MODELS`, `load_vendored()`).
 
-- **Value-stream skeleton** — a root wrapper `ValueStream`
-  (`it4it-vs-root`, "IT4IT: Value Streams") that `Composition`-links its 7
-  IT4IT value streams (Explore, Evaluate, Integrate, Deploy, Release, Operate,
-  Consume) and `Realization`-links to one `Outcome`
-  ("IT4IT: Digital Product"); each stream in turn `Composition`-links its
-  stages (28 total). The streams form a **`Flow` network, not a linear
-  pipeline** — several stream pairs flow both ways in the source model, which
-  is preserved as-is, not treated as a modelling error
-  (`architecture/model/relationships.yaml:490-563`).
-- **42 IT4IT capabilities** — 24 reachable from a stage via the source model's
-  own `DataObject → Resource → Capability` chain (collapsed here into a
-  single **derived** `Capability --Serving--> Stage` edge per reachable pair,
-  tagged `props: {derived: "true"}` and labelled `<<derived>>` so it's
-  distinguishable from source-verbatim edges), plus 18 more capabilities the
-  derivation chain doesn't reach, carried for completeness
-  (`architecture/model/elements.yaml:1115-1339`,
-  `architecture/model/relationships.yaml:565-685`). Seven of the 18 have no
-  documentation in the ArchiMate exchange file and were pulled from the
-  published standard PDF instead; one is explicitly marked "inferred, not
-  sourced" (Deployment Management — the standard names no such capability
-  anywhere; the description is inferred from the Deploy stream's own stages).
-  A single placeholder element from the source model literally named
-  "Capability" (no documentation, no relationships) was excluded as a
-  modelling artefact, not a real domain concept.
-- **Bridge to the platform's own capabilities** — 9 `Association` edges, each
-  tagged `props: {source: it4it-alignment}` (a third, distinct tag from the
-  `it4it`-internal and `<<derived>>` ones above, so this layer can be
-  filtered on its own), curated by semantic overlap rather than exhaustively:
-  e.g. `cap-digital-twin` ↔ IT4IT Configuration Management and Architecture
-  Management (the twin's current/intent planes are functionally a CMS and a
-  living architecture model, respectively); `cap-control-plane` ↔ IT4IT
-  Product Development; `cap-forensic-ledger` ↔ IT4IT Compliance Management
-  (`architecture/model/relationships.yaml:687-699`).
+This is a decision about *packaging*, not content — nothing about the IT4IT
+data itself changed:
 
-Deliberately **excluded from every other view** in the model — the section is
-reachable only through its own dedicated views (below), so it never pollutes a
-platform-only diagram.
+- **Value-stream skeleton** (`third_party/it4it/elements.yaml`) — a root
+  wrapper `ValueStream` (`it4it-vs-root`, "IT4IT: Value Streams")
+  `Composition`-linking its 7 IT4IT value streams (Explore, Evaluate,
+  Integrate, Deploy, Release, Operate, Consume) and `Realization`-linking to
+  one `Outcome` ("IT4IT: Digital Product"); each stream in turn
+  `Composition`-links its stages (28 total). The streams form a **`Flow`
+  network, not a linear pipeline** — several stream pairs flow both ways in
+  the source model, preserved as-is (`third_party/it4it/relationships.yaml`).
+- **42 IT4IT capabilities** — 24 reachable from a stage via the source
+  model's own `DataObject → Resource → Capability` chain, collapsed into a
+  single **derived** `Capability --Serving--> Stage` edge per reachable pair
+  (tagged `props: {derived: "true"}`, labelled `<<derived>>`), plus 18 more
+  capabilities the derivation chain doesn't reach, carried for completeness.
+- **Bridge to the platform's own capabilities** — 10 `Association` edges,
+  tagged `props: {source: it4it-alignment}`, are the one piece of IT4IT-
+  referencing content that **stays first-party**, in this repo's own
+  `relationships.yaml` "D. IT4IT TOUCHPOINTS" section — their source
+  endpoint is always one of this platform's own `cap-*` capabilities, e.g.
+  `cap-digital-twin` ↔ IT4IT Configuration Management / Architecture
+  Management, `cap-control-plane` ↔ IT4IT Product Development,
+  `cap-forensic-ledger` ↔ IT4IT Compliance Management
+  (`architecture/model/relationships.yaml` §"D. IT4IT TOUCHPOINTS").
+
+`third_party/it4it` also carries its own `views.yaml` and `diagrams/vision/`
+(the same 4 pure-IT4IT views described below, rendered by this repo's
+`render_diagrams.py` into that vendored diagrams directory) — a view whose
+content is 100% `it4it-*` elements is vendored alongside the data it draws
+on, the same reasoning that vendored the elements/relationships. The one
+exception is the capability-bridges touchpoint view, which stays here since
+it spans both models. Deliberately **excluded from every other view** in the
+model, so IT4IT elements never pollute a platform-only diagram.
+
+If IT4IT is ever consumed via its own independently-generated `.xml` (its own
+`build.py` / `NS`) instead of raw YAML, this merged-hashing approach no
+longer holds — that would need its own ADR ([ADR-0029](architecture.md)
+§"Consequences").
 
 ## Views and diagrams
 
-25 ArchiMate views are declared in `views.yaml` — 14 for the platform's own
-model (sections A–C) plus 11 for the IT4IT reference (section D, below). The
-C4 context and
-container diagrams are **not** views — `render_diagrams.py` projects them via
-`diagram-c4` with `--system "Frictionless Architecture Platform"`
+20 ArchiMate views cover the merged model — 16 declared in this repo's own
+`views.yaml` (sections A–C plus the IT4IT touchpoint bridge) plus 4 declared
+in `third_party/it4it/views.yaml` for the vendored IT4IT reference (section
+D, below), loaded the same way its elements/relationships are
+([ADR-0029](architecture.md)). The C4 context and container diagrams are
+**not** views — `render_diagrams.py` projects them via `diagram-c4` with
+`--system "Frictionless Architecture Platform"`
 (`architecture/model/README.md` §"Regenerate"). Seven of the platform's own
-14 views are a TOGAF ADM Phase A "Architecture Vision" set, each held to its
+16 views are a TOGAF ADM Phase A "Architecture Vision" set, each held to its
 matching standard ArchiMate viewpoint and rendered under `diagrams/vision/`:
 
 | View | Viewpoint | Covers |
@@ -388,20 +399,20 @@ matching standard ArchiMate viewpoint and rendered under `diagrams/vision/`:
 | Value Stream — Governed Architecture Delivery | `value_stream` | The stream's six stages (`Composition` + `Triggering` sequence, with a `Reconcile → Specify` feedback `Flow`), the capabilities that `Serve` each stage, the recipient stakeholders, and the outcome it `Realizes` |
 | Outcome Realization | `outcome_realization` | Business processes → capabilities → value stream → outcome, the end-to-end realization chain |
 
-The remaining seven of the 14 platform-model views are cross-cutting and
+The remaining eight of the 16 platform-model views are cross-cutting and
 marked `viewpoint: custom` (a deliberate cross-layer cut, not held to a
 standard allow-list) or `application_cooperation`: `Architecture Skeleton`,
-`Delivery Choreography`, `Subsystems & Capabilities`, and the four per-stage
-`Artefact Flow — …` views (`architecture/model/views.yaml`). Rendered `.puml` /
-`.svg` land under `architecture/model/diagrams/` (vision views under
-`diagrams/vision/`).
+`Delivery Choreography`, `Subsystems & Capabilities`, the four per-stage
+`Artefact Flow — …` views, and `IT4IT: Capability Bridges` (see below)
+(`architecture/model/views.yaml`). Rendered `.puml` / `.svg` land under
+`architecture/model/diagrams/` (vision views under `diagrams/vision/`).
 
 Several of the platform-model views deliberately scope a type by explicit
-`members` rather than `include_types`, because the section-D IT4IT import
-added many more elements of that same ArchiMate type — an `include_types`
-scoping would silently pull IT4IT elements into a platform-only view. This
-affects every view that includes `Outcome` (the IT4IT import added a second
-one, `it4it-outcome-digital-product`), `Capability` (42 more), or `ValueStream`
+`members` rather than `include_types`, because the vendored IT4IT model adds
+many more elements of that same ArchiMate type — an `include_types` scoping
+would silently pull IT4IT elements into a platform-only view. This affects
+every view that includes `Outcome` (IT4IT adds a second one,
+`it4it-outcome-digital-product`), `Capability` (42 more), or `ValueStream`
 (36 more: 7 streams + 29 stages) — e.g. `Stakeholder`, `Strategy`,
 `Capability Map`, `Value Stream — Governed Architecture Delivery`,
 `Outcome Realization` and `Architecture Skeleton` all switched their
@@ -412,25 +423,23 @@ Outcome/Capability/ValueStream scoping to `members` for this reason
 
 ### IT4IT reference views (section D)
 
-11 views cover the IT4IT reference content, all excluded from every other
-view above:
+4 views cover the IT4IT reference content, declared in
+`third_party/it4it/views.yaml` and rendered into that repo's own
+`diagrams/vision/` — plus one touchpoint view that stays here:
 
 | View | Viewpoint | Covers |
 |---|---|---|
-| IT4IT Alignment | `value_stream` | The complete reference dump: all 7 streams, 28 stages, the outcome, and the 24 derivation-reachable capabilities (79 elements) — kept as the one-stop monolith even after the split below |
 | IT4IT: Value Streams | `value_stream` | The 7 streams and the outcome they jointly realize, no stage decomposition |
-| IT4IT: Explore / Evaluate / Integrate / Deploy / Release / Operate / Consume | `value_stream` | One view per stream, showing just that stream's own stages |
-| IT4IT: Capability Map | `capability` | All 42 IT4IT capabilities — renders as an **unconnected map**, since the source model has no capability-to-capability relationships (the derivation chain runs stage → capability, not capability → capability) |
-| IT4IT: Capability Bridges | `custom` | Just the 9 `props.source: it4it-alignment` associations between this platform's own capabilities and IT4IT capabilities |
+| IT4IT: Capability Map | `capability` | All 42 IT4IT capabilities plus the 4 canonical domain groupings that nest 34 of them — renders as an otherwise **unconnected map**, since the source model has no other capability-to-capability relationships |
+| IT4IT: Stakeholder | `stakeholder` | The 24 named IT4IT stakeholder roles, as a catalog (no Driver/Assessment to connect them to) |
+| IT4IT: Outcome Realization | `outcome_realization` | The 7 value streams (plus root) and the 36 Outcomes they realize |
+| IT4IT: Capability Bridges *(stays first-party)* | `custom` | Just the 10 `props.source: it4it-alignment` associations between this platform's own capabilities and IT4IT capabilities — a cross-model cut, so it lives in `architecture/model/views.yaml`/`diagrams/`, not the vendored repo, the same convention as `frictionless-architect-subsystem-capabilities` |
 
-The per-stream/capability-map/bridges views were split out of the original
-`IT4IT Alignment` monolith (79 elements — too large to read as one diagram);
-that view stays as the complete reference dump, and its diagram lives outside
-`diagrams/it4it/` (the per-stream views' folder) since it's the one view that
-spans the split. `IT4IT: Capability Bridges` is likewise kept outside
-`diagrams/it4it/` for the same reason — it is a cross-model cut, the same
-convention as `frictionless-architect-subsystem-capabilities`
-(`architecture/model/views.yaml:286-583`).
+An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
+predated this 4-view split and was dropped once it was fully superseded: it
+only nominally conformed to `viewpoint: value_stream` — its allow-list
+happens to also cover `Capability`/`Outcome`, not because the monolith was a
+genuine single-purpose Value Stream diagram.
 
 ## Regenerating
 
@@ -488,3 +497,11 @@ the same window. Full history is in the ADR log — see
 §"Provenance"; `git log` on `elements.yaml`/`relationships.yaml`/`views.yaml`
 for the exact commit sequence, which `README.md`'s own Provenance section does
 not yet narrate).
+
+A later pass ([ADR-0029](architecture.md), 2026-09-13) vendored the IT4IT
+content out of this repo entirely: `third_party/it4it` (a git submodule)
+now holds its `elements.yaml`/`relationships.yaml`/`views.yaml`/
+`diagrams/vision/`, `build.py`/`render_diagrams.py` merge it in at build
+time, and the old 79-element `IT4IT Alignment` monolith view was dropped in
+favour of the 4 focused reference views described above. Only the
+capability-bridge touchpoint relationships and view stayed first-party.

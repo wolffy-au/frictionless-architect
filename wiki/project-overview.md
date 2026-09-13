@@ -1,6 +1,6 @@
 ---
 title: Project Overview
-generated: 2026-08-30
+generated: 2026-09-13
 generator: claude-sonnet-5
 sources:
   - README.md
