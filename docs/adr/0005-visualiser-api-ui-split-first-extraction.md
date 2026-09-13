@@ -15,8 +15,9 @@ and the HTML/JS UI, and reads Neo4j directly via `visualizer/data_loader.py`.
 
 The **first extraction** splits the visualiser into two packages:
 
-- `packages/schema-visualizer-api` — JSON only (`/schema-payload`, `/refresh`,
-  `/status`). Scope: `visualizer/{api,cache,config}.py`, the payload /
+- `packages/schema-visualizer-api` — JSON only (`/schema-payload`,
+  `/schema-payload/refresh`, `/schema-payload/status`). Scope:
+  `visualizer/{api,cache,config}.py`, the payload /
   coverage-merge logic, and the FastAPI router. Drop the server-rendered HTML
   route and Jinja/static mounts — confirmed no consumer today.
 - `packages/schema-visualizer-ui` (or fold into `dashboard`) — a Vite app that
