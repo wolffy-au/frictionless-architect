@@ -6,11 +6,10 @@
 Single source of truth for "which view -> which file": the ``diagram:`` key in
 ``views.yaml`` (path under ``diagrams/``, no extension). The two C4 diagrams are
 not views — they are projected by ``diagram-c4`` and listed in ``C4_DIAGRAMS``.
-Pure-IT4IT views (ADR-0029 — a ``diagram:`` slug of ``it4it/...`` or
-``frictionless-architect-it4it-alignment``) render into the vendored
-``third_party/it4it/diagrams/`` instead of ``architecture/model/diagrams/``;
-every other view, including the cross-model capability-bridges touchpoint
-view, stays under ``architecture/model/diagrams/``.
+Pure-IT4IT views (ADR-0029 — a ``diagram:`` slug of ``it4it/...``) render into
+the vendored ``third_party/it4it/diagrams/`` instead of
+``architecture/model/diagrams/``; every other view, including the cross-model
+capability-bridges touchpoint view, stays under ``architecture/model/diagrams/``.
 
 Run ``build.py`` first (this reads the generated XML, it does not rebuild it).
 
@@ -43,7 +42,7 @@ IT4IT_DIAGRAMS = REPO / "third_party/it4it/diagrams"
 
 
 def is_it4it_slug(slug: str) -> bool:
-    return slug.startswith("it4it/") or slug == "frictionless-architect-it4it-alignment"
+    return slug.startswith("it4it/")
 
 
 def out_root(slug: str) -> Path:

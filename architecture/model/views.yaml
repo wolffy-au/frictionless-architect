@@ -337,7 +337,7 @@
 
 - id: view-it4it-alignment
   name: IT4IT Alignment
-  diagram: frictionless-architect-it4it-alignment
+  diagram: it4it/alignment
   # The IT4IT 3.0 value-stream skeleton, plus the 24 IT4IT capabilities
   # reachable from a stage via the source model's own DataObject -> Resource
   # -> Capability chain (see third_party/it4it/relationships.yaml, the
