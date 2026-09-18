@@ -51,8 +51,9 @@ unique, which is all `det_id()` needs.
   (its own `build.py` / `NS`) instead of raw YAML, this decision no longer
   holds — merging two separately-hashed UUID spaces is the hard version of
   this problem and would need its own ADR.
-- Implemented: `third_party/it4it` (local-only for now — no upstream GitHub
-  home yet) holds the full IT4IT `elements.yaml`/`relationships.yaml`; there is
+- Implemented: `third_party/it4it` (GitHub home:
+  `wolffy-au/frictionless-it4it`) holds the full IT4IT
+  `elements.yaml`/`relationships.yaml`; there is
   no touchpoint-filtering — `build.py` imports the whole vendored file, and
   only the bridge `Association` edges (props: `source: it4it-alignment`) stay
   first-party, in `relationships.yaml`. It is in

@@ -120,8 +120,8 @@ Format / `.archimate` parser (for `knowledge-graph`) and OSCAL
 catalog-resolution tooling (for `policy-enforcement`) (`ARCHITECTURE.md` §4).
 `third_party/` has its first real occupant, though: the IT4IT 3.0
 value-stream reference model, vendored as its own repo (a git submodule,
-local-only for now — no upstream GitHub home yet) per
-[ADR-0029](#decision-log), the same first-party/vendored split
+`wolffy-au/frictionless-it4it`) per [ADR-0029](#decision-log), the same
+first-party/vendored split
 [ADR-0002](#decision-log) draws for actively co-developed code vs. a
 low-touch external reference. Its `elements.yaml`/`relationships.yaml`
 merge into the canonical model's own `det_id()`/`NS` hashing pass rather
