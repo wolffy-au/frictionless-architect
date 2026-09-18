@@ -23,7 +23,17 @@ defaults:
 
 # Per-fork keys override defaults; list keys (fix_branches, private_branches,
 # security_paths) are MERGED with the defaults, not replaced.
-forks: []
+forks:
+  - name: it4it
+    # Authored, not forked from an existing upstream — there is no separate
+    # third-party project to track (see ADR-0029 in this repo), so upstream
+    # and fork are the same repo we author directly. `fork-sync` on this
+    # entry is still a no-op (nothing to pull from an "upstream" that is
+    # ourselves), but it now has a real GitHub home.
+    upstream: https://github.com/wolffy-au/frictionless-it4it.git
+    fork: git@github.com:wolffy-au/frictionless-it4it.git
+    upstream_branch: master
+    dist_branch: master
   # - name: oscal-cli
   #   upstream: https://github.com/usnistgov/oscal-cli
   #   fork: git@github.com:stephanborg6/oscal-cli.git

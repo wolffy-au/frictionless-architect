@@ -4,11 +4,15 @@
     poetry run python architecture/model/build.py
 
 ``architecture/model/elements.yaml`` + ``relationships.yaml`` are the single
-source of truth. This script projects them into ``frictionless-architect.xml``
-(Open Group Exchange Format) via pyArchimate, then runs the ``model-archimate``
-validator over the result. Every diagram (``*.puml`` / ``*.svg``) is in turn a
-projection of that XML — regenerate them with the ``diagram-c4`` /
-``diagram-archimate`` skills after running this.
+source of truth for first-party content; each dir under ``third_party/`` (the
+IT4IT 3.0 value-stream skeleton, ADR-0029) contributes its own
+``elements.yaml`` / ``relationships.yaml`` in the same schema, merged in
+alongside the first-party ones before this script projects the combined model
+into ``frictionless-architect.xml`` (Open Group Exchange Format) via
+pyArchimate, then runs the ``model-archimate`` validator over the result.
+Every diagram (``*.puml`` / ``*.svg``) is in turn a projection of that XML —
+regenerate them with the ``diagram-c4`` / ``diagram-archimate`` skills after
+running this.
 
 Schema (see ``architecture/model/README.md``):
 
@@ -41,6 +45,12 @@ HERE = Path(__file__).parent
 OUT = HERE / "frictionless-architect.xml"
 SKILL_SCRIPTS = HERE.parents[1] / ".agents/skills/model-archimate/scripts"
 VALIDATOR = SKILL_SCRIPTS / "validate.py"
+# Vendored reference models (ADR-0029): each is loaded alongside the
+# first-party elements.yaml/relationships.yaml and merged into the same
+# det_id()/NS pass below — their own id prefix (e.g. `it4it-`) is what keeps
+# the merged id space unique, not any separate reconciliation step.
+THIRD_PARTY = HERE.parents[1] / "third_party"
+VENDORED_MODELS = [THIRD_PARTY / "it4it"]
 
 # The model-archimate skill owns the standard-viewpoint reference and the
 # conformance check a view is held to when it declares `viewpoint:`.
@@ -70,18 +80,31 @@ def det_id(*parts: str) -> str:
     return "id-" + uuid.uuid5(NS, "|".join(parts)).hex
 
 
-def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
-    path = HERE / name
+def load_path(path: Path, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
     if optional and not path.exists():
         return []
     if not path.exists():
-        errors.append(f"{name} is missing")
+        errors.append(f"{path} is missing")
         return []
     data = yaml.safe_load(path.read_text()) or []
     if not isinstance(data, list):
-        errors.append(f"{name} must be a YAML list")
+        errors.append(f"{path} must be a YAML list")
         return []
     return data
+
+
+def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
+    return load_path(HERE / name, errors, optional)
+
+
+def load_vendored(filename: str, errors: list[str]) -> list[dict[str, Any]]:
+    """Load `filename` from every vendored model dir (ADR-0029). A missing
+    submodule checkout (never initialized) is silently skipped, same as any
+    other optional input — `git submodule update --init` fixes it."""
+    merged: list[dict[str, Any]] = []
+    for model_dir in VENDORED_MODELS:
+        merged += load_path(model_dir / filename, errors, optional=True)
+    return merged
 
 
 def add_elements(
@@ -316,11 +339,11 @@ def main() -> int:
     m = Model("frictionless-architect")
     errors: list[str] = []
 
-    elements = load("elements.yaml", errors)
+    elements = load("elements.yaml", errors) + load_vendored("elements.yaml", errors)
     by_id, types_by_id = add_elements(m, elements, errors)
-    rels = load("relationships.yaml", errors)
+    rels = load("relationships.yaml", errors) + load_vendored("relationships.yaml", errors)
     add_relationships(m, rels, by_id, errors)
-    views = load("views.yaml", errors, optional=True)
+    views = load("views.yaml", errors, optional=True) + load_vendored("views.yaml", errors)
     add_views(m, views, elements, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
 
