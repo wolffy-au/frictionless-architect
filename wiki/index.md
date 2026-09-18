@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-09-13
+generated: 2026-09-18
 generator: claude-sonnet-5
 ---
 
@@ -27,6 +27,10 @@ generator: claude-sonnet-5
   artefact input/output pipeline, and the vendored IT4IT 3.0 reference model
   (`third_party/it4it`, merged in at build time — 285 elements, 566
   relationships, 20 views).
+- [IT4IT Reference Model](it4it-model.md) — the vendored `third_party/it4it`
+  repo itself: its schema, the 142-element value-stream/capability/
+  stakeholder/outcome content, the derived Serving edges, and its own 4
+  standard-viewpoint views.
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.

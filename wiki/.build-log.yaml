@@ -148,6 +148,24 @@ topics:
         architecture/model/views.yaml:
           sha256: f881c463b28fc1e34f52e4af9518904f336ad9a1ddcdaceb8f67884ddacd8263
           lines: 390
+  it4it-model:
+    title: IT4IT Reference Model
+    page: wiki/it4it-model.md
+    built: '2026-09-18'
+    sources:
+      files:
+        third_party/it4it/README.md:
+          sha256: 92e9837194a2b3f18cb4c1307064b39a568c92b72cea3eb550c895bc79952cf4
+          lines: 16
+        third_party/it4it/elements.yaml:
+          sha256: 60002f1ce238f396a46f24bdca2f562c21075fdeead9583261659c838cc4cd4e
+          lines: 1127
+        third_party/it4it/relationships.yaml:
+          sha256: db857c830a82c364f53be53d2c759e3ab1f98f72ee0fa686845cec88f85d629d
+          lines: 282
+        third_party/it4it/views.yaml:
+          sha256: 010de92eb8b6468e10f0277137bbfb0a5a5edf18f8a077c0b3b7bb2515c5e3cf
+          lines: 212
   data-model:
     title: Data Model
     page: wiki/data-model.md

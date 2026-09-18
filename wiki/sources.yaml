@@ -43,6 +43,15 @@ topics:
       - path: architecture/model/relationships.yaml
       - path: architecture/model/views.yaml
 
+  - name: it4it-model
+    title: IT4IT Reference Model
+    description: The vendored IT4IT 3.0 value-stream reference model (third_party/it4it) and how it's merged into the platform's own architecture model.
+    sources:
+      - path: third_party/it4it/README.md
+      - path: third_party/it4it/elements.yaml
+      - path: third_party/it4it/relationships.yaml
+      - path: third_party/it4it/views.yaml
+
   - name: data-model
     title: Data Model
     description: Domain entities, the Neo4j schema, and the ArchiMate XSD basis.
