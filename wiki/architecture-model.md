@@ -327,7 +327,7 @@ The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
 `elements.yaml`/`relationships.yaml`, tagged `props: {source: it4it}` so it
 could be filtered from the platform's own model. [ADR-0029](architecture.md)
 moved it out: it now lives in `third_party/it4it`, a **git submodule**
-(local-only for now — no upstream GitHub home yet), in the same
+pointing at `wolffy-au/frictionless-it4it` on GitHub, in the same
 `elements.yaml` / `relationships.yaml` / `views.yaml` schema this repo uses.
 `build.py` loads it alongside the first-party YAML and merges both into the
 **same** `det_id()` / `NS` hashing pass — there is no separate build step, no
