@@ -57,6 +57,10 @@ echo -e "\n🤖 Installing Claude CLI..."
 run_command "curl -fsSL https://claude.ai/install.sh | bash"
 echo "✅ Done"
 
+echo -e "\n🤖 Installing herdr..."
+run_command "curl -fsSL https://herdr.dev/install.sh | sh"
+echo "✅ Done"
+
 echo -e "\n🤖 Installing Specify CLI (latest release)..."
 SPEC_KIT_TAG=$(github_latest_release_tag "github/spec-kit") || SPEC_KIT_TAG=""
 if [[ -z "$SPEC_KIT_TAG" ]]; then
