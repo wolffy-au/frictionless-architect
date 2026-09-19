@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-13
+generated: 2026-09-18
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -26,8 +26,8 @@ and [ADR-0008](architecture.md) (`type` is a bare ArchiMate 3.2 concept name).
 ```text
 elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
    └─▶ build.py ─▶ frictionless-architect.xml ─▶ validate.py
-                        ├─▶ diagram-c4        ─▶ diagrams/*-c4-*.puml / .svg
-                        └─▶ diagram-archimate ─▶ diagrams/*-<view>.puml / .svg
+                        ├─▶ diagram-c4        ─▶ diagrams/c4/*.puml / .svg
+                        └─▶ diagram-archimate ─▶ diagrams/<layer>/<view>.puml / .svg
 ```
 
 (`architecture/model/README.md` §"Architecture model"). `build.py` runs
@@ -399,13 +399,21 @@ matching standard ArchiMate viewpoint and rendered under `diagrams/vision/`:
 | Value Stream — Governed Architecture Delivery | `value_stream` | The stream's six stages (`Composition` + `Triggering` sequence, with a `Reconcile → Specify` feedback `Flow`), the capabilities that `Serve` each stage, the recipient stakeholders, and the outcome it `Realizes` |
 | Outcome Realization | `outcome_realization` | Business processes → capabilities → value stream → outcome, the end-to-end realization chain |
 
-The remaining eight of the 16 platform-model views are cross-cutting and
-marked `viewpoint: custom` (a deliberate cross-layer cut, not held to a
-standard allow-list) or `application_cooperation`: `Architecture Skeleton`,
-`Delivery Choreography`, `Subsystems & Capabilities`, the four per-stage
-`Artefact Flow — …` views, and `IT4IT: Capability Bridges` (see below)
+Of the remaining nine platform-model views, only `Architecture Skeleton` is
+still marked `viewpoint: custom` (a deliberate cross-layer cut, not held to
+a standard allow-list); the four per-stage `Artefact Flow — …` views are
+`application_cooperation` and `Business — Controls & Compliance Catalog` is
+`business_process_cooperation`. `Delivery Choreography` and
+`Subsystems & Capabilities` are `outcome_realization` — each is a
+`BusinessProcess`/`ApplicationComponent` → `Capability` realization cut,
+which the standard Outcome Realization allow-list (`Capability` +
+business/application elements) matches even with no `Outcome` element on
+the view. `IT4IT: Capability Bridges` (see below) is `capability` — a pure
+`Capability`-to-`Capability` cut, first-party and IT4IT alike
 (`architecture/model/views.yaml`). Rendered `.puml` / `.svg` land under
-`architecture/model/diagrams/` (vision views under `diagrams/vision/`).
+`architecture/model/diagrams/`, grouped into per-ArchiMate-layer
+subfolders (`application/`, `business/`, `c4/`, `cross-layer/`; vision
+views under `diagrams/vision/`).
 
 Several of the platform-model views deliberately scope a type by explicit
 `members` rather than `include_types`, because the vendored IT4IT model adds
@@ -433,7 +441,7 @@ Outcome/Capability/ValueStream scoping to `members` for this reason
 | IT4IT: Capability Map | `capability` | All 42 IT4IT capabilities plus the 4 canonical domain groupings that nest 34 of them — renders as an otherwise **unconnected map**, since the source model has no other capability-to-capability relationships |
 | IT4IT: Stakeholder | `stakeholder` | The 24 named IT4IT stakeholder roles, as a catalog (no Driver/Assessment to connect them to) |
 | IT4IT: Outcome Realization | `outcome_realization` | The 7 value streams (plus root) and the 36 Outcomes they realize |
-| IT4IT: Capability Bridges *(stays first-party)* | `custom` | Just the 10 `props.source: it4it-alignment` associations between this platform's own capabilities and IT4IT capabilities — a cross-model cut, so it lives in `architecture/model/views.yaml`/`diagrams/`, not the vendored repo, the same convention as `frictionless-architect-subsystem-capabilities` |
+| IT4IT: Capability Bridges *(stays first-party)* | `capability` | Just the 10 `props.source: it4it-alignment` associations between this platform's own capabilities and IT4IT capabilities — a pure `Capability`-to-`Capability` cross-model cut, so it lives in `architecture/model/views.yaml`/`diagrams/`, not the vendored repo. Unlike `cross-layer/subsystem-capabilities` (a cross-*layer* cut within this repo's own model), it spans two repos, so its diagram stays flat at `diagrams/` root rather than in a layer subfolder |
 
 An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
 predated this 4-view split and was dropped once it was fully superseded: it
