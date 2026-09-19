@@ -19,9 +19,10 @@
             "ppa": true,
             "version": "latest"
         },
-        "ghcr.io/devcontainers/features/node": {
+        "ghcr.io/devcontainers/features/node:1": {
             "version": "lts"
-        }
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {}
     },
     "mounts": [
         "source=python-cache,target=/home/devcontainer/.cache,type=volume",
@@ -47,7 +48,8 @@
                 "snyk-security.snyk-vulnerability-scanner",
                 "redhat.vscode-yaml",
                 "SonarSource.sonarlint-vscode",
-                "yzhang.markdown-all-in-one"
+                "yzhang.markdown-all-in-one",
+                "GitHub.vscode-pull-request-github"
             ],
             "settings": {
                 "debug.javascript.autoAttachFilter": "disabled",

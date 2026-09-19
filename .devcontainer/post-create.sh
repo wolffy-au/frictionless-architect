@@ -209,14 +209,6 @@ run_command "sudo apt-get install -y plantuml"
 run_command "sudo curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /usr/share/plantuml/plantuml.jar"
 echo "✅ Done"
 
-# Installing GitHub CLI
-echo -e "\n🐙 Installing GitHub CLI..."
-run_command "curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg"
-run_command "sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg"
-run_command "echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main' | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null"
-run_command "sudo apt-get update && sudo apt install -y gh"
-echo "✅ Done"
-
 if [ -f /workspaces/frictionless-architect/frontend/package.json ]; then
     echo -e "\n🌐 Installing frontend dependencies and Playwright browser..."
     run_command "cd /workspaces/frictionless-architect/frontend && npm config set bin-links false && npm install && node ./node_modules/playwright/cli.js install --with-deps chromium"
