@@ -50,8 +50,8 @@ C4_PUML = ".agents/skills/diagram-c4/scripts/model_to_c4.py"
 SYSTEM = "Frictionless Architecture Platform"
 C4_DIAGRAMS = [
     # (slug, level, layout)
-    ("frictionless-architect-c4-context", "context", "WITH_LEGEND"),
-    ("frictionless-architect-c4-container", "container", "LEFT_RIGHT"),
+    ("c4/context", "context", "WITH_LEGEND"),
+    ("c4/container", "container", "LEFT_RIGHT"),
 ]
 
 
