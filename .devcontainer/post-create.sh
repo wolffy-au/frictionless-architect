@@ -267,7 +267,7 @@ echo "✅ Done"
 # Installing Git Hooks
 echo -e "\n🪝 Installing Git Hooks..."
 run_command "pip install pre-commit"
-run_command "pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg"
+run_command "sudo env PATH=\"$PATH\" HOME=\"$HOME\" pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg"
 echo "✅ Done"
 
 echo -e "\n🧹 Cleaning cache..."
