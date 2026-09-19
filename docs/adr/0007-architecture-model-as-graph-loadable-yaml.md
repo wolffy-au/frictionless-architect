@@ -21,8 +21,8 @@ hand-edited. Every other form is a generated projection:
 ```text
 architecture/model/{elements,relationships,views}.yaml   (canonical, hand-edited)
   ├─▶ build.py ─▶ architecture/model/frictionless-architect.xml ─▶ validate.py
-  │                   ├─▶ diagram-c4        ─▶ architecture/model/diagrams/*-c4-*.puml / .svg
-  │                   └─▶ diagram-archimate ─▶ architecture/model/diagrams/*-<view>.puml / .svg
+  │                   ├─▶ diagram-c4        ─▶ architecture/model/diagrams/c4/*.puml / .svg
+  │                   └─▶ diagram-archimate ─▶ architecture/model/diagrams/<layer>/<view>.puml / .svg
   └─▶ Neo4j seed (reads the YAML directly)   [later]
 ```
 
