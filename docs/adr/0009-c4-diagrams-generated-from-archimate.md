@@ -19,7 +19,7 @@ model** via the `diagram-c4` skill (`model_to_c4.py architecture/model/frictionl
 from the canonical YAML by `architecture/model/build.py` (ADR-0007). The
 hand-written block in `PROJECT_SPECIFICATION.md` is replaced with a pointer to the
 generated
-`architecture/model/diagrams/frictionless-architect-c4-{context,container}.puml` / `.svg`.
+`architecture/model/diagrams/c4/{context,container}.puml` / `.svg`.
 
 ## Consequences
 

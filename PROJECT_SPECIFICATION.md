@@ -40,9 +40,9 @@ A C4 Context view shows how the platform interacts with its primary actors and s
 The context and container views are **generated from the ArchiMate model**, not hand-drawn here:
 
 - Model: `architecture/model/` (graph-loadable YAML) → `architecture/model/frictionless-architect.xml` (built by `architecture/model/build.py`)
-- Context: `architecture/model/diagrams/frictionless-architect-c4-context.puml` / `.svg`
-- Container: `architecture/model/diagrams/frictionless-architect-c4-container.puml` / `.svg`
-- Artefact input/output flow: `architecture/model/diagrams/frictionless-architect-artefact-*.puml` / `.svg`
+- Context: `architecture/model/diagrams/c4/context.puml` / `.svg`
+- Container: `architecture/model/diagrams/c4/container.puml` / `.svg`
+- Artefact input/output flow: `architecture/model/diagrams/application/artefact-*.puml` / `.svg`
 
 Regenerate via `architecture/model/build.py`, then the `diagram-c4` / `diagram-archimate` skills. See `architecture/model/README.md`.
 
