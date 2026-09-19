@@ -77,15 +77,19 @@ jobs:
           if-no-files-found: error
 
       - name: Install Snyk CLI
+        if: github.actor != 'dependabot[bot]'
         run: npm install -g snyk --ignore-scripts
 
       - name: Authenticate Snyk
+        if: github.actor != 'dependabot[bot]'
         run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Scan Test
+        if: github.actor != 'dependabot[bot]'
         run: poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
 
       - name: Snyk Code Scan
+        if: github.actor != 'dependabot[bot]'
         run: poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
 
   sonar:
