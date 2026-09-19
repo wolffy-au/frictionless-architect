@@ -57,7 +57,7 @@ unique, which is all `det_id()` needs.
   no touchpoint-filtering — `build.py` imports the whole vendored file, and
   only the bridge `Association` edges (props: `source: it4it-alignment`) stay
   first-party, in `relationships.yaml`. It is in
-  `.agents/skills/fork-sync/forks.yml`, though as an authored repo (not a fork
+  `.claude/skills/fork-sync/forks.yml`, though as an authored repo (not a fork
   of an existing upstream) `fork-sync` on it is a no-op until it has a real
   upstream.
 

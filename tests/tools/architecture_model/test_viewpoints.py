@@ -48,7 +48,8 @@ def test_collection_tokens_are_expanded() -> None:
 def test_layered_is_unrestricted() -> None:
     vp = viewpoints.get_viewpoint("layered")
     assert vp is not None
-    assert vp["elements_unrestricted"] and vp["relationships_unrestricted"]
+    assert vp["elements_unrestricted"]
+    assert vp["relationships_unrestricted"]
     assert viewpoints.check_conformance(vp, ["BusinessActor", "Node", "Gap"], ["Flow"]) == []
 
 

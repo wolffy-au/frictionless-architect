@@ -41,20 +41,52 @@
     tableView.classList.remove("hidden");
   }
 
-  function buildTable(rows, columns) {
+  function badge(className, text) {
+    const span = document.createElement("span");
+    span.className = `badge ${className}`;
+    span.textContent = text;
+    return span;
+  }
+
+  // Builds real DOM nodes rather than an HTML string: payload data (element
+  // names, ids, ...) is server/model-sourced and must never be interpolated
+  // into innerHTML, even escaped -- textContent/createElement sidestep the
+  // question entirely by never parsing the value as markup.
+  function buildTable(container, rows, columns) {
+    container.replaceChildren();
     if (!rows.length) {
-      return "<p>No records</p>";
+      const empty = document.createElement("p");
+      empty.textContent = "No records";
+      container.appendChild(empty);
+      return;
     }
-    const head = columns.map((col) => `<th>${col.label}</th>`).join("");
-    const body = rows
-      .map((row) => {
-        const cells = columns
-          .map((col) => `<td>${col.render ? col.render(row[col.field]) : (row[col.field] ?? "—")}</td>`)
-          .join("");
-        return `<tr>${cells}</tr>`;
-      })
-      .join("");
-    return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    for (const col of columns) {
+      const th = document.createElement("th");
+      th.textContent = col.label;
+      headRow.appendChild(th);
+    }
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      for (const col of columns) {
+        const td = document.createElement("td");
+        if (col.render) {
+          td.appendChild(col.render(row[col.field]));
+        } else {
+          td.textContent = row[col.field] ?? "—";
+        }
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
   }
 
   function renderTables(payload) {
@@ -65,11 +97,11 @@
       {
         label: "Coverage",
         field: "coverage",
-        render: (value) => `<span class="badge ${value ? "ok" : "warn"}">${value ? "covered" : "missing"}</span>`,
+        render: (value) => badge(value ? "ok" : "warn", value ? "covered" : "missing"),
       },
       { label: "Source", field: "source_file" },
     ];
-    elementsTable.innerHTML = buildTable(payload.elements, elemColumns);
+    buildTable(elementsTable, payload.elements, elemColumns);
     const relColumns = [
       { label: "Identifier", field: "identifier" },
       { label: "Type", field: "type" },
@@ -77,15 +109,20 @@
       { label: "Target", field: "target" },
       { label: "Source File", field: "source_file" },
     ];
-    relationshipsTable.innerHTML = buildTable(payload.relationships, relColumns);
+    buildTable(relationshipsTable, payload.relationships, relColumns);
   }
 
   function renderSummary(payload) {
-    const nodes = payload.elements.map((element) => {
-      const badgeClass = element.coverage ? "ok" : "warn";
-      return `<div><strong>${element.name || element.identifier}</strong> &#183; <span class="badge ${badgeClass}">${element.coverage ? "covered" : "gap"}</span></div>`;
-    });
-    summaryList.innerHTML = nodes.join("");
+    summaryList.replaceChildren();
+    for (const element of payload.elements) {
+      const row = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = element.name || element.identifier;
+      row.appendChild(name);
+      row.appendChild(document.createTextNode(" · "));
+      row.appendChild(badge(element.coverage ? "ok" : "warn", element.coverage ? "covered" : "gap"));
+      summaryList.appendChild(row);
+    }
   }
 
   function buildDiagram(payload) {

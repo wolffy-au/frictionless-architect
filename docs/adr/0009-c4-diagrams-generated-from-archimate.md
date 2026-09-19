@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-08-29
 - **Sources:** `PROJECT_SPECIFICATION.md` §"C4 Context Diagram";
-  `architecture/model/README.md`; session memory `ecosystem-c4`; `.agents/skills/diagram-c4/`
+  `architecture/model/README.md`; session memory `ecosystem-c4`; `.claude/skills/diagram-c4/`
 
 ## Context
 
@@ -27,4 +27,4 @@ generated
 - The context generator merges parallel edges onto the one system box (distinct
   sub-labels stacked one per line) — a `diagram-c4` convention.
 - Fixed ArchiMate→C4 mapping lives in
-  `.agents/skills/diagram-c4/references/archimate-to-c4-mapping.md`.
+  `.claude/skills/diagram-c4/references/archimate-to-c4-mapping.md`.

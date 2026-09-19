@@ -27,8 +27,8 @@ echo "poetry.lock already up to date."
 # --- Security Checks ---
 echo "Running Snyk security scan..."
 poetry run snyk auth "${SNYK_TOKEN:?SNYK_TOKEN must be set to run the pre-merge Snyk scan}"
-poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
-poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
+poetry run snyk test --package-manager=poetry --org=wolffy-au
+poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ignores
 
 # behave (BDD acceptance) is not gated while tests/features/ is a placeholder.
 # Re-add `poetry run behave tests/features/` here once real scenarios exist.

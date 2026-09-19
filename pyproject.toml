@@ -22,6 +22,7 @@ dependencies = [
     "neo4j>=5.10.0,<6.0.0",
     "python-dotenv (>=1.2.2,<2.0.0)",
     "uvicorn (>=0.43.0,<0.44.0)",
+    "defusedxml (>=0.7.1,<0.8.0)",
 ]
 
 [dependency-groups]
@@ -61,6 +62,7 @@ lint = [
     "pyright>=1.1.407,<2.0.0",
     "ruff>=0.14.10,<1.0.0",
     "pysonar>=1.3.0.4086",
+    "types-defusedxml (>=0.7.0.20260504,<0.8.0.0)",
 ]
 
 [tool.poetry]
@@ -90,11 +92,11 @@ reportMissingImports = true
 reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
 reportUnknownMemberType = false
-extraPaths = ["src", ".agents/skills/wiki-librarian/tools", ".agents/skills/model-archimate/scripts", "architecture/model"]
+extraPaths = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
 
 [tool.mypy]
 strict = true
-mypy_path = ["src", ".agents/skills/wiki-librarian/tools", ".agents/skills/model-archimate/scripts", "architecture/model"]
+mypy_path = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
 packages = ["frictionless_architect", "tests"]
 show_error_codes = true
 ignore_missing_imports = false
@@ -158,8 +160,8 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.pytest.ini_options]
-pythonpath = ["src", ".agents/skills/wiki-librarian/tools", ".agents/skills/model-archimate/scripts", "architecture/model"]
-testpaths = ["./tests/unit", "./tests/security", "./tests/integration", "./tests/api", "./tests/tools"]
+pythonpath = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
+testpaths = ["./tests/unit", "./tests/integration", "./tests/api", "./tests/tools"]
 python_files = "*_test.py test_*.py *_spec.py"
 asyncio_default_fixture_loop_scope = "module"
 addopts = """

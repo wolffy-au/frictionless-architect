@@ -26,10 +26,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -37,7 +37,7 @@ jobs:
         run: pip install --upgrade poetry --only-binary ":all:"
 
       - name: Cache virtualenv
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .venv
           key: venv-ubuntu-py3.12-${{ hashFiles('poetry.lock') }}
@@ -77,16 +77,20 @@ jobs:
           if-no-files-found: error
 
       - name: Install Snyk CLI
+        if: github.actor != 'dependabot[bot]'
         run: npm install -g snyk --ignore-scripts
 
       - name: Authenticate Snyk
+        if: github.actor != 'dependabot[bot]'
         run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Scan Test
-        run: poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
+        if: github.actor != 'dependabot[bot]'
+        run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au
 
       - name: Snyk Code Scan
-        run: poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
+        if: github.actor != 'dependabot[bot]'
+        run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores
 
   sonar:
     name: SonarQube Analysis
@@ -95,12 +99,12 @@ jobs:
     if: (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Download coverage report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: coverage-xml
           path: build

@@ -73,7 +73,7 @@ Resolve anything open (`quality-uplift` agent) before continuing.
 ### 4. Security — no unresolved high/critical vulnerabilities
 
 ```bash
-poetry run snyk test --package-manager=poetry --severity-threshold=high
+poetry run snyk test --package-manager=poetry
 gh api repos/wolffy-au/frictionless-architect/dependabot/alerts --jq '[.[] | select(.state=="open")]'
 ```
 

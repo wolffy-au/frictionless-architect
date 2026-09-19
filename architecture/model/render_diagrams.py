@@ -44,8 +44,8 @@ VENDORED_VIEW_SOURCES = [(REPO / "third_party/it4it/views.yaml", REPO / "third_p
 
 # Repo-relative paths — _run() executes with cwd=REPO.
 MODEL = "architecture/model/frictionless-architect.xml"
-ARCHIMATE_PUML = ".agents/skills/diagram-archimate/scripts/model_to_puml.py"
-C4_PUML = ".agents/skills/diagram-c4/scripts/model_to_c4.py"
+ARCHIMATE_PUML = ".claude/skills/diagram-archimate/scripts/model_to_puml.py"
+C4_PUML = ".claude/skills/diagram-c4/scripts/model_to_c4.py"
 
 SYSTEM = "Frictionless Architecture Platform"
 C4_DIAGRAMS = [

@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-09-18
+generated: 2026-09-19
 generator: claude-sonnet-5
 ---
 

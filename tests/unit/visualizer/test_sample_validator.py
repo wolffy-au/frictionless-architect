@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from frictionless_architect.visualizer.sample_validator import validate_sample_against_schema
+from frictionless_architect.visualizer.sample_validator import (
+    _iter_defined_types,
+    validate_sample_against_schema,
+)
 
 SAMPLE_PATH = Path("sample-data/sample-00/Test Model Full.xml")
 SCHEMA_PATH = Path("sample-data/schema/archimate3_Model.xsd")
@@ -52,3 +56,23 @@ def test_dangling_references_are_flagged(tmp_path: Path) -> None:
     issues = validate_sample_against_schema(sample, SCHEMA_PATH)
     assert any("target e-missing is missing" in issue for issue in issues)
     assert any("missing relationship r-missing" in issue for issue in issues)
+
+
+def test_iter_defined_types_raises_when_schema_has_no_root() -> None:
+    rootless_tree = MagicMock(getroot=MagicMock(return_value=None))
+    with patch("frictionless_architect.visualizer.sample_validator._safe_parse", return_value=rootless_tree):
+        try:
+            _iter_defined_types(SCHEMA_PATH)
+        except ValueError as exc:
+            assert "no root element" in str(exc)
+        else:
+            raise AssertionError("expected ValueError for a rootless schema")
+
+
+def test_validate_sample_reports_when_sample_has_no_root(tmp_path: Path) -> None:
+    sample = tmp_path / "rootless.xml"
+    sample.write_text(BROKEN_SAMPLE, encoding="utf-8")
+    rootless_tree = MagicMock(getroot=MagicMock(return_value=None))
+    with patch("frictionless_architect.visualizer.sample_validator._safe_parse", return_value=rootless_tree):
+        issues = validate_sample_against_schema(sample, SCHEMA_PATH)
+    assert issues == [f"Sample XML {sample} has no root element"]

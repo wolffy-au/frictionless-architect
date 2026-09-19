@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Iterable
 from xml.etree import ElementTree as ET
 
+from defusedxml.ElementTree import parse as _safe_parse
+
 # XML namespace identifiers, not fetched endpoints — these are the literal,
 # spec-defined strings (W3C XML Schema, The Open Group's ArchiMate 3.0
 # exchange format) that real documents declare; switching the scheme would
@@ -16,7 +18,9 @@ XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 
 
 def _iter_defined_types(schema_path: Path) -> set[str]:
-    root = ET.parse(schema_path).getroot()
+    root = _safe_parse(schema_path).getroot()
+    if root is None:
+        raise ValueError(f"Schema {schema_path} has no root element")
     defined: set[str] = set()
     defined.update(elem.attrib["name"] for elem in root.findall(f".//{{{XSD_NS}}}element") if "name" in elem.attrib)
     defined.update(elem.attrib["name"] for elem in root.findall(f".//{{{XSD_NS}}}complexType") if "name" in elem.attrib)
@@ -77,8 +81,10 @@ def validate_sample_against_schema(sample_path: Path, schema_path: Path) -> list
     if not schema_path.exists():
         return [f"Schema XSD missing at {schema_path}"]
 
-    tree = ET.parse(sample_path)
+    tree = _safe_parse(sample_path)
     root = tree.getroot()
+    if root is None:
+        return [f"Sample XML {sample_path} has no root element"]
     element_ids, relationship_ids, element_types, relationship_types = _gather_sample_metadata(root)
     defined_types = _iter_defined_types(schema_path)
     errors: list[str] = []
