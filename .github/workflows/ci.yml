@@ -86,11 +86,11 @@ jobs:
 
       - name: Snyk Scan Test
         if: github.actor != 'dependabot[bot]'
-        run: poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
+        run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au
 
       - name: Snyk Code Scan
         if: github.actor != 'dependabot[bot]'
-        run: poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
+        run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores
 
   sonar:
     name: SonarQube Analysis
