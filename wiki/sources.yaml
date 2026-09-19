@@ -9,7 +9,7 @@
 #     title: <text>
 #
 # After editing, run the librarian to (re)build, then:
-#   python .agents/skills/wiki-librarian/tools/build_status.py --coverage
+#   python .claude/skills/wiki-librarian/tools/build_status.py --coverage
 
 topics:
   - name: project-overview
@@ -104,6 +104,14 @@ topics:
     title: Agent Skills & Workflows
     description: The repo's coding-agent skills and paired agents.
     sources:
-      - path: .agents/skills/README.md
-      - path: .agents/skills/*/SKILL.md
-      - path: .agents/agents/*.md
+      - path: .claude/skills/README.md
+      - path: .claude/skills/commit-message/SKILL.md
+      - path: .claude/skills/diagram-archimate/SKILL.md
+      - path: .claude/skills/diagram-c4/SKILL.md
+      - path: .claude/skills/diagram-plantuml/SKILL.md
+      - path: .claude/skills/fork-sync/SKILL.md
+      - path: .claude/skills/model-archimate/SKILL.md
+      - path: .claude/skills/wiki-editor/SKILL.md
+      - path: .claude/skills/wiki-librarian/SKILL.md
+      - path: .claude/skills/speckit-*/SKILL.md
+      - path: .claude/agents/*.md

@@ -1,4 +1,4 @@
-generated: '2026-09-18'
+generated: '2026-09-19'
 generator: claude-sonnet-5
 topics:
   project-overview:
@@ -28,7 +28,7 @@ topics:
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
-    built: '2026-09-18'
+    built: '2026-09-19'
     sources:
       files:
         ARCHITECTURE.md:
@@ -59,13 +59,13 @@ topics:
           sha256: 5de717fb2529ab67323ede189f84e4c157ca5094ade639006d6464f23da73e12
           lines: 31
         docs/adr/0007-architecture-model-as-graph-loadable-yaml.md:
-          sha256: cec51ef86e1c8af972944aacd7ea8035fc03afd9528a20485dc581dd0dbfc1ee
+          sha256: c45fa69513a4587be2294180f74f953d0cdf138afffbfdb64863286df14702a8
           lines: 50
         docs/adr/0008-model-type-is-bare-archimate-name.md:
           sha256: 2f9fcbb4d7a750b1336272ae3ff1d3a881352d123b48d9c5e782f05cd20ca06a
           lines: 28
         docs/adr/0009-c4-diagrams-generated-from-archimate.md:
-          sha256: b624e2f452dac38d0ef70c38637b593d078ca615f94db181df9768a4738a50c6
+          sha256: 7fb1d0eefeb028e6c052271dd3ba9f7a000ee5372d6a0fc4eaa26f925ab50fce
           lines: 30
         docs/adr/0010-load-bearing-skeleton-only.md:
           sha256: 42d0c7802a88e71c004d3860c3bd324a4ff2949686c395fdb2f80058ae085908
@@ -125,28 +125,28 @@ topics:
           sha256: dcade856d701df397133d737a39c8a8ff1c4680e9e8eacb03e6ccbea0240f004
           lines: 75
         docs/adr/0029-it4it-as-vendored-touchpoint-model.md:
-          sha256: 752b1a8c707946b8dd66351099b935b770ec52cc14f219955b8a225adf71a6c9
+          sha256: eedeaa55f20d3c1c7c7bd86e9f7b19f30a8623d2099c387bc37388f4bce48b00
           lines: 74
         docs/adr/README.md:
-          sha256: 9443e5fc9215da7e15d42927a569cd810b4b15a54f74f7468f20e45377775b81
+          sha256: bc2b654f8277c345df57d42f3d66a2051f38902faab751d0e0b47eaffef902c2
           lines: 97
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-09-18'
+    built: '2026-09-19'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 4d9508d18cc48131e70f7d3a22beb9aaadb3a715a7ba9f0c76e88d183234db68
+          sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
           lines: 112
         architecture/model/elements.yaml:
           sha256: 7c09b144167597ae3eb17a33573a6524fe76c99fcb73a9d2275932e761fb38ba
           lines: 871
         architecture/model/relationships.yaml:
-          sha256: f1bc58b5093d1727a5c925ec1c86d3447026e566fba47ad71d99bce7cb7f093d
+          sha256: e733cba5866c6ed90c35bf41fdcd075987ba90bbd14132500ac8f18ed2269200
           lines: 604
         architecture/model/views.yaml:
-          sha256: 59bd77744d40384bdfa26a5c75e0317235e8c7bb875c3d3f0cb9bcd792368b89
+          sha256: 3c9eaf146b9ce0426ceacbe6b57b8253b77e1cc8dbdfa31204e4da0c809116f6
           lines: 396
   it4it-model:
     title: IT4IT Reference Model
@@ -223,7 +223,7 @@ topics:
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
-    built: '2026-09-18'
+    built: '2026-09-19'
     sources:
       files:
         src/frictionless_architect/schema/__init__.py:
@@ -251,17 +251,17 @@ topics:
           sha256: 0fc57618bfe3f090cdab3946897cf76b2a69bbaa332bd534afb0efcc9b9a6f7e
           lines: 137
         src/frictionless_architect/visualizer/sample_validator.py:
-          sha256: 061efe35b6613e9244e3dd1ac682f1d482069d8921a759263893ddc7d57a8ba1
-          lines: 88
+          sha256: 2315bab95e973ffc6b057a6e98842e847b57d3b5f943053c586d562b2bbfb465
+          lines: 92
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-09-18'
+    built: '2026-09-19'
     sources:
       files:
         AGENTS.md:
-          sha256: 42f369b0f26e993304007d73f35212cb02b1c5556c05986f865df9d2ac435541
-          lines: 104
+          sha256: c3585f056380506ed6011433dfbf3301dee591591fd2f87acbb4971de6b67ed5
+          lines: 126
         RELEASE.md:
           sha256: 053ee3d964384bcdfdf5ee7422a34114bc476ca6d7d19d831f51711ef967a9b5
           lines: 213
@@ -316,99 +316,99 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-09-12'
+    built: '2026-09-19'
     sources:
       files:
-        .agents/agents/README.md:
-          sha256: edde65ff298e42c8011a8214c06438cafc7bcf6592b20d2e05519e8cd21c0de8
+        .claude/agents/README.md:
+          sha256: e74e7c6eea1eec829e700c3bc1dced336a8889626ee0d073ace0c1cb2226b11b
           lines: 39
-        .agents/agents/acceptance-author.md:
+        .claude/agents/acceptance-author.md:
           sha256: 0dfe679f953201c94ca6b8c7c5f3e76d31a3647a6c023b79d274d19facc8082f
           lines: 77
-        .agents/agents/adr-auditor.md:
+        .claude/agents/adr-auditor.md:
           sha256: c698451ce569a5b06388689a4dec70667a0707f2d092b211d4813e0c75f8ee6f
           lines: 115
-        .agents/agents/commit-auditor.md:
+        .claude/agents/commit-auditor.md:
           sha256: a8d5cafaad98f5ae5cfcb0e4b1ab7cf1be9c388b27cea7323e0084d43e2c12f1
           lines: 46
-        .agents/agents/coverage-uplift.md:
+        .claude/agents/coverage-uplift.md:
           sha256: adb67534bc4d7aa538ae2e8b7f524e5b25fe342679f3963d0ba5e632f3e54b78
           lines: 72
-        .agents/agents/docs-uplift.md:
+        .claude/agents/docs-uplift.md:
           sha256: a44008ce0775db9467be093d28fe12619cb69e9cfeb4e5f6f1630e4bbbb088ff
           lines: 64
-        .agents/agents/quality-uplift.md:
+        .claude/agents/quality-uplift.md:
           sha256: 3d24dfe9e8bb0ceec6216f1b9a593374f876a4ddfc6609c27deecc95cadd8bc6
           lines: 68
-        .agents/agents/refactor-analyst.md:
+        .claude/agents/refactor-analyst.md:
           sha256: 5d60eb748aad2875fa2353cba8fa23024687a1c3dbd419d5016340de9c257ff0
           lines: 55
-        .agents/agents/release-runner.md:
+        .claude/agents/release-runner.md:
           sha256: 8a62be35e5ad655dc5bc54a8ba06ac76e0730e601f3060d5c2a697e77f8849fa
           lines: 64
-        .agents/agents/spec-alignment.md:
+        .claude/agents/spec-alignment.md:
           sha256: 076f8e369e96ae0abe7693853520fd9220c7c05e46cae18f07760ca018230838
           lines: 55
-        .agents/agents/vulnerability-remediator.md:
+        .claude/agents/vulnerability-remediator.md:
           sha256: c92342ca9128d4869e2a2596c54811bf0e2148fa040cdf7e302d12397f93af6a
           lines: 61
-        .agents/agents/wiki-maintenance.md:
-          sha256: aa9cfdd81bdea927a1d7c2f19c05e69a5a00b315191bdb3ac60314bef489a24d
+        .claude/agents/wiki-maintenance.md:
+          sha256: 85b425dd9637150cf07d19c6a6800039e445c21f2f4e5ff42508a5bdc2082890
           lines: 61
-        .agents/skills/README.md:
-          sha256: 8fb61e229e298f03b1447102b04e04e650bfbaecf5b7ca8f414b4b537274c89d
-          lines: 70
-        .agents/skills/commit-message/SKILL.md:
+        .claude/skills/README.md:
+          sha256: 51700bd56260936b7e640f970f0132954ab20ea283a42e6b3c926243fc65ce2b
+          lines: 75
+        .claude/skills/commit-message/SKILL.md:
           sha256: 4dc191c20403f330b4c923231e019e12cb95b7d986b00043b0e6fc64fe6f6a21
           lines: 76
-        .agents/skills/diagram-archimate/SKILL.md:
-          sha256: 1e6c454a874536d41fc187491356046dae8f5d7de48b1571d7acb484dd1a2206
+        .claude/skills/diagram-archimate/SKILL.md:
+          sha256: b2fe61f3d864b714daa3593bfe45d47a732f38fd9d86527bd394e6722df5abea
           lines: 83
-        .agents/skills/diagram-c4/SKILL.md:
-          sha256: a00a8f3b64857491aeb2aff694b04c95745d2663367deb08e65ffb966c76f138
+        .claude/skills/diagram-c4/SKILL.md:
+          sha256: a38146431e767ccafb9331d2e0e42f41e22da12fe11d1b6c3f4e1398e7f040ed
           lines: 64
-        .agents/skills/diagram-plantuml/SKILL.md:
+        .claude/skills/diagram-plantuml/SKILL.md:
           sha256: 90976eefaf24d4a7d4899dd4ff47d650d03226a76d1af0e262cb74736887cf25
           lines: 68
-        .agents/skills/fork-sync/SKILL.md:
+        .claude/skills/fork-sync/SKILL.md:
           sha256: cafd25948d559cf328c0d6bf87a6f1d543bf9fc3cca4dca1a84ea652fd5231ae
           lines: 103
-        .agents/skills/model-archimate/SKILL.md:
-          sha256: 4a0015efda64a7d318ee8a105ca717bde224f240779754fec0c8c483bfb4345e
+        .claude/skills/model-archimate/SKILL.md:
+          sha256: 0aac98a8860b3b62810702cd30bd74c098e053448ba6502a166e8f4db0820a82
           lines: 175
-        .agents/skills/speckit-analyze/SKILL.md:
-          sha256: f9828d73a545500680c4f6f1e1eb8b0f9124578430128045170a8d7e388a944b
-          lines: 259
-        .agents/skills/speckit-checklist/SKILL.md:
-          sha256: 6632a53c5ddbde330c7ca3a8d19459b4de866ea5296028c2178f7b4598243d78
-          lines: 383
-        .agents/skills/speckit-clarify/SKILL.md:
-          sha256: d3aa120d6b5d7718c4c6d792dd41bee66254bd4bb82f88f3067f1d1c4e9d2dc2
-          lines: 291
-        .agents/skills/speckit-constitution/SKILL.md:
-          sha256: 01074220f2b4bb32a92b8ad23a688358bd5e3828e18871b21a32ff8db6753358
-          lines: 177
-        .agents/skills/speckit-converge/SKILL.md:
-          sha256: 36bded5c2afe14cae77161ac2f1f42e6bedeb5fa2028e06dba541420b4b5508d
-          lines: 277
-        .agents/skills/speckit-implement/SKILL.md:
-          sha256: d113f4e09878a8a2e7f64b3852d698076a38394b8fc777b7426b1159c28e92fe
-          lines: 226
-        .agents/skills/speckit-plan/SKILL.md:
-          sha256: b3dca1c679a2452e8e3aa84c96b42fc5cee42e8b0cb3c30fa77a60ff83db6d4d
-          lines: 166
-        .agents/skills/speckit-specify/SKILL.md:
-          sha256: 88d7fab201de66297f16b6c271a418a0f2c198d714456dfd707e623348ec47c1
-          lines: 345
-        .agents/skills/speckit-tasks/SKILL.md:
-          sha256: 1ae03ee3aac56f19cac4cba8d51c672e4f50692f5a179f8fb65a035752e71592
-          lines: 214
-        .agents/skills/speckit-taskstoissues/SKILL.md:
-          sha256: 542bf370046ecc2dbea0a539522e0628bee7a425b47b8afb0bd67ae274c01720
-          lines: 109
-        .agents/skills/wiki-editor/SKILL.md:
+        .claude/skills/speckit-analyze/SKILL.md:
+          sha256: 3237cd827194efaf6bb06ba05ef9bc1a703a223d362f5e34d0558c5a38ae34d0
+          lines: 262
+        .claude/skills/speckit-checklist/SKILL.md:
+          sha256: 5dc436df0c727e9078bf182dd385e5cb1b60ee67ebe644d3f659ec12e3b78abb
+          lines: 386
+        .claude/skills/speckit-clarify/SKILL.md:
+          sha256: 164f49ef87cb2e922585316f5281b455a8e1940b1efd25317d517a567acae472
+          lines: 294
+        .claude/skills/speckit-constitution/SKILL.md:
+          sha256: 60c27f3962e78edf204b2b2e7cba91a616980860b61d6bf2051dc6965d483dda
+          lines: 182
+        .claude/skills/speckit-converge/SKILL.md:
+          sha256: fac66428c93e6e4fa0559a618a620d979fd8124d567f6f79db741fce0081cb3d
+          lines: 279
+        .claude/skills/speckit-implement/SKILL.md:
+          sha256: 7186d59488f89dcf23abd17baed118b05c242d4f62f1de3f9f44625a2b1728f0
+          lines: 229
+        .claude/skills/speckit-plan/SKILL.md:
+          sha256: 9e97fc0b4ce895c70a1ea720dc0377618c23e27c83ecf4d87b6e0f6c323790a4
+          lines: 169
+        .claude/skills/speckit-specify/SKILL.md:
+          sha256: d4d93f2444355136e78bb533988aa2dd560dc4b258f4923f67b1a437e7de38f8
+          lines: 348
+        .claude/skills/speckit-tasks/SKILL.md:
+          sha256: d148aeda1011260c4465c5f105fa1e045a0b0224ccb3e6e0c1ec32c732cae1ae
+          lines: 218
+        .claude/skills/speckit-taskstoissues/SKILL.md:
+          sha256: 464bbaf464a28ffa371b0452599c18e7cb5799630148d9f945e6a4d7066a1234
+          lines: 112
+        .claude/skills/wiki-editor/SKILL.md:
           sha256: 0ebf7c6f99fe2a0f445f198b50e0485ab448e8b1fa6667a23f5753abc3f9de0e
           lines: 65
-        .agents/skills/wiki-librarian/SKILL.md:
-          sha256: f35c0ea71d20ec89e5beb3af56a70d221ac3ed93a4f2858c9acebe0b8d0f7034
+        .claude/skills/wiki-librarian/SKILL.md:
+          sha256: 6af14d10c9a402f7248a46bb1dda9acc72191d1a2f0d3425b6a1ae07ab99707e
           lines: 266

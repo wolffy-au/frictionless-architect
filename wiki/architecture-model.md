@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-18
+generated: 2026-09-19
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -31,7 +31,7 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 ```
 
 (`architecture/model/README.md` §"Architecture model"). `build.py` runs
-`.agents/skills/model-archimate/scripts/validate.py`, which holds the **whole**
+`.claude/skills/model-archimate/scripts/validate.py`, which holds the **whole**
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see "Motivation-layer lint" below). The
@@ -71,8 +71,8 @@ Schema rules (`architecture/model/README.md` §"Schema";
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 - **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
-  from `.agents/skills/model-archimate/reference/archi-viewpoints.xml`
-  (`poetry run python .agents/skills/model-archimate/scripts/viewpoints.py
+  from `.claude/skills/model-archimate/reference/archi-viewpoints.xml`
+  (`poetry run python .claude/skills/model-archimate/scripts/viewpoints.py
   list`). `build.py` holds that view to the viewpoint's allowed concepts and
   fails on a stray one; `viewpoint: custom` marks a deliberate cross-layer view
   (not checked), and omitting the key also skips the check
