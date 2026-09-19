@@ -9,8 +9,8 @@ and [ADR-0008](../../docs/adr/0008-model-type-is-bare-archimate-name.md).
 ```text
 elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
    └─▶ build.py ─▶ frictionless-architect.xml ─▶ validate.py
-                        ├─▶ diagram-c4     ─▶ diagrams/*-c4-*.puml / .svg
-                        └─▶ diagram-archimate ─▶ diagrams/*-<view>.puml / .svg
+                        ├─▶ diagram-c4     ─▶ diagrams/c4/*.puml / .svg
+                        └─▶ diagram-archimate ─▶ diagrams/<layer>/<view>.puml / .svg
 ```
 
 ## Files

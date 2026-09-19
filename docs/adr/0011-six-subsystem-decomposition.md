@@ -4,7 +4,7 @@
   `ARCHITECTURE.md` / `PROJECT_SPECIFICATION.md`
 - **Date:** 2026-08-29
 - **Sources:** session memory `ecosystem-c4`; `architecture/model/README.md`
-  §"Model contents" (section B); `architecture/model/diagrams/frictionless-architect-c4-container.puml`
+  §"Model contents" (section B); `architecture/model/diagrams/c4/container.puml`
 
 ## Context
 
