@@ -178,7 +178,7 @@
 
 - id: view-skeleton
   name: Architecture Skeleton
-  diagram: frictionless-architect-skeleton
+  diagram: cross-layer/skeleton
   # The load-bearing subset (ADR-0010): motivation spine + the capabilities it
   # drives. A deliberate cross-layer cut — no standard viewpoint spans
   # motivation elements and Capability together.
@@ -199,10 +199,11 @@
 
 - id: view-delivery
   name: Delivery Choreography
-  diagram: frictionless-architect-delivery
-  # Business Process Cooperation in spirit, but it also shows the capabilities
-  # the processes realize (not a Business Process Cooperation concept).
-  viewpoint: custom
+  diagram: cross-layer/delivery
+  # BusinessProcess -> Capability realization: the standard viewpoint whose
+  # allow-list spans both (Capability + $BusinessElements$) is Outcome
+  # Realization, even though no Outcome element sits on this particular view.
+  viewpoint: outcome_realization
   include_types: [BusinessProcess]
   members:
     - cap-spec-engine
@@ -214,10 +215,11 @@
 
 - id: view-subsystem-capabilities
   name: Subsystems & Capabilities
-  diagram: frictionless-architect-subsystem-capabilities
-  # Application Component -> Strategy Capability realization: a bridge view
-  # that spans the application and strategy layers by design.
-  viewpoint: custom
+  diagram: cross-layer/subsystem-capabilities
+  # ApplicationComponent -> Capability realization: the standard viewpoint
+  # whose allow-list spans both (Capability + $ApplicationElements$) is
+  # Outcome Realization, even though no Outcome element sits on this view.
+  viewpoint: outcome_realization
   members:
     - sub-catalog
     - sub-library
@@ -237,7 +239,7 @@
 - id: view-artefact-oscal
   name: Artefact Flow — Controls & OSCAL
   viewpoint: application_cooperation
-  diagram: frictionless-architect-artefact-oscal
+  diagram: application/artefact-oscal
   members:
     - sub-catalog
     - fn-policy-authoring
@@ -252,7 +254,7 @@
 - id: view-business-controls-catalog
   name: Business — Controls & Compliance Catalog
   viewpoint: business_process_cooperation
-  diagram: frictionless-architect-business-controls-catalog
+  diagram: business/controls-catalog
   # Business-layer-only counterpart of view-artefact-oscal: the Compliance
   # Officer / Auditor authoring policy and converting it (with upstream
   # regulatory standards) into OSCAL catalogs/profiles. Trestle is
@@ -287,7 +289,7 @@
 - id: view-artefact-library
   name: Artefact Flow — Library & Design
   viewpoint: application_cooperation
-  diagram: frictionless-architect-artefact-library
+  diagram: application/artefact-library
   members:
     - sub-library
     - fn-pattern-authoring
@@ -308,7 +310,7 @@
 - id: view-artefact-twin-governance
   name: Artefact Flow — Digital Twin & Governance
   viewpoint: application_cooperation
-  diagram: frictionless-architect-artefact-twin-governance
+  diagram: application/artefact-twin-governance
   members:
     - sub-twin
     - sub-governance
@@ -338,7 +340,7 @@
 - id: view-artefact-assurance-spec
   name: Artefact Flow — Assurance & Specification
   viewpoint: application_cooperation
-  diagram: frictionless-architect-artefact-assurance-spec
+  diagram: application/artefact-assurance-spec
   members:
     - sub-assurance
     - sub-modelling
@@ -365,13 +367,17 @@
 
 - id: view-it4it-capability-bridges
   name: "IT4IT: Capability Bridges"
-  viewpoint: custom
+  # Pure Capability, both first-party cap-* and it4it-cap-* — a clean fit for
+  # the standard Capability Map viewpoint.
+  viewpoint: capability
   diagram: frictionless-architect-it4it-capability-bridges
   # The traceability layer: every cap-* <-> IT4IT capability Association
   # (props.source: it4it-alignment in relationships.yaml). Deliberately NOT
   # in third_party/it4it/views.yaml — that repo is IT4IT-only content; this
-  # view is a cross-model cut spanning both, same convention as
-  # frictionless-architect-subsystem-capabilities.
+  # view is a cross-*model* cut spanning both repos, so its diagram stays
+  # flat at the diagrams/ root rather than living in any one layer folder —
+  # unlike cross-layer/subsystem-capabilities, which is only a cross-*layer*
+  # cut within this repo's own model and so does get a layer folder.
   members:
     - cap-digital-twin
     - cap-reusable-architecture
