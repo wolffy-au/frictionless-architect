@@ -40,11 +40,11 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 
-`build.py` runs `.agents/skills/model-archimate/scripts/validate.py`, which
+`build.py` runs `.claude/skills/model-archimate/scripts/validate.py`, which
 holds the **whole** model to the ArchiMate 3.2 relationship matrix.
 
 - **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
-  from `.agents/skills/model-archimate/reference/archi-viewpoints.xml` (run
+  from `.claude/skills/model-archimate/reference/archi-viewpoints.xml` (run
   `scripts/viewpoints.py list`). `build.py` holds that view to the
   viewpoint's allowed concepts and fails on a stray one. `custom` = a
   deliberate cross-layer view (not checked); omitting the key also skips the

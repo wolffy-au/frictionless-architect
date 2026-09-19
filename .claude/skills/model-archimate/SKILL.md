@@ -51,9 +51,9 @@ machine-readable form of the ArchiMate 3.2 §14 viewpoint tables. See
 `$…Elements$` collection tokens and applying Archi's allow-list semantics):
 
 ```bash
-poetry run python .agents/skills/model-archimate/scripts/viewpoints.py list
-poetry run python .agents/skills/model-archimate/scripts/viewpoints.py show value_stream
-poetry run python .agents/skills/model-archimate/scripts/viewpoints.py \
+poetry run python .claude/skills/model-archimate/scripts/viewpoints.py list
+poetry run python .claude/skills/model-archimate/scripts/viewpoints.py show value_stream
+poetry run python .claude/skills/model-archimate/scripts/viewpoints.py \
   check MODEL.xml --view "Value Stream — …" --viewpoint value_stream
 ```
 
@@ -125,7 +125,7 @@ the direct edge for readability — both legitimate reasons to keep it).
 advisory only (exit 0 always, findings to review by hand):
 
 ```bash
-poetry run python .agents/skills/model-archimate/scripts/check_derived.py model.archimate
+poetry run python .claude/skills/model-archimate/scripts/check_derived.py model.archimate
 ```
 
 It deliberately does **not** check `Access`, `Influence`, `Specialization` or
@@ -146,7 +146,7 @@ Run it whenever adding relationships, alongside `validate.py`.
 Run `scripts/validate.py`:
 
 ```bash
-poetry run python .agents/skills/model-archimate/scripts/validate.py model.archimate
+poetry run python .claude/skills/model-archimate/scripts/validate.py model.archimate
 ```
 
 It reports and exits non-zero on any of:

@@ -55,7 +55,8 @@ guidance here, inside the manual block.
 - `tests/` — mirrors the `src/` package layout; `tests/unit/<pkg>/test_<mod>.py` for
   `src/frictionless_architect/<pkg>/<mod>.py`. Also `tests/api/` (in-process FastAPI)
   and `tests/features/` (behave). See `TECHNICAL.md` → "Testing Layout".
-- `.agents/skills/` and `.agents/agents/` — the skill and subagent catalogs (below).
+- `.claude/skills/` and `.claude/agents/` — the skill and subagent catalogs (below); tracked
+  in git despite living under `.claude/` (see `.gitignore`'s `.claude/` block).
 - `.specify/` — Spec Kit machinery; `specs/` — feature specs.
 
 ### Working on the code
@@ -108,10 +109,10 @@ type/test suite on push, Conventional Commits check on the message.
 
 ## Skills & Workflows
 
-Available skills/workflows are cataloged in [`.agents/skills/README.md`](.agents/skills/README.md).
+Available skills/workflows are cataloged in [`.claude/skills/README.md`](.claude/skills/README.md).
 Invoke each by its directory name (e.g. `speckit-plan`, `fork-sync`).
 
-Subagents are cataloged in [`.agents/agents/README.md`](.agents/agents/README.md)
+Subagents are cataloged in [`.claude/agents/README.md`](.claude/agents/README.md)
 (e.g. `quality-uplift`, `coverage-uplift`, `acceptance-author`, `docs-uplift`,
 `refactor-analyst`, `spec-alignment`, `adr-auditor`, `vulnerability-remediator`,
 `release-runner`, `commit-auditor`).

@@ -25,7 +25,7 @@ run_command() {
 # can't be resolved.
 github_latest_release_tag() {
     local repo="$1"   # e.g. github/spec-kit
-    curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+    curl -fsSL --proto "=https" "https://api.github.com/repos/${repo}/releases/latest" \
         | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/'
 }
 
@@ -72,7 +72,7 @@ fi
 echo "✅ Done"
 
 # ── Spec Kit scaffolding: regenerate to match the installed CLI ──────────────
-# .specify/{templates,scripts,integrations} and .agents/skills/speckit-* are
+# .specify/{templates,scripts,integrations} and .claude/skills/speckit-* are
 # git-ignored and rebuilt here. .specify/speckit.lock (tracked) pins the version;
 # if a rebuild changes it, the working tree goes dirty so the bump gets reviewed
 # and committed. .specify/memory/ is hand-owned and never touched.
@@ -144,30 +144,34 @@ GITIGNORE
 LOCKED_VERSION=$(jq -r '.speckit_version // "none"' "$LOCK_FILE" 2>/dev/null || echo "none")
 
 # Guard the hand-owned governance files against any tooling side effects.
+# rm first: `cp -r src dst` copies INTO dst instead of overwriting it when dst
+# already exists (e.g. a re-run in the same container, /tmp not cleared),
+# which would nest a stray .specify/memory/memory/ on restore below.
+rm -rf /tmp/speckit-memory.bak
 cp -r "$WORKSPACE_DIR/.specify/memory" /tmp/speckit-memory.bak 2>/dev/null || true
 
 if [[ -f "$SPECKIT_MANIFEST" ]]; then
     # Existing scaffolding present → diff-aware upgrade (blocks on modified managed files).
     #
-    # Deliberately targets "codex", not "claude", even though this devcontainer
-    # is normally driven from Claude Code. Skill content is kept under
-    # .agents/skills/ (the codex integration's layout); .claude/skills/* are
-    # symlinks into that same directory, so Claude Code already reads the
-    # up-to-date skills without a separate "claude" integration install.
-    # `specify integration switch claude` looks tempting but should NOT be
-    # run here: its install step atomically writes shared infra files via
-    # tempfile + chmod + rename, and chmod fails with EPERM on this
-    # drvfs/9p-mounted workspace (see the EPERM note below), leaving the
-    # switch half-applied — it deleted the .agents/skills/*.md files before
-    # failing to install the claude integration. If this was already tried
-    # and left the tree in that state, restore with:
-    #   git checkout -- .agents/skills/ .specify/integration.json .specify/integrations/codex.manifest.json
-    specify integration upgrade codex --script sh \
+    # Targets "claude" — the native Claude Code integration writes the
+    # speckit-* skills straight into .claude/skills/speckit-*, which
+    # .gitignore re-ignores (see the .claude/ block there); the repo's own
+    # tracked skills/agents live alongside them in .claude/skills/ and
+    # .claude/agents/ and are untouched, since claude.manifest.json only
+    # lists the speckit-* paths it owns. `upgrade` refreshes the current
+    # integration in place, but still writes .specify/integrations/*.json
+    # via the same atomic tempfile → chmod → rename path that trips the
+    # drvfs EPERM (see the note below) — `sudo` sidesteps the UID-mapping
+    # check that causes it. If a run is ever interrupted mid-write, restore
+    # with:
+    #   git checkout -- .claude/skills/ .claude/agents/ .specify/integration.json .specify/integrations/claude.manifest.json
+    sudo env PATH="$PATH" HOME="$HOME" specify integration upgrade claude --script sh \
         || echo "⚠️  'specify integration upgrade' did not complete cleanly — run 'specify integration status'."
 else
     # Fresh clone (scaffolding is git-ignored and absent) → scaffold from bundled assets.
-    specify init --here --force --non-interactive --ignore-agent-tools \
-        --integration codex --integration-options "--skills" \
+    # sudo for the same reason as the upgrade branch above (drvfs chmod EPERM).
+    sudo env PATH="$PATH" HOME="$HOME" specify init --here --force --non-interactive --ignore-agent-tools \
+        --integration claude \
         || echo "⚠️  'specify init' did not complete cleanly."
 fi
 
@@ -248,7 +252,7 @@ install_skill_from_release() {
     local tmp
     tmp=$(mktemp -d)
     local extracted_root=""
-    if curl -fsSL "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz" -o "${tmp}/skill.tar.gz" \
+    if curl -fsSL --proto "=https" "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz" -o "${tmp}/skill.tar.gz" \
         && tar -xzf "${tmp}/skill.tar.gz" -C "${tmp}"; then
         extracted_root=$(find "${tmp}" -mindepth 1 -maxdepth 1 -type d | head -1)
     fi
@@ -267,11 +271,6 @@ install_skill_from_release() {
 install_skill_from_release "JuliusBrussee/caveman" "skills/caveman" ".claude/skills/caveman" "caveman"
 install_skill_from_release "REMvisual/claude-handoff" "skills/handoff" ".claude/skills/session-handoff" "session-handoff"
 echo "✅ Done"
-
-# Linking repo-tracked skills & agents into .claude/
-# Extracted to scripts/link-claude-skills.sh so it can also be run by hand after
-# `git worktree add` (each worktree gets its own git-ignored .claude/).
-"$WORKSPACE_DIR/scripts/link-claude-skills.sh"
 
 # Installing Git Hooks
 echo -e "\n🪝 Installing Git Hooks..."

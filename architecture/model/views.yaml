@@ -7,8 +7,8 @@
 # `viewpoint:` is set and not `custom`) holds it to that standard ArchiMate
 # viewpoint's allowed concepts — a stray concept fails the build. Slugs and
 # allow lists:
-#   .agents/skills/model-archimate/reference/archi-viewpoints.xml
-#   (list them: poetry run python .agents/skills/model-archimate/scripts/viewpoints.py list)
+#   .claude/skills/model-archimate/reference/archi-viewpoints.xml
+#   (list them: poetry run python .claude/skills/model-archimate/scripts/viewpoints.py list)
 # `viewpoint: custom` = a deliberate cross-layer view; omitting the key skips
 # the check.
 #

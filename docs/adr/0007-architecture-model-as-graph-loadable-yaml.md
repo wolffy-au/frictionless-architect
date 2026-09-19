@@ -38,7 +38,7 @@ architecture/model/{elements,relationships,views}.yaml   (canonical, hand-edited
 
 - `frictionless-architect.xml` and everything under `diagrams/` are committed but
   generated — same status as `.puml` / `.svg`; never hand-edited.
-- `build.py` runs `.agents/skills/model-archimate/scripts/validate.py`, which now
+- `build.py` runs `.claude/skills/model-archimate/scripts/validate.py`, which now
   gates the **whole** model against the ArchiMate 3.2 relationship matrix
   (previously only the C4 subset was checked).
 - One unified model holds three layered sections — A. Skeleton (ADR-0010),

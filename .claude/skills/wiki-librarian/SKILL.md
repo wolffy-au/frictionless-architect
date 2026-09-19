@@ -62,7 +62,7 @@ If there is no `wiki/` directory (or no `wiki/sources.yaml`):
 2. **Auto-discover candidate sources**: glob the repo for documentation —
    `*.md` at root, `docs/**`, `architecture/**`, `specs/**`, `*.md` in
    notable subdirectories — and any other obvious knowledge files. Ignore
-   `.git`, `node_modules`, virtualenvs, lockfiles, `.agents/`, generated
+   `.git`, `node_modules`, virtualenvs, lockfiles, `.claude/`, generated
    output, and anything in `.gitignore`.
 3. Draft `wiki/sources.yaml` grouping the discovered files into a proposed
    topic map (see "Writing sources.yaml" below). Group by subject, not by

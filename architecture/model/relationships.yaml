@@ -10,7 +10,7 @@
 #           c4-label overrides `label` in the C4 projection only
 #
 # Every (source, type, target) pair is held to the ArchiMate 3.2 relationship
-# matrix by `.agents/skills/model-archimate/scripts/validate.py` (run by build.py).
+# matrix by `.claude/skills/model-archimate/scripts/validate.py` (run by build.py).
 
 # =====================================================================
 # A. Capability realizes its functional requirement (component -> contract)

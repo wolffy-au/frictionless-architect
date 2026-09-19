@@ -12,7 +12,7 @@ date where known, otherwise `unknown (pre-dates this log)`.
 
 ## Keeping it honest
 
-The [`adr-auditor`](../../.agents/agents/adr-auditor.md) agent sweeps the
+The [`adr-auditor`](../../.claude/agents/adr-auditor.md) agent sweeps the
 decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, the constitution files,
 `specs/**`) and recent commits for choices that were made without a record, for
 ADRs that have drifted from their sources, and for conflicting records. It opens

@@ -1,10 +1,10 @@
 # Agents
 
-Tool-neutral catalog of the subagents in this repo. Each is a single Markdown file
-with YAML frontmatter (`name`, `description`, `tools`, `model`) followed by its
-instructions. Agents that support it expose each by its `name`.
-
-`.agents/agents/` is symlinked to `.claude/agents/` by the devcontainer.
+Catalog of the subagents in this repo, tracked in git under `.claude/agents/`
+(the `.claude/` directory is otherwise git-ignored local state — see
+`.gitignore`). Each is a single Markdown file with YAML frontmatter (`name`,
+`description`, `tools`, `model`) followed by its instructions. Claude Code
+exposes each by its `name`.
 
 ## Maintenance agents
 

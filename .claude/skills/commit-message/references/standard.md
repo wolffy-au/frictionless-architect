@@ -45,7 +45,7 @@ Use the package directory name, not the Python module name.
 
 **Area scopes** — cross-cutting parts of the repo:
 
-- `agents` — `.agents/agents/` and `.agents/skills/`
+- `agents` — `.claude/agents/` and `.claude/skills/`
 - `skills` — a single skill when `agents` is too broad
 - `devcontainer` — `.devcontainer/`
 - `speckit` — Spec Kit integration, `.specify/`

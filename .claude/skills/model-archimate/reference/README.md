@@ -16,7 +16,7 @@ the file from that URL:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/archimatetool/archi/master/com.archimatetool.model/model/viewpoints.xml \
-  -o .agents/skills/model-archimate/reference/archi-viewpoints.xml
+  -o .claude/skills/model-archimate/reference/archi-viewpoints.xml
 ```
 
 Content is otherwise unmodified; pre-commit trims trailing whitespace and
