@@ -43,7 +43,7 @@ from pyArchimate.view.layout import LayoutConfig, apply_format, apply_layout
 
 HERE = Path(__file__).parent
 OUT = HERE / "frictionless-architect.xml"
-SKILL_SCRIPTS = HERE.parents[1] / ".agents/skills/model-archimate/scripts"
+SKILL_SCRIPTS = HERE.parents[1] / ".claude/skills/model-archimate/scripts"
 VALIDATOR = SKILL_SCRIPTS / "validate.py"
 # Vendored reference models (ADR-0029): each is loaded alongside the
 # first-party elements.yaml/relationships.yaml and merged into the same

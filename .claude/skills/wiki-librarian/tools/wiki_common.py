@@ -43,7 +43,7 @@ IGNORE_DIRS = {
     ".cache",
     "dist",
     "build",
-    ".agents",
+    ".claude",
     "wiki",
 }
 
