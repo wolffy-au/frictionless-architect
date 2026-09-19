@@ -6,16 +6,13 @@ set -euo pipefail
 export PATH="$HOME/.local/bin:$PATH"
 
 echo "Starting pre-commit checks..."
-echo "Updating dependency locks to the latest compatible versions..."
-poetry run poetry update
-poetry update
 
 echo "Running pre-commit checks..."
 
 # --- Linting and Formatting Check ---
 echo "Running pymarkdown lint..."
 # Runs pymarkdown for linting markdown files. Assumes pymarkdown is executable in the environment.
-poetry run pymarkdownlnt fix *.md specs/*.md
+poetry run pymarkdownlnt fix ./*.md specs/*.md
 
 echo "Running ruff check..."
 # Runs ruff for linting and formatting checks across the project.
