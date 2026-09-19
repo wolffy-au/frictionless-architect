@@ -1,48 +1,59 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
       - main
+      - develop
       - "feature/**"
       - "bugfix/**"
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - main
+      - develop
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   test:
+    name: Lint, type-check, and test
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
       - name: Install Poetry
-        run: pip install --upgrade poetry
+        run: pip install --upgrade poetry --only-binary ":all:"
 
-      - name: Lock dependencies
-        run: poetry lock
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-ubuntu-py3.12-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-ubuntu-py3.12-
 
-      - name: Sync dependencies
-        run: poetry update
+      - name: Install dependencies from the committed lock file
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction
 
-      - name: Run linters and tests
+      - name: Run pymarkdown lint
         run: poetry run pymarkdownlnt fix ./*.md specs/*.md
 
-      - name: Run ruff for linting and auto-fixing
-        run: poetry run ruff check . --fix
+      - name: Run ruff for linting
+        run: poetry run ruff check .
 
       - name: Run pyright for static type checking
         run: poetry run pyright
@@ -51,10 +62,48 @@ jobs:
         run: poetry run mypy
 
       - name: Run behave tests
+        # tests/features/ is a placeholder — not gated until real scenarios exist.
+        # Drop `|| true` once there is real BDD coverage to enforce.
         run: poetry run behave tests/features/ || true
 
       - name: Run pytest for unit and integration tests
-        run: poetry run pytest --cov --cov-report=xml --cov-fail-under=90
+        run: poetry run pytest --cov-fail-under=90
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: build/coverage.xml
+          if-no-files-found: error
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk --ignore-scripts
+
+      - name: Authenticate Snyk
+        run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Scan Test
+        run: poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
+
+      - name: Snyk Code Scan
+        run: poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores
+
+  sonar:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    needs: test
+    if: (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-xml
+          path: build
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@9598b8a83feef37de07f549027fab50ecffe6a6e
@@ -62,19 +111,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: SonarQube Quality Gate
+        # SonarCloud's free-tier org plan only reports Quality Gate status for
+        # pull requests and the main branch — polling it for a plain push to
+        # develop returns 403 ("Organization is not allowed to access data
+        # from non main branches"), even though the scan itself succeeds.
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
         uses: SonarSource/sonarqube-quality-gate-action@cb3ed20f9fec62b4c3b8ad9e77656c6adaade913
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-
-      - name: Authenticate Snyk
-        run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
-
-      # - name: Snyk Scan Test
-      #   run: poetry run snyk test --package-manager=poetry --severity-threshold=high --org=wolffy-au
-
-      # - name: Snyk Code Scan
-      #   run: poetry run snyk code test --package-manager=poetry --severity-threshold=high --org=wolffy-au --include-ignores

@@ -23,14 +23,24 @@ repos:
       - id: check-added-large-files
       - id: mixed-line-ending
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.9            # matches the pinned ruff in pyproject.toml
-    hooks:
-      - id: ruff            # lint + complexity gate — auto-fixes where possible
-      - id: ruff-format     # formatter — auto-reformats staged files
-
   - repo: local
     hooks:
+      # Run through `poetry run` rather than pinning a separate ruff-pre-commit
+      # rev — a standalone rev drifts out of sync with poetry.lock's resolved
+      # ruff version, and ruff's isort classification of ambiguous imports
+      # (e.g. a same-named local module vs. a third-party package) can differ
+      # between versions, so the two ruffs silently disagreed with each other.
+      - id: ruff
+        name: ruff lint
+        entry: poetry run ruff check --fix
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: poetry run ruff format
+        language: system
+        types: [python]
+
       - id: pymarkdown
         name: pymarkdown lint
         entry: poetry run pymarkdownlnt fix

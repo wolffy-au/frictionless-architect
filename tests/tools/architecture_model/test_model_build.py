@@ -8,9 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from pyArchimate import Element, Model
-
 import build
+from pyArchimate import Element, Model
 
 
 def test_canon_resolves_case_and_separator_insensitively() -> None:
@@ -27,7 +26,9 @@ def test_canon_reports_unknown_name_with_context() -> None:
 
 
 def test_det_id_is_deterministic_and_distinct() -> None:
-    assert build.det_id("x") == build.det_id("x")
+    first_call = build.det_id("x")
+    second_call = build.det_id("x")
+    assert first_call == second_call
     assert build.det_id("x", "y") != build.det_id("y", "x")
 
 
