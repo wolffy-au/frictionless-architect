@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Delete workflow runs older than ${{ inputs.days || 30 }} days
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const days = parseInt(core.getInput('days') || '${{ inputs.days || 30 }}');
