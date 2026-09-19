@@ -6,8 +6,12 @@ from pathlib import Path
 from typing import Iterable
 from xml.etree import ElementTree as ET
 
+# XML namespace identifiers, not fetched endpoints — these are the literal,
+# spec-defined strings (W3C XML Schema, The Open Group's ArchiMate 3.0
+# exchange format) that real documents declare; switching the scheme would
+# stop matching them and break schema validation.
 XSD_NS = "http://www.w3.org/2001/XMLSchema"
-ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"
+ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"  # NOSONAR
 XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 
 
