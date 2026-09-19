@@ -28,10 +28,11 @@ from __future__ import annotations
 
 import argparse
 import sys
-import xml.etree.ElementTree as ET
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
+
+from defusedxml.ElementTree import parse as _safe_parse
 
 REFERENCE_DIR = Path(__file__).resolve().parent.parent / "reference"
 ARCHI_XML = REFERENCE_DIR / "archi-viewpoints.xml"
@@ -160,7 +161,10 @@ def load_viewpoints(xml_path: str | None = None) -> dict[str, dict[str, Any]]:
     elements_unrestricted (bool), relationships_unrestricted (bool), plus any
     keys from the guidance overlay.
     """
-    root = ET.parse(Path(xml_path) if xml_path else ARCHI_XML).getroot()
+    src = Path(xml_path) if xml_path else ARCHI_XML
+    root = _safe_parse(src).getroot()
+    if root is None:
+        raise ValueError(f"{src} has no root element")
     guidance = _load_guidance()
     out: dict[str, dict[str, Any]] = {}
 

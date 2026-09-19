@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from defusedxml.ElementTree import parse as _safe_parse
+
 ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"  # Defined namespace per ArchiMate 3 spec (must stay http)
 XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"  # Standard XML Schema Instance namespace uses http and is the published URI
 
@@ -29,8 +31,10 @@ class SampleParser:
         self.sample_file = sample_file
 
     def parse(self) -> SampleParseResult:
-        tree = ET.parse(self.sample_file)
+        tree = _safe_parse(self.sample_file)
         root = tree.getroot()
+        if root is None:
+            raise ValueError(f"Sample XML {self.sample_file} has no root element")
         elements = self._parse_elements(root)
         relationships = self._parse_relationships(root)
         views = self._parse_views(root, elements)
@@ -68,7 +72,11 @@ class SampleParser:
                 "type": rel_type,
                 "source": relationship.attrib.get("source"),
                 "target": relationship.attrib.get("target"),
-                "properties": {k: v for k, v in relationship.attrib.items() if k not in {"identifier", "source", "target", f"{{{XSI_NS}}}type"}},
+                "properties": {
+                    k: v
+                    for k, v in relationship.attrib.items()
+                    if k not in {"identifier", "source", "target", f"{{{XSI_NS}}}type"}
+                },
             }
         return result
 
