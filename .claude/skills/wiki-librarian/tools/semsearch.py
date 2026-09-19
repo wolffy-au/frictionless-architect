@@ -98,7 +98,12 @@ def _default_root() -> Path:
     tools can be bundled in a skill directory separate from the corpus.
     """
     env = os.environ.get("WIKI_ROOT")
-    return Path(env).expanduser().resolve() if env else Path.cwd()
+    if not env:
+        return Path.cwd()
+    resolved = Path(env).expanduser().resolve()
+    if not resolved.is_dir():
+        raise SystemExit(f"$WIKI_ROOT does not point to an existing directory: {env!r}")
+    return resolved
 
 
 REPO = _default_root()

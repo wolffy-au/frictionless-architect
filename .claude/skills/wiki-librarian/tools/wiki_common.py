@@ -55,10 +55,20 @@ def apply_root(cli_root: str | None) -> None:
     the repo root (the directory holding `wiki/`). `--root` on the CLI or
     `$WIKI_ROOT` in the environment overrides that -- and because everything is
     CWD-relative, a `chdir` is the whole of it. No-op when neither is set.
+
+    The value is resolved (symlinks/`..` collapsed) and checked to actually be
+    a directory before `chdir`, rather than handed to the OS call raw -- both
+    a human `--root` typo and a value an agent constructs from other data
+    should fail with a clear message, not an ambiguous OS error or a silent
+    cwd change to something unexpected.
     """
     root = cli_root or os.environ.get("WIKI_ROOT")
-    if root:
-        os.chdir(os.path.expanduser(root))
+    if not root:
+        return
+    resolved = os.path.realpath(os.path.expanduser(root))
+    if not os.path.isdir(resolved):
+        raise SystemExit(f"--root/$WIKI_ROOT does not point to an existing directory: {root!r}")
+    os.chdir(resolved)
 
 
 def load_yaml(path: str, default=None):
