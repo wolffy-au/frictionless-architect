@@ -33,6 +33,7 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "tem
 async def visualizer(request: Request) -> Any:
     current_settings = get_visualizer_settings()
     return templates.TemplateResponse(
+        request,
         "schema_visualizer.html",
-        {"request": request, "warning_text": current_settings.warning_text},
+        {"warning_text": current_settings.warning_text},
     )
