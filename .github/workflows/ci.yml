@@ -111,6 +111,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: SonarQube Quality Gate
+        # SonarCloud's free-tier org plan only reports Quality Gate status for
+        # pull requests and the main branch — polling it for a plain push to
+        # develop returns 403 ("Organization is not allowed to access data
+        # from non main branches"), even though the scan itself succeeds.
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
         uses: SonarSource/sonarqube-quality-gate-action@cb3ed20f9fec62b4c3b8ad9e77656c6adaade913
         timeout-minutes: 5
         env:
