@@ -1,0 +1,40 @@
+@startuml Sample_Platform_C4_Context_Elements
+!include <C4/C4_Context>
+
+' Reference diagram: every C4_Context.puml element macro, labelled with its
+' own macro name. Not a real system model — System/SystemDb/SystemQueue are
+' alternate ways to draw *one* system in focus, shown together here only to
+' catalogue the vocabulary. See archimate-to-c4-mapping.md for which of
+' these model_to_c4.py actually emits, and from what ArchiMate element/`c4`
+' property.
+
+title Sample Platform — C4 Context element types
+LAYOUT_WITH_LEGEND()
+
+Enterprise_Boundary(Enterprise_Boundary, "Enterprise_Boundary") {
+    Person(Person, "Person", "An internal user or role.")
+
+    System_Boundary(System_Boundary, "System_Boundary") {
+        System(System, "System", "The system in focus.")
+        SystemDb(SystemDb, "SystemDb", "The system in focus, when it is primarily a datastore.")
+        SystemQueue(SystemQueue, "SystemQueue", "The system in focus, when it is primarily a message queue.")
+    }
+}
+
+Person_Ext(Person_Ext, "Person_Ext", "An external user or role.")
+
+Boundary(Boundary, "Boundary", "generic grouping") {
+    System_Ext(System_Ext, "System_Ext", "An external system.")
+    SystemDb_Ext(SystemDb_Ext, "SystemDb_Ext", "An external datastore system.")
+    SystemQueue_Ext(SystemQueue_Ext, "SystemQueue_Ext", "An external message-queue system.")
+}
+
+Rel(Person, System, "uses", "HTTPS")
+Rel(Person_Ext, System, "uses", "HTTPS")
+Rel(System, SystemDb, "reads from", "JDBC")
+Rel(System, SystemQueue, "publishes to", "AMQP")
+Rel(System, System_Ext, "calls", "HTTPS")
+Rel(System, SystemDb_Ext, "reads from", "JDBC")
+Rel(System, SystemQueue_Ext, "publishes to", "AMQP")
+
+@enduml

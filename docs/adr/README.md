@@ -42,7 +42,7 @@ narrative docs.
 - **A** — [0002](0002-poetry-monorepo-forks-as-submodules.md) — One Poetry
   monorepo for first-party code; forks as `third_party/` submodules
 - **A** — [0003](0003-poetry-not-uv.md) — Poetry is the package manager, not `uv`
-- **A** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
+- **A\*** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
   (`EPIC-` at root, `NNN-` per package)
 - **A** — [0005](0005-visualiser-api-ui-split-first-extraction.md) — Visualiser
   API/UI split is the first extraction
@@ -88,5 +88,10 @@ narrative docs.
   Commits + commitizen; SCM-derived versions; branch model
 - **A** — [0026](0026-fsm-action-endpoints-for-governed-entities.md) —
   Governed-lifecycle entities are FSMs with action-based endpoints
-- **P** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
+- **A** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
   Capability layer carries a value stream and an explicit motivation spine
+- **A** — [0028](0028-relationship-view-refs-not-relationship-fact-node.md) —
+  Relationships are edges only; views reference them by identifier list, not a
+  `RelationshipFact` node
+- **A** — [0029](0029-it4it-as-vendored-touchpoint-model.md) — IT4IT vendored
+  as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS`

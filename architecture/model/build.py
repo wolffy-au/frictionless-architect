@@ -4,11 +4,15 @@
     poetry run python architecture/model/build.py
 
 ``architecture/model/elements.yaml`` + ``relationships.yaml`` are the single
-source of truth. This script projects them into ``frictionless-architect.xml``
-(Open Group Exchange Format) via pyArchimate, then runs the ``model-archimate``
-validator over the result. Every diagram (``*.puml`` / ``*.svg``) is in turn a
-projection of that XML — regenerate them with the ``diagram-c4`` /
-``diagram-archimate`` skills after running this.
+source of truth for first-party content; each dir under ``third_party/`` (the
+IT4IT 3.0 value-stream skeleton, ADR-0029) contributes its own
+``elements.yaml`` / ``relationships.yaml`` in the same schema, merged in
+alongside the first-party ones before this script projects the combined model
+into ``frictionless-architect.xml`` (Open Group Exchange Format) via
+pyArchimate, then runs the ``model-archimate`` validator over the result.
+Every diagram (``*.puml`` / ``*.svg``) is in turn a projection of that XML —
+regenerate them with the ``diagram-c4`` / ``diagram-archimate`` skills after
+running this.
 
 Schema (see ``architecture/model/README.md``):
 
@@ -41,6 +45,12 @@ HERE = Path(__file__).parent
 OUT = HERE / "frictionless-architect.xml"
 SKILL_SCRIPTS = HERE.parents[1] / ".agents/skills/model-archimate/scripts"
 VALIDATOR = SKILL_SCRIPTS / "validate.py"
+# Vendored reference models (ADR-0029): each is loaded alongside the
+# first-party elements.yaml/relationships.yaml and merged into the same
+# det_id()/NS pass below — their own id prefix (e.g. `it4it-`) is what keeps
+# the merged id space unique, not any separate reconciliation step.
+THIRD_PARTY = HERE.parents[1] / "third_party"
+VENDORED_MODELS = [THIRD_PARTY / "it4it"]
 
 # The model-archimate skill owns the standard-viewpoint reference and the
 # conformance check a view is held to when it declares `viewpoint:`.
@@ -70,18 +80,31 @@ def det_id(*parts: str) -> str:
     return "id-" + uuid.uuid5(NS, "|".join(parts)).hex
 
 
-def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
-    path = HERE / name
+def load_path(path: Path, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
     if optional and not path.exists():
         return []
     if not path.exists():
-        errors.append(f"{name} is missing")
+        errors.append(f"{path} is missing")
         return []
     data = yaml.safe_load(path.read_text()) or []
     if not isinstance(data, list):
-        errors.append(f"{name} must be a YAML list")
+        errors.append(f"{path} must be a YAML list")
         return []
     return data
+
+
+def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
+    return load_path(HERE / name, errors, optional)
+
+
+def load_vendored(filename: str, errors: list[str]) -> list[dict[str, Any]]:
+    """Load `filename` from every vendored model dir (ADR-0029). A missing
+    submodule checkout (never initialized) is silently skipped, same as any
+    other optional input — `git submodule update --init` fixes it."""
+    merged: list[dict[str, Any]] = []
+    for model_dir in VENDORED_MODELS:
+        merged += load_path(model_dir / filename, errors, optional=True)
+    return merged
 
 
 def add_elements(
@@ -143,6 +166,93 @@ def add_relationships(m: Model, rels: list[dict[str, Any]], by_id: dict[str, Ele
         )
         for k, v in props.items():
             rel.prop(str(k), str(v))
+
+
+def _view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by_id: dict[str, str]) -> set[str]:
+    """Element ids in scope for a view — same members/include_types rule as `add_views`."""
+    want = set(v.get("members") or [])
+    types = {
+        _CANON.get(str(t).strip().replace("_", "").replace("-", "").lower()) for t in (v.get("include_types") or [])
+    }
+    return {e["id"] for e in elements if e["id"] in want or (types and types_by_id.get(e["id"]) in types)}
+
+
+def _check_driver_bypasses_assessment(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]], types_by_id: dict[str, str], errors: list[str]
+) -> None:
+    """A Driver analysed into an Assessment must route every other downstream
+    influence through that Assessment, not around it — otherwise the Goal (or
+    a Requirement) gets two inconsistent levels of justification for the same
+    Driver: one evidenced, one not."""
+    for e in elements:
+        if types_by_id.get(e["id"]) != "Driver":
+            continue
+        driver = e["id"]
+        outgoing = [r for r in rels if r["source"] == driver]
+        assessments = {r["target"] for r in outgoing if types_by_id.get(r["target"]) == "Assessment"}
+        if not assessments:
+            continue
+        for r in outgoing:
+            if r["target"] not in assessments:
+                errors.append(
+                    f"driver {driver!r} has a {r['type']} relationship straight to {r['target']!r}, "
+                    f"bypassing its own Assessment ({', '.join(sorted(assessments))}) — "
+                    "re-source it from the Assessment instead"
+                )
+
+
+def _check_derived_goal_edges(
+    elements: list[dict[str, Any]],
+    rels: list[dict[str, Any]],
+    views: list[dict[str, Any]],
+    types_by_id: dict[str, str],
+) -> list[str]:
+    """A direct `A -> Goal` relationship that is also reachable as
+    `A -> B -> Goal` is a candidate for removal as derived — *unless* some
+    view holds both A and the Goal without B in scope, in which case the
+    direct edge is the only way that view can show the connection at all,
+    and it stays."""
+    warnings: list[str] = []
+    targets_of: dict[str, set[str]] = {}
+    for r in rels:
+        targets_of.setdefault(r["source"], set()).add(r["target"])
+
+    view_scopes = {v["id"]: _view_element_ids(v, elements, types_by_id) for v in views if "id" in v}
+    for r in rels:
+        a, t = r["source"], r["target"]
+        if types_by_id.get(t) != "Goal":
+            continue
+        for b in targets_of.get(a, ()):
+            if b in (a, t) or t not in targets_of.get(b, ()):
+                continue
+            load_bearing = [vid for vid, ids in view_scopes.items() if a in ids and t in ids and b not in ids]
+            if load_bearing:
+                warnings.append(
+                    f"note: {a!r} -> {t!r} is also reachable via {b!r}, but views "
+                    f"{load_bearing} show {a!r}/{t!r} without {b!r} in scope — keeping it"
+                )
+            else:
+                warnings.append(
+                    f"warning: {a!r} -> {t!r} ({r['type']}) looks derived — already reachable via "
+                    f"{a!r} -> {b!r} -> {t!r}, and no view needs the direct edge; consider removing it"
+                )
+    return warnings
+
+
+def check_motivation_conventions(
+    elements: list[dict[str, Any]],
+    rels: list[dict[str, Any]],
+    views: list[dict[str, Any]],
+    types_by_id: dict[str, str],
+    errors: list[str],
+) -> list[str]:
+    """Project-specific motivation-layer conventions pyArchimate's metamodel gate
+    doesn't (and shouldn't) know about — both learned the hard way from earlier
+    modelling passes on this file. See `_check_driver_bypasses_assessment`
+    (hard error) and `_check_derived_goal_edges` (soft warning; never blocks
+    the build)."""
+    _check_driver_bypasses_assessment(elements, rels, types_by_id, errors)
+    return _check_derived_goal_edges(elements, rels, views, types_by_id)
 
 
 def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[str], errors: list[str]) -> None:
@@ -229,15 +339,21 @@ def main() -> int:
     m = Model("frictionless-architect")
     errors: list[str] = []
 
-    elements = load("elements.yaml", errors)
+    elements = load("elements.yaml", errors) + load_vendored("elements.yaml", errors)
     by_id, types_by_id = add_elements(m, elements, errors)
-    add_relationships(m, load("relationships.yaml", errors), by_id, errors)
-    add_views(m, load("views.yaml", errors, optional=True), elements, by_id, types_by_id, errors)
+    rels = load("relationships.yaml", errors) + load_vendored("relationships.yaml", errors)
+    add_relationships(m, rels, by_id, errors)
+    views = load("views.yaml", errors, optional=True) + load_vendored("views.yaml", errors)
+    add_views(m, views, elements, by_id, types_by_id, errors)
+    motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
 
     if errors:
         for msg in errors:
             sys.stderr.write(f"error: {msg}\n")
         return 2
+
+    for msg in motivation_warnings:
+        print(msg)
 
     m.write(str(OUT))
     print(

@@ -1,0 +1,118 @@
+// ArchiMate layer-based Neo4j Browser style sheet.
+//
+// Neo4j Browser colors/labels nodes per-label, and every element in this
+// graph also carries the generic :Element label (see ADR-0028 and
+// SchemaManager._ingest_elements) so cross-type Cypher can match any
+// element without enumerating every ArchiMate type. That's necessary for
+// the schema, but it means the *default* Browser style — which tends to
+// pick :Element for color/caption — makes every node look identical.
+//
+// This stylesheet overrides caption/color per specific ArchiMate type
+// label instead, grouped by ArchiMate layer color conventions, so the
+// visual grouping matches the type rather than the generic label.
+//
+// To use: open Neo4j Browser -> :style -> paste this file's contents (or
+// drag-and-drop it in), then save/export to keep it across sessions.
+
+node {
+  diameter: 50px;
+  color: #A5ABB6;
+  border-color: #9AA1AC;
+  border-width: 2px;
+  text-color-internal: #2A2C34;
+  caption: '{name}';
+  font-size: 10px;
+}
+
+relationship {
+  color: #A5ABB6;
+  shaft-width: 1px;
+  font-size: 8px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  caption: '{type}';
+}
+
+// --- Motivation layer (purple) ---
+node.Stakeholder    { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Driver         { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Assessment     { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Goal           { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Outcome        { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Principle      { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Requirement    { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Constraint     { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Meaning        { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+node.Value          { color: #E0CCFF; border-color: #C9A6FF; caption: '{name}'; }
+
+// --- Strategy layer (orange) ---
+node.Resource       { color: #FFE0B3; border-color: #FFC670; caption: '{name}'; }
+node.Capability     { color: #FFE0B3; border-color: #FFC670; caption: '{name}'; }
+node.CourseOfAction { color: #FFE0B3; border-color: #FFC670; caption: '{name}'; }
+node.ValueStream    { color: #FFE0B3; border-color: #FFC670; caption: '{name}'; }
+
+// --- Business layer (yellow) ---
+node.BusinessActor       { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessRole        { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessCollaboration { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessInterface   { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessProcess     { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessFunction    { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessInteraction { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessEvent       { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessService     { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.BusinessObject      { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.Contract            { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.Representation      { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+node.Product              { color: #FFFFB3; border-color: #F2E374; caption: '{name}'; }
+
+// --- Application layer (cyan/blue) ---
+node.ApplicationComponent     { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationCollaboration { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationInterface     { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationFunction      { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationInteraction   { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationProcess       { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationEvent         { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.ApplicationService       { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+node.DataObject               { color: #B3E6FF; border-color: #6FC7F2; caption: '{name}'; }
+
+// --- Technology / Physical layer (green) ---
+node.Node                  { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.Device                { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.SystemSoftware        { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyCollaboration { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyInterface   { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.Path                  { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.CommunicationNetwork  { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyFunction    { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyProcess     { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyInteraction { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyEvent       { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.TechnologyService     { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.Artifact               { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.Equipment              { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.Facility                { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+node.DistributionNetwork    { color: #C2F0C2; border-color: #8ADA8A; caption: '{name}'; }
+
+// --- Implementation & Migration layer (pink) ---
+node.WorkPackage    { color: #FFB3B3; border-color: #F27C7C; caption: '{name}'; }
+node.Deliverable    { color: #FFB3B3; border-color: #F27C7C; caption: '{name}'; }
+node.ImplementationEvent { color: #FFB3B3; border-color: #F27C7C; caption: '{name}'; }
+node.Plateau        { color: #FFB3B3; border-color: #F27C7C; caption: '{name}'; }
+node.Gap            { color: #FFB3B3; border-color: #F27C7C; caption: '{name}'; }
+
+// --- Composite / other elements ---
+node.Grouping   { color: #E6E6E6; border-color: #C0C0C0; caption: '{name}'; }
+node.Location   { color: #E6E6E6; border-color: #C0C0C0; caption: '{name}'; }
+node.Junction   { color: #E6E6E6; border-color: #C0C0C0; diameter: 20px; caption: ''; }
+
+// --- IT4IT-imported / non-standard types seen in this model ---
+node.Functional { color: #FFE0B3; border-color: #FFC670; caption: '{name}'; }
+
+// --- Non-element node kinds already have their own distinct labels ---
+node.View          { color: #D9D9D9; border-color: #B0B0B0; caption: '{name}'; }
+node.Diagram        { color: #D9D9D9; border-color: #B0B0B0; caption: '{name}'; }
+node.Viewpoint      { color: #D9D9D9; border-color: #B0B0B0; caption: '{name}'; }
+node.SchemaVersion  { color: #999999; border-color: #777777; caption: '{name}'; }

@@ -6,5 +6,15 @@ Person(BusinessActor, "Business Actor", "A role played by an organisational enti
 System_Boundary(system_boundary, "sample-platform Boundary") {
     System(AppComponent, "Application Component", "A modular, deployable and replaceable part of a software system.")
 }
+System_Ext(BusinessService, "Business Service", "A business capability offered externally that the system depends on.")
+SystemDb_Ext(BusinessObject, "Business Object", "Business-layer reference data held by an external registry.")
+' Person_Ext / SystemQueue_Ext have no ArchiMate type-based default — they
+' only ever come from an explicit c4=personExt / c4=externalQueue property.
+Person_Ext(Person_Ext, "Person_Ext", "A role or actor external to the organisation that owns the system.")
+SystemQueue_Ext(SystemQueue_Ext, "SystemQueue_Ext", "An external message queue used to exchange asynchronous events.")
 Rel(BusinessActor, AppComponent, "interacts through", "interface")
+Rel(AppComponent, BusinessService, "uses", "HTTPS")
+Rel(AppComponent, BusinessObject, "reads", "HTTPS")
+Rel(Person_Ext, AppComponent, "audits", "HTTPS")
+Rel(AppComponent, SystemQueue_Ext, "publishes events to", "AMQP")
 @enduml

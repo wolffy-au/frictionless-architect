@@ -69,16 +69,16 @@ The visualiser is the FastAPI app `frictionless_architect.visualizer:app` (title
 poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
 ```
 
-Then open `http://127.0.0.1:8100/schema-visualizer` for the diagram, table, and
-schema summary (all driven by `/schema-payload`). The schema list stays visible even
-when the banner reports missing sample data, so the last known model remains
-inspectable while a refresh is in flight.
+The service is JSON-only for now — fetch `http://127.0.0.1:8100/schema-payload`
+for the diagram, table, and schema data. The server-rendered HTML page
+(`/schema-visualizer`) described in ADR-0005 has been dropped ahead of the
+planned `schema-visualizer-ui` extraction; there is no browser UI until that
+package exists.
 
 ### Endpoints
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/schema-visualizer` | HTML page; assets at `/schema-visualizer/static` |
 | `GET` | `/schema-payload` | JSON payload; `?force_reload=true` skips cache; `503` if nothing reachable |
 | `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy |
 | `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning` |

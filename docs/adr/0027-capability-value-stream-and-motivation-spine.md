@@ -1,6 +1,6 @@
 # ADR-0027: Capability layer carries a value stream and an explicit motivation spine
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-08-30
 - **Sources:** this session; `architecture/model/elements.yaml` §A, `architecture/model/relationships.yaml` §A
 

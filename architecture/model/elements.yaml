@@ -13,6 +13,16 @@
 #   A. Motivation + Strategy + Business — the load-bearing skeleton
 #   B. Application — the six-subsystem ecosystem (C4 context / container views)
 #   C. Application — the artefact input/output pipeline (functions + artefacts)
+#
+# Authoring note — Assessment wording (not mechanically checked, review by eye):
+#   An Assessment's `name` must be written in the vocabulary of the Stakeholder
+#   who holds its Driver, not in architecture/implementation jargon. A board
+#   stakeholder reasons about market position and revenue risk, not "manual
+#   architecture governance" — push the technical cause into `desc` instead of
+#   the headline. (`build.py`'s `check_motivation_conventions` catches
+#   structural mistakes — a Driver bypassing its Assessment, a derived
+#   Constraint/Requirement->Goal edge — but altitude-of-language like this is a
+#   judgement call, not a graph check.)
 
 # =====================================================================
 # A. MOTIVATION — Drivers (why the platform exists)
@@ -83,6 +93,14 @@
     rather than after-the-fact manual evidence.
 
 - type: Assessment
+  id: assess-time-to-market
+  name: Time-to-market is falling behind AI-native competitors, risking market share
+  desc: >-
+    AI-native challengers ship customer-facing features in days; our
+    human-gated change process takes weeks. Every release cycle the gap
+    persists is a release cycle of lost competitive ground and revenue at
+    risk — a board-level concern, independent of the architectural cause.
+- type: Assessment
   id: assess-review-bottleneck
   name: Human review cannot keep pace with AI-speed delivery
   desc: >-
@@ -146,25 +164,39 @@
 # =====================================================================
 - type: Constraint
   id: const-apra
-  name: APRA CPS 230/234 Compliance
-  desc: Operational resilience and prudential standards.
+  name: No Retrospective Compliance (APRA CPS 230/234)
+  desc: >-
+    The platform must never let a change reach production on a promise to
+    check compliance later — every change requires a resolved, evidenced
+    obligation mapping before the deployment gate, and continuous
+    as-built/as-designed evidence afterward. Retrospective flagging does not
+    satisfy APRA's continuous-assurance expectation.
 - type: Constraint
   id: const-model-risk
-  name: Model Risk Management (SR 11-7 / APRA)
+  name: No Autonomous Self-Validation of Agentic Decisions
   desc: >-
-    Validation, documentation, and oversight obligations for models and agentic
-    decision-making. SR 11-7 is the de facto global standard adopted by major
-    banks; APRA's prudential and operational-resilience guidance sets the
-    Australian expectation. Together they govern how autonomous decisions are
-    validated, evidenced, and supervised.
+    The platform must not allow an AI agent to validate or approve its own
+    agentic decision-making. Wherever SR 11-7 / APRA model-risk obligations
+    apply, validation must be independent of the agent that produced the
+    change, and every validation outcome must be documented as evidence, not
+    inferred after the fact.
 - type: Constraint
   id: const-privacy
-  name: Australian Privacy Act (APP)
-  desc: Data privacy and protection regulations.
+  name: Privacy Mapping Is Mandatory, Not an Out-of-Band Check
+  desc: >-
+    Any change touching personal information must be automatically mapped to
+    its Australian Privacy Act (APP) obligations before the deployment gate,
+    and the control catalog must carry APP requirements as machine-readable
+    entries the mapping checks against — privacy may never be handled as a
+    manual, out-of-band review step.
 - type: Constraint
   id: const-cloud-policy
-  name: Cloud & Data Sovereignty Policy
-  desc: Governance and compliance policies for cloud-based operations.
+  name: Governed State Confined to Approved Sovereignty Boundary
+  desc: >-
+    The knowledge graph, audit ledger and control catalog must be hosted,
+    processed and reconciled only within approved, in-jurisdiction cloud
+    environments. No platform component may source, replicate or reconcile
+    governed system state through infrastructure outside that boundary.
 
 # =====================================================================
 # A. MOTIVATION — Functional Requirements (each one is a component contract)
@@ -461,6 +493,113 @@
     work items. A Solution Architect approves architectural drift; Security &
     Compliance approves regulatory drift. Ensures only validated, prioritised
     findings enter the delivery pipeline.
+- type: BusinessProcess
+  id: process-policy-authoring
+  name: Policy & Standards Authoring
+  desc: >-
+    The Compliance Officer / Auditor authors custom policy and standard
+    content, informed by upstream regulatory standards. Realized at
+    application layer by fn-policy-authoring (authored as Trestle Markdown).
+- type: BusinessProcess
+  id: process-oscal-conversion
+  name: OSCAL Catalog & Profile Generation
+  desc: >-
+    Converts authored policy content and upstream regulatory standards into
+    OSCAL Catalogs and Profiles. Realized at application layer by
+    fn-oscal-conversion via a Trestle round-trip.
+- type: BusinessProcess
+  id: process-pattern-traceability
+  name: Pattern Control Traceability Mapping
+  desc: >-
+    The Enterprise Architect maps generated OSCAL Profile controls onto
+    architecture patterns to capture controls traceability. Realized at
+    application layer by fn-pattern-authoring.
+- type: BusinessProcess
+  id: process-blueprint-traceability
+  name: Blueprint Control Enablement Mapping
+  desc: >-
+    The Solution Architect derives technology-specific implementation
+    blueprints from a technology-agnostic architecture pattern, capturing
+    control enablement status and gaps against the OSCAL Profile. Realized at
+    application layer by fn-blueprint-authoring.
+- type: BusinessProcess
+  id: process-effectiveness-monitoring
+  name: Controls Effectiveness Monitoring
+  desc: >-
+    Platform Operations watches whether deployed controls remain effective in
+    BAU, against the same SSP the release gate checked. Realized at
+    application layer by fn-effectiveness-monitor.
+
+# =====================================================================
+# A. BUSINESS — Objects (business-layer counterparts of the artefacts in
+#    section C; Realization links tie each back to its DataObject)
+# =====================================================================
+- type: BusinessObject
+  id: bo-regulatory-standard
+  name: Regulatory Standard
+  desc: >-
+    Upstream regulatory content consumed by the platform (e.g. NIST OSCAL
+    catalogs, FedRAMP baselines).
+- type: BusinessObject
+  id: bo-policy-doc
+  name: Policy / Standard Document
+  desc: Custom policy or standard authored by the Compliance Officer / Auditor.
+- type: BusinessObject
+  id: bo-oscal-catalog
+  name: OSCAL Catalog
+  desc: Machine-readable control catalog.
+- type: BusinessObject
+  id: bo-oscal-profile
+  name: OSCAL Profile
+  desc: Tailored control selection / baseline.
+- type: BusinessObject
+  id: bo-architecture-pattern
+  name: Architecture Pattern
+  desc: Technology-agnostic, reusable design with mapped controls.
+- type: BusinessObject
+  id: bo-implementation-blueprint
+  name: Implementation Blueprint
+  desc: >-
+    Technology-specific realisation of an architecture pattern, capturing
+    control enablement status and gaps.
+- type: BusinessObject
+  id: bo-oscal-component
+  name: OSCAL Component Definition
+  desc: Control implementation claims for a reusable blueprint.
+- type: BusinessObject
+  id: bo-solution-component
+  name: Solution Component
+  desc: >-
+    A deployed instance of an Implementation Blueprint, specialized for one
+    technology and bound into a specific Solution Design.
+- type: BusinessObject
+  id: bo-solution-design
+  name: Solution Design
+  desc: >-
+    Solution-specific composition of Solution Components, unique to one
+    system, closely related to its discovered configuration items.
+- type: BusinessObject
+  id: bo-oscal-ssp
+  name: OSCAL System Security Plan
+  desc: >-
+    Control implementation for the specific Solution Design it is derived
+    from — reconciled against discovered configuration items via the
+    existing state-discovery mechanism, not a separate one.
+- type: BusinessObject
+  id: bo-oscal-assessment-results
+  name: OSCAL Assessment Results
+  desc: >-
+    Findings on whether the SSP's declared control implementations are
+    satisfied. Verified at two cadences — a pre-release gate check and
+    continuous BAU monitoring — each a specialised instance of this.
+- type: BusinessObject
+  id: bo-release-gate-decision
+  name: Release Gate Decision
+  desc: Pass / block outcome with the controls evaluated at release time.
+- type: BusinessObject
+  id: bo-control-effectiveness-evidence
+  name: Control Effectiveness Evidence
+  desc: BAU evidence that a deployed control is (or is not) working.
 
 # =====================================================================
 # B. APPLICATION — the platform and its six subsystems
@@ -518,7 +657,7 @@
 - type: DataObject
   id: store-oscal
   name: OSCAL Repository
-  desc: OSCAL Catalogs, Profiles, Components and SSPs.
+  desc: OSCAL Catalogs, Profiles, Components, SSPs and Assessment Results.
 - type: DataObject
   id: store-patterns
   name: Pattern & Blueprint Repository
@@ -722,8 +861,9 @@
 - {type: DataObject, id: art-impact-assessment, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
 - {type: DataObject, id: art-archived-option, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
 - {type: DataObject, id: art-release-candidate, name: Release Candidate, desc: A build submitted to the enforcement gate.}
-- {type: DataObject, id: art-gate-decision, name: Gate Decision, desc: Pass / block outcome with the controls evaluated.}
-- {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working.}
+- {type: DataObject, id: art-oscal-ar, name: OSCAL Assessment Results, desc: Findings on whether an SSP's declared control implementations are satisfied.}
+- {type: DataObject, id: art-gate-decision, name: Gate Decision, desc: Pass / block outcome with the controls evaluated — the pre-release instance of an OSCAL Assessment Results.}
+- {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}
 - {type: DataObject, id: art-drift-report, name: Classified Drift Finding, desc: A deviation of current state from intent, classified and prioritised.}
 - {type: DataObject, id: art-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
 - {type: DataObject, id: art-dev-spec, name: Development Specification, desc: Executable spec derived from patterns, blueprints and designs.}

@@ -2,11 +2,20 @@
 """Generate an ArchiMate PlantUML diagram from a validated ArchiMate model.
 
     poetry run python model_to_puml.py MODEL[.archimate|.xml] [--view NAME] [-o OUT.puml]
+        [--no-direction TYPE ...]
 
 Emits PlantUML using the bundled `<archimate/Archimate>` stdlib. With
 --view, only the elements/relationships shown on that ArchiMate view are
 included; without it, the whole model. Unmapped element types fall back to
 a plain `rectangle` and are reported on stderr.
+
+--no-direction TYPE (repeatable) drops the default Up/Right layout hint
+(REL_DIRECTION) for that relationship type on this view, letting graphviz
+pick freely instead. Use it where the default rank hint fights itself — e.g.
+a relationship type with edges running both ways between the same pair of
+elements (a hub-and-spoke or mesh, not a one-way sequence), which forces
+graphviz to silently drop half the constraints as back-edges and produces a
+tangled layout regardless of the underlying data.
 
 Exit 0 = wrote output, 2 = load/lookup error.
 """
@@ -110,6 +119,30 @@ REL_MACRO = {
     "Association": "Rel_Association",
 }
 
+# Default layout direction per relationship type, using the stdlib's directional
+# macro variants (e.g. `Rel_Realization_Up`). Realization/Serving read bottom-up
+# (implementation realizing/serving something above it); Triggering/Flow read
+# left-to-right (process sequence). Types not listed here use the plain macro
+# and let graphviz pick a direction. A view whose graph isn't actually a
+# one-way sequence for one of these types (e.g. a hub-and-spoke with edges
+# running both ways between the same pair) should pass that type via
+# --no-direction / views.yaml's `no_direction:` key instead of fighting it —
+# see render_diagrams.py.
+REL_DIRECTION = {
+    "Realization": "Up",
+    "Serving": "Up",
+    "Triggering": "Right",
+    "Flow": "Right",
+}
+
+# Access relationship access_type -> stdlib macro suffix (Rel_Access_r/_w/_rw),
+# giving the connector its read/write arrowhead. Undefined/other -> plain Rel_Access.
+ACCESS_TYPE_SUFFIX = {
+    "Read": "r",
+    "Write": "w",
+    "ReadWrite": "rw",
+}
+
 # Relationship types rendered as containment (child nested in parent's box) rather
 # than an arrow. source = whole/container/active-structure, target = part/behaviour.
 # A child is only nested if it has exactly one such parent on the diagram and the
@@ -210,7 +243,7 @@ def _element_lines(
     return out
 
 
-def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
+def generate(path: str, view_name: str | None, no_direction: set[str] | None = None) -> tuple[str, list[str]]:
     model = Model("diagram")
     model.read(path)
     warnings: list[str] = []
@@ -240,6 +273,13 @@ def generate(path: str, view_name: str | None) -> tuple[str, list[str]]:
         macro = REL_MACRO.get(r.type)
         s, t = alias(r.source.uuid), alias(r.target.uuid)
         if macro:
+            if r.type == "Access":
+                suffix = ACCESS_TYPE_SUFFIX.get(getattr(r, "access_type", None))
+                if suffix:
+                    macro = f"{macro}_{suffix}"
+            direction = None if no_direction and r.type in no_direction else REL_DIRECTION.get(r.type)
+            if direction:
+                macro = f"{macro}_{direction}"
             lines.append(f'{macro}({s}, {t}, "{esc(getattr(r, "name", ""))}")')
         else:
             warnings.append(f"unmapped relationship type {r.type!r} -> plain association")
@@ -253,11 +293,18 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("model")
     ap.add_argument("--view", help="restrict to the contents of this ArchiMate view")
+    ap.add_argument(
+        "--no-direction",
+        action="append",
+        default=[],
+        metavar="TYPE",
+        help="drop the default layout-direction hint for this relationship type (repeatable)",
+    )
     ap.add_argument("-o", "--output", help="write .puml here (default: stdout)")
     args = ap.parse_args()
 
     try:
-        puml, warnings = generate(args.model, args.view)
+        puml, warnings = generate(args.model, args.view, set(args.no_direction))
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"error: {exc}\n")
         return 2

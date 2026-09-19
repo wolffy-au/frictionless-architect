@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""Regenerate every diagram under ``architecture/model/diagrams/`` from the model.
+"""Regenerate every diagram from the model.
 
     poetry run python architecture/model/render_diagrams.py [--check] [--no-svg]
 
 Single source of truth for "which view -> which file": the ``diagram:`` key in
 ``views.yaml`` (path under ``diagrams/``, no extension). The two C4 diagrams are
 not views — they are projected by ``diagram-c4`` and listed in ``C4_DIAGRAMS``.
+Vendored views (ADR-0029 — ``third_party/it4it/views.yaml``, loaded alongside
+``views.yaml`` the same way ``build.py`` merges the vendored elements and
+relationships) render into that model's own ``diagrams/`` dir instead of
+``architecture/model/diagrams/``; every view defined in this repo's own
+``views.yaml``, including the cross-model capability-bridges touchpoint view,
+stays under ``architecture/model/diagrams/``.
 
 Run ``build.py`` first (this reads the generated XML, it does not rebuild it).
 
@@ -31,6 +37,10 @@ HERE = Path(__file__).parent
 REPO = HERE.parents[1]
 VIEWS = HERE / "views.yaml"
 DIAGRAMS = HERE / "diagrams"
+# Vendored models (ADR-0029) each carry their own views.yaml, rendering into
+# their own diagrams/ dir — (views file, diagrams dir) pairs, same order as
+# build.py's VENDORED_MODELS.
+VENDORED_VIEW_SOURCES = [(REPO / "third_party/it4it/views.yaml", REPO / "third_party/it4it/diagrams")]
 
 # Repo-relative paths — _run() executes with cwd=REPO.
 MODEL = "architecture/model/frictionless-architect.xml"
@@ -56,20 +66,32 @@ def _run(cmd: list[str]) -> None:
         sys.stderr.write(r.stderr)
 
 
-def render(out_dir: Path, svg: bool) -> None:
-    views = yaml.safe_load(VIEWS.read_text()) or []
+def _view_jobs(roots: dict[Path, Path]) -> list[tuple[str, list[str]]]:
     jobs: list[tuple[str, list[str]]] = []
-
-    for v in views:
-        slug = v.get("diagram")
-        if not slug:
-            sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
+    for views_file, logical_root in [(VIEWS, DIAGRAMS), *VENDORED_VIEW_SOURCES]:
+        if not views_file.exists():
             continue
-        puml = out_dir / f"{slug}.puml"
-        jobs.append((slug, [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"], "-o", str(puml)]))
+        for v in yaml.safe_load(views_file.read_text()) or []:
+            slug = v.get("diagram")
+            if not slug:
+                sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
+                continue
+            puml = roots[logical_root] / f"{slug}.puml"
+            cmd = [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"], "-o", str(puml)]
+            for rel_type in v.get("no_direction", []):
+                cmd += ["--no-direction", rel_type]
+            jobs.append((slug, cmd))
+    return jobs
+
+
+def render(roots: dict[Path, Path], svg: bool) -> None:
+    """`roots` maps each logical output root (DIAGRAMS and each vendored
+    model's diagrams dir) to the actual directory to write into — themselves
+    for a real run, or matching temp dirs for `--check`."""
+    jobs = _view_jobs(roots)
 
     for slug, level, layout in C4_DIAGRAMS:
-        puml = out_dir / f"{slug}.puml"
+        puml = roots[DIAGRAMS] / f"{slug}.puml"
         jobs.append(
             (
                 slug,
@@ -89,20 +111,21 @@ def render(out_dir: Path, svg: bool) -> None:
             )
         )
 
-    for slug, cmd in jobs:
-        (out_dir / slug).parent.mkdir(parents=True, exist_ok=True)
+    for _, cmd in jobs:
+        Path(cmd[cmd.index("-o") + 1]).parent.mkdir(parents=True, exist_ok=True)
         _run(cmd)
 
     if svg:
-        pumls = sorted(str(p) for p in out_dir.rglob("*.puml"))
+        pumls = sorted(str(p) for out_dir in roots.values() for p in out_dir.rglob("*.puml"))
         _run(["plantuml", "-tsvg", *pumls])
 
     # PlantUML's SVG output has no trailing newline; the .puml generators do.
     # Normalise every file to exactly one so re-renders don't churn on it.
-    for f in out_dir.rglob("*"):
-        if f.suffix in (".puml", ".svg"):
-            text = f.read_text().rstrip("\n") + "\n"
-            f.write_text(text)
+    for out_dir in roots.values():
+        for f in out_dir.rglob("*"):
+            if f.suffix in (".puml", ".svg"):
+                text = f.read_text().rstrip("\n") + "\n"
+                f.write_text(text)
 
 
 def _all_files(root: Path) -> set[str]:
@@ -119,19 +142,24 @@ def main() -> int:
         sys.stderr.write(f"{MODEL} missing — run build.py first\n")
         return 2
 
+    diagram_roots = [DIAGRAMS] + [d for _, d in VENDORED_VIEW_SOURCES]
+
     if not args.check:
-        render(DIAGRAMS, svg=not args.no_svg)
-        print(f"rendered diagrams into {DIAGRAMS.relative_to(REPO)}")
+        render({root: root for root in diagram_roots}, svg=not args.no_svg)
+        print("rendered diagrams into " + ", ".join(str(r.relative_to(REPO)) for r in diagram_roots))
         return 0
 
     with tempfile.TemporaryDirectory() as td:
-        tmp = Path(td)
-        render(tmp, svg=not args.no_svg)
-        want, have = _all_files(tmp), _all_files(DIAGRAMS)
-        stale = sorted(want - have) + sorted(
-            f for f in want & have if not filecmp.cmp(tmp / f, DIAGRAMS / f, shallow=False)
-        )
-        orphan = sorted(have - want)
+        tmp_by_root = {root: Path(td) / str(i) for i, root in enumerate(diagram_roots)}
+        render(tmp_by_root, svg=not args.no_svg)
+        stale: list[str] = []
+        orphan: list[str] = []
+        for real, tmp in tmp_by_root.items():
+            want, have = _all_files(tmp), _all_files(real)
+            stale += sorted(want - have) + sorted(
+                f for f in want & have if not filecmp.cmp(tmp / f, real / f, shallow=False)
+            )
+            orphan += sorted(have - want)
         if stale or orphan:
             for f in stale:
                 print(f"STALE   {f}")

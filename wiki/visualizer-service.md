@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: 2026-08-29
+generated: 2026-09-13
 generator: claude-sonnet-5
 sources:
   - src/frictionless_architect/visualizer/__init__.py
@@ -9,6 +9,7 @@ sources:
   - src/frictionless_architect/visualizer/config.py
   - src/frictionless_architect/visualizer/data_loader.py
   - src/frictionless_architect/visualizer/sample_parser.py
+  - src/frictionless_architect/visualizer/sample_validator.py
   - src/frictionless_architect/schema/__init__.py
   - src/frictionless_architect/schema/manager.py
 ---
@@ -18,22 +19,29 @@ sources:
 
 The schema visualiser is the **only implemented slice** of the platform
 (`ARCHITECTURE.md` §2). It is a single FastAPI app that pairs the ArchiMate
-schema with sample data and serves both a JSON payload and an embedded HTML/JS
-UI. Its spec is `002-neo4j-schema-ui` — see
-[Platform Specification & API](platform-spec.md); the graph shape it reads is in
-[Data Model](data-model.md). `ARCHITECTURE.md` §8.1 plans to split it into a
-JSON-only `schema-visualizer-api` package plus a separate Vite UI.
+schema with sample data and serves it as a **JSON payload only** — the
+server-rendered HTML page (`GET /schema-visualizer`, Jinja templates +
+mounted `static/`) that ADR-0005 called for dropping as part of the
+visualiser API/UI split was actually removed on 2026-09-13, standalone,
+ahead of the rest of that extraction: it was the only browser UI in the app,
+so there is none again until `schema-visualizer-ui` is built
+(`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
+§"Implementation status", revised 2026-09-13). Its spec is
+`002-neo4j-schema-ui` — see [Platform Specification & API](platform-spec.md);
+the graph shape it reads is in [Data Model](data-model.md). `ARCHITECTURE.md`
+§8.1 plans to split it into a JSON-only `schema-visualizer-api` package plus a
+separate Vite UI.
 
 ## Entry point
 
 `src/frictionless_architect/visualizer/__init__.py` builds
-`app = FastAPI(title="Neo4j Schema Visualiser", lifespan=lifespan)`, includes
-the API router, mounts `static/` at `/schema-visualizer/static`, and renders
-`templates/schema_visualizer.html` at `GET /schema-visualizer`
-(`src/frictionless_architect/visualizer/__init__.py:23-38`). Run it with
+`app = FastAPI(title="Neo4j Schema Visualiser", lifespan=lifespan)` and
+includes the API router — nothing else; no template/static mounting remains
+(`src/frictionless_architect/visualizer/__init__.py:19-20`). Run it with
 `poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100`
-(`README.md` §"Schema Visualiser"). On shutdown, `lifespan` closes the Neo4j
-driver (`src/frictionless_architect/visualizer/__init__.py:17-20`).
+and fetch `http://127.0.0.1:8100/schema-payload` (`README.md` §"Schema
+Visualiser"). On shutdown, `lifespan` closes the Neo4j driver
+(`src/frictionless_architect/visualizer/__init__.py:13-16`).
 
 ## Configuration
 
@@ -50,8 +58,9 @@ driver (`src/frictionless_architect/visualizer/__init__.py:17-20`).
 | `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` |
 
 Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`;
+`schema_model_xsd_path` = `<sample_data_dir>/schema/archimate3_Model.xsd`;
 `cache_path` = `<cache_dir>/schema_payload.json`
-(`src/frictionless_architect/visualizer/config.py:27-33`). `get_visualizer_settings()` is `lru_cache`d.
+(`src/frictionless_architect/visualizer/config.py:27-37`). `get_visualizer_settings()` is `lru_cache`d.
 
 ## Request flow
 
@@ -65,7 +74,10 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
    `force_reload` or no cache exists, in which case it builds. If a build
    fails with `PayloadUnavailable` but a cache exists, the stale cache is
    returned (`src/frictionless_architect/visualizer/api.py:55-66`).
-2. **`_build_payload()`** (run in a thread) — parse the sample XML; if
+2. **`_build_payload()`** (run in a thread) — parse the sample XML; on a
+   successful parse, run `validate_sample_against_schema()` against
+   `schema_model_xsd_path` and add each returned issue as a `warning`
+   (`src/frictionless_architect/visualizer/api.py:130-142`); if
    `neo4j_uri` is set, query Neo4j via `DataLoader`; merge schema entries with
    sample entries per identifier; emit a `warning` for every schema type with
    no sample instance; raise `PayloadUnavailable` only if **both** Neo4j and
@@ -97,12 +109,27 @@ and views with `node` bounds (`x`/`y`/`w`/`h`, parsed via `int(float(...))`)
 and `connection` refs. `SampleParseResult.empty()` yields a blank result used
 when the file is missing (`src/frictionless_architect/visualizer/sample_parser.py:22-24`).
 
+### `sample_validator` (`src/frictionless_architect/visualizer/sample_validator.py`)
+
+`validate_sample_against_schema(sample_path, schema_path)` cross-checks the
+sample XML against the ArchiMate schema XSD and returns a list of issue
+strings (empty when consistent). It flags: element/relationship
+`xsi:type` values with no matching `<xsd:element>`/`<xsd:complexType>` in the
+schema; relationships whose `source`/`target` id isn't among the sample's
+element ids; and view `node`/`connection` refs pointing at a missing
+element/relationship id (`src/frictionless_architect/visualizer/sample_validator.py:69-88`).
+Called from `_build_payload()` above — every returned issue surfaces as a
+payload `warning`, it never raises.
+
 ### `DataLoader` (`src/frictionless_architect/visualizer/data_loader.py`)
 
 Opens a Neo4j driver lazily with `basic_auth`, runs three read queries in a
-session — `(:Element)`, `(:RelationshipFact)`, `(:View)-[:REPRESENTS_VIEW]->(:Diagram)` —
-and wraps `Neo4jError` as `DataLoaderError` (`src/frictionless_architect/visualizer/data_loader.py:27-91`). Returns
-empty lists if `neo4j_uri` is unset.
+session — `(:Element)`, `(source:Element)-[:ARCHIMATE_RELATIONSHIP]->(target:Element)`,
+`(:View)-[:REPRESENTS_VIEW]->(:Diagram)` — and wraps `Neo4jError` as
+`DataLoaderError` (`src/frictionless_architect/visualizer/data_loader.py:27-91`).
+Returns empty lists if `neo4j_uri` is unset. The relationship query now reads
+the edge directly rather than a `RelationshipFact` node — see
+[ADR-0028](architecture.md) below.
 
 ### `SchemaCache` (`src/frictionless_architect/visualizer/cache.py`)
 
@@ -121,14 +148,26 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   `diagrams`. A sanitised element-type string is added as a second node label
   (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:37-50`). Relationship ingestion
   **raises `ValueError`** if either endpoint `Element` is missing
-  (`src/frictionless_architect/schema/manager.py:132-141`) and writes both a direct
-  `[:ARCHIMATE_RELATIONSHIP]` edge and a `(:RelationshipFact)` node with
-  `[:SOURCE_ELEMENT]`/`[:TARGET_ELEMENT]` edges.
+  (`src/frictionless_architect/schema/manager.py:130-136`) and writes **only**
+  a direct `[:ARCHIMATE_RELATIONSHIP {identifier, type, ...}]` edge — as of
+  [ADR-0028](architecture.md), a `View`/`Diagram` no longer gets a
+  `(:RelationshipFact)` node; instead `_ingest_views`/`_ingest_diagrams` set
+  `v.relationshipIds`/`d.connectionIds` as a plain identifier-list property
+  (`src/frictionless_architect/schema/manager.py:152-217`). This drops
+  relationship ingestion from three write statements (existence check, edge
+  `MERGE`, node `MERGE`) to two (existence check, edge `MERGE`).
 - **`record_schema_version(name)`** — MERGEs a `(:SchemaVersion {name})` with
   `applied_at`.
-- **`run_audit_checks()`** — returns relationship facts with a missing
-  source/target id, and "orphan" views with zero elements or zero
-  relationships (`src/frictionless_architect/schema/manager.py:268-297`).
+- **`run_audit_checks()`** — two checks, both rewritten for the edges-only
+  shape: `_find_missing_relationship_targets` now scans every `View`/`Diagram`
+  identifier list for an id with no matching `ARCHIMATE_RELATIONSHIP` edge
+  (an edge itself can never have a missing endpoint post-ADR-0028, since Neo4j
+  won't create one — the integrity gap moved to the identifier-list side,
+  which is a plain string list, not a graph edge, so it can silently reference
+  a non-existent relationship); `_find_orphan_views` flags a `View` with zero
+  `INCLUDES`-linked elements or an empty `relationshipIds` list
+  (`src/frictionless_architect/schema/manager.py:239-279`, docstring on
+  `_find_missing_relationship_targets`).
 
 Cypher statements are passed through `_run_literal()` which casts to
 `LiteralString` for the driver's typed API (`src/frictionless_architect/schema/manager.py:33-34`).

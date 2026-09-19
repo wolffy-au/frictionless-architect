@@ -29,7 +29,20 @@
   diagram: vision/stakeholder
   # The case for change: who holds which driver, the assessments that make each
   # driver urgent, and the goal + outcome they drive toward.
-  include_types: [Stakeholder, Assessment, Driver, Goal, Outcome]
+  # Outcome and Stakeholder are scoped explicitly (not via include_types)
+  # because the IT4IT import added a second Outcome element
+  # (it4it-outcome-digital-product) and 24 more Stakeholder elements —
+  # an include_types: [..., Outcome/Stakeholder] here would pull them into a
+  # platform-only view. Same fix applies everywhere below
+  # Outcome/Capability/ValueStream/Stakeholder appear in include_types.
+  include_types: [Assessment, Driver, Goal]
+  members:
+    - outcome-executable-intelligence
+    - stk-exec
+    - stk-regulator
+    - stk-architecture
+    - stk-delivery
+    - stk-risk-compliance
 
 - id: view-motivation
   name: Motivation
@@ -37,8 +50,18 @@
   diagram: vision/motivation
   # The whole motivation model — stakeholders, assessments, drivers, goal,
   # outcome, principles, requirements, constraints — and how they relate.
+  # Stakeholder scoped explicitly (not via include_types), same reason as
+  # view-stakeholder above — the IT4IT import added 24 more Stakeholder
+  # elements that an include_types: [Stakeholder, ...] would pull in here.
   include_types:
-    [Stakeholder, Assessment, Driver, Goal, Outcome, Principle, Requirement, Constraint]
+    [Assessment, Driver, Goal, Principle, Requirement, Constraint]
+  members:
+    - outcome-executable-intelligence
+    - stk-exec
+    - stk-regulator
+    - stk-architecture
+    - stk-delivery
+    - stk-risk-compliance
 
 - id: view-goal-realization
   name: Goal Realization
@@ -46,7 +69,9 @@
   diagram: vision/goal-realization
   # How the goal refines into the outcome, and how principles, requirements and
   # constraints realize it.
-  include_types: [Goal, Outcome, Principle, Requirement, Constraint]
+  include_types: [Goal, Principle, Requirement, Constraint]
+  members:
+    - outcome-executable-intelligence
 
 - id: view-strategy
   name: Strategy
@@ -57,17 +82,37 @@
   # recipient stakeholders belong to the Value Stream view; the goal linkage
   # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
   # stops at the strategy layer — see Goal Realization for that.
-  include_types: [Capability, CourseOfAction, Resource]
+  # Capability is scoped via members, not include_types — see the note on
+  # view-stakeholder above; the IT4IT import added 42 more Capability elements.
+  include_types: [CourseOfAction, Resource]
   members:
     - vs-governed-delivery
     - outcome-executable-intelligence
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 - id: view-capability
   name: Capability Map
   viewpoint: capability
   diagram: vision/capability-map
   # The eight abilities and the Serving dependency order between them.
-  include_types: [Capability]
+  # Members, not include_types — the IT4IT import added 42 more Capability
+  # elements (see third_party/it4it/views.yaml's view-it4it-capability-map).
+  members:
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 - id: view-value-stream
   name: Value Stream — Governed Architecture Delivery
@@ -77,8 +122,16 @@
   # Reconcile→Specify feedback Flow), the capabilities that Serve each stage,
   # the recipient stakeholders the stream delivers value to, and the Outcome it
   # Realizes. Resources and courses of action belong to the Strategy view.
-  include_types: [ValueStream]
+  # ValueStream is scoped via members, not include_types — the IT4IT import
+  # added 36 more ValueStream elements (7 streams + 29 stages).
   members:
+    - vs-governed-delivery
+    - vss-baseline
+    - vss-specify
+    - vss-build
+    - vss-prove
+    - vss-release
+    - vss-reconcile
     - cap-control-catalog
     - cap-reusable-architecture
     - cap-digital-twin
@@ -98,9 +151,26 @@
   diagram: vision/outcome-realization
   # How business processes realize capabilities, which serve the value stream,
   # which realizes the outcome — the end-to-end realization chain.
-  include_types: [Capability, ValueStream, BusinessProcess]
+  # Capability/ValueStream scoped via members, not include_types — see notes
+  # above; the IT4IT import added elements of both types.
+  include_types: [BusinessProcess]
   members:
     - outcome-executable-intelligence
+    - vs-governed-delivery
+    - vss-baseline
+    - vss-specify
+    - vss-build
+    - vss-prove
+    - vss-release
+    - vss-reconcile
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 # =====================================================================
 # Cross-cutting / later-phase views
@@ -112,8 +182,20 @@
   # The load-bearing subset (ADR-0010): motivation spine + the capabilities it
   # drives. A deliberate cross-layer cut — no standard viewpoint spans
   # motivation elements and Capability together.
+  # Outcome/Capability scoped via members, not include_types — see the note
+  # on view-stakeholder above; the IT4IT import added elements of both types.
   viewpoint: custom
-  include_types: [Driver, Goal, Outcome, Principle, Constraint, Requirement, Capability]
+  include_types: [Driver, Goal, Principle, Constraint, Requirement]
+  members:
+    - outcome-executable-intelligence
+    - cap-digital-twin
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-forensic-ledger
+    - cap-drift-dashboard
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-reusable-architecture
 
 - id: view-delivery
   name: Delivery Choreography
@@ -126,6 +208,9 @@
     - cap-spec-engine
     - cap-control-plane
     - cap-drift-dashboard
+    - cap-control-catalog
+    - cap-forensic-ledger
+    - cap-human-approval-workflow
 
 - id: view-subsystem-capabilities
   name: Subsystems & Capabilities
@@ -163,6 +248,41 @@
     - art-oscal-catalog
     - art-oscal-profile
     - store-oscal
+
+- id: view-business-controls-catalog
+  name: Business — Controls & Compliance Catalog
+  viewpoint: business_process_cooperation
+  diagram: frictionless-architect-business-controls-catalog
+  # Business-layer-only counterpart of view-artefact-oscal: the Compliance
+  # Officer / Auditor authoring policy and converting it (with upstream
+  # regulatory standards) into OSCAL catalogs/profiles. Trestle is
+  # deliberately not shown — it's the application-layer tool realizing
+  # process-oscal-conversion (see fn-oscal-conversion), not a business actor.
+  members:
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - role-ea
+    - process-pattern-traceability
+    - bo-architecture-pattern
+    - role-sa
+    - process-blueprint-traceability
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-component
+    - bo-solution-design
+    - bo-oscal-ssp
+    - process-state-discovery
+    - process-cicd-pipeline
+    - bo-release-gate-decision
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-control-effectiveness-evidence
+    - bo-oscal-assessment-results
 
 - id: view-artefact-library
   name: Artefact Flow — Library & Design
@@ -242,3 +362,29 @@
     - art-adr
     - art-drift-report
     - art-remediation-item
+
+- id: view-it4it-capability-bridges
+  name: "IT4IT: Capability Bridges"
+  viewpoint: custom
+  diagram: frictionless-architect-it4it-capability-bridges
+  # The traceability layer: every cap-* <-> IT4IT capability Association
+  # (props.source: it4it-alignment in relationships.yaml). Deliberately NOT
+  # in third_party/it4it/views.yaml — that repo is IT4IT-only content; this
+  # view is a cross-model cut spanning both, same convention as
+  # frictionless-architect-subsystem-capabilities.
+  members:
+    - cap-digital-twin
+    - cap-reusable-architecture
+    - cap-spec-engine
+    - cap-control-plane
+    - cap-human-approval-workflow
+    - cap-control-catalog
+    - cap-forensic-ledger
+    - it4it-cap-config-mgmt
+    - it4it-cap-architecture-mgmt
+    - it4it-cap-product-design-mgmt
+    - it4it-cap-requirements-mgmt
+    - it4it-cap-product-development
+    - it4it-cap-change-mgmt
+    - it4it-cap-policy-mgmt
+    - it4it-cap-compliance-mgmt
