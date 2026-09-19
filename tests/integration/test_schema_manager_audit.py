@@ -20,9 +20,15 @@ from pathlib import Path
 
 import pytest
 from dotenv import dotenv_values
+from neo4j import GraphDatabase, basic_auth
 from neo4j.exceptions import ServiceUnavailable
 
 from frictionless_architect.schema.manager import SchemaManager
+
+# Short-circuit an unreachable server fast: the driver's default
+# connection_timeout is 30s, and with a function-scoped fixture that cost was
+# paid once per test in this file (~150s total) rather than once overall.
+_PROBE_TIMEOUT_SECONDS = 3.0
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -37,19 +43,25 @@ def _connection_kwargs() -> dict[str, str] | None:
     return {"uri": uri, "user": user, "password": password}
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def manager():
     kwargs = _connection_kwargs()
     if kwargs is None:
         pytest.skip("NEO4J_URI/NEO4J_USER/NEO4J_PASSWORD not configured")
 
-    mgr = SchemaManager(kwargs["uri"], kwargs["user"], kwargs["password"])
+    # Probe with a short timeout first: SchemaManager's own driver uses the
+    # neo4j default (30s), which makes an unreachable server slow to skip.
+    probe = GraphDatabase.driver(
+        kwargs["uri"], auth=basic_auth(kwargs["user"], kwargs["password"]), connection_timeout=_PROBE_TIMEOUT_SECONDS
+    )
     try:
-        mgr.driver.verify_connectivity()
+        probe.verify_connectivity()
     except ServiceUnavailable:
-        mgr.close()
+        probe.close()
         pytest.skip("Neo4j server is not reachable")
+    probe.close()
 
+    mgr = SchemaManager(kwargs["uri"], kwargs["user"], kwargs["password"])
     yield mgr
     mgr.close()
 
