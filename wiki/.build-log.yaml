@@ -8,7 +8,7 @@ topics:
     sources:
       files:
         PROJECT_SPECIFICATION.md:
-          sha256: d079b420726fd875c0735273a3268c35db7679fac130ad7d52a2d48d4aee30d5
+          sha256: 50002a05fe98a181965cb6021861ac3d0ee337a9d489a958a9554b586098e8da
           lines: 236
         README.md:
           sha256: bc3751711db1beadddb0f7cb26d8a0d430269aa4e2df55cbf4a8f7aa8ba09ea1
@@ -59,19 +59,19 @@ topics:
           sha256: 5de717fb2529ab67323ede189f84e4c157ca5094ade639006d6464f23da73e12
           lines: 31
         docs/adr/0007-architecture-model-as-graph-loadable-yaml.md:
-          sha256: e8fc7afc8a4dfce3ba96801fb4872ccc24850c63b2b1b166d001beffc60b17c6
+          sha256: cec51ef86e1c8af972944aacd7ea8035fc03afd9528a20485dc581dd0dbfc1ee
           lines: 50
         docs/adr/0008-model-type-is-bare-archimate-name.md:
           sha256: 2f9fcbb4d7a750b1336272ae3ff1d3a881352d123b48d9c5e782f05cd20ca06a
           lines: 28
         docs/adr/0009-c4-diagrams-generated-from-archimate.md:
-          sha256: 7b4cdaace5d0c8888cb38bccba8dae46f4e2483d7f04f8e7a27555f3948d0a44
+          sha256: b624e2f452dac38d0ef70c38637b593d078ca615f94db181df9768a4738a50c6
           lines: 30
         docs/adr/0010-load-bearing-skeleton-only.md:
           sha256: 42d0c7802a88e71c004d3860c3bd324a4ff2949686c395fdb2f80058ae085908
           lines: 39
         docs/adr/0011-six-subsystem-decomposition.md:
-          sha256: acbd9b2299e9ab6a9939dd83aae3eb9c3af5f5fbb7f00fcf16248889e24a9f4a
+          sha256: 6eb67694623eebca05b3222d98248707ba76318d6f6d9172c76684e1dc0c47e2
           lines: 41
         docs/adr/0012-adr-as-attested-fsm.md:
           sha256: 7c80b712e80da6d8f7e920ac721c935614925b56e619789ab529882760c3a76a
@@ -137,7 +137,7 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: a61c48a5dd4a7485c7d76b955ba891ce4d951f88eb24beaaaa3affbdb47b5f4d
+          sha256: 4d9508d18cc48131e70f7d3a22beb9aaadb3a715a7ba9f0c76e88d183234db68
           lines: 112
         architecture/model/elements.yaml:
           sha256: 7c09b144167597ae3eb17a33573a6524fe76c99fcb73a9d2275932e761fb38ba
@@ -146,8 +146,8 @@ topics:
           sha256: f1bc58b5093d1727a5c925ec1c86d3447026e566fba47ad71d99bce7cb7f093d
           lines: 604
         architecture/model/views.yaml:
-          sha256: f881c463b28fc1e34f52e4af9518904f336ad9a1ddcdaceb8f67884ddacd8263
-          lines: 390
+          sha256: 59bd77744d40384bdfa26a5c75e0317235e8c7bb875c3d3f0cb9bcd792368b89
+          lines: 396
   it4it-model:
     title: IT4IT Reference Model
     page: wiki/it4it-model.md
