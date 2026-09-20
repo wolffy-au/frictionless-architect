@@ -289,6 +289,11 @@
 # =====================================================================
 - {type: Composition, source: bfn-release-enforcement, target: process-cicd-pipeline, label: comprises}
 - {type: Composition, source: bfn-effectiveness-assurance, target: process-effectiveness-monitoring, label: comprises}
+- {type: Composition, source: bfn-agentic-delivery, target: process-spec-generation, label: comprises}
+- {type: Composition, source: bfn-agentic-delivery, target: process-agentic-crew, label: comprises}
+- {type: Composition, source: bfn-release-management, target: process-release, label: comprises}
+- {type: Composition, source: bfn-drift-management, target: process-state-discovery, label: comprises}
+- {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
 - {type: Assignment, source: role-ops, target: process-effectiveness-monitoring}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
