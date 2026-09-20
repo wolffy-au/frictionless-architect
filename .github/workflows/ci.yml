@@ -120,7 +120,7 @@ jobs:
         # develop returns 403 ("Organization is not allowed to access data
         # from non main branches"), even though the scan itself succeeds.
         if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-        uses: SonarSource/sonarqube-quality-gate-action@cb3ed20f9fec62b4c3b8ad9e77656c6adaade913
+        uses: SonarSource/sonarqube-quality-gate-action@7a5fffe8e523c40e0c740b6bc2712ab503e52efa
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
