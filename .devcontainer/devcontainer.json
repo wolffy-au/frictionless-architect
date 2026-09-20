@@ -30,8 +30,8 @@
         "source=claude-code-config,target=/home/devcontainer/.claude,type=volume"
     ],
     "onCreateCommand": "sudo chown -R devcontainer:devcontainer /home/devcontainer/.cache && sudo chown -R devcontainer:devcontainer /home/devcontainer/.npm && sudo chown -R devcontainer:devcontainer /home/devcontainer/.claude",
-    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-    "postStartCommand": "sudo chown -R ${containerUser}:${containerUser} ${containerWorkspaceFolder} && sudo chmod +x .devcontainer/post-create.sh && .devcontainer/post-create.sh",
+    "postCreateCommand": "sudo chown -R ${containerUser}:${containerUser} ${containerWorkspaceFolder} && sudo chmod +x .devcontainer/post-create.sh && .devcontainer/post-create.sh",
+    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
     "customizations": {
         "vscode": {
             "extensions": [
