@@ -124,6 +124,11 @@
   # Realizes. Resources and courses of action belong to the Strategy view.
   # ValueStream is scoped via members, not include_types — the IT4IT import
   # added 36 more ValueStream elements (7 streams + 29 stages).
+  # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
+  # cap-control-catalog, cap-reusable-architecture) appear nested inside a
+  # Strategy_Resource box in the Strategy view (Resource --Assignment-->
+  # Capability). They render flat here, not nested, because Resource is
+  # deliberately out of scope for this view — not a modelling inconsistency.
   members:
     - vs-governed-delivery
     - vss-baseline
@@ -157,6 +162,11 @@
   # include_types — BusinessFunction is a different type from the
   # BusinessProcess this view otherwise auto-includes) so the "major area"
   # groupings Composition-nest their already-realizing processes here too.
+  # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
+  # cap-control-catalog, cap-reusable-architecture) appear nested inside a
+  # Strategy_Resource box in the Strategy view (Resource --Assignment-->
+  # Capability). They render flat here, not nested, because Resource is
+  # deliberately out of scope for this view — not a modelling inconsistency.
   include_types: [BusinessProcess]
   members:
     - outcome-executable-intelligence

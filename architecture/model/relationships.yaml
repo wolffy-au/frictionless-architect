@@ -187,46 +187,16 @@
 # =====================================================================
 # A. Process realizes capability (orchestration flow -> component)
 # =====================================================================
-- type: Realization
-  source: process-spec-generation
-  target: cap-spec-engine
-  label: realizes
-- type: Realization
-  source: process-cicd-pipeline
-  target: cap-control-plane
-  label: woven enforcement
-- type: Realization
-  source: process-state-discovery
-  target: cap-drift-dashboard
-  label: realizes
-- type: Realization
-  source: process-policy-authoring
-  target: cap-control-catalog
-  label: realizes
-- type: Realization
-  source: process-oscal-conversion
-  target: cap-control-catalog
-  label: realizes
-- type: Realization
-  source: process-agentic-crew
-  target: cap-control-plane
-  label: realizes
-- type: Realization
-  source: process-release
-  target: cap-forensic-ledger
-  label: realizes
-- type: Realization
-  source: process-drift-review
-  target: cap-human-approval-workflow
-  label: realizes
-- type: Realization
-  source: process-pattern-traceability
-  target: cap-reusable-architecture
-  label: realizes
-- type: Realization
-  source: process-blueprint-traceability
-  target: cap-reusable-architecture
-  label: realizes
+- {type: Realization, source: process-spec-generation, target: cap-spec-engine}
+- {type: Realization, source: process-cicd-pipeline, target: cap-control-plane, label: woven enforcement}
+- {type: Realization, source: process-state-discovery, target: cap-drift-dashboard}
+- {type: Realization, source: process-policy-authoring, target: cap-control-catalog}
+- {type: Realization, source: process-oscal-conversion, target: cap-control-catalog}
+- {type: Realization, source: process-agentic-crew, target: cap-control-plane}
+- {type: Realization, source: process-release, target: cap-forensic-ledger}
+- {type: Realization, source: process-drift-review, target: cap-human-approval-workflow}
+- {type: Realization, source: process-pattern-traceability, target: cap-reusable-architecture}
+- {type: Realization, source: process-blueprint-traceability, target: cap-reusable-architecture}
 
 # =====================================================================
 # A. Process chain (the end-to-end choreography)
