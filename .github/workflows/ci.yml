@@ -87,15 +87,23 @@ jobs:
         run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Scan Test
+        # --package-manager=poetry scans only pyproject.toml/poetry.lock (a
+        # single project, not --all-projects), so it never walks third_party/
+        # — --exclude is invalid here (SNYK-CLI-0004: only valid with
+        # --all-projects/--yarn-workspaces).
         if: github.actor != 'dependabot[bot]'
-        run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --exclude=third_party
+        run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au
 
       - name: Snyk Code Scan
-        # third_party/ is vendored reference content (submodules), not
-        # first-party source — excluded so Snyk's SAST rules don't flag
-        # findings in code we don't own and can't fix here.
+        # `snyk code test` has no --exclude flag (that's only valid on
+        # `snyk test --all-projects`/--yarn-workspaces) and ignores
+        # .snykignore (SCA-only). The Snyk Code engine still honours the
+        # legacy DeepCode .dcignore file, so third_party/ — vendored
+        # reference content we don't own and can't fix here — is excluded
+        # via .dcignore instead (verified locally: --include-ignores with
+        # .dcignore in place surfaces only first-party findings).
         if: github.actor != 'dependabot[bot]'
-        run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores --exclude=third_party
+        run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores
 
   sonar:
     name: SonarQube Analysis
