@@ -35,7 +35,7 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see "Motivation-layer lint" below). The
-current model is 290 elements, 578 relationships and 21 views
+current model is 296 elements, 594 relationships and 21 views
 (`architecture/model/build.py` output): the platform's own sections A–C plus
 the IT4IT touchpoint bridge (below) account for most of that, the rest is
 the vendored IT4IT reference model merged in at build time
@@ -346,11 +346,16 @@ Four per-stage views scope it (`architecture/model/views.yaml:58-143`):
 | `Artefact Flow — Assurance & Specification` | Spec generation; release-time enforcement gate; BAU effectiveness monitoring; drift detection → remediation backlog |
 
 Notable artefacts (`architecture/model/elements.yaml:609-634`): OSCAL
-Catalog/Profile/Component/SSP, Architecture Pattern, Implementation Blueprint,
+Catalog/Profile/Component/SSP/Assessment Plan/Assessment Results/Plan of
+Action & Milestones, Architecture Pattern, Implementation Blueprint,
 Solution Design, Threat Model, Current-State Digital Twin, Candidate
 Architecture Option, Architecture Decision Record, Archived Rejected Option,
 Release Candidate, Gate Decision, Classified Drift Finding, Remediation Backlog
-Item, Development Specification, Notation Metamodel, Ledger Entry.
+Item, Development Specification, Notation Metamodel, Ledger Entry. The OSCAL
+Plan of Action & Milestones (`art-oscal-poam`) is a sidecar of the
+Remediation Backlog Item alone — unlike the other OSCAL artefacts it has no
+business-layer (`bo-`) counterpart, matching the application-layer-only
+drift/remediation mechanism it mirrors.
 
 **GH #7 addition — four `BusinessFunction`s over the artefact-flow processes.**
 Each is the stable business capability behind one or more of the process
@@ -484,4 +489,10 @@ used it to suppress the incidental capability-mesh leak on seven views,
 closed the `view-strategy` value-stream orphan with `coa-*` → value-stream
 `Serving` edges, and — per [ADR-0030](architecture.md) — added `ext-trestle`
 to the OSCAL conversion chain, bringing the model to 290 elements / 578
+relationships / 21 views. A 2026-09-20 GH #24 spec-alignment review then added
+OSCAL Assessment Plan (wired into both the pre-release gate and continuous-BAU
+monitoring cadences, per OSCAL's required `import-ap` reference on every
+Assessment Results instance) and an OSCAL Plan of Action & Milestones sidecar
+of the remediation backlog, and fixed an internal wording inconsistency in
+`art-oscal-component`'s description — bringing it to 296 elements / 594
 relationships / 21 views.

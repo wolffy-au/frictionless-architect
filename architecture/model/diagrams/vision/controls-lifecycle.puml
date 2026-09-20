@@ -28,6 +28,7 @@ Business_Object(e_id4b5ad5a2100656, "Solution Design") {
   Business_Object(e_id42defa6a190855, "Solution Component")
 }
 Business_Object(e_ide1231d147af05e, "OSCAL System Security Plan")
+Business_Object(e_idb990615e712f57, "OSCAL Assessment Plan")
 Business_Object(e_id9f8a83bba77b50, "OSCAL Assessment Results")
 Business_Object(e_id8a58348ab4605a, "Release Gate Decision")
 Business_Object(e_idca68dd43dc1854, "Control Effectiveness Evidence")
@@ -52,9 +53,12 @@ Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps 
 Rel_Specialization(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
 Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
 Rel_Access_r(e_id799f46ebb7e15b, e_ide1231d147af05e, "checks against")
+Rel_Access_w(e_id799f46ebb7e15b, e_idb990615e712f57, "generates")
 Rel_Access_w(e_id799f46ebb7e15b, e_id8a58348ab4605a, "issues")
 Rel_Access_r(e_id18a08f8aff8057, e_ide1231d147af05e, "reads expected controls")
+Rel_Access_w(e_id18a08f8aff8057, e_idb990615e712f57, "generates")
 Rel_Access_w(e_id18a08f8aff8057, e_idca68dd43dc1854, "records")
+Rel_Association(e_id9f8a83bba77b50, e_idb990615e712f57, "imports (per OSCAL's required import-ap)")
 Rel_Specialization(e_id8a58348ab4605a, e_id9f8a83bba77b50, "pre-release instance")
 Rel_Specialization(e_idca68dd43dc1854, e_id9f8a83bba77b50, "continuous-monitoring instance")
 
