@@ -93,6 +93,7 @@ reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
 reportUnknownMemberType = false
 extraPaths = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
+exclude = ["third_party", "**/node_modules", "**/__pycache__"]
 
 [tool.mypy]
 strict = true
@@ -126,12 +127,14 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+extend-exclude = ["third_party"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "C", "I"]
 ignore = [
     "E501",
 ]
+
 exclude = [
     ".venv",
     ".git",
@@ -154,6 +157,16 @@ exclude = [
     "*.json",
     "*.md",
 ]
+
+# Without this, ruff's isort auto-detects whether `build` (the
+# architecture/model/build.py script, imported via the pythonpath hack in
+# tests/tools/) is first- or third-party by checking for a top-level build/
+# directory — which pytest-cov creates locally (build/coverage.xml) but a
+# clean CI checkout doesn't have yet. That made I001's expected import order
+# flip depending on whether a local test run had happened first. Pinning it
+# here makes the sort deterministic regardless of local build/ artefacts.
+[tool.ruff.lint.isort]
+known-first-party = ["build"]
 
 [tool.ruff.format]
 quote-style = "double"

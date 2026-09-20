@@ -113,3 +113,6 @@ frontend/test-results/
 
 # Editor backup files
 *.bak
+
+# Snyk Code (SAST) local scan cache
+.dccache

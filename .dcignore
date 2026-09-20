@@ -52,3 +52,7 @@ Thumbs.db
 # Ruff cache
 .ruff_cache/
 .sonar/
+
+# Vendored git submodules — read-only reference content, not first-party
+# code we can fix; excluded from Snyk Code (SAST) scanning. See ADR-0030.
+third_party/

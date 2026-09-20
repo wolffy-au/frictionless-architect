@@ -57,6 +57,9 @@ Use the package directory name, not the Python module name.
 - `deps` — dependency bumps (`chore(deps):`, `build(deps):`)
 - `model` — the ArchiMate model pipeline (`architecture/model/`: `elements.yaml`,
   `relationships.yaml`, `views.yaml`, generated diagrams and build artefacts)
+- `third_party` — vendored `third_party/` submodules and their own tooling
+  wiring (ruff/pyright excludes, etc.), for content not merged into `build.py`
+  (contrast with `model`, used when vendored content like IT4IT is merged in)
 
 Omit the scope for genuinely repo-wide changes. Add a new area scope to this list
 in the same commit that first needs it.

@@ -1,3 +1,12 @@
 [submodule "third_party/it4it"]
 	path = third_party/it4it
 	url = https://github.com/wolffy-au/frictionless-it4it.git
+[submodule "third_party/oscal"]
+	path = third_party/oscal
+	url = https://github.com/usnistgov/OSCAL.git
+[submodule "third_party/oscal-content"]
+	path = third_party/oscal-content
+	url = https://github.com/usnistgov/oscal-content.git
+[submodule "third_party/fedramp-automation"]
+	path = third_party/fedramp-automation
+	url = https://github.com/GoComply/fedramp.git
