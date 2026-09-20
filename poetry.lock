@@ -3370,14 +3370,14 @@ type-checks = ["mypy", "types-pyyaml"]
 
 [[package]]
 name = "pyarchimate"
-version = "1.12.3"
+version = "1.13.1"
 description = "A library to create & manage Archimate files"
 optional = false
 python-versions = "<3.15,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "pyarchimate-1.12.3-py3-none-any.whl", hash = "sha256:dcb4b7637f5aa106ffc4c64734a5d83ab75ec928dcdc3942ea5f2d2d2053473f"},
-    {file = "pyarchimate-1.12.3.tar.gz", hash = "sha256:7cf4846ff5cc4211f3c77c2122a56f5611873d9dea3cd2ce97929c8e12e8592a"},
+    {file = "pyarchimate-1.13.1-py3-none-any.whl", hash = "sha256:81c8d641d69cd52d073cac3477dd66e8552d8868f85c2e7b8c62a67f724a08f9"},
+    {file = "pyarchimate-1.13.1.tar.gz", hash = "sha256:81db89dd4a06f4f43fcebc7cf2323097cc80779756f695c30c108c58bd802e42"},
 ]
 
 [package.dependencies]
