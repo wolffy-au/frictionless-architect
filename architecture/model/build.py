@@ -268,6 +268,48 @@ def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[s
         errors.append(f"view {v['id']} ({slug} viewpoint): {msg}")
 
 
+def _compile_exclude_patterns(v: dict[str, Any], errors: list[str]) -> list[dict[str, str | None]]:
+    """Compile a view's `exclude:` entries (see `add_views`) into matchers."""
+    patterns: list[dict[str, str | None]] = []
+    for ex in v.get("exclude") or []:
+        ctx = f"view {v['id']} exclude"
+        patterns.append(
+            {
+                "type": canon(ex["type"], errors, ctx) if "type" in ex else None,
+                "source_type": canon(ex["source_type"], errors, ctx) if "source_type" in ex else None,
+                "target_type": canon(ex["target_type"], errors, ctx) if "target_type" in ex else None,
+                "source": ex.get("source"),
+                "target": ex.get("target"),
+            }
+        )
+    return patterns
+
+
+def _relationship_excluded(
+    rel: Any,
+    patterns: list[dict[str, str | None]],
+    uuid_to_id: dict[str, str],
+    types_by_id: dict[str, str],
+) -> bool:
+    sid = uuid_to_id.get(rel.source.uuid)
+    tid = uuid_to_id.get(rel.target.uuid)
+    stype = types_by_id.get(sid) if sid else None
+    ttype = types_by_id.get(tid) if tid else None
+    for p in patterns:
+        if p["type"] and p["type"] != rel.type:
+            continue
+        if p["source_type"] and p["source_type"] != stype:
+            continue
+        if p["target_type"] and p["target_type"] != ttype:
+            continue
+        if p["source"] and p["source"] != sid:
+            continue
+        if p["target"] and p["target"] != tid:
+            continue
+        return True
+    return False
+
+
 def add_views(
     m: Model,
     views: list[dict[str, Any]],
@@ -293,7 +335,22 @@ def add_views(
     cannot round-trip view-level properties in the pinned version);
     `views.yaml` stays the source of truth for it.
 
+    A view may also declare `exclude:` — a list of type+pair patterns for
+    relationships that would otherwise render (both endpoints in scope) but
+    are incidental to this view's own narrated story rather than core to it
+    (GH #20: the same capability-to-capability Serving mesh was leaking
+    identically into every view that happens to include ≥2 capabilities,
+    even though only the Capability Map view is actually about it). Each
+    entry may give any of `type` / `source_type` / `target_type` (ArchiMate
+    concept names) and/or `source` / `target` (specific element ids); a
+    relationship is suppressed when every key given in an entry matches.
+    Omitted keys are wildcards, so `{type: Serving, source_type: Capability,
+    target_type: Capability}` drops every capability-to-capability Serving
+    edge on that view regardless of which specific capabilities are
+    involved.
+
     The richer view schema (auto-membership rules) is still deferred."""
+    uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
     for v in views:
         if "id" not in v or "name" not in v:
             errors.append(f"view missing id/name: {v!r}")
@@ -317,9 +374,14 @@ def add_views(
                 view.add(ref=el, uuid=det_id(v["id"], "node", el.uuid))
                 on_view.add(el.uuid)
                 view_el_types.add(types_by_id[e["id"]])
+        exclude_patterns = _compile_exclude_patterns(v, errors)
         view_rel_types: set[str] = set()
         for rel in m.relationships:
-            if rel.source.uuid in on_view and rel.target.uuid in on_view:
+            if (
+                rel.source.uuid in on_view
+                and rel.target.uuid in on_view
+                and not _relationship_excluded(rel, exclude_patterns, uuid_to_id, types_by_id)
+            ):
                 view.add_connection(ref=rel, uuid=det_id(v["id"], "conn", rel.uuid))
                 view_rel_types.add(rel.type)
         missing = [mid for mid in want if mid not in by_id]

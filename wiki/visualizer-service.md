@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: 2026-09-19
+generated: 2026-09-20
 generator: claude-sonnet-5
 sources:
   - src/frictionless_architect/visualizer/__init__.py
@@ -100,7 +100,15 @@ process (`src/frictionless_architect/visualizer/api.py:259-273`).
 
 ### `SampleParser` (`src/frictionless_architect/visualizer/sample_parser.py`)
 
-Parses `Test Model Full.xml` with the stdlib `xml.etree.ElementTree`. Pins the
+Parses `Test Model Full.xml` via `defusedxml.ElementTree.parse` — Snyk Code
+flagged the stdlib `xml.etree.ElementTree.parse` as XXE/billion-laughs
+vulnerable on Python ≤3.10 (still allowed by `pyproject.toml`'s
+`requires-python` range even though the deployed runtime is 3.12); the stdlib
+`ET` import is kept only for `Element` type annotations, which `defusedxml`
+doesn't re-export (`src/frictionless_architect/visualizer/sample_parser.py:10`).
+`defusedxml`'s `parse().getroot()` is typed `Element | None`, so `parse()`
+raises `ValueError` if the root is `None`
+(`src/frictionless_architect/visualizer/sample_parser.py:34-35`). Pins the
 ArchiMate namespace `http://www.opengroup.org/xsd/archimate/3.0/`
 (`src/frictionless_architect/visualizer/sample_parser.py:10` — note the version caveat in [Data Model](data-model.md)).
 Extracts: elements (`identifier`, `xsi:type`, `name`), relationships
@@ -113,13 +121,19 @@ when the file is missing (`src/frictionless_architect/visualizer/sample_parser.p
 
 `validate_sample_against_schema(sample_path, schema_path)` cross-checks the
 sample XML against the ArchiMate schema XSD and returns a list of issue
-strings (empty when consistent). It flags: element/relationship
-`xsi:type` values with no matching `<xsd:element>`/`<xsd:complexType>` in the
-schema; relationships whose `source`/`target` id isn't among the sample's
-element ids; and view `node`/`connection` refs pointing at a missing
-element/relationship id (`src/frictionless_architect/visualizer/sample_validator.py:69-88`).
+strings (empty when consistent). Also parses via `defusedxml.ElementTree.parse`
+for the same XXE-hardening reason as `SampleParser` above; a `None` root from
+either the schema or the sample document is handled explicitly — the schema
+case raises `ValueError`, the sample case returns an issue string rather than
+raising, since this function's contract is to report problems as list entries
+(`src/frictionless_architect/visualizer/sample_validator.py:21-22,86-88`). It
+flags: element/relationship `xsi:type` values with no matching
+`<xsd:element>`/`<xsd:complexType>` in the schema; relationships whose
+`source`/`target` id isn't among the sample's element ids; and view
+`node`/`connection` refs pointing at a missing element/relationship id
+(`src/frictionless_architect/visualizer/sample_validator.py:69-88`).
 Called from `_build_payload()` above — every returned issue surfaces as a
-payload `warning`, it never raises.
+payload `warning`, it never raises from that call site.
 
 ### `DataLoader` (`src/frictionless_architect/visualizer/data_loader.py`)
 

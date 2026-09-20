@@ -67,7 +67,9 @@ async def schema_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Asyn
 
 
 @pytest.fixture
-async def schema_client_without_sample(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> AsyncGenerator[httpx.AsyncClient, None]:
+async def schema_client_without_sample(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> AsyncGenerator[httpx.AsyncClient, None]:
     def missing_parse(_: SampleParser) -> SampleParseResult:
         raise FileNotFoundError("missing sample")
 
@@ -76,7 +78,9 @@ async def schema_client_without_sample(monkeypatch: pytest.MonkeyPatch, tmp_path
 
 
 @pytest.fixture
-async def schema_client_with_slow_refresh(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> AsyncGenerator[httpx.AsyncClient, None]:
+async def schema_client_with_slow_refresh(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> AsyncGenerator[httpx.AsyncClient, None]:
     def slow_build(cls: type[SchemaPayloadService]) -> None:
         original = cls._build_payload
 

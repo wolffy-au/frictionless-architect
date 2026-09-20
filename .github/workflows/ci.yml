@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          submodules: true
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v7
@@ -70,7 +72,7 @@ jobs:
         run: poetry run pytest --cov-fail-under=90
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-xml
           path: build/coverage.xml
@@ -85,10 +87,21 @@ jobs:
         run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Scan Test
+        # --package-manager=poetry scans only pyproject.toml/poetry.lock (a
+        # single project, not --all-projects), so it never walks third_party/
+        # — --exclude is invalid here (SNYK-CLI-0004: only valid with
+        # --all-projects/--yarn-workspaces).
         if: github.actor != 'dependabot[bot]'
         run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au
 
       - name: Snyk Code Scan
+        # `snyk code test` has no --exclude flag (that's only valid on
+        # `snyk test --all-projects`/--yarn-workspaces) and ignores
+        # .snykignore (SCA-only). The Snyk Code engine still honours the
+        # legacy DeepCode .dcignore file, so third_party/ — vendored
+        # reference content we don't own and can't fix here — is excluded
+        # via .dcignore instead (verified locally: --include-ignores with
+        # .dcignore in place surfaces only first-party findings).
         if: github.actor != 'dependabot[bot]'
         run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores
 
@@ -102,6 +115,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          submodules: true
 
       - name: Download coverage report
         uses: actions/download-artifact@v8
@@ -120,7 +134,7 @@ jobs:
         # develop returns 403 ("Organization is not allowed to access data
         # from non main branches"), even though the scan itself succeeds.
         if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-        uses: SonarSource/sonarqube-quality-gate-action@cb3ed20f9fec62b4c3b8ad9e77656c6adaade913
+        uses: SonarSource/sonarqube-quality-gate-action@7a5fffe8e523c40e0c740b6bc2712ab503e52efa
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

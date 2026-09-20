@@ -63,6 +63,15 @@
 - {type: Influence, source: coa-executable-governance, target: goal-frictionless-architecture}
 - {type: Influence, source: coa-living-twin, target: goal-frictionless-architecture}
 - {type: Influence, source: coa-reuse-first, target: goal-frictionless-architecture}
+# GH #20 follow-up: close the strategy-layer loop — each CourseOfAction also
+# serves the value stream it drives (Realization is not a legal CourseOfAction
+# -> ValueStream pair per the ArchiMate 3.2 relationship matrix; Serving is),
+# so `view-strategy` has a connected path from resources through capabilities
+# and courses of action to the stream and its outcome, instead of
+# ValueStream/Outcome sitting as an isolated pair.
+- {type: Serving, source: coa-executable-governance, target: vs-governed-delivery}
+- {type: Serving, source: coa-living-twin, target: vs-governed-delivery}
+- {type: Serving, source: coa-reuse-first, target: vs-governed-delivery}
 - {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
 - {type: Association, source: stk-architecture, target: vs-governed-delivery, label: sustained coherence}
 - {type: Association, source: stk-risk-compliance, target: vs-governed-delivery, label: provable compliance}
@@ -187,46 +196,16 @@
 # =====================================================================
 # A. Process realizes capability (orchestration flow -> component)
 # =====================================================================
-- type: Realization
-  source: process-spec-generation
-  target: cap-spec-engine
-  label: realizes
-- type: Realization
-  source: process-cicd-pipeline
-  target: cap-control-plane
-  label: woven enforcement
-- type: Realization
-  source: process-state-discovery
-  target: cap-drift-dashboard
-  label: realizes
-- type: Realization
-  source: process-policy-authoring
-  target: cap-control-catalog
-  label: realizes
-- type: Realization
-  source: process-oscal-conversion
-  target: cap-control-catalog
-  label: realizes
-- type: Realization
-  source: process-agentic-crew
-  target: cap-control-plane
-  label: realizes
-- type: Realization
-  source: process-release
-  target: cap-forensic-ledger
-  label: realizes
-- type: Realization
-  source: process-drift-review
-  target: cap-human-approval-workflow
-  label: realizes
-- type: Realization
-  source: process-pattern-traceability
-  target: cap-reusable-architecture
-  label: realizes
-- type: Realization
-  source: process-blueprint-traceability
-  target: cap-reusable-architecture
-  label: realizes
+- {type: Realization, source: process-spec-generation, target: cap-spec-engine}
+- {type: Realization, source: process-cicd-pipeline, target: cap-control-plane, label: woven enforcement}
+- {type: Realization, source: process-state-discovery, target: cap-drift-dashboard}
+- {type: Realization, source: process-policy-authoring, target: cap-control-catalog}
+- {type: Realization, source: process-oscal-conversion, target: cap-control-catalog}
+- {type: Realization, source: process-agentic-crew, target: cap-control-plane}
+- {type: Realization, source: process-release, target: cap-forensic-ledger}
+- {type: Realization, source: process-drift-review, target: cap-human-approval-workflow}
+- {type: Realization, source: process-pattern-traceability, target: cap-reusable-architecture}
+- {type: Realization, source: process-blueprint-traceability, target: cap-reusable-architecture}
 
 # =====================================================================
 # A. Process chain (the end-to-end choreography)
@@ -255,6 +234,8 @@
 # =====================================================================
 # A. Controls & Compliance Catalog (business layer)
 # =====================================================================
+- {type: Composition, source: bfn-policy-conversion, target: process-policy-authoring, label: comprises}
+- {type: Composition, source: bfn-policy-conversion, target: process-oscal-conversion, label: comprises}
 - {type: Assignment, source: role-compliance, target: process-policy-authoring}
 - {type: Assignment, source: role-compliance, target: process-oscal-conversion}
 - {type: Access, source: process-policy-authoring, target: bo-policy-doc, label: authors, props: {access_type: Write}}
@@ -273,6 +254,8 @@
 # =====================================================================
 # A. Pattern Control Traceability (business layer, parallel to release enforcement)
 # =====================================================================
+- {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-pattern-traceability, label: comprises}
+- {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-blueprint-traceability, label: comprises}
 - {type: Assignment, source: role-ea, target: process-pattern-traceability}
 - {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
@@ -290,10 +273,12 @@
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
 - {type: Realization, source: art-blueprint, target: bo-implementation-blueprint}
 - {type: Realization, source: art-oscal-component, target: bo-oscal-component}
+- {type: Association, source: bo-implementation-blueprint, target: bo-oscal-component, label: maps enablement & gaps to}
 - {type: Aggregation, source: bo-solution-design, target: bo-solution-component, label: composed of}
 - {type: Specialization, source: bo-solution-component, target: bo-implementation-blueprint, label: instance of}
 - {type: Association, source: bo-oscal-ssp, target: bo-solution-design, label: derived from}
 - {type: Access, source: process-state-discovery, target: bo-oscal-ssp, label: reconciles against, props: {access_type: Read}}
+- {type: Realization, source: fn-drift-engine, target: process-state-discovery}
 - {type: Realization, source: art-solution-design, target: bo-solution-design}
 - {type: Realization, source: art-oscal-ssp, target: bo-oscal-ssp}
 
@@ -302,6 +287,13 @@
 #    the other parallel branch off the OSCAL SSP — two cadences of the same
 #    OSCAL Assessment Results concept)
 # =====================================================================
+- {type: Composition, source: bfn-release-enforcement, target: process-cicd-pipeline, label: comprises}
+- {type: Composition, source: bfn-effectiveness-assurance, target: process-effectiveness-monitoring, label: comprises}
+- {type: Composition, source: bfn-agentic-delivery, target: process-spec-generation, label: comprises}
+- {type: Composition, source: bfn-agentic-delivery, target: process-agentic-crew, label: comprises}
+- {type: Composition, source: bfn-release-management, target: process-release, label: comprises}
+- {type: Composition, source: bfn-drift-management, target: process-state-discovery, label: comprises}
+- {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
 - {type: Assignment, source: role-ops, target: process-effectiveness-monitoring}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
@@ -314,7 +306,7 @@
 - {type: Realization, source: art-gate-decision, target: bo-release-gate-decision}
 - {type: Realization, source: art-effectiveness-evidence, target: bo-control-effectiveness-evidence}
 - {type: Realization, source: art-oscal-ar, target: bo-oscal-assessment-results}
-- {type: Realization, source: process-effectiveness-monitoring, target: cap-drift-dashboard, label: realizes}
+- {type: Realization, source: process-effectiveness-monitoring, target: cap-control-catalog}
 
 # =====================================================================
 # B. Platform composes its subsystems and shared stores
@@ -362,6 +354,7 @@
 # B. Authoring / OSCAL chain
 # =====================================================================
 - {type: Flow, source: ext-regsources, target: sub-catalog, label: baseline catalogs}
+- {type: Serving, source: ext-trestle, target: fn-oscal-conversion, label: realizes the Trestle Markdown <-> OSCAL round-trip for}
 - type: Access
   source: sub-catalog
   target: store-oscal

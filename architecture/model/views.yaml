@@ -12,6 +12,10 @@
 # `viewpoint: custom` = a deliberate cross-layer view; omitting the key skips
 # the check.
 #
+# `exclude:` (optional) suppresses relationships that would otherwise render
+# (both endpoints in scope) but are incidental to this view's own story —
+# see `build.py::add_views` for the type+pair pattern schema.
+#
 # `diagram:` is the output path (no extension) under diagrams/ used by
 # `render_diagrams.py`. Vision-phase (TOGAF ADM Phase A) views render under
 # diagrams/vision/.
@@ -85,6 +89,11 @@
   # Capability is scoped via members, not include_types — see the note on
   # view-stakeholder above; the IT4IT import added 42 more Capability elements.
   include_types: [CourseOfAction, Resource]
+  # GH #20: the capability-to-capability Serving mesh (control mappings,
+  # expected controls, etc.) is the Capability Map view's own story, not
+  # this one's — exclude it here so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
     - outcome-executable-intelligence
@@ -124,6 +133,15 @@
   # Realizes. Resources and courses of action belong to the Strategy view.
   # ValueStream is scoped via members, not include_types — the IT4IT import
   # added 36 more ValueStream elements (7 streams + 29 stages).
+  # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
+  # cap-control-catalog, cap-reusable-architecture) appear nested inside a
+  # Strategy_Resource box in the Strategy view (Resource --Assignment-->
+  # Capability). They render flat here, not nested, because Resource is
+  # deliberately out of scope for this view — not a modelling inconsistency.
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's — exclude it so it doesn't repeat.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
     - vss-baseline
@@ -153,6 +171,22 @@
   # which realizes the outcome — the end-to-end realization chain.
   # Capability/ValueStream scoped via members, not include_types — see notes
   # above; the IT4IT import added elements of both types.
+  # GH #7: the four bfn-* BusinessFunctions are added as members (not via
+  # include_types — BusinessFunction is a different type from the
+  # BusinessProcess this view otherwise auto-includes) so the "major area"
+  # groupings Composition-nest their already-realizing processes here too.
+  # GH #25: same rationale for the 3 bfn-* BusinessFunctions grouping the
+  # spec-generation -> build -> release -> drift-discovery -> triage thread,
+  # a separate lifecycle from GH #7's controls-lifecycle groupings.
+  # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
+  # cap-control-catalog, cap-reusable-architecture) appear nested inside a
+  # Strategy_Resource box in the Strategy view (Resource --Assignment-->
+  # Capability). They render flat here, not nested, because Resource is
+  # deliberately out of scope for this view — not a modelling inconsistency.
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's — exclude it so it doesn't repeat.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   include_types: [BusinessProcess]
   members:
     - outcome-executable-intelligence
@@ -171,6 +205,50 @@
     - cap-human-approval-workflow
     - cap-control-catalog
     - cap-reusable-architecture
+    - bfn-policy-conversion
+    - bfn-pattern-blueprint-traceability
+    - bfn-release-enforcement
+    - bfn-effectiveness-assurance
+    - bfn-agentic-delivery
+    - bfn-release-management
+    - bfn-drift-management
+
+- id: view-vision-controls-lifecycle
+  name: Vision — Policy-to-Runtime Controls Lifecycle
+  viewpoint: business_process_cooperation
+  diagram: vision/controls-lifecycle
+  # GH #7: one high-level, non-technical picture of a control's journey from
+  # authored policy/standard through to operational assurance. Four
+  # BusinessFunctions (the "major areas") nest their process step(s) via
+  # Composition; objects plus the process steps that connect them use the
+  # real Access/Triggering relationships already in relationships.yaml — no
+  # invented links needed. No role-* actor swimlanes — see
+  # view-business-controls-catalog for the fuller business-layer view with
+  # actors.
+  members:
+    - bfn-policy-conversion
+    - process-policy-authoring
+    - process-oscal-conversion
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - bfn-pattern-blueprint-traceability
+    - process-pattern-traceability
+    - bo-architecture-pattern
+    - process-blueprint-traceability
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-component
+    - bo-solution-design
+    - bo-oscal-ssp
+    - bfn-release-enforcement
+    - process-cicd-pipeline
+    - bo-release-gate-decision
+    - bfn-effectiveness-assurance
+    - process-effectiveness-monitoring
+    - bo-control-effectiveness-evidence
+    - bo-oscal-assessment-results
 
 # =====================================================================
 # Cross-cutting / later-phase views
@@ -186,6 +264,11 @@
   # on view-stakeholder above; the IT4IT import added elements of both types.
   viewpoint: custom
   include_types: [Driver, Goal, Principle, Constraint, Requirement]
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's (motivation spine -> capabilities) —
+  # exclude it so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - outcome-executable-intelligence
     - cap-digital-twin
@@ -205,6 +288,11 @@
   # Realization, even though no Outcome element sits on this particular view.
   viewpoint: outcome_realization
   include_types: [BusinessProcess]
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's (BusinessProcess -> Capability) —
+  # exclude it so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - cap-spec-engine
     - cap-control-plane
@@ -220,6 +308,11 @@
   # whose allow-list spans both (Capability + $ApplicationElements$) is
   # Outcome Realization, even though no Outcome element sits on this view.
   viewpoint: outcome_realization
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's (ApplicationComponent -> Capability) —
+  # exclude it so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - sub-catalog
     - sub-library
@@ -245,6 +338,7 @@
     - fn-policy-authoring
     - fn-oscal-conversion
     - ext-regsources
+    - ext-trestle
     - art-policy-doc
     - art-baseline
     - art-oscal-catalog
@@ -378,6 +472,12 @@
   # flat at the diagrams/ root rather than living in any one layer folder —
   # unlike cross-layer/subsystem-capabilities, which is only a cross-*layer*
   # cut within this repo's own model and so does get a layer folder.
+  # GH #20: this view's own story is the cap-* <-> it4it-cap-* Association
+  # bridges, not the first-party capability-to-capability Serving mesh
+  # (that's the Capability Map view's story) — exclude it so it doesn't
+  # repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - cap-digital-twin
     - cap-reusable-architecture

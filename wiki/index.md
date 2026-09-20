@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-09-19
+generated: 2026-09-20
 generator: claude-sonnet-5
 ---
 
@@ -25,12 +25,19 @@ generator: claude-sonnet-5
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: the load-bearing skeleton, the six-subsystem ecosystem, the
   artefact input/output pipeline, and the vendored IT4IT 3.0 reference model
-  (`third_party/it4it`, merged in at build time — 285 elements, 566
-  relationships, 20 views).
+  (`third_party/it4it`, merged in at build time — 290 elements, 578
+  relationships, 21 views).
+- [Architecture Views & Diagrams](architecture-diagrams.md) — how those views
+  map to ArchiMate viewpoints, the TOGAF Phase A vision-view set, the IT4IT
+  reference views, and how to regenerate every `.puml`/`.svg` diagram.
 - [IT4IT Reference Model](it4it-model.md) — the vendored `third_party/it4it`
   repo itself: its schema, the 142-element value-stream/capability/
   stakeholder/outcome content, the derived Serving edges, and its own 4
   standard-viewpoint views.
+- [OSCAL Compliance Content](oscal-compliance.md) — the vendored OSCAL/FedRAMP
+  reference content (`third_party/oscal`, `oscal-content`,
+  `fedramp-automation`), the `compliance-trestle` runtime dependency, and how
+  ADR-0030 splits the vendoring approach between the two.
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.
