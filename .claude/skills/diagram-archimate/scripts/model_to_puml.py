@@ -253,9 +253,15 @@ def generate(path: str, view_name: str | None, no_direction: set[str] | None = N
         views = [v for v in model.views if v.name == view_name]
         if not views:
             raise KeyError(f"no view named {view_name!r}; have: {[v.name for v in model.views]}")
-        wanted = _view_concepts(views[0])
+        view = views[0]
+        wanted = _view_concepts(view)
         elements = [e for e in model.elements if e.uuid in wanted]
-        relationships = [r for r in model.relationships if r.source.uuid in wanted and r.target.uuid in wanted]
+        # Render exactly the connections the view itself declares, not every
+        # model relationship whose endpoints happen to both be in scope — a
+        # view may deliberately omit an in-scope relationship (build.py's
+        # per-view `exclude:` patterns), and that suppression must survive
+        # into the diagram rather than being silently recomputed away here.
+        relationships = [model.rels_dict[c.ref] for c in view.conns if c.ref in model.rels_dict]
         title = view_name
     else:
         elements = list(model.elements)

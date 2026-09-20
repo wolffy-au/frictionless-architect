@@ -34,6 +34,7 @@ System_Ext(n_id2610ae0cc2cc50, "LLM Provider", "Language model used for drafting
 System_Ext(n_idaf80425d61fd58, "RFP / Vendor Submissions", "Requests for proposal and competing vendor solution responses assessed at engagement time.")
 
 Rel(n_idcd45bf9b5cfe51, n_id3a6eb7f6485a55, "maps to")
+Rel(n_id41a01cbfc25b5a, n_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel(n_ide1231d147af05e, n_id4b5ad5a2100656, "derived from")
 Rel(n_id5e264d2f4bb551, n_id54dd4701dbf151, "authors control content in\nverifies traceability in\nwatches control status in")
 Rel(n_id2b5394f913985a, n_id54dd4701dbf151, "curates patterns & models future-state options in\nevaluates options & records decisions in\nreviews drift in")

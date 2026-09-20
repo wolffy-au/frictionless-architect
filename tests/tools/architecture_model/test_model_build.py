@@ -175,3 +175,90 @@ def test_add_views_custom_viewpoint_skips_the_check() -> None:
         errors,
     )
     assert errors == []
+
+
+def test_add_views_exclude_by_type_and_endpoint_types_suppresses_an_in_scope_edge() -> None:
+    els = [
+        {"id": "cap-a", "type": "capability", "name": "Cap A"},
+        {"id": "cap-b", "type": "capability", "name": "Cap B"},
+    ]
+    rels = [
+        {"type": "serving", "source": "cap-a", "target": "cap-b"},
+        {"type": "triggering", "source": "cap-a", "target": "cap-b"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, rels)
+    build.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "members": ["cap-a", "cap-b"],
+                "exclude": [{"type": "serving", "source_type": "capability", "target_type": "capability"}],
+            }
+        ],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    # only the Triggering edge survives; the Serving edge matched the exclude pattern
+    assert len(view.conns) == 1
+    (rel,) = [model.rels_dict[c.ref] for c in view.conns]
+    assert rel.type == "Triggering"
+
+
+def test_add_views_exclude_by_specific_source_and_target_id() -> None:
+    els = [
+        {"id": "cap-a", "type": "capability", "name": "Cap A"},
+        {"id": "cap-b", "type": "capability", "name": "Cap B"},
+        {"id": "cap-c", "type": "capability", "name": "Cap C"},
+    ]
+    rels = [
+        {"type": "serving", "source": "cap-a", "target": "cap-b"},
+        {"type": "serving", "source": "cap-a", "target": "cap-c"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, rels)
+    build.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "members": ["cap-a", "cap-b", "cap-c"],
+                "exclude": [{"source": "cap-a", "target": "cap-b"}],
+            }
+        ],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    (rel,) = [model.rels_dict[c.ref] for c in view.conns]
+    assert rel.target.uuid == by_id["cap-c"].uuid
+
+
+def test_add_views_without_exclude_renders_every_in_scope_edge() -> None:
+    els = [
+        {"id": "cap-a", "type": "capability", "name": "Cap A"},
+        {"id": "cap-b", "type": "capability", "name": "Cap B"},
+    ]
+    rels = [{"type": "serving", "source": "cap-a", "target": "cap-b"}]
+    model, elements, by_id, types, errors = _model_with(els, rels)
+    build.add_views(
+        model,
+        [{"id": "v1", "name": "V1", "members": ["cap-a", "cap-b"]}],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    assert len(model.views[0].conns) == 1
