@@ -1,5 +1,15 @@
 # frictionless-architect
 
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![codecov](https://codecov.io/gh/wolffy-au/frictionless-architect/graph/badge.svg?token=K5AQRYWNFU)](https://codecov.io/gh/wolffy-au/frictionless-architect)
+[![test](https://github.com/wolffy-au/frictionless-architect/actions/workflows/ci.yml/badge.svg)](https://github.com/wolffy-au/frictionless-architect/actions/workflows/ci.yml)
+
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=wolffy-au_frictionless-architect&metric=alert_status)](https://sonarcloud.io/project/overview?id=wolffy-au_frictionless-architect)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=wolffy-au_frictionless-architect&metric=bugs)](https://sonarcloud.io/project/overview?id=wolffy-au_frictionless-architect)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=wolffy-au_frictionless-architect&metric=security_rating)](https://sonarcloud.io/project/overview?id=wolffy-au_frictionless-architect)
+[![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=wolffy-au_frictionless-architect&metric=sqale_rating)](https://sonarcloud.io/project/overview?id=wolffy-au_frictionless-architect)
+
 `frictionless-architect` is a platform for describing, validating, and visualising
 enterprise architecture models (ArchiMate) backed by a graph database. The full
 platform vision and capability inventory live in
