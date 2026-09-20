@@ -153,6 +153,10 @@
   # which realizes the outcome — the end-to-end realization chain.
   # Capability/ValueStream scoped via members, not include_types — see notes
   # above; the IT4IT import added elements of both types.
+  # GH #7: the four bfn-* BusinessFunctions are added as members (not via
+  # include_types — BusinessFunction is a different type from the
+  # BusinessProcess this view otherwise auto-includes) so the "major area"
+  # groupings Composition-nest their already-realizing processes here too.
   include_types: [BusinessProcess]
   members:
     - outcome-executable-intelligence
@@ -171,6 +175,10 @@
     - cap-human-approval-workflow
     - cap-control-catalog
     - cap-reusable-architecture
+    - bfn-policy-conversion
+    - bfn-pattern-blueprint-traceability
+    - bfn-release-enforcement
+    - bfn-effectiveness-assurance
 
 - id: view-vision-controls-lifecycle
   name: Vision — Policy-to-Runtime Controls Lifecycle
