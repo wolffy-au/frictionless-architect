@@ -1,3 +1,12 @@
+---
+name: User story
+about: File a dev-workflow issue with acceptance criteria and work items
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## Summary
 
 <!-- One or two sentences: what is changing. Link related commits/ADRs. -->
