@@ -143,14 +143,14 @@ topics:
           sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
           lines: 112
         architecture/model/elements.yaml:
-          sha256: 6ba4f8eea78b3ce4c26b1fd31e0dcef689f69a72f6cc49f7b4419a67c9b7e040
-          lines: 903
+          sha256: 9ae8379a18e7b4e257abf2b007305c5a23497d54818ed467493e28ae4a34fa25
+          lines: 935
         architecture/model/relationships.yaml:
-          sha256: bff256ecef3bc241e03d7a1108da053215d5f70929884789ce5951e0a4133a54
-          lines: 592
+          sha256: 61b963c00adc612d2d52e0c244ee5d8e7f4f837df62f67b2f0afd5431690e2e9
+          lines: 608
         architecture/model/views.yaml:
-          sha256: ba43be8fe7c4eb24a2580df4d929cdbb6bcb4668d7e224d7370152c022bb9a8d
-          lines: 490
+          sha256: cc6081997e54cc491a5b521b14570e673441eaf4c8c5934fa395ae662458a78f
+          lines: 500
   architecture-diagrams:
     title: Architecture Views & Diagrams
     page: wiki/architecture-diagrams.md
@@ -161,10 +161,10 @@ topics:
           sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
           lines: 112
         architecture/model/diagrams/application/artefact-assurance-spec.puml:
-          sha256: 088fcd9a3fcb35713cf41f7d2c4c62a3d5b46cb83f9af2f004d93f610ad6625b
-          lines: 57
+          sha256: 302aae0e3b1561c2e87a6f97959c5859cf8870f7a3910bab7330d1b0aed97362
+          lines: 63
         architecture/model/diagrams/application/artefact-assurance-spec.svg:
-          sha256: d1122aafcf6bf6122a88ef8a6614eae28e88d1b3cbeb001badc0fdf3113dbf9c
+          sha256: 6081a8205ff6876ad44b4ad56c398c0c56ad884a4a05a9fbdba921f0cf6f0c0e
           lines: 1
         architecture/model/diagrams/application/artefact-library.puml:
           sha256: 6d2dc8750d666cc4a7e6403bc61931472f3e49c7fd8ff14137331470842c5541
@@ -185,10 +185,10 @@ topics:
           sha256: 028e148334b96ba42fe608190e5344ca3184d062ac614f6818132a9de64ab1d0
           lines: 1
         architecture/model/diagrams/business/controls-catalog.puml:
-          sha256: 90e6ecf54abb89677e6d6db067f9024f5ab7e9a3edbc986c40720501482679b5
-          lines: 63
+          sha256: 69c2bbe12f2e0e194312092695c6d22b69053f0ff1d7d93c3e6e852a419e53eb
+          lines: 67
         architecture/model/diagrams/business/controls-catalog.svg:
-          sha256: 373c86d5b8e98f94de89daa1e919b710e45f65e45c287e09be1e51bd2c562fcb
+          sha256: 67dc627745bf87ef711b40039185427e519689d53b5faa328d661037bfc45e44
           lines: 1
         architecture/model/diagrams/c4/container.puml:
           sha256: 2c8060cb4e7d2186cd4dcedfc9b1c65f3c4c3cd221c3d7cda07bb32231731560
@@ -233,10 +233,10 @@ topics:
           sha256: 8eddac1555057caacfc0c7d131010cd9942636ec4fce17492171a10af6a17dbe
           lines: 1
         architecture/model/diagrams/vision/controls-lifecycle.puml:
-          sha256: 3224182a77859aa814b0a6f488398acbc5968b3bb488d2199c2740b53d74696d
-          lines: 61
+          sha256: 0b9cb20e0c47b200231e06e164285a8dd6adda93cf834c5544bb91d8a4b57d6c
+          lines: 65
         architecture/model/diagrams/vision/controls-lifecycle.svg:
-          sha256: 4b4e59d54de010288248221b2bd77d42a3f4c7aef9fec1702bf4c490cf595ef8
+          sha256: f3ea01b0b8aa7f969e924db33b181a92f11ef16b7ea69e46c294ff3ef767957e
           lines: 1
         architecture/model/diagrams/vision/goal-realization.puml:
           sha256: 562b7854a7856124d102d81fe5c75ccf1ba4ac692b127defe56cd39002e680db
@@ -251,10 +251,10 @@ topics:
           sha256: 668021375025ab5ddce5f7000d8bcaa409d66bd7fd4f0383b73cdebba091da23
           lines: 1
         architecture/model/diagrams/vision/outcome-realization.puml:
-          sha256: b3a2efce620438f005c5eced7d490a6d9cc16b59edfed5165c9c919be0e84b51
-          lines: 76
+          sha256: fa7cb37bd64c49f70cfc2c3cf146fc3fd163a13e1e2e6d45330f8fb5b6b545f0
+          lines: 82
         architecture/model/diagrams/vision/outcome-realization.svg:
-          sha256: 4f0b9a4e655a14f9d77ec0508642945da9fabd7459d54eb01a22441ae7d835ea
+          sha256: 9f95c0ffbca67c02162fab4810dba21947400149e0c662ce4648061ed797b927
           lines: 1
         architecture/model/diagrams/vision/stakeholder.puml:
           sha256: e828e28240207f76ef0b7a4d0da83dabdf05a5366752481e2caf64f476a85b26
@@ -275,8 +275,8 @@ topics:
           sha256: 720b4344bc8cd6c8adafe2c07d41930090f2019db445b985a44dbc2365699f9e
           lines: 1
         architecture/model/views.yaml:
-          sha256: ba43be8fe7c4eb24a2580df4d929cdbb6bcb4668d7e224d7370152c022bb9a8d
-          lines: 490
+          sha256: cc6081997e54cc491a5b521b14570e673441eaf4c8c5934fa395ae662458a78f
+          lines: 500
   it4it-model:
     title: IT4IT Reference Model
     page: wiki/it4it-model.md
