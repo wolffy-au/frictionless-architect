@@ -22,15 +22,23 @@ Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
 }
 Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
 Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
-Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
 Business_Process(e_id9459a13c29ec5d, "Production Release")
 Business_Process(e_id3a7a27eefeb751, "Current State Discovery")
 Business_Process(e_id33612ed603b85e, "Drift Review & Triage Gate")
-Business_Process(e_id14fa9f783d5350, "Policy & Standards Authoring")
-Business_Process(e_idfeca8b2013795e, "OSCAL Catalog & Profile Generation")
-Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
-Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
-Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
+Business_Function(e_id108dc21cee6055, "Policy-to-OSCAL Conversion") {
+  Business_Process(e_id14fa9f783d5350, "Policy & Standards Authoring")
+  Business_Process(e_idfeca8b2013795e, "OSCAL Catalog & Profile Generation")
+}
+Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
+  Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
+  Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
+}
+Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
+  Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
+}
+Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
+  Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
+}
 
 Rel_Realization_Up(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
 Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
@@ -70,6 +78,6 @@ Rel_Triggering_Right(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings 
 Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
 Rel_Triggering_Right(e_idfeca8b2013795e, e_id65065ee24d3c54, "profiles feed traceability mapping")
 Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
-Rel_Realization_Up(e_id18a08f8aff8057, e_id41aa3eb894c852, "realizes")
+Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
 
 @enduml

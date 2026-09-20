@@ -322,7 +322,7 @@
 - {type: Realization, source: art-gate-decision, target: bo-release-gate-decision}
 - {type: Realization, source: art-effectiveness-evidence, target: bo-control-effectiveness-evidence}
 - {type: Realization, source: art-oscal-ar, target: bo-oscal-assessment-results}
-- {type: Realization, source: process-effectiveness-monitoring, target: cap-drift-dashboard, label: realizes}
+- {type: Realization, source: process-effectiveness-monitoring, target: cap-control-catalog}
 
 # =====================================================================
 # B. Platform composes its subsystems and shared stores
