@@ -332,6 +332,7 @@
     - fn-policy-authoring
     - fn-oscal-conversion
     - ext-regsources
+    - ext-trestle
     - art-policy-doc
     - art-baseline
     - art-oscal-catalog

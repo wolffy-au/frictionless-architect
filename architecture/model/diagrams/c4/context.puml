@@ -30,6 +30,7 @@ System_Ext(n_iddc67769c419e5d, "CI/CD Pipeline", "Builds, tests and releases; in
 System_Ext(n_idd9989f19521155, "Cloud & Infrastructure Platforms", "Runtime platforms whose live state feeds the digital twin.")
 System_Ext(n_idaabfebfc7b9858, "IT Service Management / Backlog", "Delivery backlog and ticketing (e.g. Jira).")
 System_Ext(n_id13f9d5fb47b650, "Regulatory Content Sources", "Upstream NIST OSCAL content and FedRAMP baselines.")
+System_Ext(n_id0aed952692a556, "compliance-trestle", "Third-party Python library/CLI dependency, not vendored source. Performs the Trestle Markdown <-> OSCAL round-trip behind fn-oscal-conversion.")
 System_Ext(n_id2610ae0cc2cc50, "LLM Provider", "Language model used for drafting specs, ADRs, evaluations and threat narratives.")
 System_Ext(n_idaf80425d61fd58, "RFP / Vendor Submissions", "Requests for proposal and competing vendor solution responses assessed at engagement time.")
 

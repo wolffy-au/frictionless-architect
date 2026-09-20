@@ -752,6 +752,12 @@
   name: Regulatory Content Sources
   desc: Upstream NIST OSCAL content and FedRAMP baselines.
 - type: ApplicationComponent
+  id: ext-trestle
+  name: compliance-trestle
+  desc: >-
+    Third-party Python library/CLI dependency, not vendored source. Performs
+    the Trestle Markdown <-> OSCAL round-trip behind fn-oscal-conversion.
+- type: ApplicationComponent
   id: ext-llm
   name: LLM Provider
   desc: Language model used for drafting specs, ADRs, evaluations and threat narratives.

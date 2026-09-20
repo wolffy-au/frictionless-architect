@@ -14,7 +14,7 @@ include = [
 ]
 dynamic = ["version"]
 
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.11,<3.14"
 dependencies = [
     "fastapi (>=0.141.0,<0.142.0)",
     "pydantic>=2.0.0",
@@ -23,6 +23,7 @@ dependencies = [
     "python-dotenv (>=1.2.2,<2.0.0)",
     "uvicorn (>=0.43.0,<0.44.0)",
     "defusedxml (>=0.7.1,<0.8.0)",
+    "compliance-trestle (>=5.1.0,<6.0.0)",
 ]
 
 [dependency-groups]
