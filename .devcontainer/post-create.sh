@@ -3,6 +3,14 @@
 # Exit immediately on error, treat unset variables as an error, and fail if any command in a pipeline fails.
 set -euo pipefail
 
+# postStartCommand normally sets this, but that runs *after* postCreateCommand
+# (this script) on first boot, and this script shells out to git below (hook
+# relocation, pre-commit install) before postStartCommand ever runs. On a
+# 9p/drvfs-mounted workspace, git's ownership check fails without it:
+#   fatal: detected dubious ownership in repository at '...'
+# Belt-and-suspenders: postStartCommand still sets it too, for later shells.
+git config --global --add safe.directory "$(pwd)"
+
 # Function to run a command and show logs only on error
 run_command() {
     local command_to_run="$*"
@@ -25,7 +33,7 @@ run_command() {
 # can't be resolved.
 github_latest_release_tag() {
     local repo="$1"   # e.g. github/spec-kit
-    curl -fsSL --proto "=https" "https://api.github.com/repos/${repo}/releases/latest" \
+    curl -fsSL --proto "=https" --proto-redir "=https" "https://api.github.com/repos/${repo}/releases/latest" \
         | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/'
 }
 
@@ -37,6 +45,9 @@ echo "✅ Done"
 # Installing Poetry (Python package manager)
 echo -e "\n🐍 Installing Poetry - Python Package Manager..."
 run_command "pip install poetry"
+# Poetry 2.x dropped `export` as a built-in command; the pre-push hook's
+# requirements.txt sync (see .pre-commit-config.yaml) needs this plugin.
+run_command "pip install poetry-plugin-export"
 echo "✅ Done"
 
 # Installing CLI-based AI Agents
@@ -244,7 +255,7 @@ install_skill_from_release() {
     local tmp
     tmp=$(mktemp -d)
     local extracted_root=""
-    if curl -fsSL --proto "=https" "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz" -o "${tmp}/skill.tar.gz" \
+    if curl -fsSL --proto "=https" --proto-redir "=https" "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz" -o "${tmp}/skill.tar.gz" \
         && tar -xzf "${tmp}/skill.tar.gz" -C "${tmp}"; then
         extracted_root=$(find "${tmp}" -mindepth 1 -maxdepth 1 -type d | head -1)
     fi
@@ -267,7 +278,24 @@ echo "✅ Done"
 # Installing Git Hooks
 echo -e "\n🪝 Installing Git Hooks..."
 run_command "pip install pre-commit"
-run_command "sudo env PATH=\"$PATH\" HOME=\"$HOME\" pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg"
+# Some devcontainer setups (e.g. WSL2 with the workspace folder mounted from
+# the Windows filesystem via 9p/drvfs) put .git on a filesystem that does not
+# support chmod, so `pre-commit install` fails while chmod'ing the hook
+# scripts it writes:
+#   PermissionError: [Errno 1] Operation not permitted: '.git/hooks/pre-commit'
+# `git config core.hooksPath` can't work around this either — rewriting an
+# existing .git/config hits the same chmod failure via git's own lockfile
+# handling. Instead, relocate .git/hooks to a directory on the container's
+# own filesystem via a symlink: creating a symlink needs no chmod, so this
+# works even on a broken mount, and is a no-op if already relocated.
+if [[ ! -L .git/hooks ]]; then
+    NATIVE_HOOKS_DIR="$HOME/.cache/git-hooks/frictionless-architect"
+    run_command "mkdir -p \"$(dirname "$NATIVE_HOOKS_DIR")\""
+    run_command "rm -rf \"$NATIVE_HOOKS_DIR\""
+    run_command "mv .git/hooks \"$NATIVE_HOOKS_DIR\""
+    run_command "ln -s \"$NATIVE_HOOKS_DIR\" .git/hooks"
+fi
+run_command "pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg"
 echo "✅ Done"
 
 echo -e "\n🧹 Cleaning cache..."
