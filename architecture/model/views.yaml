@@ -461,6 +461,7 @@
     - art-adr
     - art-drift-report
     - art-remediation-item
+    - art-oscal-poam
 
 - id: view-it4it-capability-bridges
   name: "IT4IT: Capability Bridges"

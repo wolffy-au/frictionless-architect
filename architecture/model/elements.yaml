@@ -929,6 +929,7 @@
 - {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}
 - {type: DataObject, id: art-drift-report, name: Classified Drift Finding, desc: A deviation of current state from intent, classified and prioritised.}
 - {type: DataObject, id: art-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
+- {type: DataObject, id: art-oscal-poam, name: OSCAL Plan of Action & Milestones, desc: OSCAL-formatted sidecar of the remediation backlog — open findings and their target remediation milestones, for external compliance reporting.}
 - {type: DataObject, id: art-dev-spec, name: Development Specification, desc: Executable spec derived from patterns, blueprints and designs.}
 - {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
 - {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: A single immutable forensic record — actor, action, target artefact, timestamp, outcome.}
