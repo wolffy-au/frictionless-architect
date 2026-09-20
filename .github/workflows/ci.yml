@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          submodules: true
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v7
@@ -102,6 +104,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          submodules: true
 
       - name: Download coverage report
         uses: actions/download-artifact@v8
