@@ -55,6 +55,8 @@ Use the package directory name, not the Python module name.
 - `wiki` — the generated `wiki/` (content produced by the `wiki-librarian` skill)
 - `ci` — release/versioning plumbing
 - `deps` — dependency bumps (`chore(deps):`, `build(deps):`)
+- `model` — the ArchiMate model pipeline (`architecture/model/`: `elements.yaml`,
+  `relationships.yaml`, `views.yaml`, generated diagrams and build artefacts)
 
 Omit the scope for genuinely repo-wide changes. Add a new area scope to this list
 in the same commit that first needs it.
