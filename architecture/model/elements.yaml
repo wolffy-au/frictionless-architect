@@ -633,6 +633,15 @@
     from — reconciled against discovered configuration items via the
     existing state-discovery mechanism, not a separate one.
 - type: BusinessObject
+  id: bo-oscal-assessment-plan
+  name: OSCAL Assessment Plan
+  desc: >-
+    Scope and method for assessing the SSP's declared control implementations
+    ahead of a release — deterministically derived from the SSP/profile
+    scope, not a hand-authored planning document. Imported by the resulting
+    OSCAL Assessment Results (OSCAL requires every Assessment Results
+    instance to reference the plan it assessed against).
+- type: BusinessObject
   id: bo-oscal-assessment-results
   name: OSCAL Assessment Results
   desc: >-
@@ -900,7 +909,7 @@
 - {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: Upstream NIST OSCAL catalog / FedRAMP baseline.}
 - {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
 - {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
-- {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable component.}
+- {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
 - {type: DataObject, id: art-oscal-ssp, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
 - {type: DataObject, id: art-pattern, name: Architecture Pattern, desc: Technology-agnostic, reusable design with mapped controls.}
 - {type: DataObject, id: art-blueprint, name: Implementation Blueprint, desc: Technology-specific realisation of one or more patterns.}
@@ -914,6 +923,7 @@
 - {type: DataObject, id: art-impact-assessment, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
 - {type: DataObject, id: art-archived-option, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
 - {type: DataObject, id: art-release-candidate, name: Release Candidate, desc: A build submitted to the enforcement gate.}
+- {type: DataObject, id: art-oscal-assessment-plan, name: OSCAL Assessment Plan, desc: Scope and method for a pre-release assessment run, generated ahead of the gate check and imported by its Assessment Results.}
 - {type: DataObject, id: art-oscal-ar, name: OSCAL Assessment Results, desc: Findings on whether an SSP's declared control implementations are satisfied.}
 - {type: DataObject, id: art-gate-decision, name: Gate Decision, desc: Pass / block outcome with the controls evaluated — the pre-release instance of an OSCAL Assessment Results.}
 - {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}

@@ -296,16 +296,20 @@
 - {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
 - {type: Assignment, source: role-ops, target: process-effectiveness-monitoring}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
+- {type: Access, source: process-cicd-pipeline, target: bo-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
 - {type: Access, source: process-effectiveness-monitoring, target: bo-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
 - {type: Access, source: process-effectiveness-monitoring, target: bo-control-effectiveness-evidence, label: records, props: {access_type: Write}}
+- {type: Association, source: bo-oscal-assessment-results, target: bo-oscal-assessment-plan, label: imports (per OSCAL's required import-ap)}
 - {type: Specialization, source: bo-release-gate-decision, target: bo-oscal-assessment-results, label: pre-release instance}
 - {type: Specialization, source: bo-control-effectiveness-evidence, target: bo-oscal-assessment-results, label: continuous-monitoring instance}
 - {type: Realization, source: fn-enforcement-gate, target: process-cicd-pipeline}
 - {type: Realization, source: fn-effectiveness-monitor, target: process-effectiveness-monitoring}
 - {type: Realization, source: art-gate-decision, target: bo-release-gate-decision}
 - {type: Realization, source: art-effectiveness-evidence, target: bo-control-effectiveness-evidence}
+- {type: Realization, source: art-oscal-assessment-plan, target: bo-oscal-assessment-plan}
 - {type: Realization, source: art-oscal-ar, target: bo-oscal-assessment-results}
+- {type: Association, source: art-oscal-ar, target: art-oscal-assessment-plan, label: imports (per OSCAL's required import-ap)}
 - {type: Realization, source: process-effectiveness-monitoring, target: cap-control-catalog}
 
 # =====================================================================
@@ -540,6 +544,7 @@
 - {type: Access, source: fn-enforcement-gate, target: art-dev-spec, label: checks against, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-oscal-catalog, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-enforcement-gate, target: art-gate-decision, label: issues, props: {access_type: Write}}
 - {type: Access, source: ext-cicd, target: art-gate-decision, label: acts on, props: {access_type: Read}}
 - {type: Access, source: fn-effectiveness-monitor, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
@@ -560,6 +565,7 @@
 - {type: Aggregation, source: store-oscal, target: art-oscal-profile}
 - {type: Aggregation, source: store-oscal, target: art-oscal-component}
 - {type: Aggregation, source: store-oscal, target: art-oscal-ssp}
+- {type: Aggregation, source: store-oscal, target: art-oscal-assessment-plan}
 - {type: Aggregation, source: store-oscal, target: art-oscal-ar}
 - {type: Aggregation, source: store-patterns, target: art-pattern}
 - {type: Aggregation, source: store-patterns, target: art-blueprint}

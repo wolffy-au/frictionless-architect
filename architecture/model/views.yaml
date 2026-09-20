@@ -244,6 +244,7 @@
     - bo-oscal-ssp
     - bfn-release-enforcement
     - process-cicd-pipeline
+    - bo-oscal-assessment-plan
     - bo-release-gate-decision
     - bfn-effectiveness-assurance
     - process-effectiveness-monitoring
@@ -374,6 +375,7 @@
     - bo-oscal-ssp
     - process-state-discovery
     - process-cicd-pipeline
+    - bo-oscal-assessment-plan
     - bo-release-gate-decision
     - role-ops
     - process-effectiveness-monitoring
@@ -452,6 +454,7 @@
     - art-oscal-ssp
     - art-oscal-catalog
     - art-release-candidate
+    - art-oscal-assessment-plan
     - art-gate-decision
     - art-effectiveness-evidence
     - art-twin
