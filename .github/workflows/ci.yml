@@ -88,11 +88,14 @@ jobs:
 
       - name: Snyk Scan Test
         if: github.actor != 'dependabot[bot]'
-        run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au
+        run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --exclude=third_party
 
       - name: Snyk Code Scan
+        # third_party/ is vendored reference content (submodules), not
+        # first-party source — excluded so Snyk's SAST rules don't flag
+        # findings in code we don't own and can't fix here.
         if: github.actor != 'dependabot[bot]'
-        run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores
+        run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores --exclude=third_party
 
   sonar:
     name: SonarQube Analysis
