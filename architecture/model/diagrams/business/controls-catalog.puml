@@ -49,6 +49,7 @@ Rel_Access_r(e_id378927722a8d5a, e_id3a6eb7f6485a55, "checks enablement against"
 Rel_Access_w(e_id378927722a8d5a, e_id41a01cbfc25b5a, "authors")
 Rel_Access_w(e_id378927722a8d5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
+Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Specialization(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
 Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
 Rel_Access_r(e_id3a7a27eefeb751, e_ide1231d147af05e, "reconciles against")

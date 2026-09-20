@@ -290,10 +290,12 @@
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
 - {type: Realization, source: art-blueprint, target: bo-implementation-blueprint}
 - {type: Realization, source: art-oscal-component, target: bo-oscal-component}
+- {type: Association, source: bo-implementation-blueprint, target: bo-oscal-component, label: maps enablement & gaps to}
 - {type: Aggregation, source: bo-solution-design, target: bo-solution-component, label: composed of}
 - {type: Specialization, source: bo-solution-component, target: bo-implementation-blueprint, label: instance of}
 - {type: Association, source: bo-oscal-ssp, target: bo-solution-design, label: derived from}
 - {type: Access, source: process-state-discovery, target: bo-oscal-ssp, label: reconciles against, props: {access_type: Read}}
+- {type: Realization, source: fn-drift-engine, target: process-state-discovery}
 - {type: Realization, source: art-solution-design, target: bo-solution-design}
 - {type: Realization, source: art-oscal-ssp, target: bo-oscal-ssp}
 
