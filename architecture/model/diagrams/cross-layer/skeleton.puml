@@ -70,12 +70,5 @@ Rel_Influence(e_idc5b7e3405dd85a, e_id302f473d6cd750, "")
 Rel_Influence(e_idc5b7e3405dd85a, e_id648250d49fc85e, "")
 Rel_Influence(e_id82700e8bdc1351, e_id945f98ac87fe5d, "")
 Rel_Influence(e_id82700e8bdc1351, e_idc4aa32266a5a5f, "")
-Rel_Serving_Up(e_id18ec07397a9d5f, e_idafba1b4ab1e756, "authoritative graph")
-Rel_Serving_Up(e_id18ec07397a9d5f, e_id41aa3eb894c852, "as-designed intent")
-Rel_Serving_Up(e_id752d1de3794f5f, e_idafba1b4ab1e756, "patterns & blueprints")
-Rel_Serving_Up(e_id72468b5b403450, e_id752d1de3794f5f, "control mappings")
-Rel_Serving_Up(e_id72468b5b403450, e_id4a1c34ab69d151, "expected controls")
-Rel_Serving_Up(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
-Rel_Serving_Up(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
 
 @enduml

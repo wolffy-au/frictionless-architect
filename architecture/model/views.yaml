@@ -12,6 +12,10 @@
 # `viewpoint: custom` = a deliberate cross-layer view; omitting the key skips
 # the check.
 #
+# `exclude:` (optional) suppresses relationships that would otherwise render
+# (both endpoints in scope) but are incidental to this view's own story —
+# see `build.py::add_views` for the type+pair pattern schema.
+#
 # `diagram:` is the output path (no extension) under diagrams/ used by
 # `render_diagrams.py`. Vision-phase (TOGAF ADM Phase A) views render under
 # diagrams/vision/.
@@ -85,6 +89,11 @@
   # Capability is scoped via members, not include_types — see the note on
   # view-stakeholder above; the IT4IT import added 42 more Capability elements.
   include_types: [CourseOfAction, Resource]
+  # GH #20: the capability-to-capability Serving mesh (control mappings,
+  # expected controls, etc.) is the Capability Map view's own story, not
+  # this one's — exclude it here so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
     - outcome-executable-intelligence
@@ -129,6 +138,10 @@
   # Strategy_Resource box in the Strategy view (Resource --Assignment-->
   # Capability). They render flat here, not nested, because Resource is
   # deliberately out of scope for this view — not a modelling inconsistency.
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's — exclude it so it doesn't repeat.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
     - vss-baseline
@@ -167,6 +180,10 @@
   # Strategy_Resource box in the Strategy view (Resource --Assignment-->
   # Capability). They render flat here, not nested, because Resource is
   # deliberately out of scope for this view — not a modelling inconsistency.
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's — exclude it so it doesn't repeat.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   include_types: [BusinessProcess]
   members:
     - outcome-executable-intelligence
@@ -241,6 +258,11 @@
   # on view-stakeholder above; the IT4IT import added elements of both types.
   viewpoint: custom
   include_types: [Driver, Goal, Principle, Constraint, Requirement]
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's (motivation spine -> capabilities) —
+  # exclude it so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - outcome-executable-intelligence
     - cap-digital-twin
@@ -260,6 +282,11 @@
   # Realization, even though no Outcome element sits on this particular view.
   viewpoint: outcome_realization
   include_types: [BusinessProcess]
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's (BusinessProcess -> Capability) —
+  # exclude it so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - cap-spec-engine
     - cap-control-plane
@@ -275,6 +302,11 @@
   # whose allow-list spans both (Capability + $ApplicationElements$) is
   # Outcome Realization, even though no Outcome element sits on this view.
   viewpoint: outcome_realization
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story, not this one's (ApplicationComponent -> Capability) —
+  # exclude it so it doesn't repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - sub-catalog
     - sub-library
@@ -433,6 +465,12 @@
   # flat at the diagrams/ root rather than living in any one layer folder —
   # unlike cross-layer/subsystem-capabilities, which is only a cross-*layer*
   # cut within this repo's own model and so does get a layer folder.
+  # GH #20: this view's own story is the cap-* <-> it4it-cap-* Association
+  # bridges, not the first-party capability-to-capability Serving mesh
+  # (that's the Capability Map view's story) — exclude it so it doesn't
+  # repeat incidentally.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - cap-digital-twin
     - cap-reusable-architecture
