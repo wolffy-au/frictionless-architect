@@ -33,6 +33,9 @@ Rel_Realization_Up(e_idc29413a2099958, e_ida9babe1fe97050, "")
 Rel_Realization_Up(e_id18ec07397a9d5f, e_id78f58d32222658, "")
 Rel_Realization_Up(e_id41aa3eb894c852, e_id78f58d32222658, "")
 Rel_Realization_Up(e_id752d1de3794f5f, e_id0b01ce08664e58, "")
+Rel_Serving_Up(e_ida9babe1fe97050, e_idcd5e1d4017725d, "")
+Rel_Serving_Up(e_id78f58d32222658, e_idcd5e1d4017725d, "")
+Rel_Serving_Up(e_id0b01ce08664e58, e_idcd5e1d4017725d, "")
 Rel_Realization_Up(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
 
 @enduml

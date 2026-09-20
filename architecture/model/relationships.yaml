@@ -63,6 +63,15 @@
 - {type: Influence, source: coa-executable-governance, target: goal-frictionless-architecture}
 - {type: Influence, source: coa-living-twin, target: goal-frictionless-architecture}
 - {type: Influence, source: coa-reuse-first, target: goal-frictionless-architecture}
+# GH #20 follow-up: close the strategy-layer loop — each CourseOfAction also
+# serves the value stream it drives (Realization is not a legal CourseOfAction
+# -> ValueStream pair per the ArchiMate 3.2 relationship matrix; Serving is),
+# so `view-strategy` has a connected path from resources through capabilities
+# and courses of action to the stream and its outcome, instead of
+# ValueStream/Outcome sitting as an isolated pair.
+- {type: Serving, source: coa-executable-governance, target: vs-governed-delivery}
+- {type: Serving, source: coa-living-twin, target: vs-governed-delivery}
+- {type: Serving, source: coa-reuse-first, target: vs-governed-delivery}
 - {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
 - {type: Association, source: stk-architecture, target: vs-governed-delivery, label: sustained coherence}
 - {type: Association, source: stk-risk-compliance, target: vs-governed-delivery, label: provable compliance}
