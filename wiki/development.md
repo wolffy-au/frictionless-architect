@@ -36,6 +36,26 @@ visualiser.
   (`quickstart.md:12`; the visualiser falls back to bundled sample data when no
   Neo4j is configured).
 
+## Known environment quirks
+
+In the devcontainer, `/workspaces/frictionless-architect` is a 9p bind mount
+off a Windows drive (`aname=drvfs;path=C:\`): every file shows as mode `0777`
+owned by `vscode` regardless of the writing UID, and any `chmod`/`chown` on a
+workspace path fails with `Operation not permitted` — including chmods a
+tool runs internally as part of an atomic tempfile → chmod → rename write.
+This is what breaks `specify integration upgrade` / `specify init` and the
+Claude Code integration's install step (`.devcontainer/post-create.sh`).
+**Prefix the failing command with `sudo`** — running as root sidesteps the
+drvfs UID-mapping check, e.g. `sudo git submodule update --init <path>`
+(which chmods `.git/config.lock`) fails unprivileged but succeeds under
+`sudo` (`sudo -n true` is passwordless in this container). If a partial or
+interrupted operation left debris (e.g. a half-cloned submodule directory),
+remove it first — a non-empty destination fails the retry with an unrelated
+error. Root's global git config is separate from the normal user's: if you
+hit "detected dubious ownership", also run `sudo git config --global --add
+safe.directory <path>` (or `'*'`) before the `sudo git …` command that needs
+it (`AGENTS.md` §"Known environment quirks").
+
 ## Setup
 
 Per `README.md` §"Installation":

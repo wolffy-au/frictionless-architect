@@ -60,6 +60,17 @@ topics:
       - path: third_party/it4it/relationships.yaml
       - path: third_party/it4it/views.yaml
 
+  - name: oscal-compliance
+    title: OSCAL Compliance Content
+    description: The vendored OSCAL/FedRAMP reference content, the compliance-trestle dependency, and how they feed the platform's compliance-automation vision (ADR-0030).
+    sources:
+      - path: third_party/README.md
+      - path: third_party/oscal*/**
+      - path: third_party/fedramp-automation/**
+      - path: pyproject.toml
+      - path: sample-data/oscal/**
+      - path: docs/adr/0030-vendor-oscal-reference-content.md
+
   - name: data-model
     title: Data Model
     description: Domain entities, the Neo4j schema, and the ArchiMate XSD basis.

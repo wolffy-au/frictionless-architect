@@ -105,6 +105,20 @@ the view. `IT4IT: Capability Bridges` (see below) is `capability` — a pure
 subfolders (`application/`, `business/`, `c4/`, `cross-layer/`; vision
 views under `diagrams/vision/`).
 
+Seven views — `Strategy`, `Value Stream — Governed Architecture Delivery`,
+`Outcome Realization`, `Architecture Skeleton`, `Delivery Choreography`,
+`Subsystems & Capabilities`, `IT4IT: Capability Bridges` — also declare an
+`exclude:` pattern (`{type: Serving, source_type: Capability, target_type:
+Capability}`) to suppress the 7-edge capability-to-capability `Serving` mesh
+that is `Capability Map`'s own story but would otherwise render identically
+on every other view sharing ≥2 capabilities as members, since
+`build.py`'s default rule draws any relationship whose both endpoints are in
+scope (GH #20; see [Architecture Model](architecture-model.md) for the
+`exclude:` schema). The C4 context and container diagrams, and the
+`Artefact Flow — Controls & OSCAL` ArchiMate view, now also render
+`ext-trestle` ("compliance-trestle") as an external system serving OSCAL
+conversion, per [ADR-0030](architecture.md).
+
 Several of the platform-model views deliberately scope a type by explicit
 `members` rather than `include_types`, because the vendored IT4IT model adds
 many more elements of that same ArchiMate type — an `include_types` scoping

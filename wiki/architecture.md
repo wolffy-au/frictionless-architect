@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-09-19
+generated: 2026-09-20
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -35,6 +35,7 @@ sources:
   - docs/adr/0027-capability-value-stream-and-motivation-spine.md
   - docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md
   - docs/adr/0029-it4it-as-vendored-touchpoint-model.md
+  - docs/adr/0030-vendor-oscal-reference-content.md
   - docs/adr/README.md
 ---
 
@@ -115,11 +116,19 @@ canonical architecture model actually encodes — see
 §3–4 has not yet been reworked to match
 (`docs/adr/0011-six-subsystem-decomposition.md`).
 
-**Forks to vendor** are candidates, not confirmed: an ArchiMate Exchange
-Format / `.archimate` parser (for `knowledge-graph`) and OSCAL
-catalog-resolution tooling (for `policy-enforcement`) (`ARCHITECTURE.md` §4).
-`third_party/` has its first real occupant, though: the IT4IT 3.0
-value-stream reference model, vendored as its own repo (a git submodule,
+**Forks to vendor:** an ArchiMate Exchange Format / `.archimate` parser (for
+`knowledge-graph`) is still a candidate, not confirmed (`ARCHITECTURE.md` §4).
+OSCAL is now **resolved** — [ADR-0030](#decision-log) answers `ARCHITECTURE.md`
+§4's "which OSCAL tool?" question: `compliance-trestle` is consumed as an
+ordinary Poetry runtime dependency (not a fork/submodule), and NIST/FedRAMP
+reference content (`third_party/oscal`, `third_party/oscal-content`,
+`third_party/fedramp-automation`) is vendored as plain read-only
+`third_party/` submodules with no `fork-sync` entry and no `build.py`
+merge step — unlike the IT4IT case below, it isn't ArchiMate model data.
+See [OSCAL Compliance Content](oscal-compliance.md).
+
+`third_party/` also holds the IT4IT 3.0 value-stream reference model,
+vendored as its own repo (a git submodule,
 `wolffy-au/frictionless-it4it`) per [ADR-0029](#decision-log), the same
 first-party/vendored split
 [ADR-0002](#decision-log) draws for actively co-developed code vs. a
@@ -237,9 +246,10 @@ not re-ratified in a spec).
 | 0024 | MVP is single-user and locally run (scoping compromise) | A |
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
-| 0027 | Capability layer carries a value stream and an explicit motivation spine | P |
+| 0027 | Capability layer carries a value stream and an explicit motivation spine | A |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
 | 0029 | IT4IT vendored as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS` | A |
+| 0030 | OSCAL/FedRAMP content vendored as plain `third_party/` submodules; `compliance-trestle` consumed as an ordinary dependency | A |
 
 Most **P** rows (0017–0020) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -247,11 +257,10 @@ the authorization model and policy language, the ADR cryptographic scheme,
 accepted serialization formats, and the API error wire format are all listed
 there as "deferred solution decisions" to be re-decided intentionally
 (`specs/001` §"Deferred solution decisions"; see
-[Platform Specification & API](platform-spec.md)). ADR-0027 is **P** for a
-different reason: the change is already reflected in the
-[Architecture Model](architecture-model.md) (value stream, motivation spine,
-renamed capabilities) but the ADR itself is not yet attested
-(`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
+[Platform Specification & API](platform-spec.md)). ADR-0027 is now **A**:
+the change is reflected in the [Architecture Model](architecture-model.md)
+(value stream, motivation spine, renamed capabilities) and the ADR itself is
+accepted (`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
 
 ADR-0028 rewrites the Neo4j schema `SchemaManager` implements: it previously
 stored every ArchiMate relationship twice — an edge and a reified

@@ -1,6 +1,6 @@
 ---
 title: Project Overview
-generated: 2026-09-13
+generated: 2026-09-20
 generator: claude-sonnet-5
 sources:
   - README.md
@@ -98,9 +98,13 @@ The sources disagree on scope, and this is a known tension:
 
 Only one narrow slice is built today: the Neo4j Schema Visualiser — a FastAPI
 service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
-bundled sample model and renders it as a diagram, a table, and a schema summary,
-falling back to `sample-data/` when Neo4j is unreachable (`README.md` §"What is
-built today"). See [Visualizer Service](visualizer-service.md) and
+bundled sample model, falling back to `sample-data/` when Neo4j is unreachable
+(`README.md` §"What is built today"). It is **JSON-only for now**: `GET
+/schema-payload` returns the diagram/table/schema data as JSON; the
+server-rendered `/schema-visualizer` HTML page described in ADR-0005 was
+dropped ahead of the planned `schema-visualizer-ui` extraction, so there is no
+browser UI until that package exists (`README.md` §"Running the schema
+visualiser"). See [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md).
 
 ## Heritage cleanup

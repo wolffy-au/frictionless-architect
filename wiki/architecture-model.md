@@ -35,11 +35,11 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see "Motivation-layer lint" below). The
-current model is 289 elements, 574 relationships and 21 views
-(`architecture/model/build.py` output): 147 elements / 339 relationships /
-17 views are this platform's own (sections A–C plus the IT4IT touchpoint
-bridge, below), the rest is the vendored IT4IT reference model merged in at
-build time ([ADR-0029](architecture.md) — see "D. IT4IT alignment"). The
+current model is 290 elements, 578 relationships and 21 views
+(`architecture/model/build.py` output): the platform's own sections A–C plus
+the IT4IT touchpoint bridge (below) account for most of that, the rest is
+the vendored IT4IT reference model merged in at build time
+([ADR-0029](architecture.md) — see "D. IT4IT alignment"). The
 generated `frictionless-architect.xml` is committed but never hand-edited —
 same status as the `.puml` / `.svg` diagrams.
 
@@ -70,6 +70,22 @@ Schema rules (`architecture/model/README.md` §"Schema";
   `requirement-type`.
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
+- **`exclude`** on a view (optional) — a list of type+pair patterns
+  (`type` / `source_type` / `target_type` / `source` / `target`, all optional
+  and AND-combined per entry) matched against each in-scope relationship
+  before it's drawn as a view connection; a relationship is suppressed when
+  every key given in an entry matches, and omitted keys are wildcards
+  (`architecture/model/build.py` — `add_views` docstring, GH #20). Added
+  because `build.py`'s rendering rule draws any relationship whose both
+  endpoints are in scope, so a mesh that is core to one view's story (e.g.
+  the 7-edge capability-to-capability `Serving` mesh on `view-capability`)
+  leaks identically into every other view that happens to share ≥2 of those
+  capabilities as members. Seven views —
+  `view-strategy`, `view-value-stream`, `view-outcome-realization`,
+  `view-skeleton`, `view-delivery`, `view-subsystem-capabilities`,
+  `view-it4it-capability-bridges` — each declare
+  `exclude: [{type: Serving, source_type: Capability, target_type:
+  Capability}]` to drop that incidental mesh (`architecture/model/views.yaml`).
 - **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
   from `.claude/skills/model-archimate/reference/archi-viewpoints.xml`
   (`poetry run python .claude/skills/model-archimate/scripts/viewpoints.py
@@ -220,7 +236,14 @@ Graph, an AI agent fleet, curated control content, and the EA practice/tooling
 
 **Value stream** — the outcome-oriented view of governed delivery
 (`architecture/model/elements.yaml:276-318`). `vs-governed-delivery` "Governed
-Architecture Delivery" is a `Composition` of six stages:
+Architecture Delivery" is a `Composition` of six stages. Each of the three
+courses of action also `Serving`-links directly to the value stream (added as
+a GH #20 follow-up, since `CourseOfAction → ValueStream` `Realization` is not
+a legal ArchiMate 3.2 pair but `Serving` is) — without it, `view-strategy`
+rendered the value stream and its outcome as a disconnected pair with no path
+back to the resources/capabilities/courses-of-action chain on the same
+diagram (`architecture/model/relationships.yaml` — "GH #20 follow-up"
+comment):
 
 ```text
 Establish Control & Reuse Baseline
@@ -287,7 +310,15 @@ Architecture Intent and Current-State Digital Twin"), Framework Pack Library
 (`store-frameworks`), Forensic Audit Ledger (`store-ledger`). External systems
 (`architecture/model/elements.yaml:471-501`): Source Control, CI/CD Pipeline,
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, Regulatory
-Content Sources, LLM Provider, RFP / Vendor Submissions.
+Content Sources, LLM Provider, RFP / Vendor Submissions, and — added per
+[ADR-0030](architecture.md) — `ext-trestle` ("compliance-trestle"), whose
+`desc` states it is a "third-party Python library/CLI dependency, not
+vendored source," `Serving`-linked to `fn-oscal-conversion` ("realizes the
+Trestle Markdown ↔ OSCAL round-trip for") — a `Serving`/`Realization`-style
+edge rather than the `Flow`/`Access` used for the peer external systems,
+since trestle is invoked rather than exchanging data passively. See
+[OSCAL Compliance Content](oscal-compliance.md) for the vendored OSCAL
+reference content this connects to.
 
 The subsystem `includes` free-text property was removed — the same
 decomposition is carried by the section-C `ApplicationFunction`s and their
@@ -447,3 +478,10 @@ now holds its `elements.yaml`/`relationships.yaml`/`views.yaml`/
 time, and the old 79-element `IT4IT Alignment` monolith view was dropped in
 favour of the 4 focused reference views described above. Only the
 capability-bridge touchpoint relationships and view stayed first-party.
+
+A 2026-09-20 pass (GH #20, #23) landed the per-view `exclude:` mechanism and
+used it to suppress the incidental capability-mesh leak on seven views,
+closed the `view-strategy` value-stream orphan with `coa-*` → value-stream
+`Serving` edges, and — per [ADR-0030](architecture.md) — added `ext-trestle`
+to the OSCAL conversion chain, bringing the model to 290 elements / 578
+relationships / 21 views.
