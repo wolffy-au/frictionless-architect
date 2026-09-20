@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-19
+generated: 2026-09-20
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -35,9 +35,9 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see "Motivation-layer lint" below). The
-current model is 285 elements, 566 relationships and 20 views
-(`architecture/model/build.py` output): 143 elements / 331 relationships /
-16 views are this platform's own (sections A–C plus the IT4IT touchpoint
+current model is 289 elements, 574 relationships and 21 views
+(`architecture/model/build.py` output): 147 elements / 339 relationships /
+17 views are this platform's own (sections A–C plus the IT4IT touchpoint
 bridge, below), the rest is the vendored IT4IT reference model merged in at
 build time ([ADR-0029](architecture.md) — see "D. IT4IT alignment"). The
 generated `frictionless-architect.xml` is committed but never hand-edited —
@@ -321,6 +321,24 @@ Architecture Option, Architecture Decision Record, Archived Rejected Option,
 Release Candidate, Gate Decision, Classified Drift Finding, Remediation Backlog
 Item, Development Specification, Notation Metamodel, Ledger Entry.
 
+**GH #7 addition — four `BusinessFunction`s over the artefact-flow processes.**
+Each is the stable business capability behind one or more of the process
+steps above, `Composition`-linking its constituent process(es): Policy-to-OSCAL
+Conversion (`bfn-policy-conversion` → `process-policy-authoring`,
+`process-oscal-conversion`), Pattern & Blueprint Traceability
+(`bfn-pattern-blueprint-traceability` → `process-pattern-traceability`,
+`process-blueprint-traceability`), Release Controls Enforcement
+(`bfn-release-enforcement` → `process-cicd-pipeline`), and Controls
+Effectiveness Assurance (`bfn-effectiveness-assurance` →
+`process-effectiveness-monitoring`) (`architecture/model/elements.yaml:493-519`).
+The same pass also corrected `process-effectiveness-monitoring`'s
+`Realization` target from `cap-drift-dashboard` to `cap-control-catalog`, and
+added an `fn-drift-engine` → `process-state-discovery` `Realization` and a
+`bo-implementation-blueprint` → `bo-oscal-component` `Association` ("maps
+enablement & gaps to") that were both missing from the original model
+(`architecture/model/relationships.yaml` §"A. Process realizes capability" and
+§"B/C" sections).
+
 ### D. IT4IT alignment — vendored as its own repo, imported at build time
 
 The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
@@ -378,98 +396,14 @@ longer holds — that would need its own ADR ([ADR-0029](architecture.md)
 
 ## Views and diagrams
 
-20 ArchiMate views cover the merged model — 16 declared in this repo's own
+21 ArchiMate views cover the merged model — 17 declared in this repo's own
 `views.yaml` (sections A–C plus the IT4IT touchpoint bridge) plus 4 declared
-in `third_party/it4it/views.yaml` for the vendored IT4IT reference (section
-D, below), loaded the same way its elements/relationships are
-([ADR-0029](architecture.md)). The C4 context and container diagrams are
-**not** views — `render_diagrams.py` projects them via `diagram-c4` with
-`--system "Frictionless Architecture Platform"`
-(`architecture/model/README.md` §"Regenerate"). Seven of the platform's own
-16 views are a TOGAF ADM Phase A "Architecture Vision" set, each held to its
-matching standard ArchiMate viewpoint and rendered under `diagrams/vision/`:
-
-| View | Viewpoint | Covers |
-|---|---|---|
-| Stakeholder | `stakeholder` | Who holds which driver, the assessments that make each urgent, and the goal + outcome they drive toward |
-| Motivation | `motivation` | The whole motivation model: stakeholders, assessments, drivers, goal, outcome, principles, requirements, constraints |
-| Goal Realization | `goal_realization` | Goal → outcome, and how principles/requirements/constraints realize it |
-| Strategy | `strategy` | Resources → capabilities → courses of action, the value stream as a single element, and the outcome |
-| Capability Map | `capability` | The eight capabilities and their `Serving` dependency order |
-| Value Stream — Governed Architecture Delivery | `value_stream` | The stream's six stages (`Composition` + `Triggering` sequence, with a `Reconcile → Specify` feedback `Flow`), the capabilities that `Serve` each stage, the recipient stakeholders, and the outcome it `Realizes` |
-| Outcome Realization | `outcome_realization` | Business processes → capabilities → value stream → outcome, the end-to-end realization chain |
-
-Of the remaining nine platform-model views, only `Architecture Skeleton` is
-still marked `viewpoint: custom` (a deliberate cross-layer cut, not held to
-a standard allow-list); the four per-stage `Artefact Flow — …` views are
-`application_cooperation` and `Business — Controls & Compliance Catalog` is
-`business_process_cooperation`. `Delivery Choreography` and
-`Subsystems & Capabilities` are `outcome_realization` — each is a
-`BusinessProcess`/`ApplicationComponent` → `Capability` realization cut,
-which the standard Outcome Realization allow-list (`Capability` +
-business/application elements) matches even with no `Outcome` element on
-the view. `IT4IT: Capability Bridges` (see below) is `capability` — a pure
-`Capability`-to-`Capability` cut, first-party and IT4IT alike
-(`architecture/model/views.yaml`). Rendered `.puml` / `.svg` land under
-`architecture/model/diagrams/`, grouped into per-ArchiMate-layer
-subfolders (`application/`, `business/`, `c4/`, `cross-layer/`; vision
-views under `diagrams/vision/`).
-
-Several of the platform-model views deliberately scope a type by explicit
-`members` rather than `include_types`, because the vendored IT4IT model adds
-many more elements of that same ArchiMate type — an `include_types` scoping
-would silently pull IT4IT elements into a platform-only view. This affects
-every view that includes `Outcome` (IT4IT adds a second one,
-`it4it-outcome-digital-product`), `Capability` (42 more), or `ValueStream`
-(36 more: 7 streams + 29 stages) — e.g. `Stakeholder`, `Strategy`,
-`Capability Map`, `Value Stream — Governed Architecture Delivery`,
-`Outcome Realization` and `Architecture Skeleton` all switched their
-Outcome/Capability/ValueStream scoping to `members` for this reason
-(`architecture/model/views.yaml` — see the inline notes on `view-stakeholder`,
-`view-strategy`, `view-capability`, `view-value-stream`, `view-outcome-realization`,
-`view-skeleton`).
-
-### IT4IT reference views (section D)
-
-4 views cover the IT4IT reference content, declared in
-`third_party/it4it/views.yaml` and rendered into that repo's own
-`diagrams/vision/` — plus one touchpoint view that stays here:
-
-| View | Viewpoint | Covers |
-|---|---|---|
-| IT4IT: Value Streams | `value_stream` | The 7 streams and the outcome they jointly realize, no stage decomposition |
-| IT4IT: Capability Map | `capability` | All 42 IT4IT capabilities plus the 4 canonical domain groupings that nest 34 of them — renders as an otherwise **unconnected map**, since the source model has no other capability-to-capability relationships |
-| IT4IT: Stakeholder | `stakeholder` | The 24 named IT4IT stakeholder roles, as a catalog (no Driver/Assessment to connect them to) |
-| IT4IT: Outcome Realization | `outcome_realization` | The 7 value streams (plus root) and the 36 Outcomes they realize |
-| IT4IT: Capability Bridges *(stays first-party)* | `capability` | Just the 10 `props.source: it4it-alignment` associations between this platform's own capabilities and IT4IT capabilities — a pure `Capability`-to-`Capability` cross-model cut, so it lives in `architecture/model/views.yaml`/`diagrams/`, not the vendored repo. Unlike `cross-layer/subsystem-capabilities` (a cross-*layer* cut within this repo's own model), it spans two repos, so its diagram stays flat at `diagrams/` root rather than in a layer subfolder |
-
-An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
-predated this 4-view split and was dropped once it was fully superseded: it
-only nominally conformed to `viewpoint: value_stream` — its allow-list
-happens to also cover `Capability`/`Outcome`, not because the monolith was a
-genuine single-purpose Value Stream diagram.
-
-## Regenerating
-
-```bash
-poetry run python architecture/model/build.py           # YAML -> XML (+ validate)
-poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .svg
-```
-
-`render_diagrams.py` reads each view's `diagram:` key (one `.puml`/`.svg` pair
-per view) plus the two C4 diagrams. `--check` fails if any committed diagram is
-stale (CI / pre-commit); `--no-svg` skips the PlantUML render. It replaces the
-earlier manual per-view `plantuml` loop.
-
-`diagram-archimate` (the skill `render_diagrams.py` calls into for ArchiMate
-notation) now fixes the layout direction for two relationship pairs rather
-than leaving every edge to graphviz auto-layout: `Realization` and `Serving`
-render with the PlantUML stdlib's `_Up` macro variant (the realizing/serving
-element sits below what it realizes/serves, arrow pointing up), and
-`Triggering`/`Flow` render `_Right` (process sequence reads left to right).
-Every other relationship type is unaffected — this is a rendering hint only
-(`REL_DIRECTION` in `model_to_puml.py`), not a change to source/target
-semantics — see [Agent Skills & Workflows](agent-workflows.md).
+in `third_party/it4it/views.yaml` for the vendored IT4IT reference (section D
+above), loaded the same way its elements/relationships are
+([ADR-0029](architecture.md)). How those views map to ArchiMate viewpoints,
+which ones cover the IT4IT reference content, and how they're rendered into
+`.puml`/`.svg` diagrams is covered in
+[Architecture Views & Diagrams](architecture-diagrams.md), not this topic.
 
 ## Provenance
 

@@ -36,12 +36,20 @@ topics:
 
   - name: architecture-model
     title: Architecture Model
-    description: The canonical graph-loadable YAML model (skeleton + 6 subsystems + artefact flow) that every ArchiMate/C4 diagram is generated from.
+    description: The canonical graph-loadable YAML model (skeleton + 6 subsystems + artefact flow + IT4IT alignment) that every ArchiMate/C4 diagram is generated from.
     sources:
       - path: architecture/model/README.md
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
       - path: architecture/model/views.yaml
+
+  - name: architecture-diagrams
+    title: Architecture Views & Diagrams
+    description: How the model's ArchiMate views map to viewpoints and rendered C4/PlantUML diagrams, and how to regenerate them.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/views.yaml
+      - path: architecture/model/diagrams/**
 
   - name: it4it-model
     title: IT4IT Reference Model

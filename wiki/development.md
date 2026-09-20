@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: 2026-09-19
+generated: 2026-09-20
 generator: claude-sonnet-5
 sources:
   - quickstart.md
@@ -161,8 +161,9 @@ step by step). Summary (`RELEASE.md` §"Steps"):
 1. Sync branches; fast-forward `main` to `develop` (`--ff-only`).
 2. Full quality gate — `bash scripts/pre_merge_checks.sh` must pass clean.
 3. SonarCloud — nothing `OPEN` (resolve with `quality-uplift`).
-4. Security — no open high/critical Snyk or Dependabot findings (resolve with
-   `vulnerability-remediator`).
+4. Security — no open Snyk findings **at any severity** (the release gate drops
+   `--severity-threshold` entirely, unlike CI's `medium` threshold — `RELEASE.md`
+   §4) or open Dependabot findings (resolve with `vulnerability-remediator`).
 5. Refresh docs/specs/diagrams against the code — run `docs-uplift`,
    `spec-alignment`, and `adr-auditor`; commit regenerated artefacts.
 6. `poetry run cz bump` — updates `CHANGELOG.md`, bumps the version, creates the
