@@ -493,6 +493,32 @@
     work items. A Solution Architect approves architectural drift; Security &
     Compliance approves regulatory drift. Ensures only validated, prioritised
     findings enter the delivery pipeline.
+- type: BusinessFunction
+  id: bfn-policy-conversion
+  name: Policy-to-OSCAL Conversion
+  desc: >-
+    GH #7: the stable business capability of turning authored policy and
+    upstream regulatory standards into machine-readable OSCAL Catalogs and
+    Profiles, independent of the specific authoring/conversion process steps.
+- type: BusinessFunction
+  id: bfn-pattern-blueprint-traceability
+  name: Pattern & Blueprint Traceability
+  desc: >-
+    GH #7: the stable business capability of mapping OSCAL Profile controls
+    onto reusable architecture patterns and deriving technology-specific
+    implementation blueprints with tracked control enablement.
+- type: BusinessFunction
+  id: bfn-release-enforcement
+  name: Release Controls Enforcement
+  desc: >-
+    GH #7: the stable business capability of gating a release against its
+    expected controls before it is permitted to ship.
+- type: BusinessFunction
+  id: bfn-effectiveness-assurance
+  name: Controls Effectiveness Assurance
+  desc: >-
+    GH #7: the stable business capability of continuously verifying that
+    deployed controls remain effective in BAU.
 - type: BusinessProcess
   id: process-policy-authoring
   name: Policy & Standards Authoring

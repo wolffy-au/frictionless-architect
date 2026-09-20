@@ -255,6 +255,8 @@
 # =====================================================================
 # A. Controls & Compliance Catalog (business layer)
 # =====================================================================
+- {type: Composition, source: bfn-policy-conversion, target: process-policy-authoring, label: comprises}
+- {type: Composition, source: bfn-policy-conversion, target: process-oscal-conversion, label: comprises}
 - {type: Assignment, source: role-compliance, target: process-policy-authoring}
 - {type: Assignment, source: role-compliance, target: process-oscal-conversion}
 - {type: Access, source: process-policy-authoring, target: bo-policy-doc, label: authors, props: {access_type: Write}}
@@ -273,6 +275,8 @@
 # =====================================================================
 # A. Pattern Control Traceability (business layer, parallel to release enforcement)
 # =====================================================================
+- {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-pattern-traceability, label: comprises}
+- {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-blueprint-traceability, label: comprises}
 - {type: Assignment, source: role-ea, target: process-pattern-traceability}
 - {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
@@ -304,6 +308,8 @@
 #    the other parallel branch off the OSCAL SSP — two cadences of the same
 #    OSCAL Assessment Results concept)
 # =====================================================================
+- {type: Composition, source: bfn-release-enforcement, target: process-cicd-pipeline, label: comprises}
+- {type: Composition, source: bfn-effectiveness-assurance, target: process-effectiveness-monitoring, label: comprises}
 - {type: Assignment, source: role-ops, target: process-effectiveness-monitoring}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
