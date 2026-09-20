@@ -95,3 +95,6 @@ narrative docs.
   `RelationshipFact` node
 - **A** — [0029](0029-it4it-as-vendored-touchpoint-model.md) — IT4IT vendored
   as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS`
+- **A** — [0030](0030-vendor-oscal-reference-content.md) — NIST/FedRAMP OSCAL
+  content vendored as `third_party/` submodules; `compliance-trestle`
+  consumed as a Poetry dependency, not vendored
