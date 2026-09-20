@@ -8,8 +8,9 @@ from __future__ import annotations
 
 from typing import Any
 
-import build
 from pyArchimate import Element, Model
+
+import build
 
 
 def test_canon_resolves_case_and_separator_insensitively() -> None:

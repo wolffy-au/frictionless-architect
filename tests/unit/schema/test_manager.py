@@ -111,9 +111,7 @@ def test_ingest_payload_dispatches(monkeypatch, manager):
 def test_ingest_payload_executes_queries(manager):
     payload = {
         "elements": [{"identifier": "E1"}],
-        "relationships": [
-            {"identifier": "R1", "source": "E1", "target": "E1", "type": "AccessRelationship"}
-        ],
+        "relationships": [{"identifier": "R1", "source": "E1", "target": "E1", "type": "AccessRelationship"}],
         "views": [
             {
                 "identifier": "V1",
@@ -122,9 +120,7 @@ def test_ingest_payload_executes_queries(manager):
                 "name": "view",
             }
         ],
-        "diagrams": [
-            {"identifier": "D1", "viewRef": "V1", "nodes": ["E1"], "connections": ["R1"]}
-        ],
+        "diagrams": [{"identifier": "D1", "viewRef": "V1", "nodes": ["E1"], "connections": ["R1"]}],
     }
     manager.ingest_payload(payload)
     tx = manager.driver._session.tx
