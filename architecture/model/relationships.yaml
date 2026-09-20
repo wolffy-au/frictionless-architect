@@ -349,6 +349,7 @@
 # B. Authoring / OSCAL chain
 # =====================================================================
 - {type: Flow, source: ext-regsources, target: sub-catalog, label: baseline catalogs}
+- {type: Serving, source: ext-trestle, target: fn-oscal-conversion, label: realizes the Trestle Markdown <-> OSCAL round-trip for}
 - type: Access
   source: sub-catalog
   target: store-oscal

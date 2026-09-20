@@ -12,10 +12,12 @@ Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
   Application_DataObject(e_id9659a679544058, "OSCAL Profile")
 }
 Application_Component(e_id13f9d5fb47b650, "Regulatory Content Sources")
+Application_Component(e_id0aed952692a556, "compliance-trestle")
 Application_DataObject(e_id51129996aed75b, "Policy / Standard Document")
 Application_DataObject(e_ida95982eb78095a, "Regulatory Baseline Catalog")
 
 Rel_Flow_Right(e_id13f9d5fb47b650, e_ide4bef3733af65a, "baseline catalogs")
+Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
 Rel_Access_w(e_ide4bef3733af65a, e_idb18c37abc9ff51, "writes Catalogs & Profiles")
 Rel_Access_w(e_id6ac934f170cd5f, e_id51129996aed75b, "authors")
 Rel_Access_w(e_id13f9d5fb47b650, e_ida95982eb78095a, "supplies")
