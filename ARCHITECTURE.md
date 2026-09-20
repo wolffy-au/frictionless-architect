@@ -198,11 +198,14 @@ Components are the eight from `PROJECT_SPECIFICATION.md` "Proposed Grouping".
 **Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
 
 - An ArchiMate Exchange Format / `.archimate` parser (consumed by `knowledge-graph`).
-- OSCAL tooling — catalog resolution / component-definition handling (consumed by
-  `policy-enforcement`); the `sample-data/oscal/*.puml` resolution artefacts imply a
-  resolver is already in the loop.
 
-Confirm the exact upstreams before creating submodules.
+**OSCAL** is resolved (see [ADR-0030](docs/adr/0030-vendor-oscal-reference-content.md)):
+NIST/FedRAMP reference content (`usnistgov/OSCAL`, `usnistgov/oscal-content`,
+`GSA/fedramp-automation`) is vendored as plain `third_party/` submodules, consumed by
+`policy-enforcement` when it's built; `compliance-trestle` (the catalog/profile
+authoring and round-trip tool) is an ordinary Poetry dependency, not a submodule.
+
+Confirm the exact ArchiMate-parser upstream before creating that submodule.
 
 ---
 
@@ -359,7 +362,9 @@ Checklist:
 2. Root `.specify/` as the platform constitution with lighter per-component constitutions
    beneath, or one constitution only?
 3. Dashboard: Backstage-embedded plugin, or standalone SPA? Changes package 7's build shape.
-4. Which upstreams get forked (ArchiMate parser? which OSCAL tool?).
+4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
+   is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
+   dependency, not a fork.)
 5. Does `pii-gateway` start as its own package or split out of `governance-engine` later?
 6. `001-governance-platform` spec: promote to `EPIC-001`, or retire in favour of
    `PROJECT_SPECIFICATION.md` + per-component specs?
