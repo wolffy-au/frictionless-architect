@@ -93,6 +93,7 @@ reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
 reportUnknownMemberType = false
 extraPaths = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
+exclude = ["third_party", "**/node_modules", "**/__pycache__"]
 
 [tool.mypy]
 strict = true
@@ -126,6 +127,7 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+extend-exclude = ["third_party"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "C", "I"]

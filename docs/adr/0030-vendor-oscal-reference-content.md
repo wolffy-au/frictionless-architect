@@ -85,6 +85,22 @@ content itself isn't a "tool" requiring a fork decision at all.
   ADR — the `third_party/` + `fork-sync` mechanism from `ADR-0002` would then
   apply instead.
 
+## Implementation note (2026-09-20)
+
+`GSA/fedramp-automation` no longer exists on GitHub as of GH #22's
+implementation — confirmed 404 on both the web UI and the API, not a
+rename/redirect. GSA appears to have consolidated FedRAMP OSCAL content onto
+[automate.fedramp.gov](https://automate.fedramp.gov), a documentation site
+rather than a git-hosted source, so it isn't a submodule-able replacement.
+`third_party/fedramp-automation` is instead vendored from
+[`GoComply/fedramp`](https://github.com/GoComply/fedramp), an active
+open-source CLI for processing OSCAL-based FedRAMP SSPs that bundles
+resolved FedRAMP LOW/MODERATE/HIGH baseline catalogs at
+`bundled/catalogs/` — no PRIVACY baseline, and it is a processing tool (own
+source CC0-licensed, but the repo also vendors Go dependencies under their
+own non-CC0 licenses) rather than a pure content mirror like
+`oscal-content`. See `third_party/README.md` for the per-vendor detail.
+
 ## Alternatives considered
 
 - **Vendor `compliance-trestle` as a `third_party/` submodule** (mirroring
