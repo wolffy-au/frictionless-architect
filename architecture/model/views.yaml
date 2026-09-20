@@ -175,6 +175,9 @@
   # include_types — BusinessFunction is a different type from the
   # BusinessProcess this view otherwise auto-includes) so the "major area"
   # groupings Composition-nest their already-realizing processes here too.
+  # GH #25: same rationale for the 3 bfn-* BusinessFunctions grouping the
+  # spec-generation -> build -> release -> drift-discovery -> triage thread,
+  # a separate lifecycle from GH #7's controls-lifecycle groupings.
   # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
   # cap-control-catalog, cap-reusable-architecture) appear nested inside a
   # Strategy_Resource box in the Strategy view (Resource --Assignment-->
@@ -206,6 +209,9 @@
     - bfn-pattern-blueprint-traceability
     - bfn-release-enforcement
     - bfn-effectiveness-assurance
+    - bfn-agentic-delivery
+    - bfn-release-management
+    - bfn-drift-management
 
 - id: view-vision-controls-lifecycle
   name: Vision — Policy-to-Runtime Controls Lifecycle

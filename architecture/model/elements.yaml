@@ -494,6 +494,27 @@
     Compliance approves regulatory drift. Ensures only validated, prioritised
     findings enter the delivery pipeline.
 - type: BusinessFunction
+  id: bfn-agentic-delivery
+  name: Agentic Delivery Execution
+  desc: >-
+    GH #25: the stable business capability of turning a deterministic
+    architectural specification into supervised, agentic development output,
+    independent of the specific spec-generation/build process steps.
+- type: BusinessFunction
+  id: bfn-release-management
+  name: Release Management
+  desc: >-
+    GH #25: the stable business capability of deploying a gated, compliant
+    change to production once all controls have cleared. Distinct from
+    bfn-release-enforcement, which gates the release rather than performing it.
+- type: BusinessFunction
+  id: bfn-drift-management
+  name: Drift Management
+  desc: >-
+    GH #25: the stable business capability of continuously detecting drift
+    against architectural intent and gating it through human review before it
+    is committed as prioritised backlog work.
+- type: BusinessFunction
   id: bfn-policy-conversion
   name: Policy-to-OSCAL Conversion
   desc: >-
