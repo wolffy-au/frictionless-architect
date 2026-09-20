@@ -16,7 +16,7 @@ the service is useful with no infrastructure at all.
 
 ## Prerequisites
 
-- Python 3.12 (the project supports `>=3.10,<3.14`)
+- Python 3.12 (the project supports `>=3.11,<3.14`)
 - [Poetry](https://python-poetry.org/) 2.x for dependency management
 - Optionally, a reachable Neo4j 5.x instance (the visualiser falls back to bundled
   sample data when none is configured)

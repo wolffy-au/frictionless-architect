@@ -28,7 +28,7 @@ By participating in this project you agree to abide by the
 - **Poetry only** for dependency management — never `uv` (see
   [`ARCHITECTURE.md`](ARCHITECTURE.md) §5). `poetry install` installs the
   project and all dependency groups (`dev`, `tests`, `lint`, `docs`).
-- Python 3.12 (supported range `>=3.10,<3.14`).
+- Python 3.12 (supported range `>=3.11,<3.14`).
 - Lint / types: `ruff`, `pyright`, `mypy`. Tests: `pytest` (+ `pytest-cov`),
   `behave`.
 - Run everything through `poetry run …` or `poetry env activate`.
