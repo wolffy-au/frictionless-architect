@@ -30,7 +30,7 @@
 - id: view-stakeholder
   name: Stakeholder
   viewpoint: stakeholder
-  diagram: vision/stakeholder
+  diagram: vision/1-stakeholder
   # The case for change: who holds which driver, the assessments that make each
   # driver urgent, and the goal + outcome they drive toward.
   # Outcome and Stakeholder are scoped explicitly (not via include_types)
@@ -51,7 +51,7 @@
 - id: view-motivation
   name: Motivation
   viewpoint: motivation
-  diagram: vision/motivation
+  diagram: vision/2-motivation
   # The whole motivation model — stakeholders, assessments, drivers, goal,
   # outcome, principles, requirements, constraints — and how they relate.
   # Stakeholder scoped explicitly (not via include_types), same reason as
@@ -70,7 +70,7 @@
 - id: view-goal-realization
   name: Goal Realization
   viewpoint: goal_realization
-  diagram: vision/goal-realization
+  diagram: vision/3-goal-realization
   # How the goal refines into the outcome, and how principles, requirements and
   # constraints realize it.
   include_types: [Goal, Principle, Requirement, Constraint]
@@ -80,7 +80,7 @@
 - id: view-strategy
   name: Strategy
   viewpoint: strategy
-  diagram: vision/strategy
+  diagram: vision/4-strategy
   # Overview: resources -> capabilities -> courses of action, the value stream
   # as a single element, and the outcome. Stage decomposition and the
   # recipient stakeholders belong to the Value Stream view; the goal linkage
@@ -109,7 +109,7 @@
 - id: view-capability
   name: Capability Map
   viewpoint: capability
-  diagram: vision/capability-map
+  diagram: vision/5-capability-map
   # The eight abilities and the Serving dependency order between them.
   # Members, not include_types — the IT4IT import added 42 more Capability
   # elements (see third_party/it4it/views.yaml's view-it4it-capability-map).
@@ -126,7 +126,7 @@
 - id: view-value-stream
   name: Value Stream — Governed Architecture Delivery
   viewpoint: value_stream
-  diagram: vision/value-stream
+  diagram: vision/6-value-stream
   # The stream and its six stages (Composition + Triggering sequence, with the
   # Reconcile→Specify feedback Flow), the capabilities that Serve each stage,
   # the recipient stakeholders the stream delivers value to, and the Outcome it
@@ -166,7 +166,7 @@
 - id: view-outcome-realization
   name: Outcome Realization
   viewpoint: outcome_realization
-  diagram: vision/outcome-realization
+  diagram: vision/7-outcome-realization
   # How business processes realize capabilities, which serve the value stream,
   # which realizes the outcome — the end-to-end realization chain.
   # Capability/ValueStream scoped via members, not include_types — see notes
@@ -217,6 +217,11 @@
   name: Vision — Policy-to-Runtime Controls Lifecycle
   viewpoint: business_process_cooperation
   diagram: vision/controls-lifecycle
+  # Supplementary vision view, not one of the numbered TOGAF Phase A 1-7
+  # above — those are the standard ADM Phase A view set; this is an
+  # additional narrative diagram placed in diagrams/vision/ because it
+  # communicates the vision (the platform's core value flow), even though
+  # its content and viewpoint are Business Layer, not Motivation/Strategy.
   # GH #7: one high-level, non-technical picture of a control's journey from
   # authored policy/standard through to operational assurance. Four
   # BusinessFunctions (the "major areas") nest their process step(s) via
