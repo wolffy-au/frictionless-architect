@@ -1,32 +1,51 @@
 # 002-neo4j-schema-ui Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-04
+Auto-generated from all feature plans. Last updated: 2026-09-22.
+The `.specify/scripts/bash/update-agent-context.sh` generator this header refers to
+no longer exists in this repo, so this top section is now hand-patched — edit it
+directly rather than expecting a script to refresh it.
 
 ## Active Technologies
-- Python 3.12 (per `pyproject.toml`). + FastAPI 0.128.x, uvicorn, neo4j 5.x driver, python-dotenv/pydantic for settings and payload validation, httpx/pytest for endpoint tests, ruff/pyright/mypy for linting. (002-neo4j-schema-ui)
-- Neo4j 5 cluster for live schema metadata; canonical ArchiMate schema files under `sample-data/schema` and the enriched `sample-data/sample-00/Test Model Full.xml` drive the payloads. The visualiser caches aggregated JSON payloads in `.cache/visualiser` for offline resilience. (002-neo4j-schema-ui)
-
-- Python 3.12 (per `pyproject.toml` and repo README). + FastAPI 0.128.x, uvicorn for serving, `neo4j` 5.x driver, `python-dotenv`, `pydantic` v2 for settings/data validation, `httpx`/`pytest` for tests, `ruff`/`pyright`/`mypy` for quality checks. (002-neo4j-schema-ui)
+- Python 3.12, project floor `>=3.11,<3.14` per `pyproject.toml`. + FastAPI 0.141.x,
+  uvicorn, `neo4j` 5.x driver, `python-dotenv`, `pydantic` v2 for settings/payload
+  validation, `httpx`/`pytest` for endpoint tests, `ruff`/`pyright`/`mypy` for linting,
+  `compliance-trestle` for the Trestle Markdown ↔ OSCAL round-trip (ADR-0030).
+  (002-neo4j-schema-ui)
+- Neo4j 5 cluster for live schema metadata; canonical ArchiMate schema files under
+  `sample-data/schema` and the enriched `sample-data/sample-00/Test Model Full.xml`
+  drive the payloads. The visualiser caches aggregated JSON payloads in
+  `.cache/visualiser` for offline resilience. (002-neo4j-schema-ui)
 
 ## Project Structure
 
 ```text
-src/
-tests/
+src/frictionless_architect/   # application code (visualizer/, schema/)
+tests/                        # mirrors src/ layout, plus api/ and features/ (behave)
+architecture/                 # canonical graph-loadable model (YAML)
+specs/                        # feature specs (001-governance-platform, 002-neo4j-schema-ui)
+docs/adr/                     # MADR decision log
+scripts/                      # gate scripts (pre_commit_checks.sh, pre_merge_checks.sh)
 ```
+
+Root itself carries governance docs only (`PROJECT_SPECIFICATION.md`, `ARCHITECTURE.md`,
+`TECHNICAL.md`, `RELEASE.md`, etc.) — see "Repository layout" below.
 
 ## Commands
 
-cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] pytest [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] ruff check .
+```bash
+poetry run pytest        # from repo root
+poetry run ruff check .
+```
 
 ## Code Style
 
-Python 3.12 (per `pyproject.toml` and repo README).: Follow standard conventions
+Python 3.12 (per `pyproject.toml`): follow standard conventions; enforced by
+`ruff`/`pyright`/`mypy`.
 
 ## Recent Changes
-- 002-neo4j-schema-ui: Added Python 3.12 (per `pyproject.toml`). + FastAPI 0.128.x, uvicorn, neo4j 5.x driver, python-dotenv/pydantic for settings and payload validation, httpx/pytest for endpoint tests, ruff/pyright/mypy for linting.
-
-- 002-neo4j-schema-ui: Added Python 3.12 (per `pyproject.toml` and repo README). + FastAPI 0.128.x, uvicorn for serving, `neo4j` 5.x driver, `python-dotenv`, `pydantic` v2 for settings/data validation, `httpx`/`pytest` for tests, `ruff`/`pyright`/`mypy` for quality checks.
+- 002-neo4j-schema-ui: FastAPI bumped to 0.141.x; `compliance-trestle` added as a
+  runtime dependency for OSCAL conversion (ADR-0030), raising the Python floor from
+  `>=3.10` to `>=3.11`.
 
 <!-- MANUAL ADDITIONS START -->
 
