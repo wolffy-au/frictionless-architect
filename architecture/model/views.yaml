@@ -213,49 +213,6 @@
     - bfn-release-management
     - bfn-drift-management
 
-- id: view-vision-controls-lifecycle
-  name: Vision — Policy-to-Runtime Controls Lifecycle
-  viewpoint: business_process_cooperation
-  diagram: vision/controls-lifecycle
-  # Supplementary vision view, not one of the numbered TOGAF Phase A 1-7
-  # above — those are the standard ADM Phase A view set; this is an
-  # additional narrative diagram placed in diagrams/vision/ because it
-  # communicates the vision (the platform's core value flow), even though
-  # its content and viewpoint are Business Layer, not Motivation/Strategy.
-  # GH #7: one high-level, non-technical picture of a control's journey from
-  # authored policy/standard through to operational assurance. Four
-  # BusinessFunctions (the "major areas") nest their process step(s) via
-  # Composition; objects plus the process steps that connect them use the
-  # real Access/Triggering relationships already in relationships.yaml — no
-  # invented links needed. No role-* actor swimlanes — see
-  # view-business-controls-catalog for the fuller business-layer view with
-  # actors.
-  members:
-    - bfn-policy-conversion
-    - process-policy-authoring
-    - process-oscal-conversion
-    - bo-regulatory-standard
-    - bo-policy-doc
-    - bo-oscal-catalog
-    - bo-oscal-profile
-    - bfn-pattern-blueprint-traceability
-    - process-pattern-traceability
-    - bo-architecture-pattern
-    - process-blueprint-traceability
-    - bo-implementation-blueprint
-    - bo-oscal-component
-    - bo-solution-component
-    - bo-solution-design
-    - bo-oscal-ssp
-    - bfn-release-enforcement
-    - process-cicd-pipeline
-    - bo-oscal-assessment-plan
-    - bo-release-gate-decision
-    - bfn-effectiveness-assurance
-    - process-effectiveness-monitoring
-    - bo-control-effectiveness-evidence
-    - bo-oscal-assessment-results
-
 # =====================================================================
 # Cross-cutting / later-phase views
 # =====================================================================
@@ -355,12 +312,25 @@
   name: Business — Controls & Compliance Catalog
   viewpoint: business_process_cooperation
   diagram: business/controls-catalog
-  # Business-layer-only counterpart of view-artefact-oscal: the Compliance
-  # Officer / Auditor authoring policy and converting it (with upstream
-  # regulatory standards) into OSCAL catalogs/profiles. Trestle is
+  # Business-layer-only counterpart of view-artefact-oscal, and (GH #7) the
+  # single consolidated picture of a control's journey from authored
+  # policy/standard through to operational assurance. Trestle is
   # deliberately not shown — it's the application-layer tool realizing
   # process-oscal-conversion (see fn-oscal-conversion), not a business actor.
+  #
+  # Formerly two near-duplicate diagrams (this one, role-grouped, and
+  # vision/controls-lifecycle, function-grouped) carrying the same objects
+  # and relationships. Consolidated by assigning each role to the
+  # BusinessFunction it performs (Assignment, relationships.yaml) rather
+  # than to the individual process — nesting is then Function > Role >
+  # Process wherever one role owns a function outright (e.g.
+  # bfn-policy-conversion > role-compliance), and Function > Process where a
+  # function's steps split across roles (bfn-pattern-blueprint-traceability
+  # has both role-ea and role-sa assigned, so it stays flat with an
+  # Assignment arrow to each) or has none (bfn-release-enforcement,
+  # bfn-drift-management — automated, no human role assigned).
   members:
+    - bfn-policy-conversion
     - role-compliance
     - process-policy-authoring
     - process-oscal-conversion
@@ -368,6 +338,7 @@
     - bo-policy-doc
     - bo-oscal-catalog
     - bo-oscal-profile
+    - bfn-pattern-blueprint-traceability
     - role-ea
     - process-pattern-traceability
     - bo-architecture-pattern
@@ -378,10 +349,13 @@
     - bo-solution-component
     - bo-solution-design
     - bo-oscal-ssp
+    - bfn-drift-management
     - process-state-discovery
+    - bfn-release-enforcement
     - process-cicd-pipeline
     - bo-oscal-assessment-plan
     - bo-release-gate-decision
+    - bfn-effectiveness-assurance
     - role-ops
     - process-effectiveness-monitoring
     - bo-control-effectiveness-evidence

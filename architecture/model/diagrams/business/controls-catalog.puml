@@ -3,8 +3,16 @@
 
 title Business — Controls & Compliance Catalog
 
-Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
-Business_Process(e_id3a7a27eefeb751, "Current State Discovery")
+Business_Function(e_idc1376562b9a354, "Drift Management") {
+  Business_Process(e_id3a7a27eefeb751, "Current State Discovery")
+}
+Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
+  Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
+  Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
+}
+Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
+  Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
+}
 Business_Object(e_idd915b3e838bf5b, "Regulatory Standard")
 Business_Object(e_ide330e703d24759, "Policy / Standard Document")
 Business_Object(e_id1d03973d3f5b52, "OSCAL Catalog")
@@ -20,18 +28,18 @@ Business_Object(e_idb990615e712f57, "OSCAL Assessment Plan")
 Business_Object(e_id9f8a83bba77b50, "OSCAL Assessment Results")
 Business_Object(e_id8a58348ab4605a, "Release Gate Decision")
 Business_Object(e_idca68dd43dc1854, "Control Effectiveness Evidence")
-Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
-  Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
-}
-Business_Role(e_ide2cb7f3efa6256, "Solution Architect") {
-  Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
-}
+Business_Role(e_id2b5394f913985a, "Enterprise Architect")
+Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
 Business_Role(e_id5e264d2f4bb551, "Compliance Officer / Auditor") {
-  Business_Process(e_id14fa9f783d5350, "Policy & Standards Authoring")
-  Business_Process(e_idfeca8b2013795e, "OSCAL Catalog & Profile Generation")
+  Business_Function(e_id108dc21cee6055, "Policy-to-OSCAL Conversion") {
+    Business_Process(e_id14fa9f783d5350, "Policy & Standards Authoring")
+    Business_Process(e_idfeca8b2013795e, "OSCAL Catalog & Profile Generation")
+  }
 }
 Business_Role(e_id2c489ee6594253, "Platform Operations (BAU)") {
-  Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
+  Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
+    Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
+  }
 }
 
 Rel_Access_w(e_id14fa9f783d5350, e_ide330e703d24759, "authors")
@@ -40,6 +48,8 @@ Rel_Access_r(e_idfeca8b2013795e, e_ide330e703d24759, "reads")
 Rel_Access_w(e_idfeca8b2013795e, e_id1d03973d3f5b52, "generates")
 Rel_Access_w(e_idfeca8b2013795e, e_id3a6eb7f6485a55, "generates")
 Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
+Rel_Assignment(e_id2b5394f913985a, e_id4b6cc961fa6750, "")
+Rel_Assignment(e_ide2cb7f3efa6256, e_id4b6cc961fa6750, "")
 Rel_Access_r(e_id65065ee24d3c54, e_id3a6eb7f6485a55, "reads")
 Rel_Access_w(e_id65065ee24d3c54, e_idcd45bf9b5cfe51, "maps controls into")
 Rel_Triggering_Right(e_idfeca8b2013795e, e_id65065ee24d3c54, "profiles feed traceability mapping")

@@ -236,8 +236,7 @@
 # =====================================================================
 - {type: Composition, source: bfn-policy-conversion, target: process-policy-authoring, label: comprises}
 - {type: Composition, source: bfn-policy-conversion, target: process-oscal-conversion, label: comprises}
-- {type: Assignment, source: role-compliance, target: process-policy-authoring}
-- {type: Assignment, source: role-compliance, target: process-oscal-conversion}
+- {type: Assignment, source: role-compliance, target: bfn-policy-conversion}
 - {type: Access, source: process-policy-authoring, target: bo-policy-doc, label: authors, props: {access_type: Write}}
 - {type: Access, source: process-oscal-conversion, target: bo-regulatory-standard, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-oscal-conversion, target: bo-policy-doc, label: reads, props: {access_type: Read}}
@@ -256,14 +255,14 @@
 # =====================================================================
 - {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-pattern-traceability, label: comprises}
 - {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-blueprint-traceability, label: comprises}
-- {type: Assignment, source: role-ea, target: process-pattern-traceability}
+- {type: Assignment, source: role-ea, target: bfn-pattern-blueprint-traceability}
+- {type: Assignment, source: role-sa, target: bfn-pattern-blueprint-traceability}
 - {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
 - {type: Triggering, source: process-oscal-conversion, target: process-pattern-traceability, label: profiles feed traceability mapping}
 - {type: Realization, source: fn-pattern-authoring, target: process-pattern-traceability}
 - {type: Realization, source: art-pattern, target: bo-architecture-pattern}
 - {type: Association, source: bo-architecture-pattern, target: bo-oscal-profile, label: maps to}
-- {type: Assignment, source: role-sa, target: process-blueprint-traceability}
 - {type: Specialization, source: bo-implementation-blueprint, target: bo-architecture-pattern, label: specializes for a technology}
 - {type: Access, source: process-blueprint-traceability, target: bo-architecture-pattern, label: refines, props: {access_type: Read}}
 - {type: Access, source: process-blueprint-traceability, target: bo-oscal-profile, label: checks enablement against, props: {access_type: Read}}
@@ -294,7 +293,7 @@
 - {type: Composition, source: bfn-release-management, target: process-release, label: comprises}
 - {type: Composition, source: bfn-drift-management, target: process-state-discovery, label: comprises}
 - {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
-- {type: Assignment, source: role-ops, target: process-effectiveness-monitoring}
+- {type: Assignment, source: role-ops, target: bfn-effectiveness-assurance}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
