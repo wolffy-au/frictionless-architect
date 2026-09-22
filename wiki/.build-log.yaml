@@ -1,18 +1,18 @@
-generated: '2026-09-20'
-generator: claude-sonnet-5
+generated: '2026-09-22'
+generator: claude-opus-5-5
 topics:
   project-overview:
     title: Project Overview
     page: wiki/project-overview.md
-    built: '2026-09-20'
+    built: '2026-09-22'
     sources:
       files:
         PROJECT_SPECIFICATION.md:
           sha256: 50002a05fe98a181965cb6021861ac3d0ee337a9d489a958a9554b586098e8da
           lines: 236
         README.md:
-          sha256: 2ceba12350aee9b72dece4ac7da4affa1291884fd52ce8931bdf2ad8becb9946
-          lines: 110
+          sha256: 6a37d408b489c99c36efd1327d8910feb3dcff52a2d6fdae50e7e340696a283c
+          lines: 120
   governance-and-constitution:
     title: Governance & Constitution
     page: wiki/governance-and-constitution.md
@@ -136,25 +136,25 @@ topics:
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-09-20'
+    built: '2026-09-22'
     sources:
       files:
         architecture/model/README.md:
           sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
           lines: 112
         architecture/model/elements.yaml:
-          sha256: 9ae8379a18e7b4e257abf2b007305c5a23497d54818ed467493e28ae4a34fa25
-          lines: 935
+          sha256: 58438cf248ea5f7cb1c732cb09c5f4a03f454ce5629f45f822bfc04aa26f98fd
+          lines: 953
         architecture/model/relationships.yaml:
-          sha256: 61b963c00adc612d2d52e0c244ee5d8e7f4f837df62f67b2f0afd5431690e2e9
-          lines: 608
+          sha256: 55aead3fce9ade369de96f932fa8f71f4ba73ba5190a0447cdc69b1c1e52fbe7
+          lines: 620
         architecture/model/views.yaml:
-          sha256: cc6081997e54cc491a5b521b14570e673441eaf4c8c5934fa395ae662458a78f
-          lines: 500
+          sha256: 4007f716db45337f8d02e6dc6fac38c5b95d5d846566d175da92e5783c5bfe37
+          lines: 496
   architecture-diagrams:
     title: Architecture Views & Diagrams
     page: wiki/architecture-diagrams.md
-    built: '2026-09-20'
+    built: '2026-09-22'
     sources:
       files:
         architecture/model/README.md:
@@ -172,11 +172,17 @@ topics:
         architecture/model/diagrams/application/artefact-library.svg:
           sha256: 66676b21fb479d581d85672ada226276cabe70cbf5e165cabb9a4d6b17486b86
           lines: 1
+        architecture/model/diagrams/application/artefact-oscal-resolve.puml:
+          sha256: 053927f648be2643945fb9df8dc880ca2219537cb9960778556145f7826bc2d5
+          lines: 25
+        architecture/model/diagrams/application/artefact-oscal-resolve.svg:
+          sha256: d6a390c21cf2ce65978fd233568ed58da4cbf4eccbbdc4bc370daf9b358252f5
+          lines: 1
         architecture/model/diagrams/application/artefact-oscal.puml:
-          sha256: f9391bc2d37d5f311a66d7be7342191d62ef2c1a6be09837d6afc3615e042b6b
-          lines: 29
+          sha256: 4e2a314131e3d6d28db900ef3c7aef185730f2969758b9713483fafcd4a44aef
+          lines: 33
         architecture/model/diagrams/application/artefact-oscal.svg:
-          sha256: e857b125e389df89fafe26cfbd5cf3a85b6ce4861e3980ebc20f40c5fb81a7de
+          sha256: 2b120f9774d48495175969194db5d6a0107b5bad3fbb82a9f99b2880d92a1c9e
           lines: 1
         architecture/model/diagrams/application/artefact-twin-governance.puml:
           sha256: 296d28e0b8541cb2e90034c4ba1bda13438032b93ded48562a1c90db6adcee8c
@@ -185,22 +191,22 @@ topics:
           sha256: 028e148334b96ba42fe608190e5344ca3184d062ac614f6818132a9de64ab1d0
           lines: 1
         architecture/model/diagrams/business/controls-catalog.puml:
-          sha256: 69c2bbe12f2e0e194312092695c6d22b69053f0ff1d7d93c3e6e852a419e53eb
-          lines: 67
+          sha256: 6b356587d31bcb737b0be5b12fe5aaafa67063775fca63d67060b4ad9eab9b57
+          lines: 78
         architecture/model/diagrams/business/controls-catalog.svg:
-          sha256: 67dc627745bf87ef711b40039185427e519689d53b5faa328d661037bfc45e44
+          sha256: ce80be2fa51b3b346053dc2218d840404051802fd53c771f9a3a843910b9f7ac
           lines: 1
         architecture/model/diagrams/c4/container.puml:
-          sha256: 2c8060cb4e7d2186cd4dcedfc9b1c65f3c4c3cd221c3d7cda07bb32231731560
-          lines: 74
+          sha256: 5cbbaf63b14aec372e6f0dc86be6602b438f260b2db1538788a70eff9a60cd85
+          lines: 71
         architecture/model/diagrams/c4/container.svg:
-          sha256: fcfbae6a0d926bffdd7031346a385da49cc73afd23171dde0f1cbc94392c0261
+          sha256: c725fc3180f083122851a0adf5e344497b21b871aa92a03566bfad32506ba7a4
           lines: 1
         architecture/model/diagrams/c4/context.puml:
-          sha256: 53508f3fe428c99bd13b491c95faf463900e044ff43cf2d933df5ae82a3176be
+          sha256: cee8dfcb90fd71cb16ebed39bb0d1373483446d11051cf57646e50a784c837d4
           lines: 55
         architecture/model/diagrams/c4/context.svg:
-          sha256: 889e8f249ef54a780563c72580dedd384b305e14e8639d8dcb8fd5022f26c98a
+          sha256: 88c03577011d4914fba39282a32bcacadaf8f6c60ca84aef5479949022c78680
           lines: 1
         architecture/model/diagrams/cross-layer/delivery.puml:
           sha256: 9bf336aa0cfe841f42f4db6bdf6122e14e574b5bcf978c111007cbe16d7cc05f
@@ -226,61 +232,55 @@ topics:
         architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg:
           sha256: 2c247821818365e2ea9481129a094402b18686dd64377ebac8d7929136a43688
           lines: 1
-        architecture/model/diagrams/vision/capability-map.puml:
-          sha256: 92856df834019330145ae912d468ee2d8554dc658d893d770174f114a3629230
-          lines: 23
-        architecture/model/diagrams/vision/capability-map.svg:
-          sha256: 8eddac1555057caacfc0c7d131010cd9942636ec4fce17492171a10af6a17dbe
-          lines: 1
-        architecture/model/diagrams/vision/controls-lifecycle.puml:
-          sha256: 0b9cb20e0c47b200231e06e164285a8dd6adda93cf834c5544bb91d8a4b57d6c
-          lines: 65
-        architecture/model/diagrams/vision/controls-lifecycle.svg:
-          sha256: f3ea01b0b8aa7f969e924db33b181a92f11ef16b7ea69e46c294ff3ef767957e
-          lines: 1
-        architecture/model/diagrams/vision/goal-realization.puml:
-          sha256: 562b7854a7856124d102d81fe5c75ccf1ba4ac692b127defe56cd39002e680db
-          lines: 53
-        architecture/model/diagrams/vision/goal-realization.svg:
-          sha256: cee7aa829236b489baaaeb9676f29043bf5c62cb8a006464ecaa17281f032ef7
-          lines: 1
-        architecture/model/diagrams/vision/motivation.puml:
-          sha256: 3af9199f72099085a9abbcc9981e3b81f18ce2d4bd66f7a460d2c796237a63d1
-          lines: 89
-        architecture/model/diagrams/vision/motivation.svg:
-          sha256: 668021375025ab5ddce5f7000d8bcaa409d66bd7fd4f0383b73cdebba091da23
-          lines: 1
-        architecture/model/diagrams/vision/outcome-realization.puml:
-          sha256: fa7cb37bd64c49f70cfc2c3cf146fc3fd163a13e1e2e6d45330f8fb5b6b545f0
-          lines: 82
-        architecture/model/diagrams/vision/outcome-realization.svg:
-          sha256: 9f95c0ffbca67c02162fab4810dba21947400149e0c662ce4648061ed797b927
-          lines: 1
-        architecture/model/diagrams/vision/stakeholder.puml:
+        architecture/model/diagrams/vision/1-stakeholder.puml:
           sha256: e828e28240207f76ef0b7a4d0da83dabdf05a5366752481e2caf64f476a85b26
           lines: 38
-        architecture/model/diagrams/vision/stakeholder.svg:
+        architecture/model/diagrams/vision/1-stakeholder.svg:
           sha256: 21931f4994f486e1d9f60ca8bc1675ac28ff6087e09ef290c9383b44a15f6830
           lines: 1
-        architecture/model/diagrams/vision/strategy.puml:
+        architecture/model/diagrams/vision/2-motivation.puml:
+          sha256: 3af9199f72099085a9abbcc9981e3b81f18ce2d4bd66f7a460d2c796237a63d1
+          lines: 89
+        architecture/model/diagrams/vision/2-motivation.svg:
+          sha256: 668021375025ab5ddce5f7000d8bcaa409d66bd7fd4f0383b73cdebba091da23
+          lines: 1
+        architecture/model/diagrams/vision/3-goal-realization.puml:
+          sha256: 562b7854a7856124d102d81fe5c75ccf1ba4ac692b127defe56cd39002e680db
+          lines: 53
+        architecture/model/diagrams/vision/3-goal-realization.svg:
+          sha256: cee7aa829236b489baaaeb9676f29043bf5c62cb8a006464ecaa17281f032ef7
+          lines: 1
+        architecture/model/diagrams/vision/4-strategy.puml:
           sha256: 2c5364514112de7229785226233978e61935b3377a350815ca154af04a64f763
           lines: 41
-        architecture/model/diagrams/vision/strategy.svg:
+        architecture/model/diagrams/vision/4-strategy.svg:
           sha256: 23954cacee2a00612c316621ada1874cd324adf7a2fdb5094b7e1e61c2a8bff3
           lines: 1
-        architecture/model/diagrams/vision/value-stream.puml:
+        architecture/model/diagrams/vision/5-capability-map.puml:
+          sha256: 92856df834019330145ae912d468ee2d8554dc658d893d770174f114a3629230
+          lines: 23
+        architecture/model/diagrams/vision/5-capability-map.svg:
+          sha256: 8eddac1555057caacfc0c7d131010cd9942636ec4fce17492171a10af6a17dbe
+          lines: 1
+        architecture/model/diagrams/vision/6-value-stream.puml:
           sha256: 091e201c381b7f909fe3fa600a93211bec3be86fc80daa55179f7030d1d3aa64
           lines: 44
-        architecture/model/diagrams/vision/value-stream.svg:
+        architecture/model/diagrams/vision/6-value-stream.svg:
           sha256: 720b4344bc8cd6c8adafe2c07d41930090f2019db445b985a44dbc2365699f9e
           lines: 1
+        architecture/model/diagrams/vision/7-outcome-realization.puml:
+          sha256: fa7cb37bd64c49f70cfc2c3cf146fc3fd163a13e1e2e6d45330f8fb5b6b545f0
+          lines: 82
+        architecture/model/diagrams/vision/7-outcome-realization.svg:
+          sha256: 9f95c0ffbca67c02162fab4810dba21947400149e0c662ce4648061ed797b927
+          lines: 1
         architecture/model/views.yaml:
-          sha256: cc6081997e54cc491a5b521b14570e673441eaf4c8c5934fa395ae662458a78f
-          lines: 500
+          sha256: 4007f716db45337f8d02e6dc6fac38c5b95d5d846566d175da92e5783c5bfe37
+          lines: 496
   it4it-model:
     title: IT4IT Reference Model
     page: wiki/it4it-model.md
-    built: '2026-09-18'
+    built: '2026-09-22'
     sources:
       files:
         third_party/it4it/README.md:
@@ -293,7 +293,7 @@ topics:
           sha256: db857c830a82c364f53be53d2c759e3ab1f98f72ee0fa686845cec88f85d629d
           lines: 282
         third_party/it4it/views.yaml:
-          sha256: 010de92eb8b6468e10f0277137bbfb0a5a5edf18f8a077c0b3b7bb2515c5e3cf
+          sha256: 88f91aa5735c0de28deae6a3c248a58ec98471436315090a3de9f6e0f63c96d7
           lines: 212
   data-model:
     title: Data Model
@@ -385,12 +385,12 @@ topics:
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-09-20'
+    built: '2026-09-22'
     sources:
       files:
         AGENTS.md:
-          sha256: 7697b8af6d1f8bbac260a769630724105874edf09f60f39db646a77ff67fd54e
-          lines: 126
+          sha256: 4eeb591457dc1eb3b0e391d7af69d8b145ddf364a69e46ec1aff06f3d7d93640
+          lines: 145
         RELEASE.md:
           sha256: 4da2279d0106d90153f0f8e4016433e0636f0183fb8f96d4a7bf33f888b4dced
           lines: 213
@@ -445,7 +445,7 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-09-19'
+    built: '2026-09-22'
     sources:
       files:
         .claude/agents/README.md:
@@ -518,8 +518,8 @@ topics:
           sha256: 60c27f3962e78edf204b2b2e7cba91a616980860b61d6bf2051dc6965d483dda
           lines: 182
         .claude/skills/speckit-converge/SKILL.md:
-          sha256: fac66428c93e6e4fa0559a618a620d979fd8124d567f6f79db741fce0081cb3d
-          lines: 279
+          sha256: 9f93c1d573592f146670202210128ed24a9d75c92133951b19a2bb0e34eac13b
+          lines: 285
         .claude/skills/speckit-implement/SKILL.md:
           sha256: 7186d59488f89dcf23abd17baed118b05c242d4f62f1de3f9f44625a2b1728f0
           lines: 229

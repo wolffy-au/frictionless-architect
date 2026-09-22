@@ -1,7 +1,7 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-09-19
-generator: claude-sonnet-5
+generated: 2026-09-22
+generator: claude-opus-5-5
 sources:
   - .claude/agents/README.md
   - .claude/agents/acceptance-author.md
@@ -78,6 +78,17 @@ Both `speckit-analyze` and `speckit-converge` call
 --require-tasks --include-tasks` once from repo root and parse the JSON for
 `FEATURE_DIR` / `AVAILABLE_DOCS` when initializing their context
 (`speckit-analyze/SKILL.md:72`; `speckit-converge/SKILL.md:99`).
+
+Every `speckit-*` skill also checks for **extension hooks** before and after
+its main work. It reads `hooks.before_<command>` / `hooks.after_<command>`
+entries from `.specify/extensions.yml` and skips any hook whose `enabled` is
+explicitly `false`. A hook without an `enabled` field counts as enabled. If
+the file won't parse, the skill must not skip silently: it reports the parser
+error and says that no hooks, including mandatory (`optional: false`) ones,
+were checked, then carries on (`speckit-converge/SKILL.md:23-60, 247-285`).
+This repo has no `.specify/extensions.yml` at present, so the hooks are a
+no-op. The skills are regenerated from the Spec Kit version pinned in
+`.specify/speckit.lock`, currently 1.0.9.
 
 These realize the Specify → Plan → Implement → Verify workflow from
 [Governance & Constitution](governance-and-constitution.md).

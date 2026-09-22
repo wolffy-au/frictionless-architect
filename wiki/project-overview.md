@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: 2026-09-20
-generator: claude-sonnet-5
+generated: 2026-09-22
+generator: claude-opus-5-5
 sources:
   - README.md
   - PROJECT_SPECIFICATION.md
@@ -23,6 +23,12 @@ SDLC friction" (`PROJECT_SPECIFICATION.md` §"Phase 2").
 `README.md` frames the same thing more narrowly as the repo stands today: "a
 platform for describing, validating, and visualising enterprise architecture
 models (ArchiMate) backed by a graph database" (`README.md` §intro).
+
+The README's badge row gives the repo's vital signs: licensed **AGPL-3.0**,
+**Python 3.11+**, test runs on the GitHub Actions `ci.yml` workflow,
+coverage reported to Codecov, and a SonarCloud quality gate that also tracks
+bugs, security rating and maintainability (`README.md` §intro badges). See
+[Development](development.md) for the gates behind those signals.
 
 The product vision has two connected halves:
 

@@ -1,7 +1,7 @@
 ---
 title: IT4IT Reference Model
-generated: 2026-09-18
-generator: claude-sonnet-5
+generated: 2026-09-22
+generator: claude-opus-5-5
 sources:
   - third_party/it4it/README.md
   - third_party/it4it/elements.yaml
@@ -94,9 +94,21 @@ see [Architecture Model](architecture-model.md) §"IT4IT reference views".
 
 ## Diagrams
 
-Each view's `diagram:` key resolves to `diagrams/vision/<name>.puml`/`.svg`
-in this repo — the same `vision/` bucket a consuming project uses for its
-own stakeholder/capability-map/value-stream/outcome-realization diagrams,
+Each view's `diagram:` key resolves to `diagrams/vision/<n>-<name>.puml`/`.svg`
+in this repo. The numeric prefix follows the order the views are presented
+in `views.yaml`, not their order in the file (`third_party/it4it/views.yaml`):
+
+| # | Diagram | View |
+|---|---|---|
+| 1 | `vision/1-stakeholder` | IT4IT: Stakeholder |
+| 2 | `vision/2-capability-map` | IT4IT: Capability Map |
+| 3 | `vision/3-value-streams` | IT4IT: Value Streams |
+| 4 | `vision/4-outcome-realization` | IT4IT: Outcome Realization |
+
+This mirrors the `1-`…`7-` TOGAF Phase A numbering the consuming project
+uses for its own vision diagrams (see
+[Architecture Views & Diagrams](architecture-diagrams.md)). They share the
+same `vision/` bucket, and the diagrams are
 rendered by that consumer's `render_diagrams.py` (this repo carries no
 build tooling of its own; see [Architecture Model](architecture-model.md)
 §"D. IT4IT alignment" for how a consumer wires that up).
