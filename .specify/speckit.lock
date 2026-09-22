@@ -1,5 +1,5 @@
 {
-  "speckit_version": "1.0.8",
+  "speckit_version": "1.0.9",
   "integration": "claude",
   "note": "Pinned Spec Kit version. The scaffolding it generates (.specify/templates, .specify/scripts, .specify/integrations, .claude/skills/speckit-*) is git-ignored and rebuilt by .devcontainer/post-create.sh against whatever specify-cli release is current at container-create time. When a rebuild reports a version change, review the regenerated tree, then commit the bumped speckit_version here."
 }
