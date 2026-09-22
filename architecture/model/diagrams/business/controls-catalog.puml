@@ -43,6 +43,7 @@ Business_Role(e_id2c489ee6594253, "Platform Operations (BAU)") {
 }
 
 Rel_Access_w(e_id14fa9f783d5350, e_ide330e703d24759, "authors")
+Rel_Specialization(e_idd915b3e838bf5b, e_ide330e703d24759, "externally-published instance")
 Rel_Access_r(e_idfeca8b2013795e, e_idd915b3e838bf5b, "reads")
 Rel_Access_r(e_idfeca8b2013795e, e_ide330e703d24759, "reads")
 Rel_Access_w(e_idfeca8b2013795e, e_id1d03973d3f5b52, "generates")

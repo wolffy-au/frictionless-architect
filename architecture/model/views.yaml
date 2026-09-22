@@ -298,14 +298,31 @@
   diagram: application/artefact-oscal
   members:
     - sub-catalog
-    - fn-policy-authoring
+    - fn-ai-markdown-conversion
     - fn-oscal-conversion
-    - ext-regsources
+    - ext-llm
     - ext-trestle
     - art-policy-doc
+    - art-regulatory-standard
+    - art-trestle-markdown
     - art-baseline
+    - art-baseline-profile
     - art-oscal-catalog
     - art-oscal-profile
+    - store-oscal
+
+- id: view-artefact-oscal-resolve
+  name: Artefact Flow — OSCAL Profile Resolution
+  viewpoint: application_cooperation
+  diagram: application/artefact-oscal-resolve
+  members:
+    - sub-catalog
+    - fn-oscal-profile-resolve
+    - ext-trestle
+    - art-oscal-catalog
+    - art-oscal-profile
+    - art-oscal-resolved-catalog
+    - art-baseline-resolved-catalog
     - store-oscal
 
 - id: view-business-controls-catalog

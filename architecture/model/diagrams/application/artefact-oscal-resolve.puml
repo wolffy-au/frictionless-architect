@@ -1,0 +1,25 @@
+@startuml
+!include <archimate/Archimate>
+
+title Artefact Flow — OSCAL Profile Resolution
+
+Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
+  Application_Function(e_id9395f0bc80c955, "OSCAL Profile Resolution")
+}
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
+  Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
+  Application_DataObject(e_id9659a679544058, "OSCAL Profile")
+  Application_DataObject(e_id0bcf03d5bb0d58, "Resolved OSCAL Catalog")
+}
+Application_Component(e_id0aed952692a556, "compliance-trestle")
+Application_DataObject(e_ide0d2eafd1b6957, "Regulatory Resolved Baseline Catalog")
+
+Rel_Specialization(e_id0bcf03d5bb0d58, e_idddf65887d53f57, "resolved instance")
+Rel_Association(e_id0bcf03d5bb0d58, e_id9659a679544058, "fulfills the profile's control selection")
+Rel_Specialization(e_ide0d2eafd1b6957, e_id0bcf03d5bb0d58, "vendored instance (golden-dataset validation data)")
+Rel_Serving_Up(e_id0aed952692a556, e_id9395f0bc80c955, "realizes profile-resolve for")
+Rel_Access_r(e_id9395f0bc80c955, e_idddf65887d53f57, "reads")
+Rel_Access_r(e_id9395f0bc80c955, e_id9659a679544058, "reads")
+Rel_Access_w(e_id9395f0bc80c955, e_id0bcf03d5bb0d58, "generates")
+
+@enduml

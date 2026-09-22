@@ -544,16 +544,19 @@
   id: process-policy-authoring
   name: Policy & Standards Authoring
   desc: >-
-    The Compliance Officer / Auditor authors custom policy and standard
-    content, informed by upstream regulatory standards. Realized at
-    application layer by fn-policy-authoring (authored as Trestle Markdown).
+    The Compliance Officer / Auditor authors a verbatim custom policy or
+    standard document (e.g. Word/PDF), informed by upstream regulatory
+    standards, using tools outside the platform. Has no application-layer
+    realization — the platform's involvement begins when fn-ai-markdown-
+    conversion ingests the resulting document.
 - type: BusinessProcess
   id: process-oscal-conversion
   name: OSCAL Catalog & Profile Generation
   desc: >-
-    Converts authored policy content and upstream regulatory standards into
-    OSCAL Catalogs and Profiles. Realized at application layer by
-    fn-oscal-conversion via a Trestle round-trip.
+    Converts authored policy content and upstream regulatory standard text
+    into OSCAL Catalogs and Profiles. Realized at application layer by
+    fn-ai-markdown-conversion (AI-assisted conversion into Trestle-editable
+    Markdown) followed by fn-oscal-conversion's Trestle round-trip.
 - type: BusinessProcess
   id: process-pattern-traceability
   name: Pattern Control Traceability Mapping
@@ -585,8 +588,9 @@
   id: bo-regulatory-standard
   name: Regulatory Standard
   desc: >-
-    Upstream regulatory content consumed by the platform (e.g. NIST OSCAL
-    catalogs, FedRAMP baselines).
+    Verbatim upstream regulatory standard text consumed by the platform (e.g.
+    NIST CSF, NIST SP 800-53) — published in prose form, not pre-converted to
+    OSCAL.
 - type: BusinessObject
   id: bo-policy-doc
   name: Policy / Standard Document
@@ -673,8 +677,9 @@
   id: sub-catalog
   name: Controls & Compliance Catalog
   desc: >-
-    Authors custom policies and standards and converts them to OSCAL Catalogs
-    and Profiles.
+    Converts policy/standard documents (authored externally, outside the
+    platform) into OSCAL Catalogs and Profiles via AI-assisted Markdown
+    conversion and a Trestle round-trip.
 - type: ApplicationComponent
   id: sub-library
   name: Reusable Architecture Library
@@ -778,10 +783,6 @@
   name: IT Service Management / Backlog
   desc: Delivery backlog and ticketing (e.g. Jira).
 - type: ApplicationComponent
-  id: ext-regsources
-  name: Regulatory Content Sources
-  desc: Upstream NIST OSCAL content and FedRAMP baselines.
-- type: ApplicationComponent
   id: ext-trestle
   name: compliance-trestle
   desc: >-
@@ -790,7 +791,10 @@
 - type: ApplicationComponent
   id: ext-llm
   name: LLM Provider
-  desc: Language model used for drafting specs, ADRs, evaluations and threat narratives.
+  desc: >-
+    Language model used for drafting specs, ADRs, evaluations and threat
+    narratives, and for converting verbatim policy/standard documents into
+    Trestle-editable Markdown.
 - type: ApplicationComponent
   id: ext-rfp
   name: RFP / Vendor Submissions
@@ -807,15 +811,24 @@
 
 # --- C. Functions: Controls & Compliance Catalog ---
 - type: ApplicationFunction
-  id: fn-policy-authoring
-  name: Policy & Standards Authoring
-  desc: Author custom policy and standard content as Trestle Markdown catalogs.
+  id: fn-ai-markdown-conversion
+  name: AI-Assisted Markdown Conversion
+  desc: >-
+    Use an LLM to convert a verbatim policy/standard document (custom-authored
+    or upstream regulatory text) into the Trestle-editable Markdown catalog
+    structure Trestle's author commands expect.
 - type: ApplicationFunction
   id: fn-oscal-conversion
   name: OSCAL Catalog & Profile Generation
   desc: >-
-    Convert authored Markdown and upstream baselines into OSCAL Catalogs and
-    Profiles (Trestle round-trip).
+    Convert Trestle-editable Markdown into OSCAL Catalogs and Profiles via a
+    Trestle round-trip (import / author / assemble).
+- type: ApplicationFunction
+  id: fn-oscal-profile-resolve
+  name: OSCAL Profile Resolution
+  desc: >-
+    Resolve an OSCAL Profile against its source Catalog(s) into a fully
+    resolved OSCAL Catalog (trestle profile-resolve).
 
 # --- C. Functions: Reusable Architecture Library ---
 - type: ApplicationFunction
@@ -905,10 +918,15 @@
     designs for spec-driven delivery.
 
 # --- C. Artefacts (DataObject) ---
-- {type: DataObject, id: art-policy-doc, name: Policy / Standard Document, desc: Custom policy or standard authored as Trestle Markdown.}
-- {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: Upstream NIST OSCAL catalog / FedRAMP baseline.}
+- {type: DataObject, id: art-policy-doc, name: Policy / Standard Document, desc: Verbatim custom policy or standard document (e.g. Word/PDF), not yet machine-readable.}
+- {type: DataObject, id: art-regulatory-standard, name: Regulatory Standard Document, desc: Verbatim upstream regulatory standard text (e.g. NIST CSF, NIST SP 800-53), supplied as a document input -- not a system integration -- to fn-ai-markdown-conversion.}
+- {type: DataObject, id: art-trestle-markdown, name: Trestle-Editable Markdown Catalog, desc: AI-converted Markdown catalog structure ready for Trestle's author/assemble commands.}
+- {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input.}
+- {type: DataObject, id: art-baseline-profile, name: Regulatory Baseline Profile, desc: Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input.}
+- {type: DataObject, id: art-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input.}
 - {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
 - {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
+- {type: DataObject, id: art-oscal-resolved-catalog, name: Resolved OSCAL Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
 - {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
 - {type: DataObject, id: art-oscal-ssp, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
 - {type: DataObject, id: art-pattern, name: Architecture Pattern, desc: Technology-agnostic, reusable design with mapped controls.}

@@ -6,7 +6,7 @@ title Frictionless Architecture Platform — C4 Container
 LAYOUT_LEFT_RIGHT()
 
 System_Boundary(n_id54dd4701dbf151, "Frictionless Architecture Platform") {
-  Container(n_ide4bef3733af65a, "Controls & Compliance Catalog", "", "Authors custom policies and standards and converts them to OSCAL Catalogs and Profiles.")
+  Container(n_ide4bef3733af65a, "Controls & Compliance Catalog", "", "Converts policy/standard documents (authored externally, outside the platform) into OSCAL Catalogs and Profiles via AI-assisted Markdown conversion and a Trestle round-trip.")
   Container(n_id3b0beba52b5a5c, "Reusable Architecture Library", "", "Composable patterns, blueprints and solution designs with OSCAL references, threat modelling, and modelling of candidate / future-state options for governance to decide on.")
   Container(n_id3da203d482f955, "Digital Twin & Knowledge Graph", "", "Maintains the Architecture Knowledge Graph: an intent plane and a current-state digital twin plane.")
   Container(n_id0d5bd02b5ffe5e, "Architecture Governance", "", "Comparative evaluation of candidate options, impact assessment, the decision and its ADR, and archival of the rejected options with reasons. Pure decision-making — the options themselves are modelled in the Reusable Architecture Library.")
@@ -28,9 +28,8 @@ System_Ext(n_id4a7b9c4171d855, "Source Control", "Git repositories for specifica
 System_Ext(n_iddc67769c419e5d, "CI/CD Pipeline", "Builds, tests and releases; invokes the enforcement gate.")
 System_Ext(n_idd9989f19521155, "Cloud & Infrastructure Platforms", "Runtime platforms whose live state feeds the digital twin.")
 System_Ext(n_idaabfebfc7b9858, "IT Service Management / Backlog", "Delivery backlog and ticketing (e.g. Jira).")
-System_Ext(n_id13f9d5fb47b650, "Regulatory Content Sources", "Upstream NIST OSCAL content and FedRAMP baselines.")
 System_Ext(n_id0aed952692a556, "compliance-trestle", "Third-party Python library/CLI dependency, not vendored source. Performs the Trestle Markdown <-> OSCAL round-trip behind fn-oscal-conversion.")
-System_Ext(n_id2610ae0cc2cc50, "LLM Provider", "Language model used for drafting specs, ADRs, evaluations and threat narratives.")
+System_Ext(n_id2610ae0cc2cc50, "LLM Provider", "Language model used for drafting specs, ADRs, evaluations and threat narratives, and for converting verbatim policy/standard documents into Trestle-editable Markdown.")
 System_Ext(n_idaf80425d61fd58, "RFP / Vendor Submissions", "Requests for proposal and competing vendor solution responses assessed at engagement time.")
 
 Rel(n_id5e264d2f4bb551, n_ide4bef3733af65a, "authors control content in")
@@ -44,8 +43,6 @@ Rel(n_ide2cb7f3efa6256, n_id492c882252a953, "reviews drift in")
 Rel(n_id2c489ee6594253, n_id492c882252a953, "watches control effectiveness & drift in")
 Rel(n_id5e264d2f4bb551, n_id492c882252a953, "watches control status in")
 Rel(n_id2c72565ddd6c52, n_id82f04fecbdd85e, "consumes specifications from")
-Rel(n_id13f9d5fb47b650, n_ide4bef3733af65a, "baseline catalogs")
-Rel(n_ide4bef3733af65a, n_idb18c37abc9ff51, "writes Catalogs & Profiles")
 Rel(n_ide4bef3733af65a, n_ide155670d2bae58, "reads NIST / FedRAMP packs")
 Rel(n_id3b0beba52b5a5c, n_idb18c37abc9ff51, "references Profiles & Components; emits SSP")
 Rel(n_id3b0beba52b5a5c, n_idb9264b9a2b5a50, "stores patterns, blueprints & designs")
