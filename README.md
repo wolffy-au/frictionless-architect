@@ -72,11 +72,11 @@ them in a `.env` file at the repository root (loaded automatically when present)
 
 ## Running the schema visualiser
 
-The visualiser is the FastAPI app `frictionless_architect.visualizer:app` (title
+The visualiser is the FastAPI app `frictionless_architect.app:app` (title
 "Neo4j Schema Visualiser").
 
 ```bash
-poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
+poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 ```
 
 The service is JSON-only for now — fetch `http://127.0.0.1:8100/schema-payload`

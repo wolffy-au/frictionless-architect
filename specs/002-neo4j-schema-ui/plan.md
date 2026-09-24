@@ -12,7 +12,7 @@ Deliver a single-user Neo4j schema visualiser that pairs every ArchiMate node/re
 **Primary Dependencies**: FastAPI 0.128.x, uvicorn, neo4j 5.x driver, python-dotenv/pydantic for settings and payload validation, httpx/pytest for endpoint tests, ruff/pyright/mypy for linting.  
 **Storage**: Neo4j 5 cluster for live schema metadata; canonical ArchiMate schema files under `sample-data/schema` and the enriched `sample-data/sample-00/Test Model Full.xml` drive the payloads. The visualiser caches aggregated JSON payloads in `.cache/visualiser` for offline resilience.  
 **Testing**: Async `pytest` suites (`tests/api/…`), expect contract tests for `/schema-payload*` endpoints plus UI smoke tests driving `schema_visualizer.js`.  
-**Target Platform**: Single-user desktop MVP that runs via `uvicorn src/frictionless_architect.visualizer:app` (FastAPI) and serves assets to any modern browser on Windows/macOS/Linux.  
+**Target Platform**: Single-user desktop MVP that runs via `uvicorn frictionless_architect.app:app` (FastAPI) and serves assets to any modern browser on Windows/macOS/Linux.  
 **Project Type**: Single Python backend service with embedded UI assets and static payload caches; no separate frontend build chain.  
 **Performance Goals**: Fetch/render schema payload <2 seconds, keep schema endpoints available at ≥99.5% uptime, surface `latency_ms` metrics along with warnings when caches or data reloads slow down.  
 **Constraints**: Must reuse the existing Neo4j read permissions (no extra auth), keep schemas visible even when `Test Model Full.xml` is missing, and optimize for laptop memory/CPU budgets.  

@@ -38,7 +38,7 @@ separate Vite UI.
 `app = FastAPI(title="Neo4j Schema Visualiser", lifespan=lifespan)` and
 includes the API router — nothing else; no template/static mounting remains
 (`src/frictionless_architect/visualizer/__init__.py:19-20`). Run it with
-`poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100`
+`poetry run uvicorn frictionless_architect.app:app --reload --port 8100`
 and fetch `http://127.0.0.1:8100/schema-payload` (`README.md` §"Schema
 Visualiser"). On shutdown, `lifespan` closes the Neo4j driver
 (`src/frictionless_architect/visualizer/__init__.py:13-16`).
@@ -197,6 +197,6 @@ Cypher statements are passed through `_run_literal()` which casts to
 - ArchiMate namespace version — see [Data Model](data-model.md).
 
 `README.md` §"Schema Visualiser" now documents this service directly
-(`poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100`,
+(`poetry run uvicorn frictionless_architect.app:app --reload --port 8100`,
 plus the endpoint table) — the earlier accounting-template run instructions
 have been removed.

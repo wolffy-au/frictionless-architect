@@ -1,79 +1,65 @@
 # ADR-0005: Visualiser API/UI split is the first extraction
 
 - **Status:** Accepted
-- **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §8); revised 2026-09-05
+- **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §8); revised 2026-09-05; revised 2026-09-24
 - **Sources:** `ARCHITECTURE.md` §8, §8.1, §10, §11; `refactor-analyst` assessment (2026-08-30)
 
 ## Context
 
 The restructure (ADR-0001, ADR-0002) needs a first, low-risk extraction to prove
-the monorepo fan-out pattern (root CI fans out, shared lock resolves, tests
-pass). Today one FastAPI app (`visualizer/api.py`) serves both the JSON payload
-and the HTML/JS UI, and reads Neo4j directly via `visualizer/data_loader.py`.
+the monorepo fan-out pattern. Today one FastAPI app serves both the JSON payload
+and the HTML/JS UI, and reads Neo4j directly.
 
 ## Decision
 
-The **first extraction** splits the visualiser into two packages:
+Split the visualiser into two packages:
 
-- `packages/schema-visualizer-api` — JSON only (`/schema-payload`,
-  `/schema-payload/refresh`, `/schema-payload/status`). Scope:
-  `visualizer/{api,cache,config}.py`, the payload /
-  coverage-merge logic, and the FastAPI router. Drop the server-rendered HTML
-  route and Jinja/static mounts — confirmed no consumer today.
-- `packages/schema-visualizer-ui` (or fold into `dashboard`) — a Vite app that
-  fetches `/schema-payload`.
+- `packages/schema-visualizer-api` — JSON only (`/schema-payload*`). Scope:
+  `visualizer/{api,cache,config}.py` and the FastAPI router. Drops the
+  server-rendered HTML route and Jinja/static mounts.
+- `packages/schema-visualizer-ui` (or fold into `dashboard`) — a Vite app
+  fetching `/schema-payload`.
 
-`schema/manager.py` (the Neo4j write/migrate/audit controller),
-`visualizer/data_loader.py` (the Neo4j read path), and `sample_parser.py`
-do **not** move into `schema-visualizer-api`:
-
-- `sample_parser.py` is dependency-free stdlib ArchiMate-XML parsing with no
-  coupling to FastAPI/cache/config — generic ingestion, not visualiser logic —
-  so it moves to `packages/knowledge-graph` with the rest of the ingestion
-  path.
-- `manager.py` and the Neo4j read path belong with `knowledge-graph` for the
-  same reason: the visualiser only ever needed read access, not the
-  write/migrate/audit surface.
-- `schema-visualizer-api` consumes `knowledge-graph` as a **path-dependency
-  library** (its own Neo4j connection), not over HTTP — matches
-  `ARCHITECTURE.md` §3.3 and avoids a service contract before there's a second
-  consumer. This is expected to graduate to HTTP later (more consumers, or
-  independent scaling), so the read-path interface must stay narrow and free
-  of leaked Neo4j driver types — a seam to swap, not a rewrite.
+`schema/manager.py`, `visualizer/data_loader.py` (Neo4j read path), and
+`sample_parser.py` move to `packages/knowledge-graph` instead — none are
+visualiser-specific, and the visualiser only ever needed read access.
+`schema-visualizer-api` consumes `knowledge-graph` as a path-dependency
+library, not over HTTP, until a second consumer needs that interface to
+graduate — so the read-path interface stays narrow and free of leaked Neo4j
+driver types now.
 
 ## Consequences
 
 - Entry point changes: `uvicorn frictionless_architect.visualizer:app` →
   `uvicorn schema_visualizer_api:app`; update `README.md` / `quickstart.md`.
-- The `FRICTIONLESS_ARCHITECT_` env prefix is kept as-is for this step; renaming
-  it is its own epic (`ARCHITECTURE.md` §9).
-- Subsequent sequence: scaffold `knowledge-graph` → vendor forks → re-home specs
-  → extract remaining components as work reaches them.
-- Placement and library-vs-HTTP questions are settled; the extraction can
-  proceed against them without revisiting placement.
+- `FRICTIONLESS_ARCHITECT_` env prefix stays as-is; renaming it is its own
+  epic (`ARCHITECTURE.md` §9).
+- Sequence: scaffold `knowledge-graph` → vendor forks → re-home specs →
+  extract remaining components as work reaches them.
 
 ## Implementation status (2026-09-13)
 
-The package split itself has not happened: no `packages/` directory exists yet
-(blocked on the ADR-0001/0002 monorepo restructure). The one piece that could
-be actioned standalone — dropping the server-rendered `/schema-visualizer`
-HTML route and its Jinja/static mounts from `visualizer/__init__.py` — has
-now been done, ahead of the rest of the split. Note that "confirmed no
-consumer today" (above) was inaccurate at the time: `README.md` and
-`quickstart.md` documented `/schema-visualizer` as the primary way to run the
-app, and it was the only browser UI in the codebase (built per
-`specs/002-neo4j-schema-ui/tasks.md` T003/T010/T013/T016). Both docs have been
-updated to point at the JSON `/schema-payload` endpoint instead. The app has
-no browser UI until `schema-visualizer-ui` is built; `visualizer/static/` and
-`visualizer/templates/` are now orphaned and can be deleted once that
-replacement exists (or sooner, if desired).
+The package split hasn't happened (`packages/` blocked on ADR-0001/0002). One
+piece was actioned standalone: dropped the server-rendered `/schema-visualizer`
+HTML route and its Jinja/static mounts from `visualizer/__init__.py`, and
+repointed `README.md`/`quickstart.md` at `/schema-payload`.
+`visualizer/static/`/`templates/` are now orphaned.
+
+## Implementation status (2026-09-24)
+
+`specs/003-oscal-ai-conversion` mounts a new `/oscal` router onto the same
+FastAPI app the visualiser uses, so naming that shared app after the
+visualiser no longer matched reality. The `app`/`lifespan` construction moved
+out of `visualizer/__init__.py` into a neutral `frictionless_architect/app.py`;
+entry point is now `uvicorn frictionless_architect.app:app`. This is an
+interim rename for the current flat layout — `schema-visualizer-api` still
+gets its own app object when the package split above happens.
 
 ## Alternatives considered
 
 - **`schema-visualizer-api` calls `knowledge-graph` over HTTP from the start**
-  — rejected for now: no second consumer yet, and it adds a service contract
-  and internal auth before either is needed. Revisit if `knowledge-graph`
-  gains other consumers or the two packages need independent scaling.
-- **Keep `sample_parser.py` in the API package** — rejected: it has no
-  visualiser-specific coupling, and leaving it behind would duplicate parsing
-  logic once `knowledge-graph`'s own ingestion path needs it.
+  — rejected: no second consumer yet; adds a service contract before it's
+  needed.
+- **Keep `sample_parser.py` in the API package** — rejected: no
+  visualiser-specific coupling; would duplicate parsing logic once
+  `knowledge-graph` needs it.

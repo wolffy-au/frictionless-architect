@@ -17,7 +17,7 @@ sources:
 `quickstart.md` (repo root) is a partly-stale SpecKit template — it still
 tells you to install **UV** (its "Python 3.11 or higher" now matches the
 project floor). Its run command was
-fixed to `poetry run uvicorn frictionless_architect.visualizer:app --port 8100`
+fixed to `poetry run uvicorn frictionless_architect.app:app --port 8100`
 (`quickstart.md` §"Core Service (CLI/API)"). Where it still conflicts with
 `pyproject.toml`, `README.md`, `AGENTS.md`, or `ARCHITECTURE.md`, those win; the
 disagreements are flagged inline below. The `002` feature quickstart
@@ -94,7 +94,7 @@ FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
 FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
 FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300
 
-poetry run uvicorn frictionless_architect.visualizer:app --reload --port 8100
+poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 # then fetch http://127.0.0.1:8100/schema-payload — JSON-only for now, the
 # server-rendered /schema-visualizer HTML page was dropped 2026-09-13
 # (see Visualizer Service)

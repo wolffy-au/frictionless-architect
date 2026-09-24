@@ -32,7 +32,7 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
 2. (Optional) If you want Neo4j to hold the same dataset as the sample XML, use the schema manager with a JSON fixture derived from `Test Model Full.xml`.
 3. Run the FastAPI visualiser:
    ```bash
-   uvicorn frictionless_architect.visualizer:app --reload --port 8100
+   uvicorn frictionless_architect.app:app --reload --port 8100
    ```
 4. Open `http://127.0.0.1:8100/schema-visualizer`:
    - The Cytoscape-driven diagram replays the ArchiMate view positions and relationships included in the sample file.
