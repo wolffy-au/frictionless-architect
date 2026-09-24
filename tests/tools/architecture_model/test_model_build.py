@@ -263,3 +263,30 @@ def test_add_views_without_exclude_renders_every_in_scope_edge() -> None:
 
     assert errors == []
     assert len(model.views[0].conns) == 1
+
+
+def test_load_path_flags_flow_value_truncated_by_unquoted_comma(tmp_path: Any) -> None:
+    f = tmp_path / "elements.yaml"
+    f.write_text("- {type: DataObject, id: art-x, name: X, desc: first part, lost tail}\n")
+    errors: list[str] = []
+    data = build.load_path(f, errors)
+    assert data[0]["desc"] == "first part"  # YAML really does truncate it
+    assert errors == [
+        f"{f}: art-x: key 'lost tail' has no value — likely an unquoted comma truncating a flow-style value; quote it"
+    ]
+
+
+def test_load_path_flags_truncated_relationship_label(tmp_path: Any) -> None:
+    f = tmp_path / "relationships.yaml"
+    f.write_text("- {type: Serving, source: a, target: b, label: one, two}\n")
+    errors: list[str] = []
+    build.load_path(f, errors)
+    assert len(errors) == 1 and "a->b: key 'two'" in errors[0]
+
+
+def test_load_path_accepts_quoted_commas(tmp_path: Any) -> None:
+    f = tmp_path / "elements.yaml"
+    f.write_text('- {type: DataObject, id: art-x, name: X, desc: "first part, kept tail"}\n')
+    errors: list[str] = []
+    assert build.load_path(f, errors)[0]["desc"] == "first part, kept tail"
+    assert errors == []
