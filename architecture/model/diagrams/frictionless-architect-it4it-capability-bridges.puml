@@ -24,7 +24,7 @@ Rel_Association(e_id18ec07397a9d5f, e_id4d61fa7927b25a, "intent plane holds the 
 Rel_Association(e_id752d1de3794f5f, e_id4d61fa7927b25a, "curates the architecture patterns this capability owns")
 Rel_Association(e_id752d1de3794f5f, e_ideeaf0949683a5c, "blueprints & solution designs are product-design artefacts")
 Rel_Association(e_idafba1b4ab1e756, e_idd6ac415340a950, "generates the spec that operationalises captured requirements")
-Rel_Association(e_id4a1c34ab69d151, e_idd778fc8624cb59, "supervises the AI agents doing the coding")
+Rel_Association(e_id4a1c34ab69d151, e_idd778fc8624cb59, "supervises the AI agents doing the coding, unit verification, and defect correction this capability owns")
 Rel_Association(e_id08f340a094e552, e_id84098be1d6b45f, "human sign-off is the approval gate in this capability's change lifecycle")
 Rel_Association(e_id72468b5b403450, e_id2ef31342d4255f, "owns the same policy & standards content")
 Rel_Association(e_idc29413a2099958, e_id2ed06f8de48b51, "the append-only ledger is the audit management evidence this function owns")
