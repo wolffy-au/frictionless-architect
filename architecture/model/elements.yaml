@@ -480,19 +480,36 @@
     all gates have cleared. Automatically auditable end-to-end.
 - type: BusinessProcess
   id: process-state-discovery
-  name: Current State Discovery
+  name: Architecture Reconciliation
   desc: >-
-    Continuous, automated reconciliation of actual system state against
-    architectural intent. Surfaces classified drift events for human review;
-    does not write directly to the backlog.
+    Continuous, automated reconciliation of the Current State Architecture
+    against the Transition State Architecture in effect — what should be true
+    by now — so gaps planned for later states are not flagged as drift.
+    Records classified drift findings in the Architecture Conformance Register
+    for human review.
 - type: BusinessProcess
   id: process-drift-review
-  name: Drift Review & Triage Gate
+  name: Drift Review & Triage
   desc: >-
-    Human-gated review of drift findings before they are committed as backlog
-    work items. A Solution Architect approves architectural drift; Security &
-    Compliance approves regulatory drift. Ensures only validated, prioritised
-    findings enter the delivery pipeline.
+    Ongoing human review and triage of drift findings as they are surfaced by
+    Architecture Reconciliation. An Enterprise Architect approves
+    architectural drift. Each finding's triage outcome is recorded in the
+    Architecture Conformance Register.
+- type: BusinessProcess
+  id: process-target-state-definition
+  name: Target State Definition
+  desc: >-
+    The Enterprise Architect defines and maintains the strategic Target State
+    Architecture — where the estate should be heading — and the Architecture
+    Roadmap that sequences the transition to it, taking open regulatory
+    remediation milestones from the OSCAL POA&M as input.
+- type: BusinessProcess
+  id: process-solution-design
+  name: Solution Design Composition
+  desc: >-
+    The Solution Architect composes implementation blueprints into a
+    solution-specific Solution Design. Realized at application layer by
+    fn-solution-compose.
 - type: BusinessFunction
   id: bfn-agentic-delivery
   name: Agentic Delivery Execution
@@ -511,16 +528,18 @@
   id: bfn-drift-management
   name: Drift Management
   desc: >-
-    GH #25: the stable business capability of continuously detecting drift
-    against architectural intent and gating it through human review before it
-    is committed as prioritised backlog work.
+    GH #25: the stable business capability of continuously reconciling the
+    current state architecture against the target state architecture and
+    reviewing and triaging the resulting drift findings, keeping each
+    finding's status in the Architecture Conformance Register.
 - type: BusinessFunction
   id: bfn-policy-conversion
   name: Policy-to-OSCAL Conversion
   desc: >-
     GH #7: the stable business capability of turning authored policy and
-    upstream regulatory standards into machine-readable OSCAL Catalogs and
-    Profiles, independent of the specific authoring/conversion process steps.
+    upstream regulatory standards into machine-readable OSCAL Catalogs,
+    tailoring them into Profiles and resolving those into Resolved Catalogs,
+    independent of the specific authoring/conversion process steps.
 - type: BusinessFunction
   id: bfn-pattern-blueprint-traceability
   name: Pattern & Blueprint Traceability
@@ -528,6 +547,18 @@
     GH #7: the stable business capability of mapping OSCAL Profile controls
     onto reusable architecture patterns and deriving technology-specific
     implementation blueprints with tracked control enablement.
+- type: BusinessFunction
+  id: bfn-architecture-strategy
+  name: Architecture Strategy
+  desc: >-
+    The stable business capability of defining and maintaining the strategic
+    target state architecture the estate is reconciled against.
+- type: BusinessFunction
+  id: bfn-solution-design
+  name: Solution Design
+  desc: >-
+    The stable business capability of composing reusable implementation
+    blueprints into solution-specific designs.
 - type: BusinessFunction
   id: bfn-release-enforcement
   name: Release Controls Enforcement
@@ -551,12 +582,29 @@
     conversion ingests the resulting document.
 - type: BusinessProcess
   id: process-oscal-conversion
-  name: OSCAL Catalog & Profile Generation
+  name: OSCAL Catalog Generation
   desc: >-
     Converts authored policy content and upstream regulatory standard text
-    into OSCAL Catalogs and Profiles. Realized at application layer by
+    into OSCAL Catalogs. Profiles are not produced here — every Profile,
+    including a published baseline such as NIST SP 800-53B, is tailored by
+    a human in Control Baseline Tailoring. Realized at application layer by
     fn-ai-markdown-conversion (AI-assisted conversion into Trestle-editable
     Markdown) followed by fn-oscal-conversion's Trestle round-trip.
+- type: BusinessProcess
+  id: process-baseline-tailoring
+  name: Control Baseline Tailoring
+  desc: >-
+    The Compliance Officer / Auditor tailors an OSCAL Profile from one or
+    more OSCAL Catalogs — selecting the applicable controls and setting
+    their parameters — to reflect the organisation's obligations, policies
+    and risk appetite. Human judgement; no application-layer realization yet.
+- type: BusinessProcess
+  id: process-profile-resolution
+  name: OSCAL Profile Resolution
+  desc: >-
+    Automatically resolves a tailored OSCAL Profile against its source
+    Catalog(s) into a Resolved OSCAL Catalog. Realized at application layer
+    by fn-oscal-profile-resolve.
 - type: BusinessProcess
   id: process-pattern-traceability
   name: Pattern Control Traceability Mapping
@@ -568,7 +616,7 @@
   id: process-blueprint-traceability
   name: Blueprint Control Enablement Mapping
   desc: >-
-    The Solution Architect derives technology-specific implementation
+    The Enterprise Architect derives technology-specific implementation
     blueprints from a technology-agnostic architecture pattern, capturing
     control enablement status and gaps against the OSCAL Profile. Realized at
     application layer by fn-blueprint-authoring.
@@ -603,6 +651,13 @@
   id: bo-oscal-profile
   name: OSCAL Profile
   desc: Tailored control selection / baseline.
+- type: BusinessObject
+  id: bo-oscal-resolved-catalog
+  name: Resolved OSCAL Catalog
+  desc: >-
+    The flattened set of controls a tailored Profile actually selects,
+    produced by resolving the Profile against its source Catalog(s) — the
+    operative control baseline for downstream use.
 - type: BusinessObject
   id: bo-architecture-pattern
   name: Architecture Pattern
@@ -660,6 +715,66 @@
   id: bo-control-effectiveness-evidence
   name: Control Effectiveness Evidence
   desc: BAU evidence that a deployed control is (or is not) working.
+- type: BusinessObject
+  id: bo-current-state-architecture
+  name: Current State Architecture
+  desc: >-
+    The discovered, as-built architecture of the estate — the "where we are"
+    that is reconciled against the Transition State Architecture in effect.
+  props:
+    archimate-analogue: Baseline Plateau
+- type: BusinessObject
+  id: bo-target-state-architecture
+  name: Target State Architecture
+  desc: >-
+    The adopted, strategic future-state architecture — the "where we want to
+    be" at the end of the Architecture Roadmap. Distinct from a Candidate
+    Architecture Option, which is only under evaluation.
+  props:
+    archimate-analogue: Target Plateau
+- type: BusinessObject
+  id: bo-architecture-roadmap
+  name: Architecture Roadmap
+  desc: >-
+    The time-sequenced transition from the Current State Architecture to the
+    Target State Architecture — the Transition State Architectures in order,
+    with the work that moves between them. Consumed by portfolio / delivery
+    planning outside the platform; not read by any process in this model.
+  props:
+    archimate-analogue: Plateau sequence with Work Packages and Implementation Events
+- type: BusinessObject
+  id: bo-transition-state-architecture
+  name: Transition State Architecture
+  desc: >-
+    An intermediate, dated state on the Architecture Roadmap — what should be
+    true by a given date. The one currently in effect is what the Current
+    State Architecture is reconciled against, so gaps planned for later
+    states are not flagged as drift.
+  props:
+    archimate-analogue: Transition Plateau
+- type: BusinessObject
+  id: bo-oscal-poam
+  name: OSCAL Plan of Action & Milestones
+  desc: >-
+    Open control deficiencies found by assessment — at the release gate and
+    in BAU effectiveness monitoring — with their planned remediation and
+    target milestones, in OSCAL form for external compliance reporting.
+- type: BusinessObject
+  id: bo-drift-finding
+  name: Drift Finding
+  desc: >-
+    A classified deviation of the Current State Architecture from the
+    Transition State Architecture in effect — an unplanned gap.
+  props:
+    archimate-analogue: Gap
+- type: BusinessObject
+  id: bo-conformance-backlog
+  name: Architecture Conformance Register
+  desc: >-
+    The system of record for every drift finding and its triage status —
+    open, approved for remediation, accepted / waived, deferred to the
+    roadmap, or closed. Findings approved for remediation are raised as
+    work items in the ITSM backlog; the register itself is not a backlog.
 
 # =====================================================================
 # B. APPLICATION — the platform and its six subsystems
@@ -678,8 +793,9 @@
   name: Controls & Compliance Catalog
   desc: >-
     Converts policy/standard documents (authored externally, outside the
-    platform) into OSCAL Catalogs and Profiles via AI-assisted Markdown
-    conversion and a Trestle round-trip.
+    platform) into OSCAL Catalogs via AI-assisted Markdown conversion and a
+    Trestle round-trip, and resolves tailored Profiles into Resolved
+    Catalogs.
 - type: ApplicationComponent
   id: sub-library
   name: Reusable Architecture Library
@@ -705,8 +821,9 @@
   id: sub-assurance
   name: Conformance & Drift Assurance
   desc: >-
-    Enforces controls at release, monitors effectiveness in BAU, and detects and
-    reports architecture drift.
+    Supervises agentic development to enforce controls at build, supplies the
+    expected controls the pipeline's release gate verifies, monitors
+    effectiveness in BAU, and detects and reports architecture drift.
 - type: ApplicationComponent
   id: sub-modelling
   name: Modelling & Specification
@@ -747,7 +864,7 @@
 - type: BusinessRole
   id: role-sa
   name: Solution Architect
-  desc: Composes blueprints into solution designs.
+  desc: Composes solution designs from implementation blueprints.
 - type: BusinessRole
   id: role-sec
   name: Security Architect / Threat Modeller
@@ -773,7 +890,7 @@
 - type: ApplicationComponent
   id: ext-cicd
   name: CI/CD Pipeline
-  desc: Builds, tests and releases; invokes the enforcement gate.
+  desc: Builds, tests and releases; runs the controls enforcement gate inline.
 - type: ApplicationComponent
   id: ext-cloud
   name: Cloud & Infrastructure Platforms
@@ -819,10 +936,10 @@
     structure Trestle's author commands expect.
 - type: ApplicationFunction
   id: fn-oscal-conversion
-  name: OSCAL Catalog & Profile Generation
+  name: OSCAL Catalog Generation
   desc: >-
-    Convert Trestle-editable Markdown into OSCAL Catalogs and Profiles via a
-    Trestle round-trip (import / author / assemble).
+    Convert Trestle-editable Markdown into OSCAL Catalogs via a Trestle
+    round-trip (import / author / assemble).
 - type: ApplicationFunction
   id: fn-oscal-profile-resolve
   name: OSCAL Profile Resolution
@@ -887,11 +1004,22 @@
 
 # --- C. Functions: Conformance & Drift Assurance ---
 - type: ApplicationFunction
+  id: fn-build-supervision
+  name: Agentic Build Supervision
+  desc: >-
+    Build-time control enforcement: intercept and evaluate every agent-generated
+    change against the development specification and the expected controls
+    before it is committed, blocking non-conformant changes. Every evaluation
+    is recorded to the Forensic Audit Ledger rather than a separate evidence
+    artefact.
+- type: ApplicationFunction
   id: fn-enforcement-gate
   name: Controls Enforcement Gate
   desc: >-
-    Evaluate a release candidate against the expected controls and the solution
-    design at release time; block or pass.
+    Release-time control enforcement, run inline in the CI/CD pipeline: verify
+    that every control the SSP expects is satisfied — directly on the release
+    candidate for artefact-observable controls, and from the forensic ledger
+    for process controls (e.g. no agent self-validation); block or pass.
 - type: ApplicationFunction
   id: fn-effectiveness-monitor
   name: Controls Effectiveness Monitoring
@@ -902,8 +1030,9 @@
   id: fn-drift-engine
   name: Drift & Deviation Detection
   desc: >-
-    Diff as-designed intent against the current-state twin and classify
-    deviations as drift findings.
+    Diff the current-state twin against the transition state in effect on the
+    Architecture Roadmap and classify the deviations — unplanned gaps — as
+    drift findings.
 
 # --- C. Functions: Modelling & Specification ---
 - type: ApplicationFunction
@@ -916,6 +1045,44 @@
   desc: >-
     Generate development specifications from patterns, blueprints and solution
     designs for spec-driven delivery.
+
+# --- C. Functions: External systems (outside the platform Grouping) ---
+- type: ApplicationFunction
+  id: fn-scm-versioning
+  name: Specification & Code Versioning
+  desc: >-
+    Commit and version generated development specifications alongside the
+    delivery code that implements them.
+- type: ApplicationFunction
+  id: fn-scm-change-review
+  name: Change Review (Pull Request)
+  desc: >-
+    Peer-review a proposed change against its specification and merge it,
+    triggering a pipeline build.
+- type: ApplicationFunction
+  id: fn-cicd-build
+  name: Build & Test
+  desc: >-
+    Build and test a merged change and package it as a release candidate for
+    the enforcement gate.
+- type: ApplicationFunction
+  id: fn-cicd-deploy
+  name: Release Deployment
+  desc: >-
+    Act on the gate decision — promote a passed release candidate to its
+    target environment (or halt a blocked one) and record the deployment event.
+- type: ApplicationFunction
+  id: fn-itsm-backlog
+  name: Backlog Management
+  desc: >-
+    Prioritise and schedule remediation backlog items raised from classified
+    drift findings through to closure.
+- type: ApplicationFunction
+  id: fn-itsm-change
+  name: Change Management
+  desc: >-
+    Maintain the change record for a release, attaching the gate decision as
+    its compliance approval evidence.
 
 # --- C. Artefacts (DataObject) ---
 - {type: DataObject, id: art-policy-doc, name: Policy / Standard Document, desc: "Verbatim custom policy or standard document (e.g. Word/PDF), not yet machine-readable."}
@@ -937,6 +1104,8 @@
 - {type: DataObject, id: art-deploy-event, name: Deployment Event, desc: A release / deployment recorded by the pipeline.}
 - {type: DataObject, id: art-twin, name: Current-State Digital Twin, desc: The as-built plane of the Architecture Knowledge Graph.}
 - {type: DataObject, id: art-candidate-arch, name: Candidate Architecture Option, desc: A proposed future-state or vendor solution under evaluation.}
+- {type: DataObject, id: art-target-architecture, name: Target State Architecture, desc: The adopted future-state architecture — the end state of the Architecture Roadmap.}
+- {type: DataObject, id: art-architecture-roadmap, name: Architecture Roadmap, desc: The time-sequenced transition from current to target state — what should be true by when.}
 - {type: DataObject, id: art-adr, name: Architecture Decision Record, desc: The chosen option with its rationale and trade-offs.}
 - {type: DataObject, id: art-impact-assessment, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
 - {type: DataObject, id: art-archived-option, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
@@ -947,7 +1116,7 @@
 - {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}
 - {type: DataObject, id: art-drift-report, name: Classified Drift Finding, desc: "A deviation of current state from intent, classified and prioritised."}
 - {type: DataObject, id: art-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
-- {type: DataObject, id: art-oscal-poam, name: OSCAL Plan of Action & Milestones, desc: "OSCAL-formatted sidecar of the remediation backlog — open findings and their target remediation milestones, for external compliance reporting."}
+- {type: DataObject, id: art-oscal-poam, name: OSCAL Plan of Action & Milestones, desc: "Open control deficiencies from OSCAL Assessment Results — release-gate and BAU — with their target remediation milestones, for external compliance reporting."}
 - {type: DataObject, id: art-dev-spec, name: Development Specification, desc: "Executable spec derived from patterns, blueprints and designs."}
 - {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
 - {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: "A single immutable forensic record — actor, action, target artefact, timestamp, outcome."}

@@ -1,0 +1,40 @@
+@startuml
+!include <archimate/Archimate>
+
+title Business — 2. Pattern, Blueprint & Solution Design
+
+Business_Object(e_id3a6eb7f6485a55, "OSCAL Profile")
+Business_Object(e_idcd45bf9b5cfe51, "Architecture Pattern")
+Business_Object(e_id41a01cbfc25b5a, "Implementation Blueprint")
+Business_Object(e_id0bb22ba44cfa50, "OSCAL Component Definition")
+Business_Object(e_id4b5ad5a2100656, "Solution Design") {
+  Business_Object(e_id42defa6a190855, "Solution Component")
+}
+Business_Object(e_ide1231d147af05e, "OSCAL System Security Plan")
+Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
+  Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
+    Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
+    Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
+  }
+}
+Business_Role(e_ide2cb7f3efa6256, "Solution Architect") {
+  Business_Function(e_id86f3d2dd174754, "Solution Design") {
+    Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
+  }
+}
+
+Rel_Access_r(e_id65065ee24d3c54, e_id3a6eb7f6485a55, "reads")
+Rel_Access_w(e_id65065ee24d3c54, e_idcd45bf9b5cfe51, "maps controls into")
+Rel_Association(e_idcd45bf9b5cfe51, e_id3a6eb7f6485a55, "maps to")
+Rel_Specialization_Up(e_id41a01cbfc25b5a, e_idcd45bf9b5cfe51, "specializes for a technology")
+Rel_Access_r(e_id378927722a8d5a, e_idcd45bf9b5cfe51, "refines")
+Rel_Access_r(e_id378927722a8d5a, e_id3a6eb7f6485a55, "checks enablement against")
+Rel_Access_w(e_id378927722a8d5a, e_id41a01cbfc25b5a, "authors")
+Rel_Access_w(e_id378927722a8d5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
+Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
+Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
+Rel_Specialization_Up(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
+Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
+Rel_Access_w(e_id4991c823f6d55b, e_id4b5ad5a2100656, "composes")
+
+@enduml

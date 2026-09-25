@@ -36,7 +36,10 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 - **`name` / `desc`** — top-level keys, not inside `props`.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read`|`Write`|`ReadWrite`) on `Access` relationships,
-  `requirement-type`.
+  `requirement-type`, and `archimate-analogue` on a BusinessObject whose
+  *content* in the managed estate's model is an Implementation & Migration
+  concept (Plateau, Gap, …) — kept as a tag so this model's own Plateaus stay
+  free to mean states of the platform itself.
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 

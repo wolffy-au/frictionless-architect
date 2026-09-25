@@ -1,0 +1,36 @@
+@startuml
+!include <archimate/Archimate>
+
+title Business — Architecture Strategy & Drift
+
+Business_Object(e_id66f6cfb386e056, "Current State Architecture")
+Business_Object(e_id2532acbff6cc51, "Target State Architecture")
+Business_Object(e_idb23da624fbab57, "Architecture Roadmap") {
+  Business_Object(e_id469a5e18ea9c57, "Transition State Architecture")
+}
+Business_Object(e_idd18d048900f05b, "OSCAL Plan of Action & Milestones")
+Business_Object(e_id195b0ade075454, "Architecture Conformance Register") {
+  Business_Object(e_id4819673b912051, "Drift Finding")
+}
+Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
+  Business_Function(e_id5794c15b037251, "Architecture Strategy") {
+    Business_Process(e_id395c9c2923aa56, "Target State Definition")
+  }
+  Business_Function(e_idc1376562b9a354, "Drift Management") {
+    Business_Process(e_id3a7a27eefeb751, "Architecture Reconciliation")
+    Business_Process(e_id33612ed603b85e, "Drift Review & Triage")
+  }
+}
+
+Rel_Triggering_Right(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
+Rel_Access_w(e_id395c9c2923aa56, e_id2532acbff6cc51, "defines")
+Rel_Access_r(e_id3a7a27eefeb751, e_id66f6cfb386e056, "reconciles")
+Rel_Access_w(e_id395c9c2923aa56, e_idb23da624fbab57, "plans")
+Rel_Access_r(e_id395c9c2923aa56, e_idd18d048900f05b, "takes remediation milestones from")
+Rel_Association(e_idb23da624fbab57, e_id2532acbff6cc51, "sequences the transition to")
+Rel_Access_r(e_id3a7a27eefeb751, e_id469a5e18ea9c57, "reconciles against the state in effect")
+Rel_Access_w(e_id3a7a27eefeb751, e_id195b0ade075454, "records new findings in")
+Rel_Access_r(e_id33612ed603b85e, e_id4819673b912051, "triages")
+Rel_Access_rw(e_id33612ed603b85e, e_id195b0ade075454, "updates triage status in")
+
+@enduml

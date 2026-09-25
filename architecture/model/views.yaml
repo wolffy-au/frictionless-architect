@@ -334,6 +334,9 @@
   # policy/standard through to operational assurance. Trestle is
   # deliberately not shown — it's the application-layer tool realizing
   # process-oscal-conversion (see fn-oscal-conversion), not a business actor.
+  # Architecture strategy and drift are not part of this journey (their only
+  # OSCAL touchpoint is reading the POA&M) and have their own view,
+  # view-business-strategy-drift.
   #
   # Formerly two near-duplicate diagrams (this one, role-grouped, and
   # vision/controls-lifecycle, function-grouped) carrying the same objects
@@ -341,33 +344,40 @@
   # BusinessFunction it performs (Assignment, relationships.yaml) rather
   # than to the individual process — nesting is then Function > Role >
   # Process wherever one role owns a function outright (e.g.
-  # bfn-policy-conversion > role-compliance), and Function > Process where a
-  # function's steps split across roles (bfn-pattern-blueprint-traceability
-  # has both role-ea and role-sa assigned, so it stays flat with an
-  # Assignment arrow to each) or has none (bfn-release-enforcement,
-  # bfn-drift-management — automated, no human role assigned).
+  # bfn-policy-conversion > role-compliance; role-ea owns
+  # bfn-pattern-blueprint-traceability; role-sa owns bfn-solution-design),
+  # and Function > Process where a function has no role assigned
+  # (bfn-release-enforcement).
+  #
+  # The three view-business-* slice views below zoom into consecutive
+  # stretches of this journey. They are deliberate subsets of this overview,
+  # not the kind of near-duplicate consolidated above — all are projections
+  # of the same model, so they cannot drift apart. Keep them.
   members:
     - bfn-policy-conversion
     - role-compliance
     - process-policy-authoring
     - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
     - bo-regulatory-standard
     - bo-policy-doc
     - bo-oscal-catalog
     - bo-oscal-profile
+    - bo-oscal-resolved-catalog
     - bfn-pattern-blueprint-traceability
     - role-ea
     - process-pattern-traceability
     - bo-architecture-pattern
     - role-sa
+    - bfn-solution-design
+    - process-solution-design
     - process-blueprint-traceability
     - bo-implementation-blueprint
     - bo-oscal-component
     - bo-solution-component
     - bo-solution-design
     - bo-oscal-ssp
-    - bfn-drift-management
-    - process-state-discovery
     - bfn-release-enforcement
     - process-cicd-pipeline
     - bo-oscal-assessment-plan
@@ -377,6 +387,87 @@
     - process-effectiveness-monitoring
     - bo-control-effectiveness-evidence
     - bo-oscal-assessment-results
+    - bo-oscal-poam
+
+# --- Slices of view-business-controls-catalog (read 1 -> 2 -> 3). Each
+#     repeats its hand-off object(s) from the neighbouring slice: the OSCAL
+#     Profile (1 -> 2) and the OSCAL SSP (2 -> 3).
+- id: view-business-policy-conversion
+  name: Business — 1. Policy-to-OSCAL Conversion
+  viewpoint: business_process_cooperation
+  diagram: business/1-policy-conversion
+  members:
+    - bfn-policy-conversion
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - bo-oscal-resolved-catalog
+
+- id: view-business-pattern-solution-design
+  name: Business — 2. Pattern, Blueprint & Solution Design
+  viewpoint: business_process_cooperation
+  diagram: business/2-pattern-solution-design
+  members:
+    - bfn-pattern-blueprint-traceability
+    - role-ea
+    - process-pattern-traceability
+    - process-blueprint-traceability
+    - bfn-solution-design
+    - role-sa
+    - process-solution-design
+    - bo-oscal-profile
+    - bo-architecture-pattern
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-design
+    - bo-solution-component
+    - bo-oscal-ssp
+
+- id: view-business-control-assurance
+  name: Business — 3. Control Assurance
+  viewpoint: business_process_cooperation
+  diagram: business/3-control-assurance
+  members:
+    - bfn-release-enforcement
+    - process-cicd-pipeline
+    - bfn-effectiveness-assurance
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-oscal-ssp
+    - bo-oscal-assessment-plan
+    - bo-oscal-assessment-results
+    - bo-release-gate-decision
+    - bo-control-effectiveness-evidence
+    - bo-oscal-poam
+
+- id: view-business-strategy-drift
+  name: Business — Architecture Strategy & Drift
+  viewpoint: business_process_cooperation
+  diagram: business/strategy-drift
+  # Architecture-side counterpart of the controls journey above: target
+  # state and roadmap definition, reconciliation of current against target
+  # state, and triage into the Architecture Conformance Register. The OSCAL
+  # POA&M appears only as an input to Target State Definition.
+  members:
+    - role-ea
+    - bfn-architecture-strategy
+    - process-target-state-definition
+    - bfn-drift-management
+    - process-state-discovery
+    - process-drift-review
+    - bo-target-state-architecture
+    - bo-architecture-roadmap
+    - bo-transition-state-architecture
+    - bo-current-state-architecture
+    - bo-conformance-backlog
+    - bo-drift-finding
+    - bo-oscal-poam
 
 - id: view-artefact-library
   name: Artefact Flow — Library & Design
@@ -415,6 +506,7 @@
     - fn-notation-engine
     - ext-cloud
     - ext-cicd
+    - fn-cicd-deploy
     - ext-rfp
     - art-infra-state
     - art-deploy-event
@@ -437,12 +529,20 @@
     - sub-assurance
     - sub-modelling
     - fn-spec-generator
+    - fn-build-supervision
     - fn-enforcement-gate
     - fn-effectiveness-monitor
     - fn-drift-engine
+    - fn-ledger-record
     - ext-cicd
     - ext-scm
     - ext-itsm
+    - fn-scm-versioning
+    - fn-scm-change-review
+    - fn-cicd-build
+    - fn-cicd-deploy
+    - fn-itsm-backlog
+    - fn-itsm-change
     - art-pattern
     - art-blueprint
     - art-solution-design
@@ -452,9 +552,11 @@
     - art-release-candidate
     - art-oscal-assessment-plan
     - art-gate-decision
+    - art-ledger-entry
     - art-effectiveness-evidence
     - art-twin
     - art-adr
+    - art-architecture-roadmap
     - art-drift-report
     - art-remediation-item
     - art-oscal-poam

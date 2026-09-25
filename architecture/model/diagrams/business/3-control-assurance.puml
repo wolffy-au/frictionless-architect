@@ -1,0 +1,34 @@
+@startuml
+!include <archimate/Archimate>
+
+title Business — 3. Control Assurance
+
+Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
+  Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
+}
+Business_Object(e_ide1231d147af05e, "OSCAL System Security Plan")
+Business_Object(e_idb990615e712f57, "OSCAL Assessment Plan")
+Business_Object(e_id9f8a83bba77b50, "OSCAL Assessment Results")
+Business_Object(e_id8a58348ab4605a, "Release Gate Decision")
+Business_Object(e_idca68dd43dc1854, "Control Effectiveness Evidence")
+Business_Object(e_idd18d048900f05b, "OSCAL Plan of Action & Milestones")
+Business_Role(e_id2c489ee6594253, "Platform Operations (BAU)") {
+  Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
+    Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
+  }
+}
+
+Rel_Access_w(e_id799f46ebb7e15b, e_idd18d048900f05b, "records control deficiencies in")
+Rel_Access_w(e_id18a08f8aff8057, e_idd18d048900f05b, "records control deficiencies in")
+Rel_Association(e_idd18d048900f05b, e_id9f8a83bba77b50, "tracks remediation of")
+Rel_Access_r(e_id799f46ebb7e15b, e_ide1231d147af05e, "checks against")
+Rel_Access_w(e_id799f46ebb7e15b, e_idb990615e712f57, "generates")
+Rel_Access_w(e_id799f46ebb7e15b, e_id8a58348ab4605a, "issues")
+Rel_Access_r(e_id18a08f8aff8057, e_ide1231d147af05e, "reads expected controls")
+Rel_Access_w(e_id18a08f8aff8057, e_idb990615e712f57, "generates")
+Rel_Access_w(e_id18a08f8aff8057, e_idca68dd43dc1854, "records")
+Rel_Association(e_id9f8a83bba77b50, e_idb990615e712f57, "imports (per OSCAL's required import-ap)")
+Rel_Specialization_Up(e_id8a58348ab4605a, e_id9f8a83bba77b50, "pre-release instance")
+Rel_Specialization_Up(e_idca68dd43dc1854, e_id9f8a83bba77b50, "continuous-monitoring instance")
+
+@enduml
