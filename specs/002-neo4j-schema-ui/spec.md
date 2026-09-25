@@ -63,7 +63,7 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 
 - What happens when the schema references a type (e.g., a new ArchiMate element) with no sample nodes in `sample-data/sample-00`?
 - How does the visualiser behave if `Test Model.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers?
-- What if the schema files are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes?
+- What if the schema files are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes? *Resolved (ADR-0032)*: the ArchiMate 3.1 exchange-format XSDs keep the `http://www.opengroup.org/xsd/archimate/3.0/` namespace, so 3.0-namespaced sample data remains valid against them. A sample file declaring any other namespace is reported as a warning naming the expected namespace, and `/schema-payload/status` returns `sample_file_status: "invalid"` rather than rendering an empty model.
 - What warning should appear if `sample-data/sample-00/Test Model.xml` cannot be loaded so analysts understand why sample instances are unavailable without being blocked?
 
 ## Requirements *(mandatory)*

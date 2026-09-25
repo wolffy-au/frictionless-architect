@@ -45,3 +45,4 @@
   }
   ```  
 - **Notes**: UI uses this endpoint to enforce the non-blocking warning and honor the 5-minute retry window from the spec.
+- **`sample_file_status` values**: `loaded` (sample parsed), `missing` (file absent or not well-formed XML), `invalid` (root is not an ArchiMate `<model>` in the `http://www.opengroup.org/xsd/archimate/3.0/` namespace — see ADR-0032; `last_warning` carries the details).
