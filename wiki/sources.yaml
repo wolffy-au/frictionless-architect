@@ -119,6 +119,7 @@ topics:
       - path: specs/002-neo4j-schema-ui/plan.md
       - path: specs/002-neo4j-schema-ui/research.md
       - path: specs/002-neo4j-schema-ui/contracts/api.md
+      - path: specs/002-neo4j-schema-ui/checklists/requirements.md
 
   - name: non-functionals
     title: Non-Functional Requirements

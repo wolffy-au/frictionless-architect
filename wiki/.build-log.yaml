@@ -424,6 +424,9 @@ topics:
         specs/001-governance-platform/spec.md:
           sha256: 0cdc62c387f49dcc353a856a2e1de6e3a6b698572808a8b0aa06103f81d288e3
           lines: 191
+        specs/002-neo4j-schema-ui/checklists/requirements.md:
+          sha256: b925640f8a25d3afbfbc566668a282309ca94caeca2fbc250b2e0744b7e08a9a
+          lines: 34
         specs/002-neo4j-schema-ui/contracts/api.md:
           sha256: 390d4948021bf5857514709030e061a367be9cb156b3905d6e18e08c4cb164b5
           lines: 48
