@@ -131,6 +131,7 @@ REL_MACRO = {
 # see render_diagrams.py.
 REL_DIRECTION = {
     "Realization": "Up",
+    "Specialization": "Up",
     "Serving": "Up",
     "Triggering": "Right",
     "Flow": "Right",
