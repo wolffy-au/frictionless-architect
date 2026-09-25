@@ -373,6 +373,24 @@ topics:
         third_party/README.md:
           sha256: 6731594fe88744191f988b45b8aa4131fab9460db44f83f49a8a32f67e8c29ad
           lines: 73
+        third_party/fedramp-automation/LICENSE.md:
+          sha256: 48a7cf796e3cafbf06a91d35f014d13c25f5cc61fbe64a153e71d49d58a286e8
+          lines: 122
+        third_party/fedramp-automation/README.md:
+          sha256: 04089695d077b7748cf4ea78a2e75ef4ce88472b41e5587df540adab02bc5c6f
+          lines: 60
+        third_party/oscal-content/LICENSE.md:
+          sha256: 9f0ddd1ed71f691bb483965a7c46e1315ab6cc28dac0426d4c3d27108aafde13
+          lines: 27
+        third_party/oscal-content/README.md:
+          sha256: 48bf0b343139848935dde670c3ab4e29267e2bcfb4df7b3e499396ae030f88a8
+          lines: 15
+        third_party/oscal/LICENSE.md:
+          sha256: 63407ac41abc46911bc9759fc0c19fd0ba7f66c59bb6746e51d85e2f2f3244b1
+          lines: 34
+        third_party/oscal/README.md:
+          sha256: dc076e93c8d9f080eab5d9b3cfcac44d440513828c1649a523b1ecfcad3cf7ff
+          lines: 60
   data-model:
     title: Data Model
     page: wiki/data-model.md

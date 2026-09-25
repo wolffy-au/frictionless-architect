@@ -91,8 +91,12 @@ topics:
     description: The vendored OSCAL/FedRAMP reference content, the compliance-trestle dependency, and how they feed the platform's compliance-automation vision (ADR-0030).
     sources:
       - path: third_party/README.md
-      - path: third_party/oscal*/**
-      - path: third_party/fedramp-automation/**
+      - path: third_party/oscal/README.md
+      - path: third_party/oscal/LICENSE.md
+      - path: third_party/oscal-content/README.md
+      - path: third_party/oscal-content/LICENSE.md
+      - path: third_party/fedramp-automation/README.md
+      - path: third_party/fedramp-automation/LICENSE.md
       - path: pyproject.toml
       - path: sample-data/oscal/**
       - path: docs/adr/0030-vendor-oscal-reference-content.md
