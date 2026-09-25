@@ -1,13 +1,14 @@
 ---
 title: Visualizer Service
-generated: 2026-09-20
-generator: claude-sonnet-5
+generated: 2026-09-25
+generator: claude-opus-5-5
 sources:
   - src/frictionless_architect/visualizer/__init__.py
   - src/frictionless_architect/visualizer/api.py
   - src/frictionless_architect/visualizer/cache.py
   - src/frictionless_architect/visualizer/config.py
   - src/frictionless_architect/visualizer/data_loader.py
+  - src/frictionless_architect/visualizer/namespaces.py
   - src/frictionless_architect/visualizer/sample_parser.py
   - src/frictionless_architect/visualizer/sample_validator.py
   - src/frictionless_architect/schema/__init__.py
@@ -34,14 +35,16 @@ separate Vite UI.
 
 ## Entry point
 
-`src/frictionless_architect/visualizer/__init__.py` builds
-`app = FastAPI(title="Neo4j Schema Visualiser", lifespan=lifespan)` and
-includes the API router — nothing else; no template/static mounting remains
-(`src/frictionless_architect/visualizer/__init__.py:19-20`). Run it with
+`src/frictionless_architect/visualizer/__init__.py` is now only a package
+docstring. The FastAPI app moved to the shared platform entry point
+`frictionless_architect.app`, which builds
+`app = FastAPI(title="Frictionless Architect", lifespan=lifespan)` and
+includes the visualiser's API router; its `lifespan` closes the Neo4j driver
+on shutdown (`src/frictionless_architect/app.py:13-20`). The module docstring
+anticipates the OSCAL service joining the same app. Run it with
 `poetry run uvicorn frictionless_architect.app:app --reload --port 8100`
-and fetch `http://127.0.0.1:8100/schema-payload` (`README.md` §"Schema
-Visualiser"). On shutdown, `lifespan` closes the Neo4j driver
-(`src/frictionless_architect/visualizer/__init__.py:13-16`).
+and fetch `http://127.0.0.1:8100/schema-payload` (`README.md` §"Running the
+schema visualiser").
 
 ## Configuration
 
@@ -68,35 +71,64 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
 [Platform Specification & API](platform-spec.md) for the endpoint table.
 
 `SchemaPayloadService` orchestrates payload building
-(`src/frictionless_architect/visualizer/api.py:40-253`):
+(`src/frictionless_architect/visualizer/api.py:42-262`):
 
 1. **`get_payload(force_reload)`** — returns the cached payload unless
    `force_reload` or no cache exists, in which case it builds. If a build
    fails with `PayloadUnavailable` but a cache exists, the stale cache is
-   returned (`src/frictionless_architect/visualizer/api.py:55-66`).
-2. **`_build_payload()`** (run in a thread) — parse the sample XML; on a
-   successful parse, run `validate_sample_against_schema()` against
-   `schema_model_xsd_path` and add each returned issue as a `warning`
-   (`src/frictionless_architect/visualizer/api.py:130-142`); if
+   returned (`src/frictionless_architect/visualizer/api.py:59-70`).
+2. **`_build_payload()`** (run in a thread) — parse the sample XML. A missing
+   or malformed file adds the generic `warning_text` and leaves
+   `sample_status` as `missing`; an `ArchimateNamespaceError` sets
+   `sample_status = "invalid"` and adds the error's own message (which names
+   the expected namespace) as the warning; either way the payload continues
+   with an empty sample result. On a successful parse, it runs
+   `validate_sample_against_schema()` against `schema_model_xsd_path` and adds
+   each returned issue as a `warning`
+   (`src/frictionless_architect/visualizer/api.py:127-147`); if
    `neo4j_uri` is set, query Neo4j via `DataLoader`; merge schema entries with
    sample entries per identifier; emit a `warning` for every schema type with
    no sample instance; raise `PayloadUnavailable` only if **both** Neo4j and
-   sample yield nothing (`src/frictionless_architect/visualizer/api.py:112-180`). Relationship identifiers are
+   sample yield nothing (`src/frictionless_architect/visualizer/api.py:116-193`). Relationship identifiers are
    excluded from the element list so a relationship isn't double-listed
-   (`src/frictionless_architect/visualizer/api.py:155-165`).
+   (`src/frictionless_architect/visualizer/api.py:160-170`).
 3. **`request_refresh()`** — spawns a background `asyncio` task that rebuilds
    and re-caches; raises `RefreshInProgress` (→ HTTP 409) if one is already
    running; the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
-   (`src/frictionless_architect/visualizer/api.py:68-95`).
+   (`src/frictionless_architect/visualizer/api.py:72-99`).
 4. **`get_status()`** — reports `cache_age_seconds`, `neo4j_status`
    (`disabled`/`available`/`unavailable`), `sample_file_status`
-   (`missing`/`loaded`), `last_warning`, `refresh_in_progress`, and refresh
-   timestamps (`src/frictionless_architect/visualizer/api.py:97-110`).
+   (`missing`/`loaded`/`invalid`), `last_warning`, `refresh_in_progress`,
+   and refresh timestamps (`src/frictionless_architect/visualizer/api.py:101-114`).
+   The contract defines `invalid` as "root is not an ArchiMate `<model>` in
+   the 3.0 namespace", with details in `last_warning`
+   (`specs/002-neo4j-schema-ui/contracts/api.md` §"`/schema-payload/status`").
 
 `get_schema_service()` is `lru_cache(maxsize=1)` — one service instance per
-process (`src/frictionless_architect/visualizer/api.py:259-273`).
+process (`src/frictionless_architect/visualizer/api.py:264-280`).
 
 ## Components
+
+### `namespaces` (`src/frictionless_architect/visualizer/namespaces.py`)
+
+This module is the single home for the XML namespace strings the parser and
+validator share: `XSD_NS`, `XSI_NS`, and
+`ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"`
+(`src/frictionless_architect/visualizer/namespaces.py:15-17`). They are
+identifiers that real documents declare, not fetched URLs, so they stay
+`http`. The 3.0 value is deliberate even though the bundled schema is 3.1,
+because the 3.1 exchange-format XSDs kept the 3.0 namespace
+(`docs/adr/0032-archimate-exchange-namespace-3-0.md`; see
+[Data Model](data-model.md)).
+
+`require_archimate_namespace(root, source)` raises `ArchimateNamespaceError`
+(a `ValueError` subclass) unless the root tag is exactly `{ARCHIMATE_NS}model`.
+It gives a separate actionable message for each failure: no namespace at all,
+the wrong namespace (naming the expected one), or a root element that isn't
+`<model>` (`src/frictionless_architect/visualizer/namespaces.py:20-52`). The
+check exists because ElementTree's namespace-qualified lookups quietly match
+nothing on a document in another namespace. Before this check, such a file
+parsed to zero elements and passed validation silently (GitHub issue #51).
 
 ### `SampleParser` (`src/frictionless_architect/visualizer/sample_parser.py`)
 
@@ -107,10 +139,12 @@ vulnerable on Python ≤3.10 (still allowed by `pyproject.toml`'s
 `ET` import is kept only for `Element` type annotations, which `defusedxml`
 doesn't re-export (`src/frictionless_architect/visualizer/sample_parser.py:10`).
 `defusedxml`'s `parse().getroot()` is typed `Element | None`, so `parse()`
-raises `ValueError` if the root is `None`
-(`src/frictionless_architect/visualizer/sample_parser.py:34-35`). Pins the
-ArchiMate namespace `http://www.opengroup.org/xsd/archimate/3.0/`
-(`src/frictionless_architect/visualizer/sample_parser.py:10` — note the version caveat in [Data Model](data-model.md)).
+raises `ValueError` if the root is `None`, then calls
+`require_archimate_namespace()` before any extraction. A wrong-namespace
+document therefore raises `ArchimateNamespaceError` instead of yielding an
+empty result (`src/frictionless_architect/visualizer/sample_parser.py:32-37`).
+It imports `ARCHIMATE_NS`/`XSI_NS` from `namespaces` rather than defining
+its own (`src/frictionless_architect/visualizer/sample_parser.py:12`).
 Extracts: elements (`identifier`, `xsi:type`, `name`), relationships
 (`identifier`, type, `source`, `target`, remaining attrs as `properties`),
 and views with `node` bounds (`x`/`y`/`w`/`h`, parsed via `int(float(...))`)
@@ -126,12 +160,16 @@ for the same XXE-hardening reason as `SampleParser` above; a `None` root from
 either the schema or the sample document is handled explicitly — the schema
 case raises `ValueError`, the sample case returns an issue string rather than
 raising, since this function's contract is to report problems as list entries
-(`src/frictionless_architect/visualizer/sample_validator.py:21-22,86-88`). It
+(`src/frictionless_architect/visualizer/sample_validator.py:21-22,86-87`).
+After the root check, it runs `require_archimate_namespace()`. On a namespace
+mismatch, it returns that error as the only issue and skips the type and
+reference checks, which would be meaningless against an unmatched namespace
+(`src/frictionless_architect/visualizer/sample_validator.py:88-91`). Otherwise it
 flags: element/relationship `xsi:type` values with no matching
 `<xsd:element>`/`<xsd:complexType>` in the schema; relationships whose
 `source`/`target` id isn't among the sample's element ids; and view
 `node`/`connection` refs pointing at a missing element/relationship id
-(`src/frictionless_architect/visualizer/sample_validator.py:69-88`).
+(`src/frictionless_architect/visualizer/sample_validator.py:55-102`).
 Called from `_build_payload()` above — every returned issue surfaces as a
 payload `warning`, it never raises from that call site.
 
@@ -192,9 +230,14 @@ Cypher statements are passed through `_run_literal()` which casts to
   acceptance scenarios reference `Test Model.xml`
   (`src/frictionless_architect/visualizer/config.py:29` vs
   `specs/002-neo4j-schema-ui/spec.md:25`).
-- Parser library: implemented with `xml.etree.ElementTree`; the research doc
-  chose `lxml` + `xmlschema` (`specs/002-neo4j-schema-ui/research.md:8-11`).
-- ArchiMate namespace version — see [Data Model](data-model.md).
+- XSD validation: the parse path matches the design, `defusedxml`-wrapped
+  `ElementTree`, per the corrected ADR-0022 and
+  `specs/002-neo4j-schema-ui/research.md:8-11`. The `xmlschema` validation
+  both describe is not implemented. `validate_sample_against_schema()` does
+  its own type/reference cross-checks, `xmlschema` isn't a declared
+  dependency, and ADR-0022 lists full XSD-structural validation as an open
+  follow-up (`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`
+  §Consequences).
 
 `README.md` §"Schema Visualiser" now documents this service directly
 (`poetry run uvicorn frictionless_architect.app:app --reload --port 8100`,

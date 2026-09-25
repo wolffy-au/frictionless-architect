@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-09-22
+generated: 2026-09-25
 generator: claude-opus-5-5
 sources:
   - .claude/agents/README.md
@@ -85,7 +85,10 @@ entries from `.specify/extensions.yml` and skips any hook whose `enabled` is
 explicitly `false`. A hook without an `enabled` field counts as enabled. If
 the file won't parse, the skill must not skip silently: it reports the parser
 error and says that no hooks, including mandatory (`optional: false`) ones,
-were checked, then carries on (`speckit-converge/SKILL.md:23-60, 247-285`).
+were checked, then carries on (`speckit-converge/SKILL.md:21-60, 241-279`).
+`speckit-converge` also reports its outcome (`converged` or `tasks_appended`)
+before listing any after-hooks, so the user can decide whether to run the
+optional follow-ups (`.claude/skills/speckit-converge/SKILL.md:241-279`).
 This repo has no `.specify/extensions.yml` at present, so the hooks are a
 no-op. The skills are regenerated from the Spec Kit version pinned in
 `.specify/speckit.lock`, currently 1.0.9.
@@ -144,6 +147,16 @@ branch, ordered `fix_branches` / `private_branches`, an optional `test_cmd`, and
 JSON + exit codes; the skill applies judgement only where a script escalated.
 Runs interactively (`/fork-sync [name]`) or on a timer. This supports the
 `third_party/` submodule strategy in [Architecture Overview](architecture.md).
+
+## `pr-wrapup`
+
+Post-merge housekeeping for one PR and the issue it fixes. It checks that the
+merge actually landed in the base branch, then deletes the remote branch and
+closes the issue with a summary comment, which the catalog notes is needed
+for `develop`-targeted PRs. Finally it removes the local worktree and branches (with
+`sudo` fallbacks for the drvfs quirk), prunes, and reports anything left over
+(`.claude/skills/README.md:44`). It sits under "Repo maintenance" in the
+catalog, alongside `fork-sync` and `commit-message`.
 
 ## Diagrams & architecture models
 

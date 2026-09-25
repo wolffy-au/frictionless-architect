@@ -1,7 +1,7 @@
 ---
 title: Architecture Overview
-generated: 2026-09-20
-generator: claude-sonnet-5
+generated: 2026-09-25
+generator: claude-opus-5-5
 sources:
   - ARCHITECTURE.md
   - TECHNICAL.md
@@ -36,6 +36,8 @@ sources:
   - docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md
   - docs/adr/0029-it4it-as-vendored-touchpoint-model.md
   - docs/adr/0030-vendor-oscal-reference-content.md
+  - docs/adr/0031-fr016-no-redaction-for-policy-documents.md
+  - docs/adr/0032-archimate-exchange-namespace-3-0.md
   - docs/adr/README.md
 ---
 
@@ -125,7 +127,13 @@ reference content (`third_party/oscal`, `third_party/oscal-content`,
 `third_party/fedramp-automation`) is vendored as plain read-only
 `third_party/` submodules with no `fork-sync` entry and no `build.py`
 merge step — unlike the IT4IT case below, it isn't ArchiMate model data.
-See [OSCAL Compliance Content](oscal-compliance.md).
+A 2026-09-24 revision adds a third path. The scripts of
+`oscal-document-workbench`, a Claude Code plugin with no installable
+interface, are **ported as native Python** (`normalizer.py`,
+`trestle_ops.py`) with Apache-2.0 attribution headers. They are neither
+vendored nor depended on
+(`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
+(2026-09-24)"). See [OSCAL Compliance Content](oscal-compliance.md).
 
 `third_party/` also holds the IT4IT 3.0 value-stream reference model,
 vendored as its own repo (a git submodule,
@@ -192,6 +200,17 @@ deferred rather than settled. `ARCHITECTURE.md` §10 still lists both as open
 questions and has not been updated to reflect this resolution — a
 narrative/ADR mismatch this page flags rather than silently resolving.
 
+An interim step has landed ahead of the split (ADR-0005 revised
+2026-09-24). `specs/003-oscal-ai-conversion` mounts an `/oscal` router on
+the same FastAPI app, so an app named after the visualiser no longer fit.
+The `app`/`lifespan` construction moved out of `visualizer/__init__.py` into
+a neutral `frictionless_architect/app.py`, and the entry point is now
+`uvicorn frictionless_architect.app:app`. `schema-visualizer-api` still gets
+its own app object once the package split happens
+(`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
+§"Implementation status (2026-09-24)"; `ARCHITECTURE.md` §8.1 checklist).
+See [Visualizer Service](visualizer-service.md).
+
 ## Cross-cutting risks and open questions
 
 Risks (`ARCHITECTURE.md` §9): the `FRICTIONLESS_ARCHITECT_` env prefix and
@@ -241,7 +260,7 @@ not re-ratified in a spec).
 | 0019 | Policy engine is OPA (Rego); bypass raises managed-drift debt | P |
 | 0020 | Frontend is a Vite dashboard, target-embedded in Backstage | P |
 | 0021 | Schema visualiser uses cytoscape.js + coordinated tables | A |
-| 0022 | Schema visualiser parses ArchiMate with `lxml` + `xmlschema` | A |
+| 0022 | Schema visualiser parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema` (corrected 2026-09-25 from `lxml` + `xmlschema`) | A |
 | 0023 | Visualiser reuses Neo4j read credentials; caches payloads offline | A |
 | 0024 | MVP is single-user and locally run (scoping compromise) | A |
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
@@ -249,7 +268,9 @@ not re-ratified in a spec).
 | 0027 | Capability layer carries a value stream and an explicit motivation spine | A |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
 | 0029 | IT4IT vendored as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS` | A |
-| 0030 | OSCAL/FedRAMP content vendored as plain `third_party/` submodules; `compliance-trestle` consumed as an ordinary dependency | A |
+| 0030 | OSCAL/FedRAMP content vendored as plain `third_party/` submodules; `compliance-trestle` consumed as an ordinary dependency; `oscal-document-workbench` scripts ported as native Python | A |
+| 0031 | Policy/standard document conversion bypasses the PII anonymization gateway, scoped to that one ingestion path | A |
+| 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
 
 Most **P** rows (0017–0020) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -280,6 +301,41 @@ stale or typo'd id will silently match nothing, which `run_audit_checks`
 should gain a check for as a follow-up
 (`docs/adr/0028-relationship-view-refs-not-relationship-fact-node.md`). See
 [Visualizer Service](visualizer-service.md) for the implementation.
+
+ADR-0022 was **corrected in place** on 2026-09-25 rather than superseded,
+because the decision itself didn't change and only the record was wrong. It
+originally said `lxml` + `xmlschema`. The code has always parsed with the
+standard library's `xml.etree.ElementTree` through `defusedxml` (XXE and
+entity-expansion hardening), and `lxml` was never a dependency. The corrected
+record keeps `xmlschema` for XSD validation, loaded in its `defuse="always"`
+mode. It marks the old 3.0/3.1 namespace defect as resolved by ADR-0032, and
+leaves full XSD-structural validation as an open follow-up to issue #51
+(`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`). The sources disagree
+on one point. The ADR's Consequences call `xmlschema` a runtime dependency,
+but `pyproject.toml` doesn't declare it and no visualiser module imports it,
+so today it exists only as the intended tool for that unbuilt validation step
+(see [Visualizer Service](visualizer-service.md)).
+
+ADR-0031 carves a **scoped exception** out of ADR-0014. The OSCAL
+conversion pipeline (`specs/003-oscal-ai-conversion` FR-016) sends verbatim
+policy and regulatory-standard text to an LLM without redaction. The
+reasoning is that authored, organisation-owned governance text is a
+different category from personal data swept up by collaboration-tool
+capture. ADR-0014's text is unchanged, and its gateway stays mandatory on
+every other LLM path. The ADR says to revisit if such documents turn out to
+routinely carry PII/PHI
+(`docs/adr/0031-fr016-no-redaction-for-policy-documents.md`).
+
+ADR-0032 settles the ArchiMate namespace (GitHub issue #51). The Open Group's
+3.1 exchange-format XSDs keep the `http://www.opengroup.org/xsd/archimate/3.0/`
+namespace, but the bundled copies had been hand-edited to a 3.1 namespace.
+The fix restores the XSDs to the official files and accepts only the 3.0
+namespace, defined once as `ARCHIMATE_NS`. Any other namespace is rejected
+loudly rather than parsing to an empty model, which had violated
+constitution Principle VII. Both alternatives were rejected: moving to 3.1,
+because no conforming tool emits it, and accepting both, because that would
+hide schema drift (`docs/adr/0032-archimate-exchange-namespace-3-0.md`). See
+[Data Model](data-model.md) and [Visualizer Service](visualizer-service.md).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).

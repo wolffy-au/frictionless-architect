@@ -1,6 +1,6 @@
 ---
 title: Architecture Views & Diagrams
-generated: 2026-09-22
+generated: 2026-09-25
 generator: claude-opus-5-5
 sources:
   - architecture/model/README.md

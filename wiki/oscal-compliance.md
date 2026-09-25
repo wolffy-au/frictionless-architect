@@ -1,7 +1,7 @@
 ---
 title: OSCAL Compliance Content
-generated: 2026-09-20
-generator: claude-sonnet-5
+generated: 2026-09-25
+generator: claude-opus-5-5
 sources:
   - third_party/README.md
   - pyproject.toml
@@ -55,9 +55,9 @@ entry** — read-only reference/example content the repo doesn't patch, not a
 tracked fork — and none are consumed by `build.py`: there is nothing for
 `det_id()` to hash or merge, since OSCAL catalogs/profiles aren't ArchiMate
 model YAML (`docs/adr/0030-vendor-oscal-reference-content.md` §Decision,
-§Consequences). As of this build, all three show as uninitialized in
-`git submodule status` (a leading `-`) in this checkout — only `it4it` is
-currently checked out.
+§Consequences). This page was built from a checkout with the three OSCAL/FedRAMP
+submodules uninitialised (only `it4it` checked out), so it summarises them
+from `third_party/README.md` and ADR-0030, not from their contents.
 
 `compliance-trestle` is the opposite case: an ordinary Poetry **main
 dependency** (`pyproject.toml` — `"compliance-trestle (>=5.1.0,<6.0.0)"`,
@@ -69,13 +69,35 @@ normal `poetry update`/Dependabot upgrade path instead of `fork-sync`
 (`docs/adr/0030-vendor-oscal-reference-content.md` §Decision).
 
 In the architecture model, trestle is `ext-trestle` — an `ApplicationComponent`
-in the existing "External systems" convention alongside `ext-llm`/
-`ext-regsources`, with a `Serving`/`Realization` edge into
+in the existing "External systems" convention alongside `ext-llm`, with a `Serving`/`Realization` edge into
 `fn-oscal-conversion` (not `Flow`/`Access` like the peer-system externals) and
 a `desc` noting it's "a third-party Python library/CLI dependency, not
 vendored source" so it isn't mistaken for the `it4it-` vendored-content
 pattern. See [Architecture Model](architecture-model.md) for the full element
-and its relationships.
+and its relationships. (ADR-0030 still names `ext-regsources` as a peer
+external. The architecture model has since removed that element in the
+Controls & OSCAL remodel, so the ADR text is out of date on this point.)
+
+## Ported logic: `oscal-document-workbench`
+
+A 2026-09-24 revision of ADR-0030 adds a third category besides "vendor as a
+submodule" and "consume as a dependency".
+`oscal-compass-lab/compliance-trestle-skills` (Apache-2.0) is a Claude Code
+plugin for drafting an SSP against an existing catalog. That is a
+neighbouring problem, not the same one. Two of its scripts have designs worth
+reusing for this repo's task of authoring a new Catalog/Profile from verbatim
+document text: `extract-legacy-doc.sh`'s document-sectioning and
+traceability scheme, and `validate-oscal-package.sh`'s validation-report
+shape. The plugin is agent-only tooling with no installable or versioned
+interface, so neither vendoring path fits. The logic is **ported as native
+Python** instead (`normalizer.py`, `trestle_ops.py`), with Apache-2.0 §4
+attribution headers noting origin and licence
+(`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
+(2026-09-24)"). The ADR records two rejected alternatives: vendoring the
+plugin and shelling out to its scripts, and depending on it as a package,
+which isn't possible because it isn't published as one. Full detail is
+deferred to `specs/003-oscal-ai-conversion/research.md` R10, which is not a
+source of this page.
 
 ## The `fedramp-automation` substitution
 
@@ -92,9 +114,10 @@ bundles resolved LOW/MODERATE/HIGH baseline catalogs at `bundled/catalogs/`.
 Unlike `oscal`/`oscal-content`, it is a processing tool rather than a pure
 content mirror — no PRIVACY baseline, and while its own source is
 CC0-licensed, the repo also vendors Go dependencies under their own
-(non-CC0) licenses (`third_party/README.md` §"fedramp-automation"). ADR-0030
-itself still names the original, now-defunct upstream and has an open
-follow-up to record this substitution formally.
+(non-CC0) licenses (`third_party/README.md` §"fedramp-automation"). The
+revised ADR-0030 Decision no longer names the defunct upstream and points to
+this implementation note for the actual source
+(`docs/adr/0030-vendor-oscal-reference-content.md` §Decision).
 
 ## License compatibility
 

@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-22
+generated: 2026-09-25
 generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
@@ -595,3 +595,16 @@ Three passes on 2026-09-21/22 followed:
 
 The model now stands at 301 elements / 610 relationships / 21 views (`git log`
 on `architecture/model/`, commits `fce0731`, `7304e53`, `f4458ff`).
+
+A 2026-09-24 fix quoted 12 DataObject `desc` values and one IT4IT bridge
+label. In the flow-style `{...}` YAML entries, an unquoted comma had been
+silently cutting each value short. Among the lost text were the golden-dataset
+artefacts' "not a production pipeline input" caveat and `art-ledger-entry`'s
+actor/action/target fields. The full text is now restored, for example the
+`cap-control-plane` → `it4it-cap-product-development` label "supervises the
+AI agents doing the coding, unit verification, and defect correction this
+capability owns" (`architecture/model/elements.yaml` §"C. Artefacts";
+`architecture/model/relationships.yaml` §"D. IT4IT TOUCHPOINTS"). The model
+build now fails on any such truncation instead of generating from it
+(commits `08ed6e3`, `1fd26e3`). Element and relationship counts are
+unchanged.
