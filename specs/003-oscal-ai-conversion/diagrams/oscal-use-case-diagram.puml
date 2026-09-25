@@ -1,0 +1,33 @@
+@startuml oscal-use-case-diagram
+left to right direction
+
+actor "Document Author" as Author
+actor "Compliance Officer / Auditor" as Officer
+actor "Platform Operator" as Operator
+
+rectangle "AI-Assisted Policy & Standard Conversion to OSCAL" {
+  usecase "Convert document to\nTrestle-editable Markdown (US1)" as UC1
+  usecase "Flag unconvertible section" as UC1ext1
+  usecase "Reject on control-identifier\ncollision (FR-013)" as UC1ext2
+  usecase "Approve conversion (FR-011)" as UCApprove
+  usecase "Produce OSCAL Catalog\nand Profile (US2)" as UC2
+  usecase "Resolve Profile into fully\nresolved Catalog (US3)" as UC3
+}
+
+Author --> UC1
+Officer --> UCApprove
+Operator --> UC2
+Operator --> UC3
+
+UC1ext1 .> UC1 : <<extend>>
+UC1ext2 .> UC1 : <<extend>>
+UC2 ..> UCApprove : <<include>>
+UC3 ..> UC2 : <<include>>
+
+note right of UCApprove
+  Gate required before UC2 (FR-011):
+  every regulatory-standard conversion,
+  or the first-ever approval of a
+  given custom-policy document.
+end note
+@enduml

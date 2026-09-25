@@ -1,0 +1,32 @@
+@startuml oscal-pipeline-activity
+start
+:PolicyStandardDocument submitted;
+:normalize() -> NormalizedDocument;
+:AI convert (chunked, FR-018) -> TrestleEditableMarkdownCatalog;
+if (conversion succeeded?) then (no: FR-013 collision / FR-014 LLM error)
+  :status = conversion_failed;
+  :append LedgerEntry(convert, failure);
+  stop
+else (yes)
+endif
+:append LedgerEntry(convert, success);
+:trestle validate;
+if (validation passed?) then (no)
+  :status = validation_failed;
+  :append LedgerEntry(validate, failure);
+  stop
+else (yes)
+endif
+:status = validated;
+:append LedgerEntry(validate, success);
+if (approval gate satisfied? (FR-011)) then (no)
+  :await Compliance Officer / Auditor approval;
+  :append LedgerEntry(approve, success) once approved;
+else (yes: custom-policy already approved)
+endif
+:trestle import + assemble -> OscalCatalog + OscalProfile;
+:append LedgerEntry(assemble, success|failure);
+:trestle profile-resolve -> ResolvedOscalCatalog;
+:append LedgerEntry(resolve, success|failure);
+stop
+@enduml

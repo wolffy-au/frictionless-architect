@@ -1,0 +1,6 @@
+@startuml oscal-approval-status
+[*] --> unapproved
+unapproved --> approved : approve() by Compliance Officer / Auditor
+approved --> unapproved : next conversion, if source_kind == regulatory-standard
+approved --> approved : next conversion, if source_kind == custom-policy\n(stays approved, re-evaluated from ledger)
+@enduml

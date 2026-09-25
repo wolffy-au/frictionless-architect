@@ -1,0 +1,46 @@
+@startuml oscal-journey-activity
+|Document Author|
+start
+:submit verbatim document\n(PDF/Word/spreadsheet-CSV/Markdown/text);
+|System|
+:normalize into consistent text (FR-001, FR-002);
+:AI-assisted conversion to Trestle Markdown,\nchunked if needed (FR-018);
+if (identifier collision (FR-013) or\nLLM error/timeout (FR-014)?) then (yes)
+  :fail whole conversion, no partial output;
+  |Document Author|
+  :see specific, actionable error (SC-004);
+  stop
+else (no)
+endif
+if (any section not confidently mapped?) then (yes)
+  :flag as unconvertible, keep rest (US1 Scenario 3);
+else (no)
+endif
+:trestle structural/header validation (FR-003);
+if (validation passes?) then (no)
+  :surface specific validation error;
+  stop
+else (yes)
+endif
+|Compliance Officer / Auditor|
+if (approval required? (FR-011)\nregulatory-standard, or first-time approval) then (yes)
+  :review and approve;
+else (no: already-approved custom-policy revision)
+endif
+|System|
+:trestle import + author/assemble\n-> OSCAL Catalog + Profile (US2, FR-004, FR-009);
+if (assembly fails against validated Markdown?) then (yes)
+  :surface Trestle's specific failure (FR-010);
+  stop
+else (yes)
+endif
+:trestle profile-resolve\n-> fully Resolved OSCAL Catalog (US3, FR-005);
+if (Profile references an unassembled Catalog?) then (yes)
+  :surface clear error (US3 Scenario 2);
+  stop
+else (yes)
+endif
+|Document Author|
+:Catalog, Profile, and Resolved Catalog available,\nkept distinct (FR-009);
+stop
+@enduml

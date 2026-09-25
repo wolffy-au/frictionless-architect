@@ -8,15 +8,6 @@
 
 **Input**: User description: "AI-assisted conversion of verbatim policy and regulatory-standard documents into OSCAL Catalogs and Profiles via compliance-trestle: AI-assisted Markdown conversion, Trestle round-trip assembly, and Trestle profile resolution. Downstream consumption of the outputs is out of scope. See User Scenarios, Requirements, and Assumptions below for the full, clarified scope."
 
-## Clarifications
-
-### Session 2026-09-23
-
-- Q: Does the verbatim document content get sent to the LLM provider as-is, or does it need redaction/handling constraints first? → A: Send document content as-is to the existing `ext-llm` provider -- same trust boundary as other platform LLM uses, no redaction step.
-- Q: Does the system need to keep an audit trail of who submitted, converted, and approved each document? → A: Record each conversion/approval as an entry in the platform's existing forensic ledger (actor, source document, outcome).
-- Q: What makes two submissions count as the same source document for the overwrite rule (FR-015)? → A: A stable identifier the author provides or selects (e.g. document title/policy ID), independent of content changes.
-- Q: Does the system need to handle source documents larger than a single LLM context window? → A: System MUST support documents larger than a single context window via a chunking/multi-pass strategy that preserves control identity across chunks.
-
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Convert a verbatim document into Trestle-editable Markdown (Priority: P1)
@@ -72,6 +63,27 @@ Given an OSCAL Catalog and an OSCAL Profile that tailors it, a user obtains a fu
 - LLM error/timeout mid-conversion, including mid-chunk on a large document: fails the whole conversion, no partial output (FR-014, FR-018).
 - Resubmission of a document under the same Source Document Identifier: overwrites the prior output (FR-015).
 - Upstream standard already has a well-known pre-built OSCAL catalog (e.g. NIST SP 800-53): production still converts from the verbatim text (FR-008).
+
+## Use case diagram
+
+Actors and capabilities from the User Stories above, plus the two edge-case extension
+points (unconvertible section, control-identifier collision) and the FR-011 approval
+gate that US2 includes.
+
+Source: `diagrams/oscal-use-case-diagram.puml`.
+
+![oscal-use-case-diagram](diagrams/oscal-use-case-diagram.svg)
+
+## Journey activity diagram
+
+End-to-end flow across the three user stories, by actor. Mirrors the Acceptance
+Scenarios and Edge Cases above; see `data-model.md`'s pipeline activity diagram for
+the equivalent entity/ledger view, and `contracts/api.md` for the endpoint each step
+calls.
+
+Source: `diagrams/oscal-journey-activity.puml`.
+
+![oscal-journey-activity](diagrams/oscal-journey-activity.svg)
 
 ## Requirements *(mandatory)*
 
