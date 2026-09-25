@@ -23,7 +23,6 @@ topics:
     title: Governance & Constitution
     description: The project's constitutional rules and quality gates.
     sources:
-      - path: PROJECT_CONSTITUTION.md
       - path: .specify/memory/constitution.md
 
   - name: architecture

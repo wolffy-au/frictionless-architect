@@ -21,4 +21,4 @@ binary. This is a standing constraint on every feature, not a one-time choice.
 - Drives the graph-native model (ADR-0007), the ArchiMate exchange format
   support, and one-click "Compliance Pack" exports.
 - New formats or integrations must carry documented migration/mapping paths
-  (Constitution VIII / `PROJECT_CONSTITUTION.md` VIII).
+  (Constitution VIII).

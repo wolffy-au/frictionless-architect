@@ -2,7 +2,7 @@
 
 Canonical description of how this repository is structured and the target it is being
 restructured toward. Read alongside `PROJECT_SPECIFICATION.md` (the product vision),
-`PROJECT_CONSTITUTION.md`, and `TECHNICAL.md`.
+`.specify/memory/constitution.md` (the platform constitution), and `TECHNICAL.md`.
 
 **Status:** target adopted; migration in progress (see §8).
 
@@ -98,7 +98,6 @@ end note
 ```
 frictionless-architect/                 # ROOT — governance & orchestration
 ├── PROJECT_SPECIFICATION.md             # vision (stays)
-├── PROJECT_CONSTITUTION.md              # platform constitution
 ├── ARCHITECTURE.md  NONFUNCTIONALS.md  TECHNICAL.md
 ├── .specify/                            # PLATFORM SpecKit: constitution + epic templates
 ├── specs/                               # EPIC / cross-cutting specs only  (see §6)

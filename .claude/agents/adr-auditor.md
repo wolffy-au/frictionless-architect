@@ -26,7 +26,7 @@ Poetry only, never `uv` (ADR-0003). Markdown is linted by
 - **Decision-bearing docs**, in priority order:
   - `ARCHITECTURE.md` — the restructure narrative; §5 tables, §10 open questions,
     §11 "Locked decisions"
-  - `.specify/memory/constitution.md`, `PROJECT_CONSTITUTION.md` — principles + gates
+  - `.specify/memory/constitution.md` — principles + gates
   - `TECHNICAL.md` — tooling / pattern / standards choices
   - `PROJECT_SPECIFICATION.md` — vision-level product decisions (historical; treat
     as input, not current truth where `specs/**` has moved on)
