@@ -165,8 +165,11 @@ dropped until `acceptance-author` writes real scenarios
   are `v$version`; `cz bump` owns `CHANGELOG.md` and the tag
   (`version_provider = "scm"`) (`AGENTS.md` §"Conventions";
   [Architecture Overview](architecture.md) ADR-0025).
-- Work on `feature/**` or `bugfix/**` branches — never directly on `main` or
-  `develop`.
+- **Branches:** `main` changes only through a PR, never a direct commit.
+  `develop` accepts direct pushes, fast-forward only and never force-pushed.
+  Use `feature/**` / `bugfix/**` branches for anything that should be
+  reviewed before it lands (`AGENTS.md:119-121`).
+
 - **Spelling "visualiser":** identifiers, module/package names, paths, route
   segments and the wiki topic slug use `visualizer` (`-z-`); running prose uses
   the en-GB "visualiser" (`-s-`); both in one sentence is intentional

@@ -497,8 +497,8 @@ topics:
     sources:
       files:
         AGENTS.md:
-          sha256: 4eeb591457dc1eb3b0e391d7af69d8b145ddf364a69e46ec1aff06f3d7d93640
-          lines: 145
+          sha256: 0af04daa5cdda2a115873caf011484998b138a42b6c63424f861ab4b6061e025
+          lines: 147
         RELEASE.md:
           sha256: 4da2279d0106d90153f0f8e4016433e0636f0183fb8f96d4a7bf33f888b4dced
           lines: 213
