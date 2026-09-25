@@ -75,6 +75,7 @@ topics:
       - path: architecture/model/README.md
       - path: architecture/model/views.yaml
       - path: architecture/model/diagrams/**
+      - path: architecture/model/render_diagrams.py
 
   - name: it4it-model
     title: IT4IT Reference Model

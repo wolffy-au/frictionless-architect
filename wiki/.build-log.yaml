@@ -328,6 +328,9 @@ topics:
         architecture/model/diagrams/vision/7-outcome-realization.svg:
           sha256: 9f95c0ffbca67c02162fab4810dba21947400149e0c662ce4648061ed797b927
           lines: 1
+        architecture/model/render_diagrams.py:
+          sha256: 566f2a465a3fc1a3e565a26c768e0de5a353e3bace2be3c3b673e06c958db97b
+          lines: 212
         architecture/model/views.yaml:
           sha256: 4007f716db45337f8d02e6dc6fac38c5b95d5d846566d175da92e5783c5bfe37
           lines: 496
