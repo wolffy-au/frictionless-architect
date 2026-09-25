@@ -36,12 +36,37 @@ topics:
 
   - name: architecture-model
     title: Architecture Model
-    description: The canonical graph-loadable YAML model (skeleton + 6 subsystems + artefact flow + IT4IT alignment) that every ArchiMate/C4 diagram is generated from.
+    description: The canonical graph-loadable YAML model — file layout, schema, build pipeline, and IT4IT alignment — that every ArchiMate/C4 diagram is generated from. Layer contents are on the per-layer pages.
     sources:
       - path: architecture/model/README.md
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
       - path: architecture/model/views.yaml
+      - path: architecture/model/build.py
+
+  - name: architecture-model-skeleton
+    title: "Architecture Model: Skeleton"
+    description: Section A of the model — the Motivation, Strategy and Business elements that carry the load-bearing skeleton.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+
+  - name: architecture-model-ecosystem
+    title: "Architecture Model: Ecosystem"
+    description: Section B of the model — the application-layer six-subsystem ecosystem behind the C4 context/container views.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+
+  - name: architecture-model-artefact-flow
+    title: "Architecture Model: Artefact Flow"
+    description: Section C of the model — the application-layer input/output pipeline of functions and artefacts, including the OSCAL chain.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
 
   - name: architecture-diagrams
     title: Architecture Views & Diagrams

@@ -1,7 +1,7 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-09-20
-generator: claude-sonnet-5
+generated: 2026-09-25
+generator: claude-opus-5-5
 ---
 
 > This wiki is **generated** by the `wiki-librarian` skill from the sources
@@ -23,10 +23,18 @@ generator: claude-sonnet-5
   decision log.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
-  generated: the load-bearing skeleton, the six-subsystem ecosystem, the
-  artefact input/output pipeline, and the vendored IT4IT 3.0 reference model
-  (`third_party/it4it`, merged in at build time — 290 elements, 578
-  relationships, 21 views).
+  generated: files, schema, the `build.py` pipeline, and the vendored IT4IT 3.0
+  reference model (`third_party/it4it`, merged in at build time — 301 elements,
+  610 relationships, 21 views).
+- [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
+  stakeholders, drivers, assessments, goal/outcome, principles, constraints,
+  requirements, capabilities, strategy, value stream, and business processes.
+- [Architecture Model: Ecosystem](architecture-model-ecosystem.md) — section B:
+  the six subsystems, shared stores, business roles, and external systems
+  behind the C4 views.
+- [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md) —
+  section C: the application functions and artefacts of the input/output
+  pipeline, including the policy-to-OSCAL chain.
 - [Architecture Views & Diagrams](architecture-diagrams.md) — how those views
   map to ArchiMate viewpoints, the TOGAF Phase A vision-view set, the IT4IT
   reference views, and how to regenerate every `.puml`/`.svg` diagram.

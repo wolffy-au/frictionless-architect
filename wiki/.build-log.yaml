@@ -148,6 +148,9 @@ topics:
         architecture/model/README.md:
           sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
           lines: 112
+        architecture/model/build.py:
+          sha256: 7cb82fddd80a06343a9d97edfc0225a9ffbf1643a82ba1a31ee6ddd59e1091fc
+          lines: 458
         architecture/model/elements.yaml:
           sha256: 1a6382022c9c145641a66e62f88cd8e2040b8fb09ffca85ac511811de447a4fa
           lines: 953
@@ -157,6 +160,51 @@ topics:
         architecture/model/views.yaml:
           sha256: 4007f716db45337f8d02e6dc6fac38c5b95d5d846566d175da92e5783c5bfe37
           lines: 496
+  architecture-model-skeleton:
+    title: 'Architecture Model: Skeleton'
+    page: wiki/architecture-model-skeleton.md
+    built: '2026-09-25'
+    sources:
+      files:
+        architecture/model/README.md:
+          sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
+          lines: 112
+        architecture/model/elements.yaml:
+          sha256: 1a6382022c9c145641a66e62f88cd8e2040b8fb09ffca85ac511811de447a4fa
+          lines: 953
+        architecture/model/relationships.yaml:
+          sha256: 7d219acd944fa90e421564a29853f7c7f381a4373f10f67765048c939da1fa2d
+          lines: 620
+  architecture-model-ecosystem:
+    title: 'Architecture Model: Ecosystem'
+    page: wiki/architecture-model-ecosystem.md
+    built: '2026-09-25'
+    sources:
+      files:
+        architecture/model/README.md:
+          sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
+          lines: 112
+        architecture/model/elements.yaml:
+          sha256: 1a6382022c9c145641a66e62f88cd8e2040b8fb09ffca85ac511811de447a4fa
+          lines: 953
+        architecture/model/relationships.yaml:
+          sha256: 7d219acd944fa90e421564a29853f7c7f381a4373f10f67765048c939da1fa2d
+          lines: 620
+  architecture-model-artefact-flow:
+    title: 'Architecture Model: Artefact Flow'
+    page: wiki/architecture-model-artefact-flow.md
+    built: '2026-09-25'
+    sources:
+      files:
+        architecture/model/README.md:
+          sha256: 1784dec98c6dd32ba25476ddfd032d985dc21f1d110a5072d55b1c15af983a2c
+          lines: 112
+        architecture/model/elements.yaml:
+          sha256: 1a6382022c9c145641a66e62f88cd8e2040b8fb09ffca85ac511811de447a4fa
+          lines: 953
+        architecture/model/relationships.yaml:
+          sha256: 7d219acd944fa90e421564a29853f7c7f381a4373f10f67765048c939da1fa2d
+          lines: 620
   architecture-diagrams:
     title: Architecture Views & Diagrams
     page: wiki/architecture-diagrams.md
@@ -301,6 +349,27 @@ topics:
         third_party/it4it/views.yaml:
           sha256: 88f91aa5735c0de28deae6a3c248a58ec98471436315090a3de9f6e0f63c96d7
           lines: 212
+  oscal-compliance:
+    title: OSCAL Compliance Content
+    page: wiki/oscal-compliance.md
+    built: '2026-09-25'
+    sources:
+      files:
+        docs/adr/0030-vendor-oscal-reference-content.md:
+          sha256: a2ae0dde2037f9d470a69031e130af3358305644791b38e1b136fa5563eba8a3
+          lines: 110
+        pyproject.toml:
+          sha256: 6429337cda2fe10d72e00f504053c40b42457837f2aa8448f2a8efb5413542ac
+          lines: 226
+        sample-data/oscal/01-nist-baseline-resolution.puml:
+          sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
+          lines: 53
+        sample-data/oscal/02-nist-fedramp-combined-resolution.puml:
+          sha256: c743a3e57f784cf136ef8cbd7bf5d5a4023a4bc69bbc1b1cb205d5603c44d428
+          lines: 44
+        third_party/README.md:
+          sha256: 6731594fe88744191f988b45b8aa4131fab9460db44f83f49a8a32f67e8c29ad
+          lines: 73
   data-model:
     title: Data Model
     page: wiki/data-model.md
@@ -550,24 +619,3 @@ topics:
         .claude/skills/wiki-librarian/SKILL.md:
           sha256: 6af14d10c9a402f7248a46bb1dda9acc72191d1a2f0d3425b6a1ae07ab99707e
           lines: 266
-  oscal-compliance:
-    title: OSCAL Compliance Content
-    page: wiki/oscal-compliance.md
-    built: '2026-09-25'
-    sources:
-      files:
-        docs/adr/0030-vendor-oscal-reference-content.md:
-          sha256: a2ae0dde2037f9d470a69031e130af3358305644791b38e1b136fa5563eba8a3
-          lines: 110
-        pyproject.toml:
-          sha256: 6429337cda2fe10d72e00f504053c40b42457837f2aa8448f2a8efb5413542ac
-          lines: 226
-        sample-data/oscal/01-nist-baseline-resolution.puml:
-          sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
-          lines: 53
-        sample-data/oscal/02-nist-fedramp-combined-resolution.puml:
-          sha256: c743a3e57f784cf136ef8cbd7bf5d5a4023a4bc69bbc1b1cb205d5603c44d428
-          lines: 44
-        third_party/README.md:
-          sha256: 6731594fe88744191f988b45b8aa4131fab9460db44f83f49a8a32f67e8c29ad
-          lines: 73

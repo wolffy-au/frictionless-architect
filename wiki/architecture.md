@@ -114,7 +114,7 @@ But [ADR-0011](#decision-log) has since **replaced** that grouping with a
 Architecture Library · Digital Twin & Knowledge Graph · Architecture Governance ·
 Conformance & Drift Assurance · Modelling & Specification), and that is what the
 canonical architecture model actually encodes — see
-[Architecture Model](architecture-model.md) §"B. Ecosystem". `ARCHITECTURE.md`
+[Architecture Model: Ecosystem](architecture-model-ecosystem.md). `ARCHITECTURE.md`
 §3–4 has not yet been reworked to match
 (`docs/adr/0011-six-subsystem-decomposition.md`).
 
@@ -143,7 +143,7 @@ first-party/vendored split
 low-touch external reference. Its `elements.yaml`/`relationships.yaml`
 merge into the canonical model's own `det_id()`/`NS` hashing pass rather
 than getting a separate build step — see
-[Architecture Model](architecture-model.md) §"D. IT4IT alignment".
+[Architecture Model](architecture-model.md) §"IT4IT alignment".
 
 ## Monorepo tooling
 
