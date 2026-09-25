@@ -454,6 +454,12 @@ topics:
     built: '2026-09-25'
     sources:
       files:
+        src/frictionless_architect/__init__.py:
+          sha256: 48dced7090a65d75210823fe82969b7d6a6a264288b53d11d6fa6ad86848d777
+          lines: 3
+        src/frictionless_architect/app.py:
+          sha256: 5135f33e6d475ed297a9873a9c7cf9731fc72eb56d108b4685760681dd7437c0
+          lines: 20
         src/frictionless_architect/schema/__init__.py:
           sha256: dfbfb90822e85df88dc25050b6972d3d445d14ea719fd9dae550c9a872690113
           lines: 5

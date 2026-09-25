@@ -131,8 +131,7 @@ topics:
     title: Visualizer Service
     description: The FastAPI schema-visualiser service — API, caching, data loading.
     sources:
-      - path: src/frictionless_architect/visualizer/*.py
-      - path: src/frictionless_architect/schema/*.py
+      - path: src/**/*.py
 
   - name: development
     title: Development & Quickstart

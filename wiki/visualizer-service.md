@@ -3,6 +3,8 @@ title: Visualizer Service
 generated: 2026-09-25
 generator: claude-opus-5-5
 sources:
+  - src/frictionless_architect/__init__.py
+  - src/frictionless_architect/app.py
   - src/frictionless_architect/visualizer/__init__.py
   - src/frictionless_architect/visualizer/api.py
   - src/frictionless_architect/visualizer/cache.py
@@ -40,8 +42,15 @@ docstring. The FastAPI app moved to the shared platform entry point
 `frictionless_architect.app`, which builds
 `app = FastAPI(title="Frictionless Architect", lifespan=lifespan)` and
 includes the visualiser's API router; its `lifespan` closes the Neo4j driver
-on shutdown (`src/frictionless_architect/app.py:13-20`). The module docstring
-anticipates the OSCAL service joining the same app. Run it with
+on shutdown (`src/frictionless_architect/app.py:13-20`). The lifespan
+does nothing at startup. `get_schema_service()` builds the service lazily
+and memoises it with `@lru_cache(maxsize=1)`, so shutdown closes the one
+shared loader. If no request ever arrived, it builds the service just to
+close it (`src/frictionless_architect/visualizer/api.py:264-278`). The module
+docstring anticipates the OSCAL service joining the same app
+(`src/frictionless_architect/app.py:1`). The root package
+`frictionless_architect/__init__.py` is only a docstring with an empty
+`__all__` (`src/frictionless_architect/__init__.py:1-3`). Run it with
 `poetry run uvicorn frictionless_architect.app:app --reload --port 8100`
 and fetch `http://127.0.0.1:8100/schema-payload` (`README.md` §"Running the
 schema visualiser").
