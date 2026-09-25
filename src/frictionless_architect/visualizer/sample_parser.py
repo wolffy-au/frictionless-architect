@@ -9,8 +9,7 @@ from typing import Any
 
 from defusedxml.ElementTree import parse as _safe_parse
 
-ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"  # Defined namespace per ArchiMate 3 spec (must stay http)
-XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"  # Standard XML Schema Instance namespace uses http and is the published URI
+from frictionless_architect.visualizer.namespaces import ARCHIMATE_NS, XSI_NS, require_archimate_namespace
 
 
 @dataclass
@@ -35,6 +34,7 @@ class SampleParser:
         root = tree.getroot()
         if root is None:
             raise ValueError(f"Sample XML {self.sample_file} has no root element")
+        require_archimate_namespace(root, self.sample_file)
         elements = self._parse_elements(root)
         relationships = self._parse_relationships(root)
         views = self._parse_views(root, elements)

@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from frictionless_architect.visualizer.cache import SchemaCache
 from frictionless_architect.visualizer.config import VisualizerSettings, get_visualizer_settings
 from frictionless_architect.visualizer.data_loader import DataLoader, DataLoaderError
+from frictionless_architect.visualizer.namespaces import ArchimateNamespaceError
 from frictionless_architect.visualizer.sample_parser import SampleParser, SampleParseResult
 from frictionless_architect.visualizer.sample_validator import validate_sample_against_schema
 
@@ -129,6 +130,10 @@ class SchemaPayloadService:
             sample_status = "loaded"
         except (FileNotFoundError, ParseError):
             add_warning(self.settings.warning_text)
+            sample_result = SampleParseResult.empty(self.settings.sample_model_path)
+        except ArchimateNamespaceError as exc:
+            sample_status = "invalid"
+            add_warning(str(exc))
             sample_result = SampleParseResult.empty(self.settings.sample_model_path)
         else:
             for issue in validate_sample_against_schema(

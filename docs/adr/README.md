@@ -102,3 +102,6 @@ narrative docs.
 - **A** — [0031](0031-fr016-no-redaction-for-policy-documents.md) — Policy/
   standard document conversion bypasses the PII anonymization gateway
   (`ADR-0014`), scoped to that one ingestion path
+- **A** — [0032](0032-archimate-exchange-namespace-3-0.md) — ArchiMate
+  exchange files use the `archimate/3.0/` namespace (schema version 3.1);
+  any other namespace is rejected loudly

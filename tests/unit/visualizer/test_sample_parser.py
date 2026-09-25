@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from frictionless_architect.visualizer.namespaces import ArchimateNamespaceError
 from frictionless_architect.visualizer.sample_parser import SampleParser, SampleParseResult
 
 
@@ -38,3 +39,14 @@ def test_parse_raises_when_sample_has_no_root(tmp_path: Path) -> None:
     with patch("frictionless_architect.visualizer.sample_parser._safe_parse", return_value=rootless_tree):
         with pytest.raises(ValueError, match="no root element"):
             parser.parse()
+
+
+def test_parse_raises_on_foreign_archimate_namespace(tmp_path: Path) -> None:
+    sample_path = tmp_path / "archimate31.xml"
+    sample_path.write_text(
+        '<model xmlns="http://www.opengroup.org/xsd/archimate/3.1/" identifier="m-1">'
+        '<elements><element identifier="e-1"/></elements></model>',
+        encoding="utf-8",
+    )
+    with pytest.raises(ArchimateNamespaceError, match="archimate/3.1/"):
+        SampleParser(sample_path).parse()

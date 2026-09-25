@@ -8,13 +8,13 @@ from xml.etree import ElementTree as ET
 
 from defusedxml.ElementTree import parse as _safe_parse
 
-# XML namespace identifiers, not fetched endpoints — these are the literal,
-# spec-defined strings (W3C XML Schema, The Open Group's ArchiMate 3.0
-# exchange format) that real documents declare; switching the scheme would
-# stop matching them and break schema validation.
-XSD_NS = "http://www.w3.org/2001/XMLSchema"
-ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"  # NOSONAR
-XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
+from frictionless_architect.visualizer.namespaces import (
+    ARCHIMATE_NS,
+    XSD_NS,
+    XSI_NS,
+    ArchimateNamespaceError,
+    require_archimate_namespace,
+)
 
 
 def _iter_defined_types(schema_path: Path) -> set[str]:
@@ -85,6 +85,10 @@ def validate_sample_against_schema(sample_path: Path, schema_path: Path) -> list
     root = tree.getroot()
     if root is None:
         return [f"Sample XML {sample_path} has no root element"]
+    try:
+        require_archimate_namespace(root, sample_path)
+    except ArchimateNamespaceError as exc:
+        return [str(exc)]
     element_ids, relationship_ids, element_types, relationship_types = _gather_sample_metadata(root)
     defined_types = _iter_defined_types(schema_path)
     errors: list[str] = []
