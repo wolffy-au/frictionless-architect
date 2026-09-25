@@ -250,7 +250,7 @@ Target:
     (and/or `packages/knowledge-graph/specs/001-*`).
   - `002-arch-kg-semantics` (stub) → `packages/knowledge-graph/specs/002-*`, or delete.
 - **`.specify/scripts/bash/`** (`create-new-feature.sh`, `setup-plan.sh`,
-  `update-agent-context.sh`, `check-prerequisites.sh`) assume one repo / one `specs/`.
+  `check-prerequisites.sh`) assume one repo / one `specs/`.
   Add a `--package <name>` arg that targets `packages/<name>/specs/` — one source of
   truth, rather than per-package copies.
 - Root keeps `.specify/memory/constitution.md` as the **platform** constitution;
