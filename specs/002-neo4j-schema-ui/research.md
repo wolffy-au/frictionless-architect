@@ -6,8 +6,8 @@
 **Alternatives considered:** D3.js (too low-level and would force us to reinvent layout/pan/zoom) and vis.js (similar feature set but larger bundle and weaker layout controls for ArchiMate-style diagrams).  
 
 ## Parsing ArchiMate schema + sample XML data
-**Decision:** Use `lxml` plus `xmlschema` to load `sample-data/schema/*.xsd` and `sample-data/sample-00/Test Model Full.xml`, extract element/relationship/view definitions, and normalize them into JSON payloads that both Neo4j ingestion and the visualiser share.  
-**Rationale:** `xmlschema` understands XSD-defined structures so we can validate the schema files, while `lxml` keeps parsing fast for the small sample data. Normalizing into JSON simplifies the front-end contract and lets us detect coverage gaps (schema entry without matching sample element) while still providing the layout bounds FR-003 needs.  
+**Decision:** Use `defusedxml`-wrapped `xml.etree.ElementTree` to load `sample-data/schema/*.xsd` and `sample-data/sample-00/Test Model Full.xml`, extract element/relationship/view definitions, and normalize them into JSON payloads that both Neo4j ingestion and the visualiser share; validate against the XSDs with `xmlschema`. See [ADR-0022](../../docs/adr/0022-schema-visualiser-lxml-xmlschema.md).  
+**Rationale:** `xmlschema` understands XSD-defined structures so we can validate the schema files; `defusedxml`/`ElementTree` keeps parsing fast for the small sample data while also hardening against XXE and entity-expansion attacks, with no `lxml` C-extension dependency. Normalizing into JSON simplifies the front-end contract and lets us detect coverage gaps (schema entry without matching sample element) while still providing the layout bounds FR-003 needs.  
 **Alternatives considered:** Custom regex/XML parsing (fragile) or relying solely on Neo4j (reduces the ability to show sample coverage before the database is populated).  
 
 ## Reusing Neo4j read permissions + offline resilience

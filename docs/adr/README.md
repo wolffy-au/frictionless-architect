@@ -79,7 +79,7 @@ narrative docs.
 - **A** — [0021](0021-schema-visualiser-cytoscape.md) — Schema visualiser uses
   cytoscape.js + coordinated tables
 - **A** — [0022](0022-schema-visualiser-lxml-xmlschema.md) — Schema visualiser
-  parses ArchiMate with `lxml` + `xmlschema`
+  parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema`
 - **A** — [0023](0023-visualiser-reuses-neo4j-credentials-with-cache-fallback.md)
   — Visualiser reuses Neo4j read credentials; caches payloads offline
 - **A** — [0024](0024-single-user-local-mvp.md) — MVP is single-user and locally
