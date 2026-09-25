@@ -284,6 +284,7 @@
 - {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
 - {type: Triggering, source: process-baseline-tailoring, target: process-pattern-traceability, label: profiles feed traceability mapping}
+- {type: Flow, source: process-baseline-tailoring, target: process-effectiveness-monitoring, label: tailored baseline flows to}
 - {type: Realization, source: fn-pattern-authoring, target: process-pattern-traceability}
 - {type: Realization, source: art-pattern, target: bo-architecture-pattern}
 - {type: Association, source: bo-architecture-pattern, target: bo-oscal-profile, label: maps to}

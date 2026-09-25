@@ -44,6 +44,7 @@ Rel_Triggering_Right(e_idfeca8b2013795e, e_id5bcc1abc98d154, "catalogs feed tail
 Rel_Triggering_Right(e_id5bcc1abc98d154, e_id57b0ad85b82a5e, "tailored profile feeds resolution")
 Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
 Rel_Triggering_Right(e_id5bcc1abc98d154, e_id65065ee24d3c54, "profiles feed traceability mapping")
+Rel_Flow_Right(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
 Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
 Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
 

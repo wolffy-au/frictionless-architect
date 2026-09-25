@@ -20,8 +20,6 @@ Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
   Strategy_ValueStream(e_idf362f39778065d, "Release & Attest")
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
-Business_Process(e_id395c9c2923aa56, "Target State Definition")
-Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
@@ -42,6 +40,12 @@ Business_Function(e_id108dc21cee6055, "Policy-to-OSCAL Conversion") {
 Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
   Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
   Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
+}
+Business_Function(e_id5794c15b037251, "Architecture Strategy") {
+  Business_Process(e_id395c9c2923aa56, "Target State Definition")
+}
+Business_Function(e_id86f3d2dd174754, "Solution Design") {
+  Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
 }
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
@@ -86,6 +90,7 @@ Rel_Triggering_Right(e_idfeca8b2013795e, e_id5bcc1abc98d154, "catalogs feed tail
 Rel_Triggering_Right(e_id5bcc1abc98d154, e_id57b0ad85b82a5e, "tailored profile feeds resolution")
 Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
 Rel_Triggering_Right(e_id5bcc1abc98d154, e_id65065ee24d3c54, "profiles feed traceability mapping")
+Rel_Flow_Right(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
 Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
 Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
 

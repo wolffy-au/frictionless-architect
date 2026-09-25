@@ -212,6 +212,8 @@
     - bfn-agentic-delivery
     - bfn-release-management
     - bfn-drift-management
+    - bfn-architecture-strategy
+    - bfn-solution-design
 
 # =====================================================================
 # Cross-cutting / later-phase views
