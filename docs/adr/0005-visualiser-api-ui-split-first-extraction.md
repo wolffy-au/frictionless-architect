@@ -31,7 +31,7 @@ driver types now.
 ## Consequences
 
 - Entry point changes: `uvicorn frictionless_architect.visualizer:app` →
-  `uvicorn schema_visualizer_api:app`; update `README.md` / `quickstart.md`.
+  `uvicorn schema_visualizer_api:app`; update `README.md`.
 - `FRICTIONLESS_ARCHITECT_` env prefix stays as-is; renaming it is its own
   epic (`ARCHITECTURE.md` §9).
 - Sequence: scaffold `knowledge-graph` → vendor forks → re-home specs →

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** unknown (pre-dates this log)
-- **Sources:** `PROJECT_SPECIFICATION.md` Phase 1; `specs/001` FR-019; `NONFUNCTIONALS.md` §"Usability & Efficiency"; `data-model.md`
+- **Sources:** `PROJECT_SPECIFICATION.md` Phase 1; `specs/001` FR-019; `NONFUNCTIONALS.md` §"Usability & Efficiency"; `specs/001-governance-platform/data-model.md`
 
 ## Context
 

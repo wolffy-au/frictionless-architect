@@ -333,7 +333,7 @@ Checklist:
 - Keep the `FRICTIONLESS_ARCHITECT_` env prefix as-is for this extraction; rename is its
   own epic (§9).
 - Entry point `uvicorn frictionless_architect.app:app` →
-  `uvicorn schema_visualizer_api:app`; update `quickstart.md` / `README.md`.
+  `uvicorn schema_visualizer_api:app`; update `README.md`.
 
 ---
 

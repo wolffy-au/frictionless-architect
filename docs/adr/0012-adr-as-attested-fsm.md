@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-02-18 (constitution ratification); refined in `specs/001`
-- **Sources:** `data-model.md`; `specs/001-governance-platform/spec.md`
+- **Sources:** `specs/001-governance-platform/data-model.md`; `specs/001-governance-platform/spec.md`
   (FR-005, FR-006, clarification Q); `PROJECT_SPECIFICATION.md` Phase 1
 
 ## Context
