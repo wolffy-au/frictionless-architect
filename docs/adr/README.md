@@ -110,3 +110,6 @@ narrative docs.
 - **A** — [0032](0032-archimate-exchange-namespace-3-0.md) — ArchiMate
   exchange files use the `archimate/3.0/` namespace (schema version 3.1);
   any other namespace is rejected loudly
+- **A** — [0033](0033-value-streams-per-outcome.md) — One value stream per
+  outcome, organised by value recipient (not by role); streams take stages
+  over rather than duplicate them

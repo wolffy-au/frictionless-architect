@@ -5,7 +5,7 @@ title Artefact Flow — Controls & OSCAL
 
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Function(e_id7ce9f3c91f1f53, "AI-Assisted Markdown Conversion")
-  Application_Function(e_id8926bd09002459, "OSCAL Catalog & Profile Generation")
+  Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
 }
 Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
   Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
@@ -19,15 +19,14 @@ Application_DataObject(e_id0ecdf65c0ffd57, "Trestle-Editable Markdown Catalog")
 Application_DataObject(e_ida95982eb78095a, "Regulatory Baseline Catalog")
 Application_DataObject(e_ide7676379a60257, "Regulatory Baseline Profile")
 
-Rel_Specialization(e_id3d500fda79b357, e_id51129996aed75b, "externally-published instance")
-Rel_Specialization(e_ida95982eb78095a, e_idddf65887d53f57, "vendored instance (golden-dataset validation data)")
-Rel_Specialization(e_ide7676379a60257, e_id9659a679544058, "vendored instance (golden-dataset validation data)")
+Rel_Specialization_Up(e_id3d500fda79b357, e_id51129996aed75b, "externally-published instance")
+Rel_Specialization_Up(e_ida95982eb78095a, e_idddf65887d53f57, "vendored instance (golden-dataset validation data)")
+Rel_Specialization_Up(e_ide7676379a60257, e_id9659a679544058, "vendored instance (golden-dataset validation data)")
 Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
 Rel_Serving_Up(e_id2610ae0cc2cc50, e_id7ce9f3c91f1f53, "provides the document -> Markdown conversion model for")
 Rel_Access_r(e_id7ce9f3c91f1f53, e_id51129996aed75b, "reads")
 Rel_Access_w(e_id7ce9f3c91f1f53, e_id0ecdf65c0ffd57, "generates")
 Rel_Access_r(e_id8926bd09002459, e_id0ecdf65c0ffd57, "reads")
 Rel_Access_w(e_id8926bd09002459, e_idddf65887d53f57, "generates")
-Rel_Access_w(e_id8926bd09002459, e_id9659a679544058, "generates")
 
 @enduml

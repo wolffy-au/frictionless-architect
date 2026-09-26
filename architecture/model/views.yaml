@@ -32,7 +32,7 @@
   viewpoint: stakeholder
   diagram: vision/1-stakeholder
   # The case for change: who holds which driver, the assessments that make each
-  # driver urgent, and the goal + outcome they drive toward.
+  # driver urgent, and the goal + outcomes they drive toward.
   # Outcome and Stakeholder are scoped explicitly (not via include_types)
   # because the IT4IT import added a second Outcome element
   # (it4it-outcome-digital-product) and 24 more Stakeholder elements —
@@ -41,7 +41,10 @@
   # Outcome/Capability/ValueStream/Stakeholder appear in include_types.
   include_types: [Assessment, Driver, Goal]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - stk-exec
     - stk-regulator
     - stk-architecture
@@ -60,7 +63,10 @@
   include_types:
     [Assessment, Driver, Goal, Principle, Requirement, Constraint]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - stk-exec
     - stk-regulator
     - stk-architecture
@@ -71,18 +77,21 @@
   name: Goal Realization
   viewpoint: goal_realization
   diagram: vision/3-goal-realization
-  # How the goal refines into the outcome, and how principles, requirements and
-  # constraints realize it.
+  # How the goal refines into the outcomes, and how principles, requirements and
+  # constraints realize them.
   include_types: [Goal, Principle, Requirement, Constraint]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
 
 - id: view-strategy
   name: Strategy
   viewpoint: strategy
   diagram: vision/4-strategy
-  # Overview: resources -> capabilities -> courses of action, the value stream
-  # as a single element, and the outcome. Stage decomposition and the
+  # Overview: resources -> capabilities -> courses of action, each value
+  # stream as a single element, and the outcome it realizes. Stage decomposition and the
   # recipient stakeholders belong to the Value Stream view; the goal linkage
   # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
   # stops at the strategy layer — see Goal Realization for that.
@@ -96,7 +105,13 @@
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
-    - outcome-executable-intelligence
+    - vs-obligation-to-evidence
+    - vs-exception-to-decision
+    - vs-drift-to-remediation
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
+    - outcome-drift-reconciled
     - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane
@@ -124,22 +139,45 @@
     - cap-reusable-architecture
 
 - id: view-value-stream
-  name: Value Stream — Governed Architecture Delivery
+  name: Value Stream Hand-offs
   viewpoint: value_stream
   diagram: vision/6-value-stream
-  # The stream and its six stages (Composition + Triggering sequence, with the
-  # Reconcile→Specify feedback Flow), the capabilities that Serve each stage,
-  # the recipient stakeholders the stream delivers value to, and the Outcome it
-  # Realizes. Resources and courses of action belong to the Strategy view.
+  no_direction: [Flow]
+  # How the four value streams connect: each parent stream nests its stages
+  # (Composition) so every stage is identifiable by stream, with the
+  # Triggering sequence within each stream and the Triggering / Flow
+  # hand-offs across streams (ADR-0033). Flow edges are left undirected so
+  # the layout engine routes the feedback/approval edges between boxes
+  # instead of looping them over the top. Each stream's recipients, outcome
+  # and serving capabilities are in its own view (6a-6d).
   # ValueStream is scoped via members, not include_types — the IT4IT import
   # added 36 more ValueStream elements (7 streams + 29 stages).
-  # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
-  # cap-control-catalog, cap-reusable-architecture) appear nested inside a
-  # Strategy_Resource box in the Strategy view (Resource --Assignment-->
-  # Capability). They render flat here, not nested, because Resource is
-  # deliberately out of scope for this view — not a modelling inconsistency.
-  # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story, not this one's — exclude it so it doesn't repeat.
+  members:
+    - vs-governed-delivery
+    - vs-obligation-to-evidence
+    - vs-exception-to-decision
+    - vs-drift-to-remediation
+    - vss-baseline
+    - vss-specify
+    - vss-build
+    - vss-release
+    - vss-control-baseline
+    - vss-prove
+    - vss-escalate
+    - vss-signoff
+    - vss-record
+    - vss-observe
+    - vss-reconcile
+
+- id: view-vs-governed-delivery
+  name: Value Stream — Governed Architecture Delivery
+  viewpoint: value_stream
+  diagram: vision/6a-governed-delivery
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
@@ -147,28 +185,84 @@
     - vss-baseline
     - vss-specify
     - vss-build
-    - vss-prove
     - vss-release
-    - vss-reconcile
-    - cap-control-catalog
+    - stk-delivery
+    - stk-exec
+    - outcome-change-at-ai-speed
     - cap-reusable-architecture
-    - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane
-    - cap-forensic-ledger
-    - cap-human-approval-workflow
-    - cap-drift-dashboard
-    - stk-delivery
-    - stk-architecture
+
+- id: view-vs-obligation-to-evidence
+  name: Value Stream — Obligation to Evidence
+  viewpoint: value_stream
+  diagram: vision/6b-obligation-to-evidence
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
+  members:
+    - vs-obligation-to-evidence
+    - vss-control-baseline
+    - vss-prove
     - stk-risk-compliance
-    - outcome-executable-intelligence
+    - stk-regulator
+    - outcome-compliance-before-release
+    - cap-control-catalog
+    - cap-control-plane
+
+- id: view-vs-exception-to-decision
+  name: Value Stream — Exception to Decision
+  viewpoint: value_stream
+  diagram: vision/6c-exception-to-decision
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
+  members:
+    - vs-exception-to-decision
+    - vss-escalate
+    - vss-signoff
+    - vss-record
+    - stk-exec
+    - stk-risk-compliance
+    - outcome-accountable-automation
+    - cap-control-plane
+    - cap-human-approval-workflow
+    - cap-forensic-ledger
+
+- id: view-vs-drift-to-remediation
+  name: Value Stream — Drift to Remediation
+  viewpoint: value_stream
+  diagram: vision/6d-drift-to-remediation
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
+  members:
+    - vs-drift-to-remediation
+    - vss-observe
+    - vss-reconcile
+    - stk-architecture
+    - outcome-drift-reconciled
+    - cap-digital-twin
+    - cap-drift-dashboard
 
 - id: view-outcome-realization
   name: Outcome Realization
   viewpoint: outcome_realization
   diagram: vision/7-outcome-realization
-  # How business processes realize capabilities, which serve the value stream,
-  # which realizes the outcome — the end-to-end realization chain.
+  # How business processes realize capabilities, which serve the value
+  # streams, each of which realizes one outcome — the end-to-end realization chain.
   # Capability/ValueStream scoped via members, not include_types — see notes
   # above; the IT4IT import added elements of both types.
   # GH #7: the four bfn-* BusinessFunctions are added as members (not via
@@ -187,15 +281,30 @@
   # view's own story, not this one's — exclude it so it doesn't repeat.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
+  # The process chain's own left-to-right order is the Delivery Choreography
+  # view's story; here Flow/Triggering are left undirected so the layout is
+  # driven by the realization chain (process -> capability -> stage -> outcome).
+  no_direction: [Flow, Triggering]
   include_types: [BusinessProcess]
   members:
-    - outcome-executable-intelligence
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
+    - outcome-drift-reconciled
     - vs-governed-delivery
     - vss-baseline
     - vss-specify
     - vss-build
-    - vss-prove
     - vss-release
+    - vs-obligation-to-evidence
+    - vss-control-baseline
+    - vss-prove
+    - vs-exception-to-decision
+    - vss-escalate
+    - vss-signoff
+    - vss-record
+    - vs-drift-to-remediation
+    - vss-observe
     - vss-reconcile
     - cap-digital-twin
     - cap-spec-engine
@@ -212,28 +321,25 @@
     - bfn-agentic-delivery
     - bfn-release-management
     - bfn-drift-management
+    - bfn-architecture-strategy
+    - bfn-solution-design
 
-# =====================================================================
-# Cross-cutting / later-phase views
-# =====================================================================
-
-- id: view-skeleton
-  name: Architecture Skeleton
-  diagram: cross-layer/skeleton
-  # The load-bearing subset (ADR-0010): motivation spine + the capabilities it
-  # drives. A deliberate cross-layer cut — no standard viewpoint spans
-  # motivation elements and Capability together.
-  # Outcome/Capability scoped via members, not include_types — see the note
-  # on view-stakeholder above; the IT4IT import added elements of both types.
-  viewpoint: custom
-  include_types: [Driver, Goal, Principle, Constraint, Requirement]
+- id: view-requirements-realization
+  name: Requirements Realization
+  viewpoint: requirements_realization
+  diagram: vision/8-requirements-realization
+  # Which capability realizes each functional requirement — every capability
+  # realizes at least one (ADR-0027 #1). Why each requirement exists
+  # (principle/constraint Influence, Requirement -> Outcome) is the
+  # Motivation and Goal Realization views' story, not this one's.
+  # Capability scoped via members, not include_types — see notes above; the
+  # IT4IT import added Capability elements.
+  include_types: [Requirement]
   # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story, not this one's (motivation spine -> capabilities) —
-  # exclude it so it doesn't repeat incidentally.
+  # view's own story — exclude it so it doesn't repeat incidentally.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
-    - outcome-executable-intelligence
     - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane
@@ -243,34 +349,31 @@
     - cap-control-catalog
     - cap-reusable-architecture
 
+# =====================================================================
+# Cross-cutting / later-phase views
+# =====================================================================
+
 - id: view-delivery
   name: Delivery Choreography
-  diagram: cross-layer/delivery
-  # BusinessProcess -> Capability realization: the standard viewpoint whose
-  # allow-list spans both (Capability + $BusinessElements$) is Outcome
-  # Realization, even though no Outcome element sits on this particular view.
-  viewpoint: outcome_realization
+  diagram: business/delivery
+  # The end-to-end business-process chain (Triggering / Flow hand-offs) —
+  # a standard Business Process Cooperation view. Which capability each
+  # process realizes is the Outcome Realization view's story, not this one's.
+  viewpoint: business_process_cooperation
   include_types: [BusinessProcess]
-  # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story, not this one's (BusinessProcess -> Capability) —
-  # exclude it so it doesn't repeat incidentally.
-  exclude:
-    - {type: Serving, source_type: Capability, target_type: Capability}
-  members:
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-drift-dashboard
-    - cap-control-catalog
-    - cap-forensic-ledger
-    - cap-human-approval-workflow
+  # Flow edges are left undirected so the layout engine can place their
+  # targets freely instead of looping them back over the chain.
+  no_direction: [Flow]
+  # The 16-process chain renders very wide; cap it so it fits a page.
+  max_width: 3800
 
 - id: view-subsystem-capabilities
   name: Subsystems & Capabilities
-  diagram: cross-layer/subsystem-capabilities
-  # ApplicationComponent -> Capability realization: the standard viewpoint
-  # whose allow-list spans both (Capability + $ApplicationElements$) is
-  # Outcome Realization, even though no Outcome element sits on this view.
-  viewpoint: outcome_realization
+  diagram: layered/subsystem-capabilities
+  # ApplicationComponent -> Capability realization spans the Strategy and
+  # Application layers — the standard Layered viewpoint, which exists for
+  # showing how layers line up.
+  viewpoint: layered
   # GH #20: the capability-to-capability Serving mesh is the Capability Map
   # view's own story, not this one's (ApplicationComponent -> Capability) —
   # exclude it so it doesn't repeat incidentally.
@@ -334,6 +437,9 @@
   # policy/standard through to operational assurance. Trestle is
   # deliberately not shown — it's the application-layer tool realizing
   # process-oscal-conversion (see fn-oscal-conversion), not a business actor.
+  # Architecture strategy and drift are not part of this journey (their only
+  # OSCAL touchpoint is reading the POA&M) and have their own view,
+  # view-business-strategy-drift.
   #
   # Formerly two near-duplicate diagrams (this one, role-grouped, and
   # vision/controls-lifecycle, function-grouped) carrying the same objects
@@ -341,33 +447,40 @@
   # BusinessFunction it performs (Assignment, relationships.yaml) rather
   # than to the individual process — nesting is then Function > Role >
   # Process wherever one role owns a function outright (e.g.
-  # bfn-policy-conversion > role-compliance), and Function > Process where a
-  # function's steps split across roles (bfn-pattern-blueprint-traceability
-  # has both role-ea and role-sa assigned, so it stays flat with an
-  # Assignment arrow to each) or has none (bfn-release-enforcement,
-  # bfn-drift-management — automated, no human role assigned).
+  # bfn-policy-conversion > role-compliance; role-ea owns
+  # bfn-pattern-blueprint-traceability; role-sa owns bfn-solution-design),
+  # and Function > Process where a function has no role assigned
+  # (bfn-release-enforcement).
+  #
+  # The three view-business-* slice views below zoom into consecutive
+  # stretches of this journey. They are deliberate subsets of this overview,
+  # not the kind of near-duplicate consolidated above — all are projections
+  # of the same model, so they cannot drift apart. Keep them.
   members:
     - bfn-policy-conversion
     - role-compliance
     - process-policy-authoring
     - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
     - bo-regulatory-standard
     - bo-policy-doc
     - bo-oscal-catalog
     - bo-oscal-profile
+    - bo-oscal-resolved-catalog
     - bfn-pattern-blueprint-traceability
     - role-ea
     - process-pattern-traceability
     - bo-architecture-pattern
     - role-sa
+    - bfn-solution-design
+    - process-solution-design
     - process-blueprint-traceability
     - bo-implementation-blueprint
     - bo-oscal-component
     - bo-solution-component
     - bo-solution-design
     - bo-oscal-ssp
-    - bfn-drift-management
-    - process-state-discovery
     - bfn-release-enforcement
     - process-cicd-pipeline
     - bo-oscal-assessment-plan
@@ -377,6 +490,87 @@
     - process-effectiveness-monitoring
     - bo-control-effectiveness-evidence
     - bo-oscal-assessment-results
+    - bo-oscal-poam
+
+# --- Slices of view-business-controls-catalog (read 1 -> 2 -> 3). Each
+#     repeats its hand-off object(s) from the neighbouring slice: the OSCAL
+#     Profile (1 -> 2) and the OSCAL SSP (2 -> 3).
+- id: view-business-policy-conversion
+  name: Business — 1. Policy-to-OSCAL Conversion
+  viewpoint: business_process_cooperation
+  diagram: business/1-policy-conversion
+  members:
+    - bfn-policy-conversion
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - bo-oscal-resolved-catalog
+
+- id: view-business-pattern-solution-design
+  name: Business — 2. Pattern, Blueprint & Solution Design
+  viewpoint: business_process_cooperation
+  diagram: business/2-pattern-solution-design
+  members:
+    - bfn-pattern-blueprint-traceability
+    - role-ea
+    - process-pattern-traceability
+    - process-blueprint-traceability
+    - bfn-solution-design
+    - role-sa
+    - process-solution-design
+    - bo-oscal-resolved-catalog
+    - bo-architecture-pattern
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-design
+    - bo-solution-component
+    - bo-oscal-ssp
+
+- id: view-business-control-assurance
+  name: Business — 3. Control Assurance
+  viewpoint: business_process_cooperation
+  diagram: business/3-control-assurance
+  members:
+    - bfn-release-enforcement
+    - process-cicd-pipeline
+    - bfn-effectiveness-assurance
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-oscal-ssp
+    - bo-oscal-assessment-plan
+    - bo-oscal-assessment-results
+    - bo-release-gate-decision
+    - bo-control-effectiveness-evidence
+    - bo-oscal-poam
+
+- id: view-business-strategy-drift
+  name: Business — Architecture Strategy & Drift
+  viewpoint: business_process_cooperation
+  diagram: business/strategy-drift
+  # Architecture-side counterpart of the controls journey above: target
+  # state and roadmap definition, reconciliation of current against target
+  # state, and triage into the Architecture Conformance Register. The OSCAL
+  # POA&M appears only as an input to Target State Definition.
+  members:
+    - role-ea
+    - bfn-architecture-strategy
+    - process-target-state-definition
+    - bfn-drift-management
+    - process-state-discovery
+    - process-drift-review
+    - bo-target-state-architecture
+    - bo-architecture-roadmap
+    - bo-transition-state-architecture
+    - bo-current-state-architecture
+    - bo-conformance-backlog
+    - bo-drift-finding
+    - bo-oscal-poam
 
 - id: view-artefact-library
   name: Artefact Flow — Library & Design
@@ -388,8 +582,7 @@
     - fn-blueprint-authoring
     - fn-solution-compose
     - fn-threat-model
-    - art-oscal-catalog
-    - art-oscal-profile
+    - art-oscal-resolved-catalog
     - art-oscal-component
     - art-oscal-ssp
     - art-pattern
@@ -415,6 +608,7 @@
     - fn-notation-engine
     - ext-cloud
     - ext-cicd
+    - fn-cicd-deploy
     - ext-rfp
     - art-infra-state
     - art-deploy-event
@@ -437,12 +631,20 @@
     - sub-assurance
     - sub-modelling
     - fn-spec-generator
+    - fn-build-supervision
     - fn-enforcement-gate
     - fn-effectiveness-monitor
     - fn-drift-engine
+    - fn-ledger-record
     - ext-cicd
     - ext-scm
     - ext-itsm
+    - fn-scm-versioning
+    - fn-scm-change-review
+    - fn-cicd-build
+    - fn-cicd-deploy
+    - fn-itsm-backlog
+    - fn-itsm-change
     - art-pattern
     - art-blueprint
     - art-solution-design
@@ -452,9 +654,11 @@
     - art-release-candidate
     - art-oscal-assessment-plan
     - art-gate-decision
+    - art-ledger-entry
     - art-effectiveness-evidence
     - art-twin
     - art-adr
+    - art-architecture-roadmap
     - art-drift-report
     - art-remediation-item
     - art-oscal-poam
@@ -470,7 +674,7 @@
   # in third_party/it4it/views.yaml — that repo is IT4IT-only content; this
   # view is a cross-*model* cut spanning both repos, so its diagram stays
   # flat at the diagrams/ root rather than living in any one layer folder —
-  # unlike cross-layer/subsystem-capabilities, which is only a cross-*layer*
+  # unlike layered/subsystem-capabilities, which is only a cross-*layer*
   # cut within this repo's own model and so does get a layer folder.
   # GH #20: this view's own story is the cap-* <-> it4it-cap-* Association
   # bridges, not the first-party capability-to-capability Serving mesh

@@ -19,7 +19,7 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 |---|---|
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?`) |
+| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
 | `render_diagrams.py` | `frictionless-architect.xml` → every `.puml` / `.svg` (view `diagram:` key + C4) |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
@@ -36,7 +36,10 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 - **`name` / `desc`** — top-level keys, not inside `props`.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read`|`Write`|`ReadWrite`) on `Access` relationships,
-  `requirement-type`.
+  `requirement-type`, and `archimate-analogue` on a BusinessObject whose
+  *content* in the managed estate's model is an Implementation & Migration
+  concept (Plateau, Gap, …) — kept as a tag so this model's own Plateaus stay
+  free to mean states of the platform itself.
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 
@@ -58,6 +61,10 @@ holds the **whole** model to the ArchiMate 3.2 relationship matrix.
   (a hub-and-spoke or mesh) — which makes the rank hint fight itself and
   produces a tangled layout (dot silently drops half the constraints as
   back-edges) no matter how clean the underlying relationship data is.
+- **`max_width`** on a view (optional) — an integer pixel width; the
+  diagram is rendered with PlantUML's `scale max <px> width`, so a wider
+  layout is scaled down to fit (a narrower one is left at its natural size).
+  Use it for long chains that would otherwise need horizontal scrolling.
 
 ## Model contents
 
@@ -65,19 +72,26 @@ Three layered sections in one model:
 
 | Section | What | Views |
 |---|---|---|
-| **A. Skeleton** | Motivation (5 stakeholders, 3 assessments, 4 drivers, 1 goal, 1 outcome, 3 principles, 4 constraints, 9 functional requirements), Strategy (8 capabilities, 3 courses of action, 4 resources + the 7-element `Governed Architecture Delivery` value stream), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md)) | **Vision (Phase A):** `Stakeholder`, `Motivation`, `Goal Realization`, `Strategy`, `Capability Map`, `Value Stream — Governed Architecture Delivery`, `Outcome Realization`. Also `Architecture Skeleton` (custom), `Delivery Choreography` |
-| **B. Ecosystem** | The platform `Grouping` (`c4=system`), its 6 subsystems, 5 shared stores, 6 roles, 7 external systems; every subsystem `Realization`-linked to a section-A capability ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities`; C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
+| **A. Skeleton** | Motivation (5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3 principles, 4 constraints, 9 functional requirements), Strategy (8 capabilities, 3 courses of action, 5 resources + 4 value streams, one per outcome, with 11 stages), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md), [ADR-0033](../../docs/adr/0033-value-streams-per-outcome.md)) | **Vision (Phase A):** `Stakeholder`, `Motivation`, `Goal Realization`, `Strategy`, `Capability Map`, `Value Stream Hand-offs` + one `Value Stream — <name>` view per stream, `Outcome Realization`, `Requirements Realization`. **Business (Phase B):** `Delivery Choreography` |
+| **B. Ecosystem** | The platform `Grouping` (`c4=system`), its 6 subsystems, 5 shared stores, 6 roles, 7 external systems; every subsystem `Realization`-linked to a section-A capability ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities` (Layered); C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
 | **C. Artefact flow** | 15 `ApplicationFunction`s assigned to their subsystem, reading input artefacts and writing output artefacts (25 `DataObject`s) via `Access`; stores `Aggregation`-link the persistent artefacts | `Artefact Flow — Controls & OSCAL` / `— Library & Design` / `— Digital Twin & Governance` / `— Assurance & Specification` |
 
 Every capability is realized by one subsystem and realizes at least one
-functional requirement; capability-to-capability `Serving` edges and the value
-stream's stage `Serving` edges record the delivery dependency order, and the
-stages themselves are `Triggering`-linked in sequence with a `Flow` feedback
-edge from `Reconcile & Remediate` back to `Specify the Change`. Every
+functional requirement; capability-to-capability `Serving` edges and the
+stages' `Serving` edges record the delivery dependency order. Each of the four
+value streams realizes one outcome and is `Association`-linked to its value
+recipients; stages are `Triggering`-linked in sequence within a stream and
+hand off across streams (Build → Prove → Release, Prove → Escalate, Sign Off
+→ Release as a `Flow`, Release → Observe, and a `Flow` feedback edge from
+`Reconcile & Remediate` back to `Specify the Change`)
+([ADR-0033](../../docs/adr/0033-value-streams-per-outcome.md)). Every
 motivation element is connected: each stakeholder is `Association`-linked to
-the drivers it holds, each assessment `Influence`s the driver it analyses, the
-four drivers `Influence` the goal, and drivers, principles and constraints all
-`Influence` the requirements they motivate, guide or shape
+the drivers it holds, each driver `Influence`s the assessment that analyses it,
+each assessment `Influence`s the outcome that answers it, the outcomes
+`Realization`-link to the goal, each requirement realizes exactly one outcome,
+and principles and constraints `Influence` the requirements they guide or shape
+— no Assessment → Goal, Assessment → Requirement or Requirement → Goal edge,
+since each would make an existing edge derived
 ([ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md)).
 
 ## Regenerate

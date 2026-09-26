@@ -52,6 +52,10 @@
 - {type: Assignment, source: res-ai-agents, target: cap-control-plane}
 - {type: Assignment, source: res-control-content, target: cap-control-catalog}
 - {type: Assignment, source: res-ea-practice, target: cap-reusable-architecture}
+- {type: Assignment, source: res-akg, target: cap-spec-engine}
+- {type: Assignment, source: res-akg, target: cap-drift-dashboard}
+- {type: Assignment, source: res-ea-practice, target: cap-human-approval-workflow}
+- {type: Assignment, source: res-evidence-record, target: cap-forensic-ledger}
 - {type: Realization, source: cap-spec-engine, target: coa-executable-governance}
 - {type: Realization, source: cap-control-plane, target: coa-executable-governance}
 - {type: Realization, source: cap-control-catalog, target: coa-executable-governance}
@@ -64,17 +68,24 @@
 - {type: Influence, source: coa-living-twin, target: goal-frictionless-architecture}
 - {type: Influence, source: coa-reuse-first, target: goal-frictionless-architecture}
 # GH #20 follow-up: close the strategy-layer loop — each CourseOfAction also
-# serves the value stream it drives (Realization is not a legal CourseOfAction
+# serves the value streams it drives (Realization is not a legal CourseOfAction
 # -> ValueStream pair per the ArchiMate 3.2 relationship matrix; Serving is),
 # so `view-strategy` has a connected path from resources through capabilities
 # and courses of action to the stream and its outcome, instead of
 # ValueStream/Outcome sitting as an isolated pair.
-- {type: Serving, source: coa-executable-governance, target: vs-governed-delivery}
-- {type: Serving, source: coa-living-twin, target: vs-governed-delivery}
 - {type: Serving, source: coa-reuse-first, target: vs-governed-delivery}
+- {type: Serving, source: coa-executable-governance, target: vs-governed-delivery}
+- {type: Serving, source: coa-executable-governance, target: vs-obligation-to-evidence}
+- {type: Serving, source: coa-executable-governance, target: vs-exception-to-decision}
+- {type: Serving, source: coa-living-twin, target: vs-drift-to-remediation}
+# Each value stream's value recipients.
 - {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
-- {type: Association, source: stk-architecture, target: vs-governed-delivery, label: sustained coherence}
-- {type: Association, source: stk-risk-compliance, target: vs-governed-delivery, label: provable compliance}
+- {type: Association, source: stk-exec, target: vs-governed-delivery, label: time to market}
+- {type: Association, source: stk-risk-compliance, target: vs-obligation-to-evidence, label: provable compliance}
+- {type: Association, source: stk-regulator, target: vs-obligation-to-evidence, label: evidence before release}
+- {type: Association, source: stk-exec, target: vs-exception-to-decision, label: accountable automation}
+- {type: Association, source: stk-risk-compliance, target: vs-exception-to-decision, label: examinable decisions}
+- {type: Association, source: stk-architecture, target: vs-drift-to-remediation, label: sustained coherence}
 
 # =====================================================================
 # A. Stakeholders hold drivers; drivers are analysed into assessments
@@ -91,95 +102,104 @@
 - {type: Influence, source: driver-compliance, target: assess-manual-compliance}
 
 # =====================================================================
-# A. Motivation spine: driver -> assessment -> goal; outcome -> goal;
-#    requirements/constraints -> goal; value stream -> outcome.
+# A. Motivation spine: driver -> assessment -> outcome -> goal;
+#    requirement -> outcome; value stream -> outcome.
 # =====================================================================
-- {type: Influence, source: assess-time-to-market, target: goal-frictionless-architecture}
-- {type: Influence, source: assess-review-bottleneck, target: goal-frictionless-architecture}
-- {type: Influence, source: assess-drift-debt, target: goal-frictionless-architecture}
-- {type: Influence, source: assess-manual-compliance, target: goal-frictionless-architecture}
-- {type: Realization, source: outcome-executable-intelligence, target: goal-frictionless-architecture}
-- {type: Realization, source: vs-governed-delivery, target: outcome-executable-intelligence}
-- {type: Realization, source: req-auto-spec-generation, target: goal-frictionless-architecture}
-- {type: Realization, source: req-regulatory-mapping, target: goal-frictionless-architecture}
-- {type: Realization, source: req-pre-deploy-gate, target: goal-frictionless-architecture}
-- {type: Realization, source: req-continuous-reconciliation, target: goal-frictionless-architecture}
-- {type: Realization, source: req-human-signoff, target: goal-frictionless-architecture}
-- {type: Realization, source: req-control-catalog, target: goal-frictionless-architecture}
-- {type: Realization, source: req-reusable-architecture, target: goal-frictionless-architecture}
-- {type: Realization, source: req-authoritative-twin, target: goal-frictionless-architecture}
-- {type: Realization, source: req-immutable-audit-ledger, target: goal-frictionless-architecture}
-# Constraints reach the goal only via the requirements they influence (same
-# pattern as Principle, which never gets a direct ->goal edge either) — a
-# direct Constraint->Goal realization here would just duplicate the
-# const-* -> req-* -> goal path that already exists below.
+- {type: Influence, source: assess-time-to-market, target: outcome-change-at-ai-speed}
+- {type: Influence, source: assess-review-bottleneck, target: outcome-accountable-automation}
+- {type: Influence, source: assess-drift-debt, target: outcome-drift-reconciled}
+- {type: Influence, source: assess-manual-compliance, target: outcome-compliance-before-release}
+- {type: Realization, source: outcome-drift-reconciled, target: goal-frictionless-architecture}
+# Each value stream realizes exactly one outcome.
+- {type: Realization, source: vs-governed-delivery, target: outcome-change-at-ai-speed}
+- {type: Realization, source: vs-obligation-to-evidence, target: outcome-compliance-before-release}
+- {type: Realization, source: vs-exception-to-decision, target: outcome-accountable-automation}
+- {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-reconciled}
+- {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
+# Each requirement realizes exactly one outcome; none realizes the goal
+# directly — req -> outcome -> goal already derives that Realization.
+- {type: Realization, source: req-auto-spec-generation, target: outcome-change-at-ai-speed}
+- {type: Realization, source: req-reusable-architecture, target: outcome-change-at-ai-speed}
+- {type: Realization, source: req-authoritative-twin, target: outcome-drift-reconciled}
+- {type: Realization, source: req-continuous-reconciliation, target: outcome-drift-reconciled}
+- {type: Realization, source: req-regulatory-mapping, target: outcome-compliance-before-release}
+- {type: Realization, source: req-control-catalog, target: outcome-compliance-before-release}
+- {type: Realization, source: req-pre-deploy-gate, target: outcome-compliance-before-release}
+- {type: Realization, source: req-human-signoff, target: outcome-accountable-automation}
+- {type: Realization, source: req-immutable-audit-ledger, target: outcome-accountable-automation}
 
 # =====================================================================
-# A. Assessments influence the functional requirements they motivate
-#    (re-anchored from the driver so the driver's contribution to a specific
-#    requirement carries the same evidenced-urgency step as its contribution
-#    to the goal).
+# A. Assessments influence the outcome that answers them (above), never a
+#    requirement: an Assessment -> Requirement Influence would make the
+#    Assessment -> Outcome edge derived (via requirement -> outcome), and the
+#    Stakeholder view — whose viewpoint admits no Requirement — needs
+#    Assessment -> Outcome to show which concern each outcome answers.
+#    Requirements are motivated by the principles and constraints below, and
+#    justified by the outcome they realize.
 # =====================================================================
-- {type: Influence, source: assess-manual-compliance, target: req-regulatory-mapping}
-- {type: Influence, source: assess-manual-compliance, target: req-pre-deploy-gate}
-- {type: Influence, source: assess-manual-compliance, target: req-control-catalog}
-- {type: Influence, source: assess-drift-debt, target: req-continuous-reconciliation}
-- {type: Influence, source: assess-drift-debt, target: req-reusable-architecture}
-- {type: Influence, source: assess-drift-debt, target: req-authoritative-twin}
-- {type: Influence, source: assess-review-bottleneck, target: req-auto-spec-generation}
-- {type: Influence, source: assess-review-bottleneck, target: req-pre-deploy-gate}
-- {type: Influence, source: assess-review-bottleneck, target: req-human-signoff}
 
 # =====================================================================
-# A. Principles guide the requirements that operationalise them
+# A. Principles and constraints each influence the ONE requirement that most
+#    directly operationalises them — kept to one edge apiece so the
+#    Motivation view stays readable. They reach outcomes and the goal only
+#    via that requirement (a direct edge would be derived). Requirements with
+#    no influence here (spec generation, reusable architecture, continuous
+#    reconciliation) are justified by the outcome they realize.
 # =====================================================================
-- {type: Influence, source: principle-human-accountability, target: req-pre-deploy-gate}
 - {type: Influence, source: principle-human-accountability, target: req-human-signoff}
 - {type: Influence, source: principle-forensic-audit, target: req-immutable-audit-ledger}
-- {type: Influence, source: principle-forensic-audit, target: req-human-signoff}
-- {type: Influence, source: principle-policy-as-code, target: req-regulatory-mapping}
-- {type: Influence, source: principle-policy-as-code, target: req-pre-deploy-gate}
 - {type: Influence, source: principle-policy-as-code, target: req-control-catalog}
-
-# =====================================================================
-# A. Constraints shape the requirements that must satisfy them
-# =====================================================================
 - {type: Influence, source: const-apra, target: req-pre-deploy-gate}
-- {type: Influence, source: const-apra, target: req-continuous-reconciliation}
-- {type: Influence, source: const-apra, target: req-immutable-audit-ledger}
-- {type: Influence, source: const-model-risk, target: req-pre-deploy-gate}
 - {type: Influence, source: const-model-risk, target: req-human-signoff}
-- {type: Influence, source: const-model-risk, target: req-immutable-audit-ledger}
 - {type: Influence, source: const-privacy, target: req-regulatory-mapping}
-- {type: Influence, source: const-privacy, target: req-control-catalog}
 - {type: Influence, source: const-cloud-policy, target: req-authoritative-twin}
-- {type: Influence, source: const-cloud-policy, target: req-continuous-reconciliation}
 
 # =====================================================================
-# A. Value stream: composition of stages, and the capabilities that serve each
+# A. Value streams: composition of stages, and the capabilities that serve each
 # =====================================================================
 - {type: Composition, source: vs-governed-delivery, target: vss-baseline}
 - {type: Composition, source: vs-governed-delivery, target: vss-specify}
 - {type: Composition, source: vs-governed-delivery, target: vss-build}
-- {type: Composition, source: vs-governed-delivery, target: vss-prove}
 - {type: Composition, source: vs-governed-delivery, target: vss-release}
-- {type: Composition, source: vs-governed-delivery, target: vss-reconcile}
+- {type: Composition, source: vs-obligation-to-evidence, target: vss-control-baseline}
+- {type: Composition, source: vs-obligation-to-evidence, target: vss-prove}
+- {type: Composition, source: vs-exception-to-decision, target: vss-escalate}
+- {type: Composition, source: vs-exception-to-decision, target: vss-signoff}
+- {type: Composition, source: vs-exception-to-decision, target: vss-record}
+- {type: Composition, source: vs-drift-to-remediation, target: vss-observe}
+- {type: Composition, source: vs-drift-to-remediation, target: vss-reconcile}
 - {type: Serving, source: cap-reusable-architecture, target: vss-baseline}
 - {type: Serving, source: cap-spec-engine, target: vss-specify}
 - {type: Serving, source: cap-control-plane, target: vss-build}
+- {type: Serving, source: cap-control-plane, target: vss-release}
+- {type: Serving, source: cap-control-catalog, target: vss-control-baseline}
 - {type: Serving, source: cap-control-plane, target: vss-prove}
-- {type: Serving, source: cap-human-approval-workflow, target: vss-release}
+- {type: Serving, source: cap-control-plane, target: vss-escalate}
+- {type: Serving, source: cap-human-approval-workflow, target: vss-signoff}
+- {type: Serving, source: cap-forensic-ledger, target: vss-record}
+- {type: Serving, source: cap-digital-twin, target: vss-observe}
 - {type: Serving, source: cap-drift-dashboard, target: vss-reconcile}
 
-# Stage sequence. The stream is a linear pipeline — no parallel stages. The
-# one non-linear edge is the feedback Flow: Reconcile classifies drift and
-# routes remediation items, which re-enter the stream as a new change to
-# Specify.
+# Stage sequence within each stream (Triggering), then the hand-offs between
+# streams. A change runs baseline -> specify -> build -> prove -> release;
+# prove escalates what it cannot validate deterministically, and the
+# sign-off returns to release as a Flow (an approval, not a second trigger —
+# a Triggering there would make prove -> release derived via the escalation
+# path). A release triggers observation of the new as-built state, and
+# reconciled drift re-enters delivery as a new change to specify.
 - {type: Triggering, source: vss-baseline, target: vss-specify}
 - {type: Triggering, source: vss-specify, target: vss-build}
+- {type: Triggering, source: vss-control-baseline, target: vss-prove}
+- {type: Triggering, source: vss-escalate, target: vss-signoff}
+- {type: Triggering, source: vss-signoff, target: vss-record}
+- {type: Triggering, source: vss-observe, target: vss-reconcile}
 - {type: Triggering, source: vss-build, target: vss-prove}
 - {type: Triggering, source: vss-prove, target: vss-release}
-- {type: Triggering, source: vss-release, target: vss-reconcile}
+- {type: Triggering, source: vss-prove, target: vss-escalate, label: not deterministically validated}
+- {type: Flow, source: vss-signoff, target: vss-release, label: approval}
+- {type: Triggering, source: vss-release, target: vss-observe}
 - {type: Flow, source: vss-reconcile, target: vss-specify, label: drift remediation re-enters}
 
 # =====================================================================
@@ -192,6 +212,7 @@
 - {type: Serving, source: cap-control-catalog, target: cap-control-plane, label: expected controls}
 - {type: Serving, source: cap-spec-engine, target: cap-control-plane, label: executable spec}
 - {type: Serving, source: cap-forensic-ledger, target: cap-human-approval-workflow, label: decision evidence}
+- {type: Serving, source: cap-control-plane, target: cap-human-approval-workflow, label: escalations}
 
 # =====================================================================
 # A. Process realizes capability (orchestration flow -> component)
@@ -201,11 +222,15 @@
 - {type: Realization, source: process-state-discovery, target: cap-drift-dashboard}
 - {type: Realization, source: process-policy-authoring, target: cap-control-catalog}
 - {type: Realization, source: process-oscal-conversion, target: cap-control-catalog}
+- {type: Realization, source: process-baseline-tailoring, target: cap-control-catalog}
+- {type: Realization, source: process-profile-resolution, target: cap-control-catalog}
 - {type: Realization, source: process-agentic-crew, target: cap-control-plane}
 - {type: Realization, source: process-release, target: cap-forensic-ledger}
 - {type: Realization, source: process-drift-review, target: cap-human-approval-workflow}
 - {type: Realization, source: process-pattern-traceability, target: cap-reusable-architecture}
 - {type: Realization, source: process-blueprint-traceability, target: cap-reusable-architecture}
+- {type: Realization, source: process-solution-design, target: cap-reusable-architecture}
+- {type: Realization, source: process-target-state-definition, target: cap-digital-twin}
 
 # =====================================================================
 # A. Process chain (the end-to-end choreography)
@@ -239,14 +264,24 @@
 - {type: Assignment, source: role-compliance, target: bfn-policy-conversion}
 - {type: Access, source: process-policy-authoring, target: bo-policy-doc, label: authors, props: {access_type: Write}}
 - {type: Specialization, source: bo-regulatory-standard, target: bo-policy-doc, label: externally-published instance}
-- {type: Access, source: process-oscal-conversion, target: bo-regulatory-standard, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-oscal-conversion, target: bo-policy-doc, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-oscal-conversion, target: bo-oscal-catalog, label: generates, props: {access_type: Write}}
-- {type: Access, source: process-oscal-conversion, target: bo-oscal-profile, label: generates, props: {access_type: Write}}
+- {type: Composition, source: bfn-policy-conversion, target: process-baseline-tailoring, label: comprises}
+- {type: Composition, source: bfn-policy-conversion, target: process-profile-resolution, label: comprises}
+- {type: Access, source: process-baseline-tailoring, target: bo-oscal-catalog, label: selects controls from, props: {access_type: Read}}
+- {type: Access, source: process-baseline-tailoring, target: bo-oscal-profile, label: tailors, props: {access_type: Write}}
+- {type: Access, source: process-profile-resolution, target: bo-oscal-catalog, label: reads, props: {access_type: Read}}
+- {type: Access, source: process-profile-resolution, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
+- {type: Access, source: process-profile-resolution, target: bo-oscal-resolved-catalog, label: generates, props: {access_type: Write}}
+- {type: Triggering, source: process-oscal-conversion, target: process-baseline-tailoring, label: catalogs feed tailoring}
+- {type: Triggering, source: process-baseline-tailoring, target: process-profile-resolution, label: tailored profile feeds resolution}
+- {type: Specialization, source: bo-oscal-resolved-catalog, target: bo-oscal-catalog, label: resolved instance}
+- {type: Association, source: bo-oscal-resolved-catalog, target: bo-oscal-profile, label: fulfills the profile's control selection}
+- {type: Realization, source: art-oscal-resolved-catalog, target: bo-oscal-resolved-catalog}
 - {type: Triggering, source: process-policy-authoring, target: process-oscal-conversion, label: authored content feeds}
 - {type: Realization, source: fn-ai-markdown-conversion, target: process-oscal-conversion}
 - {type: Realization, source: fn-oscal-conversion, target: process-oscal-conversion}
-- {type: Realization, source: fn-oscal-profile-resolve, target: process-oscal-conversion}
+- {type: Realization, source: fn-oscal-profile-resolve, target: process-profile-resolution}
 - {type: Realization, source: art-policy-doc, target: bo-policy-doc}
 - {type: Realization, source: art-regulatory-standard, target: bo-regulatory-standard}
 - {type: Specialization, source: art-regulatory-standard, target: art-policy-doc, label: externally-published instance}
@@ -267,19 +302,29 @@
 - {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-pattern-traceability, label: comprises}
 - {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-blueprint-traceability, label: comprises}
 - {type: Assignment, source: role-ea, target: bfn-pattern-blueprint-traceability}
-- {type: Assignment, source: role-sa, target: bfn-pattern-blueprint-traceability}
-- {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
+- {type: Access, source: process-pattern-traceability, target: bo-oscal-resolved-catalog, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
-- {type: Triggering, source: process-oscal-conversion, target: process-pattern-traceability, label: profiles feed traceability mapping}
+# Patterns are mapped to the resolved control set, not the raw profile — a
+# profile only selects and tailors controls; the Resolved Profile Catalog carries the
+# effective control content. (Tailoring -> Pattern mapping would be derived
+# via Resolution, so it is not modelled.)
+- {type: Triggering, source: process-profile-resolution, target: process-pattern-traceability, label: resolved controls feed traceability mapping}
+- {type: Flow, source: process-baseline-tailoring, target: process-effectiveness-monitoring, label: tailored baseline flows to}
 - {type: Realization, source: fn-pattern-authoring, target: process-pattern-traceability}
 - {type: Realization, source: art-pattern, target: bo-architecture-pattern}
-- {type: Association, source: bo-architecture-pattern, target: bo-oscal-profile, label: maps to}
+- {type: Association, source: bo-architecture-pattern, target: bo-oscal-resolved-catalog, label: maps to}
 - {type: Specialization, source: bo-implementation-blueprint, target: bo-architecture-pattern, label: specializes for a technology}
 - {type: Access, source: process-blueprint-traceability, target: bo-architecture-pattern, label: refines, props: {access_type: Read}}
-- {type: Access, source: process-blueprint-traceability, target: bo-oscal-profile, label: checks enablement against, props: {access_type: Read}}
+- {type: Access, source: process-blueprint-traceability, target: bo-oscal-resolved-catalog, label: checks enablement against, props: {access_type: Read}}
 - {type: Access, source: process-blueprint-traceability, target: bo-implementation-blueprint, label: authors, props: {access_type: Write}}
 - {type: Access, source: process-blueprint-traceability, target: bo-oscal-component, label: maps enablement & gaps to, props: {access_type: Write}}
 - {type: Triggering, source: process-pattern-traceability, target: process-blueprint-traceability, label: mapped pattern feeds blueprint derivation}
+# Blueprints are composed into a solution design (fn-solution-compose reads
+# art-blueprint), and the solution design is what the spec generator reads
+# (fn-spec-generator reads art-solution-design) — the hand-off from the
+# control-content chain into the delivery chain.
+- {type: Triggering, source: process-blueprint-traceability, target: process-solution-design, label: blueprints composed into}
+- {type: Triggering, source: process-solution-design, target: process-spec-generation, label: solution design specified}
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
 - {type: Realization, source: art-blueprint, target: bo-implementation-blueprint}
 - {type: Realization, source: art-oscal-component, target: bo-oscal-component}
@@ -287,8 +332,10 @@
 - {type: Aggregation, source: bo-solution-design, target: bo-solution-component, label: composed of}
 - {type: Specialization, source: bo-solution-component, target: bo-implementation-blueprint, label: instance of}
 - {type: Association, source: bo-oscal-ssp, target: bo-solution-design, label: derived from}
-- {type: Access, source: process-state-discovery, target: bo-oscal-ssp, label: reconciles against, props: {access_type: Read}}
 - {type: Realization, source: fn-drift-engine, target: process-state-discovery}
+# Reconciliation compares current state against the target state
+# (bfn-drift-management) — an information Flow, not a trigger.
+- {type: Flow, source: process-target-state-definition, target: process-state-discovery, label: target state reconciled against}
 - {type: Realization, source: art-solution-design, target: bo-solution-design}
 - {type: Realization, source: art-oscal-ssp, target: bo-oscal-ssp}
 
@@ -304,6 +351,33 @@
 - {type: Composition, source: bfn-release-management, target: process-release, label: comprises}
 - {type: Composition, source: bfn-drift-management, target: process-state-discovery, label: comprises}
 - {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
+- {type: Composition, source: bfn-architecture-strategy, target: process-target-state-definition, label: comprises}
+- {type: Assignment, source: role-ea, target: bfn-architecture-strategy}
+- {type: Composition, source: bfn-solution-design, target: process-solution-design, label: comprises}
+- {type: Assignment, source: role-sa, target: bfn-solution-design}
+- {type: Access, source: process-solution-design, target: bo-solution-design, label: composes, props: {access_type: Write}}
+- {type: Realization, source: fn-solution-compose, target: process-solution-design}
+- {type: Assignment, source: role-ea, target: bfn-drift-management, label: approves architectural drift}
+- {type: Access, source: process-target-state-definition, target: bo-target-state-architecture, label: defines, props: {access_type: Write}}
+- {type: Access, source: process-state-discovery, target: bo-current-state-architecture, label: reconciles, props: {access_type: Read}}
+- {type: Access, source: process-target-state-definition, target: bo-architecture-roadmap, label: plans, props: {access_type: Write}}
+- {type: Access, source: process-target-state-definition, target: bo-oscal-poam, label: takes remediation milestones from, props: {access_type: Read}}
+- {type: Association, source: bo-architecture-roadmap, target: bo-target-state-architecture, label: sequences the transition to}
+- {type: Access, source: process-state-discovery, target: bo-transition-state-architecture, label: reconciles against the state in effect, props: {access_type: Read}}
+- {type: Aggregation, source: bo-architecture-roadmap, target: bo-transition-state-architecture, label: sequences}
+- {type: Access, source: process-state-discovery, target: bo-conformance-backlog, label: records new findings in, props: {access_type: Write}}
+- {type: Aggregation, source: bo-conformance-backlog, target: bo-drift-finding, label: records}
+- {type: Access, source: process-drift-review, target: bo-drift-finding, label: triages, props: {access_type: Read}}
+- {type: Access, source: process-drift-review, target: bo-conformance-backlog, label: updates triage status in, props: {access_type: ReadWrite}}
+- {type: Realization, source: art-twin, target: bo-current-state-architecture}
+- {type: Realization, source: art-target-architecture, target: bo-target-state-architecture}
+- {type: Realization, source: art-oscal-poam, target: bo-oscal-poam}
+- {type: Realization, source: art-architecture-roadmap, target: bo-architecture-roadmap}
+- {type: Access, source: process-cicd-pipeline, target: bo-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
+- {type: Access, source: process-effectiveness-monitoring, target: bo-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
+- {type: Association, source: bo-oscal-poam, target: bo-oscal-assessment-results, label: tracks remediation of}
+- {type: Realization, source: art-drift-report, target: bo-drift-finding}
+- {type: Association, source: bo-conformance-backlog, target: art-remediation-item, label: approved findings raised as}
 - {type: Assignment, source: role-ops, target: bfn-effectiveness-assurance}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-assessment-plan, label: generates, props: {access_type: Write}}
@@ -314,6 +388,7 @@
 - {type: Association, source: bo-oscal-assessment-results, target: bo-oscal-assessment-plan, label: imports (per OSCAL's required import-ap)}
 - {type: Specialization, source: bo-release-gate-decision, target: bo-oscal-assessment-results, label: pre-release instance}
 - {type: Specialization, source: bo-control-effectiveness-evidence, target: bo-oscal-assessment-results, label: continuous-monitoring instance}
+- {type: Realization, source: fn-build-supervision, target: process-agentic-crew}
 - {type: Realization, source: fn-enforcement-gate, target: process-cicd-pipeline}
 - {type: Realization, source: fn-effectiveness-monitor, target: process-effectiveness-monitoring}
 - {type: Realization, source: art-gate-decision, target: bo-release-gate-decision}
@@ -402,7 +477,7 @@
 # B. Digital Twin & Knowledge Graph
 # =====================================================================
 - {type: Flow, source: ext-cloud, target: sub-twin, label: current-state configuration}
-- {type: Flow, source: ext-cicd, target: sub-twin, label: deployment events}
+- {type: Flow, source: ext-cicd, target: sub-twin, label: deployment events & gate outcomes}
 - type: Access
   source: sub-twin
   target: store-akg
@@ -435,8 +510,7 @@
   target: store-oscal
   label: reads control baselines & expected controls
   props: {access_type: Read}
-- {type: Flow, source: ext-cicd, target: sub-assurance, label: release candidate}
-- {type: Flow, source: sub-assurance, target: ext-cicd, label: gate decision}
+- {type: Flow, source: sub-assurance, target: ext-cicd, label: expected controls}
 - {type: Flow, source: ext-cloud, target: sub-assurance, label: runtime control signals}
 - type: Access
   source: sub-assurance
@@ -475,11 +549,18 @@
 - {type: Assignment, source: sub-twin, target: fn-twin-ingest}
 - {type: Assignment, source: sub-twin, target: fn-ledger-record}
 - {type: Assignment, source: sub-governance, target: fn-governance-eval}
-- {type: Assignment, source: sub-assurance, target: fn-enforcement-gate}
+- {type: Assignment, source: sub-assurance, target: fn-build-supervision}
 - {type: Assignment, source: sub-assurance, target: fn-effectiveness-monitor}
 - {type: Assignment, source: sub-assurance, target: fn-drift-engine}
 - {type: Assignment, source: sub-modelling, target: fn-notation-engine}
 - {type: Assignment, source: sub-modelling, target: fn-spec-generator}
+- {type: Assignment, source: ext-scm, target: fn-scm-versioning}
+- {type: Assignment, source: ext-scm, target: fn-scm-change-review}
+- {type: Assignment, source: ext-cicd, target: fn-cicd-build}
+- {type: Assignment, source: ext-cicd, target: fn-enforcement-gate}
+- {type: Assignment, source: ext-cicd, target: fn-cicd-deploy}
+- {type: Assignment, source: ext-itsm, target: fn-itsm-backlog}
+- {type: Assignment, source: ext-itsm, target: fn-itsm-change}
 
 # =====================================================================
 # C. Stage 1 — Controls & OSCAL
@@ -488,7 +569,6 @@
 - {type: Access, source: fn-ai-markdown-conversion, target: art-trestle-markdown, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-oscal-conversion, target: art-trestle-markdown, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-oscal-conversion, target: art-oscal-catalog, label: generates, props: {access_type: Write}}
-- {type: Access, source: fn-oscal-conversion, target: art-oscal-profile, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-catalog, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-profile, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-resolved-catalog, label: generates, props: {access_type: Write}}
@@ -496,11 +576,14 @@
 # =====================================================================
 # C. Stage 2 — Library & Design
 # =====================================================================
-- {type: Access, source: fn-pattern-authoring, target: art-oscal-catalog, label: references, props: {access_type: Read}}
+# Mirrors the business layer: patterns are mapped to (and blueprints checked
+# against) the resolved control set, which is generated output — read, never
+# written, by the Library.
+- {type: Access, source: fn-pattern-authoring, target: art-oscal-resolved-catalog, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-pattern-authoring, target: art-pattern, label: authors, props: {access_type: Write}}
-- {type: Access, source: fn-pattern-authoring, target: art-oscal-profile, label: maps pattern to, props: {access_type: Write}}
-- {type: Association, source: art-pattern, target: art-oscal-profile, label: maps to}
+- {type: Association, source: art-pattern, target: art-oscal-resolved-catalog, label: maps to}
 - {type: Access, source: fn-blueprint-authoring, target: art-pattern, label: refines, props: {access_type: Read}}
+- {type: Access, source: fn-blueprint-authoring, target: art-oscal-resolved-catalog, label: checks enablement against, props: {access_type: Read}}
 - {type: Access, source: fn-blueprint-authoring, target: art-blueprint, label: authors, props: {access_type: Write}}
 - {type: Access, source: fn-blueprint-authoring, target: art-oscal-component, label: maps blueprint to, props: {access_type: Write}}
 - {type: Access, source: fn-solution-compose, target: art-blueprint, label: composes, props: {access_type: Read}}
@@ -517,7 +600,7 @@
 # C. Stage 3 — Digital Twin & Governance
 # =====================================================================
 - {type: Access, source: ext-cloud, target: art-infra-state, label: reports, props: {access_type: Write}}
-- {type: Access, source: ext-cicd, target: art-deploy-event, label: records, props: {access_type: Write}}
+- {type: Access, source: fn-cicd-deploy, target: art-deploy-event, label: records, props: {access_type: Write}}
 - {type: Access, source: fn-twin-ingest, target: art-infra-state, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-twin-ingest, target: art-deploy-event, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-twin-ingest, target: art-twin, label: builds, props: {access_type: Write}}
@@ -548,15 +631,23 @@
 - {type: Access, source: fn-spec-generator, target: art-blueprint, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-spec-generator, target: art-solution-design, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-spec-generator, target: art-dev-spec, label: generates, props: {access_type: Write}}
-- {type: Access, source: ext-scm, target: art-dev-spec, label: consumes, props: {access_type: Read}}
-- {type: Access, source: ext-cicd, target: art-release-candidate, label: submits, props: {access_type: Write}}
+- {type: Access, source: fn-scm-versioning, target: art-dev-spec, label: versions, props: {access_type: Read}}
+- {type: Access, source: fn-scm-change-review, target: art-dev-spec, label: reviews against, props: {access_type: Read}}
+- {type: Flow, source: fn-scm-change-review, target: fn-cicd-build, label: merged change triggers}
+- {type: Access, source: fn-cicd-build, target: art-release-candidate, label: packages, props: {access_type: Write}}
+- {type: Access, source: fn-build-supervision, target: art-dev-spec, label: enforces, props: {access_type: Read}}
+- {type: Access, source: fn-build-supervision, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
+- {type: Flow, source: fn-build-supervision, target: fn-scm-change-review, label: conformant agent changes}
+- {type: Flow, source: fn-build-supervision, target: fn-ledger-record, label: records agent actions to}
 - {type: Access, source: fn-enforcement-gate, target: art-release-candidate, label: evaluates, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-ledger-entry, label: verifies process controls from, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-dev-spec, label: checks against, props: {access_type: Read}}
-- {type: Access, source: fn-enforcement-gate, target: art-oscal-ssp, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-oscal-catalog, label: checks against, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-enforcement-gate, target: art-gate-decision, label: issues, props: {access_type: Write}}
-- {type: Access, source: ext-cicd, target: art-gate-decision, label: acts on, props: {access_type: Read}}
+- {type: Access, source: fn-cicd-deploy, target: art-gate-decision, label: acts on, props: {access_type: Read}}
+- {type: Access, source: fn-itsm-change, target: art-gate-decision, label: attaches as approval evidence, props: {access_type: Read}}
 - {type: Access, source: fn-effectiveness-monitor, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
 - {type: Access, source: fn-effectiveness-monitor, target: art-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-effectiveness-monitor, target: art-twin, label: observes, props: {access_type: Read}}
@@ -565,11 +656,12 @@
 - {type: Specialization, source: art-effectiveness-evidence, target: art-oscal-ar, label: continuous-monitoring instance}
 - {type: Access, source: fn-drift-engine, target: art-twin, label: reads current state, props: {access_type: Read}}
 - {type: Access, source: fn-drift-engine, target: art-adr, label: reads intent, props: {access_type: Read}}
+- {type: Access, source: fn-drift-engine, target: art-architecture-roadmap, label: reconciles against the transition state in effect, props: {access_type: Read}}
 - {type: Access, source: fn-drift-engine, target: art-drift-report, label: classifies, props: {access_type: Write}}
 - {type: Access, source: fn-drift-engine, target: art-remediation-item, label: promotes to, props: {access_type: Write}}
-- {type: Access, source: ext-itsm, target: art-remediation-item, label: schedules, props: {access_type: Read}}
-- {type: Access, source: fn-drift-engine, target: art-oscal-poam, label: generates, props: {access_type: Write}}
-- {type: Association, source: art-remediation-item, target: art-oscal-poam, label: mirrored as}
+- {type: Access, source: fn-itsm-backlog, target: art-remediation-item, label: schedules, props: {access_type: ReadWrite}}
+- {type: Access, source: fn-enforcement-gate, target: art-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
+- {type: Access, source: fn-effectiveness-monitor, target: art-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
 
 # =====================================================================
 # C. Stores aggregate the persistent artefacts (ties C back to section B)
@@ -589,6 +681,8 @@
 - {type: Aggregation, source: store-akg, target: art-twin}
 - {type: Aggregation, source: store-akg, target: art-candidate-arch}
 - {type: Aggregation, source: store-akg, target: art-adr}
+- {type: Aggregation, source: store-akg, target: art-target-architecture}
+- {type: Aggregation, source: store-akg, target: art-architecture-roadmap}
 - {type: Aggregation, source: store-akg, target: art-impact-assessment}
 - {type: Aggregation, source: store-akg, target: art-archived-option}
 - {type: Aggregation, source: store-akg, target: art-drift-report}

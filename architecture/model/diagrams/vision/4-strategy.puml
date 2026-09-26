@@ -3,16 +3,17 @@
 
 title Strategy
 
-Motivation_Outcome(e_idfbcf1e02e62655, "Architecture as Executable Intelligence")
-Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
-Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
-Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
-Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
+Motivation_Outcome(e_id3be36e7ab88a59, "Approved Change Reaches Production at AI Speed")
+Motivation_Outcome(e_id4f39e9ec8e4656, "Compliance Proven Before Release")
+Motivation_Outcome(e_ide8275430b0ad5e, "Accountable, Auditable Automation")
 Strategy_CourseOfAction(e_ida9babe1fe97050, "Shift Governance Into the Pipeline")
 Strategy_CourseOfAction(e_id78f58d32222658, "Operate a Living Architecture Twin")
 Strategy_CourseOfAction(e_id0b01ce08664e58, "Curate Reuse Before Build")
 Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
   Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+  Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+  Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
 }
 Strategy_Resource(e_id689bf38e5d8a56, "AI Delivery Agents") {
   Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
@@ -22,8 +23,15 @@ Strategy_Resource(e_ida1f0927bfc4e50, "OSCAL Control Content") {
 }
 Strategy_Resource(e_id55d6b63f66465b, "Enterprise Architecture Practice") {
   Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+  Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+}
+Strategy_Resource(e_id24fcfedcc7a250, "Accumulated Evidence Record") {
+  Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
 }
 Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery")
+Strategy_ValueStream(e_id7ee8cdbf8ddc57, "Obligation to Evidence")
+Strategy_ValueStream(e_idc55b78731ffe56, "Exception to Decision")
+Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation")
 
 Rel_Realization_Up(e_idafba1b4ab1e756, e_ida9babe1fe97050, "")
 Rel_Realization_Up(e_id4a1c34ab69d151, e_ida9babe1fe97050, "")
@@ -33,9 +41,14 @@ Rel_Realization_Up(e_idc29413a2099958, e_ida9babe1fe97050, "")
 Rel_Realization_Up(e_id18ec07397a9d5f, e_id78f58d32222658, "")
 Rel_Realization_Up(e_id41aa3eb894c852, e_id78f58d32222658, "")
 Rel_Realization_Up(e_id752d1de3794f5f, e_id0b01ce08664e58, "")
-Rel_Serving_Up(e_ida9babe1fe97050, e_idcd5e1d4017725d, "")
-Rel_Serving_Up(e_id78f58d32222658, e_idcd5e1d4017725d, "")
 Rel_Serving_Up(e_id0b01ce08664e58, e_idcd5e1d4017725d, "")
-Rel_Realization_Up(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
+Rel_Serving_Up(e_ida9babe1fe97050, e_idcd5e1d4017725d, "")
+Rel_Serving_Up(e_ida9babe1fe97050, e_id7ee8cdbf8ddc57, "")
+Rel_Serving_Up(e_ida9babe1fe97050, e_idc55b78731ffe56, "")
+Rel_Serving_Up(e_id78f58d32222658, e_idfa7e21ab28235c, "")
+Rel_Realization_Up(e_idcd5e1d4017725d, e_id3be36e7ab88a59, "")
+Rel_Realization_Up(e_id7ee8cdbf8ddc57, e_id4f39e9ec8e4656, "")
+Rel_Realization_Up(e_idc55b78731ffe56, e_ide8275430b0ad5e, "")
+Rel_Realization_Up(e_idfa7e21ab28235c, e_id79b6a1e545325d, "")
 
 @enduml

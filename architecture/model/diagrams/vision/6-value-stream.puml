@@ -1,44 +1,39 @@
 @startuml
 !include <archimate/Archimate>
 
-title Value Stream — Governed Architecture Delivery
+title Value Stream Hand-offs
 
-Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")
-Motivation_Stakeholder(e_idb1fdf098c7c056, "Delivery Organisation")
-Motivation_Stakeholder(e_id133bbac4b3e450, "Risk & Compliance Function")
-Motivation_Outcome(e_idfbcf1e02e62655, "Architecture as Executable Intelligence")
-Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
-Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
-Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
-Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
-Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
-Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
-Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
-Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
 Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
-  Strategy_ValueStream(e_id447909387df55c, "Establish Control & Reuse Baseline")
+  Strategy_ValueStream(e_id447909387df55c, "Establish Reuse Baseline")
   Strategy_ValueStream(e_id01dab436206551, "Specify the Change")
   Strategy_ValueStream(e_id36fbfe00214758, "Build Under Supervision")
+  Strategy_ValueStream(e_idf362f39778065d, "Release to Production")
+}
+Strategy_ValueStream(e_id7ee8cdbf8ddc57, "Obligation to Evidence") {
+  Strategy_ValueStream(e_idde40c3d2b32359, "Establish Control Baseline")
   Strategy_ValueStream(e_idb542830057125a, "Prove Compliance")
-  Strategy_ValueStream(e_idf362f39778065d, "Release & Attest")
+}
+Strategy_ValueStream(e_idc55b78731ffe56, "Exception to Decision") {
+  Strategy_ValueStream(e_id57940702bdfc58, "Escalate Non-Standard Change")
+  Strategy_ValueStream(e_id2d06864964375b, "Decide & Sign Off")
+  Strategy_ValueStream(e_iddef15dd937ce53, "Record as Evidence")
+}
+Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
+  Strategy_ValueStream(e_id12b58c7f12735c, "Observe As-Built State")
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
 
-Rel_Association(e_idb1fdf098c7c056, e_idcd5e1d4017725d, "compliant releases at speed")
-Rel_Association(e_id3bf463ccf22a53, e_idcd5e1d4017725d, "sustained coherence")
-Rel_Association(e_id133bbac4b3e450, e_idcd5e1d4017725d, "provable compliance")
-Rel_Realization_Up(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
-Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
-Rel_Serving_Up(e_idafba1b4ab1e756, e_id01dab436206551, "")
-Rel_Serving_Up(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
-Rel_Serving_Up(e_id4a1c34ab69d151, e_idb542830057125a, "")
-Rel_Serving_Up(e_id08f340a094e552, e_idf362f39778065d, "")
-Rel_Serving_Up(e_id41aa3eb894c852, e_iddd4585a6a08153, "")
 Rel_Triggering_Right(e_id447909387df55c, e_id01dab436206551, "")
 Rel_Triggering_Right(e_id01dab436206551, e_id36fbfe00214758, "")
+Rel_Triggering_Right(e_idde40c3d2b32359, e_idb542830057125a, "")
+Rel_Triggering_Right(e_id57940702bdfc58, e_id2d06864964375b, "")
+Rel_Triggering_Right(e_id2d06864964375b, e_iddef15dd937ce53, "")
+Rel_Triggering_Right(e_id12b58c7f12735c, e_iddd4585a6a08153, "")
 Rel_Triggering_Right(e_id36fbfe00214758, e_idb542830057125a, "")
 Rel_Triggering_Right(e_idb542830057125a, e_idf362f39778065d, "")
-Rel_Triggering_Right(e_idf362f39778065d, e_iddd4585a6a08153, "")
-Rel_Flow_Right(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
+Rel_Triggering_Right(e_idb542830057125a, e_id57940702bdfc58, "not deterministically validated")
+Rel_Flow(e_id2d06864964375b, e_idf362f39778065d, "approval")
+Rel_Triggering_Right(e_idf362f39778065d, e_id12b58c7f12735c, "")
+Rel_Flow(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
 
 @enduml

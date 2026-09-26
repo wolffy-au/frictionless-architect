@@ -1,0 +1,23 @@
+@startuml
+!include <archimate/Archimate>
+
+title Value Stream — Obligation to Evidence
+
+Motivation_Stakeholder(e_idbd4abc7ec42554, "Prudential Regulator (APRA)")
+Motivation_Stakeholder(e_id133bbac4b3e450, "Risk & Compliance Function")
+Motivation_Outcome(e_id4f39e9ec8e4656, "Compliance Proven Before Release")
+Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
+Strategy_ValueStream(e_id7ee8cdbf8ddc57, "Obligation to Evidence") {
+  Strategy_ValueStream(e_idde40c3d2b32359, "Establish Control Baseline")
+  Strategy_ValueStream(e_idb542830057125a, "Prove Compliance")
+}
+
+Rel_Association(e_id133bbac4b3e450, e_id7ee8cdbf8ddc57, "provable compliance")
+Rel_Association(e_idbd4abc7ec42554, e_id7ee8cdbf8ddc57, "evidence before release")
+Rel_Realization_Up(e_id7ee8cdbf8ddc57, e_id4f39e9ec8e4656, "")
+Rel_Serving_Up(e_id72468b5b403450, e_idde40c3d2b32359, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_idb542830057125a, "")
+Rel_Triggering_Right(e_idde40c3d2b32359, e_idb542830057125a, "")
+
+@enduml
