@@ -1,6 +1,6 @@
 # ADR-0020: Frontend is a Vite dashboard, target-embedded in Backstage
 
-- **Status:** Proposed (Backstage embedding unconfirmed)
+- **Status:** Superseded by [ADR-0033](0033-ui-per-subsystem.md) (was Proposed; Backstage embedding unconfirmed)
 - **Date:** unknown (pre-dates this log)
 - **Sources:** `PROJECT_SPECIFICATION.md` Phase 3; `ARCHITECTURE.md` §4 (component 7), §10
 
