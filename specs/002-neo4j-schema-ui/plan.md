@@ -20,7 +20,7 @@ Deliver a single-user Neo4j schema visualiser that pairs every ArchiMate node/re
 
 ### Research Context
 - Visualization choice: cytoscape.js + vanilla JS/HTML tables so the FastAPI router can serve a static bundle that draws diagram/table views from the same JSON payload.  
-- Sample parsing: `defusedxml`-wrapped `ElementTree` normalizes `sample-data/schema/*` + `Test Model Full.xml` into JSON that highlights coverage gaps and positions (FR-003); `xmlschema` validates against the XSDs (see [ADR-0022](../../docs/adr/0022-schema-visualiser-lxml-xmlschema.md)).  
+- Sample parsing: `defusedxml`-wrapped `ElementTree` normalizes `sample-data/schema/*` + `Test Model Full.xml` into JSON that highlights coverage gaps and positions (FR-003); `xmlschema` validates the sample against the XSDs via `archimate3_Diagram.xsd`, reporting violations as non-blocking warnings (see [ADR-0022](../../docs/adr/0022-schema-visualiser-lxml-xmlschema.md)).  
 - Access model: Reuse Neo4j read credentials, cache aggregated payloads per quickstart, show warning “Sample data unavailable” when reloads fail, and keep schema view accessible per Constitution principles.
 
 ## Constitution Check
