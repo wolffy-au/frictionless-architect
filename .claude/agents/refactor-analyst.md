@@ -17,8 +17,9 @@ Poetry only for any inspection commands (`poetry run ...`).
 ## Inputs
 
 - Targets: the target topology in `ARCHITECTURE.md` (root = governance only; first-party
-  code → `platform/` Poetry monorepo; forks → `third_party/` submodules; visualiser
-  API/UI split is the first extraction; §9 migration risks; §10 open questions).
+  code → `platform/` Poetry monorepo; forks → `third_party/` submodules;
+  `controls-compliance-catalog` is the first extraction and the visualiser API/UI split
+  follows the knowledge-graph scaffold; §9 migration risks; §10 open questions).
 - Standards: `TECHNICAL.md` (File Structure, Code Quality, Software Architectural
   Patterns, DDD, circular-import / `src`-layout guidance), `.specify/memory/constitution.md`
   (I, VI, VII, VIII).
@@ -30,8 +31,9 @@ Poetry only for any inspection commands (`poetry run ...`).
 1. Map the current module graph: imports, layering, what depends on what, where cycles
    or upward dependencies exist. Note God-modules, mixed concerns, leaky abstractions.
 2. Compare current shape to the `ARCHITECTURE.md` target. Identify the concrete gap and
-   the smallest safe sequence of moves toward it — respecting that the visualiser split
-   is step 2 and the `FRICTIONLESS_ARCHITECT_` rename is its own epic (do not fold it in).
+   the smallest safe sequence of moves toward it — respecting the §8 order (the visualiser
+   split comes after the knowledge-graph scaffold, ADR-0005) and that the
+   `FRICTIONLESS_ARCHITECT_` rename is its own epic (do not fold it in).
 3. Assess testability: what is hard to test and why (hidden state, wide constructors,
    IO in the wrong layer), tying back to gaps `coverage-uplift` reported.
 4. Assess code-level structure: oversized functions/classes, duplication across modules,

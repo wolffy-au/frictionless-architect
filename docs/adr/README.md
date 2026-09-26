@@ -48,8 +48,8 @@ narrative docs.
 - **A** — [0003](0003-poetry-not-uv.md) — Poetry is the package manager, not `uv`
 - **A\*** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
   (`EPIC-` at root, `NNN-` per package)
-- **A** — [0005](0005-visualiser-api-ui-split-first-extraction.md) — Visualiser
-  API/UI split is the first extraction
+- **A** — [0005](0005-visualiser-api-ui-split-first-extraction.md) — Controls
+  catalog is the first extraction; visualiser API/UI split follows the knowledge graph
 - **A** — [0006](0006-prototype-neo4j-reference-only.md) — `prototype-neo4j` is
   reference-only, not a merge source
 - **A** — [0007](0007-architecture-model-as-graph-loadable-yaml.md) — Model
