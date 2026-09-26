@@ -1,0 +1,34 @@
+@startuml
+!include <archimate/Archimate>
+
+title Requirements Realization
+
+Motivation_Requirement(e_id7734176f89cb52, "Automated Specification Generation from Graph")
+Motivation_Requirement(e_id302f473d6cd750, "Automated Regulatory Obligation Mapping")
+Motivation_Requirement(e_idf8540f5942025a, "Pre-Deployment Compliance Gate Enforcement")
+Motivation_Requirement(e_idc4aa32266a5a5f, "Continuous As-Built vs. As-Designed Reconciliation")
+Motivation_Requirement(e_id613329062b255b, "Mandatory Human Sign-off for Non-Standard Changes")
+Motivation_Requirement(e_id648250d49fc85e, "Maintained Machine-Readable Control Catalog")
+Motivation_Requirement(e_id8d56dd769b9058, "Curated Reusable Architecture Library")
+Motivation_Requirement(e_id945f98ac87fe5d, "Authoritative Digital Twin of System State")
+Motivation_Requirement(e_id593e42936e3c58, "Immutable Forensic Audit Ledger")
+Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
+Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
+Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
+Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+
+Rel_Realization_Up(e_idafba1b4ab1e756, e_id7734176f89cb52, "")
+Rel_Realization_Up(e_id72468b5b403450, e_id302f473d6cd750, "")
+Rel_Realization_Up(e_id4a1c34ab69d151, e_idf8540f5942025a, "")
+Rel_Realization_Up(e_id41aa3eb894c852, e_idc4aa32266a5a5f, "")
+Rel_Realization_Up(e_id08f340a094e552, e_id613329062b255b, "")
+Rel_Realization_Up(e_id72468b5b403450, e_id648250d49fc85e, "")
+Rel_Realization_Up(e_id752d1de3794f5f, e_id8d56dd769b9058, "")
+Rel_Realization_Up(e_id18ec07397a9d5f, e_id945f98ac87fe5d, "")
+Rel_Realization_Up(e_idc29413a2099958, e_id593e42936e3c58, "")
+
+@enduml

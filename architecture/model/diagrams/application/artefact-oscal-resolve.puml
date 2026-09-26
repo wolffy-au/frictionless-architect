@@ -9,7 +9,7 @@ Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
 Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
   Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
   Application_DataObject(e_id9659a679544058, "OSCAL Profile")
-  Application_DataObject(e_id0bcf03d5bb0d58, "Resolved OSCAL Catalog")
+  Application_DataObject(e_id0bcf03d5bb0d58, "Resolved OSCAL Profile Catalog")
 }
 Application_Component(e_id0aed952692a556, "compliance-trestle")
 Application_DataObject(e_ide0d2eafd1b6957, "Regulatory Resolved Baseline Catalog")

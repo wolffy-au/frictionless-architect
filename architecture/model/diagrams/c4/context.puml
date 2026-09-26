@@ -10,7 +10,7 @@ SystemDb_Ext(n_idd915b3e838bf5b, "Regulatory Standard", "Verbatim upstream regul
 SystemDb_Ext(n_ide330e703d24759, "Policy / Standard Document", "Custom policy or standard authored by the Compliance Officer / Auditor.")
 SystemDb_Ext(n_id1d03973d3f5b52, "OSCAL Catalog", "Machine-readable control catalog.")
 SystemDb_Ext(n_id3a6eb7f6485a55, "OSCAL Profile", "Tailored control selection / baseline.")
-SystemDb_Ext(n_id2df79965778556, "Resolved OSCAL Catalog", "The flattened set of controls a tailored Profile actually selects, produced by resolving the Profile against its source Catalog(s) — the operative control baseline for downstream use.")
+SystemDb_Ext(n_id2df79965778556, "Resolved OSCAL Profile Catalog", "The flattened set of controls a tailored Profile actually selects, produced by resolving the Profile against its source Catalog(s) — the operative control baseline for downstream use.")
 SystemDb_Ext(n_idcd45bf9b5cfe51, "Architecture Pattern", "Technology-agnostic, reusable design with mapped controls.")
 SystemDb_Ext(n_id41a01cbfc25b5a, "Implementation Blueprint", "Technology-specific realisation of an architecture pattern, capturing control enablement status and gaps.")
 SystemDb_Ext(n_id0bb22ba44cfa50, "OSCAL Component Definition", "Control implementation claims for a reusable blueprint.")
@@ -43,7 +43,7 @@ System_Ext(n_id2610ae0cc2cc50, "LLM Provider", "Language model used for drafting
 System_Ext(n_idaf80425d61fd58, "RFP / Vendor Submissions", "Requests for proposal and competing vendor solution responses assessed at engagement time.")
 
 Rel(n_id2df79965778556, n_id3a6eb7f6485a55, "fulfills the profile's control selection")
-Rel(n_idcd45bf9b5cfe51, n_id3a6eb7f6485a55, "maps to")
+Rel(n_idcd45bf9b5cfe51, n_id2df79965778556, "maps to")
 Rel(n_id41a01cbfc25b5a, n_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel(n_ide1231d147af05e, n_id4b5ad5a2100656, "derived from")
 Rel(n_idb23da624fbab57, n_id2532acbff6cc51, "sequences the transition to")

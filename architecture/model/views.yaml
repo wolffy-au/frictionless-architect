@@ -281,6 +281,10 @@
   # view's own story, not this one's — exclude it so it doesn't repeat.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
+  # The process chain's own left-to-right order is the Delivery Choreography
+  # view's story; here Flow/Triggering are left undirected so the layout is
+  # driven by the realization chain (process -> capability -> stage -> outcome).
+  no_direction: [Flow, Triggering]
   include_types: [BusinessProcess]
   members:
     - outcome-change-at-ai-speed
@@ -320,30 +324,22 @@
     - bfn-architecture-strategy
     - bfn-solution-design
 
-# =====================================================================
-# Cross-cutting / later-phase views
-# =====================================================================
-
-- id: view-skeleton
-  name: Architecture Skeleton
-  diagram: cross-layer/skeleton
-  # The load-bearing subset (ADR-0010): motivation spine + the capabilities it
-  # drives. A deliberate cross-layer cut — no standard viewpoint spans
-  # motivation elements and Capability together.
-  # Outcome/Capability scoped via members, not include_types — see the note
-  # on view-stakeholder above; the IT4IT import added elements of both types.
-  viewpoint: custom
-  include_types: [Driver, Goal, Principle, Constraint, Requirement]
+- id: view-requirements-realization
+  name: Requirements Realization
+  viewpoint: requirements_realization
+  diagram: vision/8-requirements-realization
+  # Which capability realizes each functional requirement — every capability
+  # realizes at least one (ADR-0027 #1). Why each requirement exists
+  # (principle/constraint Influence, Requirement -> Outcome) is the
+  # Motivation and Goal Realization views' story, not this one's.
+  # Capability scoped via members, not include_types — see notes above; the
+  # IT4IT import added Capability elements.
+  include_types: [Requirement]
   # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story, not this one's (motivation spine -> capabilities) —
-  # exclude it so it doesn't repeat incidentally.
+  # view's own story — exclude it so it doesn't repeat incidentally.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
-    - outcome-drift-reconciled
-    - outcome-change-at-ai-speed
-    - outcome-compliance-before-release
-    - outcome-accountable-automation
     - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane
@@ -353,34 +349,31 @@
     - cap-control-catalog
     - cap-reusable-architecture
 
+# =====================================================================
+# Cross-cutting / later-phase views
+# =====================================================================
+
 - id: view-delivery
   name: Delivery Choreography
-  diagram: cross-layer/delivery
-  # BusinessProcess -> Capability realization: the standard viewpoint whose
-  # allow-list spans both (Capability + $BusinessElements$) is Outcome
-  # Realization, even though no Outcome element sits on this particular view.
-  viewpoint: outcome_realization
+  diagram: business/delivery
+  # The end-to-end business-process chain (Triggering / Flow hand-offs) —
+  # a standard Business Process Cooperation view. Which capability each
+  # process realizes is the Outcome Realization view's story, not this one's.
+  viewpoint: business_process_cooperation
   include_types: [BusinessProcess]
-  # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story, not this one's (BusinessProcess -> Capability) —
-  # exclude it so it doesn't repeat incidentally.
-  exclude:
-    - {type: Serving, source_type: Capability, target_type: Capability}
-  members:
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-drift-dashboard
-    - cap-control-catalog
-    - cap-forensic-ledger
-    - cap-human-approval-workflow
+  # Flow edges are left undirected so the layout engine can place their
+  # targets freely instead of looping them back over the chain.
+  no_direction: [Flow]
+  # The 16-process chain renders very wide; cap it so it fits a page.
+  max_width: 3800
 
 - id: view-subsystem-capabilities
   name: Subsystems & Capabilities
-  diagram: cross-layer/subsystem-capabilities
-  # ApplicationComponent -> Capability realization: the standard viewpoint
-  # whose allow-list spans both (Capability + $ApplicationElements$) is
-  # Outcome Realization, even though no Outcome element sits on this view.
-  viewpoint: outcome_realization
+  diagram: layered/subsystem-capabilities
+  # ApplicationComponent -> Capability realization spans the Strategy and
+  # Application layers — the standard Layered viewpoint, which exists for
+  # showing how layers line up.
+  viewpoint: layered
   # GH #20: the capability-to-capability Serving mesh is the Capability Map
   # view's own story, not this one's (ApplicationComponent -> Capability) —
   # exclude it so it doesn't repeat incidentally.
@@ -531,7 +524,7 @@
     - bfn-solution-design
     - role-sa
     - process-solution-design
-    - bo-oscal-profile
+    - bo-oscal-resolved-catalog
     - bo-architecture-pattern
     - bo-implementation-blueprint
     - bo-oscal-component
@@ -589,8 +582,7 @@
     - fn-blueprint-authoring
     - fn-solution-compose
     - fn-threat-model
-    - art-oscal-catalog
-    - art-oscal-profile
+    - art-oscal-resolved-catalog
     - art-oscal-component
     - art-oscal-ssp
     - art-pattern
@@ -682,7 +674,7 @@
   # in third_party/it4it/views.yaml — that repo is IT4IT-only content; this
   # view is a cross-*model* cut spanning both repos, so its diagram stays
   # flat at the diagrams/ root rather than living in any one layer folder —
-  # unlike cross-layer/subsystem-capabilities, which is only a cross-*layer*
+  # unlike layered/subsystem-capabilities, which is only a cross-*layer*
   # cut within this repo's own model and so does get a layer folder.
   # GH #20: this view's own story is the cap-* <-> it4it-cap-* Association
   # bridges, not the first-party capability-to-capability Serving mesh

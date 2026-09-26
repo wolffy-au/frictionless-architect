@@ -245,7 +245,9 @@ def _element_lines(
     return out
 
 
-def generate(path: str, view_name: str | None, no_direction: set[str] | None = None) -> tuple[str, list[str]]:
+def generate(
+    path: str, view_name: str | None, no_direction: set[str] | None = None, max_width: int | None = None
+) -> tuple[str, list[str]]:
     model = Model("diagram")
     model.read(path)
     warnings: list[str] = []
@@ -271,7 +273,11 @@ def generate(path: str, view_name: str | None, no_direction: set[str] | None = N
 
     children, contained, nested = _nest_tree(elements, relationships)
 
-    lines = ["@startuml", "!include <archimate/Archimate>", "", f"title {esc(title)}", ""]
+    lines = ["@startuml", "!include <archimate/Archimate>", ""]
+    if max_width:
+        # Scales the rendered image down (never up) to fit this width in px.
+        lines.append(f"scale max {max_width} width")
+    lines += [f"title {esc(title)}", ""]
     lines += _element_lines(elements, children, contained, warnings)
     lines.append("")
 
@@ -308,11 +314,17 @@ def main() -> int:
         metavar="TYPE",
         help="drop the default layout-direction hint for this relationship type (repeatable)",
     )
+    ap.add_argument(
+        "--max-width",
+        type=int,
+        metavar="PX",
+        help="cap the rendered width in pixels (PlantUML `scale max PX width`); smaller diagrams are untouched",
+    )
     ap.add_argument("-o", "--output", help="write .puml here (default: stdout)")
     args = ap.parse_args()
 
     try:
-        puml, warnings = generate(args.model, args.view, set(args.no_direction))
+        puml, warnings = generate(args.model, args.view, set(args.no_direction), args.max_width)
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"error: {exc}\n")
         return 2

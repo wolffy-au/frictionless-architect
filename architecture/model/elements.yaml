@@ -637,7 +637,7 @@
   desc: >-
     GH #7: the stable business capability of turning authored policy and
     upstream regulatory standards into machine-readable OSCAL Catalogs,
-    tailoring them into Profiles and resolving those into Resolved Catalogs,
+    tailoring them into Profiles and resolving those into Resolved Profile Catalogs,
     independent of the specific authoring/conversion process steps.
 - type: BusinessFunction
   id: bfn-pattern-blueprint-traceability
@@ -702,15 +702,16 @@
   name: OSCAL Profile Resolution
   desc: >-
     Automatically resolves a tailored OSCAL Profile against its source
-    Catalog(s) into a Resolved OSCAL Catalog. Realized at application layer
+    Catalog(s) into a Resolved OSCAL Profile Catalog. Realized at application layer
     by fn-oscal-profile-resolve.
 - type: BusinessProcess
   id: process-pattern-traceability
   name: Pattern Control Traceability Mapping
   desc: >-
-    The Enterprise Architect maps generated OSCAL Profile controls onto
-    architecture patterns to capture controls traceability. Realized at
-    application layer by fn-pattern-authoring.
+    The Enterprise Architect maps the resolved controls of the tailored
+    baseline (the Resolved OSCAL Profile Catalog) onto architecture patterns to
+    capture controls traceability. Realized at application layer by
+    fn-pattern-authoring.
 - type: BusinessProcess
   id: process-blueprint-traceability
   name: Blueprint Control Enablement Mapping
@@ -752,7 +753,7 @@
   desc: Tailored control selection / baseline.
 - type: BusinessObject
   id: bo-oscal-resolved-catalog
-  name: Resolved OSCAL Catalog
+  name: Resolved OSCAL Profile Catalog
   desc: >-
     The flattened set of controls a tailored Profile actually selects,
     produced by resolving the Profile against its source Catalog(s) — the
@@ -1051,8 +1052,8 @@
   id: fn-pattern-authoring
   name: Pattern Authoring & Control Mapping
   desc: >-
-    Author technology-agnostic architecture patterns and map them to OSCAL
-    Profiles.
+    Author technology-agnostic architecture patterns and map them to the
+    controls of a Resolved OSCAL Profile Catalog.
 - type: ApplicationFunction
   id: fn-blueprint-authoring
   name: Blueprint Authoring & Component Mapping
@@ -1192,7 +1193,7 @@
 - {type: DataObject, id: art-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: "Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input."}
 - {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
 - {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
-- {type: DataObject, id: art-oscal-resolved-catalog, name: Resolved OSCAL Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
+- {type: DataObject, id: art-oscal-resolved-catalog, name: Resolved OSCAL Profile Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
 - {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
 - {type: DataObject, id: art-oscal-ssp, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
 - {type: DataObject, id: art-pattern, name: Architecture Pattern, desc: "Technology-agnostic, reusable design with mapped controls."}

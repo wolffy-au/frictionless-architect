@@ -10,8 +10,7 @@ Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_iddc37081ec05957, "Threat Modelling")
 }
 Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
-  Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
-  Application_DataObject(e_id9659a679544058, "OSCAL Profile")
+  Application_DataObject(e_id0bcf03d5bb0d58, "Resolved OSCAL Profile Catalog")
   Application_DataObject(e_id192cc75cb2785d, "OSCAL Component Definition")
   Application_DataObject(e_id20c3b0ad770d57, "OSCAL System Security Plan")
 }
@@ -24,11 +23,11 @@ Application_DataObject(e_idb9264b9a2b5a50, "Pattern & Blueprint Repository") {
 
 Rel_Access_rw(e_id3b0beba52b5a5c, e_idb18c37abc9ff51, "references Profiles & Components; emits SSP")
 Rel_Access_w(e_id3b0beba52b5a5c, e_idb9264b9a2b5a50, "stores patterns, blueprints & designs")
-Rel_Access_r(e_iddd11da366c175c, e_idddf65887d53f57, "references")
+Rel_Access_r(e_iddd11da366c175c, e_id0bcf03d5bb0d58, "reads")
 Rel_Access_w(e_iddd11da366c175c, e_idd89db32a51b55a, "authors")
-Rel_Access_w(e_iddd11da366c175c, e_id9659a679544058, "maps pattern to")
-Rel_Association(e_idd89db32a51b55a, e_id9659a679544058, "maps to")
+Rel_Association(e_idd89db32a51b55a, e_id0bcf03d5bb0d58, "maps to")
 Rel_Access_r(e_ide1ad558dbdf859, e_idd89db32a51b55a, "refines")
+Rel_Access_r(e_ide1ad558dbdf859, e_id0bcf03d5bb0d58, "checks enablement against")
 Rel_Access_w(e_ide1ad558dbdf859, e_id6599578e1d1057, "authors")
 Rel_Access_w(e_ide1ad558dbdf859, e_id192cc75cb2785d, "maps blueprint to")
 Rel_Access_r(e_idf6a4f65b28fc5e, e_id6599578e1d1057, "composes")

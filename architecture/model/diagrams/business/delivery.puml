@@ -1,14 +1,9 @@
 @startuml
 !include <archimate/Archimate>
 
+scale max 3800 width
 title Delivery Choreography
 
-Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
-Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
-Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
-Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
-Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
-Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
 Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
 Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
 Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
@@ -25,16 +20,6 @@ Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
 Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
 Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 
-Rel_Realization_Up(e_id65467a0befb959, e_idafba1b4ab1e756, "")
-Rel_Realization_Up(e_id799f46ebb7e15b, e_id4a1c34ab69d151, "woven enforcement")
-Rel_Realization_Up(e_id3a7a27eefeb751, e_id41aa3eb894c852, "")
-Rel_Realization_Up(e_id14fa9f783d5350, e_id72468b5b403450, "")
-Rel_Realization_Up(e_idfeca8b2013795e, e_id72468b5b403450, "")
-Rel_Realization_Up(e_id5bcc1abc98d154, e_id72468b5b403450, "")
-Rel_Realization_Up(e_id57b0ad85b82a5e, e_id72468b5b403450, "")
-Rel_Realization_Up(e_id0ee6a752deff52, e_id4a1c34ab69d151, "")
-Rel_Realization_Up(e_id9459a13c29ec5d, e_idc29413a2099958, "")
-Rel_Realization_Up(e_id33612ed603b85e, e_id08f340a094e552, "")
 Rel_Triggering_Right(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
 Rel_Triggering_Right(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
 Rel_Triggering_Right(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")
@@ -43,9 +28,11 @@ Rel_Triggering_Right(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings 
 Rel_Triggering_Right(e_idfeca8b2013795e, e_id5bcc1abc98d154, "catalogs feed tailoring")
 Rel_Triggering_Right(e_id5bcc1abc98d154, e_id57b0ad85b82a5e, "tailored profile feeds resolution")
 Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
-Rel_Triggering_Right(e_id5bcc1abc98d154, e_id65065ee24d3c54, "profiles feed traceability mapping")
-Rel_Flow_Right(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
+Rel_Triggering_Right(e_id57b0ad85b82a5e, e_id65065ee24d3c54, "resolved controls feed traceability mapping")
+Rel_Flow(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
 Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
-Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
+Rel_Triggering_Right(e_id378927722a8d5a, e_id4991c823f6d55b, "blueprints composed into")
+Rel_Triggering_Right(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
+Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 
 @enduml

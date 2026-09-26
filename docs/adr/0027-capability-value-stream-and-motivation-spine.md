@@ -1,7 +1,7 @@
 # ADR-0027: Capability layer carries a value stream and an explicit motivation spine
 
 - **Status:** Accepted
-- **Date:** 2026-08-30
+- **Date:** 2026-08-30 (updated 2026-09-26)
 - **Sources:** this session; `architecture/model/elements.yaml` §A, `architecture/model/relationships.yaml` §A
 
 ## Context
@@ -41,63 +41,53 @@ The architecture model's Strategy and Motivation layers were under-connected:
    regulation), `cap-reusable-architecture` → *Reusable Architecture Curation*.
    IDs are unchanged.
 
-3. **A value stream is the outcome-oriented view of delivery.**
-   `vs-governed-delivery` "Governed Architecture Delivery" is a `Composition` of
-   six stages (`ValueStream` elements): Establish Control & Reuse Baseline →
-   Specify the Change → Build Under Supervision → Prove Compliance → Release &
-   Attest → Reconcile & Remediate. Each stage is `Serving`-linked from the
-   capabilities that enable it. `Capability → Capability` `Serving` edges record
-   the dependency order (e.g. Architecture Knowledge Management serves Executable
-   Specification Generation).
+3. **Value streams are the outcome-oriented view of delivery.** There is one
+   value stream per outcome, each a `Composition` of its stages (`ValueStream`
+   elements) — see [ADR-0033](0033-value-streams-per-outcome.md) for the four
+   streams, their stages and the hand-offs between them. Each stage is
+   `Serving`-linked from the capabilities that enable it. `Capability →
+   Capability` `Serving` edges record the dependency order (e.g. Architecture
+   Knowledge Management serves Executable Specification Generation).
 
-   *Amended 2026-09-26:* superseded in part by
-   [ADR-0033](0033-value-streams-per-outcome.md) — there are now four value
-   streams, one per outcome, and this stream's Prove, Reconcile and
-   sign-off/attest stages moved to them.
+4. **The goal is realized by outcomes, and each outcome by a value stream.**
+   *Frictionless Architecture & Governance at Machine Speed* is the single
+   `Goal`; four `Outcome`s `Realization`-link to it — *Approved Change Reaches
+   Production at AI Speed*, *Compliance Proven Before Release*, *Accountable,
+   Auditable Automation* and *Drift Detected and Reconciled Continuously*
+   (`outcome-drift-reconciled`). Each value stream `Realization`-links to
+   exactly one outcome, and each functional requirement realizes exactly one
+   outcome, never the goal directly. "Architecture as executable
+   intelligence" is not an element: it describes the means, and lives in the
+   `Governed Architecture Delivery` value stream's description. The spine is:
+   driver → assessment → outcome → goal, with requirements and value streams
+   realizing outcomes.
 
-4. **"Architecture as Executable Intelligence" is an Outcome, not a Principle.**
-   It is `Realization`-linked to a new `Goal`, *Frictionless Architecture &
-   Governance at Machine Speed*, which the four drivers `Influence`. The value
-   stream `Realization`-links to the outcome. This gives the motivation layer a
-   spine: drivers → goal ← outcome ← value stream.
-
-   *Amended 2026-09-26:* the goal is now realized by four outcomes, and each
-   functional requirement realizes exactly one of them (never the goal
-   directly). `outcome-executable-intelligence` was renamed *Drift Detected
-   and Reconciled Continuously* (id now `outcome-drift-reconciled`) once only
-   the twin and reconciliation requirements realized it; "architecture as executable
-   intelligence" now lives in the `Governed Architecture Delivery` value
-   stream's description.
-
-5. **Drivers, principles and constraints `Influence` the functional
-   requirements they motivate / guide / shape** — 11 driver edges, 7 principle
-   edges, 10 constraint edges. (The principle and constraint edges landed as a
-   verified second pass immediately after the rest of this ADR.) No motivation
-   element is left unconnected.
-
-   *Amended 2026-09-26:* drivers no longer influence requirements directly —
-   each driver influences the assessment that analyses it, and each assessment
-   influences the outcome that answers it (not the goal, and not a
-   requirement). Only principles and constraints influence requirements, and
-   each influences just the one requirement that most directly
-   operationalises it — 3 principle edges and 4 constraint edges, down from
-   7 and 10, to keep the Motivation view readable. The rule: no edge that an
-   existing Assessment → Outcome, Requirement → Outcome or Outcome → Goal
-   chain already derives.
+5. **Every motivation element is connected, with no derived edges.** Each
+   stakeholder is `Association`-linked to the drivers it holds; each driver
+   `Influence`s the assessment that analyses it; each assessment `Influence`s
+   the outcome that answers it. Principles and constraints are the only
+   elements that `Influence` requirements, and each influences just the one
+   requirement that most directly operationalises it (3 principle edges, 4
+   constraint edges), which keeps the Motivation view readable. No edge is
+   modelled that an existing Assessment → Outcome, Requirement → Outcome or
+   Outcome → Goal chain already derives — so no Assessment → Goal, Assessment
+   → Requirement, Driver → Requirement or Requirement → Goal edge.
 
 6. **`const-model-governance` merged into `const-model-risk`** —
    *Model Risk Management (SR 11-7 / APRA)*.
 
 ## Consequences
 
-- The skeleton grows by 1 goal, 1 outcome and 7 value-stream elements. ADR-0010
+- The skeleton carries 1 goal, 4 outcomes and 15 value-stream elements (4
+  streams, 11 stages). ADR-0010
   is annotated to reflect the new element counts; these are structural
   traceability, not the speculative detail ADR-0010 excluded.
 - Two new views: **Capability Map & Value Stream** and **Delivery
-  Choreography** (the latter carries the business-process chain, which was
-  dropped from the now motivation-only skeleton view).
-- Every motivation element (driver, goal, outcome, principle, constraint,
-  requirement) is now connected; the skeleton view has no orphan boxes.
+  Choreography** (a Business Process Cooperation view of the
+  business-process chain).
+- Every motivation element (stakeholder, driver, assessment, goal, outcome,
+  principle, constraint, requirement) is connected; the Motivation view has
+  no orphan boxes.
 - `includes` free-text properties were removed from the six subsystems — the
   same decomposition is already carried by the section-C `ApplicationFunction`
   elements and their `Assignment` edges (unrelated cleanup, done in the same

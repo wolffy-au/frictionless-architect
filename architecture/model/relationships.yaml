@@ -302,19 +302,29 @@
 - {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-pattern-traceability, label: comprises}
 - {type: Composition, source: bfn-pattern-blueprint-traceability, target: process-blueprint-traceability, label: comprises}
 - {type: Assignment, source: role-ea, target: bfn-pattern-blueprint-traceability}
-- {type: Access, source: process-pattern-traceability, target: bo-oscal-profile, label: reads, props: {access_type: Read}}
+- {type: Access, source: process-pattern-traceability, target: bo-oscal-resolved-catalog, label: reads, props: {access_type: Read}}
 - {type: Access, source: process-pattern-traceability, target: bo-architecture-pattern, label: maps controls into, props: {access_type: Write}}
-- {type: Triggering, source: process-baseline-tailoring, target: process-pattern-traceability, label: profiles feed traceability mapping}
+# Patterns are mapped to the resolved control set, not the raw profile — a
+# profile only selects and tailors controls; the Resolved Profile Catalog carries the
+# effective control content. (Tailoring -> Pattern mapping would be derived
+# via Resolution, so it is not modelled.)
+- {type: Triggering, source: process-profile-resolution, target: process-pattern-traceability, label: resolved controls feed traceability mapping}
 - {type: Flow, source: process-baseline-tailoring, target: process-effectiveness-monitoring, label: tailored baseline flows to}
 - {type: Realization, source: fn-pattern-authoring, target: process-pattern-traceability}
 - {type: Realization, source: art-pattern, target: bo-architecture-pattern}
-- {type: Association, source: bo-architecture-pattern, target: bo-oscal-profile, label: maps to}
+- {type: Association, source: bo-architecture-pattern, target: bo-oscal-resolved-catalog, label: maps to}
 - {type: Specialization, source: bo-implementation-blueprint, target: bo-architecture-pattern, label: specializes for a technology}
 - {type: Access, source: process-blueprint-traceability, target: bo-architecture-pattern, label: refines, props: {access_type: Read}}
-- {type: Access, source: process-blueprint-traceability, target: bo-oscal-profile, label: checks enablement against, props: {access_type: Read}}
+- {type: Access, source: process-blueprint-traceability, target: bo-oscal-resolved-catalog, label: checks enablement against, props: {access_type: Read}}
 - {type: Access, source: process-blueprint-traceability, target: bo-implementation-blueprint, label: authors, props: {access_type: Write}}
 - {type: Access, source: process-blueprint-traceability, target: bo-oscal-component, label: maps enablement & gaps to, props: {access_type: Write}}
 - {type: Triggering, source: process-pattern-traceability, target: process-blueprint-traceability, label: mapped pattern feeds blueprint derivation}
+# Blueprints are composed into a solution design (fn-solution-compose reads
+# art-blueprint), and the solution design is what the spec generator reads
+# (fn-spec-generator reads art-solution-design) — the hand-off from the
+# control-content chain into the delivery chain.
+- {type: Triggering, source: process-blueprint-traceability, target: process-solution-design, label: blueprints composed into}
+- {type: Triggering, source: process-solution-design, target: process-spec-generation, label: solution design specified}
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
 - {type: Realization, source: art-blueprint, target: bo-implementation-blueprint}
 - {type: Realization, source: art-oscal-component, target: bo-oscal-component}
@@ -323,6 +333,9 @@
 - {type: Specialization, source: bo-solution-component, target: bo-implementation-blueprint, label: instance of}
 - {type: Association, source: bo-oscal-ssp, target: bo-solution-design, label: derived from}
 - {type: Realization, source: fn-drift-engine, target: process-state-discovery}
+# Reconciliation compares current state against the target state
+# (bfn-drift-management) — an information Flow, not a trigger.
+- {type: Flow, source: process-target-state-definition, target: process-state-discovery, label: target state reconciled against}
 - {type: Realization, source: art-solution-design, target: bo-solution-design}
 - {type: Realization, source: art-oscal-ssp, target: bo-oscal-ssp}
 
@@ -563,11 +576,14 @@
 # =====================================================================
 # C. Stage 2 — Library & Design
 # =====================================================================
-- {type: Access, source: fn-pattern-authoring, target: art-oscal-catalog, label: references, props: {access_type: Read}}
+# Mirrors the business layer: patterns are mapped to (and blueprints checked
+# against) the resolved control set, which is generated output — read, never
+# written, by the Library.
+- {type: Access, source: fn-pattern-authoring, target: art-oscal-resolved-catalog, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-pattern-authoring, target: art-pattern, label: authors, props: {access_type: Write}}
-- {type: Access, source: fn-pattern-authoring, target: art-oscal-profile, label: maps pattern to, props: {access_type: Write}}
-- {type: Association, source: art-pattern, target: art-oscal-profile, label: maps to}
+- {type: Association, source: art-pattern, target: art-oscal-resolved-catalog, label: maps to}
 - {type: Access, source: fn-blueprint-authoring, target: art-pattern, label: refines, props: {access_type: Read}}
+- {type: Access, source: fn-blueprint-authoring, target: art-oscal-resolved-catalog, label: checks enablement against, props: {access_type: Read}}
 - {type: Access, source: fn-blueprint-authoring, target: art-blueprint, label: authors, props: {access_type: Write}}
 - {type: Access, source: fn-blueprint-authoring, target: art-oscal-component, label: maps blueprint to, props: {access_type: Write}}
 - {type: Access, source: fn-solution-compose, target: art-blueprint, label: composes, props: {access_type: Read}}

@@ -23,6 +23,7 @@ Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
 }
 
 Rel_Triggering_Right(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
+Rel_Flow_Right(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 Rel_Access_w(e_id395c9c2923aa56, e_id2532acbff6cc51, "defines")
 Rel_Access_r(e_id3a7a27eefeb751, e_id66f6cfb386e056, "reconciles")
 Rel_Access_w(e_id395c9c2923aa56, e_idb23da624fbab57, "plans")
