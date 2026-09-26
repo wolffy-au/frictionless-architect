@@ -1,7 +1,7 @@
 ---
 title: Agent Skills & Workflows
 generated: 2026-09-26
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - .claude/agents/README.md
   - .claude/agents/acceptance-author.md

@@ -1,7 +1,7 @@
 ---
 title: Architecture Overview
 generated: 2026-09-26
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
   - TECHNICAL.md
@@ -114,13 +114,13 @@ packages under `platform/packages/`, each holding an `api/` and a `ui/`
 
 | # | Subsystem | Package | Build vs wrap | Scope (and what it absorbs from the old 8-component grouping) |
 |---|---|---|---|---|
-| 1 | Controls & Compliance Catalog | `controls-compliance-catalog` | build, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles; consumes the vendored OSCAL content |
+| 1 | Controls & Compliance Catalog | `controls-compliance-catalog` | build, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles; consumes the vendored OSCAL content. **First extraction** (§8.1, ADR-0005) |
 | 2 | Reusable Architecture Library | `reusable-architecture-library` | build | Patterns, blueprints, solution designs, candidate options, and threat modelling of them (the user-facing part of old 8) |
 | 3 | Digital Twin & Knowledge Graph | `digital-twin-knowledge-graph` | build, wraps a forked ArchiMate parser | Old 2 + old 6: intent and twin planes, forensic ledger, traceability matrix, NL-to-graph queries; absorbs `schema/manager.py` and `sample_parser.py` |
 | 4 | Architecture Governance | `architecture-governance` | build | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off |
 | 5 | Conformance & Drift Assurance | `conformance-drift-assurance` | build, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate enforcement (CPS 230/234), BAU monitoring, drift detection, Break-Glass, remediation tickets |
 | 6 | Modelling & Specification | `modelling-specification` | build | ArchiMate / C4 / UML modelling and executable-spec generation |
-| — | Schema Visualiser API (today's `visualizer/`) | `schema-visualizer-api` | build | First extraction; where its UI lands is open (#55) |
+| — | Schema Visualiser API (today's `visualizer/`) | `schema-visualizer-api` | build | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005); where its UI lands is open (#55) |
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or
 dissolved (`ARCHITECTURE.md` §4):
@@ -202,56 +202,71 @@ now the business specification (`docs/adr/0004-two-tier-spec-numbering.md`
 
 ## Migration sequence
 
-`ARCHITECTURE.md` §8: (1) empty `platform/` Poetry monorepo skeleton with green
-CI → (2) **first extraction: visualiser API/UI split** → (3) prove the fan-out
-pattern → (4) scaffold `digital-twin-knowledge-graph`, port `prototype-neo4j` ideas →
-(5) vendor confirmed forks → (6) re-home specs → (7) extract remaining
-components as work reaches them. §8.1 has a detailed checklist for the visualiser
-split (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
+`ARCHITECTURE.md` §8 was reordered on 2026-09-26 (GH #60): (1) empty
+`platform/` Poetry monorepo skeleton with green CI → (2) **first extraction:
+`controls-compliance-catalog`**, home of the policy-to-OSCAL pipeline (GH #44,
+§8.1) → (3) prove the fan-out pattern (workspace lock resolves, tests pass) →
+(4) scaffold `digital-twin-knowledge-graph`, port `prototype-neo4j` ideas → (5)
+vendor confirmed forks + wire `fork-sync` → (6) re-home specs to the two-tier
+scheme → (7) extract remaining components as work reaches them, **including
+the visualiser API/UI split** (§8.2), now that step 4 has delivered the read
+path it consumes. The steps are modelled in `architecture/model/` section E as
+Work Packages, with the Baseline / Transition / Target Plateaus and the gaps
+between them (GH #65) — see the migration-sequence diagram
+(`architecture/model/diagrams/migration/sequence.svg`) and the packaging view
+(`architecture/model/diagrams/implementation/packaging.svg`), which orders
+each package after the ones it consumes (`ARCHITECTURE.md` §8). See
+[Architecture Views & Diagrams](architecture-diagrams.md).
 
-The **first extraction** now moves only `visualizer/{api,cache,config}.py` plus
-the visualiser's own payload / coverage-merge logic and the FastAPI router,
-dropping the server-rendered HTML route and Jinja/static mounts (no confirmed
-consumer today). `schema/manager.py` (the Neo4j write/migrate/audit
-controller), `visualizer/data_loader.py` (the Neo4j read path) and
-`sample_parser.py` do **not** move into `schema-visualizer-api` — they go to
-`packages/digital-twin-knowledge-graph` instead, because the visualiser only ever needed
-read access and `sample_parser.py` has no visualiser-specific coupling
+**§8.1 — first extraction, `controls-compliance-catalog`.** The visualiser
+split (the old step 2) makes `schema-visualizer-api` consume
+`digital-twin-knowledge-graph` as a library, but that package is only
+scaffolded at step 4 — so the split couldn't complete before step 4 existed
+(GH #60). The policy-to-OSCAL pipeline (GH #44) became the delivery priority
+instead: it is new code with no knowledge-graph dependency (in the model,
+`Controls & Compliance Catalog` reads only the framework packs), so it is
+written straight into `packages/controls-compliance-catalog` and proves the
+pattern at step 3 without waiting on step 4. `specs/003-oscal-ai-conversion`,
+which had planned an `/oscal` router in the flat `src/`, is to be re-targeted
+at this package — not yet done; tracked as an open item in `ARCHITECTURE.md`
+§8.1 (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`, revised
+2026-09-26).
+
+**§8.2 — visualiser API/UI split, now step 7.** The split itself is unchanged
+from the original decision: `packages/schema-visualizer-api` gets
+`visualizer/{api,cache,config}.py`, the visualiser's own payload /
+coverage-merge logic, and the FastAPI router (JSON only, dropping the
+server-rendered HTML route and Jinja/static mounts — no confirmed consumer
+today). `schema/manager.py` (the Neo4j write/migrate/audit controller),
+`visualizer/data_loader.py` (the Neo4j read path), and `sample_parser.py` move
+to `packages/digital-twin-knowledge-graph` instead — the visualiser only ever
+needed read access, and `sample_parser.py` has no visualiser-specific coupling
 (dependency-free stdlib ArchiMate-XML parsing). `schema-visualizer-api`
-consumes `digital-twin-knowledge-graph` as a **path-dependency library** (its own Neo4j
-connection), not over HTTP — no second consumer exists yet, so a service
-contract and internal auth would be premature; this is expected to graduate to
-HTTP later, so the read-path interface must stay narrow and Neo4j-driver-free
-(`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`, revised
-2026-09-05). `ARCHITECTURE.md` now records both as resolved (§10 Q8, Q9) and
-§8.1's checklist names the knowledge-graph package as their destination.
-
-§8.1 also reflects what has already landed: the visualiser is JSON only, its
-router served from the shared app in `frictionless_architect/app.py`. The HTML
-route was dropped on 2026-09-13, so the remaining UI step is to build the Vite
-app and delete the orphaned `visualizer/static/` and `templates/`
-(`ARCHITECTURE.md` §8.1).
-
-One ordering gap is open: §8 splits the visualiser at step 2 but scaffolds
-`digital-twin-knowledge-graph` at step 4, while ADR-0005 has the API consume
-that package as a library. Whether to scaffold a minimal read path early,
-reorder, or import from the flat package in the interim is tracked in #60
-(`ARCHITECTURE.md` §10 Q10).
-
+consumes `digital-twin-knowledge-graph` as a **path-dependency library** (its
+own Neo4j connection), not over HTTP, until a second consumer needs that
+interface to graduate — so the read-path interface stays narrow and
+Neo4j-driver-free now (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
 The target `packages/schema-visualizer-ui` Vite app no longer folds into a
-dashboard; its home is open (#55) (`ARCHITECTURE.md` §8.1;
-`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
+dashboard; its home is open (#55).
 
-An interim step has landed ahead of the split (ADR-0005 revised
-2026-09-24). `specs/003-oscal-ai-conversion` mounts an `/oscal` router on
-the same FastAPI app, so an app named after the visualiser no longer fit.
-The `app`/`lifespan` construction moved out of `visualizer/__init__.py` into
-a neutral `frictionless_architect/app.py`, and the entry point is now
-`uvicorn frictionless_architect.app:app`. `schema-visualizer-api` still gets
-its own app object once the package split happens
-(`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
-§"Implementation status (2026-09-24)"; `ARCHITECTURE.md` §8.1 checklist).
-See [Visualizer Service](visualizer-service.md).
+§8.2 also reflects what has already landed ahead of the split itself: the
+visualiser is JSON only, its router served from the shared app in
+`frictionless_architect/app.py`. The HTML route was dropped on 2026-09-13, so
+the remaining UI step is to build the Vite app and delete the orphaned
+`visualizer/static/` and `templates/`. And since `specs/003-oscal-ai-conversion`
+mounts a new `/oscal` router onto that same shared app, naming it after the
+visualiser no longer fit: the `app`/`lifespan` construction moved out of
+`visualizer/__init__.py` into a neutral `frictionless_architect/app.py`, entry
+point now `uvicorn frictionless_architect.app:app` — an interim rename for the
+flat layout; `schema-visualizer-api` still gets its own app object once the
+package split happens (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
+§"Implementation status" 2026-09-13, 2026-09-24). See
+[Visualizer Service](visualizer-service.md).
+
+The ordering gap that used to be open here — §8 split the visualiser at step 2
+while scaffolding `digital-twin-knowledge-graph` only at step 4 — is now
+**resolved** by putting `controls-compliance-catalog` first instead
+(`ARCHITECTURE.md` §10 Q10, resolved 2026-09-26; GH #60).
 
 ## Cross-cutting risks and open questions
 
@@ -267,10 +282,9 @@ monorepo; one constitution vs. per-component addenda; how the per-subsystem UIs
 compose — Backstage plugins or a shell app (#55); which upstream to fork for
 the ArchiMate parser; whether collaboration-tool decision capture is still in
 scope and where the PII gateway sits (ADR-0014 narrowed by ADR-0031 — #56);
-whether
-`src/frictionless_architect/` stays importable as an umbrella namespace package
-during the transition; and the step-2/step-4 ordering gap above (#60). The
-library-vs-HTTP question and `sample_parser.py`'s home are marked resolved by
+whether `src/frictionless_architect/` stays importable as an umbrella namespace
+package during the transition. The library-vs-HTTP question, `sample_parser.py`'s
+home, and the step-2/step-4 ordering gap (Q10) are all marked resolved by
 ADR-0005 — see "Migration sequence" above.
 
 ## Decision log
@@ -286,7 +300,7 @@ not re-ratified in a spec). No record is currently A\*.
 | 0002 | One Poetry monorepo for first-party code; forks as `third_party/` submodules | A |
 | 0003 | Poetry is the package manager, not `uv` | A |
 | 0004 | Two-tier spec numbering (`EPIC-` root, `NNN-` per package) | A |
-| 0005 | Visualiser API/UI split is the first extraction | A |
+| 0005 | Controls catalog is the first extraction; visualiser API/UI split follows the knowledge graph (revised 2026-09-26 from "visualiser API/UI split is the first extraction") | A |
 | 0006 | `prototype-neo4j` is reference-only | A |
 | 0007 | Architecture model stored as graph-loadable YAML; `.xml` exchange format; everything else generated | A |
 | 0008 | Model `type` = bare ArchiMate 3.2 concept name | A |
@@ -351,6 +365,25 @@ streams and 11 stages. Per-role streams, a single stream and duplicated stages
 were all considered and rejected
 (`docs/adr/0033-value-streams-per-outcome.md`). See
 [Architecture Model: Skeleton](architecture-model-skeleton.md).
+
+ADR-0010 was **revised in place** on 2026-09-26 (GH #65) to cover a second
+kind of load-bearing content: the model now also carries the platform's own
+**packaging and migration** (section E) — code packages as Artifacts realising
+the six subsystems, the `ARCHITECTURE.md` §8 restructure steps as Work
+Packages, and the platform's Baseline / Transition / Target Plateaus. These are
+load-bearing in the same sense as the motivation/strategy/business skeleton:
+ADR-0005's package-dependency ordering and the §8 step sequence are decided
+*against* this section, not the other way around, and it is kept to what
+§3.2/§8 already commit to — infrastructure (Nodes, SystemSoftware) waits on
+#55's open decisions (`docs/adr/0010-load-bearing-skeleton-only.md`). ADR-0005
+itself was revised the same day (GH #60): it had originally named the
+visualiser API/UI split as the first extraction, but that split needs
+`digital-twin-knowledge-graph` as a library and that package isn't scaffolded
+until §8 step 4, so the split couldn't go first. `controls-compliance-catalog`
+(the policy-to-OSCAL pipeline, GH #44) has no knowledge-graph dependency, so it
+takes the first-extraction slot instead and the visualiser split moves to step
+7 — see "Migration sequence" above. See
+[Architecture Model](architecture-model.md) §"Packaging and migration".
 
 ADR-0020 was **revised in place** on 2026-09-26 (GitHub #50) rather than
 superseded. It had proposed one Vite dashboard (`packages/dashboard`)

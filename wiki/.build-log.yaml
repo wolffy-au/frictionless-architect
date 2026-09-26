@@ -1,5 +1,5 @@
 generated: '2026-09-26'
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 topics:
   project-overview:
     title: Project Overview
@@ -29,8 +29,8 @@ topics:
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: 8ad2fd0943426c3758657fc2eaf1139a58dfcdec2efeb36dd397b94915aebdd5
-          lines: 374
+          sha256: 0df3c0f6ddbc5132e0ae884f356258131fab05309333ee27302d6809aa01e77d
+          lines: 396
         TECHNICAL.md:
           sha256: 48b3abcc278fb94f9c7216b86ff4d56650ddce3b99d58acdf91e6a6dadc3114a
           lines: 418
@@ -50,8 +50,8 @@ topics:
           sha256: ea2240ccbbddb1e0f5cc6946aec34c781cfa071acfbe5bb363e2c0715fb5ac65
           lines: 37
         docs/adr/0005-visualiser-api-ui-split-first-extraction.md:
-          sha256: 1095e99f540ce6143c643fb4083317b03270e1992bf6385b35edbcbb4eb6da5c
-          lines: 66
+          sha256: 3a7c27c7d9741f8ddde4810d086f6345bf881f1369dfc6dad16c2dd94d24cf1b
+          lines: 106
         docs/adr/0006-prototype-neo4j-reference-only.md:
           sha256: 2cc7b0ab6605ea19352dda4703e67115d4153ce3eebd6118d27fdb0ce165adc7
           lines: 31
@@ -65,8 +65,8 @@ topics:
           sha256: 7fb1d0eefeb028e6c052271dd3ba9f7a000ee5372d6a0fc4eaa26f925ab50fce
           lines: 30
         docs/adr/0010-load-bearing-skeleton-only.md:
-          sha256: 42d0c7802a88e71c004d3860c3bd324a4ff2949686c395fdb2f80058ae085908
-          lines: 39
+          sha256: e38ac5127d02e8c0a72eb98e728383d4fea181fa0d1dcb9d86ec0ceef6ef8638
+          lines: 46
         docs/adr/0011-six-subsystem-decomposition.md:
           sha256: dbf71a64a4c531df208d2d95255a46b5cabf7d20f3c399acab113ce64e8e77aa
           lines: 43
@@ -137,7 +137,7 @@ topics:
           sha256: f064865b5d324c6eee453a35188253b4a13775bc3b6c97cc27d1152a7bb15d54
           lines: 88
         docs/adr/README.md:
-          sha256: 76738aa13e8aed0922fcf18c956f0946e7b27bf94938787cdcf9c611d4711515
+          sha256: a52f6215875bccbe6084689998f11715755ea18bff118c004acf2dc06e857fe9
           lines: 115
   architecture-model:
     title: Architecture Model
@@ -146,20 +146,20 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
-          lines: 126
+          sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
+          lines: 127
         architecture/model/build.py:
           sha256: 7cb82fddd80a06343a9d97edfc0225a9ffbf1643a82ba1a31ee6ddd59e1091fc
           lines: 458
         architecture/model/elements.yaml:
-          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
-          lines: 1229
+          sha256: 85bf8dd973636f33bba3ec5518cf1e383ef4d0dff22f79a8f333fea84fe8d7f1
+          lines: 1367
         architecture/model/relationships.yaml:
-          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
-          lines: 720
+          sha256: a30a4fc9157803ff518762d27a6bec28cf3dbe756ce225e9e941090d2aa14628
+          lines: 791
         architecture/model/views.yaml:
-          sha256: 497693a3eb26f71202573369cf5b25d50f826d637bf06ba1fbe0db5c0f0073a6
-          lines: 713
+          sha256: ff8051765c3bd568b0808f9c226730bb14dd135c1c1cda5abe01e7bd20a322ca
+          lines: 749
   architecture-model-skeleton:
     title: 'Architecture Model: Skeleton'
     page: wiki/architecture-model-skeleton.md
@@ -167,14 +167,14 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
-          lines: 126
+          sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
+          lines: 127
         architecture/model/elements.yaml:
-          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
-          lines: 1229
+          sha256: 85bf8dd973636f33bba3ec5518cf1e383ef4d0dff22f79a8f333fea84fe8d7f1
+          lines: 1367
         architecture/model/relationships.yaml:
-          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
-          lines: 720
+          sha256: a30a4fc9157803ff518762d27a6bec28cf3dbe756ce225e9e941090d2aa14628
+          lines: 791
   architecture-model-ecosystem:
     title: 'Architecture Model: Ecosystem'
     page: wiki/architecture-model-ecosystem.md
@@ -182,14 +182,14 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
-          lines: 126
+          sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
+          lines: 127
         architecture/model/elements.yaml:
-          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
-          lines: 1229
+          sha256: 85bf8dd973636f33bba3ec5518cf1e383ef4d0dff22f79a8f333fea84fe8d7f1
+          lines: 1367
         architecture/model/relationships.yaml:
-          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
-          lines: 720
+          sha256: a30a4fc9157803ff518762d27a6bec28cf3dbe756ce225e9e941090d2aa14628
+          lines: 791
   architecture-model-artefact-flow:
     title: 'Architecture Model: Artefact Flow'
     page: wiki/architecture-model-artefact-flow.md
@@ -197,14 +197,14 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
-          lines: 126
+          sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
+          lines: 127
         architecture/model/elements.yaml:
-          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
-          lines: 1229
+          sha256: 85bf8dd973636f33bba3ec5518cf1e383ef4d0dff22f79a8f333fea84fe8d7f1
+          lines: 1367
         architecture/model/relationships.yaml:
-          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
-          lines: 720
+          sha256: a30a4fc9157803ff518762d27a6bec28cf3dbe756ce225e9e941090d2aa14628
+          lines: 791
   architecture-diagrams:
     title: Architecture Views & Diagrams
     page: wiki/architecture-diagrams.md
@@ -212,8 +212,8 @@ topics:
     sources:
       files:
         architecture/model/README.md:
-          sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
-          lines: 126
+          sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
+          lines: 127
         architecture/model/diagrams/application/artefact-assurance-spec.puml:
           sha256: f84341c731c765e3fe41f5d36bd3ba31d5242a787532436f2a4b77d52f41a15a
           lines: 87
@@ -281,10 +281,10 @@ topics:
           sha256: 267d14380dc62a2c985cd6b5f4c832424f8c490971a2365c326a64b621b700b1
           lines: 1
         architecture/model/diagrams/c4/container.puml:
-          sha256: fe3fbf2e9280d7d8f4d17eaa7feaef2e581621274b1ed4de48bbd8f661d8e4a3
-          lines: 70
+          sha256: a377c7f8ea781fbdac6ffcaef73ab5f18d49f1276b0ae9d1d2dd9895de6e554a
+          lines: 72
         architecture/model/diagrams/c4/container.svg:
-          sha256: 7dd59137efd4d4817f1c9d1c61f0b6ec643e5d07f3b24e1eae262141e41c341a
+          sha256: 7e84680cb9819dcc1db0a4085b89da8797c0ad5c744892d8514e91ef0e7a0406
           lines: 1
         architecture/model/diagrams/c4/context.puml:
           sha256: abcdc7520e32b35b4c5e6b3188e541556b5b628f4cb0a737a235c5e822f13fa3
@@ -298,11 +298,23 @@ topics:
         architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg:
           sha256: 469dc4a7e8d0d25ba94eaf8ebafada6474a4822070a583521a621a6e243fa9ae
           lines: 1
+        architecture/model/diagrams/implementation/packaging.puml:
+          sha256: cab65e2510295704a2f3f9a3f4b1209b6754c2b2bf6105d89b6fc6f456dfd100
+          lines: 35
+        architecture/model/diagrams/implementation/packaging.svg:
+          sha256: f98a2c9ac87e591ff6b837b151e1fe49f83af8408f806cbef03d5ba23256469a
+          lines: 1
         architecture/model/diagrams/layered/subsystem-capabilities.puml:
           sha256: 8c5b56e1a66e7d54a3575e3cf7e29a0c79a88e1fdeb50248fabab5439830522e
           lines: 33
         architecture/model/diagrams/layered/subsystem-capabilities.svg:
           sha256: 090ca9f3aabb75d6aa6aa0f82d3ce7c5beb17670f7992005f1bf7a78b9c73e94
+          lines: 1
+        architecture/model/diagrams/migration/sequence.puml:
+          sha256: 0e61514dbcf911248b7c0f7c9ee1eaa3f87bf30bb5d3b7c0609e320de114d983
+          lines: 53
+        architecture/model/diagrams/migration/sequence.svg:
+          sha256: 6f689a061b535729767d244b723b354e08c91e6ced77a76aa4ee61e2ef4e0564
           lines: 1
         architecture/model/diagrams/vision/1-stakeholder.puml:
           sha256: 22ecd00a27bc3324994cd0d6de9b506e89a6ce9a084b7f1f804da6bb860a2f6a
@@ -380,8 +392,8 @@ topics:
           sha256: 3629f2ad4109c433b40acaee49a6a2c78f2091f7f20ed1ce93de8a2c092931a7
           lines: 214
         architecture/model/views.yaml:
-          sha256: 497693a3eb26f71202573369cf5b25d50f826d637bf06ba1fbe0db5c0f0073a6
-          lines: 713
+          sha256: ff8051765c3bd568b0808f9c226730bb14dd135c1c1cda5abe01e7bd20a322ca
+          lines: 749
   it4it-model:
     title: IT4IT Reference Model
     page: wiki/it4it-model.md
@@ -626,8 +638,8 @@ topics:
           sha256: 3d24dfe9e8bb0ceec6216f1b9a593374f876a4ddfc6609c27deecc95cadd8bc6
           lines: 68
         .claude/agents/refactor-analyst.md:
-          sha256: 5d60eb748aad2875fa2353cba8fa23024687a1c3dbd419d5016340de9c257ff0
-          lines: 55
+          sha256: ebaa2b5f69b30f254628fe3552db51cc6a26a2346ceeba9df5804f9cadf79e2b
+          lines: 57
         .claude/agents/release-runner.md:
           sha256: 8a62be35e5ad655dc5bc54a8ba06ac76e0730e601f3060d5c2a697e77f8849fa
           lines: 64

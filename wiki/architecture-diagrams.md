@@ -1,7 +1,7 @@
 ---
 title: Architecture Views & Diagrams
 generated: 2026-09-26
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/application/artefact-assurance-spec.puml
@@ -32,8 +32,12 @@ sources:
   - architecture/model/diagrams/c4/context.svg
   - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
   - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+  - architecture/model/diagrams/implementation/packaging.puml
+  - architecture/model/diagrams/implementation/packaging.svg
   - architecture/model/diagrams/layered/subsystem-capabilities.puml
   - architecture/model/diagrams/layered/subsystem-capabilities.svg
+  - architecture/model/diagrams/migration/sequence.puml
+  - architecture/model/diagrams/migration/sequence.svg
   - architecture/model/diagrams/vision/1-stakeholder.puml
   - architecture/model/diagrams/vision/1-stakeholder.svg
   - architecture/model/diagrams/vision/2-motivation.puml
@@ -76,10 +80,11 @@ For what the model itself *means* (its elements, relationships and content secti
 
 ## Views and diagrams
 
-The merged model has 29 ArchiMate views:
+The merged model has 31 ArchiMate views:
 
-- 25 are declared in this repo's own `views.yaml`. They cover sections A–C and
-  the IT4IT touchpoint bridge.
+- 27 are declared in this repo's own `views.yaml`. They cover sections A–C,
+  the IT4IT touchpoint bridge, and (since 2026-09-26, GH #65) section E —
+  the platform's own packaging and migration.
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
   ([ADR-0029](architecture.md)).
@@ -98,6 +103,8 @@ kind of view:
 | `layered/` | the cross-layer Subsystems & Capabilities view |
 | `application/` | the artefact-flow views |
 | `c4/` | the C4 context and container diagrams |
+| `implementation/` | the Packaging view (section E) |
+| `migration/` | the Migration Sequence view (section E) |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
 The old `cross-layer/` folder is **gone** (PR #62):
@@ -231,7 +238,13 @@ changed to match:
 - Assurance → pipeline: "expected controls".
 - The earlier release-candidate/gate-decision round trip between them is gone.
 
-(`architecture/model/diagrams/c4/container.puml`.)
+(`architecture/model/diagrams/c4/container.puml`.) A 2026-09-26 change (GH #65)
+adds a seventh container, **Schema Visualiser API**, with a single edge back
+to the Architecture Knowledge Graph store labelled "reads the knowledge graph
+via" — the C4 projection drops `ApplicationInterface` elements, so
+`if-twin-read-path` itself doesn't appear, but the model's extra direct
+`Serving` edge (see [Architecture Model](architecture-model.md) §"Packaging
+and migration") keeps the container from rendering disconnected.
 
 ### Suppressing the capability mesh on other views
 
@@ -262,6 +275,32 @@ IT4IT elements into a platform-only view. This applies to `Outcome` (IT4IT adds
 more) and `ValueStream` (36 more: 7 streams + 29 stages). See the notes on
 `view-stakeholder`, `view-strategy`, `view-capability`, `view-value-stream` and
 `view-outcome-realization` (`architecture/model/views.yaml:30-170`).
+
+### Implementation & Migration views (section E)
+
+Two views, added 2026-09-26 (GH #65), render the platform's own restructure
+(see [Architecture Model](architecture-model.md) §"Packaging and migration"):
+
+| View | Diagram | Viewpoint | Covers |
+|---|---|---|---|
+| Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, and `if-twin-read-path`, each realized by its package `Artifact` |
+| Migration Sequence | `migration/sequence` | `implementation_migration` | The `ARCHITECTURE.md` §8 steps as `WorkPackage`s, their `Deliverable`s, and the Baseline / Transition / Target `Plateau`s and `Gap`s between them |
+
+**Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
+mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,
+one `exclude:` entry per relationship type) — that cooperation story belongs to
+the Artefact Flow views, not this one. No `Node`/`SystemSoftware` technology
+layer is scoped yet; the deployment half of the `implementation_deployment`
+viewpoint is left for GH #55 (`architecture/model/views.yaml` §"Implementation
+& Migration").
+
+**Migration Sequence** scopes `include_types: [WorkPackage, Deliverable,
+Plateau, Gap, Artifact]` and deliberately leaves out the `ApplicationComponent`
+members — the Packaging view above already carries the package-to-component
+story, so Migration Sequence stays focused on the step-by-step timeline. It
+**replaces** the hand-drawn `ARCHITECTURE.md` §8 diagram with a generated one
+(`architecture/model/views.yaml` §"Implementation & Migration"; see
+[Architecture Overview](architecture.md) §"Migration sequence").
 
 ### IT4IT reference views (section D)
 
