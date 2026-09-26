@@ -1,0 +1,16 @@
+[project]
+name = "controls-compliance-catalog"
+description = "Controls & Compliance Catalog: policy/standard documents to OSCAL Catalogs and Profiles."
+# Frozen placeholder, as at the repo root — versioning moves to the monorepo
+# root with the rest of the commitizen setup (ADR-0002, Consequences).
+version = "0.0.0"
+requires-python = ">=3.11,<3.14"
+readme = "README.md"
+dependencies = []
+
+[tool.poetry]
+packages = [{ include = "controls_compliance_catalog", from = "src" }]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
