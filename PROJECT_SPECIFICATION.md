@@ -154,6 +154,12 @@ The implementation is successful if a Solution Architect can **curate the DNA** 
 
 ---
 
+> **Historical note (2026-09):** the component breakdown and grouping below are superseded
+> by the six subsystems of [ADR-0011](docs/adr/0011-six-subsystem-decomposition.md). See
+> ADR-0011, `architecture/model/`, and `ARCHITECTURE.md` §4 for the current mapping. The
+> "Specify lifecycle" CLI (Component 1.1) is this repository's development tooling
+> (`.specify/`), not a platform component.
+
 ## Components
 
    1. Core Engine: Python-based CLI/service for the Specify lifecycle, including PII Anonymization Gateway.

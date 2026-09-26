@@ -56,7 +56,7 @@ narrative docs · **S** = Superseded.
   generated from the ArchiMate model
 - **A** — [0010](0010-load-bearing-skeleton-only.md) — Central model is a
   load-bearing skeleton only (contents extended by 0027)
-- **A\*** — [0011](0011-six-subsystem-decomposition.md) — Platform decomposes
+- **A** — [0011](0011-six-subsystem-decomposition.md) — Platform decomposes
   into 6 subsystems (replacing the 8-component grouping)
 - **A** — [0012](0012-adr-as-attested-fsm.md) — ADRs are an attested
   finite-state machine

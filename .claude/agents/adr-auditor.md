@@ -61,13 +61,14 @@ plausible alternative deserves a record. Coding-style minutiae do not — one
 4. **Check each ADR against reality**:
    - Does the cited source still say what the ADR says? (e.g. a `Proposed` ADR a
      spec has since ratified → should be `Accepted`.)
-   - Does the code/narrative contradict it? (e.g. ADR-0011's 6-subsystem
-     decomposition vs. `ARCHITECTURE.md` §3–4 still showing 8 components → the
-     "not yet applied" note is still accurate, so flag the *doc*, not the ADR.)
+   - Does the code/narrative contradict it? (e.g. before #50, ADR-0011's
+     6-subsystem decomposition vs. `ARCHITECTURE.md` §3–4 still showing 8
+     components → the "not yet applied" note was accurate, so the *doc* was
+     flagged, not the ADR.)
    - Do referenced files / flags / packages still exist? (`grep`, `Glob`.)
-   - Known open items to re-check each run: ADR-0011 (§3–4 rework), ADR-0017–0020
-     (`Proposed` — has a spec ratified any?), ADR-0022 (ArchiMate 3.0/3.1/3.2
-     namespace defect — fixed yet?).
+   - Known open items to re-check each run: ADR-0017–0019
+     (`Proposed` — has a spec ratified any?), ADR-0014 vs ADR-0031 scope (#56),
+     ADR-0022 (ArchiMate 3.0/3.1/3.2 namespace defect — fixed yet?).
 5. **Check ADR-vs-ADR**: any two records whose decisions now conflict without a
    `Superseded by` link.
 6. **Classify** every finding:

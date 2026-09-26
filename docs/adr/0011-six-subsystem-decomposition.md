@@ -1,7 +1,6 @@
 # ADR-0011: Platform decomposes into 6 subsystems
 
-- **Status:** Accepted; realised in the architecture model, not yet applied to
-  `ARCHITECTURE.md` / `PROJECT_SPECIFICATION.md`
+- **Status:** Accepted
 - **Date:** 2026-08-29
 - **Sources:** session memory `ecosystem-c4`; `architecture/model/README.md`
   §"Model contents" (section B); `architecture/model/diagrams/c4/container.puml`
@@ -35,7 +34,9 @@ Knowledge Graph is one store with two planes (intent + digital twin).
   carries the platform `Grouping`, its 6 subsystems, shared stores, roles, and
   external systems, with subsystems `Realization`-linked to the section-A
   capabilities.
-- `ARCHITECTURE.md` §3–4 and `PROJECT_SPECIFICATION.md` still describe the
-  8-component decomposition and still need reworking to match (user chose
-  "replace"). **This is outstanding.**
-- Package/directory names in `ARCHITECTURE.md` §3.2 will change accordingly.
+- Applied in #50: `ARCHITECTURE.md` §3–4 now maps the six subsystems to packages
+  (`controls-compliance-catalog`, `reusable-architecture-library`,
+  `digital-twin-knowledge-graph`, `architecture-governance`,
+  `conformance-drift-assurance`, `modelling-specification`), and
+  `PROJECT_SPECIFICATION.md` carries a historical note. The packaging /
+  deployment view (`ARCHITECTURE.md` §3.3) is tracked separately in #55.

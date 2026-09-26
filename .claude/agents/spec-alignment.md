@@ -27,7 +27,8 @@ Poetry only for any inspection commands.
 
 1. Extract a requirement list: every FR / NFR / SC / user story with a stable ID, plus
    each spec'd feature from `PROJECT_SPECIFICATION.md` that lacks one (assign a provisional
-   ID). Record each component 1–8 and its sub-features.
+   ID). Map each to its ADR-0011 subsystem (`ARCHITECTURE.md` §4); the spec's old
+   components 1–8 are historical.
 2. For each requirement, locate the implementing code + test. Classify:
    **Done** / **Partial** / **Missing** / **Diverged** (built differently than specified)
    / **Undocumented** (code exists, no spec).
