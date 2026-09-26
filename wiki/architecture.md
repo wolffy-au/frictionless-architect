@@ -38,6 +38,7 @@ sources:
   - docs/adr/0030-vendor-oscal-reference-content.md
   - docs/adr/0031-fr016-no-redaction-for-policy-documents.md
   - docs/adr/0032-archimate-exchange-namespace-3-0.md
+  - docs/adr/0033-value-streams-per-outcome.md
   - docs/adr/README.md
 ---
 
@@ -307,12 +308,13 @@ not re-ratified in a spec). No record is currently A\*.
 | 0024 | MVP is single-user and locally run (scoping compromise) | A |
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
-| 0027 | Capability layer carries a value stream and an explicit motivation spine | A |
+| 0027 | Capability layer carries a value stream and an explicit motivation spine (updated 2026-09-26: four outcomes, streams per 0033, no derived edges) | A |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
 | 0029 | IT4IT vendored as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS` | A |
 | 0030 | OSCAL/FedRAMP content vendored as plain `third_party/` submodules; `compliance-trestle` consumed as an ordinary dependency; `oscal-document-workbench` scripts ported as native Python | A |
 | 0031 | Policy/standard document conversion bypasses the PII anonymization gateway, scoped to that one ingestion path | A |
 | 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
+| 0033 | One value stream per outcome, organised by value recipient (not by role); streams take stages over rather than duplicate them | A |
 
 The **P** rows (0017–0019) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -324,6 +326,31 @@ there as "deferred solution decisions" to be re-decided intentionally
 the change is reflected in the [Architecture Model](architecture-model.md)
 (value stream, motivation spine, renamed capabilities) and the ADR itself is
 accepted (`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
+
+ADR-0027 was **updated in place** on 2026-09-26, alongside the new
+**ADR-0033**. The goal is now realized by four outcomes rather than one:
+
+- Approved Change Reaches Production at AI Speed
+- Compliance Proven Before Release
+- Accountable, Auditable Automation
+- Drift Detected and Reconciled Continuously
+
+"Architecture as Executable Intelligence" is no longer an element. It
+survives only as a description of the means, in the Governed Architecture
+Delivery stream. The motivation spine is driver → assessment → outcome → goal,
+and requirements and value streams realize outcomes. Principles and
+constraints each `Influence` only the one requirement they most directly
+operationalise. No edge is modelled that an existing chain already derives
+(`docs/adr/0027-capability-value-stream-and-motivation-spine.md` §Decision
+3–5).
+
+ADR-0033 (Accepted 2026-09-26) gives each outcome its own value stream. It
+organises the streams by who receives the value, not by role. Stages are
+moved between streams rather than duplicated, so the skeleton carries 4
+streams and 11 stages. Per-role streams, a single stream and duplicated stages
+were all considered and rejected
+(`docs/adr/0033-value-streams-per-outcome.md`). See
+[Architecture Model: Skeleton](architecture-model-skeleton.md).
 
 ADR-0020 was **revised in place** on 2026-09-26 (GitHub #50) rather than
 superseded. It had proposed one Vite dashboard (`packages/dashboard`)

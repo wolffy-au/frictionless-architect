@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
@@ -36,10 +36,10 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see "Motivation-layer lint" below). The
-current model is 301 elements, 610 relationships and 21 views
-(`architecture/model/build.py` output): the platform's own sections A–C plus
-the IT4IT touchpoint bridge (below) account for most of that, the rest is
-the vendored IT4IT reference model merged in at build time
+current merged model is 336 elements, 684 relationships and 29 views. Of those,
+194 elements, 449 relationships and 25 views are the platform's own sections
+A–C plus the IT4IT touchpoint bridge (below). The rest (142 / 235 / 4) is
+the vendored IT4IT reference model, merged in at build time
 ([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
 generated `frictionless-architect.xml` is committed but never hand-edited —
 same status as the `.puml` / `.svg` diagrams.
@@ -50,7 +50,7 @@ same status as the `.puml` / `.svg` diagrams.
 |---|---|
 | `elements.yaml` | Every element: `type` / `id` / `name` / `desc?` / `props?` (`architecture/model/README.md` §"Files") |
 | `relationships.yaml` | Every relationship: `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | Minimal view scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`) |
+| `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
 | `diagrams/` | **Generated** `.puml` / `.svg` |
@@ -68,7 +68,12 @@ Schema rules (`architecture/model/README.md` §"Schema";
 - **`name` / `desc`** — top-level keys, not inside `props`.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read` | `Write` | `ReadWrite`) on `Access` relationships,
-  `requirement-type`.
+  `requirement-type`, and `archimate-analogue` on a BusinessObject whose
+  *content* in the managed estate's model is an Implementation & Migration
+  concept (Plateau, Gap, …). It is kept as a tag so this model's own
+  Plateaus stay free to mean states of the platform itself
+  (`architecture/model/README.md` §"Schema"). The strategy/drift business
+  objects use it; see [Skeleton](architecture-model-skeleton.md).
 - **`label`** on a relationship shows on ArchiMate diagrams and is the default
   C4 edge label; `props.c4-label` overrides it in the C4 projection only.
 - **`exclude`** on a view (optional) — a list of type+pair patterns
@@ -79,23 +84,39 @@ Schema rules (`architecture/model/README.md` §"Schema";
   (`architecture/model/build.py` — `add_views` docstring, GH #20). Added
   because `build.py`'s rendering rule draws any relationship whose both
   endpoints are in scope, so a mesh that is core to one view's story (e.g.
-  the 7-edge capability-to-capability `Serving` mesh on `view-capability`)
+  the 8-edge capability-to-capability `Serving` mesh on `view-capability`)
   leaks identically into every other view that happens to share ≥2 of those
-  capabilities as members. Seven views —
-  `view-strategy`, `view-value-stream`, `view-outcome-realization`,
-  `view-skeleton`, `view-delivery`, `view-subsystem-capabilities`,
-  `view-it4it-capability-bridges` — each declare
+  capabilities as members. Ten views each declare
   `exclude: [{type: Serving, source_type: Capability, target_type:
-  Capability}]` to drop that incidental mesh (`architecture/model/views.yaml`).
+  Capability}]` to drop that incidental mesh:
+
+  - Strategy
+  - the four per-stream Value Stream views (`6a`–`6d`)
+  - Outcome Realization
+  - Requirements Realization
+  - Subsystems & Capabilities
+  - IT4IT: Capability Bridges
+
+  (`architecture/model/views.yaml`.)
 - **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
   from `.claude/skills/model-archimate/reference/archi-viewpoints.xml`
   (`poetry run python .claude/skills/model-archimate/scripts/viewpoints.py
   list`). `build.py` holds that view to the viewpoint's allowed concepts and
-  fails on a stray one; `viewpoint: custom` marks a deliberate cross-layer view
+  fails on a stray one. `viewpoint: custom` marks a deliberate cross-layer view
   (not checked), and omitting the key also skips the check
   (`architecture/model/README.md` §"Schema"). The tag lives only in
-  `views.yaml` — pyArchimate (pinned) cannot round-trip it into the generated
-  XML.
+  `views.yaml`, because pyArchimate (pinned) cannot round-trip it into the
+  generated XML. Since PR #62, **no view uses `custom`**: every platform view is
+  held to a standard viewpoint. The schema still documents the option.
+- **`no_direction`** on a view (optional) — relationship types to draw
+  undirected on that view only, instead of `diagram-archimate`'s default
+  `Up`/`Right` layout hint. It is for graphs that aren't a one-way sequence,
+  where the rank hint would fight itself (`architecture/model/README.md`
+  §"Schema").
+- **`max_width`** on a view (optional) — an integer pixel width, rendered as
+  PlantUML's `scale max <px> width`. It is for long chains that would
+  otherwise scroll horizontally, and is used by Delivery Choreography
+  (`architecture/model/README.md` §"Schema").
 
 `build.py` accumulates every validation problem (unknown concept name,
 duplicate id, dangling relationship reference, unknown view member) and reports
@@ -109,7 +130,7 @@ them together rather than aborting on the first
 
 | Section | Page |
 |---|---|
-| A. Motivation + Strategy + Business — the load-bearing skeleton | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
+| A. Motivation + Strategy + Business — the load-bearing skeleton (4 outcomes, 4 value streams, 15 processes, 9 functions) | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
 | B. Application — the six-subsystem ecosystem | [Architecture Model: Ecosystem](architecture-model-ecosystem.md) |
 | C. Application — the artefact input/output pipeline | [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md) |
 
@@ -184,7 +205,7 @@ data itself changed:
   single **derived** `Capability --Serving--> Stage` edge per reachable pair
   (tagged `props: {derived: "true"}`, labelled `<<derived>>`), plus 18 more
   capabilities the derivation chain doesn't reach, carried for completeness.
-- **Bridge to the platform's own capabilities** — 10 `Association` edges,
+- **Bridge to the platform's own capabilities** — 9 `Association` edges,
   tagged `props: {source: it4it-alignment}`, are the one piece of IT4IT-
   referencing content that **stays first-party**, in this repo's own
   `relationships.yaml` "D. IT4IT TOUCHPOINTS" section — their source
@@ -210,7 +231,7 @@ longer holds — that would need its own ADR ([ADR-0029](architecture.md)
 
 ## Views and diagrams
 
-21 ArchiMate views cover the merged model — 17 declared in this repo's own
+29 ArchiMate views cover the merged model — 25 declared in this repo's own
 `views.yaml` (sections A–C plus the IT4IT touchpoint bridge) plus 4 declared
 in `third_party/it4it/views.yaml` for the vendored IT4IT reference (see
 "IT4IT alignment" above), loaded the same way its elements/relationships are
@@ -303,3 +324,27 @@ capability owns" (`architecture/model/elements.yaml` §"C. Artefacts";
 build now fails on any such truncation instead of generating from it
 (commits `08ed6e3`, `1fd26e3`). Element and relationship counts are
 unchanged.
+
+A 2026-09-26 pass (PR #62) reworked the business layer and the vision set:
+
+- **Outcomes and value streams.** The goal is now realized by four outcomes,
+  and each outcome has its own value stream, organised by who receives its
+  value. Stages were moved between streams rather than duplicated
+  ([ADR-0033](architecture.md)). The vision set grew from seven to thirteen
+  views: a Value Stream Hand-offs view, one view per stream (`6a`–`6d`), and a
+  new Requirements Realization view.
+- **Business layer.** It now has 15 business processes grouped under 9
+  business functions, with roles assigned to the functions they perform.
+  A strategy/drift group of business objects was added: Current, Target and
+  Transition State Architecture, Architecture Roadmap, OSCAL POA&M, Drift
+  Finding and Architecture Conformance Register. The objects whose content is
+  an Implementation & Migration concept carry the new `archimate-analogue` tag.
+- **Renames and removals.** The resolved OSCAL artefact was renamed
+  **Resolved OSCAL Profile Catalog**. The `cross-layer/` diagram folder and
+  the Architecture Skeleton view were removed. Delivery Choreography became a
+  Business Process Cooperation view (using the new `max_width:` key), and
+  Subsystems & Capabilities became a `layered` view.
+
+That brings the model to 336 elements / 684 relationships / 29 views
+(`git log` on `architecture/model/`, commit `cf57bfc`). `build.py` itself did
+not change.

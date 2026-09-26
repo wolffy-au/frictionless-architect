@@ -25,11 +25,12 @@ generator: claude-opus-5-5
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: files, schema, the `build.py` pipeline, and the vendored IT4IT 3.0
-  reference model (`third_party/it4it`, merged in at build time — 301 elements,
-  610 relationships, 21 views).
+  reference model (`third_party/it4it`, merged in at build time — 336 elements,
+  684 relationships, 29 views).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
-  stakeholders, drivers, assessments, goal/outcome, principles, constraints,
-  requirements, capabilities, strategy, value stream, and business processes.
+  stakeholders, drivers, assessments, goal and four outcomes, principles,
+  constraints, requirements, capabilities, strategy, four value streams, and the
+  business layer (functions, processes, business objects).
 - [Architecture Model: Ecosystem](architecture-model-ecosystem.md) — section B:
   the six subsystems, shared stores, business roles, and external systems
   behind the C4 views.
