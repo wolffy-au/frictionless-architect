@@ -19,6 +19,7 @@ Application_DataObject(e_ida95982eb78095a, "Regulatory Baseline Catalog")
 
 Rel_Specialization_Up(e_id3d500fda79b357, e_id51129996aed75b, "externally-published instance")
 Rel_Specialization_Up(e_ida95982eb78095a, e_idddf65887d53f57, "vendored instance (golden-dataset validation data)")
+Rel_Association(e_ida95982eb78095a, e_id3d500fda79b357, "expected OSCAL output for (golden pair)")
 Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
 Rel_Serving_Up(e_id2610ae0cc2cc50, e_id7ce9f3c91f1f53, "provides the document -> Markdown conversion model for")
 Rel_Access_r(e_id7ce9f3c91f1f53, e_id51129996aed75b, "reads")

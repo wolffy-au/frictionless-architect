@@ -288,6 +288,7 @@
 - {type: Specialization, source: art-regulatory-standard, target: art-policy-doc, label: externally-published instance}
 - {type: Realization, source: art-baseline, target: bo-oscal-catalog}
 - {type: Specialization, source: art-baseline, target: art-oscal-catalog, label: vendored instance (golden-dataset validation data)}
+- {type: Association, source: art-baseline, target: art-regulatory-standard, label: expected OSCAL output for (golden pair)}
 - {type: Realization, source: art-baseline-profile, target: bo-oscal-profile}
 - {type: Specialization, source: art-baseline-profile, target: art-oscal-profile, label: vendored instance (golden-dataset validation data)}
 - {type: Realization, source: art-oscal-catalog, target: bo-oscal-catalog}
