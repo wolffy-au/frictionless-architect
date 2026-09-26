@@ -286,15 +286,15 @@
 - {type: Realization, source: art-policy-doc, target: bo-policy-doc}
 - {type: Realization, source: art-regulatory-standard, target: bo-regulatory-standard}
 - {type: Specialization, source: art-regulatory-standard, target: art-policy-doc, label: externally-published instance}
-- {type: Realization, source: art-baseline, target: bo-regulatory-standard}
+- {type: Realization, source: art-baseline, target: bo-oscal-catalog}
 - {type: Specialization, source: art-baseline, target: art-oscal-catalog, label: vendored instance (golden-dataset validation data)}
-- {type: Realization, source: art-baseline-profile, target: bo-regulatory-standard}
+- {type: Realization, source: art-baseline-profile, target: bo-oscal-profile}
 - {type: Specialization, source: art-baseline-profile, target: art-oscal-profile, label: vendored instance (golden-dataset validation data)}
 - {type: Realization, source: art-oscal-catalog, target: bo-oscal-catalog}
 - {type: Realization, source: art-oscal-profile, target: bo-oscal-profile}
 - {type: Specialization, source: art-oscal-resolved-catalog, target: art-oscal-catalog, label: resolved instance}
 - {type: Association, source: art-oscal-resolved-catalog, target: art-oscal-profile, label: fulfills the profile's control selection}
-- {type: Realization, source: art-baseline-resolved-catalog, target: bo-regulatory-standard}
+- {type: Realization, source: art-baseline-resolved-catalog, target: bo-oscal-resolved-catalog}
 - {type: Specialization, source: art-baseline-resolved-catalog, target: art-oscal-resolved-catalog, label: vendored instance (golden-dataset validation data)}
 
 # =====================================================================
