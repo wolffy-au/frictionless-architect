@@ -68,13 +68,14 @@ holds the **whole** model to the ArchiMate 3.2 relationship matrix.
 
 ## Model contents
 
-Three layered sections in one model:
+Layered sections in one model (section D, the IT4IT capability bridges, is relationships only and has no row here):
 
 | Section | What | Views |
 |---|---|---|
 | **A. Skeleton** | Motivation (5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3 principles, 4 constraints, 9 functional requirements), Strategy (8 capabilities, 3 courses of action, 5 resources + 4 value streams, one per outcome, with 11 stages), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md), [ADR-0033](../../docs/adr/0033-value-streams-per-outcome.md)) | **Vision (Phase A):** `Stakeholder`, `Motivation`, `Goal Realization`, `Strategy`, `Capability Map`, `Value Stream Hand-offs` + one `Value Stream — <name>` view per stream, `Outcome Realization`, `Requirements Realization`. **Business (Phase B):** `Delivery Choreography` |
 | **B. Ecosystem** | The platform `Grouping` (`c4=system`), its 6 subsystems, 5 shared stores, 6 roles, 7 external systems; every subsystem `Realization`-linked to a section-A capability ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities` (Layered); C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
 | **C. Artefact flow** | 15 `ApplicationFunction`s assigned to their subsystem, reading input artefacts and writing output artefacts (25 `DataObject`s) via `Access`; stores `Aggregation`-link the persistent artefacts | `Artefact Flow — Controls & OSCAL` / `— Library & Design` / `— Digital Twin & Governance` / `— Assurance & Specification` |
+| **E. Implementation & Migration** | The platform's own restructure ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), GH #65): the `Schema Visualiser API` component and the Digital Twin's `Knowledge Graph Read Path` interface ([ADR-0005](../../docs/adr/0005-visualiser-api-ui-split-first-extraction.md)); 8 package `Artifact`s (`c4=ignore`) realising their components; the 7 `ARCHITECTURE.md` §8 steps as `WorkPackage`s, 3 `Deliverable`s, and Baseline / Transition / Target `Plateau`s with the 2 `Gap`s between them; `controls-compliance-catalog` is the first extraction (ADR-0005, GH #60). No technology layer yet (GH #55) | `Packaging` (`diagrams/implementation/`), `Migration Sequence` (`diagrams/migration/`) |
 
 Every capability is realized by one subsystem and realizes at least one
 functional requirement; capability-to-capability `Serving` edges and the

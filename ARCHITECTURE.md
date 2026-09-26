@@ -122,7 +122,7 @@ frictionless-architect/                 # ROOT — governance & orchestration
         ├── architecture-governance/         # subsystem 4
         ├── conformance-drift-assurance/     # subsystem 5
         ├── modelling-specification/         # subsystem 6
-        └── schema-visualizer-api/           # first extraction (from today's src/)
+        └── schema-visualizer-api/           # from today's src/, after step 4 (§8)
 ```
 
 Each `packages/<name>/` carries its own `pyproject.toml`, `src/`, `tests/`, `README.md`,
@@ -149,13 +149,13 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 <!-- pyml disable md013 -->
 | # | Subsystem | Home | Build vs wrap | Notes (absorbs, from the old 8-component grouping) |
 |---|---|---|---|---|
-| 1 | Controls & Compliance Catalog | `packages/controls-compliance-catalog` | **build**, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles (AI-assisted Markdown, Trestle round-trip). Consumes the vendored OSCAL reference content; the OSCAL sample-data work belongs here. |
+| 1 | Controls & Compliance Catalog | `packages/controls-compliance-catalog` | **build**, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles (AI-assisted Markdown, Trestle round-trip). Consumes the vendored OSCAL reference content; the OSCAL sample-data work belongs here. **First extraction** (§8.1, ADR-0005). |
 | 2 | Reusable Architecture Library | `packages/reusable-architecture-library` | **build** | Patterns, blueprints, solution designs, candidate options, and threat modelling of them (old 8.3, the user-facing part). |
 | 3 | Digital Twin & Knowledge Graph | `packages/digital-twin-knowledge-graph` | **build**, wraps forked ArchiMate parser | Old 2 + old 6: the intent and twin planes, the forensic ledger, and querying them (traceability matrix, NL-to-graph). Absorbs today's `schema/manager.py`, `sample_parser.py`; port `prototype-neo4j` seeding ideas (§7). |
 | 4 | Architecture Governance | `packages/architecture-governance` | **build** | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off (and its UI). |
 | 5 | Conformance & Drift Assurance | `packages/conformance-drift-assurance` | **build**, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate control enforcement (CPS 230 / 234), BAU effectiveness monitoring, drift detection, Break-Glass, remediation tickets. |
 | 6 | Modelling & Specification | `packages/modelling-specification` | **build** | ArchiMate / C4 / UML modelling and executable-spec generation from the knowledge graph. |
-| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | First extraction. Where its embedded UI lands is open (#55). |
+| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005). Where its embedded UI lands is open (#55). |
 <!-- pyml enable md013 -->
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or dissolved:
@@ -249,21 +249,42 @@ branch `archive/prototype-neo4j` before it rots. Do not block the restructure on
 
 ## 8. Migration sequence
 
-```plantuml
-@startuml
-title Restructure sequence
-(*) --> "1. Create platform/ Poetry monorepo skeleton\n(empty, CI green)"
---> "2. FIRST EXTRACTION:\nvisualiser API/UI split ->\npackages/schema-visualizer-api"
---> "3. Prove pattern: root CI fans out,\nworkspace lock resolves, tests pass"
---> "4. Scaffold digital-twin-knowledge-graph;\nport prototype-neo4j ideas"
---> "5. Vendor confirmed forks into third_party/\n(submodules) + wire fork-sync"
---> "6. Re-home specs to two-tier scheme;\npatch .specify scripts"
---> "7. Extract remaining components as work reaches them"
---> (*)
-@enduml
-```
+1. Create `platform/` Poetry monorepo skeleton (empty, CI green).
+2. **First extraction:** `packages/controls-compliance-catalog`, home of the policy-to-OSCAL
+   pipeline (#44) (§8.1).
+3. Prove pattern: root CI fans out, workspace lock resolves, tests pass.
+4. Scaffold `digital-twin-knowledge-graph`; port `prototype-neo4j` ideas (§7).
+5. Vendor confirmed forks into `third_party/` (submodules) + wire `fork-sync`.
+6. Re-home specs to the two-tier scheme; patch `.specify` scripts (§6).
+7. Extract remaining components as work reaches them — including the visualiser API/UI
+   split (§8.2), now that step 4 has delivered the read path it consumes.
 
-### 8.1 First extraction — visualiser API/UI split
+The steps are modelled in `architecture/model/` section E as Work Packages, with the
+packages each delivers, the Baseline / Transition / Target Plateaus, and the Gaps
+between them (GH #65):
+
+[![Migration sequence](architecture/model/diagrams/migration/sequence.svg)](architecture/model/diagrams/migration/sequence.svg)
+
+The order puts each package after the packages it consumes — see the
+[packaging view](architecture/model/diagrams/implementation/packaging.svg) (ADR-0005, #60).
+
+### 8.1 First extraction — controls-compliance-catalog
+
+The policy-to-OSCAL pipeline (#44) is new code, so it is written straight into
+`packages/controls-compliance-catalog` instead of into today's flat `src/` and moved later.
+It reads only the vendored framework packs — no dependency on
+`digital-twin-knowledge-graph` — so it proves the pattern (step 3) without waiting on
+step 4. It needs the `platform/` skeleton (step 1) first.
+
+Checklist:
+
+- Create `packages/controls-compliance-catalog/` with its own `pyproject.toml`, `src/`,
+  `tests/`, `README.md`, and `specs/` (§3.2, §6); add it to the `platform/` workspace.
+- Re-target `specs/003-oscal-ai-conversion` at this package (it planned an `/oscal`
+  router in the flat `src/`, ADR-0005 → Implementation status 2026-09-24).
+- Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
+
+### 8.2 Visualiser API/UI split (step 7)
 
 Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
 from the shared FastAPI app in `frictionless_architect/app.py`. The server-rendered HTML
@@ -358,9 +379,9 @@ Checklist:
    as a path-dependency library, not over HTTP, until a second consumer needs that interface.
 9. *Resolved (ADR-0005):* `sample_parser.py` is generic ArchiMate ingestion, so it moves to
    `digital-twin-knowledge-graph` (§4) and the API package stays thin.
-10. §8 splits the visualiser (step 2) before scaffolding `digital-twin-knowledge-graph`
-    (step 4), but ADR-0005 has the API consume that package as a library. Scaffold a
-    minimal read path early, reorder, or import from the flat package in the interim? (#60)
+10. *Resolved (ADR-0005):* the visualiser split moves after the
+    `digital-twin-knowledge-graph` scaffold, and `controls-compliance-catalog` — which has
+    no knowledge-graph dependency — becomes the first extraction (§8, #60).
 
 ---
 
@@ -371,4 +392,5 @@ Checklist:
 - First-party code → **one Poetry monorepo** (`platform/`). Forks → **git
   submodules under `third_party/` only**.
 - **Package manager is Poetry, not `uv`** (`uv sync` broke repeatedly in this env).
-- **Visualiser API/UI split is the first extraction.**
+- **`controls-compliance-catalog` (policy-to-OSCAL) is the first extraction; the
+  visualiser API/UI split follows the knowledge-graph scaffold** (ADR-0005).

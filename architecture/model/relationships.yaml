@@ -718,3 +718,74 @@
 - {type: Association, source: cap-human-approval-workflow, target: it4it-cap-change-mgmt, label: human sign-off is the approval gate in this capability's change lifecycle, props: {source: it4it-alignment}}
 - {type: Association, source: cap-control-catalog, target: it4it-cap-policy-mgmt, label: owns the same policy & standards content, props: {source: it4it-alignment}}
 - {type: Association, source: cap-forensic-ledger, target: it4it-cap-compliance-mgmt, label: the append-only ledger is the audit management evidence this function owns, props: {source: it4it-alignment}}
+
+# =====================================================================
+# E. Schema visualiser consumes the knowledge-graph read path (ADR-0005)
+#    — a library interface, not HTTP; the visualiser has no direct Access to
+#    store-akg.
+# =====================================================================
+- {type: Composition, source: sys-platform, target: sub-schema-visualizer}
+- {type: Composition, source: sub-twin, target: if-twin-read-path}
+- {type: Serving, source: if-twin-read-path, target: sub-schema-visualizer, label: path-dependency library}
+# Derivable (Composition sub-twin -> interface + Serving interface -> visualiser),
+# kept deliberately: the C4 projection drops the ApplicationInterface, so without
+# this edge the visualiser container renders with no relationships.
+- {type: Serving, source: sub-twin, target: sub-schema-visualizer, label: serves the read path to, props: {c4-label: reads the knowledge graph via}}
+
+# =====================================================================
+# E. Packages realise their components
+# =====================================================================
+- {type: Realization, source: art-flat-src, target: sub-schema-visualizer}
+- {type: Realization, source: art-flat-src, target: sub-twin}
+- {type: Realization, source: art-pkg-schema-visualizer-api, target: sub-schema-visualizer}
+- {type: Realization, source: art-pkg-digital-twin-knowledge-graph, target: sub-twin}
+- {type: Realization, source: art-pkg-controls-compliance-catalog, target: sub-catalog}
+- {type: Realization, source: art-pkg-reusable-architecture-library, target: sub-library}
+- {type: Realization, source: art-pkg-architecture-governance, target: sub-governance}
+- {type: Realization, source: art-pkg-conformance-drift-assurance, target: sub-assurance}
+- {type: Realization, source: art-pkg-modelling-specification, target: sub-modelling}
+
+# =====================================================================
+# E. Migration sequence (ARCHITECTURE.md §8)
+#    The first extraction is controls-compliance-catalog (GH #44), which has
+#    no knowledge-graph dependency; schema-visualizer-api follows step 4, which
+#    delivers the read path it consumes (ADR-0005, GH #60).
+# =====================================================================
+- {type: Triggering, source: wp-1-monorepo-skeleton, target: wp-2-catalog-extraction}
+- {type: Triggering, source: wp-2-catalog-extraction, target: wp-3-prove-pattern}
+- {type: Triggering, source: wp-3-prove-pattern, target: wp-4-scaffold-twin}
+- {type: Triggering, source: wp-4-scaffold-twin, target: wp-5-vendor-forks}
+- {type: Triggering, source: wp-5-vendor-forks, target: wp-6-rehome-specs}
+- {type: Triggering, source: wp-6-rehome-specs, target: wp-7-extract-remaining}
+- {type: Realization, source: wp-1-monorepo-skeleton, target: del-monorepo-skeleton}
+- {type: Realization, source: wp-2-catalog-extraction, target: del-catalog-pkg}
+- {type: Realization, source: wp-4-scaffold-twin, target: del-twin-pkg-scaffold}
+- {type: Realization, source: del-catalog-pkg, target: art-pkg-controls-compliance-catalog}
+- {type: Realization, source: del-twin-pkg-scaffold, target: art-pkg-digital-twin-knowledge-graph}
+- {type: Realization, source: wp-3-prove-pattern, target: plat-first-extraction}
+- {type: Realization, source: wp-7-extract-remaining, target: plat-target}
+
+# =====================================================================
+# E. Plateaus: which packages make up each state (ordered by the Gaps below)
+# =====================================================================
+- {type: Aggregation, source: plat-baseline, target: art-flat-src}
+- {type: Aggregation, source: plat-first-extraction, target: art-flat-src}
+- {type: Aggregation, source: plat-first-extraction, target: art-pkg-controls-compliance-catalog}
+- {type: Aggregation, source: plat-target, target: art-pkg-schema-visualizer-api}
+- {type: Aggregation, source: plat-target, target: art-pkg-digital-twin-knowledge-graph}
+- {type: Aggregation, source: plat-target, target: art-pkg-controls-compliance-catalog}
+- {type: Aggregation, source: plat-target, target: art-pkg-reusable-architecture-library}
+- {type: Aggregation, source: plat-target, target: art-pkg-architecture-governance}
+- {type: Aggregation, source: plat-target, target: art-pkg-conformance-drift-assurance}
+- {type: Aggregation, source: plat-target, target: art-pkg-modelling-specification}
+
+# =====================================================================
+# E. Gaps: each lies between two Plateaus (ordering Baseline -> Target);
+#    the packages that differ are the Plateaus' Aggregations, named in each
+#    Gap's desc — no Gap -> Artifact or Plateau Triggering edges, which would
+#    only restate that
+# =====================================================================
+- {type: Association, source: gap-catalog-extracted, target: plat-baseline}
+- {type: Association, source: gap-catalog-extracted, target: plat-first-extraction}
+- {type: Association, source: gap-subsystems-packaged, target: plat-first-extraction}
+- {type: Association, source: gap-subsystems-packaged, target: plat-target}

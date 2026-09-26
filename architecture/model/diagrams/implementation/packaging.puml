@@ -1,0 +1,35 @@
+@startuml
+!include <archimate/Archimate>
+
+title Packaging
+
+Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog")
+Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library")
+Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
+  Application_Interface(e_id0c9a1a2f155254, "Knowledge Graph Read Path")
+}
+Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance")
+Application_Component(e_id492c882252a953, "Conformance & Drift Assurance")
+Application_Component(e_id82f04fecbdd85e, "Modelling & Specification")
+Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
+Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
+Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
+Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
+Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
+
+Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
+Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")
+Rel_Realization_Up(e_id9b247a70d9f258, e_id3da203d482f955, "")
+Rel_Realization_Up(e_id11f06faa9d2d5d, e_idd18b3d46fade58, "")
+Rel_Realization_Up(e_id69891242354858, e_id3da203d482f955, "")
+Rel_Realization_Up(e_idfcb391a9833b5b, e_ide4bef3733af65a, "")
+Rel_Realization_Up(e_id3ac7123fc98d52, e_id3b0beba52b5a5c, "")
+Rel_Realization_Up(e_id880eb98a22b15c, e_id0d5bd02b5ffe5e, "")
+Rel_Realization_Up(e_idb422fae52e4652, e_id492c882252a953, "")
+Rel_Realization_Up(e_id42d611ba8e6759, e_id82f04fecbdd85e, "")
+
+@enduml
