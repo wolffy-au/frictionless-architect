@@ -35,7 +35,7 @@ step 5) or any time you suspect the log has fallen behind.
 
 Status key: **A** = Accepted · **P** = Proposed (captured from the vision docs,
 not yet re-ratified in a spec) · **A\*** = Accepted but not yet reflected in the
-narrative docs · **S** = Superseded.
+narrative docs.
 
 - **A** — [0001](0001-root-is-governance-only.md) — Root is governance-only;
   app code lives one level below
@@ -74,8 +74,9 @@ narrative docs · **S** = Superseded.
   for metadata, Neo4j for the knowledge graph
 - **P** — [0019](0019-opa-rego-policy-engine.md) — Policy engine is OPA (Rego);
   bypass raises managed-drift debt
-- **S** — [0020](0020-vite-dashboard-in-backstage.md) — Frontend is a Vite
-  dashboard, target-embedded in Backstage (superseded by 0033)
+- **A** — [0020](0020-vite-dashboard-in-backstage.md) — Each subsystem ships
+  its own UI (`ui/` beside `api/`); no central dashboard (revised from a single
+  Vite/Backstage dashboard)
 - **A** — [0021](0021-schema-visualiser-cytoscape.md) — Schema visualiser uses
   cytoscape.js + coordinated tables
 - **A** — [0022](0022-schema-visualiser-lxml-xmlschema.md) — Schema visualiser
@@ -105,5 +106,3 @@ narrative docs · **S** = Superseded.
 - **A** — [0032](0032-archimate-exchange-namespace-3-0.md) — ArchiMate
   exchange files use the `archimate/3.0/` namespace (schema version 3.1);
   any other namespace is rejected loudly
-- **A** — [0033](0033-ui-per-subsystem.md) — Each subsystem ships its own UI
-  (`ui/` beside `api/`); no central dashboard package

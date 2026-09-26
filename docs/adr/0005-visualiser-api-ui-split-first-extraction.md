@@ -17,7 +17,7 @@ Split the visualiser into two packages:
 - `packages/schema-visualizer-api` — JSON only (`/schema-payload*`). Scope:
   `visualizer/{api,cache,config}.py` and the FastAPI router. Drops the
   server-rendered HTML route and Jinja/static mounts.
-- `packages/schema-visualizer-ui` (home open since ADR-0033 dropped the
+- `packages/schema-visualizer-ui` (home open since ADR-0020 dropped the
   dashboard — #55) — a Vite app
   fetching `/schema-payload`.
 

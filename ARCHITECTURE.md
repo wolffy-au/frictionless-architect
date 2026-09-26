@@ -92,7 +92,7 @@ end note
 - **Vendored upstream forks are git submodules under `third_party/`, and only there.**
   They are low-touch (rebased customisation branch, periodic `fork-sync`), so submodule
   pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
-- **Each subsystem ships its own UI** ([ADR-0033](docs/adr/0033-ui-per-subsystem.md)) —
+- **Each subsystem ships its own UI** ([ADR-0020](docs/adr/0020-vite-dashboard-in-backstage.md)) —
   a `ui/` `pnpm` sub-tree beside its `api/`, inside the same monorepo, not a separate repo,
   until JS weight demands `turborepo`. There is no central dashboard package; how the UIs
   are composed (Backstage plugins or a shell app) is open (#55).
@@ -116,7 +116,7 @@ frictionless-architect/                 # ROOT — governance & orchestration
     ├── pyproject.toml                   # root project; packages/* as path dependencies
     ├── poetry.lock                      # single shared lock
     └── packages/
-        ├── controls-compliance-catalog/     # subsystem 1  (each: api/ + ui/, ADR-0033)
+        ├── controls-compliance-catalog/     # subsystem 1  (each: api/ + ui/, ADR-0020)
         ├── reusable-architecture-library/   # subsystem 2
         ├── digital-twin-knowledge-graph/    # subsystem 3
         ├── architecture-governance/         # subsystem 4
@@ -144,7 +144,7 @@ and `specs/` (per-package feature specs — see §6).
 
 The six subsystems are those of [ADR-0011](docs/adr/0011-six-subsystem-decomposition.md),
 modelled in `architecture/model/` (section B). Each package holds an `api/` and a `ui/`
-([ADR-0033](docs/adr/0033-ui-per-subsystem.md)).
+([ADR-0020](docs/adr/0020-vite-dashboard-in-backstage.md)).
 
 | # | Subsystem | Home | Build vs wrap | Notes (absorbs, from the old 8-component grouping) |
 |---|---|---|---|---|
@@ -165,7 +165,7 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
   subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
   own as-built state is an operational NFR (FR-018); threat modelling as an output is
   subsystem 2.
-- **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0033).
+- **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
 
 **Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
 
@@ -333,7 +333,7 @@ Checklist:
    rule? (Leaning: package forever; split only if a component is open-sourced standalone.)
 2. Root `.specify/` as the platform constitution with lighter per-component constitutions
    beneath, or one constitution only?
-3. Per-subsystem UIs (ADR-0033): Backstage plugins, or composed in a shell app? Changes
+3. Per-subsystem UIs (ADR-0020): Backstage plugins, or composed in a shell app? Changes
    each `ui/` tree's build shape (#55).
 4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
    is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
