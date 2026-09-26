@@ -259,6 +259,15 @@ branch `archive/prototype-neo4j` before it rots. Do not block the restructure on
 7. Extract remaining components as work reaches them — including the visualiser API/UI
    split (§8.2), now that step 4 has delivered the read path it consumes.
 
+The steps are modelled in `architecture/model/` section E as Work Packages, with the
+packages each delivers, the Baseline / Transition / Target Plateaus, and the Gaps
+between them (GH #65):
+
+[![Migration sequence](architecture/model/diagrams/migration/sequence.svg)](architecture/model/diagrams/migration/sequence.svg)
+
+The order puts each package after the packages it consumes — see the
+[packaging view](architecture/model/diagrams/implementation/packaging.svg) (ADR-0005, #60).
+
 ### 8.1 First extraction — controls-compliance-catalog
 
 The policy-to-OSCAL pipeline (#44) is new code, so it is written straight into

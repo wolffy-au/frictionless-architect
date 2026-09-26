@@ -12,6 +12,7 @@ System_Boundary(n_id54dd4701dbf151, "Frictionless Architecture Platform") {
   Container(n_id0d5bd02b5ffe5e, "Architecture Governance", "", "Comparative evaluation of candidate options, impact assessment, the decision and its ADR, and archival of the rejected options with reasons. Pure decision-making — the options themselves are modelled in the Reusable Architecture Library.")
   Container(n_id492c882252a953, "Conformance & Drift Assurance", "", "Supervises agentic development to enforce controls at build, supplies the expected controls the pipeline's release gate verifies, monitors effectiveness in BAU, and detects and reports architecture drift.")
   Container(n_id82f04fecbdd85e, "Modelling & Specification", "", "Out-of-the-box ArchiMate / C4 / UML modelling, and generation of development specifications.")
+  Container(n_idd18b3d46fade58, "Schema Visualiser API", "", "Serves the aggregated ArchiMate schema and sample-model coverage as JSON (/schema-payload, /refresh, /status). Not one of the six subsystems; extracted after the knowledge-graph scaffold (ADR-0005), reading the knowledge graph only through the Digital Twin & Knowledge Graph read path.")
   ContainerDb(n_idb18c37abc9ff51, "OSCAL Repository", "", "OSCAL Catalogs, Profiles, Components, SSPs and Assessment Results.")
   ContainerDb(n_idb9264b9a2b5a50, "Pattern & Blueprint Repository", "", "Architecture patterns, implementation blueprints and solution designs.")
   ContainerDb(n_id989d401ffdae55, "Architecture Knowledge Graph", "", "One graph store, two planes: Architecture Intent and Current-State Digital Twin.")
@@ -66,5 +67,6 @@ Rel(n_id82f04fecbdd85e, n_ide155670d2bae58, "reads ArchiMate / C4 / UML metamode
 Rel(n_id82f04fecbdd85e, n_idb9264b9a2b5a50, "reads patterns, blueprints & designs")
 Rel(n_id82f04fecbdd85e, n_id2610ae0cc2cc50, "requests draft specifications from")
 Rel(n_id82f04fecbdd85e, n_id4a7b9c4171d855, "specifications")
+Rel(n_idd18b3d46fade58, n_id3da203d482f955, "reads the knowledge graph via")
 
 @enduml

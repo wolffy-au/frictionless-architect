@@ -13,6 +13,8 @@
 #   A. Motivation + Strategy + Business — the load-bearing skeleton
 #   B. Application — the six-subsystem ecosystem (C4 context / container views)
 #   C. Application — the artefact input/output pipeline (functions + artefacts)
+#   E. Implementation & Migration — packages (Artifacts) and the restructure
+#      sequence (Work Packages, Deliverables, Plateaus) — ARCHITECTURE.md §3.2, §8
 #
 # Authoring note — Assessment wording (not mechanically checked, review by eye):
 #   An Assessment's `name` must be written in the vocabulary of the Stakeholder
@@ -930,6 +932,21 @@
   desc: >-
     Out-of-the-box ArchiMate / C4 / UML modelling, and generation of development
     specifications.
+- type: ApplicationComponent
+  id: sub-schema-visualizer
+  name: Schema Visualiser API
+  desc: >-
+    Serves the aggregated ArchiMate schema and sample-model coverage as JSON
+    (/schema-payload, /refresh, /status). Not one of the six subsystems;
+    extracted after the knowledge-graph scaffold (ADR-0005), reading the
+    knowledge graph only through the Digital Twin & Knowledge Graph read path.
+- type: ApplicationInterface
+  id: if-twin-read-path
+  name: Knowledge Graph Read Path
+  desc: >-
+    Narrow, in-process library interface over the Neo4j read path and
+    ArchiMate sample parsing. Consumed as a path dependency, not over HTTP,
+    and free of leaked Neo4j driver types (ADR-0005).
 
 # --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
 - type: DataObject
@@ -1227,3 +1244,124 @@
 - {type: DataObject, id: art-dev-spec, name: Development Specification, desc: "Executable spec derived from patterns, blueprints and designs."}
 - {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
 - {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: "A single immutable forensic record — actor, action, target artefact, timestamp, outcome."}
+
+# =====================================================================
+# E. IMPLEMENTATION & MIGRATION — the platform's own restructure
+#    Artifacts are the code packages (ARCHITECTURE.md §3.2) realising their
+#    ApplicationComponents; Work Packages are the ARCHITECTURE.md §8 steps,
+#    verbatim; Plateaus are states of THIS platform (not the managed estate —
+#    see the archimate-analogue tags on the section-A BusinessObjects).
+#    Artifacts carry c4=ignore: packaging is not a C4 container concern.
+#    Technology layer (Nodes, SystemSoftware) is GH #55.
+# =====================================================================
+
+# --- E. Artifacts (code packages) ---
+- type: Artifact
+  id: art-flat-src
+  name: frictionless_architect (flat src/)
+  desc: >-
+    Today's single Poetry project: src/frictionless_architect/ holding the
+    visualiser and the schema manager side by side.
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-schema-visualizer-api
+  name: packages/schema-visualizer-api
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-digital-twin-knowledge-graph
+  name: packages/digital-twin-knowledge-graph
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-controls-compliance-catalog
+  name: packages/controls-compliance-catalog
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-reusable-architecture-library
+  name: packages/reusable-architecture-library
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-architecture-governance
+  name: packages/architecture-governance
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-conformance-drift-assurance
+  name: packages/conformance-drift-assurance
+  props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-modelling-specification
+  name: packages/modelling-specification
+  props: {c4: ignore}
+
+# --- E. Work Packages (ARCHITECTURE.md §8, one per step) ---
+- type: WorkPackage
+  id: wp-1-monorepo-skeleton
+  name: 1. Create platform/ Poetry monorepo skeleton
+  desc: Empty, CI green.
+- type: WorkPackage
+  id: wp-2-catalog-extraction
+  name: "2. First extraction: controls-compliance-catalog"
+  desc: >-
+    packages/controls-compliance-catalog, home of the policy-to-OSCAL
+    pipeline (GH #44).
+- type: WorkPackage
+  id: wp-3-prove-pattern
+  name: "3. Prove pattern"
+  desc: Root CI fans out, workspace lock resolves, tests pass.
+- type: WorkPackage
+  id: wp-4-scaffold-twin
+  name: 4. Scaffold digital-twin-knowledge-graph
+  desc: Port prototype-neo4j ideas (ADR-0006, ARCHITECTURE.md §7).
+- type: WorkPackage
+  id: wp-5-vendor-forks
+  name: 5. Vendor confirmed forks into third_party/
+  desc: Submodules, wired to fork-sync.
+- type: WorkPackage
+  id: wp-6-rehome-specs
+  name: 6. Re-home specs to two-tier scheme
+  desc: Patch the .specify scripts (ADR-0004).
+- type: WorkPackage
+  id: wp-7-extract-remaining
+  name: 7. Extract remaining components
+  desc: As work reaches them.
+
+# --- E. Deliverables (only where a step hands over a package) ---
+- type: Deliverable
+  id: del-monorepo-skeleton
+  name: Monorepo skeleton
+  desc: platform/ root pyproject.toml + shared poetry.lock, CI green.
+- type: Deliverable
+  id: del-catalog-pkg
+  name: controls-compliance-catalog package
+- type: Deliverable
+  id: del-twin-pkg-scaffold
+  name: digital-twin-knowledge-graph scaffold
+
+# --- E. Plateaus (states of this platform) ---
+- type: Plateau
+  id: plat-baseline
+  name: "Baseline: flat src/"
+- type: Plateau
+  id: plat-first-extraction
+  name: "Transition: first extraction proven"
+  desc: After step 3 — controls-compliance-catalog in the monorepo, pattern proven.
+- type: Plateau
+  id: plat-target
+  name: "Target: package per subsystem"
+  desc: ARCHITECTURE.md §3.2 layout.
+
+# --- E. Gaps (what changes between consecutive Plateaus) ---
+- type: Gap
+  id: gap-catalog-extracted
+  name: "Gap: controls catalog extracted to its own package"
+  desc: >-
+    Baseline -> Transition. controls-compliance-catalog is created as its
+    own package and the OSCAL conversion code (GH #44) is written there, not
+    in the flat src/. It reads only the framework packs (store-frameworks),
+    not the knowledge graph, so nothing it needs waits on step 4.
+- type: Gap
+  id: gap-subsystems-packaged
+  name: "Gap: remaining subsystems packaged"
+  desc: >-
+    Transition -> Target. The remaining packages are created, including
+    schema-visualizer-api once step 4 has delivered the knowledge-graph read
+    path it consumes (ADR-0005), and the flat src/ is retired.

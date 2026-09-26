@@ -711,3 +711,39 @@
     - it4it-cap-change-mgmt
     - it4it-cap-policy-mgmt
     - it4it-cap-compliance-mgmt
+
+# =====================================================================
+# Implementation & Migration — the platform's own restructure (GH #65)
+# =====================================================================
+
+- id: view-packaging
+  name: Packaging
+  diagram: implementation/packaging
+  # Packages (Artifacts) realising the components they ship. No Nodes /
+  # SystemSoftware yet — the deployment half of this viewpoint is GH #55.
+  viewpoint: implementation_deployment
+  # Subsystem-to-subsystem cooperation is the Artefact Flow views' story,
+  # not packaging's — exclude it so it doesn't render incidentally.
+  exclude:
+    - {type: Serving, source_type: ApplicationComponent, target_type: ApplicationComponent}
+    - {type: Flow, source_type: ApplicationComponent, target_type: ApplicationComponent}
+    - {type: Association, source_type: ApplicationComponent, target_type: ApplicationComponent}
+  include_types: [Artifact]
+  members:
+    - sub-catalog
+    - sub-library
+    - sub-twin
+    - sub-governance
+    - sub-assurance
+    - sub-modelling
+    - sub-schema-visualizer
+    - if-twin-read-path
+
+- id: view-migration
+  name: Migration Sequence
+  diagram: migration/sequence
+  # ARCHITECTURE.md §8 steps as Work Packages, what each delivers, and the
+  # Plateaus the platform passes through. Components are left out: the
+  # Packaging view carries the package -> component story.
+  viewpoint: implementation_migration
+  include_types: [WorkPackage, Deliverable, Plateau, Gap, Artifact]

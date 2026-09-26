@@ -1,0 +1,53 @@
+@startuml
+!include <archimate/Archimate>
+
+title Migration Sequence
+
+Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
+Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+Implementation_WorkPackage(e_idbd449c19b4d151, "1. Create platform/ Poetry monorepo skeleton")
+Implementation_WorkPackage(e_idf7f5656c5dbc55, "2. First extraction: controls-compliance-catalog")
+Implementation_WorkPackage(e_id8526bedb919051, "3. Prove pattern")
+Implementation_WorkPackage(e_idb5aefc03c12758, "4. Scaffold digital-twin-knowledge-graph")
+Implementation_WorkPackage(e_ide65ef885c75d5c, "5. Vendor confirmed forks into third_party/")
+Implementation_WorkPackage(e_idca8b472cbb665f, "6. Re-home specs to two-tier scheme")
+Implementation_WorkPackage(e_idb1ceb35faf4e51, "7. Extract remaining components")
+Implementation_Deliverable(e_idbee89c6988a65e, "Monorepo skeleton")
+Implementation_Deliverable(e_iddb0e3448ac8e55, "controls-compliance-catalog package")
+Implementation_Deliverable(e_idfd60d816da9a57, "digital-twin-knowledge-graph scaffold")
+Implementation_Plateau(e_id4accde76fa5858, "Baseline: flat src/")
+Implementation_Plateau(e_id0b25de8c31c356, "Transition: first extraction proven")
+Implementation_Plateau(e_idc612f81efc8758, "Target: package per subsystem") {
+  Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+  Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+  Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
+  Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+  Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
+  Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
+}
+Implementation_Gap(e_idea9942f7e66155, "Gap: controls catalog extracted to its own package")
+Implementation_Gap(e_id46193b16238b5f, "Gap: remaining subsystems packaged")
+
+Rel_Triggering_Right(e_idbd449c19b4d151, e_idf7f5656c5dbc55, "")
+Rel_Triggering_Right(e_idf7f5656c5dbc55, e_id8526bedb919051, "")
+Rel_Triggering_Right(e_id8526bedb919051, e_idb5aefc03c12758, "")
+Rel_Triggering_Right(e_idb5aefc03c12758, e_ide65ef885c75d5c, "")
+Rel_Triggering_Right(e_ide65ef885c75d5c, e_idca8b472cbb665f, "")
+Rel_Triggering_Right(e_idca8b472cbb665f, e_idb1ceb35faf4e51, "")
+Rel_Realization_Up(e_idbd449c19b4d151, e_idbee89c6988a65e, "")
+Rel_Realization_Up(e_idf7f5656c5dbc55, e_iddb0e3448ac8e55, "")
+Rel_Realization_Up(e_idb5aefc03c12758, e_idfd60d816da9a57, "")
+Rel_Realization_Up(e_iddb0e3448ac8e55, e_idfcb391a9833b5b, "")
+Rel_Realization_Up(e_idfd60d816da9a57, e_id69891242354858, "")
+Rel_Realization_Up(e_id8526bedb919051, e_id0b25de8c31c356, "")
+Rel_Realization_Up(e_idb1ceb35faf4e51, e_idc612f81efc8758, "")
+Rel_Aggregation(e_id4accde76fa5858, e_id9b247a70d9f258, "")
+Rel_Aggregation(e_id0b25de8c31c356, e_id9b247a70d9f258, "")
+Rel_Aggregation(e_id0b25de8c31c356, e_idfcb391a9833b5b, "")
+Rel_Aggregation(e_idc612f81efc8758, e_idfcb391a9833b5b, "")
+Rel_Association(e_idea9942f7e66155, e_id4accde76fa5858, "")
+Rel_Association(e_idea9942f7e66155, e_id0b25de8c31c356, "")
+Rel_Association(e_id46193b16238b5f, e_id0b25de8c31c356, "")
+Rel_Association(e_id46193b16238b5f, e_idc612f81efc8758, "")
+
+@enduml
