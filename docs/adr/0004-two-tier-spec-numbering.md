@@ -21,10 +21,12 @@ Per-component work will make this worse.
 
 ## Consequences
 
-- Existing specs re-home: `001-governance-platform` → `EPIC-001` (or retire —
-  open question, `ARCHITECTURE.md` §10); `002-neo4j-schema-ui` →
+- Existing specs re-home: `001-governance-platform` → `EPIC-001` (revised
+  2026-09-26: the "or retire" option is closed — `PROJECT_SPECIFICATION.md` was
+  retired instead and spec 001 is now the business specification, constitution
+  v1.3.0); `002-neo4j-schema-ui` →
   `packages/schema-visualizer-api/specs/001-*`; `002-arch-kg-semantics` (stub) →
-  `packages/knowledge-graph/specs/002-*` or delete.
+  `packages/digital-twin-knowledge-graph/specs/002-*` or delete.
 - The `.specify` scripts need patching before per-component specs can be created.
 - Root keeps one platform constitution; per-component constitutions are optional
   lighter addenda.

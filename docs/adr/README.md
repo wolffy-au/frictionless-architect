@@ -10,6 +10,10 @@ feature specs. ADRs 0001–0024 were back-filled from those documents on
 2026-08-30; the "Date" field of a back-filled record is the decision's original
 date where known, otherwise `unknown (pre-dates this log)`.
 
+`PROJECT_SPECIFICATION.md` was retired on 2026-09-26 (constitution v1.3.0). ADR
+`Sources` lines that cite it refer to its last version:
+`git show 38ff242:PROJECT_SPECIFICATION.md`.
+
 ## Keeping it honest
 
 The [`adr-auditor`](../../.claude/agents/adr-auditor.md) agent sweeps the
@@ -56,7 +60,7 @@ narrative docs.
   generated from the ArchiMate model
 - **A** — [0010](0010-load-bearing-skeleton-only.md) — Central model is a
   load-bearing skeleton only (contents extended by 0027)
-- **A\*** — [0011](0011-six-subsystem-decomposition.md) — Platform decomposes
+- **A** — [0011](0011-six-subsystem-decomposition.md) — Platform decomposes
   into 6 subsystems (replacing the 8-component grouping)
 - **A** — [0012](0012-adr-as-attested-fsm.md) — ADRs are an attested
   finite-state machine
@@ -74,8 +78,9 @@ narrative docs.
   for metadata, Neo4j for the knowledge graph
 - **P** — [0019](0019-opa-rego-policy-engine.md) — Policy engine is OPA (Rego);
   bypass raises managed-drift debt
-- **P** — [0020](0020-vite-dashboard-in-backstage.md) — Frontend is a Vite
-  dashboard, target-embedded in Backstage
+- **A** — [0020](0020-per-subsystem-uis.md) — Each subsystem ships
+  its own UI (`ui/` beside `api/`); no central dashboard (revised from a single
+  Vite/Backstage dashboard)
 - **A** — [0021](0021-schema-visualiser-cytoscape.md) — Schema visualiser uses
   cytoscape.js + coordinated tables
 - **A** — [0022](0022-schema-visualiser-lxml-xmlschema.md) — Schema visualiser

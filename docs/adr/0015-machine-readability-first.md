@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** unknown (pre-dates this log)
-- **Sources:** `PROJECT_SPECIFICATION.md` Phase 1; `specs/001` FR-019; `NONFUNCTIONALS.md` §"Usability & Efficiency"; `data-model.md`
+- **Sources:** `PROJECT_SPECIFICATION.md` Phase 1; `specs/001` FR-019; `NONFUNCTIONALS.md` §"Usability & Efficiency"; `specs/001-governance-platform/data-model.md`
 
 ## Context
 
@@ -21,4 +21,4 @@ binary. This is a standing constraint on every feature, not a one-time choice.
 - Drives the graph-native model (ADR-0007), the ArchiMate exchange format
   support, and one-click "Compliance Pack" exports.
 - New formats or integrations must carry documented migration/mapping paths
-  (Constitution VIII / `PROJECT_CONSTITUTION.md` VIII).
+  (Constitution VIII).

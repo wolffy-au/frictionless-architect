@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - ARCHITECTURE.md
@@ -25,7 +25,7 @@ sources:
   - docs/adr/0017-knowledge-graph-on-standard-ontology.md
   - docs/adr/0018-postgres-plus-neo4j-data-layer.md
   - docs/adr/0019-opa-rego-policy-engine.md
-  - docs/adr/0020-vite-dashboard-in-backstage.md
+  - docs/adr/0020-per-subsystem-uis.md
   - docs/adr/0021-schema-visualiser-cytoscape.md
   - docs/adr/0022-schema-visualiser-lxml-xmlschema.md
   - docs/adr/0023-visualiser-reuses-neo4j-credentials-with-cache-fallback.md
@@ -54,8 +54,9 @@ thin **governance / orchestration layer** — vision, constitution, cross-cuttin
 specs, coordination scripts, submodule pointers, and fan-out CI — and holds
 **no application code** (`ARCHITECTURE.md` §1,
 `docs/adr/0001-root-is-governance-only.md`). This is a packaging decision that
-does not change the product vision. Status: "target adopted; migration in
-progress" (`ARCHITECTURE.md` §1).
+does not change the product vision, whose decomposition is the six subsystems of
+[ADR-0011](#decision-log), modelled in `architecture/model/`. Status: "target
+adopted; migration in progress" (`ARCHITECTURE.md` §1).
 
 ## Current state
 
@@ -87,44 +88,67 @@ cherry-picked into `develop` before the deletion
 - Vendored upstream forks are **git submodules under `third_party/` only** —
   never a submodule for actively-developed first-party code
   (`ARCHITECTURE.md` §3.1).
-- Frontends are a `pnpm`/Vite sub-tree inside the same monorepo until JS weight
-  justifies `turborepo` (`ARCHITECTURE.md` §3.1).
+- **Each subsystem ships its own UI** — a `ui/` `pnpm` sub-tree beside its
+  `api/`, inside the same monorepo, until JS weight justifies `turborepo`. There
+  is no central dashboard package; whether the UIs compose as Backstage plugins
+  or in a shell app is open (GitHub #55) (`ARCHITECTURE.md` §3.1,
+  `docs/adr/0020-per-subsystem-uis.md`).
 
-Target layout is enumerated in `ARCHITECTURE.md` §3.2.
+Target layout is enumerated in `ARCHITECTURE.md` §3.2. §3.3's target diagram is
+now a **TODO placeholder** (#55): it is to be replaced by a *generated*
+Implementation and Deployment view — packages as ArchiMate Artifacts realising
+the subsystems, deployed onto infrastructure — because diagrams come from
+`architecture/model/` and are never hand-drawn (constitution Principle X).
+Until then §3.2 gives the package layout and the generated C4 container view
+gives the logical one (`ARCHITECTURE.md` §3.3). See
+[Architecture Views & Diagrams](architecture-diagrams.md).
 
-## Component decomposition — two views in flux
+## Subsystem → package mapping
 
-`ARCHITECTURE.md` §3.2 / §4 still document an **eight-component** split taken
-from `PROJECT_SPECIFICATION.md` "Proposed Grouping":
+`ARCHITECTURE.md` §4 maps the six subsystems of [ADR-0011](#decision-log) —
+the same ones the model's section B encodes (see
+[Architecture Model: Ecosystem](architecture-model-ecosystem.md)) — to
+packages under `platform/packages/`, each holding an `api/` and a `ui/`
+([ADR-0020](#decision-log)):
 
-| # | Component | Package | Notes |
-|---|---|---|---|
-| 1 | Core Governance Service + PII handling | `governance-engine` (+ optional `pii-gateway`) | Specify lifecycle |
-| 2 | Architecture Knowledge Graph & Semantic Model | `knowledge-graph` | Absorbs `schema/manager.py`, `sample_parser.py`; wraps a forked ArchiMate parser |
-| 3 | AI-Assisted Decision Capture & Attestation | `decision-capture` | ADR generation, conflict detection, sign-off |
-| 4 | Automated Policy & Compliance Enforcement | `policy-enforcement` | CPS 230/234; wraps OPA + forked OSCAL tooling; owns `sample-data/oscal/*` |
-| 5 | Real-Time Monitoring & Drift Management | `drift-management` | Drift detect, Break-Glass, managed-drift tickets |
-| 6 | Compliance Audit & Query Interface | `audit-query` | Traceability matrix + NL-to-graph |
-| 7 | Architecture Governance Dashboard | `dashboard` | Vite/pnpm; Backstage-embedded target unconfirmed |
-| 8 | Security Foundations | `security-foundations` | RBAC/ABAC, encryption helpers, threat scanning; consumed by all |
-| — | Schema Visualiser API (today's `visualizer/`) | `schema-visualizer-api` | The first planned extraction |
+| # | Subsystem | Package | Build vs wrap | Scope (and what it absorbs from the old 8-component grouping) |
+|---|---|---|---|---|
+| 1 | Controls & Compliance Catalog | `controls-compliance-catalog` | build, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles; consumes the vendored OSCAL content |
+| 2 | Reusable Architecture Library | `reusable-architecture-library` | build | Patterns, blueprints, solution designs, candidate options, and threat modelling of them (the user-facing part of old 8) |
+| 3 | Digital Twin & Knowledge Graph | `digital-twin-knowledge-graph` | build, wraps a forked ArchiMate parser | Old 2 + old 6: intent and twin planes, forensic ledger, traceability matrix, NL-to-graph queries; absorbs `schema/manager.py` and `sample_parser.py` |
+| 4 | Architecture Governance | `architecture-governance` | build | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off |
+| 5 | Conformance & Drift Assurance | `conformance-drift-assurance` | build, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate enforcement (CPS 230/234), BAU monitoring, drift detection, Break-Glass, remediation tickets |
+| 6 | Modelling & Specification | `modelling-specification` | build | ArchiMate / C4 / UML modelling and executable-spec generation |
+| — | Schema Visualiser API (today's `visualizer/`) | `schema-visualizer-api` | build | First extraction; where its UI lands is open (#55) |
 
-But [ADR-0011](#decision-log) has since **replaced** that grouping with a
-**six-subsystem** decomposition (Controls & Compliance Catalog · Reusable
-Architecture Library · Digital Twin & Knowledge Graph · Architecture Governance ·
-Conformance & Drift Assurance · Modelling & Specification), and that is what the
-canonical architecture model actually encodes — see
-[Architecture Model: Ecosystem](architecture-model-ecosystem.md). `ARCHITECTURE.md`
-§3–4 has not yet been reworked to match
-(`docs/adr/0011-six-subsystem-decomposition.md`).
+**Not packages** — parts of the old grouping that ADR-0011 dropped or
+dissolved (`ARCHITECTURE.md` §4):
+
+- **Specify lifecycle CLI** (old 1.1) — this repo's development tooling
+  (`.specify/`), not a platform component; distinct from subsystem 6's
+  executable-spec generation.
+- **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
+- **Security foundations** (old 8) — RBAC and encryption are platform
+  requirements every subsystem meets (`specs/001` FR-016/017,
+  `NONFUNCTIONALS.md`); scanning the platform's own deployment is operational
+  (`NONFUNCTIONALS.md` "Security Assessments", formerly FR-018); threat
+  modelling as a user-facing output belongs to subsystem 2.
+- **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
+
+ADR-0011 is now fully **Accepted** (no longer A\*): it records that #50 applied
+it to `ARCHITECTURE.md` §3–4 and that `PROJECT_SPECIFICATION.md` carried a
+historical note until it was retired, with the packaging / deployment view tracked in #55
+(`docs/adr/0011-six-subsystem-decomposition.md` §Consequences). See
+[Project Overview](project-overview.md).
 
 **Forks to vendor:** an ArchiMate Exchange Format / `.archimate` parser (for
-`knowledge-graph`) is still a candidate, not confirmed (`ARCHITECTURE.md` §4).
+`digital-twin-knowledge-graph`) is still a candidate, not confirmed (`ARCHITECTURE.md` §4).
 OSCAL is now **resolved** — [ADR-0030](#decision-log) answers `ARCHITECTURE.md`
 §4's "which OSCAL tool?" question: `compliance-trestle` is consumed as an
 ordinary Poetry runtime dependency (not a fork/submodule), and NIST/FedRAMP
 reference content (`third_party/oscal`, `third_party/oscal-content`,
-`third_party/fedramp-automation`) is vendored as plain read-only
+`third_party/fedramp-automation`) — consumed by `controls-compliance-catalog`
+once it's built — is vendored as plain read-only
 `third_party/` submodules with no `fork-sync` entry and no `build.py`
 merge step — unlike the IT4IT case below, it isn't ArchiMate model data.
 A 2026-09-24 revision adds a third path. The scripts of
@@ -153,12 +177,13 @@ than getting a separate build step — see
 benefit large enough to justify migrating a working build; it sits in an "on
 hold" row, revisited only if Poetry's monorepo story becomes a real drag
 (`ARCHITECTURE.md` §5, `docs/adr/0003-poetry-not-uv.md`).
-`pnpm`+`turborepo` is "later, if JS grows"; Nx, meta-repo tools, and "submodules
+`pnpm`+`turborepo` is "later, if JS grows" — a pnpm workspace nests under
+`packages/*/ui` now; Nx, meta-repo tools, and "submodules
 for everything" are rejected.
 
 Layout under Poetry: `platform/pyproject.toml` is the root project; each
 `packages/<name>/` depends on siblings via path dependencies
-(`{ path = "../knowledge-graph", develop = true }`). Dynamic versioning and the
+(`{ path = "../digital-twin-knowledge-graph", develop = true }`). Dynamic versioning and the
 commitizen config move to the root; no build-backend churn (`ARCHITECTURE.md` §5).
 
 ## Spec numbering (two-tier target)
@@ -168,13 +193,17 @@ Today: flat `specs/NNN-*` across the platform, with a collision already
 only `EPIC-` cross-cutting specs; each `packages/<name>/specs/` restarts its own
 `NNN-` sequence; the `.specify/scripts/bash/` scripts need a `--package`
 argument first (`ARCHITECTURE.md` §6,
-`docs/adr/0004-two-tier-spec-numbering.md`).
+`docs/adr/0004-two-tier-spec-numbering.md`). `001-governance-platform` becomes
+`EPIC-001`: ADR-0004 was revised on 2026-09-26 to close its "or retire" option,
+because the root `PROJECT_SPECIFICATION.md` was retired instead and spec 001 is
+now the business specification (`docs/adr/0004-two-tier-spec-numbering.md`
+§Consequences; `ARCHITECTURE.md` §10 Q6).
 
 ## Migration sequence
 
 `ARCHITECTURE.md` §8: (1) empty `platform/` Poetry monorepo skeleton with green
 CI → (2) **first extraction: visualiser API/UI split** → (3) prove the fan-out
-pattern → (4) scaffold `knowledge-graph`, port `prototype-neo4j` ideas →
+pattern → (4) scaffold `digital-twin-knowledge-graph`, port `prototype-neo4j` ideas →
 (5) vendor confirmed forks → (6) re-home specs → (7) extract remaining
 components as work reaches them. §8.1 has a detailed checklist for the visualiser
 split (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
@@ -185,20 +214,32 @@ dropping the server-rendered HTML route and Jinja/static mounts (no confirmed
 consumer today). `schema/manager.py` (the Neo4j write/migrate/audit
 controller), `visualizer/data_loader.py` (the Neo4j read path) and
 `sample_parser.py` do **not** move into `schema-visualizer-api` — they go to
-`packages/knowledge-graph` instead, because the visualiser only ever needed
+`packages/digital-twin-knowledge-graph` instead, because the visualiser only ever needed
 read access and `sample_parser.py` has no visualiser-specific coupling
 (dependency-free stdlib ArchiMate-XML parsing). `schema-visualizer-api`
-consumes `knowledge-graph` as a **path-dependency library** (its own Neo4j
+consumes `digital-twin-knowledge-graph` as a **path-dependency library** (its own Neo4j
 connection), not over HTTP — no second consumer exists yet, so a service
 contract and internal auth would be premature; this is expected to graduate to
 HTTP later, so the read-path interface must stay narrow and Neo4j-driver-free
 (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`, revised
-2026-09-05). This **resolves** the two questions the ADR's original
-Consequences (2026-08-30) left open — library-vs-HTTP consumption and
-`sample_parser.py`'s home — which an earlier "Amendment (2026-08-30)" had
-deferred rather than settled. `ARCHITECTURE.md` §10 still lists both as open
-questions and has not been updated to reflect this resolution — a
-narrative/ADR mismatch this page flags rather than silently resolving.
+2026-09-05). `ARCHITECTURE.md` now records both as resolved (§10 Q8, Q9) and
+§8.1's checklist names the knowledge-graph package as their destination.
+
+§8.1 also reflects what has already landed: the visualiser is JSON only, its
+router served from the shared app in `frictionless_architect/app.py`. The HTML
+route was dropped on 2026-09-13, so the remaining UI step is to build the Vite
+app and delete the orphaned `visualizer/static/` and `templates/`
+(`ARCHITECTURE.md` §8.1).
+
+One ordering gap is open: §8 splits the visualiser at step 2 but scaffolds
+`digital-twin-knowledge-graph` at step 4, while ADR-0005 has the API consume
+that package as a library. Whether to scaffold a minimal read path early,
+reorder, or import from the flat package in the interim is tracked in #60
+(`ARCHITECTURE.md` §10 Q10).
+
+The target `packages/schema-visualizer-ui` Vite app no longer folds into a
+dashboard; its home is open (#55) (`ARCHITECTURE.md` §8.1;
+`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`).
 
 An interim step has landed ahead of the split (ADR-0005 revised
 2026-09-24). `specs/003-oscal-ai-conversion` mounts an `/oscal` router on
@@ -221,21 +262,22 @@ config is single-project; `behave` and `pytest` `testpaths` are root-absolute;
 CI assumes one package.
 
 Open questions (`ARCHITECTURE.md` §10): whether anything ever leaves the
-monorepo; one constitution vs. per-component addenda; dashboard as Backstage
-plugin vs. standalone SPA; which upstreams to fork; whether `pii-gateway` starts
-as its own package; whether `src/frictionless_architect/` stays importable as an
-umbrella namespace package during the transition. `ARCHITECTURE.md` §10 still
-lists the library-vs-HTTP `knowledge-graph` consumption question and
-`sample_parser.py`'s package home as open, but the revised
-`docs/adr/0005-visualiser-api-ui-split-first-extraction.md` (2026-09-05) has
-since answered both — see "Component decomposition" above.
+monorepo; one constitution vs. per-component addenda; how the per-subsystem UIs
+compose — Backstage plugins or a shell app (#55); which upstream to fork for
+the ArchiMate parser; whether collaboration-tool decision capture is still in
+scope and where the PII gateway sits (ADR-0014 narrowed by ADR-0031 — #56);
+whether
+`src/frictionless_architect/` stays importable as an umbrella namespace package
+during the transition; and the step-2/step-4 ordering gap above (#60). The
+library-vs-HTTP question and `sample_parser.py`'s home are marked resolved by
+ADR-0005 — see "Migration sequence" above.
 
 ## Decision log
 
 `docs/adr/` records the load-bearing decisions as one MADR-lite file each
 (`docs/adr/README.md`). Status: **A** accepted, **A\*** accepted but not yet
 reflected in the narrative docs, **P** proposed (carried from the vision docs,
-not re-ratified in a spec).
+not re-ratified in a spec). No record is currently A\*.
 
 | ADR | Decision | Status |
 |---|---|---|
@@ -249,7 +291,7 @@ not re-ratified in a spec).
 | 0008 | Model `type` = bare ArchiMate 3.2 concept name | A |
 | 0009 | C4 context/container diagrams generated from the ArchiMate model | A |
 | 0010 | Central model is a load-bearing skeleton only (element counts extended by 0027) | A |
-| 0011 | Platform decomposes into 6 subsystems (replacing the 8-component grouping) | A\* |
+| 0011 | Platform decomposes into 6 subsystems (replacing the 8-component grouping) | A |
 | 0012 | ADRs are an attested finite-state machine (`Draft→Under Review→Approved→Superseded`) | A |
 | 0013 | Authorization is a dedicated policy component, separate from authentication | A |
 | 0014 | Mandatory PII/PHI anonymization before any LLM processing | A |
@@ -258,7 +300,7 @@ not re-ratified in a spec).
 | 0017 | Knowledge graph built on a standard ontology (Backstage/C4) | P |
 | 0018 | Data layer: Postgres for metadata, Neo4j for the knowledge graph | P |
 | 0019 | Policy engine is OPA (Rego); bypass raises managed-drift debt | P |
-| 0020 | Frontend is a Vite dashboard, target-embedded in Backstage | P |
+| 0020 | Each subsystem ships its own UI (`ui/` beside `api/`); no central dashboard (revised 2026-09-26 from a single Vite/Backstage dashboard) | A |
 | 0021 | Schema visualiser uses cytoscape.js + coordinated tables | A |
 | 0022 | Schema visualiser parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema` (corrected 2026-09-25 from `lxml` + `xmlschema`) | A |
 | 0023 | Visualiser reuses Neo4j read credentials; caches payloads offline | A |
@@ -272,7 +314,7 @@ not re-ratified in a spec).
 | 0031 | Policy/standard document conversion bypasses the PII anonymization gateway, scoped to that one ingestion path | A |
 | 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
 
-Most **P** rows (0017–0020) exist because `specs/001-governance-platform`
+The **P** rows (0017–0019) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
 the authorization model and policy language, the ADR cryptographic scheme,
 accepted serialization formats, and the API error wire format are all listed
@@ -282,6 +324,16 @@ there as "deferred solution decisions" to be re-decided intentionally
 the change is reflected in the [Architecture Model](architecture-model.md)
 (value stream, motivation spine, renamed capabilities) and the ADR itself is
 accepted (`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
+
+ADR-0020 was **revised in place** on 2026-09-26 (GitHub #50) rather than
+superseded. It had proposed one Vite dashboard (`packages/dashboard`)
+target-embedded in Backstage — the old "Frontend Dashboard" component — but was
+never ratified or built. With ADR-0011's six subsystems serving different roles
+there was no home for a central dashboard, so the record now decides that each
+subsystem ships its own UI; cross-subsystem views (e.g. a traceability
+overview) are composed from the subsystem UIs, and composition and build
+tooling are left to #55 (`docs/adr/0020-per-subsystem-uis.md`; the file was renamed from its old
+`vite-dashboard-in-backstage` slug to match).
 
 ADR-0028 rewrites the Neo4j schema `SchemaManager` implements: it previously
 stored every ArchiMate relationship twice — an edge and a reified

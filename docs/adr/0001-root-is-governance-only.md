@@ -22,5 +22,5 @@ level below the root.
 - A migration is required to move today's `src/` into `platform/` (see ADR-0002, ADR-0005).
 - Root-absolute config (`[tool.pytest]` `testpaths`, `[tool.behave]`, Sonar, CI)
   must be re-homed per package.
-- This is a packaging decision only; the product vision in `PROJECT_SPECIFICATION.md`
-  is unchanged.
+- This is a packaging decision only; the product vision (originally
+  `PROJECT_SPECIFICATION.md`, now `specs/001-governance-platform/spec.md`) is unchanged.

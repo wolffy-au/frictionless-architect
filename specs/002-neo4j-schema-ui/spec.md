@@ -72,13 +72,13 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 
 ### Functional Requirements
 
-- **FR-001**: System MUST display a concise summary of every node, relationship, and view type declared in the ArchiMate schema files under `sample-data/schema`, ensuring the displayed names and identifiers exactly match the schema definitions (Constitution Principle VII: Financial Data Accuracy / Data Accuracy in schema translation).
-- **FR-002**: System MUST pair each schema definition with at least one corresponding sample occurrence from `sample-data/sample-00/Test Model.xml`, including identifiers, labels, and coordinates, so stakeholders can verify how the schema translates into concrete data (Principle IX: Data Longevity & Interoperability).
+- **FR-001**: System MUST display a concise summary of every node, relationship, and view type declared in the ArchiMate schema files under `sample-data/schema`, ensuring the displayed names and identifiers exactly match the schema definitions (Constitution Principle VII: System Integrity & Accuracy — data accuracy in schema translation).
+- **FR-002**: System MUST pair each schema definition with at least one corresponding sample occurrence from `sample-data/sample-00/Test Model.xml`, including identifiers, labels, and coordinates, so stakeholders can verify how the schema translates into concrete data (Principle VIII: Durability & Interoperability).
 - **FR-003**: Users MUST be able to switch between a diagram-centric overview (respecting the stored x/y/w/h styling) and a tabular schema breakdown that lists element/relationship attributes, ensuring consistent presentation across formats (Principle IX: Cross-Platform Consistency).
-- **FR-004**: System MUST expose the source schema file name (e.g., `archimate3_Model.xsd`, `archimate3_View.xsd`) alongside each displayed type so updates to those files immediately surface in the UI and reviewers can trace back definitions (Principle IX / Interoperability).
-- **FR-005**: System MUST highlight schema coverage gaps by flagging any defined type that lacks a sample entry, providing a clear call-out so data stewards can address missing nodes before further modeling work (Principle VII: Data Accuracy and verification).
+- **FR-004**: System MUST expose the source schema file name (e.g., `archimate3_Model.xsd`, `archimate3_View.xsd`) alongside each displayed type so updates to those files immediately surface in the UI and reviewers can trace back definitions (Principle VIII: Durability & Interoperability).
+- **FR-005**: System MUST highlight schema coverage gaps by flagging any defined type that lacks a sample entry, providing a clear call-out so data stewards can address missing nodes before further modeling work (Principle VII: System Integrity & Accuracy — verification).
 - **FR-006**: System MUST display a non-blocking warning when the sample data file is missing or unreadable, yet keep the schema summary accessible so users can continue investigation without being forced to restore the sample first (Principle IX: Cross-Platform Consistency).
-- **FR-007**: System MUST enforce the Neo4j read permission model for the visualiser so access mirrors the existing data guardrails without introducing an additional authentication layer (Principle VII: Data Accuracy and Access Control).
+- **FR-007**: System MUST enforce the Neo4j read permission model for the visualiser so access mirrors the existing data guardrails without introducing an additional authentication layer (Principle V: Security Practices — access control; Principle VII: System Integrity & Accuracy).
 
 ### Key Entities *(include if feature involves data)*
 
