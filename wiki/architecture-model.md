@@ -35,7 +35,8 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 `.claude/skills/model-archimate/scripts/validate.py`, which holds the **whole**
 model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
-`check_motivation_conventions` pass (see "Motivation-layer lint" below). The
+`check_motivation_conventions` pass (see
+[Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
 current merged model is 336 elements, 684 relationships and 29 views. Of those,
 194 elements, 449 relationships and 25 views are the platform's own sections
 A–C plus the IT4IT touchpoint bridge (below). The rest (142 / 235 / 4) is
@@ -267,8 +268,8 @@ plus capability-map/bridges views documented above. A final pair of passes
 reframed the four Constraints as platform limits rather than regulation
 summaries, and corrected the motivation-layer chain (driver → assessment → goal
 routing, the fourth Assessment, dropped derived `Constraint → Goal` edges) —
-see "Motivation-layer lint" on
-[Architecture Model: Skeleton](architecture-model-skeleton.md). `diagram-archimate`'s default
+see
+[Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine). `diagram-archimate`'s default
 `Realization`/`Serving`-up, `Triggering`/`Flow`-right layout hint was added in
 the same window. Full history is in the ADR log — see
 [Architecture Overview](architecture.md) (`architecture/model/README.md`

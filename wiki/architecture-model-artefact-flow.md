@@ -87,7 +87,7 @@ controls directly on the release candidate. It "verifies process controls
 from" the forensic ledger and reads the expected controls from the SSP
 (`architecture/model/relationships.yaml:560`, `642-648`).
 
-### Controls & OSCAL — how policy becomes OSCAL
+## Controls & OSCAL — how policy becomes OSCAL
 
 The first stage models how the platform will use compliance-trestle.
 Nobody authors policy inside the platform: a Compliance Officer writes a

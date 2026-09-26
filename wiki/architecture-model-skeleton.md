@@ -70,7 +70,7 @@ for the full list.
 
 Each stakeholder is `Association`-linked to the driver(s) it holds
 (`architecture/model/relationships.yaml:90-103`). Each is also linked to the value
-stream(s) that deliver value to it (see "Value streams" below).
+stream(s) that deliver value to it (see "Value streams — one per outcome" below).
 
 **Drivers.** There are four, and they say why the platform exists (`architecture/model/elements.yaml:27-57`):
 

@@ -130,7 +130,7 @@ dissolved (`ARCHITECTURE.md` §4):
   executable-spec generation.
 - **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
 - **Security foundations** (old 8) — RBAC and encryption are platform
-  requirements every subsystem meets (`specs/001` FR-016/017,
+  requirements every subsystem meets (`specs/001-governance-platform/spec.md` FR-016/017,
   `NONFUNCTIONALS.md`); scanning the platform's own deployment is operational
   (`NONFUNCTIONALS.md` "Security Assessments", formerly FR-018); threat
   modelling as a user-facing output belongs to subsystem 2.
@@ -321,7 +321,7 @@ deliberately de-specified premature product choices — persistence technologies
 the authorization model and policy language, the ADR cryptographic scheme,
 accepted serialization formats, and the API error wire format are all listed
 there as "deferred solution decisions" to be re-decided intentionally
-(`specs/001` §"Deferred solution decisions"; see
+(`specs/001-governance-platform/spec.md` §"Deferred solution decisions"; see
 [Platform Specification & API](platform-spec.md)). ADR-0027 is now **A**:
 the change is reflected in the [Architecture Model](architecture-model.md)
 (value stream, motivation spine, renamed capabilities) and the ADR itself is
