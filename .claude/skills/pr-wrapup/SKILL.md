@@ -1,6 +1,6 @@
 ---
 name: pr-wrapup
-description: 'Wrap up a GitHub issue and its PR once the PR is merged — verify the merge, delete the remote branch, close the issue with a summary comment, remove the local worktree and branches, prune, and report leftovers. Use for "PR merged, clean up", "wrap up issue #N", "/pr-wrapup <PR#>".'
+description: 'Wrap up a GitHub issue and its PR once the PR is merged — verify the merge, check the issue acceptance criteria against the base branch, delete the remote branch, close the issue with a summary comment, remove the local worktree and branches, prune, and report leftovers. Use for "PR merged, clean up", "wrap up issue #N", "/pr-wrapup <PR#>".'
 ---
 
 # pr-wrapup
@@ -24,7 +24,7 @@ gh pr view <PR> -R wolffy-au/frictionless-architect \
 - `state` must be `MERGED`. Anything else → stop and report.
 - Note `baseRefName`. Feature/bugfix PRs target **`develop`**; GitHub only auto-closes
   `Closes #N` issues on the default branch (`main`), so for a `develop` PR the issue is
-  still open and step 3 is required.
+  still open and step 4 is required.
 - `git fetch --prune origin`, then prove the local branch holds nothing unmerged:
   - local tip == `headRefOid` (nothing committed locally after the PR's last push), **and**
   - `git merge-base --is-ancestor <headRefOid> origin/<base>` succeeds (merge commit /
@@ -33,7 +33,30 @@ gh pr view <PR> -R wolffy-au/frictionless-architect \
     landed on the base after the branch point.
   - Any local-only commits or an unexplained diff → stop and show them.
 
-## 2. Delete the remote branch
+## 2. Check the acceptance criteria
+
+A merged PR proves the branch landed, not that the issue is done. For each linked issue
+still `OPEN`, check it against the base branch before anything closes it:
+
+```bash
+gh issue view <N> -R wolffy-au/frictionless-architect --json title,body,state
+```
+
+- Pull out the criteria: an "Acceptance criteria" section or `- [ ]` checkboxes first.
+  With neither, fall back to the "Scope" bullets (respecting "Out of scope"). With no
+  usable criteria at all, tell the user and use the issue title as the single criterion.
+- Check each one against **`origin/<base>`** (after step 1's fetch), not the worktree:
+  `git grep <pattern> origin/<base> -- <paths>`, `git show origin/<base>:<path>`,
+  `git log origin/<base> --oneline -- <path>`. For "no more X" criteria, grep for X and
+  expect no hits (exclude generated or historical paths like `wiki/` and `docs/adr/` when
+  that is the intent).
+- Show the user a table: criterion → **met / partly met / not met** → evidence
+  (`path:line` or commit SHA, or the command whose empty output proves an absence).
+- All met → go on. Otherwise stop and ask which of these the user wants: open a
+  follow-up issue for the gaps, leave the issue open, or close it anyway with the gaps
+  noted in the close comment.
+
+## 3. Delete the remote branch
 
 Skip if GitHub already deleted it (`git ls-remote --heads origin <head>` is empty).
 
@@ -41,13 +64,17 @@ Skip if GitHub already deleted it (`git ls-remote --heads origin <head>` is empt
 git push origin --delete <headRefName>
 ```
 
-## 3. Close the issue with a comment
+## 4. Close the issue with a comment
 
-For each linked issue still `OPEN` (`gh issue view <N> --json state`):
+For each linked issue still `OPEN` (`gh issue view <N> --json state`) that passed step 2,
+or that the user chose to close with gaps noted — skip any they chose to leave open:
 
 - Draft a short comment in the scratchpad:
-  ``Fixed by #<PR> (merged into `<base>` as <short mergeCommit>).`` plus one to three lines on what changed and any ADR / follow-up
-  issue. Reuse the PR body's summary; don't restate the whole PR.
+  ``Fixed by #<PR> (merged into `<base>` as <short mergeCommit>).`` plus one to three
+  lines on what changed and any ADR / follow-up issue. Reuse the PR body's summary;
+  don't restate the whole PR. Add one line on what step 2 checked (e.g. "Acceptance
+  criteria verified against `develop`: 4/4 met."), and list any gaps the user chose to
+  close with.
 - Show the draft to the user, then:
 
 ```bash
@@ -57,7 +84,7 @@ gh issue close <N> -R wolffy-au/frictionless-architect --reason completed \
 
 If the issue was already closed (default-branch PR), don't add a duplicate comment.
 
-## 4. Remove the local worktree
+## 5. Remove the local worktree
 
 Run from the **main checkout** (`/workspaces/frictionless-architect`), never from inside
 the worktree being removed — the session's cwd disappears with it, so use absolute paths
@@ -74,7 +101,7 @@ delete the directory (`Permission denied`). After checking the path is exactly t
 worktree you meant (not the main checkout, not a sibling), finish with
 `sudo rm -rf <worktree>` and then `git worktree prune`.
 
-## 5. Delete local branches
+## 6. Delete local branches
 
 ```bash
 git branch -d <headRefName>     # -D only after step 1 proved it merged (squash merges need -D)
@@ -87,7 +114,7 @@ If git fails with `could not lock config file .git/config: Operation not permitt
 (drvfs EPERM when removing upstream tracking), repeat the command as
 `sudo git -c safe.directory='*' <command>`.
 
-## 6. Prune and report
+## 7. Prune and report
 
 ```bash
 git worktree prune
@@ -112,6 +139,8 @@ Finish with a short report of what was done (with SHAs), then the **leftovers**:
   the user once for the set, unless they already asked for exactly these steps.
 - Never force-delete a branch, `rm -rf` a directory, or close an issue before step 1
   passes.
+- Never close an issue before its acceptance criteria are verified against the base
+  branch (step 2), unless the user explicitly chose to close it with the gaps noted.
 - Never touch changes you didn't make in the main checkout (stray staged files, other
   worktrees) — report them instead.
 - Don't reopen, edit, or re-merge the PR; this skill only tidies up after it.
