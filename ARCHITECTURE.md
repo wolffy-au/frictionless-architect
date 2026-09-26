@@ -92,7 +92,7 @@ end note
 - **Vendored upstream forks are git submodules under `third_party/`, and only there.**
   They are low-touch (rebased customisation branch, periodic `fork-sync`), so submodule
   pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
-- **Each subsystem ships its own UI** ([ADR-0020](docs/adr/0020-vite-dashboard-in-backstage.md)) —
+- **Each subsystem ships its own UI** ([ADR-0020](docs/adr/0020-per-subsystem-uis.md)) —
   a `ui/` `pnpm` sub-tree beside its `api/`, inside the same monorepo, not a separate repo,
   until JS weight demands `turborepo`. There is no central dashboard package; how the UIs
   are composed (Backstage plugins or a shell app) is open (#55).
@@ -144,7 +144,7 @@ and `specs/` (per-package feature specs — see §6).
 
 The six subsystems are those of [ADR-0011](docs/adr/0011-six-subsystem-decomposition.md),
 modelled in `architecture/model/` (section B). Each package holds an `api/` and a `ui/`
-([ADR-0020](docs/adr/0020-vite-dashboard-in-backstage.md)).
+([ADR-0020](docs/adr/0020-per-subsystem-uis.md)).
 
 | # | Subsystem | Home | Build vs wrap | Notes (absorbs, from the old 8-component grouping) |
 |---|---|---|---|---|

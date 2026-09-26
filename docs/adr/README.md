@@ -74,7 +74,7 @@ narrative docs.
   for metadata, Neo4j for the knowledge graph
 - **P** — [0019](0019-opa-rego-policy-engine.md) — Policy engine is OPA (Rego);
   bypass raises managed-drift debt
-- **A** — [0020](0020-vite-dashboard-in-backstage.md) — Each subsystem ships
+- **A** — [0020](0020-per-subsystem-uis.md) — Each subsystem ships
   its own UI (`ui/` beside `api/`); no central dashboard (revised from a single
   Vite/Backstage dashboard)
 - **A** — [0021](0021-schema-visualiser-cytoscape.md) — Schema visualiser uses
