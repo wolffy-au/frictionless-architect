@@ -28,6 +28,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
+          fetch-depth: 2
           submodules: true
 
       - name: Set up Python 3.12
@@ -77,6 +78,12 @@ jobs:
           name: coverage-xml
           path: build/coverage.xml
           if-no-files-found: error
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/coverage.xml
 
       - name: Install Snyk CLI
         if: github.actor != 'dependabot[bot]'
