@@ -101,8 +101,8 @@ topics:
           sha256: 3ef01d34f855f282e39de709c5ae9cb5eda8d26451658df641c12abd567c3ef1
           lines: 27
         docs/adr/0022-schema-visualiser-lxml-xmlschema.md:
-          sha256: 2b7bceb48435219873f19e0451056d74403c832e9593b41f90225f0fa32e38b2
-          lines: 52
+          sha256: 086e8b2fe335b17ab4491ff8d48b36a7951d93faab696c6483d88369d4199d38
+          lines: 80
         docs/adr/0023-visualiser-reuses-neo4j-credentials-with-cache-fallback.md:
           sha256: 87d06634a41f21021372bf701f15557ae972fd51a8a52a9572b429811c2c088d
           lines: 28
@@ -131,8 +131,8 @@ topics:
           sha256: 92eb016d13fea01953d1d082b31406d3ebe04d7d6933d258860cac88c5ae7176
           lines: 44
         docs/adr/0032-archimate-exchange-namespace-3-0.md:
-          sha256: 7f2aa4e7b37e2fb334b4430a352d5d5a1967516ee803236935d3b1ce7f7326b0
-          lines: 50
+          sha256: 222047517177e65709bb5f0d46388d06d486915dff9a4e1d40c7ca746d12c2dd
+          lines: 52
         docs/adr/0033-value-streams-per-outcome.md:
           sha256: f064865b5d324c6eee453a35188253b4a13775bc3b6c97cc27d1152a7bb15d54
           lines: 88
@@ -403,15 +403,15 @@ topics:
   oscal-compliance:
     title: OSCAL Compliance Content
     page: wiki/oscal-compliance.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
           sha256: a2ae0dde2037f9d470a69031e130af3358305644791b38e1b136fa5563eba8a3
           lines: 110
         pyproject.toml:
-          sha256: 6429337cda2fe10d72e00f504053c40b42457837f2aa8448f2a8efb5413542ac
-          lines: 226
+          sha256: 91f9dd9c1bbd84d4072c5e7cfe646c75d90c6a889468f9f4f57dc342715d5745
+          lines: 227
         sample-data/oscal/01-nist-baseline-resolution.puml:
           sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
           lines: 53
@@ -479,10 +479,10 @@ topics:
           sha256: 390d4948021bf5857514709030e061a367be9cb156b3905d6e18e08c4cb164b5
           lines: 48
         specs/002-neo4j-schema-ui/plan.md:
-          sha256: 4d1feac6a04249d98ab0cb864c396b57758ac763eff483a411150c3fb09f0d02
+          sha256: f3746b5b784379389358cf99649691a868f82d23af062e247b56bb9da499df0a
           lines: 58
         specs/002-neo4j-schema-ui/research.md:
-          sha256: ba3a5ed3571f94fe43512c9a1ea6094819c9a4074e8cce1fd50ea8477ada51ac
+          sha256: 9f87dd67b8871cd9d0fcb63d018e9cd1843a664af1f35713a40fe7ab253f1ea4
           lines: 16
         specs/002-neo4j-schema-ui/spec.md:
           sha256: b5381d643e1ba2b702630d4044f2c354e2cb6576642469edf51b2881cd73a29d
@@ -499,7 +499,7 @@ topics:
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         src/frictionless_architect/__init__.py:
@@ -518,14 +518,14 @@ topics:
           sha256: 3e98d3ef453e703987240680bc09250ba02ea808b9d4dd85e3a816f5248e370d
           lines: 1
         src/frictionless_architect/visualizer/api.py:
-          sha256: e9497832c429a04c1d25d85b72c583253f0255677d01e85f8c649cb565e575b4
+          sha256: 607d945c846f510bd796504a2524f860c695d0ae5be7cc908174e7b21ac61ca5
           lines: 319
         src/frictionless_architect/visualizer/cache.py:
           sha256: 7c96a3ee4eb63be70fecc1618a71b7d3083953555bb270f6c7fae608bcdea559
           lines: 29
         src/frictionless_architect/visualizer/config.py:
-          sha256: 34b5be4cf3e0048fb30aa999ea4b4a963c7a40b8da8afccb3e0b18ee1e26127f
-          lines: 42
+          sha256: fa6197cb01d53668cc97c105120b23c24ce6bf6f76e5ea7cabffbed6e29403fe
+          lines: 43
         src/frictionless_architect/visualizer/data_loader.py:
           sha256: 3d2889ae07eb7fae9f7f7d397cbde12c0783a8adfd8de2a8d424ffd8d0dd0385
           lines: 91
@@ -536,8 +536,8 @@ topics:
           sha256: 1b86588afb295f411a7f63d34e682e79efc90c699ae446e687dbaad60bba8e7b
           lines: 145
         src/frictionless_architect/visualizer/sample_validator.py:
-          sha256: 18059db2ed0dbab736caa5f4ddb53ebbe516bbe2371dbdf4694543f789930b85
-          lines: 102
+          sha256: 53d9440f80eb48cd662523cf86e7f62810a36f4775117e65a29ac6f4d58b09bf
+          lines: 138
   development:
     title: Development & Quickstart
     page: wiki/development.md

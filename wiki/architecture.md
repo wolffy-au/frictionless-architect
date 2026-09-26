@@ -303,7 +303,7 @@ not re-ratified in a spec). No record is currently A\*.
 | 0019 | Policy engine is OPA (Rego); bypass raises managed-drift debt | P |
 | 0020 | Each subsystem ships its own UI (`ui/` beside `api/`); no central dashboard (revised 2026-09-26 from a single Vite/Backstage dashboard) | A |
 | 0021 | Schema visualiser uses cytoscape.js + coordinated tables | A |
-| 0022 | Schema visualiser parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema` (corrected 2026-09-25 from `lxml` + `xmlschema`) | A |
+| 0022 | Schema visualiser parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema` (corrected 2026-09-25 from `lxml` + `xmlschema`; XSD validation implemented 2026-09-26, #53) | A |
 | 0023 | Visualiser reuses Neo4j read credentials; caches payloads offline | A |
 | 0024 | MVP is single-user and locally run (scoping compromise) | A |
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
@@ -387,13 +387,27 @@ originally said `lxml` + `xmlschema`. The code has always parsed with the
 standard library's `xml.etree.ElementTree` through `defusedxml` (XXE and
 entity-expansion hardening), and `lxml` was never a dependency. The corrected
 record keeps `xmlschema` for XSD validation, loaded in its `defuse="always"`
-mode. It marks the old 3.0/3.1 namespace defect as resolved by ADR-0032, and
-leaves full XSD-structural validation as an open follow-up to issue #51
-(`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`). The sources disagree
-on one point. The ADR's Consequences call `xmlschema` a runtime dependency,
-but `pyproject.toml` doesn't declare it and no visualiser module imports it,
-so today it exists only as the intended tool for that unbuilt validation step
-(see [Visualizer Service](visualizer-service.md)).
+mode. It marks the old 3.0/3.1 namespace defect as resolved by ADR-0032
+(`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`).
+
+The `xmlschema` half was recorded before it was built. It was implemented on
+2026-09-26 under GitHub issue #53, and ADR-0022 now says so:
+
+- `xmlschema` is a Poetry runtime dependency. It pulls in `elementpath`.
+- The sample is validated against `archimate3_Diagram.xsd`, which includes
+  the View and Model schemas. The schema is loaded with `defuse="always"` and
+  `allow="local"`, so nothing is fetched over the network. The remote
+  `xml.xsd` import resolves from `xmlschema`'s bundled copy, so the bundled
+  XSDs stay unedited.
+- XSD violations are non-blocking `XSD:`-prefixed warnings, capped at
+  `MAX_XSD_ISSUES`.
+- The compiled schema is cached per path, because building it takes about
+  200 ms.
+
+The old "open follow-up to #51" was never filed as an issue. It is now
+recorded as closed (`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`
+§Decision, §Consequences; `pyproject.toml`). See
+[Visualizer Service](visualizer-service.md).
 
 ADR-0031 carves a **scoped exception** out of ADR-0014. The OSCAL
 conversion pipeline (`specs/003-oscal-ai-conversion` FR-016) sends verbatim
@@ -413,7 +427,12 @@ namespace, defined once as `ARCHIMATE_NS`. Any other namespace is rejected
 loudly rather than parsing to an empty model, which had violated
 constitution Principle VII. Both alternatives were rejected: moving to 3.1,
 because no conforming tool emits it, and accepting both, because that would
-hide schema drift (`docs/adr/0032-archimate-exchange-namespace-3-0.md`). See
+hide schema drift (`docs/adr/0032-archimate-exchange-namespace-3-0.md`).
+ADR-0032 now describes itself as complementing ADR-0022 rather than being
+independent of it. The XSD validation would also reject a foreign namespace.
+The namespace check runs first and short-circuits, though, so the user gets
+one clear error instead of a cascade of XSD failures
+(`docs/adr/0032-archimate-exchange-namespace-3-0.md` §Consequences). See
 [Data Model](data-model.md) and [Visualizer Service](visualizer-service.md).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
