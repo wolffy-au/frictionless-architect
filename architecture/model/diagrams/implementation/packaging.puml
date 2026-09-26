@@ -15,11 +15,13 @@ Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
 Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
 Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
-Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
 Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
 Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
 Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
 Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
+Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
+  Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+}
 
 Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
 Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")

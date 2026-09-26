@@ -947,6 +947,13 @@
     Narrow, in-process library interface over the Neo4j read path and
     ArchiMate sample parsing. Consumed as a path dependency, not over HTTP,
     and free of leaked Neo4j driver types (ADR-0005).
+- type: ApplicationInterface
+  id: if-catalog-ui
+  name: Compliance Catalog UI
+  desc: >-
+    Human-facing interface where the Compliance Officer / Auditor uploads
+    policy/standard documents, reviews prose-quality feedback before
+    conversion, and tracks Catalog / Profile status.
 
 # --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
 - type: DataObject
@@ -1045,6 +1052,19 @@
 
 # --- C. Functions: Controls & Compliance Catalog ---
 - type: ApplicationFunction
+  id: fn-policy-upload
+  name: Upload Policy / Standard Document
+  desc: >-
+    Accept an uploaded custom policy/standard document or upstream
+    regulatory standard text and stage it for conversion.
+- type: ApplicationFunction
+  id: fn-policy-quality-feedback
+  name: Policy Prose Quality Feedback
+  desc: >-
+    Use an LLM to review an uploaded or authored policy/standard document's
+    prose and return actionable clarity and quality feedback to the author
+    before it is converted.
+- type: ApplicationFunction
   id: fn-ai-markdown-conversion
   name: AI-Assisted Markdown Conversion
   desc: >-
@@ -1057,6 +1077,16 @@
   desc: >-
     Convert Trestle-editable Markdown into OSCAL Catalogs via a Trestle
     round-trip (import / author / assemble).
+- type: ApplicationFunction
+  id: fn-oscal-validation
+  name: OSCAL Structural Validation
+  desc: >-
+    Run `trestle validate` against a generated OSCAL Catalog before it is
+    published, driving the per-conversion status lifecycle recorded on
+    art-oscal-catalog (converting -> converted -> validating -> validated /
+    validation_failed; specs/003-oscal-ai-conversion's
+    oscal-catalog-status.puml). Distinct from techproc-oscal-golden-check:
+    this runs on every conversion, not just in CI against the golden dataset.
 - type: ApplicationFunction
   id: fn-baseline-tailoring
   name: OSCAL Baseline Tailoring
@@ -1215,7 +1245,7 @@
 - {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: "Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input."}
 - {type: DataObject, id: art-baseline-profile, name: Regulatory Baseline Profile, desc: "Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input."}
 - {type: DataObject, id: art-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: "Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input."}
-- {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
+- {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: "Machine-readable control catalog.", props: {status-lifecycle: "converting -> converted -> validating -> validated | conversion_failed | validation_failed (specs/003-oscal-ai-conversion oscal-catalog-status.puml)"}}
 - {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
 - {type: DataObject, id: art-oscal-resolved-catalog, name: Resolved OSCAL Profile Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
 - {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
@@ -1365,3 +1395,83 @@
     Transition -> Target. The remaining packages are created, including
     schema-visualizer-api once step 4 has delivered the knowledge-graph read
     path it consumes (ADR-0005), and the flat src/ is retired.
+
+# =====================================================================
+# F. TECHNOLOGY — first cut, scoped to the policy-to-OSCAL slice (GH #55
+#    follow-up, guided by feature/gh-71-platform-skeleton and
+#    specs/003-oscal-ai-conversion): the CI golden-dataset check (GH #7),
+#    plus the runtime deployment target for the controls-compliance-catalog
+#    package. specs/003-oscal-ai-conversion's research.md confirms "no new
+#    infra (no Postgres/Neo4j dependency for this feature)"; plan.md's
+#    Target Platform is "the same Linux server as the existing visualiser
+#    deployment target", served via `poetry run uvicorn` (quickstart.md) —
+#    so this stays a single shared Node/SystemSoftware pair, not a
+#    dedicated one per subsystem. Not on any committed view yet. GH #55's
+#    other open questions (Postgres/OPA, CommunicationNetwork, per-subsystem
+#    UI hosting per ADR-0020) are deliberately out of scope here.
+# =====================================================================
+- type: Node
+  id: node-ci-runner
+  name: CI Runner
+  desc: GitHub Actions-hosted runner executing the test suite (`.github/workflows/ci.yml`).
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-pytest
+  name: pytest
+  desc: Test runner executing the golden-dataset regression suite.
+  props: {c4: ignore}
+- type: TechnologyProcess
+  id: techproc-oscal-golden-check
+  name: OSCAL Golden-Dataset Regression Check
+  desc: >-
+    Automated CI check with three legs, each comparing a generated pipeline
+    artefact against its vendored golden-dataset counterpart before merge
+    (spec 003-oscal-ai-conversion FR-006/FR-007): OSCAL Catalog generation vs.
+    art-baseline, OSCAL Profile generation vs. art-baseline-profile, and OSCAL
+    Profile resolution vs. art-baseline-resolved-catalog. Testing
+    infrastructure, not a user-facing capability — see those DataObjects' own
+    descriptions. Runs as a separate, slow `pytest -m golden` job outside the
+    fast unit suite because it invokes the real LLM (`ext-llm`, for
+    LLM-as-judge paraphrase comparison) and real trestle (`ext-trestle`) —
+    live network egress from CI, not a mocked/offline check (spec
+    003-oscal-ai-conversion research.md R8).
+  props: {c4: ignore}
+- type: Artifact
+  id: art-tech-oscal-workspace
+  name: Trestle Workspace Directory
+  desc: >-
+    Local filesystem directory tree under `<data_dir>/workspaces/<slug>/`
+    (Trestle's own catalogs/, profiles/, dist/ layout), one per Source
+    Document Identifier, reused and overwritten on resubmission (spec
+    003-oscal-ai-conversion research.md R7). Backs store-oscal — no new
+    infra: local filesystem on node-app-server, not Postgres/Neo4j.
+  props: {c4: ignore}
+- type: Artifact
+  id: art-tech-ledger-file
+  name: Forensic Ledger File (JSONL)
+  desc: >-
+    Append-only JSONL file at `<data_dir>/forensic-ledger.jsonl` (default
+    `.data/oscal/`), one line per event, no update/delete API (spec
+    003-oscal-ai-conversion research.md R3). Backs store-ledger — no new
+    infra: local filesystem on node-app-server, not Postgres/Neo4j
+    (ADR-0018 Postgres integration remains unbuilt).
+  props: {c4: ignore}
+- type: Node
+  id: node-app-server
+  name: Linux Application Server
+  desc: >-
+    Shared deployment target for the platform's Poetry-packaged services —
+    today the visualiser, and (specs/003-oscal-ai-conversion plan.md) the
+    same target for the policy-to-OSCAL pipeline. No new infra for this
+    feature: no Postgres/Neo4j dependency beyond what the visualiser
+    already uses.
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-uvicorn-fastapi
+  name: Python 3.12 / FastAPI (uvicorn)
+  desc: >-
+    ASGI runtime hosting each subsystem's api/ (ADR-0020) — the
+    controls-compliance-catalog package is served as
+    `uvicorn frictionless_architect.app:app` (specs/003-oscal-ai-conversion
+    quickstart.md).
+  props: {c4: ignore}
