@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Ecosystem"
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
@@ -18,40 +18,43 @@ The platform `Grouping` (`sys-platform`, `props: c4=system`), its six
 subsystems (`ApplicationComponent`s → C4 containers), five shared stores
 (`DataObject`s → C4 databases), six business roles (→ C4 persons), and seven
 external systems (`ApplicationComponent`s outside the grouping → C4 external
-systems) (`architecture/model/elements.yaml:368-501`). This is the
-decomposition [ADR-0011](architecture.md) adopts in place of the
-eight-component grouping still documented in
-[Architecture Overview](architecture.md). Views: `Subsystems & Capabilities`
-and the generated C4 context + container ([ADR-0009](architecture.md)).
+systems) (`architecture/model/elements.yaml:880-1020`). This is the
+decomposition [ADR-0011](architecture.md) adopts in place of the old
+eight-component grouping; [Architecture Overview](architecture.md)
+§"Subsystem → package mapping" gives the package each subsystem becomes. Views: `Subsystems & Capabilities` (a
+standard `layered` view, rendered to `layered/subsystem-capabilities`; see
+[Architecture Views & Diagrams](architecture-diagrams.md)) and the generated C4 context + container ([ADR-0009](architecture.md)).
 
 | Subsystem (`id`) | Scope | Realizes |
 |---|---|---|
-| Controls & Compliance Catalog (`sub-catalog`) | Converts externally authored policy/standard documents into OSCAL Catalogs & Profiles (AI-assisted Markdown conversion + Trestle round-trip) and resolves profiles | `cap-control-catalog` |
+| Controls & Compliance Catalog (`sub-catalog`) | Converts externally authored policy/standard documents into OSCAL Catalogs (AI-assisted Markdown conversion + Trestle round-trip) and resolves tailored Profiles into what its `desc` calls "Resolved Catalogs" (the model's artefact is the Resolved OSCAL Profile Catalog) | `cap-control-catalog` |
 | Reusable Architecture Library (`sub-library`) | Patterns, blueprints, solution designs with OSCAL refs; threat modelling; models candidate/future-state options | `cap-reusable-architecture` |
 | Digital Twin & Knowledge Graph (`sub-twin`) | The Architecture Knowledge Graph: intent plane + current-state twin plane | `cap-digital-twin`, `cap-forensic-ledger` |
 | Architecture Governance (`sub-governance`) | Comparative evaluation, the decision + its ADR, archival of rejected options — pure decision-making (options are modelled in the Library) | `cap-human-approval-workflow` |
-| Conformance & Drift Assurance (`sub-assurance`) | Release-time controls gate, BAU effectiveness monitor, drift engine + dashboard | `cap-control-plane`, `cap-drift-dashboard` |
+| Conformance & Drift Assurance (`sub-assurance`) | Supervises agentic development to enforce controls at build and supplies the *expected controls* that the CI/CD pipeline's inline release gate verifies; BAU effectiveness monitor; drift engine + dashboard | `cap-control-plane`, `cap-drift-dashboard` |
 | Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation | `cap-spec-engine` |
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
-view back to the skeleton (`architecture/model/relationships.yaml:184-194`).
-Shared stores (`architecture/model/elements.yaml:420-443`): OSCAL Repository
+view back to the skeleton (`architecture/model/relationships.yaml:417-426`).
+Shared stores (`architecture/model/elements.yaml:934-957`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
 Architecture Intent and Current-State Digital Twin"), Framework Pack Library
 (`store-frameworks`), Forensic Audit Ledger (`store-ledger`). The seven external
-systems (`architecture/model/elements.yaml:768-803`) are Source Control, CI/CD Pipeline,
+systems (`architecture/model/elements.yaml:985-1020`) are Source Control, CI/CD Pipeline
+(which now "runs the controls enforcement gate inline"),
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, LLM
 Provider, RFP / Vendor Submissions, and `ext-trestle`
 ("compliance-trestle"), added per [ADR-0030](architecture.md). Trestle's
 `desc` calls it a "third-party Python library/CLI dependency, not vendored
-source". The platform invokes Trestle rather than passively exchanging data
+source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
+fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data
 with it, so its edges are `Serving`, not the `Flow`/`Access` used for the
 peer systems. It serves `fn-oscal-conversion` (the Markdown ↔ OSCAL
 round-trip) and `fn-oscal-profile-resolve` (profile resolution). The LLM
 Provider now also serves `fn-ai-markdown-conversion`, so its `desc` covers
 converting policy/standard documents alongside its drafting uses
-(`architecture/model/relationships.yaml` §"B. Authoring / OSCAL chain").
+(`architecture/model/relationships.yaml:444-448`).
 
 The former `ext-regsources` ("Regulatory Content Sources") external system
 has been **removed**. It implied a system integration with upstream
@@ -65,3 +68,9 @@ reference content the golden datasets come from.
 The subsystem `includes` free-text property was removed — the same
 decomposition is carried by the section-C `ApplicationFunction`s ([Artefact Flow](architecture-model-artefact-flow.md)) and their
 `Assignment` edges ([ADR-0027](architecture.md) §"Consequences").
+
+The six business roles (`architecture/model/elements.yaml:959-983`) are now
+also `Assignment`-linked to the section-A BusinessFunctions they perform. For
+example, the Compliance Officer performs Policy-to-OSCAL Conversion. That
+nesting is what the Controls & Compliance Catalog view draws; see
+[Skeleton](architecture-model-skeleton.md).

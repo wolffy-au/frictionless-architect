@@ -14,7 +14,7 @@ forensic ledger. It diverged early, so it is more rewrite than cherry-pick
 ## Decision
 
 Treat `prototype-neo4j` as a **reference, not a merge source**. When
-`packages/knowledge-graph` is scaffolded, port the model and seeding ideas
+`packages/digital-twin-knowledge-graph` is scaffolded, port the model and seeding ideas
 deliberately into the new structure. Do not block the restructure on it.
 
 ## Consequences

@@ -3,7 +3,10 @@
 
 title Outcome Realization
 
-Motivation_Outcome(e_idfbcf1e02e62655, "Architecture as Executable Intelligence")
+Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
+Motivation_Outcome(e_id3be36e7ab88a59, "Approved Change Reaches Production at AI Speed")
+Motivation_Outcome(e_id4f39e9ec8e4656, "Compliance Proven Before Release")
+Motivation_Outcome(e_ide8275430b0ad5e, "Accountable, Auditable Automation")
 Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
 Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
 Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
@@ -13,11 +16,22 @@ Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
 Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
 Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
 Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
-  Strategy_ValueStream(e_id447909387df55c, "Establish Control & Reuse Baseline")
+  Strategy_ValueStream(e_id447909387df55c, "Establish Reuse Baseline")
   Strategy_ValueStream(e_id01dab436206551, "Specify the Change")
   Strategy_ValueStream(e_id36fbfe00214758, "Build Under Supervision")
+  Strategy_ValueStream(e_idf362f39778065d, "Release to Production")
+}
+Strategy_ValueStream(e_id7ee8cdbf8ddc57, "Obligation to Evidence") {
+  Strategy_ValueStream(e_idde40c3d2b32359, "Establish Control Baseline")
   Strategy_ValueStream(e_idb542830057125a, "Prove Compliance")
-  Strategy_ValueStream(e_idf362f39778065d, "Release & Attest")
+}
+Strategy_ValueStream(e_idc55b78731ffe56, "Exception to Decision") {
+  Strategy_ValueStream(e_id57940702bdfc58, "Escalate Non-Standard Change")
+  Strategy_ValueStream(e_id2d06864964375b, "Decide & Sign Off")
+  Strategy_ValueStream(e_iddef15dd937ce53, "Record as Evidence")
+}
+Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
+  Strategy_ValueStream(e_id12b58c7f12735c, "Observe As-Built State")
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
@@ -28,16 +42,24 @@ Business_Function(e_id7d896c5e89eb58, "Release Management") {
   Business_Process(e_id9459a13c29ec5d, "Production Release")
 }
 Business_Function(e_idc1376562b9a354, "Drift Management") {
-  Business_Process(e_id3a7a27eefeb751, "Current State Discovery")
-  Business_Process(e_id33612ed603b85e, "Drift Review & Triage Gate")
+  Business_Process(e_id3a7a27eefeb751, "Architecture Reconciliation")
+  Business_Process(e_id33612ed603b85e, "Drift Review & Triage")
 }
 Business_Function(e_id108dc21cee6055, "Policy-to-OSCAL Conversion") {
   Business_Process(e_id14fa9f783d5350, "Policy & Standards Authoring")
-  Business_Process(e_idfeca8b2013795e, "OSCAL Catalog & Profile Generation")
+  Business_Process(e_idfeca8b2013795e, "OSCAL Catalog Generation")
+  Business_Process(e_id5bcc1abc98d154, "Control Baseline Tailoring")
+  Business_Process(e_id57b0ad85b82a5e, "OSCAL Profile Resolution")
 }
 Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
   Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
   Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
+}
+Business_Function(e_id5794c15b037251, "Architecture Strategy") {
+  Business_Process(e_id395c9c2923aa56, "Target State Definition")
+}
+Business_Function(e_id86f3d2dd174754, "Solution Design") {
+  Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
 }
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
@@ -46,37 +68,61 @@ Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
   Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 }
 
-Rel_Realization_Up(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
+Rel_Realization_Up(e_idcd5e1d4017725d, e_id3be36e7ab88a59, "")
+Rel_Realization_Up(e_id7ee8cdbf8ddc57, e_id4f39e9ec8e4656, "")
+Rel_Realization_Up(e_idc55b78731ffe56, e_ide8275430b0ad5e, "")
+Rel_Realization_Up(e_idfa7e21ab28235c, e_id79b6a1e545325d, "")
 Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
 Rel_Serving_Up(e_idafba1b4ab1e756, e_id01dab436206551, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_idf362f39778065d, "")
+Rel_Serving_Up(e_id72468b5b403450, e_idde40c3d2b32359, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_idb542830057125a, "")
-Rel_Serving_Up(e_id08f340a094e552, e_idf362f39778065d, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_id57940702bdfc58, "")
+Rel_Serving_Up(e_id08f340a094e552, e_id2d06864964375b, "")
+Rel_Serving_Up(e_idc29413a2099958, e_iddef15dd937ce53, "")
+Rel_Serving_Up(e_id18ec07397a9d5f, e_id12b58c7f12735c, "")
 Rel_Serving_Up(e_id41aa3eb894c852, e_iddd4585a6a08153, "")
-Rel_Triggering_Right(e_id447909387df55c, e_id01dab436206551, "")
-Rel_Triggering_Right(e_id01dab436206551, e_id36fbfe00214758, "")
-Rel_Triggering_Right(e_id36fbfe00214758, e_idb542830057125a, "")
-Rel_Triggering_Right(e_idb542830057125a, e_idf362f39778065d, "")
-Rel_Triggering_Right(e_idf362f39778065d, e_iddd4585a6a08153, "")
-Rel_Flow_Right(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
+Rel_Triggering(e_id447909387df55c, e_id01dab436206551, "")
+Rel_Triggering(e_id01dab436206551, e_id36fbfe00214758, "")
+Rel_Triggering(e_idde40c3d2b32359, e_idb542830057125a, "")
+Rel_Triggering(e_id57940702bdfc58, e_id2d06864964375b, "")
+Rel_Triggering(e_id2d06864964375b, e_iddef15dd937ce53, "")
+Rel_Triggering(e_id12b58c7f12735c, e_iddd4585a6a08153, "")
+Rel_Triggering(e_id36fbfe00214758, e_idb542830057125a, "")
+Rel_Triggering(e_idb542830057125a, e_idf362f39778065d, "")
+Rel_Triggering(e_idb542830057125a, e_id57940702bdfc58, "not deterministically validated")
+Rel_Flow(e_id2d06864964375b, e_idf362f39778065d, "approval")
+Rel_Triggering(e_idf362f39778065d, e_id12b58c7f12735c, "")
+Rel_Flow(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
 Rel_Realization_Up(e_id65467a0befb959, e_idafba1b4ab1e756, "")
 Rel_Realization_Up(e_id799f46ebb7e15b, e_id4a1c34ab69d151, "woven enforcement")
 Rel_Realization_Up(e_id3a7a27eefeb751, e_id41aa3eb894c852, "")
 Rel_Realization_Up(e_id14fa9f783d5350, e_id72468b5b403450, "")
 Rel_Realization_Up(e_idfeca8b2013795e, e_id72468b5b403450, "")
+Rel_Realization_Up(e_id5bcc1abc98d154, e_id72468b5b403450, "")
+Rel_Realization_Up(e_id57b0ad85b82a5e, e_id72468b5b403450, "")
 Rel_Realization_Up(e_id0ee6a752deff52, e_id4a1c34ab69d151, "")
 Rel_Realization_Up(e_id9459a13c29ec5d, e_idc29413a2099958, "")
 Rel_Realization_Up(e_id33612ed603b85e, e_id08f340a094e552, "")
 Rel_Realization_Up(e_id65065ee24d3c54, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id378927722a8d5a, e_id752d1de3794f5f, "")
-Rel_Triggering_Right(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
-Rel_Triggering_Right(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
-Rel_Triggering_Right(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")
-Rel_Triggering_Right(e_id9459a13c29ec5d, e_id3a7a27eefeb751, "initiates discovery for")
-Rel_Triggering_Right(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
-Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
-Rel_Triggering_Right(e_idfeca8b2013795e, e_id65065ee24d3c54, "profiles feed traceability mapping")
-Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
+Rel_Realization_Up(e_id4991c823f6d55b, e_id752d1de3794f5f, "")
+Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
+Rel_Triggering(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
+Rel_Triggering(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
+Rel_Triggering(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")
+Rel_Triggering(e_id9459a13c29ec5d, e_id3a7a27eefeb751, "initiates discovery for")
+Rel_Triggering(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
+Rel_Triggering(e_idfeca8b2013795e, e_id5bcc1abc98d154, "catalogs feed tailoring")
+Rel_Triggering(e_id5bcc1abc98d154, e_id57b0ad85b82a5e, "tailored profile feeds resolution")
+Rel_Triggering(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
+Rel_Triggering(e_id57b0ad85b82a5e, e_id65065ee24d3c54, "resolved controls feed traceability mapping")
+Rel_Flow(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
+Rel_Triggering(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
+Rel_Triggering(e_id378927722a8d5a, e_id4991c823f6d55b, "blueprints composed into")
+Rel_Triggering(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
+Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
 
 @enduml

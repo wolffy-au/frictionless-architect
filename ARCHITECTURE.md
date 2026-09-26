@@ -1,8 +1,8 @@
 # Repository Architecture & Topology
 
 Canonical description of how this repository is structured and the target it is being
-restructured toward. Read alongside `PROJECT_SPECIFICATION.md` (the product vision),
-`PROJECT_CONSTITUTION.md`, and `TECHNICAL.md`.
+restructured toward. Read alongside `specs/001-governance-platform/spec.md` (the business specification),
+`.specify/memory/constitution.md` (the platform constitution), and `TECHNICAL.md`.
 
 **Status:** target adopted; migration in progress (see §8).
 
@@ -20,10 +20,13 @@ All application code lives **one level below** the repository root. The root is 
 coordination scripts, submodule pointers, and the CI that fans out to components. It holds
 **no application code**.
 
-This is a packaging decision only. The product vision in `PROJECT_SPECIFICATION.md` — an
-8-component Frictionless Architecture & Governance Platform automating APRA CPS 230 / 234
-compliance — is unchanged. The spec's "single-user, locally run MVP" line is treated as an
-early scoping compromise, not a constraint on the topology.
+This is a packaging decision only. The product vision in `specs/001-governance-platform/spec.md` — a
+Frictionless Architecture & Governance Platform automating APRA CPS 230 / 234 compliance —
+is unchanged; its decomposition is the six subsystems of
+[ADR-0011](docs/adr/0011-six-subsystem-decomposition.md), modelled in `architecture/model/`. The
+"single-user, locally run MVP" target
+([ADR-0024](docs/adr/0024-single-user-local-mvp.md)) is treated as an early scoping compromise, not a
+constraint on the topology.
 
 ---
 
@@ -35,7 +38,7 @@ title Current state — one flat repo, one narrow slice built
 skinparam componentStyle rectangle
 
 package "frictionless-architect (repo root)" {
-  [Governance docs\nPROJECT_SPECIFICATION / CONSTITUTION\nNONFUNCTIONALS / TECHNICAL] as docs
+  [Governance docs\nCONSTITUTION / ARCHITECTURE\nNONFUNCTIONALS / TECHNICAL] as docs
   [.specify/ SpecKit machinery\n(constitution, templates, bash scripts)] as speckit
   [specs/002-neo4j-schema-ui] as spec002
 
@@ -60,7 +63,7 @@ api --> parser
 parser --> sampledata
 
 note bottom of docs
-  Vision = 8-component platform.
+  Vision = six-subsystem platform (ADR-0011).
   Built  = this one box (spec 002).
 end note
 @enduml
@@ -90,21 +93,21 @@ end note
 - **Vendored upstream forks are git submodules under `third_party/`, and only there.**
   They are low-touch (rebased customisation branch, periodic `fork-sync`), so submodule
   pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
-- **Frontend(s)** are packages too — a `pnpm`/Vite sub-tree inside the same monorepo, not
-  a separate repo, until JS weight demands `turborepo`.
+- **Each subsystem ships its own UI** ([ADR-0020](docs/adr/0020-per-subsystem-uis.md)) —
+  a `ui/` `pnpm` sub-tree beside its `api/`, inside the same monorepo, not a separate repo,
+  until JS weight demands `turborepo`. There is no central dashboard package; how the UIs
+  are composed (Backstage plugins or a shell app) is open (#55).
 
 ### 3.2 Target directory layout
 
-```
+```text
 frictionless-architect/                 # ROOT — governance & orchestration
-├── PROJECT_SPECIFICATION.md             # vision (stays)
-├── PROJECT_CONSTITUTION.md              # platform constitution
 ├── ARCHITECTURE.md  NONFUNCTIONALS.md  TECHNICAL.md
 ├── .specify/                            # PLATFORM SpecKit: constitution + epic templates
 ├── specs/                               # EPIC / cross-cutting specs only  (see §6)
 │   └── EPIC-xxx-.../
 ├── orchestration/
-│   ├── compose/                         # docker-compose for Neo4j + Postgres + OPA (dev)
+│   ├── compose/                         # docker-compose for Neo4j (+ Postgres / OPA if kept — #55)
 │   └── scripts/                         # cross-component coordination
 ├── third_party/                        # git submodules — vendored forks ONLY
 │   ├── <archimate-parser-fork>/
@@ -113,96 +116,67 @@ frictionless-architect/                 # ROOT — governance & orchestration
     ├── pyproject.toml                   # root project; packages/* as path dependencies
     ├── poetry.lock                      # single shared lock
     └── packages/
-        ├── governance-engine/           # component 1
-        ├── pii-gateway/                 #   (1.2 — split candidate)
-        ├── knowledge-graph/             # component 2
-        ├── decision-capture/            # component 3
-        ├── policy-enforcement/          # component 4
-        ├── drift-management/            # component 5
-        ├── audit-query/                 # component 6
-        ├── dashboard/                   # component 7 — Vite/pnpm sub-tree
-        ├── security-foundations/        # component 8 (largely cross-cutting lib)
-        └── schema-visualizer-api/       # first extraction (from today's src/)
+        ├── controls-compliance-catalog/     # subsystem 1  (each: api/ + ui/, ADR-0020)
+        ├── reusable-architecture-library/   # subsystem 2
+        ├── digital-twin-knowledge-graph/    # subsystem 3
+        ├── architecture-governance/         # subsystem 4
+        ├── conformance-drift-assurance/     # subsystem 5
+        ├── modelling-specification/         # subsystem 6
+        └── schema-visualizer-api/           # first extraction (from today's src/)
 ```
 
 Each `packages/<name>/` carries its own `pyproject.toml`, `src/`, `tests/`, `README.md`,
-and `specs/` (per-component feature specs — see §6).
+and `specs/` (per-package feature specs — see §6).
 
 ### 3.3 Target diagram
 
-```plantuml
-@startuml
-title Target — root orchestrates; components live one level down
-skinparam componentStyle rectangle
-
-package "frictionless-architect (root: governance + orchestration)" as root {
-  [PROJECT_SPECIFICATION / CONSTITUTION] as vision
-  [.specify/ — platform constitution + epic specs] as pspeckit
-  [orchestration/ — compose, fan-out CI, coord scripts] as orch
-  [third_party/ — git submodules: vendored forks] as forks
-}
-
-package "platform/ (Poetry monorepo)" as ws {
-  [governance-engine] as c1
-  [pii-gateway] as c1b
-  [knowledge-graph] as c2
-  [decision-capture] as c3
-  [policy-enforcement] as c4
-  [drift-management] as c5
-  [audit-query] as c6
-  [dashboard (Vite/pnpm)] as c7
-  [security-foundations] as c8
-  [schema-visualizer-api] as cv
-}
-
-cloud "External systems" {
-  [Neo4j] as neo4j
-  [Postgres] as pg
-  [OPA / Rego] as opa
-  [Backstage portal] as backstage
-}
-
-root --> ws : versions, coordinates,\nfans out CI
-forks ..> c2 : vendored parser consumed as dep
-forks ..> c4 : vendored OSCAL tooling
-c2 --> neo4j
-c1 --> pg
-c4 --> opa
-c7 --> backstage : embeds
-c7 --> c6 : queries
-cv --> neo4j
-c6 --> c2
-c3 --> c2
-c5 --> c2
-@enduml
-```
+> **TODO ([#55](https://github.com/wolffy-au/frictionless-architect/issues/55)):** a
+> generated packaging / deployment view — packages as ArchiMate Artifacts realising the
+> subsystems, deployed onto the infrastructure, in an *Implementation and Deployment*
+> viewpoint — replaces this placeholder. Diagrams are generated from `architecture/model/`,
+> never hand-drawn (constitution Principle X). Until then, §3.2 gives the package layout and
+> the generated C4 container view
+> ([`container.svg`](architecture/model/diagrams/c4/container.svg)) gives the logical one.
 
 ---
 
-## 4. Component → package mapping
+## 4. Subsystem → package mapping
 
-Components are the eight from `PROJECT_SPECIFICATION.md` "Proposed Grouping".
+The six subsystems are those of [ADR-0011](docs/adr/0011-six-subsystem-decomposition.md),
+modelled in `architecture/model/` (section B). Each package holds an `api/` and a `ui/`
+([ADR-0020](docs/adr/0020-per-subsystem-uis.md)).
 
-| # | Component | Home | Build vs wrap | Notes |
+<!-- pyml disable md013 -->
+| # | Subsystem | Home | Build vs wrap | Notes (absorbs, from the old 8-component grouping) |
 |---|---|---|---|---|
-| 1 | Core Governance Service + PII handling | `packages/governance-engine` (+ optional `packages/pii-gateway`) | **build** | Python CLI/service, Specify lifecycle. PII gateway may split later — one package to start. |
-| 2 | Architecture Knowledge Graph & Semantic Model | `packages/knowledge-graph` | **build**, wraps forked ArchiMate parser | Absorbs today's `schema/manager.py`, `sample_parser.py`; port `prototype-neo4j` seeding ideas (§7). |
-| 3 | AI-Assisted Decision Capture & Attestation | `packages/decision-capture` | **build** | ADR gen, conflict detection, sign-off. Attestation *UI* belongs to dashboard (7). |
-| 4 | Automated Policy & Compliance Enforcement | `packages/policy-enforcement` | **build**, wraps OPA + forked OSCAL tooling | CPS 230 / 234. The OSCAL sample-data work belongs here. |
-| 5 | Real-Time Monitoring & Drift Management | `packages/drift-management` | **build** | Drift detect, Break-Glass, managed-drift tickets. |
-| 6 | Compliance Audit & Query Interface | `packages/audit-query` | **build** | Traceability matrix + NL-to-graph. Backend for dashboard queries. |
-| 7 | Architecture Governance Dashboard | `packages/dashboard` | **build** (Vite, pnpm sub-tree) | Backstage-embedded target unconfirmed — see §10. |
-| 8 | Security Foundations | `packages/security-foundations` | **build** (mostly a shared lib) | RBAC/ABAC, encryption helpers, threat-model scanning. Consumed by all others. |
-| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | First extraction. Its embedded UI folds into `dashboard` or ships as a small `schema-visualizer-ui` package. |
+| 1 | Controls & Compliance Catalog | `packages/controls-compliance-catalog` | **build**, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles (AI-assisted Markdown, Trestle round-trip). Consumes the vendored OSCAL reference content; the OSCAL sample-data work belongs here. |
+| 2 | Reusable Architecture Library | `packages/reusable-architecture-library` | **build** | Patterns, blueprints, solution designs, candidate options, and threat modelling of them (old 8.3, the user-facing part). |
+| 3 | Digital Twin & Knowledge Graph | `packages/digital-twin-knowledge-graph` | **build**, wraps forked ArchiMate parser | Old 2 + old 6: the intent and twin planes, the forensic ledger, and querying them (traceability matrix, NL-to-graph). Absorbs today's `schema/manager.py`, `sample_parser.py`; port `prototype-neo4j` seeding ideas (§7). |
+| 4 | Architecture Governance | `packages/architecture-governance` | **build** | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off (and its UI). |
+| 5 | Conformance & Drift Assurance | `packages/conformance-drift-assurance` | **build**, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate control enforcement (CPS 230 / 234), BAU effectiveness monitoring, drift detection, Break-Glass, remediation tickets. |
+| 6 | Modelling & Specification | `packages/modelling-specification` | **build** | ArchiMate / C4 / UML modelling and executable-spec generation from the knowledge graph. |
+| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | First extraction. Where its embedded UI lands is open (#55). |
+<!-- pyml enable md013 -->
+
+**Not packages** — parts of the old grouping that ADR-0011 dropped or dissolved:
+
+- **Specify lifecycle CLI** (old 1.1) — this repo's development tooling (`.specify/`), not a
+  platform component. Distinct from subsystem 6's executable-spec generation.
+- **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
+- **Security foundations** (old 8) — RBAC and encryption are platform requirements every
+  subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
+  own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
+  formerly FR-018); threat modelling as an output is subsystem 2.
+- **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
 
 **Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
 
-- An ArchiMate Exchange Format / `.archimate` parser (consumed by `knowledge-graph`).
+- An ArchiMate Exchange Format / `.archimate` parser (consumed by `digital-twin-knowledge-graph`).
 
 **OSCAL** is resolved (see [ADR-0030](docs/adr/0030-vendor-oscal-reference-content.md)):
 NIST/FedRAMP reference content (`usnistgov/OSCAL`, `usnistgov/oscal-content`,
 `GSA/fedramp-automation`) is vendored as plain `third_party/` submodules, consumed by
-`policy-enforcement` when it's built; `compliance-trestle` (the catalog/profile
+`controls-compliance-catalog` when it's built; `compliance-trestle` (the catalog/profile
 authoring and round-trip tool) is an ordinary Poetry dependency, not a submodule.
 
 Confirm the exact ArchiMate-parser upstream before creating that submodule.
@@ -216,18 +190,20 @@ Confirm the exact ArchiMate-parser upstream before creating that submodule.
 environment, and there is no benefit large enough to justify migrating a working
 build off Poetry. Revisit only if Poetry's monorepo story becomes a real drag.
 
+<!-- pyml disable md013 -->
 | Option | Verdict | Why |
 |---|---|---|
 | **Poetry monorepo** | **Chosen** | Already in use (`poetry-dynamic-versioning`, commitizen, `poetry.lock`). Root `pyproject.toml` aggregates `packages/*` as path dependencies; each package keeps its own `pyproject.toml` and build backend; one shared `poetry.lock`. No migration cost. |
 | `uv` workspace | On hold | Faster resolver and a native workspace model, but `uv sync` broke repeatedly here and migrating every `pyproject.toml` + the versioning setup buys little today. Re-evaluate if that changes. |
-| `pnpm` + `turborepo` | Later, if JS grows | Right tool once `dashboard` + shared UI libs justify a task graph. Nest a pnpm workspace under `packages/dashboard*` now; promote only when needed. |
+| `pnpm` + `turborepo` | Later, if JS grows | Right tool once the per-subsystem `ui/` trees + shared UI libs justify a task graph. Nest a pnpm workspace under `packages/*/ui` now; promote only when needed. |
 | Meta-repo tool (`meta`, `mu-repo`, `git-subrepo`) | No | Solves polyrepo coordination we are deliberately avoiding for first-party code. |
 | Submodules for everything | No | Pointer-commit churn makes day-to-day multi-package dev miserable. Forks only. |
 | Nx | No | JS-first; heavier than the Python weight warrants. |
+<!-- pyml enable md013 -->
 
 **Multi-package layout under Poetry:** `platform/pyproject.toml` is the root project;
 each `packages/<name>/` is a Poetry project depending on its siblings via path
-dependencies (`{ path = "../knowledge-graph", develop = true }`). Dynamic versioning
+dependencies (`{ path = "../digital-twin-knowledge-graph", develop = true }`). Dynamic versioning
 and the commitizen config move to the root and target the whole tree. No build-backend
 churn — packages keep the current setup.
 
@@ -243,15 +219,15 @@ Target:
 - **Root `specs/`** holds only **epic / cross-cutting** specs, prefixed `EPIC-`:
   e.g. `specs/EPIC-001-platform-restructure/`, `specs/EPIC-002-cps230-234-traceability/`.
 - **Each `packages/<name>/specs/`** restarts its own `NNN-` sequence, scoped to that
-  component: e.g. `packages/knowledge-graph/specs/001-neo4j-schema-ui/`.
+  component: e.g. `packages/digital-twin-knowledge-graph/specs/001-neo4j-schema-ui/`.
 - **Existing specs re-home as:**
-  - `001-governance-platform` → `EPIC-001`, or retire in favour of
-    `PROJECT_SPECIFICATION.md` + per-component specs (§10).
+  - `001-governance-platform` → `EPIC-001` (it is the platform's business specification
+    since `PROJECT_SPECIFICATION.md` was retired — §10 Q6).
   - `002-neo4j-schema-ui` → `packages/schema-visualizer-api/specs/001-*`
-    (and/or `packages/knowledge-graph/specs/001-*`).
-  - `002-arch-kg-semantics` (stub) → `packages/knowledge-graph/specs/002-*`, or delete.
+    (and/or `packages/digital-twin-knowledge-graph/specs/001-*`).
+  - `002-arch-kg-semantics` (stub) → `packages/digital-twin-knowledge-graph/specs/002-*`, or delete.
 - **`.specify/scripts/bash/`** (`create-new-feature.sh`, `setup-plan.sh`,
-  `update-agent-context.sh`, `check-prerequisites.sh`) assume one repo / one `specs/`.
+  `check-prerequisites.sh`) assume one repo / one `specs/`.
   Add a `--package <name>` arg that targets `packages/<name>/specs/` — one source of
   truth, rather than per-package copies.
 - Root keeps `.specify/memory/constitution.md` as the **platform** constitution;
@@ -265,7 +241,7 @@ Branch has: KG model, UNWIND bulk seeding, ArchiMate business/motivation layers,
 layer-scoped visualisers, forensic ledger / KG planes. Diverged early → more rewrite than
 cherry-pick.
 
-Treat it as a **reference, not a merge source**. When `packages/knowledge-graph` is
+Treat it as a **reference, not a merge source**. When `packages/digital-twin-knowledge-graph` is
 scaffolded, port the model + seeding ideas deliberately into the new structure. Tag the
 branch `archive/prototype-neo4j` before it rots. Do not block the restructure on it.
 
@@ -279,7 +255,7 @@ title Restructure sequence
 (*) --> "1. Create platform/ Poetry monorepo skeleton\n(empty, CI green)"
 --> "2. FIRST EXTRACTION:\nvisualiser API/UI split ->\npackages/schema-visualizer-api"
 --> "3. Prove pattern: root CI fans out,\nworkspace lock resolves, tests pass"
---> "4. Scaffold knowledge-graph;\nport prototype-neo4j ideas"
+--> "4. Scaffold digital-twin-knowledge-graph;\nport prototype-neo4j ideas"
 --> "5. Vendor confirmed forks into third_party/\n(submodules) + wire fork-sync"
 --> "6. Re-home specs to two-tier scheme;\npatch .specify scripts"
 --> "7. Extract remaining components as work reaches them"
@@ -289,8 +265,10 @@ title Restructure sequence
 
 ### 8.1 First extraction — visualiser API/UI split
 
-Today one FastAPI app (`visualizer/api.py`) serves both JSON and the HTML/JS UI
-(`static/schema_visualizer.js`, `templates/schema_visualizer.html`).
+Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
+from the shared FastAPI app in `frictionless_architect/app.py`. The server-rendered HTML
+route was dropped on 2026-09-13, leaving `visualizer/static/` and `templates/` orphaned
+(ADR-0005 → Implementation status).
 
 ```plantuml
 @startuml
@@ -298,9 +276,10 @@ title Visualiser split
 skinparam componentStyle rectangle
 
 package "BEFORE  src/frictionless_architect/visualizer/" {
-  [api.py  routes:\n/schema-visualizer (HTML)\n/schema-payload (+/refresh /status)] as before_api
-  [static/ + templates/] as before_ui
-  before_api --> before_ui : Jinja + static mount
+  [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
+  [data_loader.py sample_parser.py\n(+ schema/manager.py)] as before_kg
+  [static/ + templates/\n(orphaned)] as before_ui
+  before_api --> before_kg
 }
 
 package "AFTER" {
@@ -309,7 +288,7 @@ package "AFTER" {
     [cache.py config.py\npayload + coverage-merge logic] as after_lib
     after_api --> after_lib
   }
-  package "packages/schema-visualizer-ui  (or fold into dashboard)" {
+  package "packages/schema-visualizer-ui  (home open — #55)" {
     [Vite app\nfetches /schema-payload] as after_ui
   }
   after_ui ..> after_api : HTTP (CORS / dev proxy)
@@ -318,23 +297,25 @@ package "AFTER" {
 ```
 
 Checklist:
+
 - Move `visualizer/{api,cache,config}.py` + the visualiser's own payload /
   coverage-merge logic + the FastAPI router into
   `packages/schema-visualizer-api/src/`.
 - `data_loader.py` (Neo4j read), `sample_parser.py`, and `schema/manager.py` are
-  **not** part of this step — their home is deferred to the `knowledge-graph`
-  extraction (see ADR-0005 → Amendment 2026-08-30, and §4).
-- Drop the HTML route + Jinja/static mounts from `api.py`; keep `/schema-payload*`.
-- Move `static/` + `templates/` into a Vite project; replace the server-rendered bootstrap
-  with a `fetch('/schema-payload')` call; add a dev proxy.
+  **not** part of this step — they move to `packages/digital-twin-knowledge-graph`, which
+  `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
+  §4).
+- ~~Drop the HTML route + Jinja/static mounts; keep `/schema-payload*`.~~ Done 2026-09-13.
+- Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy;
+  delete the orphaned `visualizer/static/` and `templates/`.
 - Add CORS config to the API (same-origin today, so none).
 - `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the
   package; `test_data_loader.py` / `test_sample_parser.py` follow their code to
-  `knowledge-graph`.
+  `digital-twin-knowledge-graph`.
 - Keep the `FRICTIONLESS_ARCHITECT_` env prefix as-is for this extraction; rename is its
   own epic (§9).
 - Entry point `uvicorn frictionless_architect.app:app` →
-  `uvicorn schema_visualizer_api:app`; update `quickstart.md` / `README.md`.
+  `uvicorn schema_visualizer_api:app`; update `README.md`.
 
 ---
 
@@ -361,20 +342,25 @@ Checklist:
    rule? (Leaning: package forever; split only if a component is open-sourced standalone.)
 2. Root `.specify/` as the platform constitution with lighter per-component constitutions
    beneath, or one constitution only?
-3. Dashboard: Backstage-embedded plugin, or standalone SPA? Changes package 7's build shape.
+3. Per-subsystem UIs (ADR-0020): Backstage plugins, or composed in a shell app? Changes
+   each `ui/` tree's build shape (#55).
 4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
    is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
    dependency, not a fork.)
-5. Does `pii-gateway` start as its own package or split out of `governance-engine` later?
-6. `001-governance-platform` spec: promote to `EPIC-001`, or retire in favour of
-   `PROJECT_SPECIFICATION.md` + per-component specs?
+5. Is collaboration-tool decision capture still in scope, and where does the PII gateway
+   (ADR-0014, narrowed by ADR-0031) sit? (#56)
+6. *Resolved 2026-09-26:* `001-governance-platform` becomes `EPIC-001` (ADR-0004, §6).
+   `PROJECT_SPECIFICATION.md` was retired instead, so spec 001 is the platform's business
+   specification (constitution v1.3.0).
 7. Keep `src/frictionless_architect/` importable as an umbrella namespace package during
    the transition, or hard-cut per extraction?
-8. Does `schema-visualizer-api` consume `knowledge-graph` as a path-dependency library
-   (its own Neo4j connection, per §3.3) or over HTTP? (Blocks the first extraction —
-   ADR-0005 Amendment.)
-9. Is `sample_parser.py` visualiser-specific or generic ArchiMate ingestion? If generic
-   it moves to `knowledge-graph` with the forked parser (§4) and the API package stays thin.
+8. *Resolved (ADR-0005):* `schema-visualizer-api` consumes `digital-twin-knowledge-graph`
+   as a path-dependency library, not over HTTP, until a second consumer needs that interface.
+9. *Resolved (ADR-0005):* `sample_parser.py` is generic ArchiMate ingestion, so it moves to
+   `digital-twin-knowledge-graph` (§4) and the API package stays thin.
+10. §8 splits the visualiser (step 2) before scaffolding `digital-twin-knowledge-graph`
+    (step 4), but ADR-0005 has the API consume that package as a library. Scaffold a
+    minimal read path early, reorder, or import from the flat package in the interim? (#60)
 
 ---
 

@@ -19,5 +19,6 @@ Rel_Serving_Up(e_id72468b5b403450, e_id752d1de3794f5f, "control mappings")
 Rel_Serving_Up(e_id72468b5b403450, e_id4a1c34ab69d151, "expected controls")
 Rel_Serving_Up(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
 Rel_Serving_Up(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_id08f340a094e552, "escalations")
 
 @enduml

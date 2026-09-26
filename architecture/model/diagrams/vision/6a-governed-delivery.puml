@@ -1,0 +1,29 @@
+@startuml
+!include <archimate/Archimate>
+
+title Value Stream — Governed Architecture Delivery
+
+Motivation_Stakeholder(e_id19419ed668d556, "Executive Leadership & Board")
+Motivation_Stakeholder(e_idb1fdf098c7c056, "Delivery Organisation")
+Motivation_Outcome(e_id3be36e7ab88a59, "Approved Change Reaches Production at AI Speed")
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
+Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
+  Strategy_ValueStream(e_id447909387df55c, "Establish Reuse Baseline")
+  Strategy_ValueStream(e_id01dab436206551, "Specify the Change")
+  Strategy_ValueStream(e_id36fbfe00214758, "Build Under Supervision")
+  Strategy_ValueStream(e_idf362f39778065d, "Release to Production")
+}
+
+Rel_Association(e_idb1fdf098c7c056, e_idcd5e1d4017725d, "compliant releases at speed")
+Rel_Association(e_id19419ed668d556, e_idcd5e1d4017725d, "time to market")
+Rel_Realization_Up(e_idcd5e1d4017725d, e_id3be36e7ab88a59, "")
+Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
+Rel_Serving_Up(e_idafba1b4ab1e756, e_id01dab436206551, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_idf362f39778065d, "")
+Rel_Triggering_Right(e_id447909387df55c, e_id01dab436206551, "")
+Rel_Triggering_Right(e_id01dab436206551, e_id36fbfe00214758, "")
+
+@enduml

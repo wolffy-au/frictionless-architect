@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-02-18 (Constitution VI); detail in `TECHNICAL.md`
 - **Sources:** `.specify/memory/constitution.md` VI; `TECHNICAL.md`
-  §"Software Architectural Patterns" / §"API Design Principles"; `data-model.md`
+  §"Software Architectural Patterns" / §"API Design Principles"; `specs/001-governance-platform/data-model.md`
 
 ## Context
 

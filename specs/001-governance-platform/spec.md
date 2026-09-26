@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-governance-platform`
 **Created**: 2026-02-21
-**Last revised**: 2026-08-28 (technology-agnostic pass; retired branch `001-governance-platform` folded into `develop` for reference during architecture rework)
+**Last revised**: 2026-09-26 (FR-018 moved to `NONFUNCTIONALS.md`; FR-021–FR-023 carried over from the retired `PROJECT_SPECIFICATION.md`, which this spec replaces as the platform's business specification). Previously 2026-08-28 (technology-agnostic pass; retired branch `001-governance-platform` folded into `develop` for reference during architecture rework)
 **Status**: Draft — under rework
 **Input**: User description: "Core Governance Service. Combines specification lifecycle management and a privacy gateway that removes sensitive data before any external processing. This is the foundational service layer responsible for managing the specification process and ensuring data privacy during processing."
 
@@ -146,12 +146,20 @@ and alerts are observable.
   that consumes verified identity attributes; the authentication mechanism MUST supply those
   attributes.
 - **FR-017**: The platform MUST protect data in transit and at rest.
-- **FR-018**: The platform MUST periodically scan its own as-built state to support threat
-  modelling.
+- **FR-018**: *Moved to `NONFUNCTIONALS.md` "Security Assessments"* — regular automated
+  security scanning of the platform's own deployment is an operational requirement, not a
+  functional one. The number is kept so requirement IDs are not reused.
 - **FR-019**: The platform MUST keep all architectural artifacts machine-readable
   (executable, or structured data).
 - **FR-020**: The platform MUST automate enforcement of APRA CPS 230 (Operational
   Resilience) and CPS 234 (Information Security).
+- **FR-021**: When drift is detected, the platform MUST generate a remediation proposal — the
+  specific change (e.g. a pull request) needed to return the deployment to its as-designed
+  state.
+- **FR-022**: The platform MUST generate system diagrams and documentation from the semantic
+  model, so they stay in sync with it.
+- **FR-023**: The platform MUST export audit-ready compliance packs for regulatory submissions
+  in a single action.
 
 ### Key Entities *(include if feature involves data)*
 

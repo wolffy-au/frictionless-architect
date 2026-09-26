@@ -17,13 +17,14 @@ Split the visualiser into two packages:
 - `packages/schema-visualizer-api` — JSON only (`/schema-payload*`). Scope:
   `visualizer/{api,cache,config}.py` and the FastAPI router. Drops the
   server-rendered HTML route and Jinja/static mounts.
-- `packages/schema-visualizer-ui` (or fold into `dashboard`) — a Vite app
+- `packages/schema-visualizer-ui` (home open since ADR-0020 dropped the
+  dashboard — #55) — a Vite app
   fetching `/schema-payload`.
 
 `schema/manager.py`, `visualizer/data_loader.py` (Neo4j read path), and
-`sample_parser.py` move to `packages/knowledge-graph` instead — none are
+`sample_parser.py` move to `packages/digital-twin-knowledge-graph` instead — none are
 visualiser-specific, and the visualiser only ever needed read access.
-`schema-visualizer-api` consumes `knowledge-graph` as a path-dependency
+`schema-visualizer-api` consumes `digital-twin-knowledge-graph` as a path-dependency
 library, not over HTTP, until a second consumer needs that interface to
 graduate — so the read-path interface stays narrow and free of leaked Neo4j
 driver types now.
@@ -31,10 +32,10 @@ driver types now.
 ## Consequences
 
 - Entry point changes: `uvicorn frictionless_architect.visualizer:app` →
-  `uvicorn schema_visualizer_api:app`; update `README.md` / `quickstart.md`.
+  `uvicorn schema_visualizer_api:app`; update `README.md`.
 - `FRICTIONLESS_ARCHITECT_` env prefix stays as-is; renaming it is its own
   epic (`ARCHITECTURE.md` §9).
-- Sequence: scaffold `knowledge-graph` → vendor forks → re-home specs →
+- Sequence: scaffold `digital-twin-knowledge-graph` → vendor forks → re-home specs →
   extract remaining components as work reaches them.
 
 ## Implementation status (2026-09-13)
@@ -57,9 +58,9 @@ gets its own app object when the package split above happens.
 
 ## Alternatives considered
 
-- **`schema-visualizer-api` calls `knowledge-graph` over HTTP from the start**
+- **`schema-visualizer-api` calls `digital-twin-knowledge-graph` over HTTP from the start**
   — rejected: no second consumer yet; adds a service contract before it's
   needed.
 - **Keep `sample_parser.py` in the API package** — rejected: no
   visualiser-specific coupling; would duplicate parsing logic once
-  `knowledge-graph` needs it.
+  `digital-twin-knowledge-graph` needs it.

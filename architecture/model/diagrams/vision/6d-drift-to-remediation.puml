@@ -1,0 +1,21 @@
+@startuml
+!include <archimate/Archimate>
+
+title Value Stream — Drift to Remediation
+
+Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")
+Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
+Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
+Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
+  Strategy_ValueStream(e_id12b58c7f12735c, "Observe As-Built State")
+  Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
+}
+
+Rel_Association(e_id3bf463ccf22a53, e_idfa7e21ab28235c, "sustained coherence")
+Rel_Realization_Up(e_idfa7e21ab28235c, e_id79b6a1e545325d, "")
+Rel_Serving_Up(e_id18ec07397a9d5f, e_id12b58c7f12735c, "")
+Rel_Serving_Up(e_id41aa3eb894c852, e_iddd4585a6a08153, "")
+Rel_Triggering_Right(e_id12b58c7f12735c, e_iddd4585a6a08153, "")
+
+@enduml

@@ -19,7 +19,7 @@ The motivation — a problem being fixed, a standard being followed, an ADR bein
 
 Concrete bullets of the actual change (structure, files, config, schema). Fine to leave as an outline while work is in progress; fill in fully once done. Ex.
 - New submodule `third_party/it4it` merged in by `build.py` at build time.
-- `views.yaml`, `PROJECT_SPECIFICATION.md`, and affected ADRs updated to match new paths.
+- `views.yaml`, `ARCHITECTURE.md`, and affected ADRs updated to match new paths.
 
 ## Work items
 

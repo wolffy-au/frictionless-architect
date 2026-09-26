@@ -7,10 +7,9 @@ This guide provides essential steps to get started with the Frictionless Archite
 Ensure you have the following installed:
 
 - **Python**: Version 3.11 or higher (as determined by research).
-- **UV**: Python package installer.
+- **Poetry**: Dependency management and running build and test commands (ADR-0003).
 - **Git**: For managing code versions and branches.
 - **Podman (Docker)**: For running PostgreSQL and Neo4j databases (if applicable).
-- **UV**: For running build and test commands.
 
 ## Project Setup
 
@@ -40,26 +39,9 @@ Ensure you have the following installed:
 
 ## Running the Platform
 
-This platform consists of a core Python service and potentially other microservices.
+To run what is built today (the Neo4j schema visualiser), see `README.md`.
 
-### Core Service (CLI/API)
-
-The one runnable slice today is the Neo4j schema visualiser, a FastAPI app.
-
-1. **Set up databases (if applicable)**:
-    Refer to the database-specific setup instructions (e.g., Docker Compose for PostgreSQL and Neo4j).
-    The visualiser also runs without Neo4j, falling back to bundled sample data.
-
-2. **Run the core service**:
-
-    ```bash
-    poetry run uvicorn frictionless_architect.app:app --reload --port 8100
-    ```
-
-    Then fetch `http://127.0.0.1:8100/schema-payload`. The service is JSON-only
-    for now — see `README.md` for the full set of endpoints and settings.
-
-### Running Specifications and Planning
+## Running Specifications and Planning
 
 Use the `specify` CLI commands for managing your architecture specifications:
 
@@ -77,9 +59,17 @@ Use the `specify` CLI commands for managing your architecture specifications:
 
 ## Development Workflow
 
-1. **Specify**: Define requirements in `specs/<branch>/spec.md`.
-2. **Plan**: Run `setup-plan.sh` and `speckit.plan` to generate `plan.md`, `research.md`, `data-model.md`, `contracts/`, etc.
-3. **Implement**: Use `speckit.tasks` to break down the plan and implement.
-4. **Verify**: Ensure all tests pass and quality gates are met.
+The six stages below are defined in `.specify/memory/constitution.md` §"Development Workflow",
+which is authoritative if they ever differ.
+
+1. **Specify** (`speckit-specify`): Define requirements and user stories in `specs/<feature>/spec.md`.
+2. **Plan** (`speckit-plan`): Research technical approaches and generate `plan.md`, `research.md`,
+   `data-model.md`, `contracts/`, etc.
+3. **Record**: File or update an ADR under `docs/adr/` for every load-bearing choice the plan makes
+   (Principle X).
+4. **Break down** (`speckit-tasks`): Map the plan to tasks and requirements.
+5. **Implement** (`speckit-implement`): Execute tasks following the Red-Green-Refactor cycle.
+6. **Verify**: Pass all quality gates — `scripts/pre_commit_checks.sh` on every commit,
+   `scripts/pre_merge_checks.sh` before merge.
 
 For more detailed information, refer to `TECHNICAL.md` and the generated specification files.

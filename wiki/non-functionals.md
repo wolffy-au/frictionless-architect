@@ -1,7 +1,7 @@
 ---
 title: Non-Functional Requirements
-generated: 2026-08-29
-generator: claude-sonnet-5
+generated: 2026-09-26
+generator: claude-opus-5-5
 sources:
   - NONFUNCTIONALS.md
 ---
@@ -12,7 +12,7 @@ sources:
 `NONFUNCTIONALS.md` holds the abstracted, high-level quality-attribute
 requirements derived from the feature specification. It is one of the four
 "deeper detail" documents the [Governance & Constitution](governance-and-constitution.md)
-points to, alongside `TECHNICAL.md` and `PROJECT_SPECIFICATION.md`.
+points to, alongside `TECHNICAL.md` and the feature specs.
 
 All entries below are direct from `NONFUNCTIONALS.md` §"Categories".
 
@@ -34,7 +34,12 @@ All entries below are direct from `NONFUNCTIONALS.md` §"Categories".
 - Authentication via industry-standard mechanisms (secure tokens); authorization
   enforced by policy (**ABAC** named as the example).
 - Data encrypted **at rest and in transit**.
-- Regular automated scanning and threat modelling.
+- The platform's **own deployment** undergoes regular automated security
+  scanning. This was
+  formerly functional requirement FR-018 in spec 001 and now lives here as an
+  operational requirement; threat modelling of *client* architectures is a
+  library output, not part of it (`NONFUNCTIONALS.md` §Security → "Security
+  Assessments"; see [Platform Specification & API](platform-spec.md)).
 - Compliance with relevant information-security standards and regulations.
 
 ## Reliability & Availability
@@ -43,6 +48,10 @@ All entries below are direct from `NONFUNCTIONALS.md` §"Categories".
 - Controlled, auditable exceptions/overrides for critical operations (the
   Break-Glass mechanism).
 - Regular automated health and configuration-consistency checks.
+- Automated **resilience testing** (e.g. chaos engineering) that proves the
+  as-designed recovery logic works in simulated outages, in support of APRA
+  CPS 230 — carried over from the retired `PROJECT_SPECIFICATION.md`
+  (`NONFUNCTIONALS.md` §"Reliability & Availability" → "Resilience Testing").
 - Standardized, machine-readable API error reporting.
 - Compliance with operational-resilience standards.
 

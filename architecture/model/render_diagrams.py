@@ -98,6 +98,8 @@ def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
             cmd = [sys.executable, str(ARCHIMATE_PUML), str(MODEL), "--view", v["name"]]
             for rel_type in v.get("no_direction", []):
                 cmd += ["--no-direction", rel_type]
+            if v.get("max_width"):
+                cmd += ["--max-width", str(v["max_width"])]
             jobs.append((diagram_root / f"{slug}.puml", cmd))
 
     if diagram_root == DIAGRAMS:

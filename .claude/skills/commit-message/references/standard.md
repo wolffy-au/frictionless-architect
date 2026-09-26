@@ -40,7 +40,7 @@ change and forces a major bump regardless of type.
 Optional but expected when a change is localised. Lower-case, `[a-z0-9-]+`.
 
 **Package scopes** — a member of the `platform/` Poetry monorepo, named by its
-directory under `platform/packages/` (e.g. `knowledge-graph`, `schema-visualizer`).
+directory under `platform/packages/` (e.g. `digital-twin-knowledge-graph`, `schema-visualizer`).
 Use the package directory name, not the Python module name.
 
 **Area scopes** — cross-cutting parts of the repo:

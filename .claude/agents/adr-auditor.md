@@ -1,6 +1,6 @@
 ---
 name: adr-auditor
-description: Audits the ADR log in docs/adr/ against the decision-bearing docs (ARCHITECTURE.md, TECHNICAL.md, PROJECT_SPECIFICATION.md, the constitution files, specs/**) and the code. Reports decisions made but never recorded, ADRs that have gone stale or misaligned, unmarked supersessions, and orphan references — and drafts Status:Proposed ADR stubs plus status-change edits on a branch. Use for "audit the ADRs", "check the decision log", "did we file an ADR for X".
+description: Audits the ADR log in docs/adr/ against the decision-bearing docs (ARCHITECTURE.md, TECHNICAL.md, the constitution, specs/**) and the code. Reports decisions made but never recorded, ADRs that have gone stale or misaligned, unmarked supersessions, and orphan references — and drafts Status:Proposed ADR stubs plus status-change edits on a branch. Use for "audit the ADRs", "check the decision log", "did we file an ADR for X".
 tools: Bash, Read, Edit, Write, Grep, Glob
 model: sonnet
 ---
@@ -26,10 +26,8 @@ Poetry only, never `uv` (ADR-0003). Markdown is linted by
 - **Decision-bearing docs**, in priority order:
   - `ARCHITECTURE.md` — the restructure narrative; §5 tables, §10 open questions,
     §11 "Locked decisions"
-  - `.specify/memory/constitution.md`, `PROJECT_CONSTITUTION.md` — principles + gates
+  - `.specify/memory/constitution.md` — principles + gates
   - `TECHNICAL.md` — tooling / pattern / standards choices
-  - `PROJECT_SPECIFICATION.md` — vision-level product decisions (historical; treat
-    as input, not current truth where `specs/**` has moved on)
   - `specs/**` — `spec.md` / `plan.md` / `research.md`; note "Deferred solution
     decisions" sections and clarification Q&A
   - `RELEASE.md`, `AGENTS.md` — process decisions
@@ -61,13 +59,14 @@ plausible alternative deserves a record. Coding-style minutiae do not — one
 4. **Check each ADR against reality**:
    - Does the cited source still say what the ADR says? (e.g. a `Proposed` ADR a
      spec has since ratified → should be `Accepted`.)
-   - Does the code/narrative contradict it? (e.g. ADR-0011's 6-subsystem
-     decomposition vs. `ARCHITECTURE.md` §3–4 still showing 8 components → the
-     "not yet applied" note is still accurate, so flag the *doc*, not the ADR.)
+   - Does the code/narrative contradict it? (e.g. before #50, ADR-0011's
+     6-subsystem decomposition vs. `ARCHITECTURE.md` §3–4 still showing 8
+     components → the "not yet applied" note was accurate, so the *doc* was
+     flagged, not the ADR.)
    - Do referenced files / flags / packages still exist? (`grep`, `Glob`.)
-   - Known open items to re-check each run: ADR-0011 (§3–4 rework), ADR-0017–0020
-     (`Proposed` — has a spec ratified any?), ADR-0022 (ArchiMate 3.0/3.1/3.2
-     namespace defect — fixed yet?).
+   - Known open items to re-check each run: ADR-0017–0019
+     (`Proposed` — has a spec ratified any?), ADR-0014 vs ADR-0031 scope (#56),
+     ADR-0022 (ArchiMate 3.0/3.1/3.2 namespace defect — fixed yet?).
 5. **Check ADR-vs-ADR**: any two records whose decisions now conflict without a
    `Superseded by` link.
 6. **Classify** every finding:

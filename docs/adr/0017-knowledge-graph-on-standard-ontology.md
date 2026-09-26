@@ -17,9 +17,9 @@ Software Catalog** or the **C4 model** — rather than an ad-hoc schema.
 
 ## Consequences
 
-- Constrains the `knowledge-graph` package's node/edge vocabulary.
+- Constrains the `digital-twin-knowledge-graph` package's node/edge vocabulary.
 - Interacts with ADR-0008 (ArchiMate concept names as the model vocabulary) — the
   reconciliation between an ArchiMate-typed model and a Backstage/C4 ontology is
-  unresolved and should be settled when `knowledge-graph` is scaffolded.
+  unresolved and should be settled when `digital-twin-knowledge-graph` is scaffolded.
 - Persistence technology for the semantic model is a deferred solution decision
   (`specs/001`), though Neo4j is the working assumption (ADR-0018).

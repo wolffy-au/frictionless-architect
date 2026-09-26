@@ -17,13 +17,12 @@ topics:
     description: What Frictionless Architect is, who it's for, and its scope.
     sources:
       - path: README.md
-      - path: PROJECT_SPECIFICATION.md
+      - path: specs/001-governance-platform/spec.md
 
   - name: governance-and-constitution
     title: Governance & Constitution
     description: The project's constitutional rules and quality gates.
     sources:
-      - path: PROJECT_CONSTITUTION.md
       - path: .specify/memory/constitution.md
 
   - name: architecture
@@ -105,7 +104,7 @@ topics:
     title: Data Model
     description: Domain entities, the Neo4j schema, and the ArchiMate XSD basis.
     sources:
-      - path: data-model.md
+      - path: specs/001-governance-platform/data-model.md
       - path: specs/002-neo4j-schema-ui/data-model.md
       - path: sample-data/schema/*.xsd
 
@@ -137,7 +136,7 @@ topics:
     title: Development & Quickstart
     description: How to set up, run, and work in this repo.
     sources:
-      - path: quickstart.md
+      - path: specs/001-governance-platform/quickstart.md
       - path: AGENTS.md
       - path: RELEASE.md
       - path: specs/002-neo4j-schema-ui/quickstart.md

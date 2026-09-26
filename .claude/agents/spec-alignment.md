@@ -1,6 +1,6 @@
 ---
 name: spec-alignment
-description: Reviews the codebase against the project's specifications (PROJECT_SPECIFICATION.md, specs/**, the constitution) and reports where implementation diverges from, lags, or silently drops documented requirements — plus orphaned code with no spec. Read-only - it produces a traceability gap report, it does not write specs or code. Use for "spec alignment check", "what did we miss from the spec", "requirements traceability".
+description: Reviews the codebase against the project's specifications (specs/**, the constitution) and reports where implementation diverges from, lags, or silently drops documented requirements — plus orphaned code with no spec. Read-only - it produces a traceability gap report, it does not write specs or code. Use for "spec alignment check", "what did we miss from the spec", "requirements traceability".
 tools: Bash, Read, Grep, Glob
 model: sonnet
 ---
@@ -25,9 +25,9 @@ Poetry only for any inspection commands.
 
 ## Steps
 
-1. Extract a requirement list: every FR / NFR / SC / user story with a stable ID, plus
-   each spec'd feature from `PROJECT_SPECIFICATION.md` that lacks one (assign a provisional
-   ID). Record each component 1–8 and its sub-features.
+1. Extract a requirement list: every FR / NFR / SC / user story with a stable ID
+   (`specs/001-governance-platform` is the platform's business specification). Map each
+   to its ADR-0011 subsystem (`ARCHITECTURE.md` §4); the old components 1–8 are historical.
 2. For each requirement, locate the implementing code + test. Classify:
    **Done** / **Partial** / **Missing** / **Diverged** (built differently than specified)
    / **Undocumented** (code exists, no spec).
@@ -35,7 +35,7 @@ Poetry only for any inspection commands.
    paths for format changes (VIII), cross-platform assumptions (IX), validation before
    release (VII).
 4. Flag spec-vs-spec contradictions you hit (e.g. `uv` in `TECHNICAL.md` vs Poetry in
-   practice; accounting-era language in `PROJECT_CONSTITUTION.md` / `README.md`).
+   practice; accounting-era language in `README.md`).
 5. Rank gaps CRITICAL / HIGH / MEDIUM / LOW (constitution violations and unbuilt
    success-criteria first).
 

@@ -1,6 +1,6 @@
 ---
 title: Platform Specification & API
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - specs/001-governance-platform/spec.md
@@ -38,9 +38,12 @@ formats for model/interface ingestion, the wire format for structured API
 errors, and the persistence technologies for the semantic model and platform
 metadata.
 
-### Functional requirements (FR-001 … FR-020)
+### Functional requirements (FR-001 … FR-023)
 
-Highlights (`specs/001-governance-platform/spec.md:114-154`):
+Spec 001 is the platform's business specification since the root
+`PROJECT_SPECIFICATION.md` was retired (2026-09-26); FR-021–FR-023 were
+carried over from it (`specs/001-governance-platform/spec.md` header "Last
+revised"). Highlights (`specs/001-governance-platform/spec.md:114-163`):
 
 - Maintain a machine-readable semantic model mapping technical components to
   data domains, CBS, and regulations (FR-001, FR-002).
@@ -59,10 +62,19 @@ Highlights (`specs/001-governance-platform/spec.md:114-154`):
 - Authenticate both humans and automated agents (FR-015); make authorization
   decisions in a **dedicated policy component** consuming verified identity
   attributes (FR-016).
-- Protect data in transit and at rest (FR-017); periodically scan its own
-  as-built state for threat modelling (FR-018).
+- Protect data in transit and at rest (FR-017).
+- FR-018 is now a tombstone: security scanning of the platform's own
+  deployment moved to `NONFUNCTIONALS.md` "Security Assessments" as an
+  operational requirement, and the number is kept so IDs are not reused
+  (`specs/001-governance-platform/spec.md` FR-018; see
+  [Non-Functional Requirements](non-functionals.md)).
 - Keep all artifacts machine-readable (FR-019); automate enforcement of APRA
   CPS 230 and CPS 234 (FR-020).
+- On drift, generate a remediation proposal — the specific change (e.g. a pull
+  request) that returns the deployment to its as-designed state (FR-021).
+- Generate system diagrams and documentation from the semantic model so they
+  stay in sync (FR-022); export audit-ready compliance packs in a single
+  action (FR-023).
 
 ### Priority journeys
 
@@ -139,7 +151,12 @@ between a diagram view (respecting stored `x/y/w/h`) and a tabular breakdown
 (FR-003); show the source schema filename beside each type (FR-004); flag
 schema types with no sample entry as coverage gaps (FR-005); non-blocking
 warning when sample data is missing (FR-006); enforce the Neo4j read-permission
-model (FR-007). Each FR cites Constitution principles VII–IX.
+model (FR-007). Each FR cites the constitution principle it serves, using the
+current names: VII System Integrity & Accuracy (FR-001, FR-005), VIII
+Durability & Interoperability (FR-002, FR-004), IX Cross-Platform Consistency
+(FR-003, FR-006), and V Security Practices plus VII for the access-control
+requirement FR-007 (`specs/002-neo4j-schema-ui/spec.md` §"Functional
+Requirements"; see [Governance & Constitution](governance-and-constitution.md)).
 
 ### Design decisions (research)
 
