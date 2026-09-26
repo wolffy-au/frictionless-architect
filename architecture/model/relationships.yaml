@@ -91,69 +91,55 @@
 - {type: Influence, source: driver-compliance, target: assess-manual-compliance}
 
 # =====================================================================
-# A. Motivation spine: driver -> assessment -> goal; outcome -> goal;
-#    requirements/constraints -> goal; value stream -> outcome.
+# A. Motivation spine: driver -> assessment -> outcome -> goal;
+#    requirement -> outcome; value stream -> outcome.
 # =====================================================================
-- {type: Influence, source: assess-time-to-market, target: goal-frictionless-architecture}
-- {type: Influence, source: assess-review-bottleneck, target: goal-frictionless-architecture}
-- {type: Influence, source: assess-drift-debt, target: goal-frictionless-architecture}
-- {type: Influence, source: assess-manual-compliance, target: goal-frictionless-architecture}
-- {type: Realization, source: outcome-executable-intelligence, target: goal-frictionless-architecture}
-- {type: Realization, source: vs-governed-delivery, target: outcome-executable-intelligence}
-- {type: Realization, source: req-auto-spec-generation, target: goal-frictionless-architecture}
-- {type: Realization, source: req-regulatory-mapping, target: goal-frictionless-architecture}
-- {type: Realization, source: req-pre-deploy-gate, target: goal-frictionless-architecture}
-- {type: Realization, source: req-continuous-reconciliation, target: goal-frictionless-architecture}
-- {type: Realization, source: req-human-signoff, target: goal-frictionless-architecture}
-- {type: Realization, source: req-control-catalog, target: goal-frictionless-architecture}
-- {type: Realization, source: req-reusable-architecture, target: goal-frictionless-architecture}
-- {type: Realization, source: req-authoritative-twin, target: goal-frictionless-architecture}
-- {type: Realization, source: req-immutable-audit-ledger, target: goal-frictionless-architecture}
-# Constraints reach the goal only via the requirements they influence (same
-# pattern as Principle, which never gets a direct ->goal edge either) — a
-# direct Constraint->Goal realization here would just duplicate the
-# const-* -> req-* -> goal path that already exists below.
+- {type: Influence, source: assess-time-to-market, target: outcome-change-at-ai-speed}
+- {type: Influence, source: assess-review-bottleneck, target: outcome-accountable-automation}
+- {type: Influence, source: assess-drift-debt, target: outcome-drift-reconciled}
+- {type: Influence, source: assess-manual-compliance, target: outcome-compliance-before-release}
+- {type: Realization, source: outcome-drift-reconciled, target: goal-frictionless-architecture}
+- {type: Realization, source: vs-governed-delivery, target: outcome-drift-reconciled}
+- {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
+# Each requirement realizes exactly one outcome; none realizes the goal
+# directly — req -> outcome -> goal already derives that Realization.
+- {type: Realization, source: req-auto-spec-generation, target: outcome-change-at-ai-speed}
+- {type: Realization, source: req-reusable-architecture, target: outcome-change-at-ai-speed}
+- {type: Realization, source: req-authoritative-twin, target: outcome-drift-reconciled}
+- {type: Realization, source: req-continuous-reconciliation, target: outcome-drift-reconciled}
+- {type: Realization, source: req-regulatory-mapping, target: outcome-compliance-before-release}
+- {type: Realization, source: req-control-catalog, target: outcome-compliance-before-release}
+- {type: Realization, source: req-pre-deploy-gate, target: outcome-compliance-before-release}
+- {type: Realization, source: req-human-signoff, target: outcome-accountable-automation}
+- {type: Realization, source: req-immutable-audit-ledger, target: outcome-accountable-automation}
 
 # =====================================================================
-# A. Assessments influence the functional requirements they motivate
-#    (re-anchored from the driver so the driver's contribution to a specific
-#    requirement carries the same evidenced-urgency step as its contribution
-#    to the goal).
+# A. Assessments influence the outcome that answers them (above), never a
+#    requirement: an Assessment -> Requirement Influence would make the
+#    Assessment -> Outcome edge derived (via requirement -> outcome), and the
+#    Stakeholder view — whose viewpoint admits no Requirement — needs
+#    Assessment -> Outcome to show which concern each outcome answers.
+#    Requirements are motivated by the principles and constraints below, and
+#    justified by the outcome they realize.
 # =====================================================================
-- {type: Influence, source: assess-manual-compliance, target: req-regulatory-mapping}
-- {type: Influence, source: assess-manual-compliance, target: req-pre-deploy-gate}
-- {type: Influence, source: assess-manual-compliance, target: req-control-catalog}
-- {type: Influence, source: assess-drift-debt, target: req-continuous-reconciliation}
-- {type: Influence, source: assess-drift-debt, target: req-reusable-architecture}
-- {type: Influence, source: assess-drift-debt, target: req-authoritative-twin}
-- {type: Influence, source: assess-review-bottleneck, target: req-auto-spec-generation}
-- {type: Influence, source: assess-review-bottleneck, target: req-pre-deploy-gate}
-- {type: Influence, source: assess-review-bottleneck, target: req-human-signoff}
 
 # =====================================================================
-# A. Principles guide the requirements that operationalise them
+# A. Principles and constraints each influence the ONE requirement that most
+#    directly operationalises them — kept to one edge apiece so the
+#    Motivation view stays readable. They reach outcomes and the goal only
+#    via that requirement (a direct edge would be derived). Requirements with
+#    no influence here (spec generation, reusable architecture, continuous
+#    reconciliation) are justified by the outcome they realize.
 # =====================================================================
-- {type: Influence, source: principle-human-accountability, target: req-pre-deploy-gate}
 - {type: Influence, source: principle-human-accountability, target: req-human-signoff}
 - {type: Influence, source: principle-forensic-audit, target: req-immutable-audit-ledger}
-- {type: Influence, source: principle-forensic-audit, target: req-human-signoff}
-- {type: Influence, source: principle-policy-as-code, target: req-regulatory-mapping}
-- {type: Influence, source: principle-policy-as-code, target: req-pre-deploy-gate}
 - {type: Influence, source: principle-policy-as-code, target: req-control-catalog}
-
-# =====================================================================
-# A. Constraints shape the requirements that must satisfy them
-# =====================================================================
 - {type: Influence, source: const-apra, target: req-pre-deploy-gate}
-- {type: Influence, source: const-apra, target: req-continuous-reconciliation}
-- {type: Influence, source: const-apra, target: req-immutable-audit-ledger}
-- {type: Influence, source: const-model-risk, target: req-pre-deploy-gate}
 - {type: Influence, source: const-model-risk, target: req-human-signoff}
-- {type: Influence, source: const-model-risk, target: req-immutable-audit-ledger}
 - {type: Influence, source: const-privacy, target: req-regulatory-mapping}
-- {type: Influence, source: const-privacy, target: req-control-catalog}
 - {type: Influence, source: const-cloud-policy, target: req-authoritative-twin}
-- {type: Influence, source: const-cloud-policy, target: req-continuous-reconciliation}
 
 # =====================================================================
 # A. Value stream: composition of stages, and the capabilities that serve each

@@ -120,9 +120,11 @@
     and cannot be trusted at AI-delivery cadence.
 
 # =====================================================================
-# A. MOTIVATION — Goal & Outcome (the aim, and the end result that realizes it)
-#    Drivers influence the goal; the Governed Architecture Delivery value
-#    stream realizes the outcome; the outcome realizes the goal.
+# A. MOTIVATION — Goal & Outcomes (the aim, and the end results that realize it)
+#    Each assessment influences the outcome that answers it; each outcome
+#    realizes the goal; each requirement realizes exactly one outcome. No
+#    Assessment -> Goal or Requirement -> Goal edge — both would be derived
+#    via the outcome. Each value stream realizes exactly one outcome.
 # =====================================================================
 - type: Goal
   id: goal-frictionless-architecture
@@ -132,12 +134,34 @@
     volume of AI-driven delivery — without a human review bottleneck and
     without accumulating unmanaged architectural drift.
 - type: Outcome
-  id: outcome-executable-intelligence
-  name: Architecture as Executable Intelligence
+  id: outcome-drift-reconciled
+  name: Drift Detected and Reconciled Continuously
   desc: >-
-    Architecture has moved from passive documentation to executable system
-    intelligence: the specification, the controls, and the guardrails are
-    machine-readable artefacts that AI agents and pipelines consume directly.
+    The as-built estate is continuously reconciled against as-designed intent:
+    every deviation surfaces as a classified drift event and is remediated
+    before it can accumulate as unmanaged architectural risk.
+- type: Outcome
+  id: outcome-change-at-ai-speed
+  name: Approved Change Reaches Production at AI Speed
+  desc: >-
+    The lead time from an approved change to its production release matches
+    the cadence of AI-driven delivery — specifications are generated and
+    designs reused, not hand-authored, so architecture no longer gates time to
+    market.
+- type: Outcome
+  id: outcome-compliance-before-release
+  name: Compliance Proven Before Release
+  desc: >-
+    Every change reaches production already mapped to its regulatory
+    obligations and evaluated against machine-readable controls — compliance
+    evidence is produced at the gate, not reconstructed after the fact.
+- type: Outcome
+  id: outcome-accountable-automation
+  name: Accountable, Auditable Automation
+  desc: >-
+    Agentic delivery runs at machine speed while every decision it cannot
+    deterministically validate has a named human owner, and every action it
+    takes is recorded as contemporaneous, examinable evidence.
 
 # =====================================================================
 # A. MOTIVATION — Principles (constitution-level; cross-binding)
@@ -406,9 +430,11 @@
   id: vs-governed-delivery
   name: Governed Architecture Delivery
   desc: >-
-    End-to-end value stream that turns an approved change into a compliant,
-    twin-reconciled production release: baseline, specify, build, prove,
-    release, reconcile.
+    Architecture as executable intelligence, applied to delivery: the
+    specification, the controls and the guardrails are machine-readable
+    artefacts that AI agents and pipelines consume directly. End-to-end value
+    stream that turns an approved change into a compliant, twin-reconciled
+    production release: baseline, specify, build, prove, release, reconcile.
 - type: ValueStream
   id: vss-baseline
   name: Establish Control & Reuse Baseline

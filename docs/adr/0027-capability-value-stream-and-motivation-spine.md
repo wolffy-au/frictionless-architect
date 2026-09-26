@@ -56,11 +56,29 @@ The architecture model's Strategy and Motivation layers were under-connected:
    stream `Realization`-links to the outcome. This gives the motivation layer a
    spine: drivers → goal ← outcome ← value stream.
 
+   *Amended 2026-09-26:* the goal is now realized by four outcomes, and each
+   functional requirement realizes exactly one of them (never the goal
+   directly). `outcome-executable-intelligence` was renamed *Drift Detected
+   and Reconciled Continuously* (id now `outcome-drift-reconciled`) once only
+   the twin and reconciliation requirements realized it; "architecture as executable
+   intelligence" now lives in the `Governed Architecture Delivery` value
+   stream's description.
+
 5. **Drivers, principles and constraints `Influence` the functional
    requirements they motivate / guide / shape** — 11 driver edges, 7 principle
    edges, 10 constraint edges. (The principle and constraint edges landed as a
    verified second pass immediately after the rest of this ADR.) No motivation
    element is left unconnected.
+
+   *Amended 2026-09-26:* drivers no longer influence requirements directly —
+   each driver influences the assessment that analyses it, and each assessment
+   influences the outcome that answers it (not the goal, and not a
+   requirement). Only principles and constraints influence requirements, and
+   each influences just the one requirement that most directly
+   operationalises it — 3 principle edges and 4 constraint edges, down from
+   7 and 10, to keep the Motivation view readable. The rule: no edge that an
+   existing Assessment → Outcome, Requirement → Outcome or Outcome → Goal
+   chain already derives.
 
 6. **`const-model-governance` merged into `const-model-risk`** —
    *Model Risk Management (SR 11-7 / APRA)*.

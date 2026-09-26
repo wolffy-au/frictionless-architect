@@ -32,7 +32,7 @@
   viewpoint: stakeholder
   diagram: vision/1-stakeholder
   # The case for change: who holds which driver, the assessments that make each
-  # driver urgent, and the goal + outcome they drive toward.
+  # driver urgent, and the goal + outcomes they drive toward.
   # Outcome and Stakeholder are scoped explicitly (not via include_types)
   # because the IT4IT import added a second Outcome element
   # (it4it-outcome-digital-product) and 24 more Stakeholder elements —
@@ -41,7 +41,10 @@
   # Outcome/Capability/ValueStream/Stakeholder appear in include_types.
   include_types: [Assessment, Driver, Goal]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - stk-exec
     - stk-regulator
     - stk-architecture
@@ -60,7 +63,10 @@
   include_types:
     [Assessment, Driver, Goal, Principle, Requirement, Constraint]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - stk-exec
     - stk-regulator
     - stk-architecture
@@ -71,11 +77,14 @@
   name: Goal Realization
   viewpoint: goal_realization
   diagram: vision/3-goal-realization
-  # How the goal refines into the outcome, and how principles, requirements and
-  # constraints realize it.
+  # How the goal refines into the outcomes, and how principles, requirements and
+  # constraints realize them.
   include_types: [Goal, Principle, Requirement, Constraint]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
 
 - id: view-strategy
   name: Strategy
@@ -96,7 +105,7 @@
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
     - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane
@@ -161,7 +170,7 @@
     - stk-delivery
     - stk-architecture
     - stk-risk-compliance
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
 
 - id: view-outcome-realization
   name: Outcome Realization
@@ -189,7 +198,7 @@
     - {type: Serving, source_type: Capability, target_type: Capability}
   include_types: [BusinessProcess]
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
     - vs-governed-delivery
     - vss-baseline
     - vss-specify
@@ -235,7 +244,10 @@
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
-    - outcome-executable-intelligence
+    - outcome-drift-reconciled
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane

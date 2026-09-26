@@ -3,7 +3,7 @@
 
 title Outcome Realization
 
-Motivation_Outcome(e_idfbcf1e02e62655, "Architecture as Executable Intelligence")
+Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
 Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
 Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
 Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
@@ -54,7 +54,7 @@ Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
   Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 }
 
-Rel_Realization_Up(e_idcd5e1d4017725d, e_idfbcf1e02e62655, "")
+Rel_Realization_Up(e_idcd5e1d4017725d, e_id79b6a1e545325d, "")
 Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
 Rel_Serving_Up(e_idafba1b4ab1e756, e_id01dab436206551, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
