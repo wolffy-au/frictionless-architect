@@ -51,7 +51,7 @@ driver types now.
 
 ## Consequences
 
-- Entry point changes: `uvicorn frictionless_architect.visualizer:app` →
+- Entry point changes: `uvicorn frictionless_architect.app:app` →
   `uvicorn schema_visualizer_api:app`; update `README.md`.
 - `FRICTIONLESS_ARCHITECT_` env prefix stays as-is; renaming it is its own
   epic (`ARCHITECTURE.md` §9).
@@ -60,8 +60,9 @@ driver types now.
   specs → extract remaining components, the visualiser split among them.
 - Policy-to-OSCAL (GH #44) needs the `platform/` skeleton (step 1) before its code
   has a home. `specs/003-oscal-ai-conversion`, which planned an `/oscal` router in
-  the flat `src/` (see Implementation status 2026-09-24), is re-targeted at
-  `packages/controls-compliance-catalog`.
+  the flat `src/` (see Implementation status 2026-09-24), is to be re-targeted at
+  `packages/controls-compliance-catalog` — not yet done; tracked as an open
+  item in `ARCHITECTURE.md` §8.1.
 - Step 3 proves the workspace lock and CI fan-out on a new package; moving
   existing code between packages is first exercised at step 4, when
   `digital-twin-knowledge-graph` absorbs `schema/manager.py` and `sample_parser.py`.
