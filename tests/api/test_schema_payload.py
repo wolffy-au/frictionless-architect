@@ -25,3 +25,13 @@ async def test_schema_payload_warns_when_sample_missing(schema_client_without_sa
     status = (await schema_client_without_sample.get("/schema-payload/status")).json()
     assert status["sample_file_status"] == "missing"
     assert status["last_warning"] == "Sample data unavailable"
+
+
+@pytest.mark.asyncio
+async def test_schema_payload_surfaces_xsd_violations_as_warnings(schema_client_with_xsd_violation):
+    response = await schema_client_with_xsd_violation.get("/schema-payload")
+    assert response.status_code == 200
+    warnings = response.json()["warnings"]
+    assert any(w.startswith("XSD: ") and "bogus" in w for w in warnings)
+    status = (await schema_client_with_xsd_violation.get("/schema-payload/status")).json()
+    assert status["sample_file_status"] == "loaded"

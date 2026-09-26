@@ -138,7 +138,7 @@ class SchemaPayloadService:
         else:
             for issue in validate_sample_against_schema(
                 self.settings.sample_model_path,
-                self.settings.schema_model_xsd_path,
+                self.settings.schema_diagram_xsd_path,
             ):
                 add_warning(issue)
 
