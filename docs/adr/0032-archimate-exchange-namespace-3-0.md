@@ -39,8 +39,10 @@ payload service surfaces it as a warning with `sample_file_status: "invalid"`.
 - Revisit if The Open Group publishes a new target namespace (e.g. with
   ArchiMate 3.2 or 4.0 exchange-format schemas); supporting it then means
   a migration path per Principle VIII, not a silent second namespace.
-- Independent of ADR-0022 (`lxml` + `xmlschema`); full XSD validation there
-  would enforce the same namespace.
+- Complements ADR-0022 (`defusedxml` + `xmlschema`): the XSD validation it
+  records would also reject a foreign namespace, but the namespace check here
+  runs first and short-circuits, so the user gets one clear error instead of
+  a cascade of XSD failures.
 
 ## Alternatives considered
 

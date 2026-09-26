@@ -24,6 +24,7 @@ dependencies = [
     "uvicorn (>=0.43.0,<0.44.0)",
     "defusedxml (>=0.7.1,<0.8.0)",
     "compliance-trestle (>=5.1.0,<6.0.0)",
+    "xmlschema (>=4.3.2,<5.0.0)",
 ]
 
 [dependency-groups]
