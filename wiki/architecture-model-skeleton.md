@@ -286,7 +286,7 @@ Triggering there would make Prove → Release derived through the escalation pat
 
 There are 15 `BusinessProcess`es, grouped by `Composition` under 9 `BusinessFunction`s
 (`architecture/model/elements.yaml:541-729`;
-`architecture/model/relationships.yaml:259-341`). Roles are `Assignment`-linked
+`architecture/model/relationships.yaml:259-343`). Roles are `Assignment`-linked
 to the *function* they perform, not to individual processes:
 
 | Function | Processes | Assigned role |
@@ -318,7 +318,7 @@ They "could — and arguably should — be re-cut to align with the journeys of 
 section-B roles" (`architecture/model/elements.yaml:605-611`).
 
 **The choreography.** The processes form one connected chain, with Triggering
-hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-341`):
+hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-343`):
 
 ```text
 Policy Authoring → OSCAL Catalog Generation → Baseline Tailoring
@@ -333,7 +333,7 @@ Target State Definition ─Flow "target state reconciled against"▶ Architectur
 All 15 processes `Realization`-link to a capability. Control & Obligation
 Management is realized by five of them: the four Policy-to-OSCAL processes and
 Controls Effectiveness Monitoring (`architecture/model/relationships.yaml:217-234`,
-`399`).
+`401`).
 
 ### Business objects
 
@@ -355,7 +355,7 @@ back to their `DataObject`; see
   check enablement against, the *resolved catalog* rather than the raw Profile.
   A profile only selects and tailors controls, while the resolved catalog
   carries the effective control content
-  (`architecture/model/relationships.yaml:299-314`).
+  (`architecture/model/relationships.yaml:301-316`).
 - **Architecture strategy and drift.** The second group is Current State,
   Target State and Transition State Architecture, Architecture Roadmap, Drift
   Finding, and the Architecture Conformance Register. The Architecture
@@ -384,12 +384,12 @@ the Current State against the **Transition State in effect**, "so gaps planned f
 states are not flagged as drift". It records findings in the Conformance
 Register, and Drift Review & Triage updates their status there
 (`architecture/model/elements.yaml:574-590`;
-`architecture/model/relationships.yaml:336-349`).
+`architecture/model/relationships.yaml:338-351`).
 
 **Where the POA&M sits.** Target State Definition takes remediation milestones
 from the OSCAL POA&M. The CICD gate and effectiveness monitoring both write
 control deficiencies into the POA&M
-(`architecture/model/relationships.yaml:339-356`).
+(`architecture/model/relationships.yaml:341-358`).
 
 > **Sources disagree on what Drift Management reconciles against and what the
 > traceability functions read.**
@@ -402,4 +402,4 @@ control deficiencies into the POA&M
 >   Profile controls". `process-blueprint-traceability` still describes checking
 >   "against the OSCAL Profile". Their `Access` edges read the Resolved OSCAL
 >   Profile Catalog (`architecture/model/elements.yaml:643-648`, `716-722`;
->   `architecture/model/relationships.yaml:299-301`).
+>   `architecture/model/relationships.yaml:301-303`).

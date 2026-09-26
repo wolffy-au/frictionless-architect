@@ -152,14 +152,14 @@ topics:
           sha256: 7cb82fddd80a06343a9d97edfc0225a9ffbf1643a82ba1a31ee6ddd59e1091fc
           lines: 458
         architecture/model/elements.yaml:
-          sha256: 97cd61d2375eb0ea67a1a6dbf724832e7f291e25d41ad503405875e4ccc5aa2e
-          lines: 1222
+          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
+          lines: 1229
         architecture/model/relationships.yaml:
-          sha256: f3531b922c39d12c7a33ff0759b927db796fd6b3a150b548f6d9886c4785a753
-          lines: 714
+          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
+          lines: 720
         architecture/model/views.yaml:
-          sha256: 5679204c8852310dd5549c2204e9fc7c871dfa0ec9d21b4d2df04806a91db4d5
-          lines: 700
+          sha256: 497693a3eb26f71202573369cf5b25d50f826d637bf06ba1fbe0db5c0f0073a6
+          lines: 713
   architecture-model-skeleton:
     title: 'Architecture Model: Skeleton'
     page: wiki/architecture-model-skeleton.md
@@ -170,11 +170,11 @@ topics:
           sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
           lines: 126
         architecture/model/elements.yaml:
-          sha256: 97cd61d2375eb0ea67a1a6dbf724832e7f291e25d41ad503405875e4ccc5aa2e
-          lines: 1222
+          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
+          lines: 1229
         architecture/model/relationships.yaml:
-          sha256: f3531b922c39d12c7a33ff0759b927db796fd6b3a150b548f6d9886c4785a753
-          lines: 714
+          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
+          lines: 720
   architecture-model-ecosystem:
     title: 'Architecture Model: Ecosystem'
     page: wiki/architecture-model-ecosystem.md
@@ -185,11 +185,11 @@ topics:
           sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
           lines: 126
         architecture/model/elements.yaml:
-          sha256: 97cd61d2375eb0ea67a1a6dbf724832e7f291e25d41ad503405875e4ccc5aa2e
-          lines: 1222
+          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
+          lines: 1229
         architecture/model/relationships.yaml:
-          sha256: f3531b922c39d12c7a33ff0759b927db796fd6b3a150b548f6d9886c4785a753
-          lines: 714
+          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
+          lines: 720
   architecture-model-artefact-flow:
     title: 'Architecture Model: Artefact Flow'
     page: wiki/architecture-model-artefact-flow.md
@@ -200,11 +200,11 @@ topics:
           sha256: b60df7e91c0d506e707230a631873b875f88e8afed5ded811e4ee82aede17805
           lines: 126
         architecture/model/elements.yaml:
-          sha256: 97cd61d2375eb0ea67a1a6dbf724832e7f291e25d41ad503405875e4ccc5aa2e
-          lines: 1222
+          sha256: 0fc82c11e26cf77665eba4f4a6d48822b878dab5bea9b7436d8d77bf74c521dc
+          lines: 1229
         architecture/model/relationships.yaml:
-          sha256: f3531b922c39d12c7a33ff0759b927db796fd6b3a150b548f6d9886c4785a753
-          lines: 714
+          sha256: a0eff1ae440c8b0f63d1ceeedbf3e35f34c5597388d47f74fe55c620cfde28b5
+          lines: 720
   architecture-diagrams:
     title: Architecture Views & Diagrams
     page: wiki/architecture-diagrams.md
@@ -227,16 +227,16 @@ topics:
           sha256: b6bea533eb72b05c205bd45ab26b2fd0c06a846555e71528ee70771ce3588330
           lines: 1
         architecture/model/diagrams/application/artefact-oscal-resolve.puml:
-          sha256: 7cdbf78319eb612ac13db37d7137d0947c2e3499ed99bd17617ce0207e8d8a59
-          lines: 25
+          sha256: 173ef5283988aac67cec425740ed0134378e97fcaa507e955bea7d5476bfb893
+          lines: 33
         architecture/model/diagrams/application/artefact-oscal-resolve.svg:
-          sha256: 2956f0f2b6c4d9806a4daa0a6f95444dfc976eb87525bb94789c4da1cbc28d06
+          sha256: ba3337c7c091f8bb4fdde789f705ee909f473ff524c62a5a64a1c6fe1471b67b
           lines: 1
         architecture/model/diagrams/application/artefact-oscal.puml:
-          sha256: fd3d101c9e1ea474ef0d01f622f4d0c5f5974e6918a631fcf91e5b9f10823ab4
-          lines: 32
+          sha256: 4f88abedfde4645bf26d212cea44f280b8c40870948a1ef7886f22f120358d4c
+          lines: 30
         architecture/model/diagrams/application/artefact-oscal.svg:
-          sha256: 9450bac087a83539457a23eec7e289809aebb84720365285287834a2b14a17ba
+          sha256: 83aa3a36187d15cfa853375677619bbf1ac3893e50bc3785e74cf096f90baba1
           lines: 1
         architecture/model/diagrams/application/artefact-twin-governance.puml:
           sha256: 96ffed17eeb6134484c883c8ca674abb4eb103a06e84995644c313ea87e99342
@@ -380,8 +380,8 @@ topics:
           sha256: 3629f2ad4109c433b40acaee49a6a2c78f2091f7f20ed1ce93de8a2c092931a7
           lines: 214
         architecture/model/views.yaml:
-          sha256: 5679204c8852310dd5549c2204e9fc7c871dfa0ec9d21b4d2df04806a91db4d5
-          lines: 700
+          sha256: 497693a3eb26f71202573369cf5b25d50f826d637bf06ba1fbe0db5c0f0073a6
+          lines: 713
   it4it-model:
     title: IT4IT Reference Model
     page: wiki/it4it-model.md
