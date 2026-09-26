@@ -79,7 +79,7 @@ narrative docs.
 - **A** — [0021](0021-schema-visualiser-cytoscape.md) — Schema visualiser uses
   cytoscape.js + coordinated tables
 - **A** — [0022](0022-schema-visualiser-lxml-xmlschema.md) — Schema visualiser
-  parses ArchiMate with `lxml` + `xmlschema`
+  parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema`
 - **A** — [0023](0023-visualiser-reuses-neo4j-credentials-with-cache-fallback.md)
   — Visualiser reuses Neo4j read credentials; caches payloads offline
 - **A** — [0024](0024-single-user-local-mvp.md) — MVP is single-user and locally
@@ -97,4 +97,11 @@ narrative docs.
   as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS`
 - **A** — [0030](0030-vendor-oscal-reference-content.md) — NIST/FedRAMP OSCAL
   content vendored as `third_party/` submodules; `compliance-trestle`
-  consumed as a Poetry dependency, not vendored
+  consumed as a Poetry dependency, not vendored; `oscal-document-workbench`'s
+  scripts are ported as native Python, not vendored or depended on
+- **A** — [0031](0031-fr016-no-redaction-for-policy-documents.md) — Policy/
+  standard document conversion bypasses the PII anonymization gateway
+  (`ADR-0014`), scoped to that one ingestion path
+- **A** — [0032](0032-archimate-exchange-namespace-3-0.md) — ArchiMate
+  exchange files use the `archimate/3.0/` namespace (schema version 3.1);
+  any other namespace is rejected loudly

@@ -116,7 +116,9 @@ type/test suite on push, Conventional Commits check on the message.
 - **Conventional Commits**, enforced by commitizen. Use the `commit-message` skill for
   the ruleset and `commit-auditor` to check a branch before a PR. Tags are `v$version`;
   `cz bump` owns `CHANGELOG.md` and the tag (`version_provider = "scm"`).
-- Work on `feature/**` or `bugfix/**` branches — never directly on `main` or `develop`.
+- `main` only changes via PR — never commit directly to it. `develop` can take
+  direct pushes (fast-forward only, never force-push); prefer `feature/**` /
+  `bugfix/**` branches for anything you'd want reviewed before it lands.
 - **Spelling of "visualiser":** code identifiers, module/package names, paths, route
   segments and the wiki topic slug use `visualizer` (`-z-`, matching the Python/FastAPI
   ecosystem and the future `schema-visualizer-api` package). Running prose uses the

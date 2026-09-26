@@ -614,7 +614,7 @@
 - {type: Association, source: cap-reusable-architecture, target: it4it-cap-architecture-mgmt, label: curates the architecture patterns this capability owns, props: {source: it4it-alignment}}
 - {type: Association, source: cap-reusable-architecture, target: it4it-cap-product-design-mgmt, label: blueprints & solution designs are product-design artefacts, props: {source: it4it-alignment}}
 - {type: Association, source: cap-spec-engine, target: it4it-cap-requirements-mgmt, label: generates the spec that operationalises captured requirements, props: {source: it4it-alignment}}
-- {type: Association, source: cap-control-plane, target: it4it-cap-product-development, label: supervises the AI agents doing the coding, unit verification, and defect correction this capability owns, props: {source: it4it-alignment}}
+- {type: Association, source: cap-control-plane, target: it4it-cap-product-development, label: "supervises the AI agents doing the coding, unit verification, and defect correction this capability owns", props: {source: it4it-alignment}}
 - {type: Association, source: cap-human-approval-workflow, target: it4it-cap-change-mgmt, label: human sign-off is the approval gate in this capability's change lifecycle, props: {source: it4it-alignment}}
 - {type: Association, source: cap-control-catalog, target: it4it-cap-policy-mgmt, label: owns the same policy & standards content, props: {source: it4it-alignment}}
 - {type: Association, source: cap-forensic-ledger, target: it4it-cap-compliance-mgmt, label: the append-only ledger is the audit management evidence this function owns, props: {source: it4it-alignment}}

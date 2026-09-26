@@ -36,12 +36,37 @@ topics:
 
   - name: architecture-model
     title: Architecture Model
-    description: The canonical graph-loadable YAML model (skeleton + 6 subsystems + artefact flow + IT4IT alignment) that every ArchiMate/C4 diagram is generated from.
+    description: The canonical graph-loadable YAML model — file layout, schema, build pipeline, and IT4IT alignment — that every ArchiMate/C4 diagram is generated from. Layer contents are on the per-layer pages.
     sources:
       - path: architecture/model/README.md
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
       - path: architecture/model/views.yaml
+      - path: architecture/model/build.py
+
+  - name: architecture-model-skeleton
+    title: "Architecture Model: Skeleton"
+    description: Section A of the model — the Motivation, Strategy and Business elements that carry the load-bearing skeleton.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+
+  - name: architecture-model-ecosystem
+    title: "Architecture Model: Ecosystem"
+    description: Section B of the model — the application-layer six-subsystem ecosystem behind the C4 context/container views.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+
+  - name: architecture-model-artefact-flow
+    title: "Architecture Model: Artefact Flow"
+    description: Section C of the model — the application-layer input/output pipeline of functions and artefacts, including the OSCAL chain.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
 
   - name: architecture-diagrams
     title: Architecture Views & Diagrams
@@ -50,6 +75,7 @@ topics:
       - path: architecture/model/README.md
       - path: architecture/model/views.yaml
       - path: architecture/model/diagrams/**
+      - path: architecture/model/render_diagrams.py
 
   - name: it4it-model
     title: IT4IT Reference Model
@@ -65,8 +91,12 @@ topics:
     description: The vendored OSCAL/FedRAMP reference content, the compliance-trestle dependency, and how they feed the platform's compliance-automation vision (ADR-0030).
     sources:
       - path: third_party/README.md
-      - path: third_party/oscal*/**
-      - path: third_party/fedramp-automation/**
+      - path: third_party/oscal/README.md
+      - path: third_party/oscal/LICENSE.md
+      - path: third_party/oscal-content/README.md
+      - path: third_party/oscal-content/LICENSE.md
+      - path: third_party/fedramp-automation/README.md
+      - path: third_party/fedramp-automation/LICENSE.md
       - path: pyproject.toml
       - path: sample-data/oscal/**
       - path: docs/adr/0030-vendor-oscal-reference-content.md
@@ -89,6 +119,7 @@ topics:
       - path: specs/002-neo4j-schema-ui/plan.md
       - path: specs/002-neo4j-schema-ui/research.md
       - path: specs/002-neo4j-schema-ui/contracts/api.md
+      - path: specs/002-neo4j-schema-ui/checklists/requirements.md
 
   - name: non-functionals
     title: Non-Functional Requirements
@@ -100,8 +131,7 @@ topics:
     title: Visualizer Service
     description: The FastAPI schema-visualiser service — API, caching, data loading.
     sources:
-      - path: src/frictionless_architect/visualizer/*.py
-      - path: src/frictionless_architect/schema/*.py
+      - path: src/**/*.py
 
   - name: development
     title: Development & Quickstart

@@ -918,21 +918,21 @@
     designs for spec-driven delivery.
 
 # --- C. Artefacts (DataObject) ---
-- {type: DataObject, id: art-policy-doc, name: Policy / Standard Document, desc: Verbatim custom policy or standard document (e.g. Word/PDF), not yet machine-readable.}
-- {type: DataObject, id: art-regulatory-standard, name: Regulatory Standard Document, desc: Verbatim upstream regulatory standard text (e.g. NIST CSF, NIST SP 800-53), supplied as a document input -- not a system integration -- to fn-ai-markdown-conversion.}
+- {type: DataObject, id: art-policy-doc, name: Policy / Standard Document, desc: "Verbatim custom policy or standard document (e.g. Word/PDF), not yet machine-readable."}
+- {type: DataObject, id: art-regulatory-standard, name: Regulatory Standard Document, desc: "Verbatim upstream regulatory standard text (e.g. NIST CSF, NIST SP 800-53), supplied as a document input -- not a system integration -- to fn-ai-markdown-conversion."}
 - {type: DataObject, id: art-trestle-markdown, name: Trestle-Editable Markdown Catalog, desc: AI-converted Markdown catalog structure ready for Trestle's author/assemble commands.}
-- {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input.}
-- {type: DataObject, id: art-baseline-profile, name: Regulatory Baseline Profile, desc: Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input.}
-- {type: DataObject, id: art-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input.}
+- {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: "Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input."}
+- {type: DataObject, id: art-baseline-profile, name: Regulatory Baseline Profile, desc: "Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input."}
+- {type: DataObject, id: art-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: "Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input."}
 - {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
 - {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
 - {type: DataObject, id: art-oscal-resolved-catalog, name: Resolved OSCAL Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
 - {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
 - {type: DataObject, id: art-oscal-ssp, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
-- {type: DataObject, id: art-pattern, name: Architecture Pattern, desc: Technology-agnostic, reusable design with mapped controls.}
+- {type: DataObject, id: art-pattern, name: Architecture Pattern, desc: "Technology-agnostic, reusable design with mapped controls."}
 - {type: DataObject, id: art-blueprint, name: Implementation Blueprint, desc: Technology-specific realisation of one or more patterns.}
 - {type: DataObject, id: art-solution-design, name: Solution Design, desc: Composed solution — SolutionComponents under a SolutionDesign.}
-- {type: DataObject, id: art-threat-model, name: Threat Model, desc: Threats and mitigations attached to a pattern, blueprint or design.}
+- {type: DataObject, id: art-threat-model, name: Threat Model, desc: "Threats and mitigations attached to a pattern, blueprint or design."}
 - {type: DataObject, id: art-infra-state, name: Live Infrastructure State, desc: Observed configuration of the running platforms.}
 - {type: DataObject, id: art-deploy-event, name: Deployment Event, desc: A release / deployment recorded by the pipeline.}
 - {type: DataObject, id: art-twin, name: Current-State Digital Twin, desc: The as-built plane of the Architecture Knowledge Graph.}
@@ -941,13 +941,13 @@
 - {type: DataObject, id: art-impact-assessment, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
 - {type: DataObject, id: art-archived-option, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
 - {type: DataObject, id: art-release-candidate, name: Release Candidate, desc: A build submitted to the enforcement gate.}
-- {type: DataObject, id: art-oscal-assessment-plan, name: OSCAL Assessment Plan, desc: Scope and method for a pre-release assessment run, generated ahead of the gate check and imported by its Assessment Results.}
+- {type: DataObject, id: art-oscal-assessment-plan, name: OSCAL Assessment Plan, desc: "Scope and method for a pre-release assessment run, generated ahead of the gate check and imported by its Assessment Results."}
 - {type: DataObject, id: art-oscal-ar, name: OSCAL Assessment Results, desc: Findings on whether an SSP's declared control implementations are satisfied.}
 - {type: DataObject, id: art-gate-decision, name: Gate Decision, desc: Pass / block outcome with the controls evaluated — the pre-release instance of an OSCAL Assessment Results.}
 - {type: DataObject, id: art-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}
-- {type: DataObject, id: art-drift-report, name: Classified Drift Finding, desc: A deviation of current state from intent, classified and prioritised.}
+- {type: DataObject, id: art-drift-report, name: Classified Drift Finding, desc: "A deviation of current state from intent, classified and prioritised."}
 - {type: DataObject, id: art-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
-- {type: DataObject, id: art-oscal-poam, name: OSCAL Plan of Action & Milestones, desc: OSCAL-formatted sidecar of the remediation backlog — open findings and their target remediation milestones, for external compliance reporting.}
-- {type: DataObject, id: art-dev-spec, name: Development Specification, desc: Executable spec derived from patterns, blueprints and designs.}
+- {type: DataObject, id: art-oscal-poam, name: OSCAL Plan of Action & Milestones, desc: "OSCAL-formatted sidecar of the remediation backlog — open findings and their target remediation milestones, for external compliance reporting."}
+- {type: DataObject, id: art-dev-spec, name: Development Specification, desc: "Executable spec derived from patterns, blueprints and designs."}
 - {type: DataObject, id: art-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
-- {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: A single immutable forensic record — actor, action, target artefact, timestamp, outcome.}
+- {type: DataObject, id: art-ledger-entry, name: Ledger Entry, desc: "A single immutable forensic record — actor, action, target artefact, timestamp, outcome."}

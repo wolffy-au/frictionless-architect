@@ -51,6 +51,7 @@ Use the package directory name, not the Python module name.
 - `speckit` — Spec Kit integration, `.specify/`
 - `specs` — feature specs under `specs/` or `packages/*/specs/`
 - `architecture` — `ARCHITECTURE.md` and structural decisions
+- `adr` — MADR decision records under `docs/adr/` (`docs(adr):`)
 - `sample-data` — fixture/sample models
 - `wiki` — the generated `wiki/` (content produced by the `wiki-librarian` skill)
 - `ci` — release/versioning plumbing

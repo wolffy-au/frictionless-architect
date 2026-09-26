@@ -76,3 +76,14 @@ def test_validate_sample_reports_when_sample_has_no_root(tmp_path: Path) -> None
     with patch("frictionless_architect.visualizer.sample_validator._safe_parse", return_value=rootless_tree):
         issues = validate_sample_against_schema(sample, SCHEMA_PATH)
     assert issues == [f"Sample XML {sample} has no root element"]
+
+
+def test_foreign_namespace_is_reported_instead_of_passing(tmp_path: Path) -> None:
+    sample = tmp_path / "archimate31.xml"
+    sample.write_text(
+        BROKEN_SAMPLE.replace("archimate/3.0/", "archimate/3.1/"),
+        encoding="utf-8",
+    )
+    issues = validate_sample_against_schema(sample, SCHEMA_PATH)
+    assert len(issues) == 1
+    assert "archimate/3.1/" in issues[0]

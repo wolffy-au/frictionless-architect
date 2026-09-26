@@ -230,3 +230,24 @@ async def test_background_refresh_handles_unavailable(tmp_path: Path) -> None:
     service._refresh_task = asyncio.ensure_future(asyncio.sleep(0))
     await service._background_refresh()
     assert service._refresh_task is None
+
+
+@pytest.mark.asyncio
+async def test_schema_payload_warns_on_foreign_sample_namespace(tmp_path: Path) -> None:
+    settings = VisualizerSettings(
+        neo4j_uri="bolt://localhost:7687",
+        neo4j_user="user",
+        neo4j_password="pass",
+        cache_dir=tmp_path / "cache",
+        sample_data_dir=tmp_path,
+    )
+    sample_path = settings.sample_model_path
+    sample_path.parent.mkdir(parents=True)
+    sample_path.write_text('<model xmlns="http://www.opengroup.org/xsd/archimate/3.1/"/>', encoding="utf-8")
+    parser = SampleParser(sample_path)
+    loader = StubLoader(settings)
+    cache = SchemaCache(settings.cache_path)
+    service = SchemaPayloadService(settings, parser, loader, cache)
+    payload = await service.get_payload(force_reload=True)
+    assert any("archimate/3.1/" in warning for warning in payload["warnings"])
+    assert service.get_status()["sample_file_status"] == "invalid"

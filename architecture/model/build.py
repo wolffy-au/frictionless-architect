@@ -90,7 +90,33 @@ def load_path(path: Path, errors: list[str], optional: bool = False) -> list[dic
     if not isinstance(data, list):
         errors.append(f"{path} must be a YAML list")
         return []
+    _check_null_keys(data, str(path), errors)
     return data
+
+
+def _check_null_keys(node: Any, where: str, errors: list[str]) -> None:
+    """Flag any mapping key whose value is null.
+
+    In a flow-style entry (`- {id: x, desc: a, b}`) an unquoted comma ends the
+    value, so YAML silently truncates it and turns the tail into a stray key
+    with a null value. No model field is legitimately null, so treat every one
+    as that truncation and report it rather than build from the cut-short text.
+    """
+    if isinstance(node, dict):
+        ident = node.get("id") or (
+            f"{node['source']}->{node['target']}" if "source" in node and "target" in node else None
+        )
+        ctx = f"{where}: {ident}" if ident else where
+        for key, value in node.items():
+            if value is None:
+                errors.append(
+                    f"{ctx}: key {key!r} has no value — likely an unquoted comma truncating a flow-style value; quote it"
+                )
+            else:
+                _check_null_keys(value, ctx, errors)
+    elif isinstance(node, list):
+        for item in node:
+            _check_null_keys(item, where, errors)
 
 
 def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:

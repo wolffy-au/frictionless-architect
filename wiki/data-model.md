@@ -1,7 +1,7 @@
 ---
 title: Data Model
-generated: 2026-08-29
-generator: claude-sonnet-5
+generated: 2026-09-25
+generator: claude-opus-5-5
 sources:
   - data-model.md
   - specs/002-neo4j-schema-ui/data-model.md
@@ -53,30 +53,48 @@ with action-based endpoints — see [Architecture Overview](architecture.md).
 
 ## ArchiMate schema basis
 
-The canonical schema files under `sample-data/schema/` are the published
+The canonical schema files under `sample-data/schema/` are the official
 **Open Group ArchiMate 3.1 Open Exchange Format** XSDs (`archimate3_Model.xsd`,
-`archimate3_View.xsd`, `archimate3_Diagram.xsd`), used verbatim — author
-"The Open Group ArchiMate Exchange Team", `version="3.1"`,
-`targetNamespace="http://www.opengroup.org/xsd/archimate/3.1/"`
+`archimate3_View.xsd`, `archimate3_Diagram.xsd`) — author "The Open Group
+ArchiMate Exchange Team", `version="3.1"`
 (`sample-data/schema/archimate3_View.xsd:1-21`). `archimate3_Model.xsd`'s
 `ModelType` defines a `model` root containing `metadata`, `name`, `elements`,
 `relationships`, `organizations`, and `propertyDefinitions`
 (`sample-data/schema/archimate3_Model.xsd:314-362`); `archimate3_View.xsd`
-adds `views/diagrams` (`sample-data/schema/archimate3_View.xsd:45`). Element
-and relationship types
-are carried on the `xsi:type` attribute; view nodes carry required `x`/`y`
-(`LocationGroup`) and `w`/`h` (`SizeGroup`) integer bounds plus `style`
-(`sample-data/schema/archimate3_Diagram.xsd`, `LocationGroup`/`SizeGroup`).
+adds `views` (`sample-data/schema/archimate3_View.xsd:45`) and
+`archimate3_Diagram.xsd` adds `diagrams`
+(`sample-data/schema/archimate3_Diagram.xsd:42`). Element and relationship
+types are carried on the `xsi:type` attribute; view nodes carry required
+`x`/`y` (`LocationGroup`) and `w`/`h` (`SizeGroup`) integer bounds plus
+`style` (`sample-data/schema/archimate3_Diagram.xsd:220-260`).
 
-> **Version mismatch worth knowing.** The XSDs are ArchiMate **3.1**, but the
-> visualiser's sample parser pins the ArchiMate **3.0** namespace string
-> `http://www.opengroup.org/xsd/archimate/3.0/`
-> (`src/frictionless_architect/visualizer/sample_parser.py:10`). The XSDs
-> also declare their *default* `xmlns` as the 3.0 URI while their
-> `targetNamespace` is 3.1. Sample data authored against a strict 3.1
-> namespace would not be matched by the parser's XPath queries.
-> `specs/002-neo4j-schema-ui` variously calls the schema "ArchiMate 3" and
-> "3.2"; neither matches the files.
+### Namespace: 3.1 schema, 3.0 namespace
+
+Although the schema *version* is 3.1, all three XSDs declare
+`targetNamespace="http://www.opengroup.org/xsd/archimate/3.0/"` — The Open
+Group kept the 3.0 namespace for the 3.1 exchange format, and only the
+`version` attribute and publication URL say 3.1
+(`sample-data/schema/archimate3_Model.xsd:1-9`;
+`docs/adr/0032-archimate-exchange-namespace-3-0.md` §Context). Earlier bundled
+copies had been hand-edited to a 3.1 `targetNamespace`, which disagreed with
+the parser and with every model file in the repo; that drift was reverted
+(GitHub issue #51) and ADR-0032 now fixes the rule:
+
+- Exactly one namespace is accepted, `http://www.opengroup.org/xsd/archimate/3.0/`,
+  defined once as `ARCHIMATE_NS` (`src/frictionless_architect/visualizer/namespaces.py:15`).
+- The bundled XSDs must stay identical to the official Open Group files —
+  refresh them from upstream, never edit locally
+  (`docs/adr/0032-archimate-exchange-namespace-3-0.md` §Consequences).
+- A document in any other namespace is rejected loudly rather than parsing to
+  an empty model; see [Visualizer Service](visualizer-service.md) for how the
+  parser, validator, and API surface this.
+- A future Open Group namespace (e.g. with ArchiMate 3.2 or 4.0) would need an
+  explicit migration path, not a silently accepted second namespace
+  (`docs/adr/0032-archimate-exchange-namespace-3-0.md` §Consequences).
+
+`specs/002-neo4j-schema-ui` refers to the schema generically as "ArchiMate 3"
+(`specs/002-neo4j-schema-ui/spec.md:104`); its version-mismatch edge case is
+marked resolved by ADR-0032 (`specs/002-neo4j-schema-ui/spec.md:66`).
 
 ## Schema-visualiser payload model
 
