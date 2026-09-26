@@ -37,8 +37,8 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 336 elements, 684 relationships and 29 views. Of those,
-194 elements, 449 relationships and 25 views are the platform's own sections
+current merged model is 337 elements, 690 relationships and 29 views. Of those,
+195 elements, 455 relationships and 25 views are the platform's own sections
 A–C plus the IT4IT touchpoint bridge (below). The rest (142 / 235 / 4) is
 the vendored IT4IT reference model, merged in at build time
 ([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
@@ -349,3 +349,23 @@ A 2026-09-26 pass (PR #62) reworked the business layer and the vision set:
 That brings the model to 336 elements / 684 relationships / 29 views
 (`git log` on `architecture/model/`, commit `cf57bfc`). `build.py` itself did
 not change.
+
+A 2026-09-26 partial pass on GH #61 (PR #67) filled the OSCAL Catalog/Profile
+gaps that the Markdown catalogue converter (#44) depends on:
+
+- A new `ApplicationFunction`, **OSCAL Baseline Tailoring**
+  (`fn-baseline-tailoring`), sits on the Controls & Compliance Catalog. It
+  reads the OSCAL Catalog, writes the OSCAL Profile, is served by
+  compliance-trestle, and realizes `process-baseline-tailoring`.
+- The golden-dataset artefacts now realize their matching OSCAL business
+  objects (Catalog, Profile, Resolved OSCAL Profile Catalog) instead of
+  `bo-regulatory-standard`.
+- A new Association, "expected OSCAL output for (golden pair)", links
+  `art-baseline` to `art-regulatory-standard`.
+- The two OSCAL artefact views were split: Controls & OSCAL is now
+  conversion only, and OSCAL Profile Resolution carries tailoring and
+  resolution.
+
+That brings the model to 337 elements / 690 relationships / 29 views
+(`architecture/model/elements.yaml` §"C. Artefacts";
+`architecture/model/relationships.yaml`; `architecture/model/views.yaml`).

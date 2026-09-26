@@ -35,7 +35,7 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 | Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation | `cap-spec-engine` |
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
-view back to the skeleton (`architecture/model/relationships.yaml:417-426`).
+view back to the skeleton (`architecture/model/relationships.yaml:419-428`).
 Shared stores (`architecture/model/elements.yaml:934-957`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
@@ -51,10 +51,11 @@ source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
 fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data
 with it, so its edges are `Serving`, not the `Flow`/`Access` used for the
 peer systems. It serves `fn-oscal-conversion` (the Markdown ↔ OSCAL
-round-trip) and `fn-oscal-profile-resolve` (profile resolution). The LLM
+round-trip), `fn-baseline-tailoring` (profile authoring) and
+`fn-oscal-profile-resolve` (profile resolution). The LLM
 Provider now also serves `fn-ai-markdown-conversion`, so its `desc` covers
 converting policy/standard documents alongside its drafting uses
-(`architecture/model/relationships.yaml:444-448`).
+(`architecture/model/relationships.yaml:446-451`).
 
 The former `ext-regsources` ("Regulatory Content Sources") external system
 has been **removed**. It implied a system integration with upstream

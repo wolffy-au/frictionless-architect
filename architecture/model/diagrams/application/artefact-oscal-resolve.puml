@@ -4,6 +4,8 @@
 title Artefact Flow — OSCAL Profile Resolution
 
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
+  Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
+  Application_Function(e_id959e350a39c158, "OSCAL Baseline Tailoring")
   Application_Function(e_id9395f0bc80c955, "OSCAL Profile Resolution")
 }
 Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
@@ -12,12 +14,18 @@ Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
   Application_DataObject(e_id0bcf03d5bb0d58, "Resolved OSCAL Profile Catalog")
 }
 Application_Component(e_id0aed952692a556, "compliance-trestle")
+Application_DataObject(e_ide7676379a60257, "Regulatory Baseline Profile")
 Application_DataObject(e_ide0d2eafd1b6957, "Regulatory Resolved Baseline Catalog")
 
+Rel_Specialization_Up(e_ide7676379a60257, e_id9659a679544058, "vendored instance (golden-dataset validation data)")
 Rel_Specialization_Up(e_id0bcf03d5bb0d58, e_idddf65887d53f57, "resolved instance")
 Rel_Association(e_id0bcf03d5bb0d58, e_id9659a679544058, "fulfills the profile's control selection")
 Rel_Specialization_Up(e_ide0d2eafd1b6957, e_id0bcf03d5bb0d58, "vendored instance (golden-dataset validation data)")
+Rel_Serving_Up(e_id0aed952692a556, e_id959e350a39c158, "provides profile authoring for")
 Rel_Serving_Up(e_id0aed952692a556, e_id9395f0bc80c955, "realizes profile-resolve for")
+Rel_Access_w(e_id8926bd09002459, e_idddf65887d53f57, "generates")
+Rel_Access_r(e_id959e350a39c158, e_idddf65887d53f57, "selects controls from")
+Rel_Access_w(e_id959e350a39c158, e_id9659a679544058, "tailors")
 Rel_Access_r(e_id9395f0bc80c955, e_idddf65887d53f57, "reads")
 Rel_Access_r(e_id9395f0bc80c955, e_id9659a679544058, "reads")
 Rel_Access_w(e_id9395f0bc80c955, e_id0bcf03d5bb0d58, "generates")

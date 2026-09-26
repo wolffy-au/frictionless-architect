@@ -1041,6 +1041,13 @@
     Convert Trestle-editable Markdown into OSCAL Catalogs via a Trestle
     round-trip (import / author / assemble).
 - type: ApplicationFunction
+  id: fn-baseline-tailoring
+  name: OSCAL Baseline Tailoring
+  desc: >-
+    Select and tailor controls (parameters, modifications) from one or more
+    OSCAL Catalogs into an OSCAL Profile via Trestle's profile authoring
+    commands.
+- type: ApplicationFunction
   id: fn-oscal-profile-resolve
   name: OSCAL Profile Resolution
   desc: >-

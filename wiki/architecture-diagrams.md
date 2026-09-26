@@ -146,7 +146,7 @@ repo (`1-stakeholder` … `4-outcome-realization`). See
 ### The business (Phase B) set
 
 Six views render under `diagrams/business/`, all using
-`business_process_cooperation` (`architecture/model/views.yaml:354-573`):
+`business_process_cooperation` (`architecture/model/views.yaml:354-586`):
 
 | View | Diagram | Covers |
 |---|---|---|
@@ -174,17 +174,17 @@ Process** wherever one role owns a function outright:
 
 It nests **Function > Process** where no role is assigned, as with Release
 Controls Enforcement. This consolidation replaced an earlier near-duplicate
-`vision/controls-lifecycle` diagram (`architecture/model/views.yaml:431-458`).
+`vision/controls-lifecycle` diagram (`architecture/model/views.yaml:444-471`).
 
 **The three numbered slices** zoom into consecutive stretches of the
 consolidated view. They are deliberate subsets, and they cannot drift apart
 because all of them are projections of the same model
-(`architecture/model/views.yaml:452-458`).
+(`architecture/model/views.yaml:465-471`).
 
 > **Sources disagree on the 1 → 2 hand-off object.** The slice comment says
 > each slice repeats its hand-off object from the neighbouring slice: "the
 > OSCAL Profile (1 -> 2) and the OSCAL SSP (2 -> 3)"
-> (`architecture/model/views.yaml:495-497`). The rendered slice 2 does not
+> (`architecture/model/views.yaml:508-510`). The rendered slice 2 does not
 > contain the OSCAL Profile. What it shares with slice 1 is the **Resolved
 > OSCAL Profile Catalog**, which patterns and blueprints now read
 > (`architecture/model/diagrams/business/2-pattern-solution-design.puml`).
@@ -201,16 +201,23 @@ because all of them are projections of the same model
 - **IT4IT: Capability Bridges** uses `capability`.
 
 The Controls & OSCAL stage is drawn as **two** application-layer views
-(`architecture/model/views.yaml:398-430`):
+(`architecture/model/views.yaml:398-443`):
 
 - `Artefact Flow — Controls & OSCAL` (`application/artefact-oscal`). The LLM
   Provider serves AI-assisted Markdown conversion, and Trestle serves the
-  round-trip into an OSCAL Catalog. The view also holds the golden-dataset
-  baseline catalog and profile.
+  round-trip into an OSCAL Catalog. The view is conversion only: its one
+  golden-dataset object is the baseline catalog, the expected output for the
+  Regulatory Standard Document it converts.
 - `Artefact Flow — OSCAL Profile Resolution`
-  (`application/artefact-oscal-resolve`). Trestle's `profile-resolve` turns a
-  profile and its catalog into the **Resolved OSCAL Profile Catalog**. FedRAMP's
-  pre-resolved baselines sit alongside as validation data.
+  (`application/artefact-oscal-resolve`). OSCAL Baseline Tailoring reads the
+  OSCAL Catalog and writes the OSCAL Profile, and Trestle's `profile-resolve`
+  turns the profile and its catalog into the **Resolved OSCAL Profile
+  Catalog**. OSCAL Catalog Generation is repeated from the first view as the
+  Catalog's writer. Trestle's round-trip `Serving` of that function is excluded
+  here, because the first view already shows it. The golden-dataset baseline
+  profile and FedRAMP's pre-resolved baselines sit alongside as validation
+  data. The split follows GH #61 decision A: each OSCAL object appears with
+  its writer and every reader (`architecture/model/views.yaml` comments).
 
 **C4 diagrams.** The C4 context diagram draws the business objects as external data stores
 (`SystemDb_Ext`). These include "Resolved OSCAL Profile Catalog" and the new
@@ -275,7 +282,7 @@ pure `Capability`-to-`Capability` cut across two repos, so it lives in this
 repo's `views.yaml` rather than the vendored one. Because it is a cross-*model*
 cut, its diagram stays flat at the `diagrams/` root. By contrast,
 `layered/subsystem-capabilities` is only a cross-*layer* cut within this repo's
-own model, so it gets a layer folder (`architecture/model/views.yaml:666-700`).
+own model, so it gets a layer folder (`architecture/model/views.yaml:679-713`).
 
 An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
 predated the 4-view split and was dropped once the split fully superseded it. It

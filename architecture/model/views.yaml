@@ -399,6 +399,9 @@
   name: Artefact Flow — Controls & OSCAL
   viewpoint: application_cooperation
   diagram: application/artefact-oscal
+  # Policy / standard -> OSCAL Catalog conversion only. Tailoring the
+  # Catalog into an OSCAL Profile is view-artefact-oscal-resolve's story
+  # (GH #61 decision A), so the Profile objects live there.
   members:
     - sub-catalog
     - fn-ai-markdown-conversion
@@ -409,21 +412,31 @@
     - art-regulatory-standard
     - art-trestle-markdown
     - art-baseline
-    - art-baseline-profile
     - art-oscal-catalog
-    - art-oscal-profile
     - store-oscal
 
 - id: view-artefact-oscal-resolve
   name: Artefact Flow — OSCAL Profile Resolution
   viewpoint: application_cooperation
   diagram: application/artefact-oscal-resolve
+  # OSCAL Catalog -> OSCAL Profile -> Resolved OSCAL Profile Catalog: both
+  # OSCAL Catalog and OSCAL Profile appear here with their writer and every
+  # reader (GH #61 decision A). fn-oscal-conversion is repeated from
+  # view-artefact-oscal as the Catalog's writer — a hand-off *function*,
+  # one step beyond the hand-off *objects* the business slices repeat.
+  # Trestle's round-trip Serving of fn-oscal-conversion is view-artefact-
+  # oscal's story, not this one's — exclude it so it doesn't repeat.
+  exclude:
+    - {type: Serving, source: ext-trestle, target: fn-oscal-conversion}
   members:
     - sub-catalog
+    - fn-oscal-conversion
+    - fn-baseline-tailoring
     - fn-oscal-profile-resolve
     - ext-trestle
     - art-oscal-catalog
     - art-oscal-profile
+    - art-baseline-profile
     - art-oscal-resolved-catalog
     - art-baseline-resolved-catalog
     - store-oscal
