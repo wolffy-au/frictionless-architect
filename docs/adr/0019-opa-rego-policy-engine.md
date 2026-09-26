@@ -22,4 +22,4 @@ incident (ADR-0024's Break-Glass).
   language" as a deferred decision — hence Proposed, pending re-ratification.
 - Rego policies get their own unit tests to prevent CI "false passes"
   (`PROJECT_SPECIFICATION.md` Phase 11).
-- Lives in the `policy-enforcement` package, wrapping OPA + forked OSCAL tooling.
+- Lives in the `conformance-drift-assurance` package, wrapping OPA + forked OSCAL tooling.
