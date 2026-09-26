@@ -4,15 +4,13 @@
 title Strategy
 
 Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
-Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
-Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
-Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
-Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
 Strategy_CourseOfAction(e_ida9babe1fe97050, "Shift Governance Into the Pipeline")
 Strategy_CourseOfAction(e_id78f58d32222658, "Operate a Living Architecture Twin")
 Strategy_CourseOfAction(e_id0b01ce08664e58, "Curate Reuse Before Build")
 Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
   Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+  Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+  Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
 }
 Strategy_Resource(e_id689bf38e5d8a56, "AI Delivery Agents") {
   Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
@@ -22,6 +20,10 @@ Strategy_Resource(e_ida1f0927bfc4e50, "OSCAL Control Content") {
 }
 Strategy_Resource(e_id55d6b63f66465b, "Enterprise Architecture Practice") {
   Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+  Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+}
+Strategy_Resource(e_id24fcfedcc7a250, "Accumulated Evidence Record") {
+  Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
 }
 Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery")
 

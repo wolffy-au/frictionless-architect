@@ -52,6 +52,10 @@
 - {type: Assignment, source: res-ai-agents, target: cap-control-plane}
 - {type: Assignment, source: res-control-content, target: cap-control-catalog}
 - {type: Assignment, source: res-ea-practice, target: cap-reusable-architecture}
+- {type: Assignment, source: res-akg, target: cap-spec-engine}
+- {type: Assignment, source: res-akg, target: cap-drift-dashboard}
+- {type: Assignment, source: res-ea-practice, target: cap-human-approval-workflow}
+- {type: Assignment, source: res-evidence-record, target: cap-forensic-ledger}
 - {type: Realization, source: cap-spec-engine, target: coa-executable-governance}
 - {type: Realization, source: cap-control-plane, target: coa-executable-governance}
 - {type: Realization, source: cap-control-catalog, target: coa-executable-governance}
@@ -178,6 +182,7 @@
 - {type: Serving, source: cap-control-catalog, target: cap-control-plane, label: expected controls}
 - {type: Serving, source: cap-spec-engine, target: cap-control-plane, label: executable spec}
 - {type: Serving, source: cap-forensic-ledger, target: cap-human-approval-workflow, label: decision evidence}
+- {type: Serving, source: cap-control-plane, target: cap-human-approval-workflow, label: escalations}
 
 # =====================================================================
 # A. Process realizes capability (orchestration flow -> component)

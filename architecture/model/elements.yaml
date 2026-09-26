@@ -422,6 +422,13 @@
   name: Enterprise Architecture Practice
   desc: Human resource — the architects who curate patterns and hold governance decisions.
 
+- type: Resource
+  id: res-evidence-record
+  name: Accumulated Evidence Record
+  desc: >-
+    Intangible resource — the growing, append-only body of recorded agent
+    actions, gate decisions and sign-offs that regulatory examination draws on.
+
 # =====================================================================
 # A. STRATEGY — Value stream (outcome-oriented view of governed delivery;
 #    each stage is served by the capabilities that enable it)
