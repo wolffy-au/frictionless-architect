@@ -1,6 +1,6 @@
 ---
 title: Sample Data
-generated: 2026-09-12
+generated: 2026-09-26
 generator: claude-sonnet-5
 sources:
   - sample-data/oscal/01-nist-baseline-resolution.puml
@@ -87,8 +87,9 @@ performs, just against different source shapes now.
 
 Two PlantUML artifact diagrams documenting how NIST SP 800-53 rev5 control
 baselines are resolved into a component's control set. These illustrate the
-kind of OSCAL tooling the `policy-enforcement` component would wrap
-(`ARCHITECTURE.md` §4 and its "Forks to vendor" list).
+kind of OSCAL profile resolution the platform's controls-and-compliance
+work covers — see [OSCAL Compliance Content](oscal-compliance.md) and
+[Architecture Overview](architecture.md) §"Subsystem → package mapping".
 
 - **`01-nist-baseline-resolution.puml`** — "one dimension, plus an optional
   privacy add-on". A catalog is imported and tailored into exactly one of

@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - .claude/agents/README.md
@@ -112,8 +112,8 @@ merge** (`.claude/agents/README.md:24-29`).
 | `docs-uplift` | branch + PR | Resync docstrings, README / quickstart / feature guides, and the PlantUML/C4/ArchiMate diagrams with the code. |
 | `vulnerability-remediator` | branch + PR | Resolve Dependabot / Snyk / SonarCloud security findings; bump or pin fixed versions, patch vulnerable code, verify gates. |
 | `refactor-analyst` | read-only | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations, no code changes. |
-| `spec-alignment` | read-only | Traceability gap report: code vs `PROJECT_SPECIFICATION.md`, `specs/**`, the constitution. |
-| `adr-auditor` | branch + **draft** PR | Audit `docs/adr/` against the decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, `PROJECT_SPECIFICATION.md`, constitution, `specs/**`) and recent commits; report missing / stale / misaligned / superseded records and draft `Status: Proposed` ADR stubs plus status edits. Leaves the PR **draft** — a human writes and attests the decision (`.claude/agents/README.md:30-31`). |
+| `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, the constitution. |
+| `adr-auditor` | branch + **draft** PR | Audit `docs/adr/` against the decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, constitution, `specs/**`) and recent commits; report missing / stale / misaligned / superseded records and draft `Status: Proposed` ADR stubs plus status edits. Leaves the PR **draft** — a human writes and attests the decision (`.claude/agents/README.md:30-31`). |
 | `wiki-maintenance` | flags only | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Never regenerates pages. |
 | `release-runner` | branch + tag + release | Run `RELEASE.md` end to end: gates, `cz bump`, tag, GitHub release, merge back. Stops on any red gate; pushes tag / creates release only after an explicit go-ahead. |
 
@@ -216,7 +216,16 @@ teaching models live under `sample-data/sample-0N/` — see
 Architecture decisions are recorded as MADR files under `docs/adr/`
 (`ARCHITECTURE.md` is the narrative, the ADR log is the index). The
 `adr-auditor` agent keeps the log honest — see the maintenance table above and
-[Architecture Overview](architecture.md) §"Decision log".
+[Architecture Overview](architecture.md) §"Decision log". Its standing re-check
+list is now ADR-0017–0019 (still `Proposed`), the ADR-0014 vs ADR-0031 PII
+scope question (GitHub #56), and ADR-0022's namespace defect; ADR-0011's
+§3–4 rework is cited only as a past example, since #50 applied it
+(`.claude/agents/adr-auditor.md` §"Steps" 4). Likewise `spec-alignment` maps
+each requirement — drawn from `specs/**`, with spec 001 as the business
+specification — to its ADR-0011 subsystem (`ARCHITECTURE.md` §4), treating the
+old components 1–8 as historical (`.claude/agents/spec-alignment.md` §"Steps" 1).
+`docs-uplift` now takes its feature list from routes, CLI entry points and the
+`specs/**` requirements (`.claude/agents/docs-uplift.md` §"Steps" 4).
 
 ## Ephemeral skills
 

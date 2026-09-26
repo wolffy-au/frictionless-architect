@@ -1,39 +1,36 @@
-generated: '2026-09-25'
+generated: '2026-09-26'
 generator: claude-opus-5-5
 topics:
   project-overview:
     title: Project Overview
     page: wiki/project-overview.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
-        PROJECT_SPECIFICATION.md:
-          sha256: 50002a05fe98a181965cb6021861ac3d0ee337a9d489a958a9554b586098e8da
-          lines: 236
         README.md:
-          sha256: 2abc55c97e84bd0ee6d5e664083923ae7e0df7b20aa3e5a0cb8f60d1f08b0ab7
+          sha256: 6b5f0db2ef10f071be5e76bcf04bfc60c6f55e3d4028bbebd129b9d723f67140
           lines: 120
+        specs/001-governance-platform/spec.md:
+          sha256: f08d56571b62fc3f64f162c1c65fe27df5f89c3acba3b0b6ac68533680e96f0c
+          lines: 199
   governance-and-constitution:
     title: Governance & Constitution
     page: wiki/governance-and-constitution.md
-    built: '2026-08-29'
+    built: '2026-09-26'
     sources:
       files:
         .specify/memory/constitution.md:
-          sha256: b0955b02dd8f859af955d2cdeef674e4c50a864063be23aef4eef47954d869d3
-          lines: 128
-        PROJECT_CONSTITUTION.md:
-          sha256: 753d3f3e2db8c227ea2fe559bb8054ad9367da09adfa1683eae9cc2d7b5d34c6
-          lines: 28
+          sha256: 04d8b25c34bd6bd565471d67c7aba3ac0c7c65d899ba8705139bcaf3bc0d9756
+          lines: 224
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: 545894fc0e3e46785766ac3e00dce50fe2a8c0b46fa88bcfc5284b899922df5d
-          lines: 388
+          sha256: 8ad2fd0943426c3758657fc2eaf1139a58dfcdec2efeb36dd397b94915aebdd5
+          lines: 374
         TECHNICAL.md:
           sha256: 48b3abcc278fb94f9c7216b86ff4d56650ddce3b99d58acdf91e6a6dadc3114a
           lines: 418
@@ -41,7 +38,7 @@ topics:
           sha256: 3ce41307064083f9f60169e6f2a16749ce69a985d16c905faccb389daebb2802
           lines: 23
         docs/adr/0001-root-is-governance-only.md:
-          sha256: 5195d8ec6bd99597afe9988415b293ede7985ebd7346cc427d3e3874c1849069
+          sha256: e8f59958a61be286bac90fb1eb4f42219b3fc062fe765c69aa358d82b05494d6
           lines: 26
         docs/adr/0002-poetry-monorepo-forks-as-submodules.md:
           sha256: e82dd0771f0d47d9f3e60bb471684a3a839202c07137e66649387218c32f700a
@@ -50,13 +47,13 @@ topics:
           sha256: ab0bf4f12298813ee1f2f8599fb3b83cb08ce3a1b8ae3926c657dfdf2c1fde0d
           lines: 25
         docs/adr/0004-two-tier-spec-numbering.md:
-          sha256: 37632d84065249f1f13c6320428bfcf94b3d405d2f0a8d50f91aa42fd1d4c1a5
-          lines: 35
+          sha256: ea2240ccbbddb1e0f5cc6946aec34c781cfa071acfbe5bb363e2c0715fb5ac65
+          lines: 37
         docs/adr/0005-visualiser-api-ui-split-first-extraction.md:
-          sha256: 79b4b1fd81084d8cb5a869990f865bb8dea8d8d70d82565f5976499a20ff4e99
-          lines: 65
+          sha256: 1095e99f540ce6143c643fb4083317b03270e1992bf6385b35edbcbb4eb6da5c
+          lines: 66
         docs/adr/0006-prototype-neo4j-reference-only.md:
-          sha256: 5de717fb2529ab67323ede189f84e4c157ca5094ade639006d6464f23da73e12
+          sha256: 2cc7b0ab6605ea19352dda4703e67115d4153ce3eebd6118d27fdb0ce165adc7
           lines: 31
         docs/adr/0007-architecture-model-as-graph-loadable-yaml.md:
           sha256: c45fa69513a4587be2294180f74f953d0cdf138afffbfdb64863286df14702a8
@@ -71,10 +68,10 @@ topics:
           sha256: 42d0c7802a88e71c004d3860c3bd324a4ff2949686c395fdb2f80058ae085908
           lines: 39
         docs/adr/0011-six-subsystem-decomposition.md:
-          sha256: 6eb67694623eebca05b3222d98248707ba76318d6f6d9172c76684e1dc0c47e2
-          lines: 41
+          sha256: dbf71a64a4c531df208d2d95255a46b5cabf7d20f3c399acab113ce64e8e77aa
+          lines: 43
         docs/adr/0012-adr-as-attested-fsm.md:
-          sha256: 7c80b712e80da6d8f7e920ac721c935614925b56e619789ab529882760c3a76a
+          sha256: 8ed94e2ee226ec0f42db6e1695802b0b87bd27f187e979e7679b6f58c887bca3
           lines: 33
         docs/adr/0013-authorization-separate-from-authentication.md:
           sha256: 6b57c37a86fdcb71b01fa78e78805b96d3df62e9939e569281ab6c96658fb418
@@ -83,23 +80,23 @@ topics:
           sha256: 57377c9967c2f8413e4294017bf472c0cdf89022d09f3cde6adf8df600c03f87
           lines: 23
         docs/adr/0015-machine-readability-first.md:
-          sha256: 459926d1956d44a6256c088dd2b386425f74896b2a408bccda2392c2c0929006
+          sha256: cc0b1b1e278c2df319cc62502a41d1bb475a3070e867a73fb6a4bde03f991bde
           lines: 24
         docs/adr/0016-every-change-linked-to-an-adr.md:
           sha256: 8ab1b8076e0869622b60339fb3c77b1dc30365ab75247e7043bac6dc5d2fcbce
           lines: 24
         docs/adr/0017-knowledge-graph-on-standard-ontology.md:
-          sha256: 93fb1667afe18f0ad8a0bd74f7df2a5f86b1433e74fe01b1240c6e5b38eb9004
+          sha256: 88488c02a121e7577f1d4483605b43faf8b0e9c94a1e04b1f0194354afaa189c
           lines: 25
         docs/adr/0018-postgres-plus-neo4j-data-layer.md:
           sha256: 924a4a70539cbce4fdada1b74aa24640dd1910e60b9d739484f071a19980ffdf
           lines: 28
         docs/adr/0019-opa-rego-policy-engine.md:
-          sha256: 56d64178e8b1ec6f76b033cf5867776232b2330205bf42b2e00394e4462aee35
+          sha256: 0f92f59961924fe76df3d630a6536cce784eee2921a1b27c38ce0f9d7241838f
           lines: 25
-        docs/adr/0020-vite-dashboard-in-backstage.md:
-          sha256: f2df66367951824bd4769f6785c378010371864ab77600222908024dd4ff7c5f
-          lines: 25
+        docs/adr/0020-per-subsystem-uis.md:
+          sha256: 0e7d63e913628656e8f83d3430a01535a7c39360f06bb22dc69316c0b99407c1
+          lines: 46
         docs/adr/0021-schema-visualiser-cytoscape.md:
           sha256: 3ef01d34f855f282e39de709c5ae9cb5eda8d26451658df641c12abd567c3ef1
           lines: 27
@@ -116,7 +113,7 @@ topics:
           sha256: 7da288e3ae07f5b6329b26013e8a273be46b3f929059183f6b355b3922445c52
           lines: 29
         docs/adr/0026-fsm-action-endpoints-for-governed-entities.md:
-          sha256: c3fe3f5853e023d90b6e42f05df1b970c33d6d74f35009d4af2c568b9e243d2a
+          sha256: 0231bb065bca9f55eae4c669867e3081675f5cb8fc6cd8e26e45fcad585df58e
           lines: 27
         docs/adr/0027-capability-value-stream-and-motivation-spine.md:
           sha256: 13b522568114dc69ba49d525c7e109c66e2e736a4673f4da4b969e9df78fd81c
@@ -137,8 +134,8 @@ topics:
           sha256: 7f2aa4e7b37e2fb334b4430a352d5d5a1967516ee803236935d3b1ce7f7326b0
           lines: 50
         docs/adr/README.md:
-          sha256: 2248faafedb67d959b0c3d5d042a1ee99e64ec62786ba0c8f8dd92e47bf1ec78
-          lines: 107
+          sha256: 6eefaba1a2b4f037079df67205a6b90aae1f2a8d7e426af12b781923acbde638
+          lines: 112
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
@@ -178,7 +175,7 @@ topics:
   architecture-model-ecosystem:
     title: 'Architecture Model: Ecosystem'
     page: wiki/architecture-model-ecosystem.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         architecture/model/README.md:
@@ -394,12 +391,9 @@ topics:
   data-model:
     title: Data Model
     page: wiki/data-model.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
-        data-model.md:
-          sha256: 88de872549fd2aab88e8dccb600bc2e4794bd505924856bc353559d4bc3a54d3
-          lines: 74
         sample-data/schema/archimate3_Diagram.xsd:
           sha256: 6419080f4c4bc43b4a7b8acf870146a7bae6c3487a3ce08d3c521c028ea6056e
           lines: 554
@@ -409,21 +403,24 @@ topics:
         sample-data/schema/archimate3_View.xsd:
           sha256: d708ce176403034b1229b892712cfd69660aefe17da4cc54acea1ac35e4a9854
           lines: 321
+        specs/001-governance-platform/data-model.md:
+          sha256: 88de872549fd2aab88e8dccb600bc2e4794bd505924856bc353559d4bc3a54d3
+          lines: 74
         specs/002-neo4j-schema-ui/data-model.md:
           sha256: b946f7806cf84f4d2d0dd38c4cce1f2510945ed97d7dc07b477c2459c766d786
           lines: 39
   platform-spec:
     title: Platform Specification & API
     page: wiki/platform-spec.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         specs/001-governance-platform/contracts/api.yaml:
           sha256: a4cc4c354e767dadda6923cc1ddc830d8b1ebb72f463710a7fe360656c979625
           lines: 485
         specs/001-governance-platform/spec.md:
-          sha256: 0cdc62c387f49dcc353a856a2e1de6e3a6b698572808a8b0aa06103f81d288e3
-          lines: 191
+          sha256: f08d56571b62fc3f64f162c1c65fe27df5f89c3acba3b0b6ac68533680e96f0c
+          lines: 199
         specs/002-neo4j-schema-ui/checklists/requirements.md:
           sha256: b925640f8a25d3afbfbc566668a282309ca94caeca2fbc250b2e0744b7e08a9a
           lines: 34
@@ -437,17 +434,17 @@ topics:
           sha256: ba3a5ed3571f94fe43512c9a1ea6094819c9a4074e8cce1fd50ea8477ada51ac
           lines: 16
         specs/002-neo4j-schema-ui/spec.md:
-          sha256: 26e522c6024af60d19d84c00914b946c969cf5b3a863a0c58b800e31dc77e42e
+          sha256: b5381d643e1ba2b702630d4044f2c354e2cb6576642469edf51b2881cd73a29d
           lines: 106
   non-functionals:
     title: Non-Functional Requirements
     page: wiki/non-functionals.md
-    built: '2026-08-29'
+    built: '2026-09-26'
     sources:
       files:
         NONFUNCTIONALS.md:
-          sha256: 472ae22f2710266d96fb0af0172eed0578e7db826bed820926cf2da59f3720e8
-          lines: 80
+          sha256: 254e436fd0fa5395637dc33629dd7f38dae462edfe50f04f2bd204ec943b7e00
+          lines: 84
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
@@ -493,25 +490,25 @@ topics:
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         AGENTS.md:
-          sha256: 0af04daa5cdda2a115873caf011484998b138a42b6c63424f861ab4b6061e025
-          lines: 147
+          sha256: ebba2f18d9743479af8e8c4a9fbcdc4e82647ae3dc230fc34ddb9aefae425206
+          lines: 134
         RELEASE.md:
           sha256: 4da2279d0106d90153f0f8e4016433e0636f0183fb8f96d4a7bf33f888b4dced
           lines: 213
-        quickstart.md:
-          sha256: 19d151b3cc0c66eb63cd26c8ad08184cd24438daf901574ce6a15a82c371ac88
-          lines: 85
+        specs/001-governance-platform/quickstart.md:
+          sha256: 5552f4fae9e848126bcf0a0d872c628640462d1a8d6b02bd35dc8f33b1090dbb
+          lines: 75
         specs/002-neo4j-schema-ui/quickstart.md:
           sha256: 836367bf01b8e0ee9ee08a4bc99442b98ba83f80f55e9b05c54aaeae225828a7
           lines: 46
   sample-data:
     title: Sample Data
     page: wiki/sample-data.md
-    built: '2026-09-20'
+    built: '2026-09-26'
     sources:
       files:
         sample-data/oscal/01-nist-baseline-resolution.puml:
@@ -553,18 +550,18 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-09-25'
+    built: '2026-09-26'
     sources:
       files:
         .claude/agents/README.md:
-          sha256: e74e7c6eea1eec829e700c3bc1dced336a8889626ee0d073ace0c1cb2226b11b
+          sha256: 80646b87b42ca4abbbbab933021e745ce495fac18452d3f9055e5b2d41cdac8a
           lines: 39
         .claude/agents/acceptance-author.md:
           sha256: 0dfe679f953201c94ca6b8c7c5f3e76d31a3647a6c023b79d274d19facc8082f
           lines: 77
         .claude/agents/adr-auditor.md:
-          sha256: c698451ce569a5b06388689a4dec70667a0707f2d092b211d4813e0c75f8ee6f
-          lines: 115
+          sha256: 17b00800f4db2260be63f59e9967c1893f916bad71189ef57aac6204883dba91
+          lines: 114
         .claude/agents/commit-auditor.md:
           sha256: a8d5cafaad98f5ae5cfcb0e4b1ab7cf1be9c388b27cea7323e0084d43e2c12f1
           lines: 46
@@ -572,7 +569,7 @@ topics:
           sha256: adb67534bc4d7aa538ae2e8b7f524e5b25fe342679f3963d0ba5e632f3e54b78
           lines: 72
         .claude/agents/docs-uplift.md:
-          sha256: a44008ce0775db9467be093d28fe12619cb69e9cfeb4e5f6f1630e4bbbb088ff
+          sha256: d9eb7badf0f23a64bf177a79e76766ef331adf4748c9dbd97b2f6dc509d41cd5
           lines: 64
         .claude/agents/quality-uplift.md:
           sha256: 3d24dfe9e8bb0ceec6216f1b9a593374f876a4ddfc6609c27deecc95cadd8bc6
@@ -584,7 +581,7 @@ topics:
           sha256: 8a62be35e5ad655dc5bc54a8ba06ac76e0730e601f3060d5c2a697e77f8849fa
           lines: 64
         .claude/agents/spec-alignment.md:
-          sha256: 076f8e369e96ae0abe7693853520fd9220c7c05e46cae18f07760ca018230838
+          sha256: e23446b660ad479308fd250f7e89c7468968d1da812401812340ac7e5cd64ec3
           lines: 55
         .claude/agents/vulnerability-remediator.md:
           sha256: c92342ca9128d4869e2a2596c54811bf0e2148fa040cdf7e302d12397f93af6a

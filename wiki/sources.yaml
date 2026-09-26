@@ -17,7 +17,7 @@ topics:
     description: What Frictionless Architect is, who it's for, and its scope.
     sources:
       - path: README.md
-      - path: PROJECT_SPECIFICATION.md
+      - path: specs/001-governance-platform/spec.md
 
   - name: governance-and-constitution
     title: Governance & Constitution

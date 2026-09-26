@@ -1,9 +1,9 @@
 ---
 title: Data Model
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
-  - data-model.md
+  - specs/001-governance-platform/data-model.md
   - specs/002-neo4j-schema-ui/data-model.md
   - sample-data/schema/archimate3_Diagram.xsd
   - sample-data/schema/archimate3_Model.xsd
@@ -14,20 +14,20 @@ sources:
 > and rebuild rather than editing this page.
 
 There are two data models in the repo at different altitudes: the
-**platform domain model** (`data-model.md`) and the concrete
+**platform domain model** (`specs/001-governance-platform/data-model.md`) and the concrete
 **schema-visualiser payload model** (`specs/002-neo4j-schema-ui/data-model.md`).
 
 ## Platform domain model
 
-From `data-model.md`. Machine-readability is the first constraint — every
+From `specs/001-governance-platform/data-model.md`. Machine-readability is the first constraint — every
 artifact is "executable or structured data (JSON/Markdown)"
-(`data-model.md` §"Architecture Artifacts").
+(`specs/001-governance-platform/data-model.md` §"Architecture Artifacts").
 
 | Entity | Key attributes | Notes |
 |---|---|---|
 | Architecture Artifact | Content, Format, Version | Structured/executable representation of part of the architecture |
-| **Architecture Decision Record (ADR)** | Title, Status, Date, Rationale, Decision, Consequences, Human Attestation | Requires a human cryptographic signature for `Approved`/`Superseded` (`data-model.md` §"Architecture Decision Record (ADR)") |
-| Semantic System Model | Nodes: Microservices, Data Domains, CBS, Regulations; Edges: `uses`/`supports`/`governed by` | Graph-based (`data-model.md` §"Semantic System Model") |
+| **Architecture Decision Record (ADR)** | Title, Status, Date, Rationale, Decision, Consequences, Human Attestation | Requires a human cryptographic signature for `Approved`/`Superseded` (`specs/001-governance-platform/data-model.md` §"Architecture Decision Record (ADR)") |
+| Semantic System Model | Nodes: Microservices, Data Domains, CBS, Regulations; Edges: `uses`/`supports`/`governed by` | Graph-based (`specs/001-governance-platform/data-model.md` §"Semantic System Model") |
 | Critical Business Service (CBS) | Name, Description, Impact Tolerances (RTO/RPO), Mapped Technical Components, Associated Regulations | Must align with APRA CPS 230/234; tolerances are human-readable strings with units, e.g. "4 hours" (`specs/001-governance-platform/spec.md:24`) |
 | Policy | Name, Type (CPS 230 / CPS 234 / OPA Rego), Content/Rules, Scope | Must be machine-readable and enforceable |
 
@@ -37,15 +37,15 @@ The [Platform Specification & API](platform-spec.md) `001` spec adds
 ### ADR lifecycle
 
 `Draft → Under Review → Approved → Superseded`, a governed state machine
-(`data-model.md` §"State Transitions"). Approved/Superseded require a mandatory
-human cryptographic sign-off (`data-model.md` §"Architecture Decision Record
+(`specs/001-governance-platform/data-model.md` §"State Transitions"). Approved/Superseded require a mandatory
+human cryptographic sign-off (`specs/001-governance-platform/data-model.md` §"Architecture Decision Record
 (ADR)" validation rules; the §"Validation Rules Summary" line names only
 "approved"). This is the kind of entity `TECHNICAL.md` says to model as an FSM
 with action-based endpoints — see [Architecture Overview](architecture.md).
 
 ### Relationships
 
-`data-model.md` §"Relationships": ADR `governs` Architecture Artifacts; ADR
+`specs/001-governance-platform/data-model.md` §"Relationships": ADR `governs` Architecture Artifacts; ADR
 `is_attested_by` a Human Architect; CBS `is_supported_by` Microservices and
 `is_governed_by` Regulations and Policies; the Semantic System Model
 `represents` Microservices/Data Domains/CBS/Regulations; Policy

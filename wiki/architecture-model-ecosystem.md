@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Ecosystem"
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
@@ -19,9 +19,9 @@ subsystems (`ApplicationComponent`s → C4 containers), five shared stores
 (`DataObject`s → C4 databases), six business roles (→ C4 persons), and seven
 external systems (`ApplicationComponent`s outside the grouping → C4 external
 systems) (`architecture/model/elements.yaml:368-501`). This is the
-decomposition [ADR-0011](architecture.md) adopts in place of the
-eight-component grouping still documented in
-[Architecture Overview](architecture.md). Views: `Subsystems & Capabilities`
+decomposition [ADR-0011](architecture.md) adopts in place of the old
+eight-component grouping; [Architecture Overview](architecture.md)
+§"Subsystem → package mapping" gives the package each subsystem becomes. Views: `Subsystems & Capabilities`
 and the generated C4 context + container ([ADR-0009](architecture.md)).
 
 | Subsystem (`id`) | Scope | Realizes |
