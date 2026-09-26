@@ -281,6 +281,7 @@
 - {type: Triggering, source: process-policy-authoring, target: process-oscal-conversion, label: authored content feeds}
 - {type: Realization, source: fn-ai-markdown-conversion, target: process-oscal-conversion}
 - {type: Realization, source: fn-oscal-conversion, target: process-oscal-conversion}
+- {type: Realization, source: fn-baseline-tailoring, target: process-baseline-tailoring}
 - {type: Realization, source: fn-oscal-profile-resolve, target: process-profile-resolution}
 - {type: Realization, source: art-policy-doc, target: bo-policy-doc}
 - {type: Realization, source: art-regulatory-standard, target: bo-regulatory-standard}
@@ -444,6 +445,7 @@
 # B. Authoring / OSCAL chain
 # =====================================================================
 - {type: Serving, source: ext-trestle, target: fn-oscal-conversion, label: realizes the Trestle Markdown <-> OSCAL round-trip for}
+- {type: Serving, source: ext-trestle, target: fn-baseline-tailoring, label: provides profile authoring for}
 - {type: Serving, source: ext-trestle, target: fn-oscal-profile-resolve, label: realizes profile-resolve for}
 - {type: Serving, source: ext-llm, target: fn-ai-markdown-conversion, label: provides the document -> Markdown conversion model for}
 - type: Access
@@ -540,6 +542,7 @@
 # =====================================================================
 - {type: Assignment, source: sub-catalog, target: fn-ai-markdown-conversion}
 - {type: Assignment, source: sub-catalog, target: fn-oscal-conversion}
+- {type: Assignment, source: sub-catalog, target: fn-baseline-tailoring}
 - {type: Assignment, source: sub-catalog, target: fn-oscal-profile-resolve}
 - {type: Assignment, source: sub-library, target: fn-pattern-authoring}
 - {type: Assignment, source: sub-library, target: fn-blueprint-authoring}
@@ -569,6 +572,8 @@
 - {type: Access, source: fn-ai-markdown-conversion, target: art-trestle-markdown, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-oscal-conversion, target: art-trestle-markdown, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-oscal-conversion, target: art-oscal-catalog, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-baseline-tailoring, target: art-oscal-catalog, label: selects controls from, props: {access_type: Read}}
+- {type: Access, source: fn-baseline-tailoring, target: art-oscal-profile, label: tailors, props: {access_type: Write}}
 - {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-catalog, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-profile, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-resolved-catalog, label: generates, props: {access_type: Write}}
