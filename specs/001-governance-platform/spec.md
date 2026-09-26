@@ -146,9 +146,9 @@ and alerts are observable.
   that consumes verified identity attributes; the authentication mechanism MUST supply those
   attributes.
 - **FR-017**: The platform MUST protect data in transit and at rest.
-- **FR-018**: The platform's own deployment MUST be subject to regular automated security
-  scanning (an operational requirement — see `NONFUNCTIONALS.md` "Security Assessments");
-  threat modelling of client architectures is a library output, not part of this requirement.
+- **FR-018**: *Moved to `NONFUNCTIONALS.md` "Security Assessments"* — regular automated
+  security scanning of the platform's own deployment is an operational requirement, not a
+  functional one. The number is kept so requirement IDs are not reused.
 - **FR-019**: The platform MUST keep all architectural artifacts machine-readable
   (executable, or structured data).
 - **FR-020**: The platform MUST automate enforcement of APRA CPS 230 (Operational

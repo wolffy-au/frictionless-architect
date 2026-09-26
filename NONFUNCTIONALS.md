@@ -20,7 +20,9 @@
 - **Authentication:** Authentication must be secured, using industry-standard mechanisms (e.g., secure tokens).
 - **Authorization:** Access control must be enforced based on defined policies (e.g., ABAC), integrating with authentication mechanisms.
 - **Data Encryption:** Data must be encrypted at rest and in transit.
-- **Security Assessments:** Regular security assessments, including automated scanning and threat modeling, must be performed.
+- **Security Assessments:** The platform's own deployment must be subject to regular automated security
+  scanning (moved from `specs/001-governance-platform/spec.md` FR-018). Threat modelling of client
+  architectures is a library output, not part of this requirement.
 - **Regulatory Compliance:** System must comply with relevant information security standards and regulations.
 
 ---

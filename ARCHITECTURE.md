@@ -163,8 +163,8 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 - **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
 - **Security foundations** (old 8) — RBAC and encryption are platform requirements every
   subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
-  own as-built state is an operational NFR (FR-018); threat modelling as an output is
-  subsystem 2.
+  own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
+  formerly FR-018); threat modelling as an output is subsystem 2.
 - **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
 
 **Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
