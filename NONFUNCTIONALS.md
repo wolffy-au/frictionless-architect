@@ -32,6 +32,8 @@
 - **System Monitoring:** System must provide real-time monitoring of key operational parameters and deviations from expected states.
 - **Exception Handling:** System must support controlled exceptions or overrides for critical operations under defined circumstances, with auditability.
 - **System Health Checks:** Regular automated checks for system health and configuration consistency are required.
+- **Resilience Testing:** Automated resilience testing (e.g. chaos engineering) must validate that the as-designed
+  recovery logic works during simulated outages, supporting APRA CPS 230 (Operational Resilience).
 - **Resilience:** System must remain healthy, resilient, and compliant during normal operations and emergency scenarios.
 - **API Error Reporting:** API error reporting must be standardized and machine-readable.
 - **Operational Resilience:** System must comply with relevant operational resilience standards and regulations.

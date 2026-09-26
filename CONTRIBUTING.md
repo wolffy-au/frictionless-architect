@@ -4,8 +4,8 @@ Thanks for taking the time to contribute. This document covers how work
 actually happens in this repo: the toolchain, branch/commit conventions, the
 spec-driven workflow, and the quality gates a change has to clear. For the
 project's shape and rationale, start with [`README.md`](README.md),
-[`ARCHITECTURE.md`](ARCHITECTURE.md), and
-[`PROJECT_SPECIFICATION.md`](PROJECT_SPECIFICATION.md). Day-to-day development
+[`ARCHITECTURE.md`](ARCHITECTURE.md), and the platform's business specification,
+[`specs/001-governance-platform/spec.md`](specs/001-governance-platform/spec.md). Day-to-day development
 guidance for both human and AI-agent contributors lives in
 [`AGENTS.md`](AGENTS.md) — this file is the narrative front door to it.
 
@@ -58,8 +58,8 @@ commit, type/test suite on push, Conventional Commits check on the message.
 ## Repository layout
 
 - **Root** — governance and orchestration only:
-  `PROJECT_SPECIFICATION.md`, `.specify/memory/constitution.md`,
-  `ARCHITECTURE.md`, `TECHNICAL.md`, `RELEASE.md`.
+  `.specify/memory/constitution.md`, `ARCHITECTURE.md`, `TECHNICAL.md`,
+  `NONFUNCTIONALS.md`, `RELEASE.md`.
 - `src/frictionless_architect/` — application code (`visualizer/`, `schema/`).
 - `tests/` — mirrors the `src/` package layout: `tests/unit/<pkg>/test_<mod>.py`
   for `src/frictionless_architect/<pkg>/<mod>.py`. Also `tests/api/`

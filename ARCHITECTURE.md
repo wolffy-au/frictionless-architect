@@ -1,7 +1,7 @@
 # Repository Architecture & Topology
 
 Canonical description of how this repository is structured and the target it is being
-restructured toward. Read alongside `PROJECT_SPECIFICATION.md` (the product vision),
+restructured toward. Read alongside `specs/001-governance-platform/spec.md` (the business specification),
 `.specify/memory/constitution.md` (the platform constitution), and `TECHNICAL.md`.
 
 **Status:** target adopted; migration in progress (see §8).
@@ -20,11 +20,12 @@ All application code lives **one level below** the repository root. The root is 
 coordination scripts, submodule pointers, and the CI that fans out to components. It holds
 **no application code**.
 
-This is a packaging decision only. The product vision in `PROJECT_SPECIFICATION.md` — a
+This is a packaging decision only. The product vision in `specs/001-governance-platform/spec.md` — a
 Frictionless Architecture & Governance Platform automating APRA CPS 230 / 234 compliance —
 is unchanged; its decomposition is the six subsystems of
-[ADR-0011](docs/adr/0011-six-subsystem-decomposition.md), modelled in `architecture/model/`. The spec's
-"single-user, locally run MVP" line is treated as an early scoping compromise, not a
+[ADR-0011](docs/adr/0011-six-subsystem-decomposition.md), modelled in `architecture/model/`. The
+"single-user, locally run MVP" target
+([ADR-0024](docs/adr/0024-single-user-local-mvp.md)) is treated as an early scoping compromise, not a
 constraint on the topology.
 
 ---
@@ -37,7 +38,7 @@ title Current state — one flat repo, one narrow slice built
 skinparam componentStyle rectangle
 
 package "frictionless-architect (repo root)" {
-  [Governance docs\nPROJECT_SPECIFICATION / CONSTITUTION\nNONFUNCTIONALS / TECHNICAL] as docs
+  [Governance docs\nCONSTITUTION / ARCHITECTURE\nNONFUNCTIONALS / TECHNICAL] as docs
   [.specify/ SpecKit machinery\n(constitution, templates, bash scripts)] as speckit
   [specs/002-neo4j-schema-ui] as spec002
 
@@ -101,7 +102,6 @@ end note
 
 ```
 frictionless-architect/                 # ROOT — governance & orchestration
-├── PROJECT_SPECIFICATION.md             # vision (stays)
 ├── ARCHITECTURE.md  NONFUNCTIONALS.md  TECHNICAL.md
 ├── .specify/                            # PLATFORM SpecKit: constitution + epic templates
 ├── specs/                               # EPIC / cross-cutting specs only  (see §6)
@@ -217,8 +217,8 @@ Target:
 - **Each `packages/<name>/specs/`** restarts its own `NNN-` sequence, scoped to that
   component: e.g. `packages/digital-twin-knowledge-graph/specs/001-neo4j-schema-ui/`.
 - **Existing specs re-home as:**
-  - `001-governance-platform` → `EPIC-001`, or retire in favour of
-    `PROJECT_SPECIFICATION.md` + per-component specs (§10).
+  - `001-governance-platform` → `EPIC-001` (it is the platform's business specification
+    since `PROJECT_SPECIFICATION.md` was retired — §10 Q6).
   - `002-neo4j-schema-ui` → `packages/schema-visualizer-api/specs/001-*`
     (and/or `packages/digital-twin-knowledge-graph/specs/001-*`).
   - `002-arch-kg-semantics` (stub) → `packages/digital-twin-knowledge-graph/specs/002-*`, or delete.
@@ -340,8 +340,9 @@ Checklist:
    dependency, not a fork.)
 5. Is collaboration-tool decision capture still in scope, and where does the PII gateway
    (ADR-0014, narrowed by ADR-0031) sit? (#56)
-6. `001-governance-platform` spec: promote to `EPIC-001`, or retire in favour of
-   `PROJECT_SPECIFICATION.md` + per-component specs?
+6. *Resolved 2026-09-26:* `001-governance-platform` becomes `EPIC-001` (ADR-0004, §6).
+   `PROJECT_SPECIFICATION.md` was retired instead, so spec 001 is the platform's business
+   specification (constitution v1.3.0).
 7. Keep `src/frictionless_architect/` importable as an umbrella namespace package during
    the transition, or hard-cut per extraction?
 8. Does `schema-visualizer-api` consume `digital-twin-knowledge-graph` as a path-dependency library

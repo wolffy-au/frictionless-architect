@@ -38,5 +38,6 @@ Knowledge Graph is one store with two planes (intent + digital twin).
   (`controls-compliance-catalog`, `reusable-architecture-library`,
   `digital-twin-knowledge-graph`, `architecture-governance`,
   `conformance-drift-assurance`, `modelling-specification`), and
-  `PROJECT_SPECIFICATION.md` carries a historical note. The packaging /
+  `PROJECT_SPECIFICATION.md` carried a historical note until it was retired
+  (2026-09-26). The packaging /
   deployment view (`ARCHITECTURE.md` §3.3) is tracked separately in #55.

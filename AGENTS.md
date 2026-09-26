@@ -30,8 +30,8 @@ docs/adr/                     # MADR decision log
 scripts/                      # gate scripts (pre_commit_checks.sh, pre_merge_checks.sh)
 ```
 
-Root itself carries governance docs only (`PROJECT_SPECIFICATION.md`, `ARCHITECTURE.md`,
-`TECHNICAL.md`, `RELEASE.md`, etc.) — see "Repository layout" below.
+Root itself carries governance docs only (`ARCHITECTURE.md`, `TECHNICAL.md`,
+`NONFUNCTIONALS.md`, `RELEASE.md`, etc.) — see "Repository layout" below.
 
 ## Commands
 
@@ -57,8 +57,8 @@ Python 3.12 (per `pyproject.toml`): follow standard conventions; enforced by
 
 ### Repository layout
 
-- **Root** — governance and orchestration only: `PROJECT_SPECIFICATION.md`,
-  `.specify/memory/constitution.md`, `ARCHITECTURE.md`, `TECHNICAL.md`, `RELEASE.md`.
+- **Root** — governance and orchestration only: `.specify/memory/constitution.md`,
+  `ARCHITECTURE.md`, `TECHNICAL.md`, `NONFUNCTIONALS.md`, `RELEASE.md`.
 - `src/frictionless_architect/` — application code (`visualizer/`, `schema/`).
 - `tests/` — mirrors the `src/` package layout; `tests/unit/<pkg>/test_<mod>.py` for
   `src/frictionless_architect/<pkg>/<mod>.py`. Also `tests/api/` (in-process FastAPI)

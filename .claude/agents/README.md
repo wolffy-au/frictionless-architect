@@ -17,7 +17,7 @@ exposes each by its `name`.
 | `docs-uplift` | branch + PR | Resync docstrings, README/quickstart/feature guides, and PlantUML/C4/ArchiMate diagrams with the code. |
 | `vulnerability-remediator` | branch + PR | Resolve Dependabot / Snyk / SonarCloud security findings; bump or pin fixed versions, patch vulnerable code, verify gates. |
 | `refactor-analyst` | read-only | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations, no code changes. |
-| `spec-alignment` | read-only | Traceability gap report: code vs `PROJECT_SPECIFICATION.md`, `specs/**`, constitution. |
+| `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, constitution. |
 | `adr-auditor` | branch + draft PR | Audit `docs/adr/` against the decision-bearing docs and the code; report missing / stale / misaligned / superseded records, and draft `Status:Proposed` ADR stubs plus status edits. Never fleshes out or attests a decision. |
 | `release-runner` | branch + tag + release | Run `RELEASE.md` end to end: gates, `cz bump`, tag, GitHub release, merge back. Stops on any red gate. |
 

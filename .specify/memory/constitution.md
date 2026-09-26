@@ -1,5 +1,17 @@
 <!--
-  Sync Impact Report:
+  Sync Impact Report (v1.3.0, 2026-09-26):
+  - Version change: v1.2.0 -> v1.3.0
+  - Modified sections: Detailed References → "Requirements — why".
+  - Removed: PROJECT_SPECIFICATION.md is retired. Every section already had a current
+    home (specs/001-governance-platform, NONFUNCTIONALS.md, ARCHITECTURE.md, the ADR log,
+    architecture/model/) except four items, now spec 001 FR-021–FR-023 and the
+    NONFUNCTIONALS.md "Resilience Testing" NFR; its modelling-tool Feature Inventory and
+    UI Overview were moved verbatim to GH #59 as unscoped backlog.
+    `specs/001-governance-platform` is now the platform's business specification.
+  - Templates requiring updates: none.
+  - Follow-up TODOs: None
+
+  Previous report (v1.2.0):
   - Version change: v1.1.1 -> v1.2.0
   - List of modified principles:
     - II. Testing Standards (coverage rule aligned with the enforced 90% gate)
@@ -45,9 +57,9 @@ here; consult it when you need deeper detail.
 ### Requirements — why
 
 - **`specs/<feature>/`**: Executable feature specs (spec → plan → tasks).
-- **`PROJECT_SPECIFICATION.md`**: Historical business and domain requirements. Use it as
-  input when deriving user stories, requirements, and acceptance criteria for new specs; do
-  not edit it except to record historical context.
+  `specs/001-governance-platform` is the platform's business specification — the
+  platform-wide requirements every other spec derives from. (The former
+  `PROJECT_SPECIFICATION.md` was retired in v1.3.0.)
 
 ### Process — how we work
 
@@ -209,4 +221,4 @@ This constitution is the supreme guide for SpecKit development.
   added here with the next free number, not in a separate document.
 - **Compliance**: All contributors must adhere to these principles; deviations must be justified in the `plan.md` complexity tracking section.
 
-**Version**: 1.2.0 | **Ratified**: 2026-02-18 | **Last Amended**: 2026-09-25
+**Version**: 1.3.0 | **Ratified**: 2026-02-18 | **Last Amended**: 2026-09-26

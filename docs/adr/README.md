@@ -10,6 +10,10 @@ feature specs. ADRs 0001–0024 were back-filled from those documents on
 2026-08-30; the "Date" field of a back-filled record is the decision's original
 date where known, otherwise `unknown (pre-dates this log)`.
 
+`PROJECT_SPECIFICATION.md` was retired on 2026-09-26 (constitution v1.3.0). ADR
+`Sources` lines that cite it refer to its last version:
+`git show 38ff242:PROJECT_SPECIFICATION.md`.
+
 ## Keeping it honest
 
 The [`adr-auditor`](../../.claude/agents/adr-auditor.md) agent sweeps the

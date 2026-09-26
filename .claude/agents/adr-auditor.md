@@ -1,6 +1,6 @@
 ---
 name: adr-auditor
-description: Audits the ADR log in docs/adr/ against the decision-bearing docs (ARCHITECTURE.md, TECHNICAL.md, PROJECT_SPECIFICATION.md, the constitution files, specs/**) and the code. Reports decisions made but never recorded, ADRs that have gone stale or misaligned, unmarked supersessions, and orphan references — and drafts Status:Proposed ADR stubs plus status-change edits on a branch. Use for "audit the ADRs", "check the decision log", "did we file an ADR for X".
+description: Audits the ADR log in docs/adr/ against the decision-bearing docs (ARCHITECTURE.md, TECHNICAL.md, the constitution, specs/**) and the code. Reports decisions made but never recorded, ADRs that have gone stale or misaligned, unmarked supersessions, and orphan references — and drafts Status:Proposed ADR stubs plus status-change edits on a branch. Use for "audit the ADRs", "check the decision log", "did we file an ADR for X".
 tools: Bash, Read, Edit, Write, Grep, Glob
 model: sonnet
 ---
@@ -28,8 +28,6 @@ Poetry only, never `uv` (ADR-0003). Markdown is linted by
     §11 "Locked decisions"
   - `.specify/memory/constitution.md` — principles + gates
   - `TECHNICAL.md` — tooling / pattern / standards choices
-  - `PROJECT_SPECIFICATION.md` — vision-level product decisions (historical; treat
-    as input, not current truth where `specs/**` has moved on)
   - `specs/**` — `spec.md` / `plan.md` / `research.md`; note "Deferred solution
     decisions" sections and clarification Q&A
   - `RELEASE.md`, `AGENTS.md` — process decisions

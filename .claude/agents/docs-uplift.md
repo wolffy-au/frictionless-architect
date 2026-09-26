@@ -39,7 +39,7 @@ Run their scripts with `poetry run python ...`. Markdown is linted by
    references accounting-era endpoints and `pip install python-accounting` — correct
    stale content to match the visualiser reality; do not invent features.
 4. **Feature coverage**: list every user-facing feature (from routes, CLI entry points,
-   `PROJECT_SPECIFICATION.md` inventory) and confirm each has a tutorial/how-to section.
+   `specs/**` requirements) and confirm each has a tutorial/how-to section.
    Write the missing ones.
 5. **Diagrams**: for each `*.puml` / model under the docs, compare against current
    `src/` structure and regenerate via the diagram skills. Validate every diagram
