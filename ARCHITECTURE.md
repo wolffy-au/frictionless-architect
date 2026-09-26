@@ -100,7 +100,7 @@ end note
 
 ### 3.2 Target directory layout
 
-```
+```text
 frictionless-architect/                 # ROOT — governance & orchestration
 ├── ARCHITECTURE.md  NONFUNCTIONALS.md  TECHNICAL.md
 ├── .specify/                            # PLATFORM SpecKit: constitution + epic templates
@@ -146,6 +146,7 @@ The six subsystems are those of [ADR-0011](docs/adr/0011-six-subsystem-decomposi
 modelled in `architecture/model/` (section B). Each package holds an `api/` and a `ui/`
 ([ADR-0020](docs/adr/0020-per-subsystem-uis.md)).
 
+<!-- pyml disable md013 -->
 | # | Subsystem | Home | Build vs wrap | Notes (absorbs, from the old 8-component grouping) |
 |---|---|---|---|---|
 | 1 | Controls & Compliance Catalog | `packages/controls-compliance-catalog` | **build**, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles (AI-assisted Markdown, Trestle round-trip). Consumes the vendored OSCAL reference content; the OSCAL sample-data work belongs here. |
@@ -155,6 +156,7 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 | 5 | Conformance & Drift Assurance | `packages/conformance-drift-assurance` | **build**, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate control enforcement (CPS 230 / 234), BAU effectiveness monitoring, drift detection, Break-Glass, remediation tickets. |
 | 6 | Modelling & Specification | `packages/modelling-specification` | **build** | ArchiMate / C4 / UML modelling and executable-spec generation from the knowledge graph. |
 | — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | First extraction. Where its embedded UI lands is open (#55). |
+<!-- pyml enable md013 -->
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or dissolved:
 
@@ -188,6 +190,7 @@ Confirm the exact ArchiMate-parser upstream before creating that submodule.
 environment, and there is no benefit large enough to justify migrating a working
 build off Poetry. Revisit only if Poetry's monorepo story becomes a real drag.
 
+<!-- pyml disable md013 -->
 | Option | Verdict | Why |
 |---|---|---|
 | **Poetry monorepo** | **Chosen** | Already in use (`poetry-dynamic-versioning`, commitizen, `poetry.lock`). Root `pyproject.toml` aggregates `packages/*` as path dependencies; each package keeps its own `pyproject.toml` and build backend; one shared `poetry.lock`. No migration cost. |
@@ -196,6 +199,7 @@ build off Poetry. Revisit only if Poetry's monorepo story becomes a real drag.
 | Meta-repo tool (`meta`, `mu-repo`, `git-subrepo`) | No | Solves polyrepo coordination we are deliberately avoiding for first-party code. |
 | Submodules for everything | No | Pointer-commit churn makes day-to-day multi-package dev miserable. Forks only. |
 | Nx | No | JS-first; heavier than the Python weight warrants. |
+<!-- pyml enable md013 -->
 
 **Multi-package layout under Poetry:** `platform/pyproject.toml` is the root project;
 each `packages/<name>/` is a Poetry project depending on its siblings via path
@@ -261,8 +265,10 @@ title Restructure sequence
 
 ### 8.1 First extraction — visualiser API/UI split
 
-Today one FastAPI app (`visualizer/api.py`) serves both JSON and the HTML/JS UI
-(`static/schema_visualizer.js`, `templates/schema_visualizer.html`).
+Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
+from the shared FastAPI app in `frictionless_architect/app.py`. The server-rendered HTML
+route was dropped on 2026-09-13, leaving `visualizer/static/` and `templates/` orphaned
+(ADR-0005 → Implementation status).
 
 ```plantuml
 @startuml
@@ -270,9 +276,10 @@ title Visualiser split
 skinparam componentStyle rectangle
 
 package "BEFORE  src/frictionless_architect/visualizer/" {
-  [api.py  routes:\n/schema-visualizer (HTML)\n/schema-payload (+/refresh /status)] as before_api
-  [static/ + templates/] as before_ui
-  before_api --> before_ui : Jinja + static mount
+  [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
+  [data_loader.py sample_parser.py\n(+ schema/manager.py)] as before_kg
+  [static/ + templates/\n(orphaned)] as before_ui
+  before_api --> before_kg
 }
 
 package "AFTER" {
@@ -290,15 +297,17 @@ package "AFTER" {
 ```
 
 Checklist:
+
 - Move `visualizer/{api,cache,config}.py` + the visualiser's own payload /
   coverage-merge logic + the FastAPI router into
   `packages/schema-visualizer-api/src/`.
 - `data_loader.py` (Neo4j read), `sample_parser.py`, and `schema/manager.py` are
-  **not** part of this step — their home is deferred to the `digital-twin-knowledge-graph`
-  extraction (see ADR-0005 → Amendment 2026-08-30, and §4).
-- Drop the HTML route + Jinja/static mounts from `api.py`; keep `/schema-payload*`.
-- Move `static/` + `templates/` into a Vite project; replace the server-rendered bootstrap
-  with a `fetch('/schema-payload')` call; add a dev proxy.
+  **not** part of this step — they move to `packages/digital-twin-knowledge-graph`, which
+  `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
+  §4).
+- ~~Drop the HTML route + Jinja/static mounts; keep `/schema-payload*`.~~ Done 2026-09-13.
+- Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy;
+  delete the orphaned `visualizer/static/` and `templates/`.
 - Add CORS config to the API (same-origin today, so none).
 - `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the
   package; `test_data_loader.py` / `test_sample_parser.py` follow their code to
@@ -345,11 +354,13 @@ Checklist:
    specification (constitution v1.3.0).
 7. Keep `src/frictionless_architect/` importable as an umbrella namespace package during
    the transition, or hard-cut per extraction?
-8. Does `schema-visualizer-api` consume `digital-twin-knowledge-graph` as a path-dependency library
-   (its own Neo4j connection) or over HTTP? (Blocks the first extraction —
-   ADR-0005 Amendment.)
-9. Is `sample_parser.py` visualiser-specific or generic ArchiMate ingestion? If generic
-   it moves to `digital-twin-knowledge-graph` with the forked parser (§4) and the API package stays thin.
+8. *Resolved (ADR-0005):* `schema-visualizer-api` consumes `digital-twin-knowledge-graph`
+   as a path-dependency library, not over HTTP, until a second consumer needs that interface.
+9. *Resolved (ADR-0005):* `sample_parser.py` is generic ArchiMate ingestion, so it moves to
+   `digital-twin-knowledge-graph` (§4) and the API package stays thin.
+10. §8 splits the visualiser (step 2) before scaffolding `digital-twin-knowledge-graph`
+    (step 4), but ADR-0005 has the API consume that package as a library. Scaffold a
+    minimal read path early, reorder, or import from the flat package in the interim? (#60)
 
 ---
 
