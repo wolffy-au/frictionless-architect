@@ -50,6 +50,11 @@ The architecture model's Strategy and Motivation layers were under-connected:
    the dependency order (e.g. Architecture Knowledge Management serves Executable
    Specification Generation).
 
+   *Amended 2026-09-26:* superseded in part by
+   [ADR-0033](0033-value-streams-per-outcome.md) — there are now four value
+   streams, one per outcome, and this stream's Prove, Reconcile and
+   sign-off/attest stages moved to them.
+
 4. **"Architecture as Executable Intelligence" is an Outcome, not a Principle.**
    It is `Realization`-linked to a new `Goal`, *Frictionless Architecture &
    Governance at Machine Speed*, which the four drivers `Influence`. The value

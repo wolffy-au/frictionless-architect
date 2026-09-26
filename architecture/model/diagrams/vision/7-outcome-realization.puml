@@ -4,6 +4,9 @@
 title Outcome Realization
 
 Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
+Motivation_Outcome(e_id3be36e7ab88a59, "Approved Change Reaches Production at AI Speed")
+Motivation_Outcome(e_id4f39e9ec8e4656, "Compliance Proven Before Release")
+Motivation_Outcome(e_ide8275430b0ad5e, "Accountable, Auditable Automation")
 Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
 Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
 Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
@@ -13,11 +16,22 @@ Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
 Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
 Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
 Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
-  Strategy_ValueStream(e_id447909387df55c, "Establish Control & Reuse Baseline")
+  Strategy_ValueStream(e_id447909387df55c, "Establish Reuse Baseline")
   Strategy_ValueStream(e_id01dab436206551, "Specify the Change")
   Strategy_ValueStream(e_id36fbfe00214758, "Build Under Supervision")
+  Strategy_ValueStream(e_idf362f39778065d, "Release to Production")
+}
+Strategy_ValueStream(e_id7ee8cdbf8ddc57, "Obligation to Evidence") {
+  Strategy_ValueStream(e_idde40c3d2b32359, "Establish Control Baseline")
   Strategy_ValueStream(e_idb542830057125a, "Prove Compliance")
-  Strategy_ValueStream(e_idf362f39778065d, "Release & Attest")
+}
+Strategy_ValueStream(e_idc55b78731ffe56, "Exception to Decision") {
+  Strategy_ValueStream(e_id57940702bdfc58, "Escalate Non-Standard Change")
+  Strategy_ValueStream(e_id2d06864964375b, "Decide & Sign Off")
+  Strategy_ValueStream(e_iddef15dd937ce53, "Record as Evidence")
+}
+Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
+  Strategy_ValueStream(e_id12b58c7f12735c, "Observe As-Built State")
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
@@ -54,18 +68,32 @@ Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
   Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 }
 
-Rel_Realization_Up(e_idcd5e1d4017725d, e_id79b6a1e545325d, "")
+Rel_Realization_Up(e_idcd5e1d4017725d, e_id3be36e7ab88a59, "")
+Rel_Realization_Up(e_id7ee8cdbf8ddc57, e_id4f39e9ec8e4656, "")
+Rel_Realization_Up(e_idc55b78731ffe56, e_ide8275430b0ad5e, "")
+Rel_Realization_Up(e_idfa7e21ab28235c, e_id79b6a1e545325d, "")
 Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
 Rel_Serving_Up(e_idafba1b4ab1e756, e_id01dab436206551, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_idf362f39778065d, "")
+Rel_Serving_Up(e_id72468b5b403450, e_idde40c3d2b32359, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_idb542830057125a, "")
-Rel_Serving_Up(e_id08f340a094e552, e_idf362f39778065d, "")
+Rel_Serving_Up(e_id4a1c34ab69d151, e_id57940702bdfc58, "")
+Rel_Serving_Up(e_id08f340a094e552, e_id2d06864964375b, "")
+Rel_Serving_Up(e_idc29413a2099958, e_iddef15dd937ce53, "")
+Rel_Serving_Up(e_id18ec07397a9d5f, e_id12b58c7f12735c, "")
 Rel_Serving_Up(e_id41aa3eb894c852, e_iddd4585a6a08153, "")
 Rel_Triggering_Right(e_id447909387df55c, e_id01dab436206551, "")
 Rel_Triggering_Right(e_id01dab436206551, e_id36fbfe00214758, "")
+Rel_Triggering_Right(e_idde40c3d2b32359, e_idb542830057125a, "")
+Rel_Triggering_Right(e_id57940702bdfc58, e_id2d06864964375b, "")
+Rel_Triggering_Right(e_id2d06864964375b, e_iddef15dd937ce53, "")
+Rel_Triggering_Right(e_id12b58c7f12735c, e_iddd4585a6a08153, "")
 Rel_Triggering_Right(e_id36fbfe00214758, e_idb542830057125a, "")
 Rel_Triggering_Right(e_idb542830057125a, e_idf362f39778065d, "")
-Rel_Triggering_Right(e_idf362f39778065d, e_iddd4585a6a08153, "")
+Rel_Triggering_Right(e_idb542830057125a, e_id57940702bdfc58, "not deterministically validated")
+Rel_Flow_Right(e_id2d06864964375b, e_idf362f39778065d, "approval")
+Rel_Triggering_Right(e_idf362f39778065d, e_id12b58c7f12735c, "")
 Rel_Flow_Right(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
 Rel_Realization_Up(e_id65467a0befb959, e_idafba1b4ab1e756, "")
 Rel_Realization_Up(e_id799f46ebb7e15b, e_id4a1c34ab69d151, "woven enforcement")

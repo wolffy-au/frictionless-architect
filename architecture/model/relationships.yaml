@@ -68,17 +68,24 @@
 - {type: Influence, source: coa-living-twin, target: goal-frictionless-architecture}
 - {type: Influence, source: coa-reuse-first, target: goal-frictionless-architecture}
 # GH #20 follow-up: close the strategy-layer loop — each CourseOfAction also
-# serves the value stream it drives (Realization is not a legal CourseOfAction
+# serves the value streams it drives (Realization is not a legal CourseOfAction
 # -> ValueStream pair per the ArchiMate 3.2 relationship matrix; Serving is),
 # so `view-strategy` has a connected path from resources through capabilities
 # and courses of action to the stream and its outcome, instead of
 # ValueStream/Outcome sitting as an isolated pair.
-- {type: Serving, source: coa-executable-governance, target: vs-governed-delivery}
-- {type: Serving, source: coa-living-twin, target: vs-governed-delivery}
 - {type: Serving, source: coa-reuse-first, target: vs-governed-delivery}
+- {type: Serving, source: coa-executable-governance, target: vs-governed-delivery}
+- {type: Serving, source: coa-executable-governance, target: vs-obligation-to-evidence}
+- {type: Serving, source: coa-executable-governance, target: vs-exception-to-decision}
+- {type: Serving, source: coa-living-twin, target: vs-drift-to-remediation}
+# Each value stream's value recipients.
 - {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
-- {type: Association, source: stk-architecture, target: vs-governed-delivery, label: sustained coherence}
-- {type: Association, source: stk-risk-compliance, target: vs-governed-delivery, label: provable compliance}
+- {type: Association, source: stk-exec, target: vs-governed-delivery, label: time to market}
+- {type: Association, source: stk-risk-compliance, target: vs-obligation-to-evidence, label: provable compliance}
+- {type: Association, source: stk-regulator, target: vs-obligation-to-evidence, label: evidence before release}
+- {type: Association, source: stk-exec, target: vs-exception-to-decision, label: accountable automation}
+- {type: Association, source: stk-risk-compliance, target: vs-exception-to-decision, label: examinable decisions}
+- {type: Association, source: stk-architecture, target: vs-drift-to-remediation, label: sustained coherence}
 
 # =====================================================================
 # A. Stakeholders hold drivers; drivers are analysed into assessments
@@ -103,7 +110,11 @@
 - {type: Influence, source: assess-drift-debt, target: outcome-drift-reconciled}
 - {type: Influence, source: assess-manual-compliance, target: outcome-compliance-before-release}
 - {type: Realization, source: outcome-drift-reconciled, target: goal-frictionless-architecture}
-- {type: Realization, source: vs-governed-delivery, target: outcome-drift-reconciled}
+# Each value stream realizes exactly one outcome.
+- {type: Realization, source: vs-governed-delivery, target: outcome-change-at-ai-speed}
+- {type: Realization, source: vs-obligation-to-evidence, target: outcome-compliance-before-release}
+- {type: Realization, source: vs-exception-to-decision, target: outcome-accountable-automation}
+- {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-reconciled}
 - {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
@@ -146,30 +157,49 @@
 - {type: Influence, source: const-cloud-policy, target: req-authoritative-twin}
 
 # =====================================================================
-# A. Value stream: composition of stages, and the capabilities that serve each
+# A. Value streams: composition of stages, and the capabilities that serve each
 # =====================================================================
 - {type: Composition, source: vs-governed-delivery, target: vss-baseline}
 - {type: Composition, source: vs-governed-delivery, target: vss-specify}
 - {type: Composition, source: vs-governed-delivery, target: vss-build}
-- {type: Composition, source: vs-governed-delivery, target: vss-prove}
 - {type: Composition, source: vs-governed-delivery, target: vss-release}
-- {type: Composition, source: vs-governed-delivery, target: vss-reconcile}
+- {type: Composition, source: vs-obligation-to-evidence, target: vss-control-baseline}
+- {type: Composition, source: vs-obligation-to-evidence, target: vss-prove}
+- {type: Composition, source: vs-exception-to-decision, target: vss-escalate}
+- {type: Composition, source: vs-exception-to-decision, target: vss-signoff}
+- {type: Composition, source: vs-exception-to-decision, target: vss-record}
+- {type: Composition, source: vs-drift-to-remediation, target: vss-observe}
+- {type: Composition, source: vs-drift-to-remediation, target: vss-reconcile}
 - {type: Serving, source: cap-reusable-architecture, target: vss-baseline}
 - {type: Serving, source: cap-spec-engine, target: vss-specify}
 - {type: Serving, source: cap-control-plane, target: vss-build}
+- {type: Serving, source: cap-control-plane, target: vss-release}
+- {type: Serving, source: cap-control-catalog, target: vss-control-baseline}
 - {type: Serving, source: cap-control-plane, target: vss-prove}
-- {type: Serving, source: cap-human-approval-workflow, target: vss-release}
+- {type: Serving, source: cap-control-plane, target: vss-escalate}
+- {type: Serving, source: cap-human-approval-workflow, target: vss-signoff}
+- {type: Serving, source: cap-forensic-ledger, target: vss-record}
+- {type: Serving, source: cap-digital-twin, target: vss-observe}
 - {type: Serving, source: cap-drift-dashboard, target: vss-reconcile}
 
-# Stage sequence. The stream is a linear pipeline — no parallel stages. The
-# one non-linear edge is the feedback Flow: Reconcile classifies drift and
-# routes remediation items, which re-enter the stream as a new change to
-# Specify.
+# Stage sequence within each stream (Triggering), then the hand-offs between
+# streams. A change runs baseline -> specify -> build -> prove -> release;
+# prove escalates what it cannot validate deterministically, and the
+# sign-off returns to release as a Flow (an approval, not a second trigger —
+# a Triggering there would make prove -> release derived via the escalation
+# path). A release triggers observation of the new as-built state, and
+# reconciled drift re-enters delivery as a new change to specify.
 - {type: Triggering, source: vss-baseline, target: vss-specify}
 - {type: Triggering, source: vss-specify, target: vss-build}
+- {type: Triggering, source: vss-control-baseline, target: vss-prove}
+- {type: Triggering, source: vss-escalate, target: vss-signoff}
+- {type: Triggering, source: vss-signoff, target: vss-record}
+- {type: Triggering, source: vss-observe, target: vss-reconcile}
 - {type: Triggering, source: vss-build, target: vss-prove}
 - {type: Triggering, source: vss-prove, target: vss-release}
-- {type: Triggering, source: vss-release, target: vss-reconcile}
+- {type: Triggering, source: vss-prove, target: vss-escalate, label: not deterministically validated}
+- {type: Flow, source: vss-signoff, target: vss-release, label: approval}
+- {type: Triggering, source: vss-release, target: vss-observe}
 - {type: Flow, source: vss-reconcile, target: vss-specify, label: drift remediation re-enters}
 
 # =====================================================================

@@ -421,7 +421,6 @@
   id: res-ea-practice
   name: Enterprise Architecture Practice
   desc: Human resource — the architects who curate patterns and hold governance decisions.
-
 - type: Resource
   id: res-evidence-record
   name: Accumulated Evidence Record
@@ -430,8 +429,11 @@
     actions, gate decisions and sign-offs that regulatory examination draws on.
 
 # =====================================================================
-# A. STRATEGY — Value stream (outcome-oriented view of governed delivery;
-#    each stage is served by the capabilities that enable it)
+# A. STRATEGY — Value streams, one per outcome. Each stream delivers its
+#    outcome to the stakeholders who want it (Association), is composed of the
+#    stages that produce it, and each stage is served by the capabilities that
+#    enable it. Stages hand off across streams (Triggering / Flow) where one
+#    stream's result is another's input.
 # =====================================================================
 - type: ValueStream
   id: vs-governed-delivery
@@ -439,15 +441,15 @@
   desc: >-
     Architecture as executable intelligence, applied to delivery: the
     specification, the controls and the guardrails are machine-readable
-    artefacts that AI agents and pipelines consume directly. End-to-end value
-    stream that turns an approved change into a compliant, twin-reconciled
-    production release: baseline, specify, build, prove, release, reconcile.
+    artefacts that AI agents and pipelines consume directly, so an approved
+    change is specified from the graph, built under supervision against
+    reusable designs, and released — baseline, specify, build, release.
 - type: ValueStream
   id: vss-baseline
-  name: Establish Control & Reuse Baseline
+  name: Establish Reuse Baseline
   desc: >-
-    Curated controls, obligations, patterns and blueprints are in place to
-    build the change against.
+    Curated, control-mapped patterns, blueprints and solution designs are in
+    place to build the change from.
 - type: ValueStream
   id: vss-specify
   name: Specify the Change
@@ -461,17 +463,74 @@
     Development agents produce code, tests and manifests within enforced
     architectural and regulatory boundaries.
 - type: ValueStream
+  id: vss-release
+  name: Release to Production
+  desc: >-
+    A change that has cleared its compliance gate — and human sign-off, where
+    it needed one — is deployed to production.
+
+- type: ValueStream
+  id: vs-obligation-to-evidence
+  name: Obligation to Evidence
+  desc: >-
+    Turns regulatory obligations and policy into machine-readable controls,
+    and proves every change against them before it ships — compliance
+    evidence produced at the gate, not reconstructed afterwards.
+- type: ValueStream
+  id: vss-control-baseline
+  name: Establish Control Baseline
+  desc: >-
+    Applicable obligations, policies and standards are maintained as
+    version-controlled, machine-readable controls, mapped to the patterns
+    they govern.
+- type: ValueStream
   id: vss-prove
   name: Prove Compliance
   desc: >-
-    The release candidate is evaluated against the specification and the
-    expected controls; non-compliant changes are blocked, not flagged later.
+    The release candidate is mapped to its obligations and evaluated against
+    the specification and the expected controls; non-compliant changes are
+    blocked, not flagged later.
+
 - type: ValueStream
-  id: vss-release
-  name: Release & Attest
+  id: vs-exception-to-decision
+  name: Exception to Decision
   desc: >-
-    A compliant release is deployed, human sign-off is captured where required,
-    and every decision is recorded to the forensic ledger.
+    Routes every change the platform cannot deterministically validate to a
+    named human, and records every decision as contemporaneous evidence —
+    automation at machine speed with accountable ownership of the exceptions.
+- type: ValueStream
+  id: vss-escalate
+  name: Escalate Non-Standard Change
+  desc: >-
+    A change that cannot be deterministically validated against the
+    executable specification is routed to a named architect, never resolved
+    autonomously.
+- type: ValueStream
+  id: vss-signoff
+  name: Decide & Sign Off
+  desc: >-
+    The named architect approves or rejects the change explicitly, with the
+    rationale captured.
+- type: ValueStream
+  id: vss-record
+  name: Record as Evidence
+  desc: >-
+    The decision, and the gate evaluation that triggered it, are recorded to
+    the append-only forensic ledger as examinable evidence.
+
+- type: ValueStream
+  id: vs-drift-to-remediation
+  name: Drift to Remediation
+  desc: >-
+    Keeps the as-built estate converged on as-designed intent: observed state
+    is reconciled continuously and classified drift is remediated before it
+    accumulates as unmanaged risk.
+- type: ValueStream
+  id: vss-observe
+  name: Observe As-Built State
+  desc: >-
+    Telemetry and deployed artefacts refresh the as-built digital twin plane
+    of the knowledge graph.
 - type: ValueStream
   id: vss-reconcile
   name: Reconcile & Remediate
@@ -543,6 +602,13 @@
     The Solution Architect composes implementation blueprints into a
     solution-specific Solution Design. Realized at application layer by
     fn-solution-compose.
+# Modelling note (2026-09-26, open): the bfn-* BusinessFunctions below
+# group processes by lifecycle (GH #7, GH #25). They could — and arguably
+# should — be re-cut to align with the journeys of the section-B roles
+# (Enterprise / Solution / Security Architect, Developer, Compliance
+# Officer, Platform Ops): value streams are organised by who *receives*
+# value (one per outcome), so the role-by-role view of who *does* the work
+# belongs here, in the business layer, not in extra value streams.
 - type: BusinessFunction
   id: bfn-agentic-delivery
   name: Agentic Delivery Execution

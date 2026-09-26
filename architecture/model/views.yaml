@@ -90,8 +90,8 @@
   name: Strategy
   viewpoint: strategy
   diagram: vision/4-strategy
-  # Overview: resources -> capabilities -> courses of action, the value stream
-  # as a single element, and the outcome. Stage decomposition and the
+  # Overview: resources -> capabilities -> courses of action, each value
+  # stream as a single element, and the outcome it realizes. Stage decomposition and the
   # recipient stakeholders belong to the Value Stream view; the goal linkage
   # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
   # stops at the strategy layer — see Goal Realization for that.
@@ -105,6 +105,12 @@
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
     - vs-governed-delivery
+    - vs-obligation-to-evidence
+    - vs-exception-to-decision
+    - vs-drift-to-remediation
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - outcome-drift-reconciled
     - cap-digital-twin
     - cap-spec-engine
@@ -133,22 +139,45 @@
     - cap-reusable-architecture
 
 - id: view-value-stream
-  name: Value Stream — Governed Architecture Delivery
+  name: Value Stream Hand-offs
   viewpoint: value_stream
   diagram: vision/6-value-stream
-  # The stream and its six stages (Composition + Triggering sequence, with the
-  # Reconcile→Specify feedback Flow), the capabilities that Serve each stage,
-  # the recipient stakeholders the stream delivers value to, and the Outcome it
-  # Realizes. Resources and courses of action belong to the Strategy view.
+  no_direction: [Flow]
+  # How the four value streams connect: each parent stream nests its stages
+  # (Composition) so every stage is identifiable by stream, with the
+  # Triggering sequence within each stream and the Triggering / Flow
+  # hand-offs across streams (ADR-0033). Flow edges are left undirected so
+  # the layout engine routes the feedback/approval edges between boxes
+  # instead of looping them over the top. Each stream's recipients, outcome
+  # and serving capabilities are in its own view (6a-6d).
   # ValueStream is scoped via members, not include_types — the IT4IT import
   # added 36 more ValueStream elements (7 streams + 29 stages).
-  # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
-  # cap-control-catalog, cap-reusable-architecture) appear nested inside a
-  # Strategy_Resource box in the Strategy view (Resource --Assignment-->
-  # Capability). They render flat here, not nested, because Resource is
-  # deliberately out of scope for this view — not a modelling inconsistency.
-  # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story, not this one's — exclude it so it doesn't repeat.
+  members:
+    - vs-governed-delivery
+    - vs-obligation-to-evidence
+    - vs-exception-to-decision
+    - vs-drift-to-remediation
+    - vss-baseline
+    - vss-specify
+    - vss-build
+    - vss-release
+    - vss-control-baseline
+    - vss-prove
+    - vss-escalate
+    - vss-signoff
+    - vss-record
+    - vss-observe
+    - vss-reconcile
+
+- id: view-vs-governed-delivery
+  name: Value Stream — Governed Architecture Delivery
+  viewpoint: value_stream
+  diagram: vision/6a-governed-delivery
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
   members:
@@ -156,28 +185,84 @@
     - vss-baseline
     - vss-specify
     - vss-build
-    - vss-prove
     - vss-release
-    - vss-reconcile
-    - cap-control-catalog
+    - stk-delivery
+    - stk-exec
+    - outcome-change-at-ai-speed
     - cap-reusable-architecture
-    - cap-digital-twin
     - cap-spec-engine
     - cap-control-plane
-    - cap-forensic-ledger
-    - cap-human-approval-workflow
-    - cap-drift-dashboard
-    - stk-delivery
-    - stk-architecture
+
+- id: view-vs-obligation-to-evidence
+  name: Value Stream — Obligation to Evidence
+  viewpoint: value_stream
+  diagram: vision/6b-obligation-to-evidence
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
+  members:
+    - vs-obligation-to-evidence
+    - vss-control-baseline
+    - vss-prove
     - stk-risk-compliance
+    - stk-regulator
+    - outcome-compliance-before-release
+    - cap-control-catalog
+    - cap-control-plane
+
+- id: view-vs-exception-to-decision
+  name: Value Stream — Exception to Decision
+  viewpoint: value_stream
+  diagram: vision/6c-exception-to-decision
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
+  members:
+    - vs-exception-to-decision
+    - vss-escalate
+    - vss-signoff
+    - vss-record
+    - stk-exec
+    - stk-risk-compliance
+    - outcome-accountable-automation
+    - cap-control-plane
+    - cap-human-approval-workflow
+    - cap-forensic-ledger
+
+- id: view-vs-drift-to-remediation
+  name: Value Stream — Drift to Remediation
+  viewpoint: value_stream
+  diagram: vision/6d-drift-to-remediation
+  # One stream on its own: its stages in sequence, the capabilities that
+  # serve each stage, the stakeholders it delivers value to, and the outcome
+  # it realizes. Hand-offs to other streams are in the Value Stream
+  # Hand-offs view.
+  # The capability-to-capability Serving mesh is the Capability Map's story.
+  exclude:
+    - {type: Serving, source_type: Capability, target_type: Capability}
+  members:
+    - vs-drift-to-remediation
+    - vss-observe
+    - vss-reconcile
+    - stk-architecture
     - outcome-drift-reconciled
+    - cap-digital-twin
+    - cap-drift-dashboard
 
 - id: view-outcome-realization
   name: Outcome Realization
   viewpoint: outcome_realization
   diagram: vision/7-outcome-realization
-  # How business processes realize capabilities, which serve the value stream,
-  # which realizes the outcome — the end-to-end realization chain.
+  # How business processes realize capabilities, which serve the value
+  # streams, each of which realizes one outcome — the end-to-end realization chain.
   # Capability/ValueStream scoped via members, not include_types — see notes
   # above; the IT4IT import added elements of both types.
   # GH #7: the four bfn-* BusinessFunctions are added as members (not via
@@ -198,13 +283,24 @@
     - {type: Serving, source_type: Capability, target_type: Capability}
   include_types: [BusinessProcess]
   members:
+    - outcome-change-at-ai-speed
+    - outcome-compliance-before-release
+    - outcome-accountable-automation
     - outcome-drift-reconciled
     - vs-governed-delivery
     - vss-baseline
     - vss-specify
     - vss-build
-    - vss-prove
     - vss-release
+    - vs-obligation-to-evidence
+    - vss-control-baseline
+    - vss-prove
+    - vs-exception-to-decision
+    - vss-escalate
+    - vss-signoff
+    - vss-record
+    - vs-drift-to-remediation
+    - vss-observe
     - vss-reconcile
     - cap-digital-twin
     - cap-spec-engine
