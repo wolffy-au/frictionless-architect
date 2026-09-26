@@ -5,6 +5,8 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 
+cd "$(git rev-parse --show-toplevel)"
+
 echo "Starting pre-commit checks..."
 
 echo "Running pre-commit checks..."
@@ -30,6 +32,10 @@ poetry run mypy
 # --- Unit Tests ---
 echo "Running pytest unit tests..."
 poetry run pytest tests/unit/
+
+# --- platform/ monorepo packages (own lock + venv) ---
+echo "Running platform/ package checks..."
+scripts/platform_checks.sh
 
 
 echo "Pre-commit checks passed successfully."

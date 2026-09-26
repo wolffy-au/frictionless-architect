@@ -20,6 +20,9 @@ if ! git diff --quiet -- poetry.lock; then
 fi
 echo "poetry.lock already up to date."
 
+echo "Updating platform/poetry.lock and re-running the platform/ package checks..."
+scripts/platform_checks.sh --update
+
 # --- Code Quality Checks ---
 # echo "Running code quality scan..."
 # poetry run pysonar --sonar-token=<token> --exclude .git || true
@@ -29,6 +32,9 @@ echo "Running Snyk security scan..."
 poetry run snyk auth "${SNYK_TOKEN:?SNYK_TOKEN must be set to run the pre-merge Snyk scan}"
 poetry run snyk test --package-manager=poetry --org=wolffy-au
 poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ignores
+# platform/ has its own lock; `snyk test` scans one project per directory.
+# (Snyk Code above already walks platform/ source.)
+(cd platform && snyk test --package-manager=poetry --file=poetry.lock --org=wolffy-au)
 
 # behave (BDD acceptance) is not gated while tests/features/ is a placeholder.
 # Re-add `poetry run behave tests/features/` here once real scenarios exist.

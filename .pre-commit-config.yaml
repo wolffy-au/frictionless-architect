@@ -102,3 +102,12 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
+
+      # platform/ monorepo packages: own lock + venv, so pyright/mypy/pytest
+      # above never see them (root pyright excludes platform/).
+      - id: platform-checks
+        name: platform/ package checks
+        entry: scripts/platform_checks.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
