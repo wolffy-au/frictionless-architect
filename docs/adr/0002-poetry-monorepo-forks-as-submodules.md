@@ -28,6 +28,20 @@ forks are low-touch (periodic `fork-sync`).
 - Whether anything ever leaves the monorepo for its own repo is an open question
   (`ARCHITECTURE.md` §10); current lean is "package forever".
 
+## Implementation status (2026-09-26)
+
+`ARCHITECTURE.md` §8 steps 1–3 are in (#71). `platform/pyproject.toml` is a
+non-package Poetry project (`package-mode = false`) with one `poetry.lock`,
+listing each package as a path dependency (`develop = true`). The first package
+is `platform/packages/controls-compliance-catalog`. `scripts/platform_checks.sh`
+gates every package, and the root gate scripts, the pre-push hook and CI call it.
+
+Until step 7 empties the flat `src/`, the repo root keeps its own project,
+`poetry.lock` and virtualenv beside `platform/`. So there are two locks for now,
+not one. Root pyright excludes `platform/`, which has its own pyright config and
+environment. Versioning and commitizen stay at the repo root: packages carry a
+fixed `0.0.0` until they move to the monorepo root with the last extraction.
+
 ## Alternatives considered
 
 - **`uv` workspace** — see ADR-0003.

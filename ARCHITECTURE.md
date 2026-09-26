@@ -273,6 +273,13 @@ between them (GH #65):
 The order puts each package after the packages it consumes — see the
 [packaging view](architecture/model/diagrams/implementation/packaging.svg) (ADR-0005, #60).
 
+**Status:** steps 1–3 done (#71). `platform/` has its own `pyproject.toml` and
+`poetry.lock`; `packages/controls-compliance-catalog` is an empty, installable package.
+`scripts/platform_checks.sh` gates every package under `platform/packages/` (lock check,
+pyright, mypy, pytest at 90% coverage). The pre-commit and pre-merge scripts, the
+pre-push hook and CI all call it, and Sonar and Codecov pick up its coverage. The repo
+root keeps its own project and lock for the flat `src/` until step 7 empties it.
+
 ### 8.1 First extraction — controls-compliance-catalog
 
 The policy-to-OSCAL pipeline (#44) is new code, so it is written straight into
@@ -283,11 +290,11 @@ step 4. It needs the `platform/` skeleton (step 1) first.
 
 Checklist:
 
-- Create `packages/controls-compliance-catalog/` with its own `pyproject.toml`, `src/`,
-  `tests/`, `README.md`, and `specs/` (§3.2, §6); add it to the `platform/` workspace.
-- Re-target `specs/003-oscal-ai-conversion` at this package (it planned an `/oscal`
+- [x] Create `packages/controls-compliance-catalog/` with its own `pyproject.toml`, `src/`,
+  `tests/`, `README.md`, and `specs/` (§3.2, §6); add it to the `platform/` workspace (#71).
+- [ ] Re-target `specs/003-oscal-ai-conversion` at this package (it planned an `/oscal`
   router in the flat `src/`, ADR-0005 → Implementation status 2026-09-24).
-- Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
+- [ ] Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
 
 ### 8.2 Visualiser API/UI split (step 7)
 
