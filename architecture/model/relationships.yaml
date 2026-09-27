@@ -861,3 +861,30 @@
 - {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}
+
+# =====================================================================
+# F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition
+#    is hosted on the existing sw-uvicorn-fastapi/node-app-server pair, and
+#    composes the six subsystems' own UI fragments (each covered by its
+#    art-pkg-<subsystem> Artifact) — not sub-schema-visualizer, which is
+#    not one of the six subsystems (elements.yaml) and is composed into
+#    role-ea's journey by a separate Serving edge below, not by this
+#    function.
+# =====================================================================
+- {type: Serving, source: sw-uvicorn-fastapi, target: techfn-role-journey-composition, label: hosts}
+- {type: Realization, source: art-pkg-controls-compliance-catalog, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-reusable-architecture-library, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-digital-twin-knowledge-graph, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-architecture-governance, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-conformance-drift-assurance, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-modelling-specification, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+
+# =====================================================================
+# F. Schema-visualiser UI home (ADR-0005 + ADR-0020, resolved 2026-09-27,
+#    GH #55 item 8): sub-schema-visualizer composes its UI into role-ea's
+#    journey, alongside sub-library/sub-governance/sub-assurance (see the
+#    Serving edges above from those three to role-ea) — not a standalone
+#    dashboard, not a seventh subsystem. It visualises the same
+#    Architecture Knowledge Graph (sub-twin) role-ea already owns there.
+# =====================================================================
+- {type: Serving, source: sub-schema-visualizer, target: role-ea, label: visualises the Architecture Knowledge Graph schema for}

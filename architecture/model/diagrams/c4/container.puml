@@ -69,5 +69,6 @@ Rel(n_id82f04fecbdd85e, n_idb9264b9a2b5a50, "reads patterns, blueprints & design
 Rel(n_id82f04fecbdd85e, n_id2610ae0cc2cc50, "requests draft specifications from")
 Rel(n_id82f04fecbdd85e, n_id4a7b9c4171d855, "specifications")
 Rel(n_idd18b3d46fade58, n_id3da203d482f955, "reads the knowledge graph via")
+Rel(n_id2b5394f913985a, n_idd18b3d46fade58, "visualises the Architecture Knowledge Graph schema for")
 
 @enduml

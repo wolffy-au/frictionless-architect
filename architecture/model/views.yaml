@@ -770,6 +770,7 @@
     - sub-schema-visualizer
     - if-twin-read-path
     - sw-uvicorn-fastapi
+    - techfn-role-journey-composition
     - art-flat-src
     - art-pkg-schema-visualizer-api
     - art-pkg-digital-twin-knowledge-graph

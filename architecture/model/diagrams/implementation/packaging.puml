@@ -22,6 +22,7 @@ Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
 Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
   Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
 }
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
 
 Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
 Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")
@@ -33,5 +34,12 @@ Rel_Realization_Up(e_id3ac7123fc98d52, e_id3b0beba52b5a5c, "")
 Rel_Realization_Up(e_id880eb98a22b15c, e_id0d5bd02b5ffe5e, "")
 Rel_Realization_Up(e_idb422fae52e4652, e_id492c882252a953, "")
 Rel_Realization_Up(e_id42d611ba8e6759, e_id82f04fecbdd85e, "")
+Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
+Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id3ac7123fc98d52, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id880eb98a22b15c, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_idb422fae52e4652, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id42d611ba8e6759, e_id6603be277fb85c, "ui/ fragment composed by")
 
 @enduml

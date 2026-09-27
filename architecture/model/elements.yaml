@@ -1525,3 +1525,34 @@
     designed yet, so this Gap records the transition without committing to
     more than the deliberately underspecified node-hosted-cluster
     placeholder.
+
+# =====================================================================
+# F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved
+#    2026-09-27, GH #55 item 7): each subsystem's ui/ stays its own
+#    independently-owned UI fragment (already covered — each
+#    art-pkg-<subsystem> Artifact spans both its api/ and ui/ subtrees, per
+#    the GH #55 Proposal). What was still implicit is HOW those fragments
+#    get composed for a user: server-composed per role journey, not a
+#    client-side runtime framework. Backstage plugins and a client-side
+#    shell (module federation / single-spa) were both explicitly rejected
+#    (ADR-0020's "Alternatives considered" and its 2026-09-27 update) — no
+#    new SystemSoftware/Node is introduced. Composition is modelled as a
+#    TechnologyFunction rather than one more subsystem-owned fn-* (the
+#    section-C ApplicationFunctions are each Assignment-owned by exactly
+#    one subsystem — see the Assignment edges in relationships.yaml — but
+#    this function is cross-subsystem and owned by no single one of them;
+#    it is hosted directly on the shared sw-uvicorn-fastapi/node-app-server
+#    pair, the same idiom used for techproc-oscal-golden-check's hosting on
+#    sw-pytest above). Concrete mechanism (templating layer, per-role route
+#    ownership) remains deferred to implementation (ADR-0020).
+# =====================================================================
+- type: TechnologyFunction
+  id: techfn-role-journey-composition
+  name: Server-Side Role-Journey Composition
+  desc: >-
+    Assembles the role-facing page a BusinessRole lands on from the
+    independently-owned UI fragments of the subsystems that serve that
+    role, server-side, pairing with that role's journey API rather than
+    re-deriving composition logic in a client-side plugin host or shell
+    (ADR-0020, updated 2026-09-27). Hosted on sw-uvicorn-fastapi — not a
+    new deployable.
