@@ -156,7 +156,7 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 | 4 | Architecture Governance | `packages/architecture-governance` | **build** | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off (and its UI). |
 | 5 | Conformance & Drift Assurance | `packages/conformance-drift-assurance` | **build**, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate control enforcement (CPS 230 / 234), BAU effectiveness monitoring, drift detection, Break-Glass, remediation tickets. |
 | 6 | Modelling & Specification | `packages/modelling-specification` | **build** | ArchiMate / C4 / UML modelling and executable-spec generation from the knowledge graph. |
-| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005). Where its embedded UI lands is open (#55). |
+| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005). Its UI composes into `role-ea`'s journey, not a standalone dashboard (ADR-0005/0020, #55). |
 <!-- pyml enable md013 -->
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or dissolved:
@@ -310,7 +310,7 @@ package "AFTER" {
     [cache.py config.py\npayload + coverage-merge logic] as after_lib
     after_api --> after_lib
   }
-  package "packages/schema-visualizer-ui  (home open — #55)" {
+  package "packages/schema-visualizer-ui  (composes into role-ea's journey — #55)" {
     [Vite app\nfetches /schema-payload] as after_ui
   }
   after_ui ..> after_api : HTTP (CORS / dev proxy)

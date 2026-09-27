@@ -30,7 +30,10 @@ There is no central dashboard package.
 - Package layout: `packages/<subsystem>/api/` + `packages/<subsystem>/ui/`
   (`ARCHITECTURE.md` §3–4).
 - The schema-visualiser UI (ADR-0005's `schema-visualizer-ui`) no longer folds
-  into a dashboard; its home is also open in #55.
+  into a dashboard. **Home resolved (2026-09-27, GH #55):** composed into
+  `role-ea`'s journey, alongside `sub-library`/`sub-governance`/`sub-assurance`
+  — it's not one of the six subsystems (`elements.yaml`), but visualises the
+  same Architecture Knowledge Graph `role-ea` already owns elsewhere.
 - `turborepo` is adopted only once JS weight justifies a task graph (ADR-0002).
 
 **Update (2026-09-27, GH #55): composition is role-aware, not just cross-subsystem.**
