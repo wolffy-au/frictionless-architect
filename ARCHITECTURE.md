@@ -95,8 +95,9 @@ end note
   pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
 - **Each subsystem ships its own UI** ([ADR-0020](docs/adr/0020-per-subsystem-uis.md)) —
   a `ui/` `pnpm` sub-tree beside its `api/`, inside the same monorepo, not a separate repo,
-  until JS weight demands `turborepo`. There is no central dashboard package; how the UIs
-  are composed (Backstage plugins or a shell app) is open (#55).
+  until JS weight demands `turborepo`. There is no central dashboard package; composition
+  is server-composed per role journey, not a client-side shell or Backstage plugins
+  (ADR-0020); build tooling for the `ui/` trees remains open (#55).
 
 ### 3.2 Target directory layout
 
@@ -107,7 +108,7 @@ frictionless-architect/                 # ROOT — governance & orchestration
 ├── specs/                               # EPIC / cross-cutting specs only  (see §6)
 │   └── EPIC-xxx-.../
 ├── orchestration/
-│   ├── compose/                         # docker-compose for Neo4j (+ Postgres / OPA if kept — #55)
+│   ├── compose/                         # docker-compose for Neo4j (+ Postgres / OPA if kept) — target through MVP (ADR-0018)
 │   └── scripts/                         # cross-component coordination
 ├── third_party/                        # git submodules — vendored forks ONLY
 │   ├── <archimate-parser-fork>/
@@ -363,8 +364,9 @@ Checklist:
    rule? (Leaning: package forever; split only if a component is open-sourced standalone.)
 2. Root `.specify/` as the platform constitution with lighter per-component constitutions
    beneath, or one constitution only?
-3. Per-subsystem UIs (ADR-0020): Backstage plugins, or composed in a shell app? Changes
-   each `ui/` tree's build shape (#55).
+3. *Resolved (ADR-0020, 2026-09-27):* per-subsystem UI composition is server-composed
+   per role journey, neither Backstage plugins nor a client-side shell app. Build tooling
+   for each `ui/` tree remains open (#55).
 4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
    is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
    dependency, not a fork.)
