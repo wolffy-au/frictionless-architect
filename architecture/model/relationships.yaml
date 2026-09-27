@@ -851,3 +851,13 @@
 
 - {type: Assignment, source: node-app-server, target: sw-uvicorn-fastapi}
 - {type: Assignment, source: sw-uvicorn-fastapi, target: art-pkg-controls-compliance-catalog, label: hosts / serves}
+
+# --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
+- {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
+- {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
+- {type: Aggregation, source: plat-runtime-mvp, target: node-app-server}
+- {type: Aggregation, source: plat-runtime-mvp, target: sw-neo4j}
+- {type: Aggregation, source: plat-runtime-target, target: node-hosted-cluster}
+- {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
+- {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
+- {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}

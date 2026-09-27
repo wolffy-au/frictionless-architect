@@ -1407,8 +1407,17 @@
 #    deployment target", served via `poetry run uvicorn` (quickstart.md) —
 #    so this stays a single shared Node/SystemSoftware pair, not a
 #    dedicated one per subsystem. Not on any committed view yet. GH #55's
-#    other open questions (Postgres/OPA, CommunicationNetwork, per-subsystem
-#    UI hosting per ADR-0020) are deliberately out of scope here.
+#    other open questions (Postgres/OPA, per-subsystem UI hosting per
+#    ADR-0020) are deliberately out of scope here.
+#
+#    Runtime-target skeleton (ADR-0018, updated 2026-09-27): #55's "local
+#    compose only, or a hosted cluster?" resolved to phased — local compose
+#    through the (currently undated) MVP milestone, ADR-0024, then a hosted
+#    cluster for target architecture, shape deferred to a follow-up ADR.
+#    node-hosted-cluster and sw-neo4j below are the deliberately
+#    underspecified skeleton for that — CommunicationNetwork stays out of
+#    scope until the hosted-cluster shape (and so its network topology) is
+#    actually designed.
 # =====================================================================
 - type: Node
   id: node-ci-runner
@@ -1475,3 +1484,44 @@
     `uvicorn frictionless_architect.app:app` (specs/003-oscal-ai-conversion
     quickstart.md).
   props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-neo4j
+  name: Neo4j 5.x
+  desc: >-
+    The architecture knowledge-graph database (ADR-0018). Runs inside
+    node-app-server's `orchestration/compose/` stack through the MVP
+    milestone; moves to node-hosted-cluster once target architecture is
+    built (ADR-0018, updated 2026-09-27).
+  props: {c4: ignore}
+- type: Node
+  id: node-hosted-cluster
+  name: Hosted Cluster (target runtime, shape deferred)
+  desc: >-
+    Placeholder for #55's target-architecture runtime, once past the MVP
+    milestone (ADR-0018, updated 2026-09-27). Deliberately underspecified —
+    managed vs. self-managed, and which orchestrator, are deferred to a
+    follow-up ADR; nothing in the codebase argues for one option yet.
+  props: {c4: ignore}
+- type: Plateau
+  id: plat-runtime-mvp
+  name: "Runtime: local compose (MVP)"
+  desc: >-
+    Baseline and current state: node-app-server's docker-compose stack is
+    the only deployment shape, through the MVP milestone (ADR-0024,
+    undated).
+- type: Plateau
+  id: plat-runtime-target
+  name: "Runtime: hosted cluster (target)"
+  desc: >-
+    Target state once past the MVP milestone: the data layer moves to
+    node-hosted-cluster (ADR-0018, updated 2026-09-27). Concrete shape
+    deferred to a follow-up ADR.
+- type: Gap
+  id: gap-runtime-hosted
+  name: "Gap: local compose -> hosted cluster"
+  desc: >-
+    plat-runtime-mvp -> plat-runtime-target. Triggered by reaching the MVP
+    milestone (currently undated); the hosted cluster's own shape isn't
+    designed yet, so this Gap records the transition without committing to
+    more than the deliberately underspecified node-hosted-cluster
+    placeholder.

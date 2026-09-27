@@ -844,6 +844,8 @@
     - art-pkg-controls-compliance-catalog
     - art-tech-oscal-workspace
     - art-tech-ledger-file
+    - sw-neo4j
+    - node-hosted-cluster
 
 - id: view-technology-usage-catalog
   name: "Technology Usage: Catalog Runtime"
@@ -895,3 +897,21 @@
     - art-pkg-architecture-governance
     - art-pkg-conformance-drift-assurance
     - art-pkg-modelling-specification
+
+- id: view-runtime-migration
+  name: "Runtime Migration: Local Compose to Hosted Cluster"
+  diagram: technology/runtime-migration
+  # GH #55's runtime-target skeleton (ADR-0018, updated 2026-09-27): the
+  # MVP -> target Plateau/Gap for the data layer's deployment shape.
+  # Deliberately its own view, not folded into view-migration — that view's
+  # Plateaus/Gaps are the packaging restructure (ARCHITECTURE.md §8), a
+  # separate transition story from this one (same reasoning as keeping
+  # view-technology-ci-check and view-technology-persistence-boundary apart).
+  viewpoint: implementation_migration
+  members:
+    - plat-runtime-mvp
+    - plat-runtime-target
+    - gap-runtime-hosted
+    - node-app-server
+    - node-hosted-cluster
+    - sw-neo4j

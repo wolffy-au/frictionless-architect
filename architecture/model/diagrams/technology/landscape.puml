@@ -15,6 +15,10 @@ Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
     Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
   }
 }
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
 
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
 
 @enduml
