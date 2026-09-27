@@ -1,0 +1,15 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology Usage: Catalog Runtime
+
+Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
+    Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+  }
+}
+
+Rel_Realization_Up(e_idfcb391a9833b5b, e_ide4bef3733af65a, "")
+
+@enduml

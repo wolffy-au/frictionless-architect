@@ -404,8 +404,12 @@
   # (GH #61 decision A), so the Profile objects live there.
   members:
     - sub-catalog
+    - if-catalog-ui
+    - fn-policy-upload
+    - fn-policy-quality-feedback
     - fn-ai-markdown-conversion
     - fn-oscal-conversion
+    - fn-oscal-validation
     - ext-llm
     - ext-trestle
     - art-policy-doc
@@ -676,6 +680,26 @@
     - art-remediation-item
     - art-oscal-poam
 
+- id: view-application-structure-catalog
+  name: Application Structure — Controls & Compliance Catalog
+  # Standard Application Structure viewpoint: the internal structure of one
+  # application (component, interface, and the data it owns), as opposed to
+  # view-artefact-oscal / -oscal-resolve's artefact-flow-through-functions
+  # story. ApplicationFunction isn't a viewpoint-legal element here, so
+  # ownership is shown via the sub-catalog -> art-* Aggregations added
+  # alongside the fn-* Write-access edges they mirror.
+  viewpoint: application_structure
+  diagram: application/catalog-structure
+  members:
+    - sub-catalog
+    - if-catalog-ui
+    - art-policy-doc
+    - art-regulatory-standard
+    - art-trestle-markdown
+    - art-oscal-catalog
+    - art-oscal-profile
+    - art-oscal-resolved-catalog
+
 - id: view-it4it-capability-bridges
   name: "IT4IT: Capability Bridges"
   # Pure Capability, both first-party cap-* and it4it-cap-* — a clean fit for
@@ -719,8 +743,12 @@
 - id: view-packaging
   name: Packaging
   diagram: implementation/packaging
-  # Packages (Artifacts) realising the components they ship. No Nodes /
-  # SystemSoftware yet — the deployment half of this viewpoint is GH #55.
+  # Packages (Artifacts) realising the components they ship, plus the
+  # runtime SystemSoftware that hosts them (GH #55). Its Node
+  # (node-app-server) is deliberately not a member — the
+  # implementation_deployment viewpoint's allowed-concept list doesn't
+  # include Node — see view-technology-ci-check for the same constraint on
+  # node-ci-runner.
   viewpoint: implementation_deployment
   # Subsystem-to-subsystem cooperation is the Artefact Flow views' story,
   # not packaging's — exclude it so it doesn't render incidentally.
@@ -728,7 +756,10 @@
     - {type: Serving, source_type: ApplicationComponent, target_type: ApplicationComponent}
     - {type: Flow, source_type: ApplicationComponent, target_type: ApplicationComponent}
     - {type: Association, source_type: ApplicationComponent, target_type: ApplicationComponent}
-  include_types: [Artifact]
+  # include_types: [Artifact] would also sweep in the non-package Artifacts
+  # added for GH #55's persistence-boundary slice (art-tech-oscal-workspace,
+  # art-tech-ledger-file) — listed explicitly instead so only the deployable
+  # package artifacts appear here.
   members:
     - sub-catalog
     - sub-library
@@ -738,6 +769,99 @@
     - sub-modelling
     - sub-schema-visualizer
     - if-twin-read-path
+    - sw-uvicorn-fastapi
+    - techfn-role-journey-composition
+    - art-flat-src
+    - art-pkg-schema-visualizer-api
+    - art-pkg-digital-twin-knowledge-graph
+    - art-pkg-controls-compliance-catalog
+    - art-pkg-reusable-architecture-library
+    - art-pkg-architecture-governance
+    - art-pkg-conformance-drift-assurance
+    - art-pkg-modelling-specification
+
+- id: view-technology-ci-check
+  name: "Technology: OSCAL Golden-Dataset CI Check"
+  diagram: technology/oscal-golden-check
+  # GH #55's CI/testing slice: the runner and test tool executing the
+  # golden-dataset regression check, and the application-layer functions +
+  # generated/vendored DataObjects each of its three legs checks (spec
+  # 003-oscal-ai-conversion FR-006/FR-007: catalog, profile, and resolution).
+  # Deliberately viewpoint: custom — node-ci-runner is a Node, which no
+  # standard viewpoint bundling Application + Technology concepts (e.g.
+  # implementation_deployment) allows; see view-packaging's note on the
+  # same constraint.
+  viewpoint: custom
+  members:
+    - node-ci-runner
+    - sw-pytest
+    - techproc-oscal-golden-check
+    - fn-oscal-conversion
+    - art-oscal-catalog
+    - art-baseline
+    - art-regulatory-standard
+    - fn-baseline-tailoring
+    - art-oscal-profile
+    - art-baseline-profile
+    - fn-oscal-profile-resolve
+    - art-oscal-resolved-catalog
+    - art-baseline-resolved-catalog
+    - ext-llm
+    - ext-trestle
+
+- id: view-technology-persistence-boundary
+  name: "Technology: Persistence Boundary"
+  diagram: technology/persistence-boundary
+  # GH #55's storage-location slice (spec 003-oscal-ai-conversion research.md
+  # R3/R7): what store-oscal and store-ledger actually run on -- local
+  # filesystem Artifacts on node-app-server, not Postgres/Neo4j. Deliberately
+  # viewpoint: custom for the same reason as view-technology-ci-check: mixing
+  # Node/Artifact (Technology) with DataObject (Application) isn't covered by
+  # a standard viewpoint's allow-list.
+  viewpoint: custom
+  members:
+    - node-app-server
+    - art-tech-oscal-workspace
+    - store-oscal
+    - art-tech-ledger-file
+    - store-ledger
+
+- id: view-technology-landscape
+  name: "Technology: Infrastructure Landscape"
+  # Standard Technology viewpoint: the pure infrastructure topology (Node,
+  # SystemSoftware, TechnologyProcess, Artifact -- no ApplicationComponent or
+  # DataObject), covering both Nodes side by side. Distinct from
+  # view-technology-ci-check, which is scoped to the CI slice plus the
+  # application-layer concepts (fn-oscal-conversion, art-oscal-catalog,
+  # art-baseline) that view-technology-ci-check needs and this one excludes.
+  viewpoint: technology
+  diagram: technology/landscape
+  members:
+    - node-ci-runner
+    - sw-pytest
+    - techproc-oscal-golden-check
+    - node-app-server
+    - sw-uvicorn-fastapi
+    - art-pkg-controls-compliance-catalog
+    - art-tech-oscal-workspace
+    - art-tech-ledger-file
+    - sw-neo4j
+    - node-hosted-cluster
+
+- id: view-technology-usage-catalog
+  name: "Technology Usage: Catalog Runtime"
+  # Standard Technology Usage viewpoint: the demand side, application through
+  # to the Node it runs on. Unlike view-packaging (implementation_deployment,
+  # whose allow-list excludes Node -- see that view's own note), this
+  # viewpoint allows ApplicationComponent and Node together, so it's the one
+  # place the full sub-catalog -> ... -> node-app-server chain can be shown.
+  viewpoint: technology_usage
+  diagram: technology/usage-catalog
+  members:
+    - sub-catalog
+    - art-pkg-controls-compliance-catalog
+    - sw-uvicorn-fastapi
+    - node-app-server
 
 - id: view-migration
   name: Migration Sequence
@@ -746,4 +870,49 @@
   # Plateaus the platform passes through. Components are left out: the
   # Packaging view carries the package -> component story.
   viewpoint: implementation_migration
-  include_types: [WorkPackage, Deliverable, Plateau, Gap, Artifact]
+  # include_types: [WorkPackage, Deliverable, Plateau, Gap, Artifact] would
+  # also sweep in the non-package Artifacts added for GH #55's
+  # persistence-boundary slice (art-tech-oscal-workspace, art-tech-ledger-file)
+  # — listed explicitly instead.
+  members:
+    - wp-1-monorepo-skeleton
+    - wp-2-catalog-extraction
+    - wp-3-prove-pattern
+    - wp-4-scaffold-twin
+    - wp-5-vendor-forks
+    - wp-6-rehome-specs
+    - wp-7-extract-remaining
+    - del-monorepo-skeleton
+    - del-catalog-pkg
+    - del-twin-pkg-scaffold
+    - plat-baseline
+    - plat-first-extraction
+    - plat-target
+    - gap-catalog-extracted
+    - gap-subsystems-packaged
+    - art-flat-src
+    - art-pkg-schema-visualizer-api
+    - art-pkg-digital-twin-knowledge-graph
+    - art-pkg-controls-compliance-catalog
+    - art-pkg-reusable-architecture-library
+    - art-pkg-architecture-governance
+    - art-pkg-conformance-drift-assurance
+    - art-pkg-modelling-specification
+
+- id: view-runtime-migration
+  name: "Runtime Migration: Local Compose to Hosted Cluster"
+  diagram: technology/runtime-migration
+  # GH #55's runtime-target skeleton (ADR-0018, updated 2026-09-27): the
+  # MVP -> target Plateau/Gap for the data layer's deployment shape.
+  # Deliberately its own view, not folded into view-migration — that view's
+  # Plateaus/Gaps are the packaging restructure (ARCHITECTURE.md §8), a
+  # separate transition story from this one (same reasoning as keeping
+  # view-technology-ci-check and view-technology-persistence-boundary apart).
+  viewpoint: implementation_migration
+  members:
+    - plat-runtime-mvp
+    - plat-runtime-target
+    - gap-runtime-hosted
+    - node-app-server
+    - node-hosted-cluster
+    - sw-neo4j

@@ -95,8 +95,9 @@ end note
   pointer-churn is acceptable. Never a submodule for actively-developed first-party code.
 - **Each subsystem ships its own UI** ([ADR-0020](docs/adr/0020-per-subsystem-uis.md)) —
   a `ui/` `pnpm` sub-tree beside its `api/`, inside the same monorepo, not a separate repo,
-  until JS weight demands `turborepo`. There is no central dashboard package; how the UIs
-  are composed (Backstage plugins or a shell app) is open (#55).
+  until JS weight demands `turborepo`. There is no central dashboard package; composition
+  is server-composed per role journey, not a client-side shell or Backstage plugins
+  (ADR-0020); build tooling for the `ui/` trees remains open (#55).
 
 ### 3.2 Target directory layout
 
@@ -107,7 +108,7 @@ frictionless-architect/                 # ROOT — governance & orchestration
 ├── specs/                               # EPIC / cross-cutting specs only  (see §6)
 │   └── EPIC-xxx-.../
 ├── orchestration/
-│   ├── compose/                         # docker-compose for Neo4j (+ Postgres / OPA if kept — #55)
+│   ├── compose/                         # docker-compose for Neo4j (+ Postgres / OPA if kept) — target through MVP (ADR-0018)
 │   └── scripts/                         # cross-component coordination
 ├── third_party/                        # git submodules — vendored forks ONLY
 │   ├── <archimate-parser-fork>/
@@ -130,13 +131,17 @@ and `specs/` (per-package feature specs — see §6).
 
 ### 3.3 Target diagram
 
-> **TODO ([#55](https://github.com/wolffy-au/frictionless-architect/issues/55)):** a
-> generated packaging / deployment view — packages as ArchiMate Artifacts realising the
-> subsystems, deployed onto the infrastructure, in an *Implementation and Deployment*
-> viewpoint — replaces this placeholder. Diagrams are generated from `architecture/model/`,
-> never hand-drawn (constitution Principle X). Until then, §3.2 gives the package layout and
-> the generated C4 container view
-> ([`container.svg`](architecture/model/diagrams/c4/container.svg)) gives the logical one.
+Packages as ArchiMate Artifacts realising the subsystems they ship, deployed onto the
+shared runtime (`sw-uvicorn-fastapi`/`node-app-server`), in an *Implementation and
+Deployment* viewpoint (`architecture/model/` `view-packaging`, GH #55). Generated from
+`architecture/model/`, never hand-drawn (constitution Principle X); `node-app-server`
+itself is not a member — the viewpoint's allowed-concept list excludes `Node` (see the
+view's own comment in `views.yaml`).
+
+[![Packaging](architecture/model/diagrams/implementation/packaging.svg)](architecture/model/diagrams/implementation/packaging.svg)
+
+§3.2 gives the package layout in prose; the generated C4 container view
+([`container.svg`](architecture/model/diagrams/c4/container.svg)) gives the logical one.
 
 ---
 
@@ -155,7 +160,7 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 | 4 | Architecture Governance | `packages/architecture-governance` | **build** | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off (and its UI). |
 | 5 | Conformance & Drift Assurance | `packages/conformance-drift-assurance` | **build**, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate control enforcement (CPS 230 / 234), BAU effectiveness monitoring, drift detection, Break-Glass, remediation tickets. |
 | 6 | Modelling & Specification | `packages/modelling-specification` | **build** | ArchiMate / C4 / UML modelling and executable-spec generation from the knowledge graph. |
-| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005). Where its embedded UI lands is open (#55). |
+| — | Schema Visualiser API (today's `visualizer/`) | `packages/schema-visualizer-api` | **build** | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005). Its UI composes into `role-ea`'s journey, not a standalone dashboard (ADR-0005/0020, #55). |
 <!-- pyml enable md013 -->
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or dissolved:
@@ -309,7 +314,7 @@ package "AFTER" {
     [cache.py config.py\npayload + coverage-merge logic] as after_lib
     after_api --> after_lib
   }
-  package "packages/schema-visualizer-ui  (home open — #55)" {
+  package "packages/schema-visualizer-ui  (composes into role-ea's journey — #55)" {
     [Vite app\nfetches /schema-payload] as after_ui
   }
   after_ui ..> after_api : HTTP (CORS / dev proxy)
@@ -363,8 +368,9 @@ Checklist:
    rule? (Leaning: package forever; split only if a component is open-sourced standalone.)
 2. Root `.specify/` as the platform constitution with lighter per-component constitutions
    beneath, or one constitution only?
-3. Per-subsystem UIs (ADR-0020): Backstage plugins, or composed in a shell app? Changes
-   each `ui/` tree's build shape (#55).
+3. *Resolved (ADR-0020, 2026-09-27):* per-subsystem UI composition is server-composed
+   per role journey, neither Backstage plugins nor a client-side shell app. Build tooling
+   for each `ui/` tree remains open (#55).
 4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
    is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
    dependency, not a fork.)

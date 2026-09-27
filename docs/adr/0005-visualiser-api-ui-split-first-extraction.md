@@ -37,9 +37,13 @@ Split the visualiser into two packages:
 - `packages/schema-visualizer-api` — JSON only (`/schema-payload*`). Scope:
   `visualizer/{api,cache,config}.py` and the FastAPI router. Drops the
   server-rendered HTML route and Jinja/static mounts.
-- `packages/schema-visualizer-ui` (home open since ADR-0020 dropped the
-  dashboard — #55) — a Vite app
-  fetching `/schema-payload`.
+- `packages/schema-visualizer-ui` — a Vite app fetching `/schema-payload`.
+  **Home resolved (2026-09-27, GH #55, ADR-0020):** composed into the
+  Enterprise Architect's (`role-ea`) server-composed journey, not a
+  standalone dashboard or a seventh subsystem — `sub-schema-visualizer`
+  visualises the managed enterprise's own Architecture Knowledge Graph
+  (`sub-twin`), which is `role-ea`'s existing ownership domain alongside
+  `sub-library`/`sub-governance`/`sub-assurance`.
 
 `schema/manager.py`, `visualizer/data_loader.py` (Neo4j read path), and
 `sample_parser.py` move to `packages/digital-twin-knowledge-graph` instead — none are

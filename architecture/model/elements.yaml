@@ -947,6 +947,13 @@
     Narrow, in-process library interface over the Neo4j read path and
     ArchiMate sample parsing. Consumed as a path dependency, not over HTTP,
     and free of leaked Neo4j driver types (ADR-0005).
+- type: ApplicationInterface
+  id: if-catalog-ui
+  name: Compliance Catalog UI
+  desc: >-
+    Human-facing interface where the Compliance Officer / Auditor uploads
+    policy/standard documents, reviews prose-quality feedback before
+    conversion, and tracks Catalog / Profile status.
 
 # --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
 - type: DataObject
@@ -1045,6 +1052,19 @@
 
 # --- C. Functions: Controls & Compliance Catalog ---
 - type: ApplicationFunction
+  id: fn-policy-upload
+  name: Upload Policy / Standard Document
+  desc: >-
+    Accept an uploaded custom policy/standard document or upstream
+    regulatory standard text and stage it for conversion.
+- type: ApplicationFunction
+  id: fn-policy-quality-feedback
+  name: Policy Prose Quality Feedback
+  desc: >-
+    Use an LLM to review an uploaded or authored policy/standard document's
+    prose and return actionable clarity and quality feedback to the author
+    before it is converted.
+- type: ApplicationFunction
   id: fn-ai-markdown-conversion
   name: AI-Assisted Markdown Conversion
   desc: >-
@@ -1057,6 +1077,16 @@
   desc: >-
     Convert Trestle-editable Markdown into OSCAL Catalogs via a Trestle
     round-trip (import / author / assemble).
+- type: ApplicationFunction
+  id: fn-oscal-validation
+  name: OSCAL Structural Validation
+  desc: >-
+    Run `trestle validate` against a generated OSCAL Catalog before it is
+    published, driving the per-conversion status lifecycle recorded on
+    art-oscal-catalog (converting -> converted -> validating -> validated /
+    validation_failed; specs/003-oscal-ai-conversion's
+    oscal-catalog-status.puml). Distinct from techproc-oscal-golden-check:
+    this runs on every conversion, not just in CI against the golden dataset.
 - type: ApplicationFunction
   id: fn-baseline-tailoring
   name: OSCAL Baseline Tailoring
@@ -1215,7 +1245,7 @@
 - {type: DataObject, id: art-baseline, name: Regulatory Baseline Catalog, desc: "Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input."}
 - {type: DataObject, id: art-baseline-profile, name: Regulatory Baseline Profile, desc: "Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input."}
 - {type: DataObject, id: art-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: "Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input."}
-- {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: Machine-readable control catalog.}
+- {type: DataObject, id: art-oscal-catalog, name: OSCAL Catalog, desc: "Machine-readable control catalog.", props: {status-lifecycle: "converting -> converted -> validating -> validated | conversion_failed | validation_failed (specs/003-oscal-ai-conversion oscal-catalog-status.puml)"}}
 - {type: DataObject, id: art-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
 - {type: DataObject, id: art-oscal-resolved-catalog, name: Resolved OSCAL Profile Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
 - {type: DataObject, id: art-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
@@ -1365,3 +1395,179 @@
     Transition -> Target. The remaining packages are created, including
     schema-visualizer-api once step 4 has delivered the knowledge-graph read
     path it consumes (ADR-0005), and the flat src/ is retired.
+
+# =====================================================================
+# F. TECHNOLOGY — first cut, scoped to the policy-to-OSCAL slice (GH #55
+#    follow-up, guided by feature/gh-71-platform-skeleton and
+#    specs/003-oscal-ai-conversion): the CI golden-dataset check (GH #7),
+#    plus the runtime deployment target for the controls-compliance-catalog
+#    package. specs/003-oscal-ai-conversion's research.md confirms "no new
+#    infra (no Postgres/Neo4j dependency for this feature)"; plan.md's
+#    Target Platform is "the same Linux server as the existing visualiser
+#    deployment target", served via `poetry run uvicorn` (quickstart.md) —
+#    so this stays a single shared Node/SystemSoftware pair, not a
+#    dedicated one per subsystem. Not on any committed view yet. GH #55's
+#    other open questions (Postgres/OPA, per-subsystem UI hosting per
+#    ADR-0020) are deliberately out of scope here.
+#
+#    Runtime-target skeleton (ADR-0018, updated 2026-09-27): #55's "local
+#    compose only, or a hosted cluster?" resolved to phased — local compose
+#    through the (currently undated) MVP milestone, ADR-0024, then a hosted
+#    cluster for target architecture, shape deferred to a follow-up ADR.
+#    node-hosted-cluster and sw-neo4j below are the deliberately
+#    underspecified skeleton for that — CommunicationNetwork stays out of
+#    scope until the hosted-cluster shape (and so its network topology) is
+#    actually designed.
+#
+#    Modelling threshold for library dependencies (2026-09-27, GH #55 item
+#    3): `xmlschema`/`defusedxml` (visualizer/sample_validator.py,
+#    sample_parser.py — safe XML parsing + XSD validation for sample-model
+#    ingestion) are deliberately NOT given ext-* elements. Contrast with
+#    ext-trestle: that one is modelled because it performs a distinctive,
+#    named capability visible at the architecture level (the Trestle
+#    Markdown<->OSCAL round-trip behind fn-oscal-conversion). xmlschema/
+#    defusedxml are implementation-detail plumbing behind XML parsing —
+#    they don't back a named ApplicationFunction of their own, they're an
+#    internal safety/validation mechanism of one. The threshold: a
+#    third-party library gets an ext-* element when it performs a
+#    distinctive capability a modelled function depends on by name: a
+#    library that's purely an internal implementation detail of an
+#    existing modelled function stays unmodelled.
+# =====================================================================
+- type: Node
+  id: node-ci-runner
+  name: CI Runner
+  desc: GitHub Actions-hosted runner executing the test suite (`.github/workflows/ci.yml`).
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-pytest
+  name: pytest
+  desc: Test runner executing the golden-dataset regression suite.
+  props: {c4: ignore}
+- type: TechnologyProcess
+  id: techproc-oscal-golden-check
+  name: OSCAL Golden-Dataset Regression Check
+  desc: >-
+    Automated CI check with three legs, each comparing a generated pipeline
+    artefact against its vendored golden-dataset counterpart before merge
+    (spec 003-oscal-ai-conversion FR-006/FR-007): OSCAL Catalog generation vs.
+    art-baseline, OSCAL Profile generation vs. art-baseline-profile, and OSCAL
+    Profile resolution vs. art-baseline-resolved-catalog. Testing
+    infrastructure, not a user-facing capability — see those DataObjects' own
+    descriptions. Runs as a separate, slow `pytest -m golden` job outside the
+    fast unit suite because it invokes the real LLM (`ext-llm`, for
+    LLM-as-judge paraphrase comparison) and real trestle (`ext-trestle`) —
+    live network egress from CI, not a mocked/offline check (spec
+    003-oscal-ai-conversion research.md R8).
+  props: {c4: ignore}
+- type: Artifact
+  id: art-tech-oscal-workspace
+  name: Trestle Workspace Directory
+  desc: >-
+    Local filesystem directory tree under `<data_dir>/workspaces/<slug>/`
+    (Trestle's own catalogs/, profiles/, dist/ layout), one per Source
+    Document Identifier, reused and overwritten on resubmission (spec
+    003-oscal-ai-conversion research.md R7). Backs store-oscal — no new
+    infra: local filesystem on node-app-server, not Postgres/Neo4j.
+  props: {c4: ignore}
+- type: Artifact
+  id: art-tech-ledger-file
+  name: Forensic Ledger File (JSONL)
+  desc: >-
+    Append-only JSONL file at `<data_dir>/forensic-ledger.jsonl` (default
+    `.data/oscal/`), one line per event, no update/delete API (spec
+    003-oscal-ai-conversion research.md R3). Backs store-ledger — no new
+    infra: local filesystem on node-app-server, not Postgres/Neo4j
+    (ADR-0018 Postgres integration remains unbuilt).
+  props: {c4: ignore}
+- type: Node
+  id: node-app-server
+  name: Linux Application Server
+  desc: >-
+    Shared deployment target for the platform's Poetry-packaged services —
+    today the visualiser, and (specs/003-oscal-ai-conversion plan.md) the
+    same target for the policy-to-OSCAL pipeline. No new infra for this
+    feature: no Postgres/Neo4j dependency beyond what the visualiser
+    already uses.
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-uvicorn-fastapi
+  name: Python 3.12 / FastAPI (uvicorn)
+  desc: >-
+    ASGI runtime hosting each subsystem's api/ (ADR-0020) — the
+    controls-compliance-catalog package is served as
+    `uvicorn frictionless_architect.app:app` (specs/003-oscal-ai-conversion
+    quickstart.md).
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-neo4j
+  name: Neo4j 5.x
+  desc: >-
+    The architecture knowledge-graph database (ADR-0018). Runs inside
+    node-app-server's `orchestration/compose/` stack through the MVP
+    milestone; moves to node-hosted-cluster once target architecture is
+    built (ADR-0018, updated 2026-09-27).
+  props: {c4: ignore}
+- type: Node
+  id: node-hosted-cluster
+  name: Hosted Cluster (target runtime, shape deferred)
+  desc: >-
+    Placeholder for #55's target-architecture runtime, once past the MVP
+    milestone (ADR-0018, updated 2026-09-27). Deliberately underspecified —
+    managed vs. self-managed, and which orchestrator, are deferred to a
+    follow-up ADR; nothing in the codebase argues for one option yet.
+  props: {c4: ignore}
+- type: Plateau
+  id: plat-runtime-mvp
+  name: "Runtime: local compose (MVP)"
+  desc: >-
+    Baseline and current state: node-app-server's docker-compose stack is
+    the only deployment shape, through the MVP milestone (ADR-0024,
+    undated).
+- type: Plateau
+  id: plat-runtime-target
+  name: "Runtime: hosted cluster (target)"
+  desc: >-
+    Target state once past the MVP milestone: the data layer moves to
+    node-hosted-cluster (ADR-0018, updated 2026-09-27). Concrete shape
+    deferred to a follow-up ADR.
+- type: Gap
+  id: gap-runtime-hosted
+  name: "Gap: local compose -> hosted cluster"
+  desc: >-
+    plat-runtime-mvp -> plat-runtime-target. Triggered by reaching the MVP
+    milestone (currently undated); the hosted cluster's own shape isn't
+    designed yet, so this Gap records the transition without committing to
+    more than the deliberately underspecified node-hosted-cluster
+    placeholder.
+
+# =====================================================================
+# F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved
+#    2026-09-27, GH #55 item 7): each subsystem's ui/ stays its own
+#    independently-owned UI fragment (already covered — each
+#    art-pkg-<subsystem> Artifact spans both its api/ and ui/ subtrees, per
+#    the GH #55 Proposal). What was still implicit is HOW those fragments
+#    get composed for a user: server-composed per role journey, not a
+#    client-side runtime framework. Backstage plugins and a client-side
+#    shell (module federation / single-spa) were both explicitly rejected
+#    (ADR-0020's "Alternatives considered" and its 2026-09-27 update) — no
+#    new SystemSoftware/Node is introduced. Composition is modelled as a
+#    TechnologyFunction rather than one more subsystem-owned fn-* (the
+#    section-C ApplicationFunctions are each Assignment-owned by exactly
+#    one subsystem — see the Assignment edges in relationships.yaml — but
+#    this function is cross-subsystem and owned by no single one of them;
+#    it is hosted directly on the shared sw-uvicorn-fastapi/node-app-server
+#    pair, the same idiom used for techproc-oscal-golden-check's hosting on
+#    sw-pytest above). Concrete mechanism (templating layer, per-role route
+#    ownership) remains deferred to implementation (ADR-0020).
+# =====================================================================
+- type: TechnologyFunction
+  id: techfn-role-journey-composition
+  name: Server-Side Role-Journey Composition
+  desc: >-
+    Assembles the role-facing page a BusinessRole lands on from the
+    independently-owned UI fragments of the subsystems that serve that
+    role, server-side, pairing with that role's journey API rather than
+    re-deriving composition logic in a client-side plugin host or shell
+    (ADR-0020, updated 2026-09-27). Hosted on sw-uvicorn-fastapi — not a
+    new deployable.

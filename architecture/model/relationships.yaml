@@ -281,6 +281,7 @@
 - {type: Triggering, source: process-policy-authoring, target: process-oscal-conversion, label: authored content feeds}
 - {type: Realization, source: fn-ai-markdown-conversion, target: process-oscal-conversion}
 - {type: Realization, source: fn-oscal-conversion, target: process-oscal-conversion}
+- {type: Realization, source: fn-oscal-validation, target: process-oscal-conversion}
 - {type: Realization, source: fn-baseline-tailoring, target: process-baseline-tailoring}
 - {type: Realization, source: fn-oscal-profile-resolve, target: process-profile-resolution}
 - {type: Realization, source: art-policy-doc, target: bo-policy-doc}
@@ -431,6 +432,8 @@
 # B. Subsystems serve the people (Serving subsystem -> role; C4 reverses it)
 # =====================================================================
 - {type: Serving, source: sub-catalog, target: role-compliance, label: authors control content in}
+- {type: Composition, source: sub-catalog, target: if-catalog-ui}
+- {type: Serving, source: if-catalog-ui, target: role-compliance, label: "upload, feedback & status UI"}
 - {type: Serving, source: sub-library, target: role-ea, label: curates patterns & models future-state options in}
 - {type: Serving, source: sub-library, target: role-sa, label: composes blueprints & designs in}
 - {type: Serving, source: sub-library, target: role-sec, label: runs threat models in}
@@ -446,14 +449,41 @@
 # B. Authoring / OSCAL chain
 # =====================================================================
 - {type: Serving, source: ext-trestle, target: fn-oscal-conversion, label: realizes the Trestle Markdown <-> OSCAL round-trip for}
+- {type: Serving, source: ext-trestle, target: fn-oscal-validation, label: "runs `trestle validate` for"}
 - {type: Serving, source: ext-trestle, target: fn-baseline-tailoring, label: provides profile authoring for}
 - {type: Serving, source: ext-trestle, target: fn-oscal-profile-resolve, label: realizes profile-resolve for}
 - {type: Serving, source: ext-llm, target: fn-ai-markdown-conversion, label: provides the document -> Markdown conversion model for}
+- {type: Serving, source: ext-llm, target: fn-policy-quality-feedback, label: provides the prose-review model for}
+- {type: Realization, source: fn-policy-upload, target: process-policy-authoring}
+- {type: Serving, source: fn-policy-quality-feedback, target: process-policy-authoring, label: returns clarity & quality feedback to}
+- {type: Serving, source: fn-policy-upload, target: if-catalog-ui, label: exposed via}
+- {type: Serving, source: fn-policy-quality-feedback, target: if-catalog-ui, label: exposed via}
+- {type: Flow, source: fn-oscal-conversion, target: fn-oscal-validation, label: "generated catalog (converted) validated by"}
+- {type: Access, source: fn-oscal-validation, target: art-oscal-catalog, label: "validates (converted -> validating -> validated/validation_failed)", props: {access_type: ReadWrite}}
 - type: Access
   source: sub-catalog
   target: store-frameworks
   label: reads NIST / FedRAMP packs
   props: {access_type: Read}
+- type: Access
+  source: sub-catalog
+  target: store-oscal
+  label: publishes Catalogs, Profiles & Resolved Catalogs
+  props: {access_type: Write}
+
+# =====================================================================
+# B. sub-catalog owns the artefacts its functions write (component-level
+#    Access mirroring the fn-* Write-access edges above -- Aggregation isn't
+#    legal ApplicationComponent -> DataObject per the ArchiMate 3.2 matrix.
+#    Feeds view-application-structure-catalog, the Application Structure
+#    viewpoint, which cannot show ApplicationFunction)
+# =====================================================================
+- {type: Access, source: sub-catalog, target: art-policy-doc, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: art-regulatory-standard, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: art-trestle-markdown, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: art-oscal-catalog, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: art-oscal-profile, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: art-oscal-resolved-catalog, label: owns, props: {access_type: Write}}
 
 # =====================================================================
 # B. Reusable Architecture Library
@@ -541,8 +571,11 @@
 # =====================================================================
 # C. Subsystem assigns its functions
 # =====================================================================
+- {type: Assignment, source: sub-catalog, target: fn-policy-upload}
+- {type: Assignment, source: sub-catalog, target: fn-policy-quality-feedback}
 - {type: Assignment, source: sub-catalog, target: fn-ai-markdown-conversion}
 - {type: Assignment, source: sub-catalog, target: fn-oscal-conversion}
+- {type: Assignment, source: sub-catalog, target: fn-oscal-validation}
 - {type: Assignment, source: sub-catalog, target: fn-baseline-tailoring}
 - {type: Assignment, source: sub-catalog, target: fn-oscal-profile-resolve}
 - {type: Assignment, source: sub-library, target: fn-pattern-authoring}
@@ -569,6 +602,9 @@
 # =====================================================================
 # C. Stage 1 — Controls & OSCAL
 # =====================================================================
+- {type: Access, source: fn-policy-upload, target: art-policy-doc, label: stages, props: {access_type: Write}}
+- {type: Access, source: fn-policy-upload, target: art-regulatory-standard, label: stages, props: {access_type: Write}}
+- {type: Access, source: fn-policy-quality-feedback, target: art-policy-doc, label: reviews prose in, props: {access_type: Read}}
 - {type: Access, source: fn-ai-markdown-conversion, target: art-policy-doc, label: reads, props: {access_type: Read}}
 - {type: Access, source: fn-ai-markdown-conversion, target: art-trestle-markdown, label: generates, props: {access_type: Write}}
 - {type: Access, source: fn-oscal-conversion, target: art-trestle-markdown, label: reads, props: {access_type: Read}}
@@ -645,6 +681,7 @@
 - {type: Access, source: fn-build-supervision, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
 - {type: Flow, source: fn-build-supervision, target: fn-scm-change-review, label: conformant agent changes}
 - {type: Flow, source: fn-build-supervision, target: fn-ledger-record, label: records agent actions to}
+- {type: Flow, source: fn-oscal-conversion, target: fn-ledger-record, label: records conversion provenance to}
 - {type: Access, source: fn-enforcement-gate, target: art-release-candidate, label: evaluates, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-ledger-entry, label: verifies process controls from, props: {access_type: Read}}
 - {type: Access, source: fn-enforcement-gate, target: art-dev-spec, label: checks against, props: {access_type: Read}}
@@ -789,3 +826,65 @@
 - {type: Association, source: gap-catalog-extracted, target: plat-first-extraction}
 - {type: Association, source: gap-subsystems-packaged, target: plat-first-extraction}
 - {type: Association, source: gap-subsystems-packaged, target: plat-target}
+
+# =====================================================================
+# F. Technology — golden-dataset regression check (first cut, see the
+#    F. TECHNOLOGY note in elements.yaml)
+# =====================================================================
+- {type: Assignment, source: node-ci-runner, target: sw-pytest}
+- {type: Assignment, source: sw-pytest, target: techproc-oscal-golden-check}
+- {type: Access, source: techproc-oscal-golden-check, target: art-oscal-catalog, label: checks against golden dataset, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: art-baseline, label: golden-dataset baseline, props: {access_type: Read}}
+- {type: Flow, source: fn-oscal-conversion, target: techproc-oscal-golden-check, label: generated catalog checked by}
+- {type: Access, source: techproc-oscal-golden-check, target: art-oscal-profile, label: checks against golden dataset, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: art-baseline-profile, label: golden-dataset baseline, props: {access_type: Read}}
+- {type: Flow, source: fn-baseline-tailoring, target: techproc-oscal-golden-check, label: generated profile checked by}
+- {type: Access, source: techproc-oscal-golden-check, target: art-oscal-resolved-catalog, label: checks against golden dataset, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: art-baseline-resolved-catalog, label: golden-dataset baseline, props: {access_type: Read}}
+- {type: Flow, source: fn-oscal-profile-resolve, target: techproc-oscal-golden-check, label: generated resolved catalog checked by}
+- {type: Serving, source: ext-llm, target: techproc-oscal-golden-check, label: provides LLM-as-judge paraphrase comparison for}
+- {type: Serving, source: ext-trestle, target: techproc-oscal-golden-check, label: runs real profile-resolve for}
+- {type: Assignment, source: node-app-server, target: art-tech-oscal-workspace, label: hosts}
+- {type: Realization, source: art-tech-oscal-workspace, target: store-oscal}
+- {type: Assignment, source: node-app-server, target: art-tech-ledger-file, label: hosts}
+- {type: Realization, source: art-tech-ledger-file, target: store-ledger}
+
+- {type: Assignment, source: node-app-server, target: sw-uvicorn-fastapi}
+- {type: Assignment, source: sw-uvicorn-fastapi, target: art-pkg-controls-compliance-catalog, label: hosts / serves}
+
+# --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
+- {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
+- {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
+- {type: Aggregation, source: plat-runtime-mvp, target: node-app-server}
+- {type: Aggregation, source: plat-runtime-mvp, target: sw-neo4j}
+- {type: Aggregation, source: plat-runtime-target, target: node-hosted-cluster}
+- {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
+- {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
+- {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}
+
+# =====================================================================
+# F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition
+#    is hosted on the existing sw-uvicorn-fastapi/node-app-server pair, and
+#    composes the six subsystems' own UI fragments (each covered by its
+#    art-pkg-<subsystem> Artifact) — not sub-schema-visualizer, which is
+#    not one of the six subsystems (elements.yaml) and is composed into
+#    role-ea's journey by a separate Serving edge below, not by this
+#    function.
+# =====================================================================
+- {type: Serving, source: sw-uvicorn-fastapi, target: techfn-role-journey-composition, label: hosts}
+- {type: Realization, source: art-pkg-controls-compliance-catalog, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-reusable-architecture-library, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-digital-twin-knowledge-graph, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-architecture-governance, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-conformance-drift-assurance, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+- {type: Realization, source: art-pkg-modelling-specification, target: techfn-role-journey-composition, label: ui/ fragment composed by}
+
+# =====================================================================
+# F. Schema-visualiser UI home (ADR-0005 + ADR-0020, resolved 2026-09-27,
+#    GH #55 item 8): sub-schema-visualizer composes its UI into role-ea's
+#    journey, alongside sub-library/sub-governance/sub-assurance (see the
+#    Serving edges above from those three to role-ea) — not a standalone
+#    dashboard, not a seventh subsystem. It visualises the same
+#    Architecture Knowledge Graph (sub-twin) role-ea already owns there.
+# =====================================================================
+- {type: Serving, source: sub-schema-visualizer, target: role-ea, label: visualises the Architecture Knowledge Graph schema for}
