@@ -1418,6 +1418,21 @@
 #    underspecified skeleton for that — CommunicationNetwork stays out of
 #    scope until the hosted-cluster shape (and so its network topology) is
 #    actually designed.
+#
+#    Modelling threshold for library dependencies (2026-09-27, GH #55 item
+#    3): `xmlschema`/`defusedxml` (visualizer/sample_validator.py,
+#    sample_parser.py — safe XML parsing + XSD validation for sample-model
+#    ingestion) are deliberately NOT given ext-* elements. Contrast with
+#    ext-trestle: that one is modelled because it performs a distinctive,
+#    named capability visible at the architecture level (the Trestle
+#    Markdown<->OSCAL round-trip behind fn-oscal-conversion). xmlschema/
+#    defusedxml are implementation-detail plumbing behind XML parsing —
+#    they don't back a named ApplicationFunction of their own, they're an
+#    internal safety/validation mechanism of one. The threshold: a
+#    third-party library gets an ext-* element when it performs a
+#    distinctive capability a modelled function depends on by name: a
+#    library that's purely an internal implementation detail of an
+#    existing modelled function stays unmodelled.
 # =====================================================================
 - type: Node
   id: node-ci-runner

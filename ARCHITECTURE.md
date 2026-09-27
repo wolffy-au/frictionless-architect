@@ -131,13 +131,17 @@ and `specs/` (per-package feature specs — see §6).
 
 ### 3.3 Target diagram
 
-> **TODO ([#55](https://github.com/wolffy-au/frictionless-architect/issues/55)):** a
-> generated packaging / deployment view — packages as ArchiMate Artifacts realising the
-> subsystems, deployed onto the infrastructure, in an *Implementation and Deployment*
-> viewpoint — replaces this placeholder. Diagrams are generated from `architecture/model/`,
-> never hand-drawn (constitution Principle X). Until then, §3.2 gives the package layout and
-> the generated C4 container view
-> ([`container.svg`](architecture/model/diagrams/c4/container.svg)) gives the logical one.
+Packages as ArchiMate Artifacts realising the subsystems they ship, deployed onto the
+shared runtime (`sw-uvicorn-fastapi`/`node-app-server`), in an *Implementation and
+Deployment* viewpoint (`architecture/model/` `view-packaging`, GH #55). Generated from
+`architecture/model/`, never hand-drawn (constitution Principle X); `node-app-server`
+itself is not a member — the viewpoint's allowed-concept list excludes `Node` (see the
+view's own comment in `views.yaml`).
+
+[![Packaging](architecture/model/diagrams/implementation/packaging.svg)](architecture/model/diagrams/implementation/packaging.svg)
+
+§3.2 gives the package layout in prose; the generated C4 container view
+([`container.svg`](architecture/model/diagrams/c4/container.svg)) gives the logical one.
 
 ---
 
