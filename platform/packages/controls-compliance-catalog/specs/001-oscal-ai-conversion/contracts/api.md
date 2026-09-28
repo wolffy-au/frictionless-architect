@@ -1,6 +1,7 @@
 # API Contracts: AI-Assisted Policy & Standard Conversion to OSCAL
 
-All endpoints are mounted under `/oscal` in the existing FastAPI app, following
+All endpoints are mounted under `/oscal` in the `controls-compliance-catalog` package's
+FastAPI app, following
 `TECHNICAL.md`'s API Design Principles (resource-based URLs, action-based endpoints for
 FSM-like transitions, Pydantic v2 request/response validation, standardized error body).
 This is the primary "customer journey" surface — later role-specific UIs (Document

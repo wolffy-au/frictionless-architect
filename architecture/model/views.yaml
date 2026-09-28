@@ -785,8 +785,8 @@
   diagram: technology/oscal-golden-check
   # GH #55's CI/testing slice: the runner and test tool executing the
   # golden-dataset regression check, and the application-layer functions +
-  # generated/vendored DataObjects each of its three legs checks (spec
-  # 003-oscal-ai-conversion FR-006/FR-007: catalog, profile, and resolution).
+  # generated/vendored DataObjects each of its three legs checks (controls-compliance-catalog spec
+  # 001 FR-006/FR-007: catalog, profile, and resolution).
   # Deliberately viewpoint: custom — node-ci-runner is a Node, which no
   # standard viewpoint bundling Application + Technology concepts (e.g.
   # implementation_deployment) allows; see view-packaging's note on the
@@ -812,7 +812,7 @@
 - id: view-technology-persistence-boundary
   name: "Technology: Persistence Boundary"
   diagram: technology/persistence-boundary
-  # GH #55's storage-location slice (spec 003-oscal-ai-conversion research.md
+  # GH #55's storage-location slice (controls-compliance-catalog spec 001 research.md
   # R3/R7): what store-oscal and store-ledger actually run on -- local
   # filesystem Artifacts on node-app-server, not Postgres/Neo4j. Deliberately
   # viewpoint: custom for the same reason as view-technology-ci-check: mixing

@@ -1,7 +1,7 @@
 # ADR-0005: Controls catalog is the first extraction; visualiser API/UI split follows the knowledge graph
 
 - **Status:** Accepted
-- **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §8); revised 2026-09-05; revised 2026-09-24; revised 2026-09-26 (GH #60: first extraction changed to `controls-compliance-catalog`)
+- **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §8); revised 2026-09-05; revised 2026-09-24; revised 2026-09-26 (GH #60: first extraction changed to `controls-compliance-catalog`); revised 2026-09-28 (spec 003 re-targeted)
 - **Sources:** `ARCHITECTURE.md` §3.2, §8, §8.1, §8.2, §10, §11; `refactor-analyst` assessment (2026-08-30);
   GH #44, #60; `architecture/model/` section E (Migration Sequence view)
 
@@ -64,9 +64,9 @@ driver types now.
   specs → extract remaining components, the visualiser split among them.
 - Policy-to-OSCAL (GH #44) needs the `platform/` skeleton (step 1) before its code
   has a home. `specs/003-oscal-ai-conversion`, which planned an `/oscal` router in
-  the flat `src/` (see Implementation status 2026-09-24), is to be re-targeted at
-  `packages/controls-compliance-catalog` — not yet done; tracked as an open
-  item in `ARCHITECTURE.md` §8.1.
+  the flat `src/` (see Implementation status 2026-09-24), was re-targeted at
+  `packages/controls-compliance-catalog` on 2026-09-28 (see Implementation
+  status 2026-09-28).
 - Step 3 proves the workspace lock and CI fan-out on a new package; moving
   existing code between packages is first exercised at step 4, when
   `digital-twin-knowledge-graph` absorbs `schema/manager.py` and `sample_parser.py`.
@@ -88,6 +88,18 @@ out of `visualizer/__init__.py` into a neutral `frictionless_architect/app.py`;
 entry point is now `uvicorn frictionless_architect.app:app`. This is an
 interim rename for the current flat layout — `schema-visualizer-api` still
 gets its own app object when the package split above happens.
+
+## Implementation status (2026-09-28)
+
+With the `platform/` skeleton in place (#71), `specs/003-oscal-ai-conversion`
+was re-homed as `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion`
+(`ARCHITECTURE.md` §6's per-package numbering) and its plan re-targeted: the
+pipeline is the `controls_compliance_catalog` package with its own FastAPI app
+(`uvicorn controls_compliance_catalog.app:app`), not an `/oscal` router on the
+flat app. The 2026-09-24 note's reason for the neutral
+`frictionless_architect/app.py` no longer applies, so that app is the
+visualiser's alone again until the visualiser is extracted into
+`schema-visualizer-api`.
 
 ## Alternatives considered
 

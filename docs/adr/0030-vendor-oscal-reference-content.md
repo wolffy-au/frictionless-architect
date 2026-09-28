@@ -85,7 +85,7 @@ validation-report shape. Neither vendoring path above fits agent-only
 tooling with no installable interface, so the decision is to **port the
 logic as native Python** (`normalizer.py`, `trestle_ops.py`), with
 Apache-2.0 §4 attribution headers in the ported modules noting origin and
-license. Full detail: `specs/003-oscal-ai-conversion/research.md` R10.
+license. Full detail: `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/research.md` R10.
 
 ## Alternatives considered
 

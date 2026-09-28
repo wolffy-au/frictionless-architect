@@ -2,8 +2,9 @@
 
 ## Prerequisites
 
-- `poetry install --sync --with dev,tests,lint` (adds `litellm`, `pypdf`, `python-docx`,
-  `openpyxl` once declared in `pyproject.toml` — `compliance-trestle` is already present).
+- From `platform/`: `poetry install` (adds `compliance-trestle`, `litellm`, `pypdf`,
+  `python-docx` and `openpyxl` once declared in
+  `packages/controls-compliance-catalog/pyproject.toml`; one shared lock, ADR-0002).
 - Vendored golden-dataset submodules checked out for the golden-dataset tests:
   `git submodule update --init third_party/oscal-content third_party/fedramp-automation`.
 - An LLM provider credential available to `litellm` (env var per provider, e.g.
@@ -12,8 +13,9 @@
 ## Run the service
 
 ```bash
-poetry run uvicorn frictionless_architect.app:app --reload
-# /oscal/* routes are mounted on the same app per contracts/api.md
+cd platform
+poetry run uvicorn controls_compliance_catalog.app:app --reload
+# serves the /oscal/* routes in contracts/api.md
 ```
 
 ## Validate User Story 1 (conversion)
@@ -54,7 +56,8 @@ Expect `201` with a `resolved_catalog_path` pointing at a fully resolved OSCAL C
 ## Run the golden-dataset validation (FR-006/FR-007, SC-002/SC-003)
 
 ```bash
-poetry run pytest -m golden tests/api/test_oscal_golden_dataset.py -v
+cd platform
+poetry run pytest -m golden packages/controls-compliance-catalog/tests/api/test_oscal_golden_dataset.py -v
 ```
 
 This is excluded from the default `poetry run pytest` run (see `research.md` R8) because
@@ -65,8 +68,8 @@ faithfulness judgement per SC-002/SC-003.
 ## Run the fast suite
 
 ```bash
-poetry run pytest tests/unit/oscal tests/api -k "not golden"
-bash scripts/pre_commit_checks.sh
+bash scripts/platform_checks.sh     # from the repo root: pyright, mypy, pytest at 90% coverage
+bash scripts/pre_commit_checks.sh   # runs platform_checks.sh along with the root checks
 ```
 
 ## Failure modes to check

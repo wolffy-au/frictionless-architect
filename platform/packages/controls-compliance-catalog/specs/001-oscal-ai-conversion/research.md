@@ -2,8 +2,8 @@
 
 ## R1. Primary interface
 
-- **Decision**: A FastAPI service (`frictionless_architect.oscal.api`), added as a new
-  router alongside the existing visualiser app, exposing conversion/assembly/resolution/
+- **Decision**: A FastAPI service (`controls_compliance_catalog.api`), a router served by
+  the `controls-compliance-catalog` package's own app (`plan.md` Structure Decision), exposing conversion/assembly/resolution/
   approval as resource-oriented endpoints. No CLI in this feature.
 - **Rationale**: The API is the surface multiple future UIs (Document Author upload
   flow, Compliance Officer review queue, operator dashboard) will be built against.
@@ -16,7 +16,7 @@
 
 ## R2. `ext-llm` client
 
-- **Decision**: A thin first-party wrapper, `frictionless_architect.oscal.llm_client`,
+- **Decision**: A thin first-party wrapper, `controls_compliance_catalog.llm_client`,
   backed by `litellm` (already named in `TECHNICAL.md` → Utilities for LLM). Scoped to
   exactly what this feature needs: one call shape (`convert_chunk(prompt, system) -> str`)
   with provider/model/timeout read from settings, and errors normalized to a single
@@ -34,7 +34,7 @@
 
 ## R3. Forensic ledger
 
-- **Decision**: A minimal first-party ledger, `frictionless_architect.oscal.ledger`, that
+- **Decision**: A minimal first-party ledger, `controls_compliance_catalog.ledger`, that
   appends one JSON line per event to a local file
   (`<data_dir>/forensic-ledger.jsonl`, default `.data/oscal/`), matching the
   `art-ledger-entry` shape already defined in the architecture model (`actor`, `action`,
@@ -53,7 +53,7 @@
 ## R4. Document normalization (PDF / Word / spreadsheet/CSV / Markdown / plain text)
 
 - **Decision**: Format-specific extractors behind one `normalize(path, content_type) ->
-  NormalizedDocument` entry point in `frictionless_architect.oscal.normalizer`:
+  NormalizedDocument` entry point in `controls_compliance_catalog.normalizer`:
   - PDF → `pypdf` (pure-Python, no system dependency like poppler).
   - Word (`.docx`) → `python-docx`.
   - Spreadsheet/CSV → stdlib `csv` for `.csv`; `openpyxl` for `.xlsx`.
@@ -99,7 +99,7 @@ Source: `diagrams/oscal-chunking-activity.puml`.
 - **Decision**: Orchestrate via `trestle`'s Python API where importable
   (`trestle.core.commands.*` command classes, invoked in-process) rather than shelling out
   to the `trestle` CLI as a subprocess, wrapped in
-  `frictionless_architect.oscal.trestle_ops`. Each of import / author markdown assemble /
+  `controls_compliance_catalog.trestle_ops`. Each of import / author markdown assemble /
   profile-resolve gets one function with a narrow, typed return (paths + success/failure),
   and FR-012 is satisfied because these are real trestle invocations, not mocks.
 - **Rationale**: In-process avoids subprocess/PATH/venv-isolation fragility in tests and

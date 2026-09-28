@@ -1,7 +1,7 @@
 # Phase 1 Data Model: AI-Assisted Policy & Standard Conversion to OSCAL
 
 Entities below map directly to the spec's "Key Entities" section. All are first-party
-Pydantic v2 models (`frictionless_architect.oscal.models`) unless noted as a filesystem
+Pydantic v2 models (`controls_compliance_catalog.models`) unless noted as a filesystem
 artefact.
 
 ## SourceDocumentIdentifier

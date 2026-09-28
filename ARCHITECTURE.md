@@ -292,8 +292,9 @@ Checklist:
 
 - [x] Create `packages/controls-compliance-catalog/` with its own `pyproject.toml`, `src/`,
   `tests/`, `README.md`, and `specs/` (§3.2, §6); add it to the `platform/` workspace (#71).
-- [ ] Re-target `specs/003-oscal-ai-conversion` at this package (it planned an `/oscal`
-  router in the flat `src/`, ADR-0005 → Implementation status 2026-09-24).
+- [x] Re-target `specs/003-oscal-ai-conversion` at this package, re-homed as
+  `specs/001-oscal-ai-conversion` (it planned an `/oscal` router in the flat `src/`,
+  ADR-0005 → Implementation status 2026-09-24 and 2026-09-28).
 - [ ] Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
 
 ### 8.2 Visualiser API/UI split (step 7)
