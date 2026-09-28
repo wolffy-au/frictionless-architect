@@ -1,0 +1,17 @@
+@startuml oscal-approve-sequence
+actor "Compliance Officer / Auditor" as Officer
+participant "api.py" as Api
+participant "approval.py" as Approval
+participant "ledger.py" as Ledger
+
+Officer -> Api : POST /oscal/conversions/{id}/approve\n(approved_by)
+Api -> Approval : record_approval(source_document_id, approved_by)
+alt no validated conversion exists
+  Approval --> Api : not found
+  Api --> Officer : 404
+else validated conversion exists
+  Approval -> Ledger : append(approve, success)
+  Approval --> Api : ApprovalRecord
+  Api --> Officer : 200, approved=true
+end
+@enduml

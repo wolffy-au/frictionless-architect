@@ -1,0 +1,17 @@
+@startuml oscal-catalog-status
+[*] --> converting
+converting --> converted : AI conversion succeeds
+converting --> conversion_failed : FR-013 collision / FR-014 LLM error/timeout
+converted --> validating : trestle validate
+validating --> validated : structural checks pass
+validating --> validation_failed : structural checks fail (FR-003)
+conversion_failed --> [*]
+validation_failed --> [*]
+validated --> [*]
+note right of conversion_failed
+  Resubmission under the same
+  Source Document Identifier
+  starts a fresh run (FR-015),
+  not a transition from here.
+end note
+@enduml

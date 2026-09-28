@@ -1,0 +1,43 @@
+@startuml oscal-assemble-resolve-sequence
+actor "Platform Operator" as Operator
+participant "api.py" as Api
+participant "approval.py" as Approval
+participant "trestle_ops.py" as Trestle
+participant "workspace.py" as Workspace
+participant "ledger.py" as Ledger
+
+Operator -> Api : POST /oscal/assemblies\n(source_document_id)
+Api -> Approval : gate_satisfied(source_document_id)? (FR-011)
+alt not approved
+  Approval --> Api : false
+  Api --> Operator : 403
+else approved
+  Api -> Workspace : workspace_path(source_document_id)
+  Api -> Trestle : import_and_assemble(workspace_path)
+  alt Trestle assembly fails (FR-010)
+    Trestle --> Api : error
+    Api -> Ledger : append(assemble, failure)
+    Api --> Operator : 502
+  else success
+    Trestle --> Api : OscalCatalog + OscalProfile
+    Api -> Ledger : append(assemble, success)
+    Api --> Operator : 201
+  end
+end
+
+Operator -> Api : POST /oscal/resolutions\n(source_document_id)
+alt Catalog/Profile not yet assembled
+  Api --> Operator : 422
+else Catalog/Profile exist
+  Api -> Trestle : profile_resolve(catalog_path, profile_path)
+  alt Trestle resolution fails (FR-010)
+    Trestle --> Api : error
+    Api -> Ledger : append(resolve, failure)
+    Api --> Operator : 502
+  else success
+    Trestle --> Api : ResolvedOscalCatalog
+    Api -> Ledger : append(resolve, success)
+    Api --> Operator : 201
+  end
+end
+@enduml

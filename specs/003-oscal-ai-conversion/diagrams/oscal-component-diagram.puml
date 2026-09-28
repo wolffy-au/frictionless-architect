@@ -1,0 +1,39 @@
+@startuml oscal-component-diagram
+component "api.py\n<<FastAPI router>>" as Api
+component "config.py\n<<OscalSettings>>" as Config
+component "models.py\n<<Pydantic models>>" as Models
+component "markdown_converter.py\n<<orchestrator>>" as MarkdownConverter
+component "normalizer.py" as Normalizer
+component "chunking.py" as Chunking
+component "llm_client.py\n<<ext-llm wrapper>>" as LlmClient
+component "trestle_ops.py" as TrestleOps
+component "workspace.py" as Workspace
+component "approval.py" as Approval
+component "ledger.py\n<<append-only JSONL>>" as Ledger
+
+Api ..> Config : reads settings
+Api ..> Models : (de)serializes
+Api ..> MarkdownConverter : convert()
+Api ..> TrestleOps : validate() / import_assemble() / profile_resolve()
+Api ..> Approval : approve()
+
+MarkdownConverter ..> Normalizer : normalize()
+MarkdownConverter ..> Chunking : pack_chunks()
+MarkdownConverter ..> LlmClient : convert_chunk()
+MarkdownConverter ..> Ledger : append(convert)
+
+TrestleOps ..> Workspace : workspace_path()
+TrestleOps ..> Ledger : append(validate|assemble|resolve)
+
+Approval ..> Ledger : append(approve) / read ApprovalRecord
+
+note right of LlmClient
+  wraps litellm; models ext-llm
+  (research.md R2)
+end note
+
+note bottom of Normalizer
+  sectioning design ported from
+  oscal-document-workbench (R4/R10)
+end note
+@enduml
