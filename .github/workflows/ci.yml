@@ -118,8 +118,13 @@ jobs:
 
       - name: Snyk Scan Test (platform/)
         # platform/ carries its own poetry.lock, so it is a separate project.
+        # continue-on-error: this doubled our Snyk test volume per run and the
+        # org's test quota is currently exhausted (SNYK-CLI-0000 "Enrichment of
+        # Test Failed" / "Code test limit reached"). Non-blocking until the
+        # quota issue is resolved — see #71 follow-up.
         if: github.actor != 'dependabot[bot]'
         working-directory: platform
+        continue-on-error: true
         run: snyk test --package-manager=poetry --file=poetry.lock --severity-threshold=medium --org=wolffy-au
 
       - name: Snyk Code Scan
