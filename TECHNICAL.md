@@ -299,6 +299,10 @@ Examples: `visualizer/cache.py` → `tests/unit/visualizer/test_cache.py`;
 API integration tests live under `tests/api/`; `behave` acceptance features under
 `tests/features/` (see the `acceptance-author` agent).
 
+Packages in the `platform/` monorepo follow the same rule within each package:
+`platform/packages/<name>/src/<module>/…` is tested under
+`platform/packages/<name>/tests/unit/…`. `scripts/platform_checks.sh` runs them.
+
 ## Dependency Installation
 
 Package manager is **Poetry**, not `uv` — `uv sync` has failed repeatedly in this

@@ -1,0 +1,51 @@
+# The platform/ Poetry monorepo root (ADR-0002, ARCHITECTURE.md §3.2).
+#
+# Not a package itself: it pins one shared poetry.lock for every package under
+# packages/, wired in as path dependencies, and holds the tool config the
+# fan-out gate (scripts/platform_checks.sh) runs each package against.
+# ruff is not configured here — the repo-root [tool.ruff] covers platform/.
+
+[project]
+name = "frictionless-architect-platform"
+description = "Poetry monorepo root for the Frictionless Architecture Platform packages."
+requires-python = ">=3.11,<3.14"
+# Each package is listed here and sourced from its path below.
+dependencies = ["controls-compliance-catalog"]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+controls-compliance-catalog = { path = "packages/controls-compliance-catalog", develop = true }
+
+[dependency-groups]
+tests = [
+    "pytest>=9.0.2,<10.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
+]
+
+lint = [
+    "mypy>=1.19.1,<2.0.0",
+    "pyright>=1.1.407,<2.0.0",
+]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportMissingImports = true
+reportUnusedVariable = "warning"
+reportMissingTypeStubs = "none"
+
+[tool.mypy]
+strict = true
+show_error_codes = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+python_files = "*_test.py test_*.py *_spec.py"
+cache_dir = "/tmp/.pytest_cache_platform"
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+show_missing = true

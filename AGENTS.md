@@ -23,11 +23,12 @@ than this guide gives.
 
 ```text
 src/frictionless_architect/   # application code (visualizer/, schema/)
+platform/                     # Poetry monorepo (ADR-0002): packages/<name>/, own lock + venv
 tests/                        # mirrors src/ layout, plus api/ and features/ (behave)
 architecture/                 # canonical graph-loadable model (YAML)
 specs/                        # feature specs (001-governance-platform, 002-neo4j-schema-ui)
 docs/adr/                     # MADR decision log
-scripts/                      # gate scripts (pre_commit_checks.sh, pre_merge_checks.sh)
+scripts/                      # gate scripts (pre_commit_checks.sh, pre_merge_checks.sh, platform_checks.sh)
 ```
 
 Root itself carries governance docs only (`ARCHITECTURE.md`, `TECHNICAL.md`,
@@ -60,6 +61,11 @@ Python 3.12 (per `pyproject.toml`): follow standard conventions; enforced by
 - **Root** — governance and orchestration only: `.specify/memory/constitution.md`,
   `ARCHITECTURE.md`, `TECHNICAL.md`, `NONFUNCTIONALS.md`, `RELEASE.md`.
 - `src/frictionless_architect/` — application code (`visualizer/`, `schema/`).
+- `platform/` — the Poetry monorepo the flat `src/` is migrating into (ADR-0002,
+  `ARCHITECTURE.md` §8). `platform/packages/<name>/` each carry `pyproject.toml`, `src/`,
+  `tests/`, `README.md` and `specs/`. `platform/` has its own `poetry.lock` and virtualenv —
+  run its commands from `platform/`. New code for an extracted subsystem (e.g. the
+  policy-to-OSCAL pipeline in `controls-compliance-catalog`) goes there, not in `src/`.
 - `tests/` — mirrors the `src/` package layout; `tests/unit/<pkg>/test_<mod>.py` for
   `src/frictionless_architect/<pkg>/<mod>.py`. Also `tests/api/` (in-process FastAPI)
   and `tests/features/` (behave). See `TECHNICAL.md` → "Testing Layout".
@@ -74,6 +80,7 @@ poetry install                       # project + all dependency groups
 poetry run pytest                    # full test suite
 bash scripts/pre_commit_checks.sh    # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
 bash scripts/pre_merge_checks.sh     # + behave, coverage-gated pytest, frontend UI harness
+bash scripts/platform_checks.sh      # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
 ```
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on commit,
