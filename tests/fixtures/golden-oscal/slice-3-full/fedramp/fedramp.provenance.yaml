@@ -1,0 +1,23 @@
+artifact:
+  - FedRAMP_LOW-baseline-resolved-profile_catalog.xml
+  - FedRAMP_MODERATE-baseline-resolved-profile_catalog.xml
+  - FedRAMP_HIGH-baseline-resolved-profile_catalog.xml
+source: "FedRAMP LOW/MODERATE/HIGH control baselines, OSCAL resolved-profile-as-catalog representation (already merged with the SP 800-53B baseline they inherit from — self-contained, no import chain)"
+source_repo: third_party/fedramp-automation
+source_commit: 22fdd080273f5ec98c1c9c07f677659046af63f5
+source_path: bundled/catalogs/FedRAMP_{LOW,MODERATE,HIGH}-baseline-resolved-profile_catalog.xml
+license: "Public domain — U.S. Government (GSA) work"
+captured_date: "2026-09-27"
+extraction_method: "verbatim full-file copy"
+sha256:
+  FedRAMP_LOW-baseline-resolved-profile_catalog.xml: 81e3a3438b3ff2507421cbd1e41f47ab004d0dabcc92725fd2a24c3ff6c69841
+  FedRAMP_MODERATE-baseline-resolved-profile_catalog.xml: b5b701f6a6092b814dc769f31f6a8d80c40f0482dc4d4f1a80bccea4722d4033
+  FedRAMP_HIGH-baseline-resolved-profile_catalog.xml: 3d8ca1976b6abde94a6c52cdeca192f6d38187c3c83efd47dbc1f084488b638a
+notes: >
+  Vendored specifically because this is the class of content that motivated
+  this fixture set: GSA's own fedramp-automation repo has previously
+  disappeared from the internet. Only the *resolved* profile-as-catalog form
+  is vendored (per user decision) — the raw profile *delta* document (before
+  merging with its parent SP 800-53B baseline) was explicitly deemed
+  unnecessary and skipped. XML format only; fedramp-automation ships no JSON
+  equivalent.

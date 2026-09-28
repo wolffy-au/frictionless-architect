@@ -21,6 +21,11 @@ repos:
       - id: check-toml
       - id: check-merge-conflict
       - id: check-added-large-files
+        # tests/fixtures/golden-oscal/ deliberately vendors full-size NIST/
+        # FedRAMP source files (full catalog JSON, publication PDFs, resolved
+        # FedRAMP baseline XML) per ADR-0030 — each carries its own sha256 in
+        # a sidecar *.provenance.yaml, so size is expected, not a mistake.
+        exclude: ^tests/fixtures/golden-oscal/
       - id: mixed-line-ending
 
   - repo: local
