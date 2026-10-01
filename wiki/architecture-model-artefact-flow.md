@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Artefact Flow"
-generated: 2026-09-26
+generated: 2026-10-01
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -14,9 +14,10 @@ sources:
 Section C of `elements.yaml`: the application-layer input/output pipeline
 (`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
 
-Section C has 24 `ApplicationFunction`s:
+Section C has 27 `ApplicationFunction`s (24 before a 2026-09-27 pass added
+three — see "Controls & OSCAL" below):
 
-- 17 are platform functions, each `Assignment`-linked to its subsystem.
+- 20 are platform functions, each `Assignment`-linked to its subsystem.
 - 7 are external-system functions, each assigned to its external system:
   - Source Control: versioning and change review
   - CI/CD Pipeline: build, the Controls Enforcement Gate and deploy
@@ -98,10 +99,13 @@ platform's involvement starts when that document is ingested
 runs in four functions, all assigned to `sub-catalog`:
 
 ```text
+fn-policy-upload  (stages for conversion, exposed via if-catalog-ui)
 art-policy-doc / art-regulatory-standard   (verbatim documents)
+  ├─▶ fn-policy-quality-feedback  (LLM prose review, exposed via if-catalog-ui)
   └─▶ fn-ai-markdown-conversion  (LLM)     ─▶ art-trestle-markdown
         └─▶ fn-oscal-conversion  (Trestle import/author/assemble)
               ─▶ art-oscal-catalog
+                    └─▶ fn-oscal-validation  (trestle validate)
                     └─▶ fn-baseline-tailoring  (Trestle profile authoring)
                           ─▶ art-oscal-profile
                           └─▶ fn-oscal-profile-resolve  (trestle profile-resolve)
@@ -110,12 +114,29 @@ art-policy-doc / art-regulatory-standard   (verbatim documents)
 
 (`architecture/model/relationships.yaml` §"C. Stage 1 — Controls & OSCAL")
 
+- **`fn-policy-upload`** and **`fn-policy-quality-feedback`** are new
+  (2026-09-27, GH #55 follow-up, [Controls & Compliance
+  Catalog](controls-compliance-catalog.md) spec 001): accepting an uploaded
+  document and staging it, and an LLM-driven prose-quality review returned
+  to the author before conversion. Both are `Assignment`-linked to
+  `sub-catalog` and exposed via its new `if-catalog-ui` interface (see
+  [Ecosystem](architecture-model-ecosystem.md)).
 - **`fn-ai-markdown-conversion`** is the one genuinely new capability to
   build. An LLM turns a verbatim document, custom or upstream, into the
   Markdown catalog structure that Trestle's author commands expect. It
   replaces the former `fn-policy-authoring`.
 - **`fn-oscal-conversion`** is narrowed to the Trestle round-trip over that
   Markdown. It no longer reads raw upstream baselines.
+- **`fn-oscal-validation`** is new (2026-09-27): runs `trestle validate`
+  against a generated Catalog before it is published, driving
+  `art-oscal-catalog`'s new `status-lifecycle` property
+  (`converting → converted → validating → validated` /
+  `conversion_failed` / `validation_failed`). It is distinct from the
+  CI-only `techproc-oscal-golden-check` (see [Architecture
+  Model](architecture-model.md) §"Technology (section F)"): this one runs
+  on every conversion, not just against the golden dataset in CI. It also
+  `Flow`s into `fn-ledger-record`, so every conversion's provenance lands in
+  the forensic ledger alongside the other governed actions.
 - **`fn-baseline-tailoring`** ("OSCAL Baseline Tailoring") selects and
   tailors controls, parameters and modifications from one or more OSCAL
   Catalogs into an OSCAL Profile. It reads `art-oscal-catalog` ("selects

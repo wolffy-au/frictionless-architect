@@ -1,7 +1,7 @@
 ---
 title: OSCAL Compliance Content
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-01
+generator: claude-sonnet-5
 sources:
   - third_party/README.md
   - third_party/fedramp-automation/LICENSE.md
@@ -118,14 +118,16 @@ document text: `extract-legacy-doc.sh`'s document-sectioning and
 traceability scheme, and `validate-oscal-package.sh`'s validation-report
 shape. The plugin is agent-only tooling with no installable or versioned
 interface, so neither vendoring path fits. The logic is **ported as native
-Python** instead (`normalizer.py`, `trestle_ops.py`), with Apache-2.0 §4
-attribution headers noting origin and licence
+Python**, with Apache-2.0 §4 attribution headers noting origin and licence
 (`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
 (2026-09-24)"). The ADR records two rejected alternatives: vendoring the
 plugin and shelling out to its scripts, and depending on it as a package,
-which isn't possible because it isn't published as one. Full detail is
-deferred to `specs/003-oscal-ai-conversion/research.md` R10, which is not a
-source of this page.
+which isn't possible because it isn't published as one. The port landed
+2026-09-28 as the `controls-compliance-catalog` package's `SourceMapEntry`
+normalizer design and `ValidationReport` shape, not the `normalizer.py`/
+`trestle_ops.py` module names this ADR section originally sketched — see
+[Controls & Compliance Catalog](controls-compliance-catalog.md) §"Relationship
+to `oscal-document-workbench`", which is not a source of this page.
 
 ## The `fedramp-automation` substitution
 

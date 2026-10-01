@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Ecosystem"
-generated: 2026-09-26
+generated: 2026-10-01
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -75,3 +75,18 @@ also `Assignment`-linked to the section-A BusinessFunctions they perform. For
 example, the Compliance Officer performs Policy-to-OSCAL Conversion. That
 nesting is what the Controls & Compliance Catalog view draws; see
 [Skeleton](architecture-model-skeleton.md).
+
+A 2026-09-27 pass (GH #55 follow-up) added `sub-catalog`'s own
+`ApplicationInterface`, **Compliance Catalog UI** (`if-catalog-ui`) — the
+human-facing surface where the Compliance Officer/Auditor uploads
+policy/standard documents, reviews prose-quality feedback, and tracks
+Catalog/Profile status (`Composition` from `sub-catalog`; `Serving` to
+`role-compliance`, labelled "upload, feedback & status UI"). The same pass
+resolved where the schema-visualiser UI itself lives: `sub-schema-visualizer`
+gets a direct `Serving` edge to `role-ea`, composing into that role's
+existing journey alongside `sub-library`/`sub-governance`/`sub-assurance`
+rather than becoming a seventh subsystem or a standalone dashboard
+(ADR-0005 + [ADR-0020](architecture.md)). Both are recorded in
+[Architecture Model](architecture-model.md) §"Technology (section F)"
+alongside the `TechnologyFunction` that actually performs the
+cross-subsystem UI composition.

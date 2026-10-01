@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Skeleton"
-generated: 2026-09-26
+generated: 2026-10-01
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md

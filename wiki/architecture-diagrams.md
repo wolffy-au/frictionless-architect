@@ -1,6 +1,6 @@
 ---
 title: Architecture Views & Diagrams
-generated: 2026-09-26
+generated: 2026-10-01
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -14,6 +14,18 @@ sources:
   - architecture/model/diagrams/application/artefact-oscal.svg
   - architecture/model/diagrams/application/artefact-twin-governance.puml
   - architecture/model/diagrams/application/artefact-twin-governance.svg
+  - architecture/model/diagrams/application/catalog-structure.puml
+  - architecture/model/diagrams/application/catalog-structure.svg
+  - architecture/model/diagrams/technology/landscape.puml
+  - architecture/model/diagrams/technology/landscape.svg
+  - architecture/model/diagrams/technology/oscal-golden-check.puml
+  - architecture/model/diagrams/technology/oscal-golden-check.svg
+  - architecture/model/diagrams/technology/persistence-boundary.puml
+  - architecture/model/diagrams/technology/persistence-boundary.svg
+  - architecture/model/diagrams/technology/runtime-migration.puml
+  - architecture/model/diagrams/technology/runtime-migration.svg
+  - architecture/model/diagrams/technology/usage-catalog.puml
+  - architecture/model/diagrams/technology/usage-catalog.svg
   - architecture/model/diagrams/business/1-policy-conversion.puml
   - architecture/model/diagrams/business/1-policy-conversion.svg
   - architecture/model/diagrams/business/2-pattern-solution-design.puml
@@ -80,11 +92,12 @@ For what the model itself *means* (its elements, relationships and content secti
 
 ## Views and diagrams
 
-The merged model has 31 ArchiMate views:
+The merged model has 37 ArchiMate views:
 
-- 27 are declared in this repo's own `views.yaml`. They cover sections A–C,
-  the IT4IT touchpoint bridge, and (since 2026-09-26, GH #65) section E —
-  the platform's own packaging and migration.
+- 33 are declared in this repo's own `views.yaml`. They cover sections A–C,
+  the IT4IT touchpoint bridge, section E (since 2026-09-26, GH #65) — the
+  platform's own packaging and migration — and (since 2026-09-27, GH #55
+  follow-up) section F, the first Technology-layer cut.
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
   ([ADR-0029](architecture.md)).
@@ -105,6 +118,7 @@ kind of view:
 | `c4/` | the C4 context and container diagrams |
 | `implementation/` | the Packaging view (section E) |
 | `migration/` | the Migration Sequence view (section E) |
+| `technology/` | the five Technology-layer views (section F) |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
 The old `cross-layer/` folder is **gone** (PR #62):
@@ -301,6 +315,67 @@ story, so Migration Sequence stays focused on the step-by-step timeline. It
 **replaces** the hand-drawn `ARCHITECTURE.md` §8 diagram with a generated one
 (`architecture/model/views.yaml` §"Implementation & Migration"; see
 [Architecture Overview](architecture.md) §"Migration sequence").
+
+### Technology & application-structure views (section F)
+
+Six views, added 2026-09-27 (GH #55 follow-up, alongside the platform
+skeleton landing under GH #71), give the model its first Technology-layer
+cut, scoped to the `controls-compliance-catalog` slice (see [Architecture
+Model](architecture-model.md) §"Technology (section F)" and [Controls &
+Compliance Catalog](controls-compliance-catalog.md)):
+
+| View | Diagram | Viewpoint | Covers |
+|---|---|---|---|
+| Application Structure — Controls & Compliance Catalog | `application/catalog-structure` | `application_structure` | `sub-catalog`'s own component, its `if-catalog-ui` interface, and the artefacts it owns |
+| Technology: OSCAL Golden-Dataset CI Check | `technology/oscal-golden-check` | `custom` | The CI runner and test tool executing `techproc-oscal-golden-check` against the three golden-dataset legs (catalog, profile, resolution) |
+| Technology: Persistence Boundary | `technology/persistence-boundary` | `custom` | What `store-oscal`/`store-ledger` actually run on: local filesystem `Artifact`s on `node-app-server`, not Postgres/Neo4j |
+| Technology: Infrastructure Landscape | `technology/landscape` | `technology` | The pure infrastructure topology — both Nodes, their `SystemSoftware`, and the package `Artifact`s they host — with no `ApplicationComponent`/`DataObject` |
+| Technology Usage: Catalog Runtime | `technology/usage-catalog` | `technology_usage` | The demand-side chain `sub-catalog` → its package `Artifact` → `sw-uvicorn-fastapi` → `node-app-server` |
+| Runtime Migration: Local Compose to Hosted Cluster | `technology/runtime-migration` | `implementation_migration` | The `plat-runtime-mvp` → `plat-runtime-target` Plateau/Gap pair (ADR-0018) for the data layer's deployment shape |
+
+**Why `view-technology-ci-check` and `view-technology-persistence-boundary`
+are `viewpoint: custom`.** Both mix a `Node`/`Artifact` (Technology) with
+`ApplicationFunction`/`DataObject` (Application) members, and no standard
+viewpoint's allow-list covers that combination — the same constraint
+`view-packaging` already has for excluding `Node`
+(`architecture/model/views.yaml` comments on both views).
+
+**Why this isn't folded into `view-migration`.** `view-migration`'s
+Plateaus/Gaps are the packaging restructure (`ARCHITECTURE.md` §8); the
+runtime-target skeleton is a separate transition story for the data layer's
+deployment shape, so it gets its own view and its own Plateau/Gap pair
+(`plat-runtime-mvp`, `plat-runtime-target`, `gap-runtime-hosted`) rather than
+sharing `view-migration`'s `WorkPackage`s.
+
+**`view-technology-landscape` vs. `view-technology-ci-check`.** Both scope
+`node-ci-runner`/`sw-pytest`/`techproc-oscal-golden-check`, but the Landscape
+view is the pure Technology viewpoint (infrastructure only, both Nodes side
+by side); the CI Check view additionally pulls in the application-layer
+functions and artefacts the golden-dataset check actually validates
+(`architecture/model/views.yaml` comments).
+
+**Application Structure vs. Artefact Flow.** `view-application-structure-catalog`
+is a different cut from the existing `application/artefact-oscal(-resolve)`
+views: those show artefacts flowing *through* `ApplicationFunction`s across
+the whole Controls & OSCAL stage; this one shows one component's internal
+structure — `sub-catalog`, its interface, and the artefacts it owns — using
+`Aggregation` edges mirrored from the existing function `Write`-access edges,
+since `ApplicationFunction` isn't legal on the `application_structure`
+viewpoint.
+
+**Changes to existing diagrams from the same pass:**
+
+- `application/artefact-oscal` and `application/artefact-oscal-resolve` gained
+  edges for the three new section-C functions (`fn-policy-upload`,
+  `fn-policy-quality-feedback`, `fn-oscal-validation`) — see [Architecture
+  Model: Artefact Flow](architecture-model-artefact-flow.md).
+- `c4/context` and `c4/container` picked up small edge changes reflecting the
+  same additions.
+- `implementation/packaging` was rewritten from a broad
+  `include_types: [Artifact]` scope to an explicit `members:` list, so the new
+  non-package Artifacts added for the persistence-boundary slice
+  (`art-tech-oscal-workspace`, `art-tech-ledger-file`) don't incidentally sweep
+  into a view meant only for deployable package artifacts.
 
 ### IT4IT reference views (section D)
 

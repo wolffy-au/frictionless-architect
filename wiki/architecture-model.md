@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-09-26
+generated: 2026-10-01
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -37,9 +37,9 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 362 elements, 730 relationships and 31 views. Of those,
-220 elements, 495 relationships and 27 views are the platform's own sections
-A–C and E plus the IT4IT touchpoint bridge (below). The rest (142 / 235 / 4) is
+current merged model is 379 elements, 790 relationships and 37 views. Of those,
+237 elements, 555 relationships and 33 views are the platform's own sections
+A–C, E and F (below) plus the IT4IT touchpoint bridge. The rest (142 / 235 / 4) is
 the vendored IT4IT reference model, merged in at build time
 ([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
 generated `frictionless-architect.xml` is committed but never hand-edited —
@@ -137,10 +137,11 @@ them together rather than aborting on the first
 
 Section D (the IT4IT capability bridges) is relationships-only and has no
 element row of its own; section E (Implementation & Migration — the
-platform's own restructure) is covered on this page, in "Packaging and
-migration" below, rather than on a separate per-layer page. A further block,
-the IT4IT alignment itself, is vendored rather than first-party and is also
-covered below.
+platform's own restructure) and the newer section F (Technology) are covered
+on this page, in "Packaging and migration" and "Technology (section F)"
+below, rather than on a separate per-layer page. A further block, the IT4IT
+alignment itself, is vendored rather than first-party and is also covered
+below.
 
 ## Build pipeline
 
@@ -186,8 +187,8 @@ Section E models the platform's **own** restructure — the `ARCHITECTURE.md`
 first-class ArchiMate Implementation & Migration elements, added 2026-09-26
 (GH #65) and reflected in [ADR-0010](architecture.md), revised in place to
 cover this wider scope (`architecture/model/README.md` §"Model contents").
-Only the technology layer (Nodes, SystemSoftware) is still missing, pending
-GH #55's open UI-composition decisions.
+The technology layer this section originally deferred is now covered — see
+"Technology (section F)" below.
 
 **New application-layer elements.** The `Schema Visualiser API`
 (`sub-schema-visualizer`) is modelled as an `ApplicationComponent` — not one
@@ -245,6 +246,89 @@ packaging's); `Migration Sequence` (`diagrams/migration/sequence`) renders the
 Work-Package → Deliverable → Artifact → Plateau → Gap chain, replacing the old
 hand-drawn `ARCHITECTURE.md` §8 diagram with a generated one. The C4 container
 view also gained the Schema Visualiser API component. See
+[Architecture Views & Diagrams](architecture-diagrams.md).
+
+## Technology (section F)
+
+Added as a first cut (GH #55 follow-up), deliberately scoped only to the
+policy-to-OSCAL slice — not a general technology-layer rollout. Two
+unrelated infrastructure stories share the section because both came out of
+the same GH #55 decision round:
+
+**CI golden-dataset check.** `node-ci-runner` (a GitHub Actions runner,
+`c4: ignore`) hosts `sw-pytest`, which runs
+`techproc-oscal-golden-check` — the CI check comparing each of the three
+pipeline artefacts (Catalog, Profile, Resolved Catalog) against its golden
+dataset counterpart before merge
+([Controls & Compliance Catalog](controls-compliance-catalog.md) spec 001
+FR-006/FR-007). This is testing infrastructure, not a user-facing
+capability, hence `c4: ignore` throughout.
+
+**Persistence boundary and runtime target.** `node-app-server` — the shared
+deployment target already serving the visualiser — hosts two local
+filesystem Artifacts (`art-tech-oscal-workspace`, the Trestle workspace tree;
+`art-tech-ledger-file`, the forensic ledger JSONL) realising the existing
+`store-oscal`/`store-ledger` DataObjects, plus `sw-uvicorn-fastapi`, the
+shared ASGI runtime now explicitly modelled as hosting
+`art-pkg-controls-compliance-catalog`. The modelling threshold applied here:
+a third-party library gets its own `ext-*` element only when it performs a
+distinctive, named capability a modelled function depends on — `ext-trestle`
+qualifies (the Markdown↔OSCAL round-trip), but `xmlschema`/`defusedxml`
+(the visualiser's XML parsing/validation) stay unmodelled as internal
+plumbing behind an existing function. A deliberately underspecified
+`node-hosted-cluster` Node, plus a `plat-runtime-mvp` → `plat-runtime-target`
+Plateau pair and the `gap-runtime-hosted` Gap between them, record
+[ADR-0018](architecture.md)'s 2026-09-27 phasing decision (local compose
+through the MVP milestone, then a hosted cluster whose concrete shape is
+deferred to a follow-up ADR) — kept as its own `view-runtime-migration`
+view, separate from the packaging-restructure Plateaus in section E.
+
+**Per-subsystem UI composition.** A new `TechnologyFunction`,
+`techfn-role-journey-composition`, records [ADR-0020](architecture.md)'s
+2026-09-27 resolution: each subsystem's `ui/` stays its own independently
+owned fragment, composed for a user server-side, per role journey, hosted
+directly on the shared `sw-uvicorn-fastapi`/`node-app-server` pair rather
+than a new SystemSoftware/Node. It is modelled as a `TechnologyFunction`
+rather than one more subsystem-owned `fn-*`, because composition is
+cross-subsystem and owned by no single subsystem, unlike every
+`Assignment`-owned application function in section C. The six
+`art-pkg-<subsystem>` package Artifacts each `Realization`-link to it as
+their `ui/` fragment's composition point. A related edge resolves where the
+schema-visualiser UI itself lives: `sub-schema-visualizer` gets a direct
+`Serving` to `role-ea`, composing into that role's existing journey
+alongside `sub-library`/`sub-governance`/`sub-assurance`, rather than
+standing up a seventh subsystem or a standalone dashboard (ADR-0005 +
+ADR-0020).
+
+**New application-layer functions.** Two new `ApplicationFunction`s round
+out the catalog's upload/feedback path ahead of its own UI build:
+`fn-policy-upload` (accept an uploaded document, stage it for conversion)
+and `fn-policy-quality-feedback` (LLM-reviewed prose-quality feedback before
+conversion), both exposed via a new `ApplicationInterface`,
+`if-catalog-ui` — the human-facing surface the Compliance Officer/Auditor
+uses to upload documents, review feedback, and track status. A third,
+`fn-oscal-validation`, models the `trestle validate` step that already
+existed in the pipeline narrative but not as its own function, with
+`art-oscal-catalog` gaining a `status-lifecycle` property
+(`converting → converted → validating → validated` /
+`conversion_failed` / `validation_failed`) to carry that state explicitly.
+
+**New views.** Four views render section F:
+`view-technology-ci-check` (the CI slice, `viewpoint: custom` since mixing
+a Node with application-layer concepts isn't covered by a standard
+viewpoint's allow-list), `view-technology-persistence-boundary` (storage
+location, also `viewpoint: custom` for the same reason),
+`view-technology-landscape` (the standard Technology viewpoint — pure
+infrastructure topology, both Nodes side by side), and
+`view-technology-usage-catalog` (the standard Technology Usage viewpoint —
+the demand side, `sub-catalog` through to `node-app-server`, which
+`view-packaging`'s `implementation_deployment` viewpoint can't show since
+it excludes `Node`). A fifth, `view-application-structure-catalog`
+(the standard Application Structure viewpoint), also landed alongside these
+— `sub-catalog`'s own internal structure (component, interface, the
+artefacts it owns), shown via new `sub-catalog → art-*` ownership `Access`
+edges rather than `ApplicationFunction`-mediated flow, since Application
+Structure isn't a viewpoint `ApplicationFunction` can appear on. See
 [Architecture Views & Diagrams](architecture-diagrams.md).
 
 ## IT4IT alignment — vendored as its own repo, imported at build time
@@ -451,3 +535,12 @@ to cover this wider load-bearing scope, and
 `controls-compliance-catalog` the first extraction instead of the visualiser
 split (`architecture/model/README.md` §"Model contents"; see [Architecture
 Overview](architecture.md) §"Migration sequence").
+
+A 2026-09-27 pass (GH #55 follow-up, alongside the platform skeleton landing
+under GH #71) added section F — see "Technology (section F)" above — the
+CI golden-dataset check, the persistence-boundary/runtime-target skeleton
+(ADR-0018), the per-subsystem UI composition function (ADR-0020), the
+schema-visualiser-UI-home Serving edge (ADR-0005 + ADR-0020), and the
+catalog's upload/feedback functions and interface. That brings the
+platform's own model to 237 elements / 555 relationships / 33 views (379 /
+790 / 37 merged with the unchanged IT4IT reference).

@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-09-26
+generated: 2026-10-01
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -91,17 +91,30 @@ cherry-picked into `develop` before the deletion
   (`ARCHITECTURE.md` §3.1).
 - **Each subsystem ships its own UI** — a `ui/` `pnpm` sub-tree beside its
   `api/`, inside the same monorepo, until JS weight justifies `turborepo`. There
-  is no central dashboard package; whether the UIs compose as Backstage plugins
-  or in a shell app is open (GitHub #55) (`ARCHITECTURE.md` §3.1,
+  is no central dashboard package. **Composition is resolved** (2026-09-27,
+  GH #55 item 7, ADR-0020 revised): server-composed per role journey, not
+  Backstage plugins and not a client-side shell (module federation /
+  single-spa) — both alternatives explicitly rejected. Build tooling for
+  each `ui/` tree itself remains open (`ARCHITECTURE.md` §3.1,
   `docs/adr/0020-per-subsystem-uis.md`).
 
-Target layout is enumerated in `ARCHITECTURE.md` §3.2. §3.3's target diagram is
-now a **TODO placeholder** (#55): it is to be replaced by a *generated*
-Implementation and Deployment view — packages as ArchiMate Artifacts realising
-the subsystems, deployed onto infrastructure — because diagrams come from
-`architecture/model/` and are never hand-drawn (constitution Principle X).
-Until then §3.2 gives the package layout and the generated C4 container view
-gives the logical one (`ARCHITECTURE.md` §3.3). See
+`orchestration/compose/` (docker-compose for Neo4j, plus Postgres/OPA if
+kept) is the runtime **through the MVP milestone only** (ADR-0024); target
+architecture moves the data layer to a hosted cluster once that milestone
+is reached, with the concrete shape (managed vs. self-managed, which
+orchestrator) deferred to a follow-up ADR (`ARCHITECTURE.md` §3.2,
+`docs/adr/0018-postgres-plus-neo4j-data-layer.md`, revised 2026-09-27).
+
+Target layout is enumerated in `ARCHITECTURE.md` §3.2. §3.3's target diagram —
+packages as ArchiMate Artifacts realising the subsystems, deployed onto the
+shared runtime (`sw-uvicorn-fastapi`/`node-app-server`) — is **no longer a
+TODO placeholder**: it is now generated from `architecture/model/`
+(`view-packaging`, GH #55) and embedded directly in `ARCHITECTURE.md` §3.3,
+never hand-drawn (constitution Principle X). `node-app-server` itself is
+deliberately excluded from the diagram — the Implementation and Deployment
+viewpoint's allowed-concept list excludes `Node`. §3.2 gives the package
+layout in prose and the generated C4 container view gives the logical one
+(`ARCHITECTURE.md` §3.3). See
 [Architecture Views & Diagrams](architecture-diagrams.md).
 
 ## Subsystem → package mapping
@@ -218,6 +231,18 @@ between them (GH #65) — see the migration-sequence diagram
 each package after the ones it consumes (`ARCHITECTURE.md` §8). See
 [Architecture Views & Diagrams](architecture-diagrams.md).
 
+**Status (GH #71):** steps 1–3 are done. `platform/` has its own
+`pyproject.toml` and `poetry.lock`; `packages/controls-compliance-catalog`
+exists as an empty, installable package. `scripts/platform_checks.sh` gates
+every package under `platform/packages/` (lock check, pyright, mypy, pytest
+at 90% coverage) and is called from the pre-commit/pre-merge scripts, the
+pre-push hook, and CI, with Sonar/Codecov picking up its coverage. The repo
+root keeps its own project and lock for the flat `src/` until step 7 empties
+it. Step 8.1's remaining checklist item — building #44 outside-in (UI with
+stubs → stubbed API → backend) inside the package — is still open; see
+[Controls & Compliance Catalog](controls-compliance-catalog.md) for the
+spec that package's own code will implement.
+
 **§8.1 — first extraction, `controls-compliance-catalog`.** The visualiser
 split (the old step 2) makes `schema-visualizer-api` consume
 `digital-twin-knowledge-graph` as a library, but that package is only
@@ -226,11 +251,15 @@ scaffolded at step 4 — so the split couldn't complete before step 4 existed
 instead: it is new code with no knowledge-graph dependency (in the model,
 `Controls & Compliance Catalog` reads only the framework packs), so it is
 written straight into `packages/controls-compliance-catalog` and proves the
-pattern at step 3 without waiting on step 4. `specs/003-oscal-ai-conversion`,
-which had planned an `/oscal` router in the flat `src/`, is to be re-targeted
-at this package — not yet done; tracked as an open item in `ARCHITECTURE.md`
-§8.1 (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`, revised
-2026-09-26).
+pattern at step 3 without waiting on step 4. The former `specs/003-oscal-ai-conversion`,
+which had planned an `/oscal` router in the flat `src/`, was re-targeted at this
+package and re-homed as the package's own
+`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion`
+on 2026-09-28 (`ARCHITECTURE.md` §8.1, §6's per-package spec numbering;
+`docs/adr/0005-visualiser-api-ui-split-first-extraction.md` §"Implementation
+status" 2026-09-28). The pipeline runs as the package's own FastAPI app
+(`uvicorn controls_compliance_catalog.app:app`), not a router mounted on the
+flat `src/` app. See [Controls & Compliance Catalog](controls-compliance-catalog.md).
 
 **§8.2 — visualiser API/UI split, now step 7.** The split itself is unchanged
 from the original decision: `packages/schema-visualizer-api` gets
@@ -253,14 +282,15 @@ dashboard; its home is open (#55).
 visualiser is JSON only, its router served from the shared app in
 `frictionless_architect/app.py`. The HTML route was dropped on 2026-09-13, so
 the remaining UI step is to build the Vite app and delete the orphaned
-`visualizer/static/` and `templates/`. And since `specs/003-oscal-ai-conversion`
-mounts a new `/oscal` router onto that same shared app, naming it after the
-visualiser no longer fit: the `app`/`lifespan` construction moved out of
-`visualizer/__init__.py` into a neutral `frictionless_architect/app.py`, entry
-point now `uvicorn frictionless_architect.app:app` — an interim rename for the
-flat layout; `schema-visualizer-api` still gets its own app object once the
-package split happens (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
-§"Implementation status" 2026-09-13, 2026-09-24). See
+`visualizer/static/` and `templates/`. The `app`/`lifespan` construction had
+briefly moved out of `visualizer/__init__.py` into a neutral
+`frictionless_architect/app.py` on 2026-09-24, anticipating a `/oscal` router
+mounted on that same shared app — but since the 2026-09-28 re-target gave
+`controls-compliance-catalog` its own FastAPI app instead (see "Migration
+sequence" above), that reason no longer holds: `frictionless_architect/app.py`
+is the visualiser's alone again until the visualiser itself is extracted into
+`schema-visualizer-api` (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
+§"Implementation status" 2026-09-13, 2026-09-24, 2026-09-28). See
 [Visualizer Service](visualizer-service.md).
 
 The ordering gap that used to be open here — §8 split the visualiser at step 2
@@ -278,14 +308,16 @@ config is single-project; `behave` and `pytest` `testpaths` are root-absolute;
 CI assumes one package.
 
 Open questions (`ARCHITECTURE.md` §10): whether anything ever leaves the
-monorepo; one constitution vs. per-component addenda; how the per-subsystem UIs
-compose — Backstage plugins or a shell app (#55); which upstream to fork for
-the ArchiMate parser; whether collaboration-tool decision capture is still in
-scope and where the PII gateway sits (ADR-0014 narrowed by ADR-0031 — #56);
+monorepo; one constitution vs. per-component addenda; which upstream to fork
+for the ArchiMate parser; whether collaboration-tool decision capture is still
+in scope and where the PII gateway sits (ADR-0014 narrowed by ADR-0031 — #56);
 whether `src/frictionless_architect/` stays importable as an umbrella namespace
 package during the transition. The library-vs-HTTP question, `sample_parser.py`'s
 home, and the step-2/step-4 ordering gap (Q10) are all marked resolved by
-ADR-0005 — see "Migration sequence" above.
+ADR-0005 — see "Migration sequence" above. Q3 — how the per-subsystem UIs
+compose — is also now **resolved** (ADR-0020, 2026-09-27): server-composed
+per role journey, neither Backstage plugins nor a client-side shell app;
+build tooling for each `ui/` tree itself remains the open part of #55.
 
 ## Decision log
 
@@ -443,8 +475,8 @@ recorded as closed (`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`
 [Visualizer Service](visualizer-service.md).
 
 ADR-0031 carves a **scoped exception** out of ADR-0014. The OSCAL
-conversion pipeline (`specs/003-oscal-ai-conversion` FR-016) sends verbatim
-policy and regulatory-standard text to an LLM without redaction. The
+conversion pipeline (`controls-compliance-catalog` spec 001, FR-016) sends
+verbatim policy and regulatory-standard text to an LLM without redaction. The
 reasoning is that authored, organisation-owned governance text is a
 different category from personal data swept up by collaboration-tool
 capture. ADR-0014's text is unchanged, and its gateway stays mandatory on
@@ -467,6 +499,18 @@ The namespace check runs first and short-circuits, though, so the user gets
 one clear error instead of a cascade of XSD failures
 (`docs/adr/0032-archimate-exchange-namespace-3-0.md` §Consequences). See
 [Data Model](data-model.md) and [Visualizer Service](visualizer-service.md).
+
+ADR-0018 was **updated in place** on 2026-09-27 (GH #55) to resolve "local
+compose only, or a hosted cluster?" as a **phased** answer rather than a
+single choice: `orchestration/compose/` stays the runtime through the MVP
+milestone (ADR-0024), then the data layer moves to a hosted cluster for
+target architecture. The hosted cluster's own shape — managed vs.
+self-managed, which orchestrator — is deliberately left to a follow-up ADR;
+nothing in the codebase argues for one option yet. The architecture model
+carries this as a skeleton-only Plateau/Gap pair (`plat-runtime-mvp` →
+`plat-runtime-target`, `gap-runtime-hosted`) kept separate from the §8
+packaging-restructure Plateaus — a different transition story. See
+[Architecture Model](architecture-model.md).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).
