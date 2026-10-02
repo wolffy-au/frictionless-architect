@@ -38,3 +38,22 @@ def test_convert_endpoint_returns_422_with_clear_message_for_invalid_json() -> N
     assert response.status_code == 422
     body = response.json()
     assert "valid JSON" in body["message"]
+
+
+def test_candidate_endpoint_returns_candidate_markdown_for_valid_prose() -> None:
+    response = client.post(
+        "/playground/prose-to-markdown-candidate",
+        json={"prose": "Account Management: the organization manages information system accounts."},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "Account Management" in body["markdown"]
+
+
+def test_candidate_endpoint_returns_422_with_clear_message_for_empty_prose() -> None:
+    response = client.post("/playground/prose-to-markdown-candidate", json={"prose": "   "})
+
+    assert response.status_code == 422
+    body = response.json()
+    assert "Cannot convert empty prose" in body["message"]

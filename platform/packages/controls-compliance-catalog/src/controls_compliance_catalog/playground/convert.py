@@ -19,6 +19,13 @@ from trestle.core.catalog.catalog_api import CatalogAPI
 from trestle.core.control_context import ContextPurpose, ControlContext
 from trestle.oscal.catalog import Catalog
 
+from controls_compliance_catalog.llm_client import LlmConversionError, convert_chunk
+
+_PROSE_CONVERSION_SYSTEM_PROMPT = (
+    "You convert a single control's free-text prose into Trestle Markdown "
+    "control format. Output only the Markdown, no commentary."
+)
+
 
 class PlaygroundConversionError(Exception):
     """Raised when pasted OSCAL input can't be converted to Trestle Markdown."""
@@ -76,3 +83,16 @@ def convert_oscal_control_to_markdown(raw_oscal_json: str) -> str:
         if not markdown_files:
             raise PlaygroundConversionError("Trestle produced no Markdown for the pasted control(s).")
         return "\n\n".join(path.read_text() for path in markdown_files)
+
+
+def convert_control_prose_to_markdown_candidate(prose: str) -> str:
+    """Convert pasted control prose into a *candidate* Trestle Markdown via the AI path.
+
+    This is GH #76's second swimlane: an LLM-assisted conversion, offered for comparison
+    against the deterministic reference path above -- never treated as authoritative on
+    its own. Calls through ``llm_client.convert_chunk`` (spec 001-oscal-ai-conversion R2).
+    """
+    try:
+        return convert_chunk(prose, _PROSE_CONVERSION_SYSTEM_PROMPT)
+    except LlmConversionError as exc:
+        raise PlaygroundConversionError(str(exc)) from exc

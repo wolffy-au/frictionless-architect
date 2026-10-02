@@ -5,6 +5,7 @@ import json
 import pytest
 from controls_compliance_catalog.playground.convert import (
     PlaygroundConversionError,
+    convert_control_prose_to_markdown_candidate,
     convert_oscal_control_to_markdown,
 )
 
@@ -46,3 +47,16 @@ def test_rejects_a_json_array_as_not_an_object() -> None:
 def test_rejects_a_control_missing_required_oscal_fields() -> None:
     with pytest.raises(PlaygroundConversionError, match="not a valid OSCAL control or catalog"):
         convert_oscal_control_to_markdown(json.dumps({"title": "Missing an id"}))
+
+
+def test_converts_pasted_prose_to_a_candidate_markdown() -> None:
+    markdown = convert_control_prose_to_markdown_candidate(
+        "Account Management: the organization manages information system accounts."
+    )
+
+    assert "Account Management" in markdown
+
+
+def test_rejects_empty_prose_with_a_clear_error() -> None:
+    with pytest.raises(PlaygroundConversionError, match="Cannot convert empty prose"):
+        convert_control_prose_to_markdown_candidate("   ")
