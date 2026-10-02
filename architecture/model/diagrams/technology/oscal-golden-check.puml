@@ -1,0 +1,51 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology: OSCAL Golden-Dataset CI Check
+
+Application_Component(e_id0aed952692a556, "compliance-trestle")
+Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
+Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
+Application_Function(e_id959e350a39c158, "OSCAL Baseline Tailoring")
+Application_Function(e_id9395f0bc80c955, "OSCAL Profile Resolution")
+Application_DataObject(e_id3d500fda79b357, "Regulatory Standard Document")
+Application_DataObject(e_ida95982eb78095a, "Regulatory Baseline Catalog")
+Application_DataObject(e_ide7676379a60257, "Regulatory Baseline Profile")
+Application_DataObject(e_ide0d2eafd1b6957, "Regulatory Resolved Baseline Catalog")
+Application_DataObject(e_idddf65887d53f57, "OSCAL Catalog")
+Application_DataObject(e_id9659a679544058, "OSCAL Profile")
+Application_DataObject(e_id0bcf03d5bb0d58, "Resolved OSCAL Profile Catalog")
+Technology_Node(e_ida2b7d071930453, "CI Runner") {
+  Technology_SystemSoftware(e_id32ef66e0cc7a59, "pytest") {
+    Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
+  }
+}
+
+Rel_Specialization_Up(e_ida95982eb78095a, e_idddf65887d53f57, "vendored instance (golden-dataset validation data)")
+Rel_Association(e_ida95982eb78095a, e_id3d500fda79b357, "expected OSCAL output for (golden pair)")
+Rel_Specialization_Up(e_ide7676379a60257, e_id9659a679544058, "vendored instance (golden-dataset validation data)")
+Rel_Specialization_Up(e_id0bcf03d5bb0d58, e_idddf65887d53f57, "resolved instance")
+Rel_Association(e_id0bcf03d5bb0d58, e_id9659a679544058, "fulfills the profile's control selection")
+Rel_Specialization_Up(e_ide0d2eafd1b6957, e_id0bcf03d5bb0d58, "vendored instance (golden-dataset validation data)")
+Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
+Rel_Serving_Up(e_id0aed952692a556, e_id959e350a39c158, "provides profile authoring for")
+Rel_Serving_Up(e_id0aed952692a556, e_id9395f0bc80c955, "realizes profile-resolve for")
+Rel_Access_w(e_id8926bd09002459, e_idddf65887d53f57, "generates")
+Rel_Access_r(e_id959e350a39c158, e_idddf65887d53f57, "selects controls from")
+Rel_Access_w(e_id959e350a39c158, e_id9659a679544058, "tailors")
+Rel_Access_r(e_id9395f0bc80c955, e_idddf65887d53f57, "reads")
+Rel_Access_r(e_id9395f0bc80c955, e_id9659a679544058, "reads")
+Rel_Access_w(e_id9395f0bc80c955, e_id0bcf03d5bb0d58, "generates")
+Rel_Access_r(e_id2f83bc5585b95c, e_idddf65887d53f57, "checks against golden dataset")
+Rel_Access_r(e_id2f83bc5585b95c, e_ida95982eb78095a, "golden-dataset baseline")
+Rel_Flow_Right(e_id8926bd09002459, e_id2f83bc5585b95c, "generated catalog checked by")
+Rel_Access_r(e_id2f83bc5585b95c, e_id9659a679544058, "checks against golden dataset")
+Rel_Access_r(e_id2f83bc5585b95c, e_ide7676379a60257, "golden-dataset baseline")
+Rel_Flow_Right(e_id959e350a39c158, e_id2f83bc5585b95c, "generated profile checked by")
+Rel_Access_r(e_id2f83bc5585b95c, e_id0bcf03d5bb0d58, "checks against golden dataset")
+Rel_Access_r(e_id2f83bc5585b95c, e_ide0d2eafd1b6957, "golden-dataset baseline")
+Rel_Flow_Right(e_id9395f0bc80c955, e_id2f83bc5585b95c, "generated resolved catalog checked by")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id2f83bc5585b95c, "provides LLM-as-judge paraphrase comparison for")
+Rel_Serving_Up(e_id0aed952692a556, e_id2f83bc5585b95c, "runs real profile-resolve for")
+
+@enduml

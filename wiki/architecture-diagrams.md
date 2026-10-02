@@ -1,7 +1,7 @@
 ---
 title: Architecture Views & Diagrams
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-01
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/application/artefact-assurance-spec.puml
@@ -14,6 +14,18 @@ sources:
   - architecture/model/diagrams/application/artefact-oscal.svg
   - architecture/model/diagrams/application/artefact-twin-governance.puml
   - architecture/model/diagrams/application/artefact-twin-governance.svg
+  - architecture/model/diagrams/application/catalog-structure.puml
+  - architecture/model/diagrams/application/catalog-structure.svg
+  - architecture/model/diagrams/technology/landscape.puml
+  - architecture/model/diagrams/technology/landscape.svg
+  - architecture/model/diagrams/technology/oscal-golden-check.puml
+  - architecture/model/diagrams/technology/oscal-golden-check.svg
+  - architecture/model/diagrams/technology/persistence-boundary.puml
+  - architecture/model/diagrams/technology/persistence-boundary.svg
+  - architecture/model/diagrams/technology/runtime-migration.puml
+  - architecture/model/diagrams/technology/runtime-migration.svg
+  - architecture/model/diagrams/technology/usage-catalog.puml
+  - architecture/model/diagrams/technology/usage-catalog.svg
   - architecture/model/diagrams/business/1-policy-conversion.puml
   - architecture/model/diagrams/business/1-policy-conversion.svg
   - architecture/model/diagrams/business/2-pattern-solution-design.puml
@@ -32,8 +44,12 @@ sources:
   - architecture/model/diagrams/c4/context.svg
   - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
   - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+  - architecture/model/diagrams/implementation/packaging.puml
+  - architecture/model/diagrams/implementation/packaging.svg
   - architecture/model/diagrams/layered/subsystem-capabilities.puml
   - architecture/model/diagrams/layered/subsystem-capabilities.svg
+  - architecture/model/diagrams/migration/sequence.puml
+  - architecture/model/diagrams/migration/sequence.svg
   - architecture/model/diagrams/vision/1-stakeholder.puml
   - architecture/model/diagrams/vision/1-stakeholder.svg
   - architecture/model/diagrams/vision/2-motivation.puml
@@ -76,10 +92,12 @@ For what the model itself *means* (its elements, relationships and content secti
 
 ## Views and diagrams
 
-The merged model has 29 ArchiMate views:
+The merged model has 37 ArchiMate views:
 
-- 25 are declared in this repo's own `views.yaml`. They cover sections A–C and
-  the IT4IT touchpoint bridge.
+- 33 are declared in this repo's own `views.yaml`. They cover sections A–C,
+  the IT4IT touchpoint bridge, section E (since 2026-09-26, GH #65) — the
+  platform's own packaging and migration — and (since 2026-09-27, GH #55
+  follow-up) section F, the first Technology-layer cut.
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
   ([ADR-0029](architecture.md)).
@@ -98,6 +116,9 @@ kind of view:
 | `layered/` | the cross-layer Subsystems & Capabilities view |
 | `application/` | the artefact-flow views |
 | `c4/` | the C4 context and container diagrams |
+| `implementation/` | the Packaging view (section E) |
+| `migration/` | the Migration Sequence view (section E) |
+| `technology/` | the five Technology-layer views (section F) |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
 The old `cross-layer/` folder is **gone** (PR #62):
@@ -146,7 +167,7 @@ repo (`1-stakeholder` … `4-outcome-realization`). See
 ### The business (Phase B) set
 
 Six views render under `diagrams/business/`, all using
-`business_process_cooperation` (`architecture/model/views.yaml:354-573`):
+`business_process_cooperation` (`architecture/model/views.yaml:354-586`):
 
 | View | Diagram | Covers |
 |---|---|---|
@@ -174,17 +195,17 @@ Process** wherever one role owns a function outright:
 
 It nests **Function > Process** where no role is assigned, as with Release
 Controls Enforcement. This consolidation replaced an earlier near-duplicate
-`vision/controls-lifecycle` diagram (`architecture/model/views.yaml:431-458`).
+`vision/controls-lifecycle` diagram (`architecture/model/views.yaml:444-471`).
 
 **The three numbered slices** zoom into consecutive stretches of the
 consolidated view. They are deliberate subsets, and they cannot drift apart
 because all of them are projections of the same model
-(`architecture/model/views.yaml:452-458`).
+(`architecture/model/views.yaml:465-471`).
 
 > **Sources disagree on the 1 → 2 hand-off object.** The slice comment says
 > each slice repeats its hand-off object from the neighbouring slice: "the
 > OSCAL Profile (1 -> 2) and the OSCAL SSP (2 -> 3)"
-> (`architecture/model/views.yaml:495-497`). The rendered slice 2 does not
+> (`architecture/model/views.yaml:508-510`). The rendered slice 2 does not
 > contain the OSCAL Profile. What it shares with slice 1 is the **Resolved
 > OSCAL Profile Catalog**, which patterns and blueprints now read
 > (`architecture/model/diagrams/business/2-pattern-solution-design.puml`).
@@ -201,16 +222,23 @@ because all of them are projections of the same model
 - **IT4IT: Capability Bridges** uses `capability`.
 
 The Controls & OSCAL stage is drawn as **two** application-layer views
-(`architecture/model/views.yaml:398-430`):
+(`architecture/model/views.yaml:398-443`):
 
 - `Artefact Flow — Controls & OSCAL` (`application/artefact-oscal`). The LLM
   Provider serves AI-assisted Markdown conversion, and Trestle serves the
-  round-trip into an OSCAL Catalog. The view also holds the golden-dataset
-  baseline catalog and profile.
+  round-trip into an OSCAL Catalog. The view is conversion only: its one
+  golden-dataset object is the baseline catalog, the expected output for the
+  Regulatory Standard Document it converts.
 - `Artefact Flow — OSCAL Profile Resolution`
-  (`application/artefact-oscal-resolve`). Trestle's `profile-resolve` turns a
-  profile and its catalog into the **Resolved OSCAL Profile Catalog**. FedRAMP's
-  pre-resolved baselines sit alongside as validation data.
+  (`application/artefact-oscal-resolve`). OSCAL Baseline Tailoring reads the
+  OSCAL Catalog and writes the OSCAL Profile, and Trestle's `profile-resolve`
+  turns the profile and its catalog into the **Resolved OSCAL Profile
+  Catalog**. OSCAL Catalog Generation is repeated from the first view as the
+  Catalog's writer. Trestle's round-trip `Serving` of that function is excluded
+  here, because the first view already shows it. The golden-dataset baseline
+  profile and FedRAMP's pre-resolved baselines sit alongside as validation
+  data. The split follows GH #61 decision A: each OSCAL object appears with
+  its writer and every reader (`architecture/model/views.yaml` comments).
 
 **C4 diagrams.** The C4 context diagram draws the business objects as external data stores
 (`SystemDb_Ext`). These include "Resolved OSCAL Profile Catalog" and the new
@@ -224,7 +252,13 @@ changed to match:
 - Assurance → pipeline: "expected controls".
 - The earlier release-candidate/gate-decision round trip between them is gone.
 
-(`architecture/model/diagrams/c4/container.puml`.)
+(`architecture/model/diagrams/c4/container.puml`.) A 2026-09-26 change (GH #65)
+adds a seventh container, **Schema Visualiser API**, with a single edge back
+to the Architecture Knowledge Graph store labelled "reads the knowledge graph
+via" — the C4 projection drops `ApplicationInterface` elements, so
+`if-twin-read-path` itself doesn't appear, but the model's extra direct
+`Serving` edge (see [Architecture Model](architecture-model.md) §"Packaging
+and migration") keeps the container from rendering disconnected.
 
 ### Suppressing the capability mesh on other views
 
@@ -256,6 +290,93 @@ more) and `ValueStream` (36 more: 7 streams + 29 stages). See the notes on
 `view-stakeholder`, `view-strategy`, `view-capability`, `view-value-stream` and
 `view-outcome-realization` (`architecture/model/views.yaml:30-170`).
 
+### Implementation & Migration views (section E)
+
+Two views, added 2026-09-26 (GH #65), render the platform's own restructure
+(see [Architecture Model](architecture-model.md) §"Packaging and migration"):
+
+| View | Diagram | Viewpoint | Covers |
+|---|---|---|---|
+| Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, and `if-twin-read-path`, each realized by its package `Artifact` |
+| Migration Sequence | `migration/sequence` | `implementation_migration` | The `ARCHITECTURE.md` §8 steps as `WorkPackage`s, their `Deliverable`s, and the Baseline / Transition / Target `Plateau`s and `Gap`s between them |
+
+**Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
+mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,
+one `exclude:` entry per relationship type) — that cooperation story belongs to
+the Artefact Flow views, not this one. No `Node`/`SystemSoftware` technology
+layer is scoped yet; the deployment half of the `implementation_deployment`
+viewpoint is left for GH #55 (`architecture/model/views.yaml` §"Implementation
+& Migration").
+
+**Migration Sequence** scopes `include_types: [WorkPackage, Deliverable,
+Plateau, Gap, Artifact]` and deliberately leaves out the `ApplicationComponent`
+members — the Packaging view above already carries the package-to-component
+story, so Migration Sequence stays focused on the step-by-step timeline. It
+**replaces** the hand-drawn `ARCHITECTURE.md` §8 diagram with a generated one
+(`architecture/model/views.yaml` §"Implementation & Migration"; see
+[Architecture Overview](architecture.md) §"Migration sequence").
+
+### Technology & application-structure views (section F)
+
+Six views, added 2026-09-27 (GH #55 follow-up, alongside the platform
+skeleton landing under GH #71), give the model its first Technology-layer
+cut, scoped to the `controls-compliance-catalog` slice (see [Architecture
+Model](architecture-model.md) §"Technology (section F)" and [Controls &
+Compliance Catalog](controls-compliance-catalog.md)):
+
+| View | Diagram | Viewpoint | Covers |
+|---|---|---|---|
+| Application Structure — Controls & Compliance Catalog | `application/catalog-structure` | `application_structure` | `sub-catalog`'s own component, its `if-catalog-ui` interface, and the artefacts it owns |
+| Technology: OSCAL Golden-Dataset CI Check | `technology/oscal-golden-check` | `custom` | The CI runner and test tool executing `techproc-oscal-golden-check` against the three golden-dataset legs (catalog, profile, resolution) |
+| Technology: Persistence Boundary | `technology/persistence-boundary` | `custom` | What `store-oscal`/`store-ledger` actually run on: local filesystem `Artifact`s on `node-app-server`, not Postgres/Neo4j |
+| Technology: Infrastructure Landscape | `technology/landscape` | `technology` | The pure infrastructure topology — both Nodes, their `SystemSoftware`, and the package `Artifact`s they host — with no `ApplicationComponent`/`DataObject` |
+| Technology Usage: Catalog Runtime | `technology/usage-catalog` | `technology_usage` | The demand-side chain `sub-catalog` → its package `Artifact` → `sw-uvicorn-fastapi` → `node-app-server` |
+| Runtime Migration: Local Compose to Hosted Cluster | `technology/runtime-migration` | `implementation_migration` | The `plat-runtime-mvp` → `plat-runtime-target` Plateau/Gap pair (ADR-0018) for the data layer's deployment shape |
+
+**Why `view-technology-ci-check` and `view-technology-persistence-boundary`
+are `viewpoint: custom`.** Both mix a `Node`/`Artifact` (Technology) with
+`ApplicationFunction`/`DataObject` (Application) members, and no standard
+viewpoint's allow-list covers that combination — the same constraint
+`view-packaging` already has for excluding `Node`
+(`architecture/model/views.yaml` comments on both views).
+
+**Why this isn't folded into `view-migration`.** `view-migration`'s
+Plateaus/Gaps are the packaging restructure (`ARCHITECTURE.md` §8); the
+runtime-target skeleton is a separate transition story for the data layer's
+deployment shape, so it gets its own view and its own Plateau/Gap pair
+(`plat-runtime-mvp`, `plat-runtime-target`, `gap-runtime-hosted`) rather than
+sharing `view-migration`'s `WorkPackage`s.
+
+**`view-technology-landscape` vs. `view-technology-ci-check`.** Both scope
+`node-ci-runner`/`sw-pytest`/`techproc-oscal-golden-check`, but the Landscape
+view is the pure Technology viewpoint (infrastructure only, both Nodes side
+by side); the CI Check view additionally pulls in the application-layer
+functions and artefacts the golden-dataset check actually validates
+(`architecture/model/views.yaml` comments).
+
+**Application Structure vs. Artefact Flow.** `view-application-structure-catalog`
+is a different cut from the existing `application/artefact-oscal(-resolve)`
+views: those show artefacts flowing *through* `ApplicationFunction`s across
+the whole Controls & OSCAL stage; this one shows one component's internal
+structure — `sub-catalog`, its interface, and the artefacts it owns — using
+`Aggregation` edges mirrored from the existing function `Write`-access edges,
+since `ApplicationFunction` isn't legal on the `application_structure`
+viewpoint.
+
+**Changes to existing diagrams from the same pass:**
+
+- `application/artefact-oscal` and `application/artefact-oscal-resolve` gained
+  edges for the three new section-C functions (`fn-policy-upload`,
+  `fn-policy-quality-feedback`, `fn-oscal-validation`) — see [Architecture
+  Model: Artefact Flow](architecture-model-artefact-flow.md).
+- `c4/context` and `c4/container` picked up small edge changes reflecting the
+  same additions.
+- `implementation/packaging` was rewritten from a broad
+  `include_types: [Artifact]` scope to an explicit `members:` list, so the new
+  non-package Artifacts added for the persistence-boundary slice
+  (`art-tech-oscal-workspace`, `art-tech-ledger-file`) don't incidentally sweep
+  into a view meant only for deployable package artifacts.
+
 ### IT4IT reference views (section D)
 
 Four views cover the IT4IT reference content. They are declared in
@@ -275,7 +396,7 @@ pure `Capability`-to-`Capability` cut across two repos, so it lives in this
 repo's `views.yaml` rather than the vendored one. Because it is a cross-*model*
 cut, its diagram stays flat at the `diagrams/` root. By contrast,
 `layered/subsystem-capabilities` is only a cross-*layer* cut within this repo's
-own model, so it gets a layer folder (`architecture/model/views.yaml:666-700`).
+own model, so it gets a layer folder (`architecture/model/views.yaml:679-713`).
 
 An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
 predated the 4-view split and was dropped once the split fully superseded it. It

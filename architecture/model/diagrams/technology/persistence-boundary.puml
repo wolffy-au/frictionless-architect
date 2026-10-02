@@ -1,0 +1,16 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology: Persistence Boundary
+
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository")
+Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
+  Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+}
+
+Rel_Realization_Up(e_id1ae7a35dbecd59, e_idb18c37abc9ff51, "")
+Rel_Realization_Up(e_id100dd210f7455d, e_ida4a5b51705f555, "")
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+!include <archimate/Archimate>
+
+title Runtime Migration: Local Compose to Hosted Cluster
+
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Implementation_Plateau(e_id41f19d1f4d8e57, "Runtime: local compose (MVP)") {
+  Technology_Node(e_id87c8b07cea4751, "Linux Application Server")
+}
+Implementation_Plateau(e_iddb3e8c90fede5c, "Runtime: hosted cluster (target)") {
+  Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
+}
+Implementation_Gap(e_idb79cfd9d701c52, "Gap: local compose -> hosted cluster")
+
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Aggregation(e_id41f19d1f4d8e57, e_id625e631f1f715e, "")
+Rel_Aggregation(e_iddb3e8c90fede5c, e_id625e631f1f715e, "")
+Rel_Association(e_idb79cfd9d701c52, e_id41f19d1f4d8e57, "")
+Rel_Association(e_idb79cfd9d701c52, e_iddb3e8c90fede5c, "")
+
+@enduml

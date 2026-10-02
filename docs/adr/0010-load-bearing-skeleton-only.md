@@ -1,7 +1,7 @@
 # ADR-0010: Central model is a load-bearing skeleton only
 
 - **Status:** Accepted; skeleton contents extended by [ADR-0027](0027-capability-value-stream-and-motivation-spine.md)
-- **Date:** unknown (pre-dates this log; recorded in `architecture/model/README.md`)
+- **Date:** unknown (pre-dates this log; recorded in `architecture/model/README.md`; revised 2026-09-26 (GH #65))
 - **Sources:** `architecture/model/README.md`
 
 ## Context
@@ -37,3 +37,10 @@ was fleshed out — see `git log -- architecture/model/elements.yaml`).
 - The skeleton may grow to carry genuine structural traceability (the motivation
   spine, the value stream) — ADR-0027 — but not the speculative detail this ADR
   excluded.
+- The model also carries the platform's **own packaging and migration** (section E,
+  GH #65): code packages as Artifacts realising their components, the
+  `ARCHITECTURE.md` §8 restructure steps as Work Packages, and the platform's
+  Baseline / Transition / Target Plateaus. These are load-bearing — ADR-0005's
+  package dependency and the §8 order are decided against them — and are kept
+  to what `ARCHITECTURE.md` §3.2 and §8 already commit to. Infrastructure (Nodes,
+  SystemSoftware) waits for GH #55's open decisions.

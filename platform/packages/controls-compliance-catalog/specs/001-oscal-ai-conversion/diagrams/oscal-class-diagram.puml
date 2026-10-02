@@ -1,0 +1,103 @@
+@startuml oscal-class-diagram
+hide empty members
+
+class SourceDocumentIdentifier <<value object>> {
+  value: str
+}
+
+class PolicyStandardDocument <<request input, not persisted>> {
+  source_kind: "custom-policy" | "regulatory-standard"
+  content_format: "pdf" | "docx" | "xlsx" | "csv" | "markdown" | "text"
+  raw_bytes: bytes
+}
+
+class NormalizedDocument {
+  plain_text: str
+}
+
+class SourceMapEntry <<ported design>> {
+  source_id: str
+  heading: str
+  level: int
+  start_line: int
+  end_line: int
+  text_sha256: str
+  oscal_target: str | None
+  status: "pending" | "converted" | "unconvertible"
+  notes: str | None
+}
+
+class TrestleEditableMarkdownCatalog <<filesystem artefact>> {
+  workspace_path: Path
+  status: "converted" | "conversion_failed" | "validated" | "validation_failed"
+}
+
+class ValidationReport <<ported design>> {
+  target: str
+  status: "pass" | "fail"
+  validators: list[str]
+  errors: list[str]
+  generated_at: datetime
+  note: str
+}
+
+class ApprovalRecord <<ledger-projected>> {
+  source_kind: "custom-policy" | "regulatory-standard"
+  approved: bool
+  approved_by: str | None
+  approved_at: datetime | None
+}
+
+class OscalCatalog <<filesystem artefact>> {
+  catalog_path: Path
+  assembled_at: datetime
+}
+
+class OscalProfile <<filesystem artefact>> {
+  profile_path: Path
+  assembled_at: datetime
+}
+
+class ResolvedOscalCatalog <<filesystem artefact>> {
+  resolved_catalog_path: Path
+  resolved_at: datetime
+}
+
+class GoldenDataset <<test-only>> {
+  catalog_source: Path
+  profile_sources: list[Path]
+  resolved_baseline_sources: list[Path]
+}
+
+class LedgerEntry <<append-only>> {
+  entry_id: UUID
+  timestamp: datetime
+  actor: str
+  action: "convert" | "validate" | "assemble" | "resolve" | "approve"
+  outcome: "success" | "failure"
+  detail: str | None
+}
+
+PolicyStandardDocument "1" --> "1" SourceDocumentIdentifier
+NormalizedDocument "1" --> "1" SourceDocumentIdentifier
+TrestleEditableMarkdownCatalog "1" --> "1" SourceDocumentIdentifier
+ApprovalRecord "1" --> "1" SourceDocumentIdentifier
+OscalCatalog "1" --> "1" SourceDocumentIdentifier
+OscalProfile "1" --> "1" SourceDocumentIdentifier
+ResolvedOscalCatalog "1" --> "1" SourceDocumentIdentifier
+LedgerEntry "1" --> "1" SourceDocumentIdentifier
+
+PolicyStandardDocument ..> NormalizedDocument : normalize() (R4)
+NormalizedDocument "1" *-- "many" SourceMapEntry : sections
+NormalizedDocument ..> TrestleEditableMarkdownCatalog : AI convert, chunked (R5)
+TrestleEditableMarkdownCatalog "1" *-- "many" SourceMapEntry : source_map
+TrestleEditableMarkdownCatalog "1" o-- "0..1" ValidationReport : validation_report
+TrestleEditableMarkdownCatalog ..> ApprovalRecord : gates assembly (FR-011)
+ApprovalRecord ..> OscalCatalog : approved == true
+ApprovalRecord ..> OscalProfile : approved == true
+OscalCatalog "1" -- "1" OscalProfile : assembled together (FR-009)
+OscalCatalog ..> ResolvedOscalCatalog : profile-resolve (FR-005)
+OscalProfile ..> ResolvedOscalCatalog : profile-resolve (FR-005)
+GoldenDataset ..> TrestleEditableMarkdownCatalog : accuracy check only (FR-006, test-only)
+GoldenDataset ..> ResolvedOscalCatalog : accuracy check only (FR-007, test-only)
+@enduml

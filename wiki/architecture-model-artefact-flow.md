@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Artefact Flow"
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-01
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -14,9 +14,10 @@ sources:
 Section C of `elements.yaml`: the application-layer input/output pipeline
 (`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
 
-Section C has 23 `ApplicationFunction`s:
+Section C has 27 `ApplicationFunction`s (24 before a 2026-09-27 pass added
+three — see "Controls & OSCAL" below):
 
-- 16 are platform functions, each `Assignment`-linked to its subsystem.
+- 20 are platform functions, each `Assignment`-linked to its subsystem.
 - 7 are external-system functions, each assigned to its external system:
   - Source Control: versioning and change review
   - CI/CD Pipeline: build, the Controls Enforcement Gate and deploy
@@ -27,32 +28,32 @@ relationships qualified `Read` / `Write` / `ReadWrite`. There are 35 `art-*`
 `DataObject`s. The shared stores `Aggregation`-link the persistent artefacts,
 which ties section C back to section B
 ([Ecosystem](architecture-model-ecosystem.md))
-(`architecture/model/elements.yaml:1023-1222`,
-`architecture/model/relationships.yaml:539-694`).
+(`architecture/model/elements.yaml:1023-1229`,
+`architecture/model/relationships.yaml:542-700`).
 
 A dedicated Forensic Ledger Recording function (`fn-ledger-record` →
 `art-ledger-entry`) receives `Flow` edges from four functions: governance
 evaluation, the enforcement gate, the drift engine and build supervision. As a
 result, every governed action lands an immutable record
-(`architecture/model/relationships.yaml:620-625`, `641`).
+(`architecture/model/relationships.yaml:626-631`, `647`).
 
 > **Sources disagree on counts.** The README's section-C summary still gives
 > the older figures of 15 functions and 25 DataObjects
-> (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 23
+> (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 24
 > and 35.
 
-Five per-stage views scope it (`architecture/model/views.yaml:398-430`,
-`576-666`):
+Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
+`589-679`):
 
 | View | Covers |
 |---|---|
-| `Artefact Flow — Controls & OSCAL` | Policy/standard document → AI-assisted Trestle Markdown → OSCAL catalog/profile generation, plus the golden-dataset baselines that validate it |
-| `Artefact Flow — OSCAL Profile Resolution` | Profile + source catalog(s) → Resolved OSCAL Profile Catalog via `trestle profile-resolve`, with FedRAMP's pre-resolved baselines as validation data |
+| `Artefact Flow — Controls & OSCAL` | Policy/standard document → AI-assisted Trestle Markdown → OSCAL Catalog, plus the golden-dataset catalog that validates it. Conversion only: the Profile objects moved to the next view (GH #61 decision A) |
+| `Artefact Flow — OSCAL Profile Resolution` | OSCAL Catalog → tailored OSCAL Profile → Resolved OSCAL Profile Catalog via Trestle's profile authoring and `profile-resolve`, with the golden-dataset profile and resolved baselines as validation data. `fn-oscal-conversion` is repeated as the Catalog's writer |
 | `Artefact Flow — Library & Design` | Pattern → blueprint → solution-design composition, OSCAL Component/SSP emission, threat modelling |
 | `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering |
 | `Artefact Flow — Assurance & Specification` | Spec generation; build supervision; the enforcement gate run inline in CI/CD; BAU effectiveness monitoring; drift detection against the roadmap → remediation backlog and POA&M |
 
-Notable artefacts (`architecture/model/elements.yaml:1187-1222`):
+Notable artefacts (`architecture/model/elements.yaml:1194-1229`):
 
 - **OSCAL:** Catalog, Profile, Resolved OSCAL Profile Catalog, Component,
   SSP, Assessment Plan, Assessment Results, and Plan of Action & Milestones.
@@ -71,21 +72,21 @@ realizes its business object (`bo-target-state-architecture`,
 `bo-architecture-roadmap`). The drift engine now diffs the twin against the
 roadmap and "reconciles against the transition state in effect", rather than
 against the target
-(`architecture/model/relationships.yaml:373-375`, `659`, `684-685`).
+(`architecture/model/relationships.yaml:375-377`, `665`, `690-691`).
 
 **POA&M.** The OSCAL Plan of Action & Milestones (`art-oscal-poam`) now
 realizes a business-layer counterpart, `bo-oscal-poam`. It is written from
 both assessment cadences: the enforcement gate and the BAU effectiveness
 monitor both "record control deficiencies in" it. `store-oscal` aggregates it.
 At the business layer, target-state definition reads it for remediation
-milestones (`architecture/model/relationships.yaml:364-378`, `663-664`,
-`676`).
+milestones (`architecture/model/relationships.yaml:366-380`, `669-670`,
+`682`).
 
 **The enforcement gate** (`fn-enforcement-gate`) is assigned to the external
 CI/CD Pipeline, not to a platform subsystem. It verifies artefact-observable
 controls directly on the release candidate. It "verifies process controls
 from" the forensic ledger and reads the expected controls from the SSP
-(`architecture/model/relationships.yaml:560`, `642-648`).
+(`architecture/model/relationships.yaml:564`, `648-654`).
 
 ## Controls & OSCAL — how policy becomes OSCAL
 
@@ -95,25 +96,54 @@ verbatim policy or standard (e.g. Word/PDF) in external tools, so
 `process-policy-authoring` has **no application-layer realization**. The
 platform's involvement starts when that document is ingested
 (`architecture/model/elements.yaml` — `process-policy-authoring`). The chain
-runs in three functions, all assigned to `sub-catalog`:
+runs in four functions, all assigned to `sub-catalog`:
 
 ```text
+fn-policy-upload  (stages for conversion, exposed via if-catalog-ui)
 art-policy-doc / art-regulatory-standard   (verbatim documents)
+  ├─▶ fn-policy-quality-feedback  (LLM prose review, exposed via if-catalog-ui)
   └─▶ fn-ai-markdown-conversion  (LLM)     ─▶ art-trestle-markdown
         └─▶ fn-oscal-conversion  (Trestle import/author/assemble)
-              ─▶ art-oscal-catalog + art-oscal-profile
-                    └─▶ fn-oscal-profile-resolve  (trestle profile-resolve)
-                          ─▶ art-oscal-resolved-catalog  ("Resolved OSCAL Profile Catalog")
+              ─▶ art-oscal-catalog
+                    └─▶ fn-oscal-validation  (trestle validate)
+                    └─▶ fn-baseline-tailoring  (Trestle profile authoring)
+                          ─▶ art-oscal-profile
+                          └─▶ fn-oscal-profile-resolve  (trestle profile-resolve)
+                                ─▶ art-oscal-resolved-catalog  ("Resolved OSCAL Profile Catalog")
 ```
 
 (`architecture/model/relationships.yaml` §"C. Stage 1 — Controls & OSCAL")
 
+- **`fn-policy-upload`** and **`fn-policy-quality-feedback`** are new
+  (2026-09-27, GH #55 follow-up, [Controls & Compliance
+  Catalog](controls-compliance-catalog.md) spec 001): accepting an uploaded
+  document and staging it, and an LLM-driven prose-quality review returned
+  to the author before conversion. Both are `Assignment`-linked to
+  `sub-catalog` and exposed via its new `if-catalog-ui` interface (see
+  [Ecosystem](architecture-model-ecosystem.md)).
 - **`fn-ai-markdown-conversion`** is the one genuinely new capability to
   build. An LLM turns a verbatim document, custom or upstream, into the
   Markdown catalog structure that Trestle's author commands expect. It
   replaces the former `fn-policy-authoring`.
 - **`fn-oscal-conversion`** is narrowed to the Trestle round-trip over that
   Markdown. It no longer reads raw upstream baselines.
+- **`fn-oscal-validation`** is new (2026-09-27): runs `trestle validate`
+  against a generated Catalog before it is published, driving
+  `art-oscal-catalog`'s new `status-lifecycle` property
+  (`converting → converted → validating → validated` /
+  `conversion_failed` / `validation_failed`). It is distinct from the
+  CI-only `techproc-oscal-golden-check` (see [Architecture
+  Model](architecture-model.md) §"Technology (section F)"): this one runs
+  on every conversion, not just against the golden dataset in CI. It also
+  `Flow`s into `fn-ledger-record`, so every conversion's provenance lands in
+  the forensic ledger alongside the other governed actions.
+- **`fn-baseline-tailoring`** ("OSCAL Baseline Tailoring") selects and
+  tailors controls, parameters and modifications from one or more OSCAL
+  Catalogs into an OSCAL Profile. It reads `art-oscal-catalog` ("selects
+  controls from") and writes `art-oscal-profile` ("tailors"), and
+  compliance-trestle serves it ("provides profile authoring for")
+  (`architecture/model/elements.yaml` — `fn-baseline-tailoring`;
+  `architecture/model/relationships.yaml:449`, `576-577`).
 - **`fn-oscal-profile-resolve`** is split out so creation and resolution
   get their own views. Its output, `art-oscal-resolved-catalog`, is modelled
   as a `Specialization` of `art-oscal-catalog`, because OSCAL and Trestle
@@ -123,7 +153,7 @@ art-policy-doc / art-regulatory-standard   (verbatim documents)
   named **Resolved OSCAL Profile Catalog**. Downstream, the Library reads it
   instead of the raw profile: `fn-pattern-authoring` reads it,
   `fn-blueprint-authoring` "checks enablement against" it, and `art-pattern`
-  "maps to" it (`architecture/model/relationships.yaml:582-586`).
+  "maps to" it (`architecture/model/relationships.yaml:588-592`).
 - **Documents, not integrations.** `art-regulatory-standard` (e.g. NIST
   CSF, NIST SP 800-53 in prose) is a `Specialization` of `art-policy-doc`,
   labelled "externally-published instance". The business layer mirrors this
@@ -131,7 +161,9 @@ art-policy-doc / art-regulatory-standard   (verbatim documents)
 - **Golden-dataset validation artefacts.** Each production output has a
   vendored upstream counterpart used to validate it. None of these is a
   production pipeline input. Each is a `Specialization` of the artefact it
-  validates, and `store-frameworks` aggregates all three:
+  validates and realizes the matching OSCAL business object (Catalog,
+  Profile, Resolved OSCAL Profile Catalog). `store-frameworks` aggregates
+  all three:
 
   | Artefact | Upstream source | Validates |
   |---|---|---|
@@ -139,13 +171,20 @@ art-policy-doc / art-regulatory-standard   (verbatim documents)
   | `art-baseline-profile` | NIST LOW/MODERATE/HIGH/PRIVACY profiles (oscal-content) | Profile generation |
   | `art-baseline-resolved-catalog` | FedRAMP LOW/MODERATE/HIGH resolved baselines (fedramp-automation) | Profile resolution |
 
-  (`architecture/model/elements.yaml` §"C. Artefacts (DataObject)")
+  (`architecture/model/elements.yaml` §"C. Artefacts (DataObject)";
+  `architecture/model/relationships.yaml:289-299`)
+
+  `art-baseline` is also `Association`-linked to `art-regulatory-standard`,
+  labelled "expected OSCAL output for (golden pair)". The NIST SP 800-53
+  prose document is the converter's input, and the vendored catalog is the
+  output it should produce (`architecture/model/relationships.yaml:291`).
 
 At the business layer, `process-oscal-conversion` is realized by
 `fn-ai-markdown-conversion` and `fn-oscal-conversion`. `fn-oscal-profile-resolve`
-realizes its own process, `process-profile-resolution`. That process is
-triggered by `process-baseline-tailoring` ("tailored profile feeds
-resolution") (`architecture/model/relationships.yaml:277-284`).
+realizes its own process, `process-profile-resolution`, and
+`fn-baseline-tailoring` realizes `process-baseline-tailoring`. Tailoring
+triggers resolution ("tailored profile feeds
+resolution") (`architecture/model/relationships.yaml:277-285`).
 
 A modelling note on this change: `sub-catalog`'s former `Access` →
 `store-oscal` ("writes Catalogs & Profiles") edge was dropped, and no direct
@@ -165,7 +204,7 @@ artefact flow are:
 - Release Controls Enforcement, which comprises the CI/CD pipeline
 - Controls Effectiveness Assurance, which comprises effectiveness monitoring
 
-(`architecture/model/relationships.yaml:262-270`, `302-303`, `347-348`.) The
+(`architecture/model/relationships.yaml:262-270`, `304-305`, `349-350`.) The
 full set of nine is on [Skeleton](architecture-model-skeleton.md).
 
 Business roles are `Assignment`-linked to the **BusinessFunction** they
@@ -177,7 +216,7 @@ perform, not to individual processes:
 - Solution Architect → Solution Design
 - Platform Operations (BAU) → Controls Effectiveness Assurance
 
-(`architecture/model/relationships.yaml:264`, `304`, `355-360`, `381`.) Only
+(`architecture/model/relationships.yaml:264`, `306`, `357-362`, `383`.) Only
 Release Controls Enforcement, among the controls functions, has no human role;
 it runs inline in the pipeline. This role-on-function modelling is what lets
 the consolidated Controls & Compliance Catalog view nest Function > Role >
@@ -186,5 +225,5 @@ Process; see [Architecture Views & Diagrams](architecture-diagrams.md).
 > **Sources disagree on the resolved artefact's name.** `sub-catalog`'s `desc`
 > still says it resolves Profiles "into Resolved Catalogs", and
 > `fn-oscal-profile-resolve`'s `desc` says "a fully resolved OSCAL Catalog"
-> (`architecture/model/elements.yaml:892-898`, `1044-1048`). The artefact
+> (`architecture/model/elements.yaml:892-898`, `1051-1055`). The artefact
 > itself is named Resolved OSCAL Profile Catalog.

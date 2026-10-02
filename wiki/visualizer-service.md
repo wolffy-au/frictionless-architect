@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: 2026-09-25
+generated: 2026-09-26
 generator: claude-opus-5-5
 sources:
   - src/frictionless_architect/__init__.py
@@ -70,9 +70,10 @@ schema visualiser").
 | `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` |
 
 Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`;
-`schema_model_xsd_path` = `<sample_data_dir>/schema/archimate3_Model.xsd`;
+`schema_diagram_xsd_path` = `<sample_data_dir>/schema/archimate3_Diagram.xsd`
+(the entry XSD; it includes the View and Model schemas);
 `cache_path` = `<cache_dir>/schema_payload.json`
-(`src/frictionless_architect/visualizer/config.py:27-37`). `get_visualizer_settings()` is `lru_cache`d.
+(`src/frictionless_architect/visualizer/config.py:27-38`). `get_visualizer_settings()` is `lru_cache`d.
 
 ## Request flow
 
@@ -92,7 +93,7 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
    `sample_status = "invalid"` and adds the error's own message (which names
    the expected namespace) as the warning; either way the payload continues
    with an empty sample result. On a successful parse, it runs
-   `validate_sample_against_schema()` against `schema_model_xsd_path` and adds
+   `validate_sample_against_schema()` against `schema_diagram_xsd_path` and adds
    each returned issue as a `warning`
    (`src/frictionless_architect/visualizer/api.py:127-147`); if
    `neo4j_uri` is set, query Neo4j via `DataLoader`; merge schema entries with
@@ -123,7 +124,7 @@ process (`src/frictionless_architect/visualizer/api.py:264-280`).
 This module is the single home for the XML namespace strings the parser and
 validator share: `XSD_NS`, `XSI_NS`, and
 `ARCHIMATE_NS = "http://www.opengroup.org/xsd/archimate/3.0/"`
-(`src/frictionless_architect/visualizer/namespaces.py:15-17`). They are
+(`src/frictionless_architect/visualizer/namespaces.py:16-18`). They are
 identifiers that real documents declare, not fetched URLs, so they stay
 `http`. The 3.0 value is deliberate even though the bundled schema is 3.1,
 because the 3.1 exchange-format XSDs kept the 3.0 namespace
@@ -162,23 +163,46 @@ when the file is missing (`src/frictionless_architect/visualizer/sample_parser.p
 
 ### `sample_validator` (`src/frictionless_architect/visualizer/sample_validator.py`)
 
-`validate_sample_against_schema(sample_path, schema_path)` cross-checks the
-sample XML against the ArchiMate schema XSD and returns a list of issue
-strings (empty when consistent). Also parses via `defusedxml.ElementTree.parse`
-for the same XXE-hardening reason as `SampleParser` above; a `None` root from
-either the schema or the sample document is handled explicitly — the schema
-case raises `ValueError`, the sample case returns an issue string rather than
-raising, since this function's contract is to report problems as list entries
-(`src/frictionless_architect/visualizer/sample_validator.py:21-22,86-87`).
-After the root check, it runs `require_archimate_namespace()`. On a namespace
-mismatch, it returns that error as the only issue and skips the type and
-reference checks, which would be meaningless against an unmatched namespace
-(`src/frictionless_architect/visualizer/sample_validator.py:88-91`). Otherwise it
-flags: element/relationship `xsi:type` values with no matching
-`<xsd:element>`/`<xsd:complexType>` in the schema; relationships whose
-`source`/`target` id isn't among the sample's element ids; and view
-`node`/`connection` refs pointing at a missing element/relationship id
-(`src/frictionless_architect/visualizer/sample_validator.py:55-102`).
+`validate_sample_against_schema(sample_path, schema_path)` validates the
+sample XML against the ArchiMate exchange-format XSDs with `xmlschema`, per
+ADR-0022. It returns a list of issue strings, which is empty when the sample is
+valid. `schema_path` is the entry XSD: for a model with diagrams that is
+`archimate3_Diagram.xsd`, which includes the View and Model schemas
+(`src/frictionless_architect/visualizer/sample_validator.py:116-138`).
+
+The checks run in this order:
+
+1. **Missing files.** A missing sample or XSD is reported as an issue.
+2. **Parse and namespace.** The sample is parsed with
+   `defusedxml.ElementTree.parse` for the same XXE-hardening reason as
+   `SampleParser`. A `None` root is reported as an issue.
+   `require_archimate_namespace()` then runs. On a namespace mismatch its
+   error is the only issue returned, and every other check is skipped.
+3. **Schema load.** `_load_schema()` builds an `XMLSchema` with
+   `defuse="always"` and `allow="local"`, so the remote `xml.xsd` import in
+   `archimate3_Model.xsd` resolves from `xmlschema`'s bundled copy rather than
+   the network. It is `lru_cache`d per path. A load failure is reported as an
+   issue (`src/frictionless_architect/visualizer/sample_validator.py:32-39`,
+   `134-137`).
+4. **Declared types.** `xsi:type` values on elements and relationships that
+   the schema doesn't declare are reported as one "Types not defined in
+   schema" issue. `xmlschema` raises on such types rather than reporting
+   them, so when any are found the XSD pass is skipped.
+5. **XSD validation.** `schema.iter_errors()` runs over the sample, re-read
+   through an equally hardened `XMLResource`. Each error becomes an
+   `XSD: <reason> (at <path>)` issue. After `MAX_XSD_ISSUES` (50) errors, one
+   "suppressed" note is added and the pass stops, so a badly broken file
+   can't flood the warnings. An `XMLSchemaException` becomes an "XSD
+   validation aborted" issue
+   (`src/frictionless_architect/visualizer/sample_validator.py:28`, `64-78`,
+   `103-113`).
+6. **References.** Hand-written checks flag relationships whose
+   `source`/`target` isn't a sample element id, and view `node`/`connection`
+   refs pointing at a missing element or relationship. They are kept
+   alongside the XSD's key/keyref constraints because they name the dangling
+   identifier (`src/frictionless_architect/visualizer/sample_validator.py:1-7`,
+   `81-100`).
+
 Called from `_build_payload()` above — every returned issue surfaces as a
 payload `warning`, it never raises from that call site.
 
@@ -239,14 +263,10 @@ Cypher statements are passed through `_run_literal()` which casts to
   acceptance scenarios reference `Test Model.xml`
   (`src/frictionless_architect/visualizer/config.py:29` vs
   `specs/002-neo4j-schema-ui/spec.md:25`).
-- XSD validation: the parse path matches the design, `defusedxml`-wrapped
-  `ElementTree`, per the corrected ADR-0022 and
-  `specs/002-neo4j-schema-ui/research.md:8-11`. The `xmlschema` validation
-  both describe is not implemented. `validate_sample_against_schema()` does
-  its own type/reference cross-checks, `xmlschema` isn't a declared
-  dependency, and ADR-0022 lists full XSD-structural validation as an open
-  follow-up (`docs/adr/0022-schema-visualiser-lxml-xmlschema.md`
-  §Consequences).
+- XSD validation: **now aligned** (GitHub issue #53). The code matches
+  ADR-0022 and `specs/002-neo4j-schema-ui/research.md:8-11`:
+  `defusedxml`-wrapped `ElementTree` for parsing, and `xmlschema` (a declared
+  runtime dependency in `pyproject.toml`) for XSD validation.
 
 `README.md` §"Schema Visualiser" now documents this service directly
 (`poetry run uvicorn frictionless_architect.app:app --reload --port 8100`,

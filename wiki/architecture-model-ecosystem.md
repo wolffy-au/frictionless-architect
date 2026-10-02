@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Ecosystem"
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-01
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -35,7 +35,7 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 | Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation | `cap-spec-engine` |
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
-view back to the skeleton (`architecture/model/relationships.yaml:417-426`).
+view back to the skeleton (`architecture/model/relationships.yaml:419-428`).
 Shared stores (`architecture/model/elements.yaml:934-957`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
@@ -51,10 +51,11 @@ source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
 fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data
 with it, so its edges are `Serving`, not the `Flow`/`Access` used for the
 peer systems. It serves `fn-oscal-conversion` (the Markdown ↔ OSCAL
-round-trip) and `fn-oscal-profile-resolve` (profile resolution). The LLM
+round-trip), `fn-baseline-tailoring` (profile authoring) and
+`fn-oscal-profile-resolve` (profile resolution). The LLM
 Provider now also serves `fn-ai-markdown-conversion`, so its `desc` covers
 converting policy/standard documents alongside its drafting uses
-(`architecture/model/relationships.yaml:444-448`).
+(`architecture/model/relationships.yaml:446-451`).
 
 The former `ext-regsources` ("Regulatory Content Sources") external system
 has been **removed**. It implied a system integration with upstream
@@ -74,3 +75,18 @@ also `Assignment`-linked to the section-A BusinessFunctions they perform. For
 example, the Compliance Officer performs Policy-to-OSCAL Conversion. That
 nesting is what the Controls & Compliance Catalog view draws; see
 [Skeleton](architecture-model-skeleton.md).
+
+A 2026-09-27 pass (GH #55 follow-up) added `sub-catalog`'s own
+`ApplicationInterface`, **Compliance Catalog UI** (`if-catalog-ui`) — the
+human-facing surface where the Compliance Officer/Auditor uploads
+policy/standard documents, reviews prose-quality feedback, and tracks
+Catalog/Profile status (`Composition` from `sub-catalog`; `Serving` to
+`role-compliance`, labelled "upload, feedback & status UI"). The same pass
+resolved where the schema-visualiser UI itself lives: `sub-schema-visualizer`
+gets a direct `Serving` edge to `role-ea`, composing into that role's
+existing journey alongside `sub-library`/`sub-governance`/`sub-assurance`
+rather than becoming a seventh subsystem or a standalone dashboard
+(ADR-0005 + [ADR-0020](architecture.md)). Both are recorded in
+[Architecture Model](architecture-model.md) §"Technology (section F)"
+alongside the `TechnologyFunction` that actually performs the
+cross-subsystem UI composition.

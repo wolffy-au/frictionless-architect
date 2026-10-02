@@ -24,6 +24,7 @@ dependencies = [
     "uvicorn (>=0.43.0,<0.44.0)",
     "defusedxml (>=0.7.1,<0.8.0)",
     "compliance-trestle (>=5.1.0,<6.0.0)",
+    "xmlschema (>=4.3.2,<5.0.0)",
 ]
 
 [dependency-groups]
@@ -94,7 +95,8 @@ reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
 reportUnknownMemberType = false
 extraPaths = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
-exclude = ["third_party", "**/node_modules", "**/__pycache__"]
+# platform/ has its own venv and pyright config — scripts/platform_checks.sh checks it.
+exclude = ["third_party", "platform", "**/node_modules", "**/__pycache__"]
 
 [tool.mypy]
 strict = true

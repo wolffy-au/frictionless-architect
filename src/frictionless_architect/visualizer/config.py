@@ -29,8 +29,9 @@ class VisualizerSettings(BaseSettings):
         return self.sample_data_dir / "sample-00" / "Test Model Full.xml"
 
     @property
-    def schema_model_xsd_path(self) -> Path:
-        return self.sample_data_dir / "schema" / "archimate3_Model.xsd"
+    def schema_diagram_xsd_path(self) -> Path:
+        """Entry XSD for validating the sample: includes the View and Model schemas."""
+        return self.sample_data_dir / "schema" / "archimate3_Diagram.xsd"
 
     @property
     def cache_path(self) -> Path:

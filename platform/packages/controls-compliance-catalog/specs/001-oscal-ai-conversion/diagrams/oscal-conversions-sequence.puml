@@ -1,0 +1,35 @@
+@startuml oscal-conversions-sequence
+actor "Document Author" as Author
+participant "api.py" as Api
+participant "normalizer.py" as Normalizer
+participant "chunking.py" as Chunking
+participant "llm_client.py\n(ext-llm)" as Llm
+participant "trestle_ops.py" as Trestle
+participant "ledger.py" as Ledger
+
+Author -> Api : POST /oscal/conversions\n(source_document_id, source_kind, file)
+Api -> Normalizer : normalize(raw_bytes, content_format)
+Normalizer --> Api : NormalizedDocument (sections)
+Api -> Chunking : pack_chunks(sections)
+Chunking --> Api : chunk plan
+loop each chunk (FR-018: preserves control identity)
+  Api -> Llm : convert_chunk(chunk)
+  alt LLM error/timeout (FR-014)
+    Llm --> Api : error
+    Api -> Ledger : append(convert, failure)
+    Api --> Author : 201, status=conversion_failed
+  else success
+    Llm --> Api : Markdown fragment
+  end
+end
+alt control identifier collision (FR-013)
+  Api -> Ledger : append(convert, failure)
+  Api --> Author : 201, status=conversion_failed
+else no collision
+  Api -> Ledger : append(convert, success)
+  Api -> Trestle : validate(markdown)
+  Trestle --> Api : ValidationReport
+  Api -> Ledger : append(validate, success|failure)
+  Api --> Author : 201, status=validated|validation_failed
+end
+@enduml

@@ -168,9 +168,13 @@ validate against the XSDs (`specs/002-neo4j-schema-ui/research.md` §"Parsing
 ArchiMate schema + sample XML data", corrected 2026-09-25 to match ADR-0022); reuse Neo4j read credentials from `.env` and fall back to
 a cached JSON payload with a "Sample data unavailable" warning on outage.
 
-> The parse path now matches the research doc. The `xmlschema` validation
-> half isn't built yet: no visualiser module imports it, and it isn't declared
-> in `pyproject.toml` (see [Visualizer Service](visualizer-service.md)).
+> The implementation now matches the research doc on both halves. As of GitHub
+> issue #53, `xmlschema` validates the sample against the XSDs via
+> `archimate3_Diagram.xsd`, offline and `defusedxml`-hardened. Violations are
+> reported as non-blocking payload warnings
+> (`specs/002-neo4j-schema-ui/research.md` §"Parsing ArchiMate schema + sample
+> XML data"; `specs/002-neo4j-schema-ui/plan.md` §"Research Context"; see
+> [Visualizer Service](visualizer-service.md)).
 > The plan names `Test Model Full.xml` as the sample source while the
 > spec's acceptance tests reference `Test Model.xml`; config points at
 > `Test Model Full.xml` (`src/frictionless_architect/visualizer/config.py:29`).

@@ -46,12 +46,13 @@ repos:
         entry: poetry run pymarkdownlnt fix
         language: system
         types: [markdown]
-        # specs/ and the SpecKit-generated skill docs are managed by tooling
-        # and are not ours to reformat. .claude/ skill + agent files are
+        # specs/ (root and per-package, ARCHITECTURE.md §6) and the
+        # SpecKit-generated skill docs are managed by tooling and are not ours
+        # to reformat. .claude/ skill + agent files are
         # instruction docs (YAML front matter + one long description line) linted
         # by their own conventions, not prose-doc rules. The
         # wiki-librarian-generated wiki/ is likewise tooling-managed.
-        exclude: ^(specs/|\.specify/|\.claude/|wiki/|CHANGELOG\.md)
+        exclude: ^(specs/|platform/packages/[^/]+/specs/|\.specify/|\.claude/|wiki/|CHANGELOG\.md)
         stages: [pre-commit]
 
   # ── commit-msg stage: Conventional Commits ───────────────────────────────
@@ -99,6 +100,15 @@ repos:
       - id: pytest-tools
         name: pytest tooling
         entry: poetry run pytest tests/tools/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      # platform/ monorepo packages: own lock + venv, so pyright/mypy/pytest
+      # above never see them (root pyright excludes platform/).
+      - id: platform-checks
+        name: platform/ package checks
+        entry: scripts/platform_checks.sh
         language: system
         pass_filenames: false
         stages: [pre-push]

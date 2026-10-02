@@ -1,0 +1,32 @@
+@startuml oscal-chunking-activity
+start
+:Take NormalizedDocument.sections\n(ordered, from R4 normalization);
+:Start new, empty chunk;
+
+repeat
+  :Take next section;
+  if (section fits chunk's\nremaining token budget?) then (yes)
+    :Add whole section to chunk\n(never split a section mid-body);
+  else (no)
+    if (chunk is empty?) then (yes)
+      :Add section anyway\n(single oversized section);
+    else (no)
+      :Carry trailing context into next chunk\n(prior chunk's last heading + excerpt);
+      :Close chunk -> call llm_client.convert_chunk();
+      :Start new chunk, seeded\nwith carried trailing context;
+      :Add current section to new chunk;
+    endif
+  endif
+repeat while (more sections remain?) is (yes)
+->no;
+
+:Close final chunk -> call llm_client.convert_chunk();
+
+if (control's full statement\ncontained in this chunk?) then (yes)
+  :LLM emits the complete control\n(identifier + full statement);
+else (no)
+  :Defer control to the chunk\nwhere it completes (R5) --\nnever emitted partially;
+endif
+
+stop
+@enduml

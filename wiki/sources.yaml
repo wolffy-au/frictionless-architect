@@ -120,6 +120,21 @@ topics:
       - path: specs/002-neo4j-schema-ui/contracts/api.md
       - path: specs/002-neo4j-schema-ui/checklists/requirements.md
 
+  - name: controls-compliance-catalog
+    title: Controls & Compliance Catalog
+    description: The controls-compliance-catalog package — the policy-to-OSCAL AI-conversion pipeline re-targeted here from the flat src/ (ADR-0005 §8.1).
+    sources:
+      - path: platform/packages/controls-compliance-catalog/README.md
+      - path: platform/packages/controls-compliance-catalog/pyproject.toml
+      - path: platform/packages/controls-compliance-catalog/specs/README.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/plan.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/research.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/data-model.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md
+
   - name: non-functionals
     title: Non-Functional Requirements
     description: Performance, security, operability, and other cross-cutting constraints.

@@ -1,0 +1,7 @@
+@startuml oscal-sourcemap-status
+[*] --> pending
+pending --> converted : confidently mapped to a control
+pending --> unconvertible : structure doesn't map cleanly (US1 Scenario 3)
+converted --> [*]
+unconvertible --> [*]
+@enduml

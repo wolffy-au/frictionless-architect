@@ -1,7 +1,7 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-01
+generator: claude-sonnet-5
 ---
 
 > This wiki is **generated** by the `wiki-librarian` skill from the sources
@@ -25,8 +25,8 @@ generator: claude-opus-5-5
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: files, schema, the `build.py` pipeline, and the vendored IT4IT 3.0
-  reference model (`third_party/it4it`, merged in at build time — 336 elements,
-  684 relationships, 29 views).
+  reference model (`third_party/it4it`, merged in at build time — 379 elements,
+  790 relationships, 37 views).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
   stakeholders, drivers, assessments, goal and four outcomes, principles,
   constraints, requirements, capabilities, strategy, four value streams, and the
@@ -55,6 +55,11 @@ generator: claude-opus-5-5
   spec (FR-001…FR-023, FR-018 now an NFR; deferred solution decisions, the
   governance API contract)
   and the implemented `002-neo4j-schema-ui` spec and endpoints.
+- [Controls & Compliance Catalog](controls-compliance-catalog.md) — the
+  `platform/packages/controls-compliance-catalog` package: the first
+  extraction into the `platform/` monorepo, its AI-assisted policy/standard →
+  OSCAL conversion pipeline (spec `001-oscal-ai-conversion`), data model, API
+  surface, and golden-dataset validation.
 - [Non-Functional Requirements](non-functionals.md) — performance, security,
   reliability, compliance, observability, and quality targets.
 - [Visualizer Service](visualizer-service.md) — the one implemented component:

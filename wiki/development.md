@@ -1,7 +1,7 @@
 ---
 title: Development & Quickstart
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-01
+generator: claude-sonnet-5
 sources:
   - specs/001-governance-platform/quickstart.md
   - AGENTS.md
@@ -148,11 +148,16 @@ The constitution's "Quality Gates" (see
 ```bash
 bash scripts/pre_commit_checks.sh   # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
 bash scripts/pre_merge_checks.sh    # + coverage-gated pytest, frontend UI harness
+bash scripts/platform_checks.sh     # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
 ```
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on
 commit, type/test suite on push, Conventional Commits check on the message
-(`AGENTS.md` §"Working on the code").
+(`AGENTS.md` §"Working on the code"). `platform_checks.sh` is a 2026-09-27
+addition (GH #71): it gates `platform/`'s own packages separately from the
+root `src/` tree and is folded into `pre_commit_checks.sh`'s run, since
+`platform/` carries its own `poetry.lock` and virtualenv (see "Repository
+layout" below).
 
 `behave` is **not currently gated**: `tests/features/` holds only a placeholder
 scenario, so the behave pre-push hook and the `pre_merge_checks.sh` step were
@@ -238,7 +243,21 @@ tree — the place to go for principles, gates, the index of every document, and
 how to resolve conflicts between them (`AGENTS.md` intro). It is entirely
 hand-maintained: the earlier generated header, `update-agent-context.sh`
 markers and "Recent Changes" section are gone. It covers active technologies, a root-layout sketch
-(`src/`, `tests/`, `architecture/`, `specs/`, `docs/adr/`, `scripts/`), basic
+(`src/`, `platform/`, `tests/`, `architecture/`, `specs/`, `docs/adr/`,
+`scripts/` — `platform/` added 2026-09-27, GH #71), basic
 commands, then the development guide: toolchain, repo layout, environment
 quirks, conventions, and the skills/agents catalog (`AGENTS.md`
 §"Development guide", §"Skills & Workflows").
+
+**Repository layout now also names `platform/`** (`AGENTS.md` §"Repository
+layout"): the Poetry monorepo the flat `src/` is migrating into (ADR-0002,
+`ARCHITECTURE.md` §8), with `platform/packages/<name>/` each carrying its own
+`pyproject.toml`, `src/`, `tests/`, `README.md` and `specs/` — per-package
+spec numbering restarts at `001` there, distinct from the root `specs/`
+sequence. `platform/` has its own `poetry.lock` and virtualenv, so its
+commands run from `platform/`, not the repo root. New code for an extracted
+subsystem goes there — the first instance is `controls-compliance-catalog`
+(see [Controls & Compliance Catalog](controls-compliance-catalog.md)), not
+`src/`. The testing-layout convention of `tests/unit/<pkg>/test_<mod>.py`
+mirroring `src/frictionless_architect/<pkg>/<mod>.py` extends the same way
+inside each `platform/packages/<name>/`.
