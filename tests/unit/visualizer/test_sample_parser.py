@@ -48,5 +48,6 @@ def test_parse_raises_on_foreign_archimate_namespace(tmp_path: Path) -> None:
         '<elements><element identifier="e-1"/></elements></model>',
         encoding="utf-8",
     )
+    parser = SampleParser(sample_path)
     with pytest.raises(ArchimateNamespaceError, match="archimate/3.1/"):
-        SampleParser(sample_path).parse()
+        parser.parse()

@@ -281,7 +281,8 @@ def test_load_path_flags_truncated_relationship_label(tmp_path: Any) -> None:
     f.write_text("- {type: Serving, source: a, target: b, label: one, two}\n")
     errors: list[str] = []
     build.load_path(f, errors)
-    assert len(errors) == 1 and "a->b: key 'two'" in errors[0]
+    assert len(errors) == 1
+    assert "a->b: key 'two'" in errors[0]
 
 
 def test_load_path_accepts_quoted_commas(tmp_path: Any) -> None:
