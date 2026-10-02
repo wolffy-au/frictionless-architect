@@ -28,7 +28,7 @@ def _as_stub_markdown(prose: str) -> str:
     if not match:
         return prose
     control_id, title, statement = match.groups()
-    return f"# {control_id.lower()} - \\[\\] {title.strip()}\n\n## Control Statement\n\n{statement.strip()}"
+    return f"# {control_id.lower()} - \\[\\] {title.strip()}\n\n## Control Statement\n\n{statement.strip()}\n"
 
 
 def convert_chunk(prompt: str, system: str) -> str:  # noqa: ARG001 - system kept for the real litellm call
