@@ -113,6 +113,32 @@ class SchemaPayloadService:
             status["last_refresh_completed"] = self._last_refresh_completed.isoformat()
         return status
 
+    def _load_sample(self, add_warning: Any) -> tuple[str, SampleParseResult]:
+        try:
+            sample_result = self.parser.parse()
+        except (FileNotFoundError, ParseError):
+            add_warning(self.settings.warning_text)
+            return "missing", SampleParseResult.empty(self.settings.sample_model_path)
+        except ArchimateNamespaceError as exc:
+            add_warning(str(exc))
+            return "invalid", SampleParseResult.empty(self.settings.sample_model_path)
+
+        for issue in validate_sample_against_schema(
+            self.settings.sample_model_path,
+            self.settings.schema_diagram_xsd_path,
+        ):
+            add_warning(issue)
+        return "loaded", sample_result
+
+    def _load_schema(self, add_warning: Any) -> tuple[str, dict[str, list[dict[str, Any]]]]:
+        if not self.settings.neo4j_uri:
+            return "disabled", {"elements": [], "relationships": [], "views": []}
+        try:
+            return "available", self.loader.collect()
+        except DataLoaderError as exc:
+            add_warning(str(exc))
+            return "unavailable", {"elements": [], "relationships": [], "views": []}
+
     def _build_payload(self) -> tuple[dict[str, Any], str, str, list[str], int]:
         start = time.monotonic()
         warnings: list[str] = []
@@ -124,35 +150,8 @@ class SchemaPayloadService:
             seen.add(text)
             warnings.append(text)
 
-        sample_status = "missing"
-        try:
-            sample_result = self.parser.parse()
-            sample_status = "loaded"
-        except (FileNotFoundError, ParseError):
-            add_warning(self.settings.warning_text)
-            sample_result = SampleParseResult.empty(self.settings.sample_model_path)
-        except ArchimateNamespaceError as exc:
-            sample_status = "invalid"
-            add_warning(str(exc))
-            sample_result = SampleParseResult.empty(self.settings.sample_model_path)
-        else:
-            for issue in validate_sample_against_schema(
-                self.settings.sample_model_path,
-                self.settings.schema_diagram_xsd_path,
-            ):
-                add_warning(issue)
-
-        schema_status = "disabled"
-        schema_payload: dict[str, list[dict[str, Any]]] = {"elements": [], "relationships": [], "views": []}
-        if self.settings.neo4j_uri:
-            try:
-                schema_payload = self.loader.collect()
-                schema_status = "available"
-            except DataLoaderError as exc:
-                schema_status = "unavailable"
-                add_warning(str(exc))
-        else:
-            schema_status = "disabled"
+        sample_status, sample_result = self._load_sample(add_warning)
+        schema_status, schema_payload = self._load_schema(add_warning)
 
         if not schema_payload["elements"] and not sample_result.elements:
             raise PayloadUnavailable(
