@@ -6,7 +6,11 @@ description = "Controls & Compliance Catalog: policy/standard documents to OSCAL
 version = "0.0.0"
 requires-python = ">=3.11,<3.14"
 readme = "README.md"
-dependencies = []
+dependencies = [
+    "fastapi (>=0.141.0,<0.142.0)",
+    "uvicorn (>=0.43.0,<0.44.0)",
+    "compliance-trestle (>=5.1.0,<6.0.0)",
+]
 
 [tool.poetry]
 packages = [{ include = "controls_compliance_catalog", from = "src" }]
