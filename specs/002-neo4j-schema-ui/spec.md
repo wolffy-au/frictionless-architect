@@ -22,11 +22,11 @@ A data analyst needs to quickly understand the node, relationship, and view type
 
 **Why this priority**: Without a schema overview it is difficult to validate that new queries or dashboards will stay consistent with the defined architecture, so the analyst cannot start work.
 
-**Independent Test**: Open the schema visualiser, confirm all element and relationship types from `sample-data/schema/archimate3_Model.xsd` are listed, and match each to at least one entry from `sample-data/sample-00/Test Model.xml`.
+**Independent Test**: Open the schema visualiser, confirm all element and relationship types from `sample-data/schema/archimate3_Model.xsd` are listed, and match each to at least one entry from `sample-data/sample-00/Test Model Full.xml`.
 
 **Acceptance Scenarios**:
 
-1. **Given** the user opens the schema tab and the sample dataset is loaded, **When** they inspect the element list, **Then** each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, VS2) drawn from `sample-data/sample-00/Test Model.xml`.
+1. **Given** the user opens the schema tab and the sample dataset is loaded, **When** they inspect the element list, **Then** each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, VS2) drawn from `sample-data/sample-00/Test Model Full.xml`.
 2. **Given** the schema contains relationships (Association), **When** the user selects that relationship type, **Then** the visualiser highlights the actual relationships between the sample nodes (e.g., the Association between VS1 and VS2) and shows the source/target identifiers.
 
 ---
@@ -41,7 +41,7 @@ A product owner wants to confirm that every schema directive (element, diagram, 
 
 **Acceptance Scenarios**:
 
-1. **Given** the schema file defines diagrams and views, **When** the owner switches to the diagram preview, **Then** the UI overlays the element positions (x, y, w, h) extracted from the sample view in `sample-data/sample-00/Test Model.xml` while showing the same relationships from the schema list.
+1. **Given** the schema file defines diagrams and views, **When** the owner switches to the diagram preview, **Then** the UI overlays the element positions (x, y, w, h) extracted from the sample view in `sample-data/sample-00/Test Model Full.xml` while showing the same relationships from the schema list.
 
 ---
 
@@ -62,9 +62,9 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 ### Edge Cases
 
 - What happens when the schema references a type (e.g., a new ArchiMate element) with no sample nodes in `sample-data/sample-00`?
-- How does the visualiser behave if `Test Model.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers?
+- How does the visualiser behave if `Test Model Full.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers?
 - What if the schema files are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes? *Resolved (ADR-0032)*: the ArchiMate 3.1 exchange-format XSDs keep the `http://www.opengroup.org/xsd/archimate/3.0/` namespace, so 3.0-namespaced sample data remains valid against them. A sample file declaring any other namespace is reported as a warning naming the expected namespace, and `/schema-payload/status` returns `sample_file_status: "invalid"` rather than rendering an empty model.
-- What warning should appear if `sample-data/sample-00/Test Model.xml` cannot be loaded so analysts understand why sample instances are unavailable without being blocked?
+- What warning should appear if `sample-data/sample-00/Test Model Full.xml` cannot be loaded so analysts understand why sample instances are unavailable without being blocked?
 
 ## Requirements *(mandatory)*
 
@@ -73,7 +73,7 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 ### Functional Requirements
 
 - **FR-001**: System MUST display a concise summary of every node, relationship, and view type declared in the ArchiMate schema files under `sample-data/schema`, ensuring the displayed names and identifiers exactly match the schema definitions (Constitution Principle VII: System Integrity & Accuracy — data accuracy in schema translation).
-- **FR-002**: System MUST pair each schema definition with at least one corresponding sample occurrence from `sample-data/sample-00/Test Model.xml`, including identifiers, labels, and coordinates, so stakeholders can verify how the schema translates into concrete data (Principle VIII: Durability & Interoperability).
+- **FR-002**: System MUST pair each schema definition with at least one corresponding sample occurrence from `sample-data/sample-00/Test Model Full.xml`, including identifiers, labels, and coordinates, so stakeholders can verify how the schema translates into concrete data (Principle VIII: Durability & Interoperability).
 - **FR-003**: Users MUST be able to switch between a diagram-centric overview (respecting the stored x/y/w/h styling) and a tabular schema breakdown that lists element/relationship attributes, ensuring consistent presentation across formats (Principle IX: Cross-Platform Consistency).
 - **FR-004**: System MUST expose the source schema file name (e.g., `archimate3_Model.xsd`, `archimate3_View.xsd`) alongside each displayed type so updates to those files immediately surface in the UI and reviewers can trace back definitions (Principle VIII: Durability & Interoperability).
 - **FR-005**: System MUST highlight schema coverage gaps by flagging any defined type that lacks a sample entry, providing a clear call-out so data stewards can address missing nodes before further modeling work (Principle VII: System Integrity & Accuracy — verification).
@@ -82,7 +82,7 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 
 ### Key Entities *(include if feature involves data)*
 
-- **Model**: Represents the top-level container defined by the ArchiMate schema (identifier, name, namespace) and the entry point for loading sample data (`Test Model.xml`).
+- **Model**: Represents the top-level container defined by the ArchiMate schema (identifier, name, namespace) and the entry point for loading sample data (`Test Model Full.xml`).
 - **Element Type**: A schema-defined node (e.g., ValueStream) with identifier, label, and allowable attributes; used to group sample nodes so users can understand each type's meaning.
 - **Relationship Type**: Defines allowable connections (e.g., Association) with source/target restrictions; the UI should show sample relationships together with schema-defined directionality.
 - **Diagram / View Node**: The visual specification from `archimate3_View.xsd` (x, y, width, height, style) that the UI uses to recreate layout previews from the sample file.
@@ -102,5 +102,5 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 ## Assumptions
 
 - The Neo4j instance uses the ArchiMate 3 schema definitions provided under `sample-data/schema`, so the UI can rely on those files as the authoritative source.
-- `sample-data/sample-00/Test Model.xml` remains available and representative of the typical dataset, so it can continue to serve as the sample load for demonstrations.
+- `sample-data/sample-00/Test Model Full.xml` remains available and representative of the typical dataset, so it can continue to serve as the sample load for demonstrations.
 - Future schema updates will continue to follow the XSD structure (elements, relationships, views) and include explicit identifiers that the UI can match to Neo4j data.
