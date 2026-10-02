@@ -1,7 +1,7 @@
 ---
 title: Platform Specification & API
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-02
+generator: claude-sonnet-5
 sources:
   - specs/001-governance-platform/spec.md
   - specs/001-governance-platform/contracts/api.yaml
@@ -146,7 +146,7 @@ target-platform line now runs the app as `uvicorn frictionless_architect.app:app
 `specs/002-neo4j-schema-ui/spec.md:75-81`: summarise every node/relationship/view
 type from `sample-data/schema` with names matching the schema exactly (FR-001);
 pair each definition with at least one sample occurrence from
-`sample-data/sample-00/Test Model.xml` including coordinates (FR-002); switch
+`sample-data/sample-00/Test Model Full.xml` including coordinates (FR-002); switch
 between a diagram view (respecting stored `x/y/w/h`) and a tabular breakdown
 (FR-003); show the source schema filename beside each type (FR-004); flag
 schema types with no sample entry as coverage gaps (FR-005); non-blocking
@@ -175,9 +175,9 @@ a cached JSON payload with a "Sample data unavailable" warning on outage.
 > (`specs/002-neo4j-schema-ui/research.md` §"Parsing ArchiMate schema + sample
 > XML data"; `specs/002-neo4j-schema-ui/plan.md` §"Research Context"; see
 > [Visualizer Service](visualizer-service.md)).
-> The plan names `Test Model Full.xml` as the sample source while the
-> spec's acceptance tests reference `Test Model.xml`; config points at
-> `Test Model Full.xml` (`src/frictionless_architect/visualizer/config.py:29`).
+> The spec's acceptance tests, plan, research, and config now all name
+> `Test Model Full.xml` consistently; the original, smaller `Test Model.xml`
+> sample file (and the spec's references to it) have been removed.
 
 ### API endpoints
 
