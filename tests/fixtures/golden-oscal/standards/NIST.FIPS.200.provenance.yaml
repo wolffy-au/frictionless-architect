@@ -1,0 +1,13 @@
+artifact: NIST.FIPS.200.pdf
+source: "FIPS PUB 200, Minimum Security Requirements for Federal Information and Information Systems — standalone verbatim publication"
+source_url: "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.200.pdf?download=1"
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: "verbatim download, unmodified"
+sha256: 107a9b9cdc8eccf37386aec28bbaf2dfaef5cfece17151ceabc3960423243a57
+notes: >
+  FIPS 200 has no OSCAL representation of its own. It specifies the 17
+  minimum-security-requirement families that SP 800-53 implements in detail,
+  and is the direct basis for the SP 800-53B LOW/MODERATE/HIGH control
+  baselines vendored as OSCAL profiles under ../slice-1-minimal/profiles and
+  ../slice-3-full/profiles. Vendored here as background/QA context.

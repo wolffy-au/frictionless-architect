@@ -34,6 +34,11 @@ poetry check --lock
 echo "Installing the platform/ workspace..."
 poetry install --no-interaction --quiet
 
+if compgen -G "packages/*/tests/features" > /dev/null; then
+  echo "Installing Playwright's Chromium browser (for behave UI scenarios)..."
+  poetry run playwright install --with-deps chromium
+fi
+
 echo "Running pyright on platform/packages..."
 poetry run pyright packages
 
@@ -47,6 +52,10 @@ for pkg in packages/*/; do
   poetry run pytest "$pkg/tests" \
     --cov="$pkg/src" --cov-fail-under=90 --cov-report=term-missing \
     --cov-report="xml:$root/build/platform-coverage-$name.xml"
+  if [[ -d "$pkg/tests/features" ]]; then
+    echo "── $name: behave"
+    poetry run behave "$pkg/tests/features"
+  fi
 done
 
 echo "✅ Platform checks passed."

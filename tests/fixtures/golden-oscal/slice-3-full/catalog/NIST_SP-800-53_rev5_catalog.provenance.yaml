@@ -1,0 +1,13 @@
+artifact: NIST_SP-800-53_rev5_catalog.json
+source: "NIST SP 800-53 Rev 5 full control catalog, OSCAL JSON representation"
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+source_path: nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: "verbatim full-file copy"
+sha256: 01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062
+notes: >
+  Complete catalog including full statement/prose for every control and
+  enhancement. Verbatim prose can be traced back to
+  ../../standards/NIST.SP.800-53r5.pdf.

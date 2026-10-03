@@ -1,0 +1,27 @@
+artifact: "all 187 files under this directory (ac/ and au/ subfolders)"
+source: >
+  Trestle-editable Markdown catalog, generated (not hand-authored) from
+  ../catalog/nist-sp800-53-rev5-catalog-ac-au-excerpt.json via
+  compliance-trestle's own CLI: `trestle import` then
+  `trestle author catalog-generate`.
+source_repo: N/A — derived from this repo's own vendored fixture, not from third_party/
+source_path: tests/fixtures/golden-oscal/slice-2-medium/catalog/nist-sp800-53-rev5-catalog-ac-au-excerpt.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105); generated form inherits the same status"
+captured_date: "2026-09-28"
+generation_method: >
+  compliance-trestle v5.1.0 (OSCAL 1.2.1), in a scratch trestle workspace,
+  invoking the poetry venv's trestle binary directly (not via `poetry run` /
+  `poetry -C`, which resets execution cwd to the poetry project root rather
+  than the intended scratch directory):
+    trestle init --local
+    trestle import -f nist-sp800-53-rev5-catalog-ac-au-excerpt.json -o slice2-catalog
+    trestle author catalog-generate -n slice2-catalog -o slice2-catalog-md
+  Output copied verbatim into this directory; no manual edits.
+sha256_of_concatenated_sorted_files: e2c7d3cf61d1c27c71898915f107235b7b369ef0f0e4eb609aceb2d913a1719c
+notes: >
+  Medium-tier counterpart to slice-1-minimal/markdown-catalog and
+  slice-3-full/markdown-catalog: every control and enhancement in the AC and
+  AU families, in Trestle-editable Markdown form. Same purpose (ready-made
+  valid input for testing the assemble step per User Story 2 of spec
+  003-oscal-ai-conversion), scoped to two full control families rather than
+  three individual controls (slice-1) or the entire catalog (slice-3).

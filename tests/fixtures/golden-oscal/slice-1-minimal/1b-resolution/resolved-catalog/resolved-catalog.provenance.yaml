@@ -1,0 +1,52 @@
+artifact:
+  - NIST_SP-800-53_rev5_LOW-baseline_resolved-catalog-excerpt.json
+  - NIST_SP-800-53_rev5_MODERATE-baseline_resolved-catalog-excerpt.json
+  - NIST_SP-800-53_rev5_HIGH-baseline_resolved-catalog-excerpt.json
+source: >
+  Derived, not copied — the flattened result of resolving each SP 800-53B
+  baseline profile (../profiles/) against the full SP 800-53 Rev 5 catalog
+  (../../../slice-3-full/catalog/NIST_SP-800-53_rev5_catalog.json), i.e. User
+  Story 3's target artifact: Catalog + Profile -> resolved Catalog.
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-28"
+generation_method: >
+  Ran compliance-trestle v5.1.0's `trestle author profile-resolve` for real
+  (unlike ../../1a-conversion/markdown-catalog/, which was generated
+  backwards — this is the actual pipeline direction for User Story 3).
+
+  Steps: (1) `trestle init --local` a scratch workspace outside the fixture
+  tree; (2) `trestle import -f` the full slice-3-full catalog
+  (NIST_SP-800-53_rev5_catalog.json, 10MB, unmodified); (3) for each of
+  LOW/MODERATE/HIGH, make a scratch copy of the vendored baseline profile
+  with its `back-matter.resources[].rlinks[].href` retargeted from the
+  original oscal-content repo's relative path
+  (../../../../nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json)
+  to an absolute path pointing at the imported catalog copy — the vendored
+  href is meaningless once the profile is vendored standalone, so this
+  retargeting is a workaround, not a content change; (4) `trestle import -f`
+  each retargeted profile copy; (5) `trestle author profile-resolve -n
+  <profile> -o <output>` to produce the full resolved catalog per tier; (6)
+  hand-extract just the 5 slice-1 tracked ids (ac-2, ac-2.1, ac-2.11, au-2,
+  ia-3, whichever are present at that tier) from each full resolved catalog
+  into the excerpt files here. The retargeted profile copies were
+  scratch-only and were not vendored; ../profiles/ holds the pristine,
+  unmodified originals.
+sha256:
+  NIST_SP-800-53_rev5_LOW-baseline_resolved-catalog-excerpt.json: fd94c1456637e6bb4cfc1ca26b39535c769d1f5931fb40f6da7e704bc41ad7f0
+  NIST_SP-800-53_rev5_MODERATE-baseline_resolved-catalog-excerpt.json: ffc4c959c1ae7a3cef62f23353ce64af9699744bc1312bd11fab793dc8565282
+  NIST_SP-800-53_rev5_HIGH-baseline_resolved-catalog-excerpt.json: 750288051e9d81203d69df05ae0f54120ec5a4198bc9ca8cf505685152958f76
+notes: >
+  Entry counts confirm the two variation patterns ../../README.md documents:
+  LOW has 2 entries (ac-2, au-2 — no AC-2 enhancements, no IA-3); MODERATE
+  has 4 (adds ac-2.1 and ia-3); HIGH has 5 (adds ac-2.11). This matches the
+  per-tier `ac-2` family selection already recorded in
+  ../../catalog/nist-sp800-53-rev5-catalog-excerpt.provenance.yaml, now
+  verified end-to-end by actually running profile-resolve rather than just
+  reading each profile's `include-controls` list.
+
+  This resolved-catalog output is NOT a valid comparison target for
+  FR-007/SC-003-style checks against the vendored FedRAMP baselines — see
+  the 2026-09-28 "Known issue" note in docs/adr/0030-vendor-oscal-reference-
+  content.md (the vendored FedRAMP content is SP 800-53 rev4, this is rev5).

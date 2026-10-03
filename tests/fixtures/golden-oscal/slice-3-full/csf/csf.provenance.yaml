@@ -1,0 +1,13 @@
+artifact: NIST_CSF_v2.0_catalog.json
+source: "NIST Cybersecurity Framework (CSF) 2.0, OSCAL catalog representation"
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+source_path: nist.gov/CSF/v2.0/json/NIST_CSF_v2.0_catalog.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: "verbatim full-file copy"
+sha256: 4836943f21d393f2821df85ada4e6f3c0617243b4ddf44263fe68205400210b4
+notes: >
+  Verbatim prose can be traced back to ../../standards/NIST.CSWP.29.pdf.
+  Not represented at slice-1/slice-2 scale — those tiers are scoped to
+  SP 800-53 / FedRAMP control families, not CSF subcategories.

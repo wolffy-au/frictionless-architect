@@ -1,0 +1,48 @@
+# Snyk policy for platform/ (scanned via `snyk test --file=poetry.lock`).
+version: v1.25.0
+ignore:
+  SNYK-PYTHON-LITELLM-17391451:
+    - '*':
+        reason: >-
+          litellm is used only as a client library (completion calls via
+          llm-provider-config / controls-compliance-catalog); the litellm proxy
+          server these advisories concern is never run. No fixed release exists
+          (1.103.2 is the latest). Re-review on expiry.
+        expires: 2026-11-02T00:00:00.000Z
+        created: 2026-10-03T00:00:00.000Z
+  SNYK-PYTHON-LITELLM-17391455:
+    - '*':
+        reason: >-
+          litellm is used only as a client library (completion calls via
+          llm-provider-config / controls-compliance-catalog); the litellm proxy
+          server these advisories concern is never run. No fixed release exists
+          (1.103.2 is the latest). Re-review on expiry.
+        expires: 2026-11-02T00:00:00.000Z
+        created: 2026-10-03T00:00:00.000Z
+  SNYK-PYTHON-LITELLM-17393717:
+    - '*':
+        reason: >-
+          litellm is used only as a client library (completion calls via
+          llm-provider-config / controls-compliance-catalog); the litellm proxy
+          server these advisories concern is never run. No fixed release exists
+          (1.103.2 is the latest). Re-review on expiry.
+        expires: 2026-11-02T00:00:00.000Z
+        created: 2026-10-03T00:00:00.000Z
+  SNYK-PYTHON-LITELLM-17393719:
+    - '*':
+        reason: >-
+          litellm is used only as a client library (completion calls via
+          llm-provider-config / controls-compliance-catalog); the litellm proxy
+          server these advisories concern is never run. No fixed release exists
+          (1.103.2 is the latest). Re-review on expiry.
+        expires: 2026-11-02T00:00:00.000Z
+        created: 2026-10-03T00:00:00.000Z
+  SNYK-PYTHON-LITELLM-20257373:
+    - '*':
+        reason: >-
+          litellm is used only as a client library (completion calls via
+          llm-provider-config / controls-compliance-catalog); the litellm proxy
+          server these advisories concern is never run. No fixed release exists
+          (1.103.2 is the latest). Re-review on expiry.
+        expires: 2026-11-02T00:00:00.000Z
+        created: 2026-10-03T00:00:00.000Z

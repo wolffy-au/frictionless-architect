@@ -14,6 +14,7 @@ Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
   Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
     Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
   }
+  Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
 }
 Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
 Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
