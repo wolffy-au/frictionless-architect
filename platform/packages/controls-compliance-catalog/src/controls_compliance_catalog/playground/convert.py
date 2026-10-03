@@ -69,7 +69,9 @@ def convert_oscal_control_to_markdown(raw_oscal: str) -> str:
         raise PlaygroundConversionError(f"Pasted OSCAL content is not valid YAML: {exc}") from exc
 
     if not isinstance(oscal_data, dict):
-        raise PlaygroundConversionError("Pasted OSCAL content is not valid YAML: expected a mapping (an OSCAL control or catalog)")
+        raise PlaygroundConversionError(
+            "Pasted OSCAL content is not valid YAML: expected a mapping (an OSCAL control or catalog)"
+        )
 
     catalog = _as_catalog(oscal_data)
 
