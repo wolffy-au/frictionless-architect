@@ -317,7 +317,8 @@ Checklist:
 - [ ] Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
 - [x] Create `packages/llm-provider-config/` (ADR-0034) and refactor `llm_client.py`'s
   single-provider stub to depend on it for provider/model/credential resolution (#76).
-  The mountable settings UI router is not built yet.
+  The mountable settings UI router is built (`create_settings_router`) and mounted by
+  `controls-compliance-catalog` at `/settings/llm`; a portal can mount the same router later.
 
 ### 8.2 Visualiser API/UI split (step 7)
 

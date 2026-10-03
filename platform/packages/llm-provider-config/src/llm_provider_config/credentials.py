@@ -67,3 +67,18 @@ def set_api_key(ref: str, key: str) -> None:
 
 def delete_api_key(ref: str) -> None:
     keyring.delete_password(SERVICE_NAME, ref)
+
+
+def key_source(settings: ProviderSettings) -> str:
+    """Where `get_api_key` would find the key, without returning it.
+
+    One of ``"not-needed"`` (Ollama), ``"keychain"``, ``"environment"`` or ``"missing"``.
+    """
+    if settings.provider is Provider.OLLAMA:
+        return "not-needed"
+    try:
+        if keyring.get_password(SERVICE_NAME, _ref(settings)):
+            return "keychain"
+    except KeyringError:
+        pass
+    return "environment" if os.environ.get(ENV_VARS[settings.provider]) else "missing"

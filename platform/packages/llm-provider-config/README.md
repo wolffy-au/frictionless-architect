@@ -29,8 +29,22 @@ litellm.completion(messages=[...], **call.completion_kwargs())
   `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) is used as a plaintext escape hatch, with a
   logged warning. Ollama needs no key.
 
-Status: settings model, storage, credential resolution and `resolve_call` are in.
-The mountable settings UI router is not built yet.
+### Settings page
+
+`create_settings_router([Component(id=..., label=...)])` returns a FastAPI router serving a
+settings page at `/settings/llm` (plus a JSON API under it). Mount it in any subsystem UI,
+declaring the components that use an LLM:
+
+```python
+app.include_router(create_settings_router([Component(id="my-pkg.feature", label="My feature")]))
+```
+
+The page edits the global default, per-component overrides, and API keys (written to the OS
+keychain, never returned), and has a "Test connection" button. There is no authentication
+(single-user local MVP, ADR-0024), so bind to localhost.
+
+Status: settings model, storage, credential resolution, `resolve_call` and the settings
+router are in.
 
 ## Development
 

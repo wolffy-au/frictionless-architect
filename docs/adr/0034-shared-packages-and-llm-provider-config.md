@@ -108,7 +108,7 @@ default plus per-component override), a TOML store, keyring-backed key lookup, a
 `resolve_call`, which yields `litellm.completion` arguments. `controls-compliance-catalog`'s
 `llm_client.convert_chunk` now calls through it (component id
 `controls-compliance-catalog.candidate-conversion`). The mountable settings UI router is
-not built yet. Choices the ADR left open:
+built (`create_settings_router`) and mounted at `/settings/llm`. Choices the ADR left open:
 
 - **Settings file:** `~/.config/frictionless-architect/llm.toml`, outside the repo tree
   (override with `LLM_PROVIDER_CONFIG_PATH`). It holds no key, only an optional
