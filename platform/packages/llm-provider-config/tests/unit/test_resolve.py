@@ -33,6 +33,7 @@ def test_openai_call_carries_prefixed_model_key_and_params(fake_keyring: InMemor
         (Provider.GEMINI, "gemini/m"),
         (Provider.ANTHROPIC, "anthropic/m"),
         (Provider.OLLAMA, "ollama_chat/m"),
+        (Provider.GITHUB_COPILOT, "github_copilot/m"),
     ],
 )
 def test_each_provider_gets_its_litellm_prefix(

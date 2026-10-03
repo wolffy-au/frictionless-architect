@@ -3,7 +3,7 @@
 Keys live in the OS credential store via `keyring`, never in a repo file. Where no
 keychain backend exists (headless CI, devcontainers) or the entry is absent, the
 provider's conventional environment variable is used as an escape hatch. That is
-plaintext, so every use is logged as a warning. Ollama needs no key.
+plaintext, so every use is logged as a warning. Ollama and GitHub Copilot need no key.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import os
 import keyring
 from keyring.errors import KeyringError
 
-from llm_provider_config.settings import Provider, ProviderSettings
+from llm_provider_config.settings import KEYLESS_PROVIDERS, Provider, ProviderSettings
 
 SERVICE_NAME = "frictionless-architect.llm-provider-config"
 
@@ -37,7 +37,7 @@ def _ref(settings: ProviderSettings) -> str:
 
 def get_api_key(settings: ProviderSettings) -> str | None:
     """Return the API key for `settings`, or None for providers that need none."""
-    if settings.provider is Provider.OLLAMA:
+    if settings.provider in KEYLESS_PROVIDERS:
         return None
     ref = _ref(settings)
     try:
@@ -72,9 +72,9 @@ def delete_api_key(ref: str) -> None:
 def key_source(settings: ProviderSettings) -> str:
     """Where `get_api_key` would find the key, without returning it.
 
-    One of ``"not-needed"`` (Ollama), ``"keychain"``, ``"environment"`` or ``"missing"``.
+    One of ``"not-needed"`` (Ollama, Copilot), ``"keychain"``, ``"environment"`` or ``"missing"``.
     """
-    if settings.provider is Provider.OLLAMA:
+    if settings.provider in KEYLESS_PROVIDERS:
         return "not-needed"
     try:
         if keyring.get_password(SERVICE_NAME, _ref(settings)):

@@ -74,6 +74,10 @@ def test_ollama_needs_no_key_and_never_touches_the_keychain() -> None:
     assert get_api_key(ProviderSettings(provider=Provider.OLLAMA, model="llama3")) is None
 
 
+def test_copilot_needs_no_key() -> None:
+    assert get_api_key(ProviderSettings(provider=Provider.GITHUB_COPILOT, model="gpt-4o")) is None
+
+
 def test_delete_removes_the_keychain_entry(fake_keyring: InMemoryKeyring) -> None:
     set_api_key("openai", "sk-keychain")
 

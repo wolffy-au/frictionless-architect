@@ -185,7 +185,7 @@ package, built and gated the same way but carrying no subsystem UI obligation
 
 - **LLM Provider Configuration** (`packages/llm-provider-config`) — resolves which LLM
   provider/model/params and credential a call uses: a global default plus an optional
-  per-component override, covering OpenAI, Google Gemini, Anthropic Claude and Ollama via
+  per-component override, covering OpenAI, Google Gemini, Anthropic Claude, Ollama and GitHub Copilot via
   `litellm`. Credentials are never written to a repo file or `.env` — they live in the
   OS's native credential store via `keyring` (macOS Keychain / Windows Credential
   Manager / Linux Secret Service), consistent with the single-user local MVP scope

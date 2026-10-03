@@ -19,6 +19,12 @@ class Provider(StrEnum):
     GEMINI = "gemini"
     ANTHROPIC = "anthropic"
     OLLAMA = "ollama"
+    GITHUB_COPILOT = "github_copilot"
+
+
+# Providers that authenticate without a stored API key (Ollama is local; Copilot signs in via
+# GitHub's device flow and litellm caches the token itself).
+KEYLESS_PROVIDERS = frozenset({Provider.OLLAMA, Provider.GITHUB_COPILOT})
 
 
 class NotConfiguredError(Exception):

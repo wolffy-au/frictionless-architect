@@ -2,7 +2,7 @@
 
 Shared package (not one of the six subsystems) that resolves which LLM
 provider, model and credential a given call uses. A thin configuration layer over
-`litellm` covering OpenAI, Google Gemini, Anthropic Claude and Ollama.
+`litellm` covering OpenAI, Google Gemini, Anthropic Claude, Ollama and GitHub Copilot.
 
 - Decided in [ADR-0034](../../../docs/adr/0034-shared-packages-and-llm-provider-config.md).
 - Settings: a global default plus an optional per-component override.
@@ -27,7 +27,7 @@ litellm.completion(messages=[...], **call.completion_kwargs())
 - **Keys** come from the OS keychain (`set_api_key`). Where there is no keychain
   backend, or no entry, the provider's environment variable (`OPENAI_API_KEY`,
   `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) is used as a plaintext escape hatch, with a
-  logged warning. Ollama needs no key.
+  logged warning. Ollama needs no key. GitHub Copilot (`github_copilot/<model>`) needs none either: litellm runs GitHub's device-flow sign-in on first use and caches the token under `~/.config/litellm/github_copilot/`, so sign in once from a terminal before using it from the UI.
 
 ### Settings page
 

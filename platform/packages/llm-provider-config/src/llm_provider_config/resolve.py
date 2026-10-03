@@ -15,6 +15,7 @@ _PREFIX: dict[Provider, str] = {
     Provider.GEMINI: "gemini",
     Provider.ANTHROPIC: "anthropic",
     Provider.OLLAMA: "ollama_chat",
+    Provider.GITHUB_COPILOT: "github_copilot",
 }
 DEFAULT_OLLAMA_API_BASE = "http://localhost:11434"
 

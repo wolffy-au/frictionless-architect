@@ -17,7 +17,7 @@ a real provider. At the same time, the need is **not specific to this
 package**: multiple subsystems will eventually call an LLM, each potentially
 wanting a different provider/model, while the user also wants one place to set
 sane defaults across the whole tool. Day 1 must cover OpenAI, Google Gemini,
-Anthropic Claude, and Ollama.
+Anthropic Claude, Ollama, and GitHub Copilot.
 
 Two problems compound:
 
@@ -118,7 +118,7 @@ built (`create_settings_router`) and mounted at `/settings/llm`. Choices the ADR
   (`OPENAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) is read as a plaintext escape
   hatch, with a logged warning. The keychain stays the primary store and wins when both
   are set. `.env` files are still not read. This resolves the CI/headless follow-up in
-  Consequences; Ollama needs no key.
+  Consequences; Ollama and GitHub Copilot need no key (Copilot uses litellm's own device-flow token cache).
 - **Tests** run against a fake `litellm.completion` and an in-memory keyring. An opt-in
   live check against a local Ollama (`RUN_OLLAMA_TESTS=1`) covers the real path.
 

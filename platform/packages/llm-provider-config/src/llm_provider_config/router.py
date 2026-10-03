@@ -26,7 +26,7 @@ from llm_provider_config.credentials import (
     set_api_key,
 )
 from llm_provider_config.resolve import resolve_call
-from llm_provider_config.settings import LlmSettings, NotConfiguredError, Provider, ProviderSettings
+from llm_provider_config.settings import KEYLESS_PROVIDERS, LlmSettings, NotConfiguredError, Provider, ProviderSettings
 from llm_provider_config.store import default_config_path, load_settings, save_settings
 
 
@@ -67,7 +67,11 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
         return {
             "config_path": str(default_config_path()),
             "providers": [
-                {"id": provider.value, "needs_key": provider is not Provider.OLLAMA, "env_var": ENV_VARS.get(provider)}
+                {
+                    "id": provider.value,
+                    "needs_key": provider not in KEYLESS_PROVIDERS,
+                    "env_var": ENV_VARS.get(provider),
+                }
                 for provider in Provider
             ],
             "default": _describe(settings.default),
@@ -106,8 +110,8 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
 def _key_routes(router: APIRouter) -> None:
     @router.put("/keys/{provider}")
     def put_key(provider: Provider, body: KeyBody) -> dict[str, str]:
-        if provider is Provider.OLLAMA:
-            raise HTTPException(status_code=422, detail="Ollama does not use an API key.")
+        if provider in KEYLESS_PROVIDERS:
+            raise HTTPException(status_code=422, detail=f"{provider.value} does not use an API key.")
         try:
             set_api_key(provider.value, body.api_key)
         except KeyringError as exc:

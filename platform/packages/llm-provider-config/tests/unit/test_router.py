@@ -26,7 +26,7 @@ def test_state_starts_empty(client: TestClient) -> None:
     body = client.get("/settings/llm/state").json()
     assert body["default"] is None
     assert body["components"] == [{"id": "pkg.feature", "label": "Feature", "override": None}]
-    assert {p["id"] for p in body["providers"]} == {"openai", "gemini", "anthropic", "ollama"}
+    assert {p["id"] for p in body["providers"]} == {"openai", "gemini", "anthropic", "ollama", "github_copilot"}
 
 
 def test_page_is_served_with_prefix(client: TestClient) -> None:
@@ -83,6 +83,12 @@ def test_key_without_keychain_points_at_env_var(client: TestClient, no_keyring: 
 
 def test_ollama_key_is_refused(client: TestClient) -> None:
     assert client.put("/settings/llm/keys/ollama", json={"api_key": "x"}).status_code == 422
+
+
+def test_copilot_key_is_refused_and_needs_none(client: TestClient) -> None:
+    assert client.put("/settings/llm/keys/github_copilot", json={"api_key": "x"}).status_code == 422
+    providers = {p["id"]: p for p in client.get("/settings/llm/state").json()["providers"]}
+    assert providers["github_copilot"]["needs_key"] is False
 
 
 def test_key_source_reports_environment(client: TestClient, no_keyring: None, monkeypatch: pytest.MonkeyPatch) -> None:
