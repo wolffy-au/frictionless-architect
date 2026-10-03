@@ -31,6 +31,7 @@ tests = [
 lint = [
     "mypy>=1.19.1,<2.0.0",
     "pyright>=1.1.407,<2.0.0",
+    "types-pyyaml>=6.0,<7.0",
 ]
 
 [tool.pyright]

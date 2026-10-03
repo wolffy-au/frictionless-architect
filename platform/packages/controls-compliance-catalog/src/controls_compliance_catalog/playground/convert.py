@@ -20,11 +20,9 @@ from trestle.core.control_context import ContextPurpose, ControlContext
 from trestle.oscal.catalog import Catalog
 
 from controls_compliance_catalog.llm_client import LlmConversionError, convert_chunk
+from controls_compliance_catalog.playground.prompts import PromptConfigError, load_system_prompt
 
-_PROSE_CONVERSION_SYSTEM_PROMPT = (
-    "You convert a single control's free-text prose into Trestle Markdown "
-    "control format. Output only the Markdown, no commentary."
-)
+_PROSE_PROMPT_NAME = "prose_to_trestle_markdown"
 
 
 class PlaygroundConversionError(Exception):
@@ -93,6 +91,6 @@ def convert_control_prose_to_markdown_candidate(prose: str) -> str:
     its own. Calls through ``llm_client.convert_chunk`` (spec 001-oscal-ai-conversion R2).
     """
     try:
-        return convert_chunk(prose, _PROSE_CONVERSION_SYSTEM_PROMPT)
-    except LlmConversionError as exc:
+        return convert_chunk(prose, load_system_prompt(_PROSE_PROMPT_NAME))
+    except (LlmConversionError, PromptConfigError) as exc:
         raise PlaygroundConversionError(str(exc)) from exc

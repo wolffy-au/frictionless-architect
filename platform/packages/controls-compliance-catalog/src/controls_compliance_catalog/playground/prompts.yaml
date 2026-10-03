@@ -1,0 +1,7 @@
+# Prompts for the control conversion playground (GH #76).
+# Edit this file to tune the AI candidate; it is re-read on every conversion,
+# so changes apply on the next click with no server restart.
+prose_to_trestle_markdown:
+  system: |
+    You convert a single control's free-text prose into Trestle Markdown
+    control format. Output only the Markdown, no commentary.

@@ -12,6 +12,7 @@ dependencies = [
     "compliance-trestle (>=5.1.0,<6.0.0)",
     "llm-provider-config",
     "litellm (>=1.0.0,<2.0.0)",
+    "pyyaml (>=6.0,<7.0)",
 ]
 
 [tool.poetry]
