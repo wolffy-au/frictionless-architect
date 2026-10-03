@@ -921,3 +921,4 @@
     - node-app-server
     - node-hosted-cluster
     - sw-neo4j
+    - sw-keyring
