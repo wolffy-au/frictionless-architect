@@ -20,3 +20,8 @@ Feature: Control conversion playground - prose to candidate Markdown (AI path)
       """
     And I click "Convert via AI (candidate)"
     Then the playground should show a candidate error containing "Cannot convert empty prose"
+
+  Scenario: Differing words are highlighted within a changed line
+    Given the control conversion playground is open
+    When I click "Convert via AI (candidate)"
+    Then the changed words should be highlighted in both Markdown panes

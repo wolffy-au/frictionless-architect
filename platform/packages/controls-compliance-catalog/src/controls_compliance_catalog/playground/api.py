@@ -235,6 +235,10 @@ _PAGE_TEMPLATE = """\
   .md-line { padding: 1px 6px; border-radius: 4px; display: block; }
   .md-line.add { background: var(--accent-ref-soft); color: var(--accent-ref); }
   .md-line.rem { background: var(--err-soft); color: var(--err); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .md-line.paired { text-decoration: none; }
+  .w { border-radius: 3px; }
+  .w.rem { background: color-mix(in srgb, var(--err) 32%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .w.add { background: color-mix(in srgb, var(--accent-ref) 32%, transparent); font-weight: 600; }
   .simnote {
     font-size: 11.5px; color: var(--text-faint); font-family: "IBM Plex Mono", monospace;
     padding: 8px 16px; border-top: 1px solid var(--border); background: var(--surface-2);
@@ -364,40 +368,83 @@ _PAGE_TEMPLATE = """\
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  function diffLines(refLines, candLines) {
-    const n = refLines.length, m = candLines.length;
+  // Generic LCS diff of two sequences: same / rem (only in a) / add (only in b).
+  function diffSeq(a, b) {
+    const n = a.length, m = b.length;
     const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
     for (let i = n - 1; i >= 0; i--) {
       for (let j = m - 1; j >= 0; j--) {
-        dp[i][j] = refLines[i] === candLines[j]
-          ? dp[i + 1][j + 1] + 1
-          : Math.max(dp[i + 1][j], dp[i][j + 1]);
+        dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
       }
     }
-    const refOut = [], candOut = [];
+    const aOut = [], bOut = [];
     let i = 0, j = 0;
     while (i < n && j < m) {
-      if (refLines[i] === candLines[j]) {
-        refOut.push({ text: refLines[i], type: "same" });
-        candOut.push({ text: candLines[j], type: "same" });
+      if (a[i] === b[j]) {
+        aOut.push({ text: a[i], type: "same" });
+        bOut.push({ text: b[j], type: "same" });
         i++; j++;
       } else if (dp[i + 1][j] >= dp[i][j + 1]) {
-        refOut.push({ text: refLines[i], type: "rem" });
+        aOut.push({ text: a[i], type: "rem" });
         i++;
       } else {
-        candOut.push({ text: candLines[j], type: "add" });
+        bOut.push({ text: b[j], type: "add" });
         j++;
       }
     }
-    while (i < n) { refOut.push({ text: refLines[i], type: "rem" }); i++; }
-    while (j < m) { candOut.push({ text: candLines[j], type: "add" }); j++; }
+    while (i < n) { aOut.push({ text: a[i], type: "rem" }); i++; }
+    while (j < m) { bOut.push({ text: b[j], type: "add" }); j++; }
+    return { aOut, bOut };
+  }
+
+  const tokenize = (line) => line.match(/\\s+|\\S+/g) || [];
+  const SIMILAR_ENOUGH = 0.4;
+
+  // Word-level diff of two changed lines; null when they share too little to be a "modified" pair.
+  function diffWords(refLine, candLine) {
+    const { aOut, bOut } = diffSeq(tokenize(refLine), tokenize(candLine));
+    const shared = aOut.filter(t => t.type === "same" && t.text.trim()).length;
+    const longest = Math.max(
+      aOut.filter(t => t.text.trim()).length, bOut.filter(t => t.text.trim()).length);
+    if (longest === 0 || shared / longest < SIMILAR_ENOUGH) return null;
+    return { refParts: aOut, candParts: bOut };
+  }
+
+  function diffLines(refLines, candLines) {
+    const { aOut: refOut, bOut: candOut } = diffSeq(refLines, candLines);
+    // Between matching lines, pair the k-th removed line with the k-th added line and refine to words.
+    let i = 0, j = 0;
+    while (i < refOut.length || j < candOut.length) {
+      if (i < refOut.length && j < candOut.length && refOut[i].type === "same" && candOut[j].type === "same") {
+        i++; j++;
+        continue;
+      }
+      let ri = i, cj = j;
+      while (ri < refOut.length && refOut[ri].type !== "same") ri++;
+      while (cj < candOut.length && candOut[cj].type !== "same") cj++;
+      for (let k = 0; i + k < ri && j + k < cj; k++) {
+        const words = diffWords(refOut[i + k].text, candOut[j + k].text);
+        if (words) {
+          refOut[i + k].parts = words.refParts;
+          candOut[j + k].parts = words.candParts;
+        }
+      }
+      i = ri; j = cj;
+    }
     return { refOut, candOut };
+  }
+
+  function renderText(r, highlight) {
+    if (!highlight || !r.parts) return escapeHtml(r.text) || "&nbsp;";
+    return r.parts.map(t => t.type === "same"
+      ? escapeHtml(t.text)
+      : '<span class="w ' + t.type + '">' + escapeHtml(t.text) + "</span>").join("");
   }
 
   function renderRows(el, rows, highlight) {
     el.innerHTML = rows.map(r => {
-      const cls = highlight && r.type !== "same" ? (" " + r.type) : "";
-      return '<span class="md-line' + cls + '">' + (escapeHtml(r.text) || "&nbsp;") + "</span>";
+      const cls = highlight && r.type !== "same" ? (" " + r.type + (r.parts ? " paired" : "")) : "";
+      return '<span class="md-line' + cls + '">' + renderText(r, highlight) + "</span>";
     }).join("");  // .md-line is display:block, so a literal "\\n" here would double every break
   }
 

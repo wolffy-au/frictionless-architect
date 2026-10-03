@@ -107,3 +107,14 @@ def step_clipboard_matches_rows(context: Context) -> None:
     text = context.page.evaluate("navigator.clipboard.readText()")
     rows = context.page.locator("#markdown-output .md-line").count()
     assert len(text.rstrip("\n").split("\n")) == rows, f"{rows} rows but clipboard has {text!r}"
+
+
+@then("the changed words should be highlighted in both Markdown panes")
+def step_word_level_highlight(context: Context) -> None:
+    context.page.wait_for_selector("#candidate-markdown-output .md-line")
+    context.page.wait_for_selector("#candidate-markdown-output .w.add")
+    context.page.wait_for_selector("#markdown-output .w.rem")
+    # A modified line keeps its unchanged words unhighlighted.
+    unchanged = context.page.inner_text("#candidate-markdown-output .md-line.paired")
+    highlighted = context.page.locator("#candidate-markdown-output .md-line.paired .w.add").all_inner_texts()
+    assert any(word not in highlighted for word in unchanged.split()), unchanged
