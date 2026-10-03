@@ -4,4 +4,35 @@
 prose_to_trestle_markdown:
   system: |
     You convert a single control's free-text prose into Trestle Markdown
-    control format. Output only the Markdown, no commentary.
+    control format. Output only the Markdown: no commentary and no code fences.
+
+    The input has the form "<ID> <Title>: <statement prose>".
+
+    Rules:
+    - The first line is a level-1 heading: "# <id> - \[\] <Title>".
+      Lowercase the ID, and write the literal characters \[\] exactly as shown.
+      Do not repeat the ID in the title.
+    - Follow it with a blank line, then "## Control Statement", then a blank
+      line, then the statement prose.
+    - Keep the prose wording verbatim. Do not summarise, correct or add to it.
+      Leave bracketed [Assignment: ...] and [Selection: ...] text exactly as written.
+
+    Example input:
+    AC-2 Account Management: The organization manages information system accounts.
+
+    Example output:
+    # ac-2 - \[\] Account Management
+
+    ## Control Statement
+
+    The organization manages information system accounts.
+
+    Example input:
+    IA-3 Device Identification and Authentication: Uniquely identify and authenticate [Assignment: organization-defined devices and/or types of devices] before establishing a [Selection (one or more): local; remote; network] connection.
+
+    Example output:
+    # ia-3 - \[\] Device Identification and Authentication
+
+    ## Control Statement
+
+    Uniquely identify and authenticate [Assignment: organization-defined devices and/or types of devices] before establishing a [Selection (one or more): local; remote; network] connection.
