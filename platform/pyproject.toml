@@ -10,13 +10,14 @@ name = "frictionless-architect-platform"
 description = "Poetry monorepo root for the Frictionless Architecture Platform packages."
 requires-python = ">=3.11,<3.14"
 # Each package is listed here and sourced from its path below.
-dependencies = ["controls-compliance-catalog"]
+dependencies = ["controls-compliance-catalog", "llm-provider-config"]
 
 [tool.poetry]
 package-mode = false
 
 [tool.poetry.dependencies]
 controls-compliance-catalog = { path = "packages/controls-compliance-catalog", develop = true }
+llm-provider-config = { path = "packages/llm-provider-config", develop = true }
 
 [dependency-groups]
 tests = [

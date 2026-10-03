@@ -1,0 +1,20 @@
+[project]
+name = "llm-provider-config"
+description = "Shared LLM provider/model configuration and credential resolution over litellm (ADR-0034)."
+# Frozen placeholder, as at the repo root — versioning moves to the monorepo
+# root with the rest of the commitizen setup (ADR-0002, Consequences).
+version = "0.0.0"
+requires-python = ">=3.11,<3.14"
+readme = "README.md"
+dependencies = [
+    "litellm (>=1.0.0,<2.0.0)",
+    "keyring (>=25.0.0,<26.0.0)",
+    "pydantic (>=2.0.0,<3.0.0)",
+]
+
+[tool.poetry]
+packages = [{ include = "llm_provider_config", from = "src" }]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
