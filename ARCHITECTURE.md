@@ -315,8 +315,9 @@ Checklist:
   `specs/001-oscal-ai-conversion` (it planned an `/oscal` router in the flat `src/`,
   ADR-0005 → Implementation status 2026-09-24 and 2026-09-28).
 - [ ] Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
-- [ ] Create `packages/llm-provider-config/` (ADR-0034) and refactor `llm_client.py`'s
+- [x] Create `packages/llm-provider-config/` (ADR-0034) and refactor `llm_client.py`'s
   single-provider stub to depend on it for provider/model/credential resolution (#76).
+  The mountable settings UI router is not built yet.
 
 ### 8.2 Visualiser API/UI split (step 7)
 

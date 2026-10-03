@@ -101,6 +101,27 @@ dependents only pull in what they actually use.
   same resolution interface; this ADR's settings/override model is designed to
   not need to change, only the credential backend.
 
+## Implementation status (2026-10-03)
+
+`platform/packages/llm-provider-config` is built: the Pydantic settings model (global
+default plus per-component override), a TOML store, keyring-backed key lookup, and
+`resolve_call`, which yields `litellm.completion` arguments. `controls-compliance-catalog`'s
+`llm_client.convert_chunk` now calls through it (component id
+`controls-compliance-catalog.candidate-conversion`). The mountable settings UI router is
+not built yet. Choices the ADR left open:
+
+- **Settings file:** `~/.config/frictionless-architect/llm.toml`, outside the repo tree
+  (override with `LLM_PROVIDER_CONFIG_PATH`). It holds no key, only an optional
+  `credential_ref` naming the keyring entry.
+- **Headless fallback (amends the secrets decision above):** where no keychain backend
+  exists, or the entry is absent, the provider's conventional environment variable
+  (`OPENAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) is read as a plaintext escape
+  hatch, with a logged warning. The keychain stays the primary store and wins when both
+  are set. `.env` files are still not read. This resolves the CI/headless follow-up in
+  Consequences; Ollama needs no key.
+- **Tests** run against a fake `litellm.completion` and an in-memory keyring. An opt-in
+  live check against a local Ollama (`RUN_OLLAMA_TESTS=1`) covers the real path.
+
 ## Alternatives considered
 
 - **`.env` / environment variables for secrets** — rejected by the maintainer:
