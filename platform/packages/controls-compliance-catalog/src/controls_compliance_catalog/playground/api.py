@@ -331,7 +331,7 @@ _PAGE_TEMPLATE = """\
           <span class="tag">from prose via AI</span>
         </div>
         <div class="md-pane" id="candidate-markdown-output"></div>
-        <div class="simnote">Stubbed: no LLM provider is configured yet &mdash; this placeholder is shaped like Trestle Markdown, not a real AI conversion.</div>
+        <div class="simnote">AI-generated: converted by the configured LLM provider (see llm-provider-config), so the output can differ from Trestle's exact formatting.</div>
       </div>
       <div class="panel">
         <div class="panel-head">

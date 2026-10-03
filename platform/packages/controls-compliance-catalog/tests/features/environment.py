@@ -2,14 +2,24 @@
 
 from __future__ import annotations
 
+import os
 import socket
+import sys
+import tempfile
 import threading
 import time
+from pathlib import Path
 
 import uvicorn
 from behave.runner import Context
+from controls_compliance_catalog import llm_client
 from controls_compliance_catalog.app import app
+from llm_provider_config import LlmSettings, Provider, ProviderSettings, save_settings
 from playwright.sync_api import sync_playwright
+
+# behave doesn't put tests/ on sys.path the way pytest's conftest does; the shared fake lives there.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from support.fake_llm import FakeCompletion  # noqa: E402
 
 
 def _free_port_socket() -> socket.socket:
@@ -19,7 +29,22 @@ def _free_port_socket() -> socket.socket:
     return sock
 
 
+def _use_fake_llm(context: Context) -> None:
+    """The UI harness never calls a real provider: swap litellm's completion for a fake.
+
+    The server runs in this process (a thread), so patching the module attribute reaches it.
+    """
+    context.llm_config_dir = tempfile.TemporaryDirectory()
+    config = save_settings(
+        LlmSettings(default=ProviderSettings(provider=Provider.OLLAMA, model="test-model")),
+        Path(context.llm_config_dir.name) / "llm.toml",
+    )
+    os.environ["LLM_PROVIDER_CONFIG_PATH"] = str(config)
+    llm_client.completion = FakeCompletion()  # type: ignore[attr-defined]
+
+
 def before_all(context: Context) -> None:
+    _use_fake_llm(context)
     sock = _free_port_socket()
     port = sock.getsockname()[1]
     config = uvicorn.Config(app, fd=sock.fileno(), log_level="warning")

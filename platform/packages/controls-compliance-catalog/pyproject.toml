@@ -10,10 +10,15 @@ dependencies = [
     "fastapi (>=0.141.0,<0.142.0)",
     "uvicorn (>=0.43.0,<0.44.0)",
     "compliance-trestle (>=5.1.0,<6.0.0)",
+    "llm-provider-config",
+    "litellm (>=1.0.0,<2.0.0)",
 ]
 
 [tool.poetry]
 packages = [{ include = "controls_compliance_catalog", from = "src" }]
+
+[tool.poetry.dependencies]
+llm-provider-config = { path = "../llm-provider-config", develop = true }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

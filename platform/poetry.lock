@@ -831,6 +831,8 @@ develop = true
 [package.dependencies]
 compliance-trestle = ">=5.1.0,<6.0.0"
 fastapi = ">=0.141.0,<0.142.0"
+litellm = ">=1.0.0,<2.0.0"
+llm-provider-config = "*"
 uvicorn = ">=0.43.0,<0.44.0"
 
 [package.source]
