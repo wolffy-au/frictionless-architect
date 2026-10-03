@@ -30,7 +30,7 @@ Feature: Control conversion playground - OSCAL to Trestle Markdown
 
   Scenario: The reference Markdown is populated as soon as the playground opens
     Given the control conversion playground is open
-    Then the Trestle Markdown output should contain "Account Management"
+    Then the Trestle Markdown output should contain "Event Logging"
 
   Scenario: The reference Markdown has no extra line breaks
     Given the control conversion playground is open
@@ -39,10 +39,10 @@ Feature: Control conversion playground - OSCAL to Trestle Markdown
   Scenario: Copy the reference Markdown
     Given the control conversion playground is open
     When I click the copy button for "reference"
-    Then the clipboard should contain "Account Management"
+    Then the clipboard should contain "Event Logging"
     And the clipboard should hold the reference Markdown without extra line breaks
 
   Scenario: Copy the OSCAL input
     Given the control conversion playground is open
     When I click the copy button for "oscal-input"
-    Then the clipboard should contain "id: ac-2"
+    Then the clipboard should contain "id: au-2"

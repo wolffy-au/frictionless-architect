@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from behave import given, then, when
 from behave.runner import Context
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 
 @given("the control conversion playground is open")
@@ -23,7 +24,13 @@ def step_click_convert(context: Context) -> None:
 
 @then('the Trestle Markdown output should contain "{expected}"')
 def step_markdown_output_contains(context: Context, expected: str) -> None:
-    context.page.wait_for_selector("#markdown-output:not(:empty)")
+    # The pane is pre-populated on load, so wait for the expected text, not merely non-empty.
+    try:
+        context.page.wait_for_function(
+            "text => document.getElementById('markdown-output').innerText.includes(text)", arg=expected, timeout=5000
+        )
+    except PlaywrightTimeoutError:
+        pass
     output = context.page.inner_text("#markdown-output")
     assert expected in output, f"expected {expected!r} in markdown output, got: {output!r}"
 
@@ -150,3 +157,14 @@ def step_scroll_candidate(context: Context) -> None:
 @then("the reference Markdown pane should have scrolled too")
 def step_reference_scrolled(context: Context) -> None:
     context.page.wait_for_function("document.querySelector('#markdown-output').scrollTop > 0")
+
+
+@when("I turn difference highlighting off")
+def step_toggle_highlight_off(context: Context) -> None:
+    context.page.click("#diff-toggle")
+
+
+@then("no differences should be highlighted in either Markdown pane")
+def step_no_highlights(context: Context) -> None:
+    marked = context.page.locator(".md-line.rem, .md-line.add, .w.rem, .w.add").count()
+    assert marked == 0, f"expected plain output, found {marked} highlighted element(s)"

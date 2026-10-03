@@ -31,3 +31,9 @@ Feature: Control conversion playground - prose to candidate Markdown (AI path)
     When I convert a long control in both paths
     And I scroll the candidate Markdown pane to the bottom
     Then the reference Markdown pane should have scrolled too
+
+  Scenario: Highlighting can be turned off to view plain output
+    Given the control conversion playground is open
+    When I click "Convert via AI (candidate)"
+    And I turn difference highlighting off
+    Then no differences should be highlighted in either Markdown pane
