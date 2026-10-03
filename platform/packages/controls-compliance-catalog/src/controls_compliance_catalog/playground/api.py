@@ -16,7 +16,7 @@ router = APIRouter(prefix="/playground", tags=["playground"])
 
 
 class OscalToMarkdownRequest(BaseModel):
-    oscal_json: str
+    oscal: str
 
 
 class OscalToMarkdownResponse(BaseModel):
@@ -43,7 +43,7 @@ class PlaygroundError(BaseModel):
 )
 def oscal_to_markdown(request: OscalToMarkdownRequest) -> OscalToMarkdownResponse | JSONResponse:
     try:
-        markdown = convert_oscal_control_to_markdown(request.oscal_json)
+        markdown = convert_oscal_control_to_markdown(request.oscal)
     except PlaygroundConversionError as exc:
         error = PlaygroundError(error_code="invalid_oscal", message=str(exc))
         return JSONResponse(status_code=422, content=error.model_dump())
@@ -66,18 +66,13 @@ def prose_to_markdown_candidate(
     return ProseToMarkdownCandidateResponse(markdown=markdown)
 
 
-_SAMPLE_CONTROL_JSON = """{
-  "id": "ac-2",
-  "class": "SP800-53",
-  "title": "Account Management",
-  "parts": [
-    {
-      "id": "ac-2_smt",
-      "name": "statement",
-      "prose": "The organization manages information system accounts."
-    }
-  ]
-}"""
+_SAMPLE_CONTROL_YAML = """id: ac-2
+class: SP800-53
+title: Account Management
+parts:
+  - id: ac-2_smt
+    name: statement
+    prose: The organization manages information system accounts."""
 
 _SAMPLE_CONTROL_PROSE = "AC-2 Account Management: The organization manages information system accounts."
 
@@ -165,7 +160,7 @@ _PAGE_TEMPLATE = """\
     font-family: "IBM Plex Mono", monospace;
   }
   #prose-input:focus { outline: 2px solid var(--accent-ai); outline-offset: -2px; }
-  #oscal-json:focus { outline: 2px solid var(--accent-ref); outline-offset: -2px; }
+  #oscal-input:focus { outline: 2px solid var(--accent-ref); outline-offset: -2px; }
   .panel-foot {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 10px 16px; border-top: 1px solid var(--border); background: var(--surface-2);
@@ -278,10 +273,10 @@ _PAGE_TEMPLATE = """\
 
     <div class="panel">
       <div class="panel-head">
-        <div class="panel-title"><span class="dot ref"></span>OSCAL control / catalog JSON</div>
-        <span class="tag">JSON</span>
+        <div class="panel-title"><span class="dot ref"></span>OSCAL control / catalog YAML</div>
+        <span class="tag">YAML</span>
       </div>
-      <textarea id="oscal-json" spellcheck="false">__SAMPLE_CONTROL_JSON__</textarea>
+      <textarea id="oscal-input" spellcheck="false">__SAMPLE_CONTROL_YAML__</textarea>
       <div class="panel-foot">
         <span class="error" id="playground-error"></span>
         <button class="run ref" id="convert-button" type="button">Convert to Markdown</button>
@@ -341,7 +336,7 @@ _PAGE_TEMPLATE = """\
           <span class="tag">from OSCAL via Trestle</span>
         </div>
         <div class="md-pane" id="markdown-output"></div>
-        <div class="simnote">Deterministic: regenerated directly from the pasted OSCAL JSON via compliance-trestle.</div>
+        <div class="simnote">Deterministic: regenerated directly from the pasted OSCAL YAML via compliance-trestle.</div>
       </div>
     </div>
   </section>
@@ -449,12 +444,12 @@ _PAGE_TEMPLATE = """\
     errorEl.textContent = "";
     refButton.disabled = true;
     setStatus(refStatus, "ref", "converting\\u2026");
-    const oscalJson = document.getElementById("oscal-json").value;
+    const oscalText = document.getElementById("oscal-input").value;
     try {
       const response = await fetch("/playground/oscal-to-markdown", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ oscal_json: oscalJson }),
+        body: JSON.stringify({ oscal: oscalText }),
       });
       const body = await response.json();
       if (myRun !== refRun) return; // a newer run superseded this one
@@ -476,7 +471,7 @@ _PAGE_TEMPLATE = """\
   refButton.addEventListener("click", runReference);
   // Trestle's conversion is deterministic and instant, so run it on load and as the OSCAL is edited.
   let refTimer = null;
-  document.getElementById("oscal-json").addEventListener("input", () => {
+  document.getElementById("oscal-input").addEventListener("input", () => {
     clearTimeout(refTimer);
     refTimer = setTimeout(runReference, 400);
   });
@@ -517,7 +512,7 @@ _PAGE_TEMPLATE = """\
 """
 
 _PAGE = _PAGE_TEMPLATE.replace("__SAMPLE_CONTROL_PROSE__", _SAMPLE_CONTROL_PROSE).replace(
-    "__SAMPLE_CONTROL_JSON__", _SAMPLE_CONTROL_JSON
+    "__SAMPLE_CONTROL_YAML__", _SAMPLE_CONTROL_YAML
 )
 
 

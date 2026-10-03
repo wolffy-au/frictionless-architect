@@ -8,13 +8,13 @@ candidate path (GH #76's second swimlane) is deliberately out of scope here.
 
 from __future__ import annotations
 
-import json
 import pathlib
 import tempfile
 import uuid
 from datetime import datetime, timezone
 from typing import Any
 
+import yaml
 from trestle.core.catalog.catalog_api import CatalogAPI
 from trestle.core.control_context import ContextPurpose, ControlContext
 from trestle.oscal.catalog import Catalog
@@ -54,20 +54,22 @@ def _as_catalog(oscal_data: dict[str, Any]) -> Catalog:
         raise PlaygroundConversionError(f"Pasted content is not a valid OSCAL control or catalog: {exc}") from exc
 
 
-def convert_oscal_control_to_markdown(raw_oscal_json: str) -> str:
-    """Convert pasted OSCAL (a control, or a full catalog) into Trestle Markdown.
+def convert_oscal_control_to_markdown(raw_oscal: str) -> str:
+    """Convert pasted OSCAL YAML (a control, or a full catalog) into Trestle Markdown.
+
+    JSON is also accepted, since JSON is (almost entirely) a subset of YAML.
 
     Uses compliance-trestle's own deterministic conversion (``CatalogAPI.write_catalog_as_markdown``)
     -- the same code path as the ``trestle author catalog-generate`` CLI command -- never a
     hand-rolled template, so the output is a faithful reference for comparison against the AI path.
     """
     try:
-        oscal_data = json.loads(raw_oscal_json)
-    except json.JSONDecodeError as exc:
-        raise PlaygroundConversionError(f"Pasted OSCAL content is not valid JSON: {exc}") from exc
+        oscal_data = yaml.safe_load(raw_oscal)
+    except yaml.YAMLError as exc:
+        raise PlaygroundConversionError(f"Pasted OSCAL content is not valid YAML: {exc}") from exc
 
     if not isinstance(oscal_data, dict):
-        raise PlaygroundConversionError("Pasted OSCAL content is not valid JSON: expected a JSON object")
+        raise PlaygroundConversionError("Pasted OSCAL content is not valid YAML: expected a mapping (an OSCAL control or catalog)")
 
     catalog = _as_catalog(oscal_data)
 

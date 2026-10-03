@@ -3,6 +3,7 @@
 import json
 
 import pytest
+import yaml
 from controls_compliance_catalog.playground.convert import (
     PlaygroundConversionError,
     convert_control_prose_to_markdown_candidate,
@@ -34,13 +35,20 @@ def test_converts_a_full_pasted_catalog_to_markdown() -> None:
     assert "Account Management" in markdown
 
 
-def test_rejects_malformed_json_with_a_clear_error() -> None:
-    with pytest.raises(PlaygroundConversionError, match="valid JSON"):
-        convert_oscal_control_to_markdown("{ not valid json")
+def test_converts_pasted_yaml_to_markdown() -> None:
+    markdown = convert_oscal_control_to_markdown(yaml.safe_dump(SINGLE_CONTROL))
+
+    assert "Account Management" in markdown
+    assert "The organization manages information system accounts." in markdown
 
 
-def test_rejects_a_json_array_as_not_an_object() -> None:
-    with pytest.raises(PlaygroundConversionError, match="valid JSON"):
+def test_rejects_malformed_yaml_with_a_clear_error() -> None:
+    with pytest.raises(PlaygroundConversionError, match="valid YAML"):
+        convert_oscal_control_to_markdown("{ not valid")
+
+
+def test_rejects_a_list_as_not_a_mapping() -> None:
+    with pytest.raises(PlaygroundConversionError, match="expected a mapping"):
         convert_oscal_control_to_markdown("[1, 2, 3]")
 
 

@@ -25,19 +25,19 @@ def test_playground_page_is_served() -> None:
 
 
 def test_convert_endpoint_returns_trestle_markdown_for_valid_control() -> None:
-    response = client.post("/playground/oscal-to-markdown", json={"oscal_json": json.dumps(SINGLE_CONTROL)})
+    response = client.post("/playground/oscal-to-markdown", json={"oscal": json.dumps(SINGLE_CONTROL)})
 
     assert response.status_code == 200
     body = response.json()
     assert "Account Management" in body["markdown"]
 
 
-def test_convert_endpoint_returns_422_with_clear_message_for_invalid_json() -> None:
-    response = client.post("/playground/oscal-to-markdown", json={"oscal_json": "{ not valid json"})
+def test_convert_endpoint_returns_422_with_clear_message_for_invalid_yaml() -> None:
+    response = client.post("/playground/oscal-to-markdown", json={"oscal": "{ not valid"})
 
     assert response.status_code == 422
     body = response.json()
-    assert "valid JSON" in body["message"]
+    assert "valid YAML" in body["message"]
 
 
 def test_candidate_endpoint_returns_candidate_markdown_for_valid_prose() -> None:

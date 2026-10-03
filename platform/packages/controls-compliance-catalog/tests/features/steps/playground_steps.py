@@ -11,9 +11,9 @@ def step_open_playground(context: Context) -> None:
     context.page.goto(f"{context.base_url}/playground")
 
 
-@when("I paste the following OSCAL control JSON:")
-def step_paste_oscal_json(context: Context) -> None:
-    context.page.fill("#oscal-json", context.text)
+@when("I paste the following OSCAL control YAML:")
+def step_paste_oscal_yaml(context: Context) -> None:
+    context.page.fill("#oscal-input", context.text)
 
 
 @when('I click "Convert to Markdown"')
