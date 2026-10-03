@@ -863,45 +863,9 @@
     - sw-uvicorn-fastapi
     - node-app-server
 
-- id: view-migration
-  name: Migration Sequence
-  diagram: migration/sequence
-  # ARCHITECTURE.md §8 steps as Work Packages, what each delivers, and the
-  # Plateaus the platform passes through. Components are left out: the
-  # Packaging view carries the package -> component story.
-  viewpoint: implementation_migration
-  # include_types: [WorkPackage, Deliverable, Plateau, Gap, Artifact] would
-  # also sweep in the non-package Artifacts added for GH #55's
-  # persistence-boundary slice (art-tech-oscal-workspace, art-tech-ledger-file)
-  # — listed explicitly instead.
-  members:
-    - wp-1-monorepo-skeleton
-    - wp-2-catalog-extraction
-    - wp-3-prove-pattern
-    - wp-4-scaffold-twin
-    - wp-5-vendor-forks
-    - wp-6-rehome-specs
-    - wp-7-extract-remaining
-    - del-monorepo-skeleton
-    - del-catalog-pkg
-    - del-twin-pkg-scaffold
-    - plat-baseline
-    - plat-first-extraction
-    - plat-target
-    - gap-catalog-extracted
-    - gap-subsystems-packaged
-    - art-flat-src
-    - art-pkg-schema-visualizer-api
-    - art-pkg-digital-twin-knowledge-graph
-    - art-pkg-controls-compliance-catalog
-    - art-pkg-reusable-architecture-library
-    - art-pkg-architecture-governance
-    - art-pkg-conformance-drift-assurance
-    - art-pkg-modelling-specification
-
 - id: view-runtime-migration
   name: "Runtime Migration: Local Compose to Hosted Cluster"
-  diagram: technology/runtime-migration
+  diagram: migration/runtime
   # GH #55's runtime-target skeleton (ADR-0018, updated 2026-09-27): the
   # MVP -> target Plateau/Gap for the data layer's deployment shape.
   # Deliberately its own view, not folded into view-migration — that view's
@@ -916,3 +880,22 @@
     - node-app-server
     - node-hosted-cluster
     - sw-neo4j
+    - bc-model-collaboration
+    - bi-collaborative-modelling
+    - role-ea
+    - role-sa
+
+- id: view-implementation-migration-overview
+  name: "Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables"
+  diagram: migration/overview
+  # Every Plateau/Gap/WorkPackage/Deliverable in the model, regardless of
+  # which transition story it belongs to (packaging, runtime/collaboration,
+  # and any future GH-roadmap-imported ones) — the one place to see the
+  # whole Implementation & Migration layer at once. CourseOfAction is a
+  # Strategy-layer concept the implementation_migration viewpoint doesn't
+  # admit, so epic-level groupings won't appear here even once imported.
+  # Unlike view-migration and view-runtime-migration this is deliberately
+  # include_types, not members: it should pick up new elements of these
+  # types automatically rather than needing to be hand-maintained.
+  viewpoint: implementation_migration
+  include_types: [Plateau, Gap, WorkPackage, Deliverable]

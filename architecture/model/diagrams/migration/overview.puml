@@ -1,0 +1,13 @@
+@startuml
+!include <archimate/Archimate>
+
+title Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables
+
+Implementation_Plateau(e_id41f19d1f4d8e57, "Solo use only")
+Implementation_Plateau(e_iddb3e8c90fede5c, "Collaborative / team modelling")
+Implementation_Gap(e_idb79cfd9d701c52, "Gap: enable team collaboration")
+
+Rel_Association(e_idb79cfd9d701c52, e_id41f19d1f4d8e57, "")
+Rel_Association(e_idb79cfd9d701c52, e_iddb3e8c90fede5c, "")
+
+@enduml

@@ -782,50 +782,6 @@
 - {type: Realization, source: art-pkg-conformance-drift-assurance, target: sub-assurance}
 - {type: Realization, source: art-pkg-modelling-specification, target: sub-modelling}
 
-# =====================================================================
-# E. Migration sequence (ARCHITECTURE.md §8)
-#    The first extraction is controls-compliance-catalog (GH #44), which has
-#    no knowledge-graph dependency; schema-visualizer-api follows step 4, which
-#    delivers the read path it consumes (ADR-0005, GH #60).
-# =====================================================================
-- {type: Triggering, source: wp-1-monorepo-skeleton, target: wp-2-catalog-extraction}
-- {type: Triggering, source: wp-2-catalog-extraction, target: wp-3-prove-pattern}
-- {type: Triggering, source: wp-3-prove-pattern, target: wp-4-scaffold-twin}
-- {type: Triggering, source: wp-4-scaffold-twin, target: wp-5-vendor-forks}
-- {type: Triggering, source: wp-5-vendor-forks, target: wp-6-rehome-specs}
-- {type: Triggering, source: wp-6-rehome-specs, target: wp-7-extract-remaining}
-- {type: Realization, source: wp-1-monorepo-skeleton, target: del-monorepo-skeleton}
-- {type: Realization, source: wp-2-catalog-extraction, target: del-catalog-pkg}
-- {type: Realization, source: wp-4-scaffold-twin, target: del-twin-pkg-scaffold}
-- {type: Realization, source: del-catalog-pkg, target: art-pkg-controls-compliance-catalog}
-- {type: Realization, source: del-twin-pkg-scaffold, target: art-pkg-digital-twin-knowledge-graph}
-- {type: Realization, source: wp-3-prove-pattern, target: plat-first-extraction}
-- {type: Realization, source: wp-7-extract-remaining, target: plat-target}
-
-# =====================================================================
-# E. Plateaus: which packages make up each state (ordered by the Gaps below)
-# =====================================================================
-- {type: Aggregation, source: plat-baseline, target: art-flat-src}
-- {type: Aggregation, source: plat-first-extraction, target: art-flat-src}
-- {type: Aggregation, source: plat-first-extraction, target: art-pkg-controls-compliance-catalog}
-- {type: Aggregation, source: plat-target, target: art-pkg-schema-visualizer-api}
-- {type: Aggregation, source: plat-target, target: art-pkg-digital-twin-knowledge-graph}
-- {type: Aggregation, source: plat-target, target: art-pkg-controls-compliance-catalog}
-- {type: Aggregation, source: plat-target, target: art-pkg-reusable-architecture-library}
-- {type: Aggregation, source: plat-target, target: art-pkg-architecture-governance}
-- {type: Aggregation, source: plat-target, target: art-pkg-conformance-drift-assurance}
-- {type: Aggregation, source: plat-target, target: art-pkg-modelling-specification}
-
-# =====================================================================
-# E. Gaps: each lies between two Plateaus (ordering Baseline -> Target);
-#    the packages that differ are the Plateaus' Aggregations, named in each
-#    Gap's desc — no Gap -> Artifact or Plateau Triggering edges, which would
-#    only restate that
-# =====================================================================
-- {type: Association, source: gap-catalog-extracted, target: plat-baseline}
-- {type: Association, source: gap-catalog-extracted, target: plat-first-extraction}
-- {type: Association, source: gap-subsystems-packaged, target: plat-first-extraction}
-- {type: Association, source: gap-subsystems-packaged, target: plat-target}
 
 # =====================================================================
 # F. Technology — golden-dataset regression check (first cut, see the
@@ -861,6 +817,13 @@
 - {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}
+
+# --- B. Model Collaboration (joint behaviour) ---
+- {type: Aggregation, source: bc-model-collaboration, target: role-ea}
+- {type: Aggregation, source: bc-model-collaboration, target: role-sa}
+- {type: Assignment, source: bc-model-collaboration, target: bi-collaborative-modelling}
+- {type: Association, source: plat-runtime-target, target: bc-model-collaboration, label: enables}
+- {type: Association, source: gap-runtime-hosted, target: bi-collaborative-modelling}
 
 # =====================================================================
 # F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition
