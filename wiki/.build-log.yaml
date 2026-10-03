@@ -155,8 +155,8 @@ topics:
           sha256: 7cb82fddd80a06343a9d97edfc0225a9ffbf1643a82ba1a31ee6ddd59e1091fc
           lines: 458
         architecture/model/elements.yaml:
-          sha256: 9ddd6ccc440b3de741011e6f08c099a14a5b1096eb267e475ce6e1d807c046a0
-          lines: 1603
+          sha256: 902f01cb6c5aa5a88539a89bc1f0e07a59fc835f62382d17903f162f23be8c66
+          lines: 1604
         architecture/model/relationships.yaml:
           sha256: a98f8aa0274bad4ed9d6a04cb55644f3262e534dfe27f966d3d3776ea31416cf
           lines: 910
@@ -173,8 +173,8 @@ topics:
           sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
           lines: 127
         architecture/model/elements.yaml:
-          sha256: 9ddd6ccc440b3de741011e6f08c099a14a5b1096eb267e475ce6e1d807c046a0
-          lines: 1603
+          sha256: 902f01cb6c5aa5a88539a89bc1f0e07a59fc835f62382d17903f162f23be8c66
+          lines: 1604
         architecture/model/relationships.yaml:
           sha256: a98f8aa0274bad4ed9d6a04cb55644f3262e534dfe27f966d3d3776ea31416cf
           lines: 910
@@ -188,8 +188,8 @@ topics:
           sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
           lines: 127
         architecture/model/elements.yaml:
-          sha256: 9ddd6ccc440b3de741011e6f08c099a14a5b1096eb267e475ce6e1d807c046a0
-          lines: 1603
+          sha256: 902f01cb6c5aa5a88539a89bc1f0e07a59fc835f62382d17903f162f23be8c66
+          lines: 1604
         architecture/model/relationships.yaml:
           sha256: a98f8aa0274bad4ed9d6a04cb55644f3262e534dfe27f966d3d3776ea31416cf
           lines: 910
@@ -203,8 +203,8 @@ topics:
           sha256: 380c9eaca6b4789e80a07146dc859660fc74d302d2baa8f3daff8bcc5fa35645
           lines: 127
         architecture/model/elements.yaml:
-          sha256: 9ddd6ccc440b3de741011e6f08c099a14a5b1096eb267e475ce6e1d807c046a0
-          lines: 1603
+          sha256: 902f01cb6c5aa5a88539a89bc1f0e07a59fc835f62382d17903f162f23be8c66
+          lines: 1604
         architecture/model/relationships.yaml:
           sha256: a98f8aa0274bad4ed9d6a04cb55644f3262e534dfe27f966d3d3776ea31416cf
           lines: 910
@@ -290,10 +290,10 @@ topics:
           sha256: 267d14380dc62a2c985cd6b5f4c832424f8c490971a2365c326a64b621b700b1
           lines: 1
         architecture/model/diagrams/c4/container.puml:
-          sha256: 2265f6f08715bc5085f0f17c14eb295c2e3c6e69b6834a5d343961244db09359
+          sha256: 49069b5790d83b59a6db577a9efd3ca92803116c278f7354024f1e1a9eaa965e
           lines: 76
         architecture/model/diagrams/c4/container.svg:
-          sha256: 46b5a135a43e4d501ed926e458839f140c4b826e07305c4c2b229206b1e2cea9
+          sha256: a050633bdf5d349e3b40c9e26ca92f042654f06c68b774385af580a5f556bc51
           lines: 1
         architecture/model/diagrams/c4/context.puml:
           sha256: 723391fbb337cfd2a99294a2decfb45f13010edb3239617c7a0c027c3113b20a
@@ -610,7 +610,7 @@ topics:
           sha256: 46298a3d15a85fc7a570369121995a4deda203cb1abaccbff35aad655e0a98f8
           lines: 39
         scripts/run-playground.sh:
-          sha256: 162b5c02ddada3232ed4bf1b87b9f71c3956d097d9249c120b9f6ef87d5de651
+          sha256: bc3d3771cf50e245a38ab77a3aecb3e4258b471a9bd64af9267647acd131383e
           lines: 19
   llm-provider-config:
     title: LLM Provider Configuration

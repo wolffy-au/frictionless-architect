@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Runs the controls-compliance-catalog control conversion playground (GH #76)
-# as a local dev server: paste OSCAL control/catalog JSON and see the real
+# as a local dev server: paste an OSCAL control/catalog (YAML or JSON) and see the real
 # compliance-trestle Markdown rendering at /playground.
 
 set -euo pipefail
