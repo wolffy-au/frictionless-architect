@@ -119,6 +119,7 @@ topics:
       - path: specs/002-neo4j-schema-ui/research.md
       - path: specs/002-neo4j-schema-ui/contracts/api.md
       - path: specs/002-neo4j-schema-ui/checklists/requirements.md
+      - path: specs/002-neo4j-schema-ui/tasks.md
 
   - name: controls-compliance-catalog
     title: Controls & Compliance Catalog
@@ -155,6 +156,9 @@ topics:
       - path: AGENTS.md
       - path: RELEASE.md
       - path: specs/002-neo4j-schema-ui/quickstart.md
+      - path: CONTRIBUTING.md
+      - path: CODE_OF_CONDUCT.md
+      - path: SECURITY.md
 
   - name: sample-data
     title: Sample Data
@@ -176,5 +180,4 @@ topics:
       - path: .claude/skills/model-archimate/SKILL.md
       - path: .claude/skills/wiki-editor/SKILL.md
       - path: .claude/skills/wiki-librarian/SKILL.md
-      - path: .claude/skills/speckit-*/SKILL.md
       - path: .claude/agents/*.md

@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-10-02
+generated: 2026-10-03
 generator: claude-sonnet-5
 sources:
   - .claude/agents/README.md
@@ -22,16 +22,6 @@ sources:
   - .claude/skills/diagram-plantuml/SKILL.md
   - .claude/skills/fork-sync/SKILL.md
   - .claude/skills/model-archimate/SKILL.md
-  - .claude/skills/speckit-analyze/SKILL.md
-  - .claude/skills/speckit-checklist/SKILL.md
-  - .claude/skills/speckit-clarify/SKILL.md
-  - .claude/skills/speckit-constitution/SKILL.md
-  - .claude/skills/speckit-converge/SKILL.md
-  - .claude/skills/speckit-implement/SKILL.md
-  - .claude/skills/speckit-plan/SKILL.md
-  - .claude/skills/speckit-specify/SKILL.md
-  - .claude/skills/speckit-tasks/SKILL.md
-  - .claude/skills/speckit-taskstoissues/SKILL.md
   - .claude/skills/wiki-editor/SKILL.md
   - .claude/skills/wiki-librarian/SKILL.md
 ---
@@ -58,9 +48,12 @@ upgrade claude` — the native Claude Code integration writes these skills
 directly into `.claude/skills/speckit-*`, no symlinking needed. The pinned
 version lives in `.specify/speckit.lock` (tracked) and a rebuild that changes
 it bumps the lock and prints a notice. `.specify/memory/` (the constitution)
-is hand-owned and never regenerated (`.claude/skills/README.md:13-24`).
+is hand-owned and never regenerated (`.claude/skills/README.md`). Because
+these skill directories are generated, not committed, a checkout that hasn't
+run that container-create step won't have them on disk — this page's own
+source set no longer globs for them for that reason.
 
-| Skill | Purpose (`.claude/skills/README.md:26-36`) |
+| Skill | Purpose (`.claude/skills/README.md`) |
 |---|---|
 | `speckit-constitution` | Project constitutional rules, quality gates, non-functional requirements |
 | `speckit-specify` | Craft or refine a feature specification when requirements change |
@@ -71,27 +64,16 @@ is hand-owned and never regenerated (`.claude/skills/README.md:13-24`).
 | `speckit-checklist` | Verify checklist completion and gate entry into implementation |
 | `speckit-implement` | Execute the implementation phase once design and planning are solid |
 | `speckit-taskstoissues` | Translate task lists into issue-tracker-friendly format |
-| `speckit-converge` | Assess the codebase against the feature's spec/plan/tasks and append remaining unbuilt work to `tasks.md` so `speckit-implement` can finish it. Not yet in the `README.md` table. |
 
-Both `speckit-analyze` and `speckit-converge` call
-`.specify/scripts/bash/check-prerequisites.sh --json --require-spec
---require-tasks --include-tasks` once from repo root and parse the JSON for
-`FEATURE_DIR` / `AVAILABLE_DOCS` when initializing their context
-(`speckit-analyze/SKILL.md:72`; `speckit-converge/SKILL.md:99`).
-
-Every `speckit-*` skill also checks for **extension hooks** before and after
-its main work. It reads `hooks.before_<command>` / `hooks.after_<command>`
-entries from `.specify/extensions.yml` and skips any hook whose `enabled` is
-explicitly `false`. A hook without an `enabled` field counts as enabled. If
-the file won't parse, the skill must not skip silently: it reports the parser
-error and says that no hooks, including mandatory (`optional: false`) ones,
-were checked, then carries on (`speckit-converge/SKILL.md:21-60, 241-285`).
-`speckit-converge` also reports its outcome (`converged` or `tasks_appended`)
-before listing any after-hooks, so the user can decide whether to run the
-optional follow-ups (`.claude/skills/speckit-converge/SKILL.md:241-285`).
-This repo has no `.specify/extensions.yml` at present, so the hooks are a
-no-op. The skills are regenerated from the Spec Kit version pinned in
-`.specify/speckit.lock`, currently 1.0.12.
+`.claude/skills/README.md`'s table above doesn't yet list `speckit-converge`,
+which earlier revisions of this page (built in an environment where the
+generated skill directories existed) described as assessing the codebase
+against a feature's spec/plan/tasks and appending remaining unbuilt work to
+`tasks.md`. That detail, and other per-skill mechanics (prerequisite-script
+calls, the `.specify/extensions.yml` hook convention), lived only in the
+generated `SKILL.md` files themselves, not in any committed source, so this
+rebuild — done from a checkout without that scaffolding — can't verify or
+restate it. Not covered by current sources.
 
 These realize the Specify → Plan → Implement → Verify workflow from
 [Governance & Constitution](governance-and-constitution.md).
@@ -131,7 +113,7 @@ defect, not a style nit". Subject form: `<type>(<scope>)?: <description>`,
 imperative, lower-case, no trailing period, ≤ 72 chars; scope is the affected
 package or top-level area (`agents`, `skills`, `wiki`, `devcontainer`, `specs`,
 `ci`, `architecture`, …). The authoritative ruleset is
-`commit-message/references/standard.md`. `commit-auditor` is the read-only
+`.claude/skills/commit-message/references/standard.md`. `commit-auditor` is the read-only
 branch-wide pre-PR audit; it never amends, rebases, or pushes.
 
 ## `fork-sync`

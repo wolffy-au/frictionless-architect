@@ -1,4 +1,4 @@
-generated: '2026-10-02'
+generated: '2026-10-03'
 generator: claude-sonnet-5
 topics:
   project-overview:
@@ -25,7 +25,7 @@ topics:
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
-    built: '2026-10-01'
+    built: '2026-10-03'
     sources:
       files:
         ARCHITECTURE.md:
@@ -125,8 +125,8 @@ topics:
           sha256: eedeaa55f20d3c1c7c7bd86e9f7b19f30a8623d2099c387bc37388f4bce48b00
           lines: 74
         docs/adr/0030-vendor-oscal-reference-content.md:
-          sha256: c35d09b0647c09e8a612ee470ac40da005e643a796b825d8f954d220ec6bbbd3
-          lines: 110
+          sha256: 7e6f14ec368e2ea3bdc4c6c15d8f4faf2f9a6d9b6628930d2367aa4b3dc1f839
+          lines: 193
         docs/adr/0031-fr016-no-redaction-for-policy-documents.md:
           sha256: b963090619847504b56c6c8115b34edd72b02e84e5b30a94790417ab84ce30be
           lines: 44
@@ -139,6 +139,7 @@ topics:
         docs/adr/README.md:
           sha256: a52f6215875bccbe6084689998f11715755ea18bff118c004acf2dc06e857fe9
           lines: 115
+      urls: {}
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
@@ -451,12 +452,12 @@ topics:
   oscal-compliance:
     title: OSCAL Compliance Content
     page: wiki/oscal-compliance.md
-    built: '2026-10-01'
+    built: '2026-10-03'
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
-          sha256: c35d09b0647c09e8a612ee470ac40da005e643a796b825d8f954d220ec6bbbd3
-          lines: 110
+          sha256: 7e6f14ec368e2ea3bdc4c6c15d8f4faf2f9a6d9b6628930d2367aa4b3dc1f839
+          lines: 193
         pyproject.toml:
           sha256: 910d459274ccaf951d1fb3d40e1baaac8b540c050ea3f424b3df06447f1d4835
           lines: 228
@@ -487,6 +488,7 @@ topics:
         third_party/oscal/README.md:
           sha256: dc076e93c8d9f080eab5d9b3cfcac44d440513828c1649a523b1ecfcad3cf7ff
           lines: 60
+      urls: {}
   data-model:
     title: Data Model
     page: wiki/data-model.md
@@ -511,7 +513,7 @@ topics:
   platform-spec:
     title: Platform Specification & API
     page: wiki/platform-spec.md
-    built: '2026-10-02'
+    built: '2026-10-03'
     sources:
       files:
         specs/001-governance-platform/contracts/api.yaml:
@@ -535,6 +537,10 @@ topics:
         specs/002-neo4j-schema-ui/spec.md:
           sha256: 0f01fac7c7b51e9b58fbd440c8a62e76c9c97bdcd2a3e08066f9446327aa2510
           lines: 106
+        specs/002-neo4j-schema-ui/tasks.md:
+          sha256: 55b75c5c94d0713025045273deca43b52a2d2934dc638e608651f46e9fc2bc45
+          lines: 102
+      urls: {}
   non-functionals:
     title: Non-Functional Requirements
     page: wiki/non-functionals.md
@@ -589,21 +595,31 @@ topics:
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-10-01'
+    built: '2026-10-03'
     sources:
       files:
         AGENTS.md:
           sha256: 1622e47607a521d6f546dcc619ce54b355c9a99def3d56ccec12f69d8a48daca
           lines: 141
+        CODE_OF_CONDUCT.md:
+          sha256: c135627b08b25735d88156b519d9daacf42c3ce3e7ec08b6b4bc56b1a5c19df7
+          lines: 128
+        CONTRIBUTING.md:
+          sha256: da6a396156ce74974fc7603fec1e035d88b783f21f03559775f3d47f43046b41
+          lines: 122
         RELEASE.md:
           sha256: 4da2279d0106d90153f0f8e4016433e0636f0183fb8f96d4a7bf33f888b4dced
           lines: 213
+        SECURITY.md:
+          sha256: 31571f7297e96f97630abc338a44ac2e24c292c5ab94bcba5505037debe8faaa
+          lines: 54
         specs/001-governance-platform/quickstart.md:
           sha256: 5552f4fae9e848126bcf0a0d872c628640462d1a8d6b02bd35dc8f33b1090dbb
           lines: 75
         specs/002-neo4j-schema-ui/quickstart.md:
           sha256: 836367bf01b8e0ee9ee08a4bc99442b98ba83f80f55e9b05c54aaeae225828a7
           lines: 46
+      urls: {}
   sample-data:
     title: Sample Data
     page: wiki/sample-data.md
@@ -649,7 +665,7 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-10-02'
+    built: '2026-10-03'
     sources:
       files:
         .claude/agents/README.md:
@@ -709,54 +725,25 @@ topics:
         .claude/skills/model-archimate/SKILL.md:
           sha256: 0aac98a8860b3b62810702cd30bd74c098e053448ba6502a166e8f4db0820a82
           lines: 175
-        .claude/skills/speckit-analyze/SKILL.md:
-          sha256: 3237cd827194efaf6bb06ba05ef9bc1a703a223d362f5e34d0558c5a38ae34d0
-          lines: 262
-        .claude/skills/speckit-checklist/SKILL.md:
-          sha256: 5dc436df0c727e9078bf182dd385e5cb1b60ee67ebe644d3f659ec12e3b78abb
-          lines: 386
-        .claude/skills/speckit-clarify/SKILL.md:
-          sha256: 164f49ef87cb2e922585316f5281b455a8e1940b1efd25317d517a567acae472
-          lines: 294
-        .claude/skills/speckit-constitution/SKILL.md:
-          sha256: 60c27f3962e78edf204b2b2e7cba91a616980860b61d6bf2051dc6965d483dda
-          lines: 182
-        .claude/skills/speckit-converge/SKILL.md:
-          sha256: 9f93c1d573592f146670202210128ed24a9d75c92133951b19a2bb0e34eac13b
-          lines: 285
-        .claude/skills/speckit-implement/SKILL.md:
-          sha256: 7186d59488f89dcf23abd17baed118b05c242d4f62f1de3f9f44625a2b1728f0
-          lines: 229
-        .claude/skills/speckit-plan/SKILL.md:
-          sha256: 9e97fc0b4ce895c70a1ea720dc0377618c23e27c83ecf4d87b6e0f6c323790a4
-          lines: 169
-        .claude/skills/speckit-specify/SKILL.md:
-          sha256: d4d93f2444355136e78bb533988aa2dd560dc4b258f4923f67b1a437e7de38f8
-          lines: 348
-        .claude/skills/speckit-tasks/SKILL.md:
-          sha256: d148aeda1011260c4465c5f105fa1e045a0b0224ccb3e6e0c1ec32c732cae1ae
-          lines: 218
-        .claude/skills/speckit-taskstoissues/SKILL.md:
-          sha256: 464bbaf464a28ffa371b0452599c18e7cb5799630148d9f945e6a4d7066a1234
-          lines: 112
         .claude/skills/wiki-editor/SKILL.md:
           sha256: 0ebf7c6f99fe2a0f445f198b50e0485ab448e8b1fa6667a23f5753abc3f9de0e
           lines: 65
         .claude/skills/wiki-librarian/SKILL.md:
           sha256: 6af14d10c9a402f7248a46bb1dda9acc72191d1a2f0d3425b6a1ae07ab99707e
           lines: 266
+      urls: {}
   controls-compliance-catalog:
     title: Controls & Compliance Catalog
     page: wiki/controls-compliance-catalog.md
-    built: '2026-10-01'
+    built: '2026-10-03'
     sources:
       files:
         platform/packages/controls-compliance-catalog/README.md:
           sha256: 0a77a8215c3e5d24157467fba3b78ef41f9aaaac5ada76be0dc49e45dad71dfb
           lines: 31
         platform/packages/controls-compliance-catalog/pyproject.toml:
-          sha256: 9d40963697db3ea3487a30a5d1b200a8d6ab67976758ee32310db57478580927
-          lines: 16
+          sha256: a0e3b74bc1830842b15fae11d232d7af83cd7861dfa2c23e3518b771cea621b9
+          lines: 20
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md:
           sha256: 815f4438b5359e108a78f236496f197e5af7ee12cb4da46b122e11792170dea4
           lines: 34
@@ -781,3 +768,4 @@ topics:
         platform/packages/controls-compliance-catalog/specs/README.md:
           sha256: dfee6ec12c13f6a54804b91a1d7cf2f626313fe4c96cac2ee70d97feae1be166
           lines: 6
+      urls: {}

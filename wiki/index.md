@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-10-01
+generated: 2026-10-03
 generator: claude-sonnet-5
 ---
 
@@ -70,10 +70,12 @@ generator: claude-sonnet-5
   `AGENTS.md` covers.
 - [Sample Data](sample-data.md) — the bundled ArchiMate/C4 sample models, the
   Archi CSV exports, and the OSCAL profile-resolution diagrams.
-- [Agent Skills & Workflows](agent-workflows.md) — the repo's coding-agent
-  skills (`speckit-*`, `commit-message`, `fork-sync`, the diagram/model chain,
-  the wiki skills) and the maintenance-agent fleet (`quality-uplift`,
-  `coverage-uplift`, `docs-uplift`, `adr-auditor`, `release-runner`, …).
+- [Agent Skills & Workflows](agent-workflows.md) — the repo's committed
+  coding-agent skills (`commit-message`, `fork-sync`, the diagram/model
+  chain, the wiki skills) and the maintenance-agent fleet (`quality-uplift`,
+  `coverage-uplift`, `docs-uplift`, `adr-auditor`, `release-runner`, …); the
+  generated, git-ignored `speckit-*` scaffolding is covered only where this
+  checkout has it on disk.
 
 ## A note on source quality
 

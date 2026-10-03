@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-10-01
+generated: 2026-10-03
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
