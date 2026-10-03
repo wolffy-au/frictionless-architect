@@ -135,6 +135,22 @@ topics:
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/app.py
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/llm_client.py
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/*.py
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/prompts.yaml
+      - path: platform/packages/controls-compliance-catalog/tests/features/*.feature
+      - path: scripts/run-playground.sh
+
+  - name: llm-provider-config
+    title: LLM Provider Configuration
+    description: The shared llm-provider-config package (ADR-0034) — global default plus per-component LLM provider/model settings, keychain credentials, and the mountable settings router.
+    sources:
+      - path: platform/packages/llm-provider-config/README.md
+      - path: platform/packages/llm-provider-config/pyproject.toml
+      - path: platform/packages/llm-provider-config/specs/README.md
+      - path: platform/packages/llm-provider-config/src/llm_provider_config/*.py
+      - path: docs/adr/0034-shared-packages-and-llm-provider-config.md
 
   - name: non-functionals
     title: Non-Functional Requirements

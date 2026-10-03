@@ -60,6 +60,10 @@ generator: claude-sonnet-5
   extraction into the `platform/` monorepo, its AI-assisted policy/standard →
   OSCAL conversion pipeline (spec `001-oscal-ai-conversion`), data model, API
   surface, and golden-dataset validation.
+- [LLM Provider Configuration](llm-provider-config.md) — the shared
+  `llm-provider-config` package (ADR-0034): global default plus per-component
+  provider settings, keychain keys with an env-var fallback, keyless Ollama and
+  GitHub Copilot, and the mountable `/settings/llm` router.
 - [Non-Functional Requirements](non-functionals.md) — performance, security,
   reliability, compliance, observability, and quality targets.
 - [Visualizer Service](visualizer-service.md) — the one implemented component:

@@ -49,8 +49,8 @@ dependents only pull in what they actually use.
 
 - **Scope:** a thin configuration and credential-resolution layer over
   `litellm` (already the chosen client library, ADR-adjacent to spec `001`
-  research.md R2) covering OpenAI, Google Gemini, Anthropic Claude, and Ollama
-  on day 1. It resolves "which provider/model/params to use for call X" and
+  research.md R2) covering OpenAI, Google Gemini, Anthropic Claude, Ollama,
+  and GitHub Copilot on day 1. It resolves "which provider/model/params to use for call X" and
   "what credential goes with it" — it does not wrap or replace `litellm`'s own
   call surface.
 - **Settings model:** a global default (provider, model id, and optional

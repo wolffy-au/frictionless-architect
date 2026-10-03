@@ -18,7 +18,17 @@ The platform `Grouping` (`sys-platform`, `props: c4=system`), its six
 subsystems (`ApplicationComponent`s → C4 containers), five shared stores
 (`DataObject`s → C4 databases), six business roles (→ C4 persons), and seven
 external systems (`ApplicationComponent`s outside the grouping → C4 external
-systems) (`architecture/model/elements.yaml:880-1020`). This is the
+systems) (`architecture/model/elements.yaml:880-1056`). Two further
+`ApplicationComponent`s sit beside them without being subsystems:
+`sub-schema-visualizer` and, since ADR-0034, `sub-llm-provider-config` ("LLM
+Provider Configuration"), a shared package that resolves provider, model and
+credential for LLM calls. It is composed into `sys-platform`, has an `Association`
+to the `ext-llm` external system, and is realised by `art-pkg-llm-provider-config`;
+there is deliberately no `Serving` edge to its consumers, since consumption is a path
+dependency, not a runtime call
+(`architecture/model/elements.yaml:944-952`, `architecture/model/relationships.yaml:772-786`).
+It appears in the Artefact Flow — Controls & OSCAL and Packaging views
+(`architecture/model/views.yaml`). This is the
 decomposition [ADR-0011](architecture.md) adopts in place of the old
 eight-component grouping; [Architecture Overview](architecture.md)
 §"Subsystem → package mapping" gives the package each subsystem becomes. Views: `Subsystems & Capabilities` (a
@@ -36,12 +46,12 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
 view back to the skeleton (`architecture/model/relationships.yaml:419-428`).
-Shared stores (`architecture/model/elements.yaml:934-957`): OSCAL Repository
+Shared stores (`architecture/model/elements.yaml:969-993`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
 Architecture Intent and Current-State Digital Twin"), Framework Pack Library
 (`store-frameworks`), Forensic Audit Ledger (`store-ledger`). The seven external
-systems (`architecture/model/elements.yaml:985-1020`) are Source Control, CI/CD Pipeline
+systems (`architecture/model/elements.yaml:1020-1056`) are Source Control, CI/CD Pipeline
 (which now "runs the controls enforcement gate inline"),
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, LLM
 Provider, RFP / Vendor Submissions, and `ext-trestle`
@@ -70,7 +80,7 @@ The subsystem `includes` free-text property was removed — the same
 decomposition is carried by the section-C `ApplicationFunction`s ([Artefact Flow](architecture-model-artefact-flow.md)) and their
 `Assignment` edges ([ADR-0027](architecture.md) §"Consequences").
 
-The six business roles (`architecture/model/elements.yaml:959-983`) are now
+The six business roles (`architecture/model/elements.yaml:994-1018`) are now
 also `Assignment`-linked to the section-A BusinessFunctions they perform. For
 example, the Compliance Officer performs Policy-to-OSCAL Conversion. That
 nesting is what the Controls & Compliance Catalog view draws; see

@@ -39,6 +39,7 @@ sources:
   - docs/adr/0031-fr016-no-redaction-for-policy-documents.md
   - docs/adr/0032-archimate-exchange-namespace-3-0.md
   - docs/adr/0033-value-streams-per-outcome.md
+  - docs/adr/0034-shared-packages-and-llm-provider-config.md
   - docs/adr/README.md
 ---
 
@@ -134,6 +135,19 @@ packages under `platform/packages/`, each holding an `api/` and a `ui/`
 | 5 | Conformance & Drift Assurance | `conformance-drift-assurance` | build, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate enforcement (CPS 230/234), BAU monitoring, drift detection, Break-Glass, remediation tickets |
 | 6 | Modelling & Specification | `modelling-specification` | build | ArchiMate / C4 / UML modelling and executable-spec generation |
 | — | Schema Visualiser API (today's `visualizer/`) | `schema-visualizer-api` | build | Extracted after the knowledge-graph scaffold (§8.2, ADR-0005); where its UI lands is open (#55) |
+
+**Shared packages (not subsystems)** — a capability needed by more than one
+subsystem package gets its own named sibling under `platform/packages/`, built
+and gated like a subsystem package but with no subsystem UI obligation, rather
+than a catch-all `common` package
+([ADR-0034](#decision-log); `ARCHITECTURE.md` §3.2, §4). The first is
+`llm-provider-config`: it resolves the LLM provider, model, parameters and
+credential for a call (a global default plus a per-component override) over
+`litellm`, covering OpenAI, Gemini, Anthropic, Ollama and GitHub Copilot, with
+keys held in the OS keychain through `keyring` rather than a repo file or
+`.env` (`ARCHITECTURE.md` §4). It exposes a mountable settings router each
+subsystem UI embeds, and its first consumer is `controls-compliance-catalog`.
+See [LLM Provider Configuration](llm-provider-config.md).
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or
 dissolved (`ARCHITECTURE.md` §4):
@@ -238,8 +252,11 @@ every package under `platform/packages/` (lock check, pyright, mypy, pytest
 at 90% coverage) and is called from the pre-commit/pre-merge scripts, the
 pre-push hook, and CI, with Sonar/Codecov picking up its coverage. The repo
 root keeps its own project and lock for the flat `src/` until step 7 empties
-it. Step 8.1's remaining checklist item — building #44 outside-in (UI with
-stubs → stubbed API → backend) inside the package — is still open; see
+it. Step 8.1's checklist now has `packages/llm-provider-config/` created (ADR-0034)
+and `llm_client.py` refactored to depend on it, with the settings router built and
+mounted at `/settings/llm` (#76); building #44 outside-in (UI with stubs → stubbed
+API → backend) inside the package is still open, though its first piece, the
+control conversion playground, now exists (`ARCHITECTURE.md` §8.1); see
 [Controls & Compliance Catalog](controls-compliance-catalog.md) for the
 spec that package's own code will implement.
 
@@ -361,6 +378,7 @@ not re-ratified in a spec). No record is currently A\*.
 | 0031 | Policy/standard document conversion bypasses the PII anonymization gateway, scoped to that one ingestion path | A |
 | 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
 | 0033 | One value stream per outcome, organised by value recipient (not by role); streams take stages over rather than duplicate them | A |
+| 0034 | Shared cross-subsystem functionality gets its own `platform/packages/` sibling package; first instance `llm-provider-config` (global + per-component LLM settings, OS-keychain secrets, never `.env`) | A |
 
 The **P** rows (0017–0019) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -397,6 +415,19 @@ streams and 11 stages. Per-role streams, a single stream and duplicated stages
 were all considered and rejected
 (`docs/adr/0033-value-streams-per-outcome.md`). See
 [Architecture Model: Skeleton](architecture-model-skeleton.md).
+
+ADR-0034 (Accepted 2026-10-03) answers where functionality shared by several
+subsystem packages lives, and how LLM provider keys are stored. Each shared
+concern gets its own sibling package. Keys live in the OS keychain through `keyring`,
+and the settings file holds only a keyring entry reference. An implementation
+note amends the keychain-only rule with a labelled, logged environment-variable
+fallback for headless environments. `.env` is still not read
+(`docs/adr/0034-shared-packages-and-llm-provider-config.md` §Decision,
+§Implementation status). The ADR's own text and `ARCHITECTURE.md` §4 now list
+GitHub Copilot among the day-one providers; the model's
+`sub-llm-provider-config` element description still names only four
+(`architecture/model/elements.yaml`, not a source of this page).
+See [LLM Provider Configuration](llm-provider-config.md).
 
 ADR-0010 was **revised in place** on 2026-09-26 (GH #65) to cover a second
 kind of load-bearing content: the model now also carries the platform's own

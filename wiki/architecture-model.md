@@ -37,8 +37,8 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 379 elements, 790 relationships and 37 views. Of those,
-237 elements, 555 relationships and 33 views are the platform's own sections
+current merged model is 382 elements, 797 relationships and 37 views. Of those,
+240 elements, 562 relationships and 33 views are the platform's own sections
 A–C, E and F (below) plus the IT4IT touchpoint bridge. The rest (142 / 235 / 4) is
 the vendored IT4IT reference model, merged in at build time
 ([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
@@ -205,12 +205,25 @@ knowledge-graph read path"). This is the graph-level record of the
 library-not-HTTP decision in
 [ADR-0005](architecture.md).
 
-**Artifacts (code packages, `c4: ignore`).** Eight `Artifact` elements: today's
+**Shared package (ADR-0034).** `sub-llm-provider-config` ("LLM Provider
+Configuration") is a second non-subsystem `ApplicationComponent`: composed into
+`sys-platform`, with an `Association` to `ext-llm` ("configures provider/model &
+resolves credentials for calls to") and a `Realization` from its package Artifact.
+No `Serving` edge runs to its consumers, because consumption is a path dependency
+(ADR-0002) rather than a runtime service call, and the real provider calls stay on
+the existing `ext-llm` edges (`architecture/model/relationships.yaml` §"E. LLM
+provider configuration is a shared package, not a subsystem"). It appears in
+the Artefact Flow — Controls & OSCAL and Packaging views, and its package Artifact in
+the Packaging and Migration Sequence views (`architecture/model/views.yaml`).
+
+**Artifacts (code packages, `c4: ignore`).** Nine `Artifact` elements: today's
 flat `art-flat-src`, plus one per target package —
 `schema-visualizer-api`, `digital-twin-knowledge-graph`,
 `controls-compliance-catalog`, `reusable-architecture-library`,
-`architecture-governance`, `conformance-drift-assurance`, and
-`modelling-specification`. Each package-Artifact `Realization`-links to the
+`architecture-governance`, `conformance-drift-assurance`,
+`modelling-specification`, and the shared `llm-provider-config`
+(`art-pkg-llm-provider-config`, which the Transition and Target Plateaus both
+aggregate). Each package-Artifact `Realization`-links to the
 `ApplicationComponent` it ships; `art-flat-src` currently realizes both
 `sub-schema-visualizer` and `sub-twin`, since neither has been extracted yet
 (`architecture/model/relationships.yaml` §"E. Packages realise their
@@ -275,7 +288,12 @@ a third-party library gets its own `ext-*` element only when it performs a
 distinctive, named capability a modelled function depends on — `ext-trestle`
 qualifies (the Markdown↔OSCAL round-trip), but `xmlschema`/`defusedxml`
 (the visualiser's XML parsing/validation) stay unmodelled as internal
-plumbing behind an existing function. A deliberately underspecified
+plumbing behind an existing function. `sw-keyring` ("OS Credential Store (keyring)") is also modelled as
+SystemSoftware, hosted on `node-app-server` and aggregated by `plat-runtime-mvp`: it holds
+the LLM provider API keys for `sub-llm-provider-config` and, being single-user local
+scope (ADR-0024), is not carried to `node-hosted-cluster` — a hosted platform would swap
+it for a server-side secret store behind the same resolution interface
+(`architecture/model/elements.yaml` `sw-keyring`; ADR-0034). A deliberately underspecified
 `node-hosted-cluster` Node, plus a `plat-runtime-mvp` → `plat-runtime-target`
 Plateau pair and the `gap-runtime-hosted` Gap between them, record
 [ADR-0018](architecture.md)'s 2026-09-27 phasing decision (local compose
