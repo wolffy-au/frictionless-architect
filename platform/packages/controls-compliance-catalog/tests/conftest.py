@@ -9,7 +9,7 @@ from support.fake_llm import FakeCompletion
 
 
 @pytest.fixture(autouse=True)
-def configured_fake_llm(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[FakeCompletion]:
+def configured_fake_llm(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> FakeCompletion:
     config = save_settings(
         LlmSettings(default=ProviderSettings(provider=Provider.OLLAMA, model="test-model")),
         tmp_path / "llm.toml",
@@ -17,7 +17,7 @@ def configured_fake_llm(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iter
     monkeypatch.setenv("LLM_PROVIDER_CONFIG_PATH", str(config))
     fake = FakeCompletion()
     monkeypatch.setattr("controls_compliance_catalog.llm_client.completion", fake)
-    yield fake
+    return fake
 
 
 @pytest.fixture

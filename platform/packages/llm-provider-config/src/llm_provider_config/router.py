@@ -91,14 +91,14 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
         save_settings(LlmSettings(default=body, components=settings.components))
         return {"status": "saved"}
 
-    @router.put("/components/{component_id}")
+    @router.put("/components/{component_id}", responses={404: {"description": "Unknown component."}})
     def put_override(component_id: str, body: ProviderSettings) -> dict[str, str]:
         _require_component(known, component_id)
         settings = load_settings()
         save_settings(LlmSettings(default=settings.default, components={**settings.components, component_id: body}))
         return {"status": "saved"}
 
-    @router.delete("/components/{component_id}")
+    @router.delete("/components/{component_id}", responses={404: {"description": "Unknown component."}})
     def delete_override(component_id: str) -> dict[str, str]:
         _require_component(known, component_id)
         settings = load_settings()
@@ -108,7 +108,13 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
 
 
 def _key_routes(router: APIRouter) -> None:
-    @router.put("/keys/{provider}")
+    @router.put(
+        "/keys/{provider}",
+        responses={
+            422: {"description": "Provider uses no API key."},
+            503: {"description": "No usable OS keychain."},
+        },
+    )
     def put_key(provider: Provider, body: KeyBody) -> dict[str, str]:
         if provider in KEYLESS_PROVIDERS:
             raise HTTPException(status_code=422, detail=f"{provider.value} does not use an API key.")
@@ -122,7 +128,7 @@ def _key_routes(router: APIRouter) -> None:
             ) from exc
         return {"status": "stored"}
 
-    @router.delete("/keys/{provider}")
+    @router.delete("/keys/{provider}", responses={404: {"description": "No stored key to remove."}})
     def remove_key(provider: Provider) -> dict[str, str]:
         try:
             delete_api_key(provider.value)
@@ -132,7 +138,7 @@ def _key_routes(router: APIRouter) -> None:
 
 
 def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
-    @router.post("/test")
+    @router.post("/test", responses={404: {"description": "Unknown component."}})
     def test_connection(body: ConnectionTestBody) -> dict[str, Any]:
         target = body.component or next(iter(known), "")
         if body.component is not None:

@@ -1,4 +1,3 @@
-from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -15,11 +14,11 @@ OLLAMA = {"provider": "ollama", "model": "gemma4:12b", "params": {"temperature":
 
 
 @pytest.fixture
-def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, no_keyring: None) -> Iterator[TestClient]:
+def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, no_keyring: None) -> TestClient:
     monkeypatch.setenv("LLM_PROVIDER_CONFIG_PATH", str(tmp_path / "llm.toml"))
     app = FastAPI()
     app.include_router(create_settings_router([COMPONENT]))
-    yield TestClient(app)
+    return TestClient(app)
 
 
 def test_state_starts_empty(client: TestClient) -> None:

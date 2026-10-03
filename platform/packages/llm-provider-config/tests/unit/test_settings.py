@@ -21,13 +21,17 @@ def test_resolve_falls_back_to_the_global_default() -> None:
 
 
 def test_resolve_raises_when_nothing_applies() -> None:
+    settings = LlmSettings()
+
     with pytest.raises(NotConfiguredError, match="pkg.step"):
-        LlmSettings().resolve("pkg.step")
+        settings.resolve("pkg.step")
 
 
 def test_resolve_ignores_other_components_overrides_without_a_default() -> None:
+    settings = LlmSettings(components={"a": _OVERRIDE})
+
     with pytest.raises(NotConfiguredError):
-        LlmSettings(components={"a": _OVERRIDE}).resolve("b")
+        settings.resolve("b")
 
 
 def test_empty_model_is_rejected() -> None:

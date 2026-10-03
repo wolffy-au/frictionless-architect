@@ -53,8 +53,10 @@ def test_rejects_a_list_as_not_a_mapping() -> None:
 
 
 def test_rejects_a_control_missing_required_oscal_fields() -> None:
+    raw = json.dumps({"title": "Missing an id"})
+
     with pytest.raises(PlaygroundConversionError, match="not a valid OSCAL control or catalog"):
-        convert_oscal_control_to_markdown(json.dumps({"title": "Missing an id"}))
+        convert_oscal_control_to_markdown(raw)
 
 
 def test_converts_pasted_prose_to_a_candidate_markdown() -> None:
@@ -84,5 +86,7 @@ def test_reports_when_trestle_writes_no_markdown(monkeypatch: pytest.MonkeyPatch
         lambda self: None,
     )
 
+    raw = json.dumps(SINGLE_CONTROL)
+
     with pytest.raises(PlaygroundConversionError, match="produced no Markdown"):
-        convert_oscal_control_to_markdown(json.dumps(SINGLE_CONTROL))
+        convert_oscal_control_to_markdown(raw)

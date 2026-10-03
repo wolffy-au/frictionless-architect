@@ -71,14 +71,18 @@ def test_component_override_beats_the_default(fake_keyring: InMemoryKeyring) -> 
 
 
 def test_unconfigured_component_raises() -> None:
+    settings = LlmSettings()
+
     with pytest.raises(NotConfiguredError):
-        resolve_call("c", LlmSettings())
+        resolve_call("c", settings)
 
 
 @pytest.mark.usefixtures("no_keyring")
 def test_missing_credential_surfaces() -> None:
+    settings = LlmSettings(default=ProviderSettings(provider=Provider.OPENAI, model="gpt-4o"))
+
     with pytest.raises(MissingCredentialError):
-        resolve_call("c", LlmSettings(default=ProviderSettings(provider=Provider.OPENAI, model="gpt-4o")))
+        resolve_call("c", settings)
 
 
 def test_settings_are_loaded_from_the_config_file_when_not_passed(
