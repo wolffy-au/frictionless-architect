@@ -1,7 +1,6 @@
 import pathlib
 
 import pytest
-
 from controls_compliance_catalog.playground import prompts
 from controls_compliance_catalog.playground.convert import (
     PlaygroundConversionError,
