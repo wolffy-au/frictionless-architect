@@ -57,3 +57,25 @@ def step_candidate_error_contains(context: Context, expected: str) -> None:
     context.page.wait_for_selector("#candidate-error:not(:empty)")
     error_text = context.page.inner_text("#candidate-error")
     assert expected in error_text, f"expected {expected!r} in candidate error, got: {error_text!r}"
+
+
+@when("I open the LLM settings from the playground")
+def step_open_llm_settings(context: Context) -> None:
+    context.page.click("#llm-settings-link")
+    context.page.wait_for_selector("#default-form select")
+
+
+@when('I save the global default as provider "{provider}" and model "{model}"')
+def step_save_default(context: Context, provider: str, model: str) -> None:
+    form = "#default-form"
+    context.page.select_option(f"{form} select", provider)
+    context.page.fill(f"{form} input >> nth=0", model)
+    context.page.click(f"{form} button.primary")
+    context.page.wait_for_selector(f"{form} .msg.ok")
+
+
+@then('the settings page should list the component "{label}" as inheriting the default')
+def step_component_inherits(context: Context, label: str) -> None:
+    context.page.wait_for_selector("#components h2")
+    heading = context.page.inner_text("#components h2")
+    assert label in heading and "inherits default" in heading, heading

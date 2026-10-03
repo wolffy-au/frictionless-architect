@@ -251,6 +251,8 @@ _PAGE_TEMPLATE = """\
   <header>
     <div class="eyebrow">OSCAL conversion component</div>
     <h1>Control Conversion Playground</h1>
+    <p class="sub"><a href="/settings/llm" id="llm-settings-link">LLM settings</a> &mdash; choose the
+    provider and model behind the AI candidate.</p>
     <p class="sub">Paste a control's prose and its OSCAL catalog entry to run both conversion
     paths to Trestle Markdown and compare the AI candidate against the deterministic reference.</p>
     <div class="scope-note">
