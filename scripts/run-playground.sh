@@ -16,4 +16,4 @@ poetry run uvicorn controls_compliance_catalog.app:app \
   --reload \
   --app-dir packages/controls-compliance-catalog/src \
   --host 127.0.0.1 \
-  --port 8000
+  --port 8001
