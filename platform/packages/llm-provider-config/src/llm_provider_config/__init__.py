@@ -2,7 +2,31 @@
 
 Resolves the provider, model and credential for an LLM call from a global default
 plus optional per-component overrides, over `litellm`. Secrets come from the OS
-keychain via `keyring`. See ADR-0034.
+keychain via `keyring`, with a labelled environment-variable fallback. See ADR-0034.
 """
 
-__all__: list[str] = []
+from llm_provider_config.credentials import (
+    MissingCredentialError,
+    delete_api_key,
+    get_api_key,
+    set_api_key,
+)
+from llm_provider_config.resolve import ResolvedCall, resolve_call
+from llm_provider_config.settings import LlmSettings, NotConfiguredError, Provider, ProviderSettings
+from llm_provider_config.store import default_config_path, load_settings, save_settings
+
+__all__ = [
+    "LlmSettings",
+    "MissingCredentialError",
+    "NotConfiguredError",
+    "Provider",
+    "ProviderSettings",
+    "ResolvedCall",
+    "default_config_path",
+    "delete_api_key",
+    "get_api_key",
+    "load_settings",
+    "resolve_call",
+    "save_settings",
+    "set_api_key",
+]
