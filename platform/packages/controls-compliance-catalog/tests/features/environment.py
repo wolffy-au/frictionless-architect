@@ -63,11 +63,13 @@ def before_all(context: Context) -> None:
 
 
 def before_scenario(context: Context, _scenario: object) -> None:
-    context.page = context.browser.new_page()
+    context.browser_context = context.browser.new_context(permissions=["clipboard-read", "clipboard-write"])
+    context.page = context.browser_context.new_page()
 
 
 def after_scenario(context: Context, _scenario: object) -> None:
     context.page.close()
+    context.browser_context.close()
 
 
 def after_all(context: Context) -> None:

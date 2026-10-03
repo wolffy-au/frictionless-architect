@@ -79,3 +79,31 @@ def step_component_inherits(context: Context, label: str) -> None:
     context.page.wait_for_selector("#components h2")
     heading = context.page.inner_text("#components h2")
     assert label in heading and "inherits default" in heading, heading
+
+
+@then("the reference Markdown pane should show each line once, with no extra line breaks")
+def step_no_extra_breaks(context: Context) -> None:
+    context.page.wait_for_selector("#markdown-output .md-line")
+    rendered = context.page.inner_text("#markdown-output").rstrip("\n").split("\n")
+    rows = context.page.locator("#markdown-output .md-line").count()
+    assert len(rendered) == rows, f"{rows} rows rendered as {len(rendered)} lines"
+
+
+@when('I click the copy button for "{target}"')
+def step_click_copy(context: Context, target: str) -> None:
+    context.page.wait_for_selector("#markdown-output .md-line")
+    context.page.click(f'button.copy[data-copy-from="{target}"]')
+    context.page.wait_for_selector(f'button.copy[data-copy-from="{target}"]:has-text("Copied")')
+
+
+@then('the clipboard should contain "{expected}"')
+def step_clipboard_contains(context: Context, expected: str) -> None:
+    text = context.page.evaluate("navigator.clipboard.readText()")
+    assert expected in text, f"expected {expected!r} in clipboard, got {text!r}"
+
+
+@then("the clipboard should hold the reference Markdown without extra line breaks")
+def step_clipboard_matches_rows(context: Context) -> None:
+    text = context.page.evaluate("navigator.clipboard.readText()")
+    rows = context.page.locator("#markdown-output .md-line").count()
+    assert len(text.rstrip("\n").split("\n")) == rows, f"{rows} rows but clipboard has {text!r}"

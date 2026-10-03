@@ -154,6 +154,12 @@ _PAGE_TEMPLATE = """\
     padding: 3px 7px; border-radius: 5px; color: var(--text-muted);
     background: var(--surface-2); border: 1px solid var(--border);
   }
+  .head-actions { display: flex; align-items: center; gap: 8px; }
+  .copy {
+    font: inherit; font-size: 11.5px; padding: 3px 9px; border-radius: 5px; cursor: pointer;
+    color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border);
+  }
+  .copy:hover { color: var(--text); }
   textarea {
     border: 0; resize: vertical; width: 100%; min-height: 160px; padding: 14px 16px;
     font-size: 13.5px; line-height: 1.55; color: var(--text); background: transparent;
@@ -262,7 +268,7 @@ _PAGE_TEMPLATE = """\
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title"><span class="dot ai"></span>Control prose</div>
-        <span class="tag">free text</span>
+        <span class="head-actions"><span class="tag">free text</span><button class="copy" type="button" data-copy-from="prose-input">Copy</button></span>
       </div>
       <textarea id="prose-input" spellcheck="false">__SAMPLE_CONTROL_PROSE__</textarea>
       <div class="panel-foot">
@@ -274,7 +280,7 @@ _PAGE_TEMPLATE = """\
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title"><span class="dot ref"></span>OSCAL control / catalog YAML</div>
-        <span class="tag">YAML</span>
+        <span class="head-actions"><span class="tag">YAML</span><button class="copy" type="button" data-copy-from="oscal-input">Copy</button></span>
       </div>
       <textarea id="oscal-input" spellcheck="false">__SAMPLE_CONTROL_YAML__</textarea>
       <div class="panel-foot">
@@ -325,7 +331,7 @@ _PAGE_TEMPLATE = """\
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title"><span class="dot ai"></span>Candidate Markdown</div>
-          <span class="tag">from prose via AI</span>
+          <span class="head-actions"><span class="tag">from prose via AI</span><button class="copy" type="button" data-copy-from="candidate">Copy</button></span>
         </div>
         <div class="md-pane" id="candidate-markdown-output"></div>
         <div class="simnote">AI-generated: converted by the configured LLM provider (see llm-provider-config), so the output can differ from Trestle's exact formatting.</div>
@@ -333,7 +339,7 @@ _PAGE_TEMPLATE = """\
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title"><span class="dot ref"></span>Reference Markdown</div>
-          <span class="tag">from OSCAL via Trestle</span>
+          <span class="head-actions"><span class="tag">from OSCAL via Trestle</span><button class="copy" type="button" data-copy-from="reference">Copy</button></span>
         </div>
         <div class="md-pane" id="markdown-output"></div>
         <div class="simnote">Deterministic: regenerated directly from the pasted OSCAL YAML via compliance-trestle.</div>
@@ -392,7 +398,12 @@ _PAGE_TEMPLATE = """\
     el.innerHTML = rows.map(r => {
       const cls = highlight && r.type !== "same" ? (" " + r.type) : "";
       return '<span class="md-line' + cls + '">' + (escapeHtml(r.text) || "&nbsp;") + "</span>";
-    }).join("\\n");
+    }).join("");  // .md-line is display:block, so a literal "\\n" here would double every break
+  }
+
+  // Split into display rows, dropping the single trailing newline so no empty last row is shown.
+  function toLines(text) {
+    return text.replace(/\\n$/, "").split("\\n");
   }
 
   function renderPlain(el, text) {
@@ -400,7 +411,7 @@ _PAGE_TEMPLATE = """\
       el.textContent = "";
       return;
     }
-    renderRows(el, text.split("\\n").map(t => ({ text: t, type: "same" })), false);
+    renderRows(el, toLines(text).map(t => ({ text: t, type: "same" })), false);
   }
 
   const refPane = document.getElementById("markdown-output");
@@ -414,7 +425,7 @@ _PAGE_TEMPLATE = """\
 
   function refreshOutputs() {
     if (highlightOn && lastRefText != null && lastCandText != null) {
-      const { refOut, candOut } = diffLines(lastRefText.split("\\n"), lastCandText.split("\\n"));
+      const { refOut, candOut } = diffLines(toLines(lastRefText), toLines(lastCandText));
       renderRows(refPane, refOut, true);
       renderRows(candPane, candOut, true);
     } else {
@@ -428,6 +439,33 @@ _PAGE_TEMPLATE = """\
     diffToggle.classList.toggle("on", highlightOn);
     diffLabel.textContent = highlightOn ? "Highlight differences" : "Show plain text";
     refreshOutputs();
+  });
+
+  const copySources = {
+    "prose-input": () => document.getElementById("prose-input").value,
+    "oscal-input": () => document.getElementById("oscal-input").value,
+    "candidate": () => lastCandText,
+    "reference": () => lastRefText,
+  };
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (_) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+  }
+  document.querySelectorAll("button.copy").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const text = copySources[btn.dataset.copyFrom]();
+      if (!text) { btn.textContent = "Nothing to copy"; }
+      else { await copyText(text); btn.textContent = "Copied"; }
+      setTimeout(() => { btn.textContent = "Copy"; }, 1200);
+    });
   });
 
   function setStatus(el, side, state) {
