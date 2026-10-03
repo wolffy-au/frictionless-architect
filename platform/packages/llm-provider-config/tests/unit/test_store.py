@@ -64,3 +64,15 @@ def test_save_and_load_default_to_the_env_path(monkeypatch: pytest.MonkeyPatch, 
     save_settings(settings)
 
     assert load_settings() == settings
+
+
+def test_save_survives_a_filesystem_that_refuses_chmod(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def refuse(self: Path, mode: int) -> None:
+        raise PermissionError("chmod not permitted")
+
+    monkeypatch.setattr(Path, "chmod", refuse)
+    target = tmp_path / "llm.toml"
+
+    save_settings(LlmSettings(), target)
+
+    assert target.exists()

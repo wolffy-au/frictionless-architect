@@ -68,3 +68,21 @@ def test_converts_pasted_prose_to_a_candidate_markdown() -> None:
 def test_rejects_empty_prose_with_a_clear_error() -> None:
     with pytest.raises(PlaygroundConversionError, match="Cannot convert empty prose"):
         convert_control_prose_to_markdown_candidate("   ")
+
+
+def test_converts_a_catalog_made_only_of_groups() -> None:
+    catalog = {"groups": [{"id": "ac", "title": "Access Control", "controls": [SINGLE_CONTROL]}]}
+
+    markdown = convert_oscal_control_to_markdown(json.dumps(catalog))
+
+    assert "Account Management" in markdown
+
+
+def test_reports_when_trestle_writes_no_markdown(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "controls_compliance_catalog.playground.convert.CatalogAPI.write_catalog_as_markdown",
+        lambda self: None,
+    )
+
+    with pytest.raises(PlaygroundConversionError, match="produced no Markdown"):
+        convert_oscal_control_to_markdown(json.dumps(SINGLE_CONTROL))
