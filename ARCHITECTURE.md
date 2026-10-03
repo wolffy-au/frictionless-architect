@@ -188,8 +188,9 @@ package, built and gated the same way but carrying no subsystem UI obligation
   per-component override, covering OpenAI, Google Gemini, Anthropic Claude, Ollama and GitHub Copilot via
   `litellm`. Credentials are never written to a repo file or `.env` — they live in the
   OS's native credential store via `keyring` (macOS Keychain / Windows Credential
-  Manager / Linux Secret Service), consistent with the single-user local MVP scope
-  (ADR-0024). Exposes a mountable settings page/router each subsystem UI embeds, not a
+  Manager / Linux Secret Service), falling back to the provider's environment variable
+  (with a logged warning) where there is no keychain, e.g. CI or headless hosts;
+  consistent with the single-user local MVP scope (ADR-0024). Exposes a mountable settings page/router each subsystem UI embeds, not a
   standalone dashboard (ADR-0020). First consumer: `controls-compliance-catalog`'s
   `llm_client.py`.
 

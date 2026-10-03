@@ -948,7 +948,8 @@
     (global default, optional per-component override), over OpenAI, Google
     Gemini, Anthropic Claude, GitHub Copilot and Ollama via litellm; Ollama and
     Copilot are keyless (Copilot signs in by device flow); other credentials are
-    held in the OS keychain, never a repo file (ADR-0034). Not one of the six
+    held in the OS keychain, never a repo file, falling back to the provider's
+    environment variable where there is no keychain (ADR-0034). Not one of the six
     subsystems and not a subsystem UI (ADR-0020) — a shared package other
     subsystem packages depend on, first consumed by the Controls &
     Compliance Catalog.
