@@ -32,3 +32,7 @@ Feature: Control conversion playground - OSCAL to Trestle Markdown
       """
     And I click "Convert to Markdown"
     Then the playground should show an error containing "valid JSON"
+
+  Scenario: The reference Markdown is populated as soon as the playground opens
+    Given the control conversion playground is open
+    Then the Trestle Markdown output should contain "Account Management"

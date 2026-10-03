@@ -440,7 +440,9 @@ _PAGE_TEMPLATE = """\
 
   const refButton = document.getElementById("convert-button");
   const refStatus = document.getElementById("reference-status");
-  refButton.addEventListener("click", async () => {
+  let refRun = 0;
+  async function runReference() {
+    const myRun = ++refRun;
     const errorEl = document.getElementById("playground-error");
     errorEl.textContent = "";
     refButton.disabled = true;
@@ -453,6 +455,7 @@ _PAGE_TEMPLATE = """\
         body: JSON.stringify({ oscal_json: oscalJson }),
       });
       const body = await response.json();
+      if (myRun !== refRun) return; // a newer run superseded this one
       if (response.ok) {
         lastRefText = body.markdown;
         setStatus(refStatus, "ref", "converted");
@@ -462,10 +465,20 @@ _PAGE_TEMPLATE = """\
         setStatus(refStatus, "ref", "error");
       }
     } finally {
-      refButton.disabled = false;
-      refreshOutputs();
+      if (myRun === refRun) {
+        refButton.disabled = false;
+        refreshOutputs();
+      }
     }
+  }
+  refButton.addEventListener("click", runReference);
+  // Trestle's conversion is deterministic and instant, so run it on load and as the OSCAL is edited.
+  let refTimer = null;
+  document.getElementById("oscal-json").addEventListener("input", () => {
+    clearTimeout(refTimer);
+    refTimer = setTimeout(runReference, 400);
   });
+  runReference();
 
   const candButton = document.getElementById("convert-candidate-button");
   const candStatus = document.getElementById("candidate-status");
