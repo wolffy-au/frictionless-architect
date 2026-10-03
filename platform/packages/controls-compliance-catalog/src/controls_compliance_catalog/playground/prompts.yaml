@@ -16,6 +16,11 @@ prose_to_trestle_markdown:
       line, then the statement prose.
     - Keep the prose wording verbatim. Do not summarise, correct or add to it.
       Leave bracketed [Assignment: ...] and [Selection: ...] text exactly as written.
+    - An enhancement ID such as "IA-3(3)" becomes "ia-3.3".
+    - If the statement has lettered parts "(a)", "(b)" and so on, write each as a
+      list item "- \[a.\] <text>" separated by a blank line. Indent nested
+      numbered parts by two spaces as "- \[1.\] <text>". Otherwise write the
+      prose as a single paragraph.
 
     Example input:
     IA-3 DEVICE IDENTIFICATION AND AUTHENTICATION

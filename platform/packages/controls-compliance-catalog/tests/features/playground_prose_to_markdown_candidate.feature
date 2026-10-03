@@ -25,3 +25,9 @@ Feature: Control conversion playground - prose to candidate Markdown (AI path)
     Given the control conversion playground is open
     When I click "Convert via AI (candidate)"
     Then the changed words should be highlighted in both Markdown panes
+
+  Scenario: Scrolling one Markdown pane scrolls the other
+    Given the control conversion playground is open
+    When I convert a long control in both paths
+    And I scroll the candidate Markdown pane to the bottom
+    Then the reference Markdown pane should have scrolled too

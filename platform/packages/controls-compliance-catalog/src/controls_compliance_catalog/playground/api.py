@@ -154,6 +154,7 @@ _PAGE_TEMPLATE = """\
     padding: 3px 7px; border-radius: 5px; color: var(--text-muted);
     background: var(--surface-2); border: 1px solid var(--border);
   }
+  .sync-toggle { font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; cursor: pointer; }
   .head-actions { display: flex; align-items: center; gap: 8px; }
   .copy {
     font: inherit; font-size: 11.5px; padding: 3px 9px; border-radius: 5px; cursor: pointer;
@@ -322,9 +323,12 @@ _PAGE_TEMPLATE = """\
   <section class="outputs-section" style="display:flex; flex-direction:column; gap:12px;">
     <div class="outputs-head">
       <h2>Trestle Markdown, both paths</h2>
-      <div class="toggle on" id="diff-toggle">
-        <span class="switch"><span class="knob"></span></span>
-        <span id="diff-toggle-label">Highlight differences</span>
+      <div style="display:flex; align-items:center; gap:18px;">
+        <label class="sync-toggle"><input type="checkbox" id="sync-scroll" checked> Sync scrolling</label>
+        <div class="toggle on" id="diff-toggle">
+          <span class="switch"><span class="knob"></span></span>
+          <span id="diff-toggle-label">Highlight differences</span>
+        </div>
       </div>
     </div>
     <div class="legend">
@@ -487,6 +491,22 @@ _PAGE_TEMPLATE = """\
     diffLabel.textContent = highlightOn ? "Highlight differences" : "Show plain text";
     refreshOutputs();
   });
+
+  // Keep the two Markdown panes level by scroll fraction (they can differ in length).
+  const syncBox = document.getElementById("sync-scroll");
+  let syncing = false;
+  function syncFrom(source, target) {
+    source.addEventListener("scroll", () => {
+      if (syncing || !syncBox.checked) return;
+      const span = source.scrollHeight - source.clientHeight;
+      const targetSpan = target.scrollHeight - target.clientHeight;
+      syncing = true;  // the target's own scroll event fires this frame; ignore it
+      target.scrollTop = span > 0 ? (source.scrollTop / span) * targetSpan : 0;
+      requestAnimationFrame(() => { syncing = false; });
+    });
+  }
+  syncFrom(refPane, candPane);
+  syncFrom(candPane, refPane);
 
   const copySources = {
     "prose-input": () => document.getElementById("prose-input").value,

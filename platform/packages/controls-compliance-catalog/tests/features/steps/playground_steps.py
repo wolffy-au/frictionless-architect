@@ -118,3 +118,35 @@ def step_word_level_highlight(context: Context) -> None:
     unchanged = context.page.inner_text("#candidate-markdown-output .md-line.paired")
     highlighted = context.page.locator("#candidate-markdown-output .md-line.paired .w.add").all_inner_texts()
     assert any(word not in highlighted for word in unchanged.split()), unchanged
+
+
+@when("I convert a long control in both paths")
+def step_convert_long_control(context: Context) -> None:
+    words = " ".join(f"word{i}" for i in range(600))
+    context.page.fill("#prose-input", f"AC-2 Long Control: {words}")
+    context.page.fill(
+        "#oscal-input",
+        f"id: ac-2\ntitle: Long Control\nparts:\n  - id: ac-2_smt\n    name: statement\n    prose: {words}\n",
+    )
+    context.page.click("#convert-button")
+    context.page.click("#convert-candidate-button")
+    context.page.wait_for_function(
+        "document.querySelector('#candidate-markdown-output').scrollHeight >"
+        " document.querySelector('#candidate-markdown-output').clientHeight"
+    )
+    context.page.wait_for_function(
+        "document.querySelector('#markdown-output').scrollHeight >"
+        " document.querySelector('#markdown-output').clientHeight"
+    )
+
+
+@when("I scroll the candidate Markdown pane to the bottom")
+def step_scroll_candidate(context: Context) -> None:
+    context.page.evaluate(
+        "const p = document.querySelector('#candidate-markdown-output'); p.scrollTop = p.scrollHeight;"
+    )
+
+
+@then("the reference Markdown pane should have scrolled too")
+def step_reference_scrolled(context: Context) -> None:
+    context.page.wait_for_function("document.querySelector('#markdown-output').scrollTop > 0")
