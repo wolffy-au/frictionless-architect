@@ -123,11 +123,16 @@ frictionless-architect/                 # ROOT — governance & orchestration
         ├── architecture-governance/         # subsystem 4
         ├── conformance-drift-assurance/     # subsystem 5
         ├── modelling-specification/         # subsystem 6
-        └── schema-visualizer-api/           # from today's src/, after step 4 (§8)
+        ├── schema-visualizer-api/           # from today's src/, after step 4 (§8)
+        └── llm-provider-config/             # shared, not a subsystem (ADR-0034)
 ```
 
 Each `packages/<name>/` carries its own `pyproject.toml`, `src/`, `tests/`, `README.md`,
-and `specs/` (per-package feature specs — see §6).
+and `specs/` (per-package feature specs — see §6). Not every package is one of the six
+subsystems: a capability needed by more than one of them gets its own sibling package
+instead of being duplicated per subsystem or dumped in a catch-all `common`
+([ADR-0034](docs/adr/0034-shared-packages-and-llm-provider-config.md)); the first
+instance is `llm-provider-config` (§4).
 
 ### 3.3 Target diagram
 
@@ -173,6 +178,20 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
   own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
   formerly FR-018); threat modelling as an output is subsystem 2.
 - **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
+
+**Shared packages (not subsystems)** — a capability needed by more than one subsystem
+package, built and gated the same way but carrying no subsystem UI obligation
+([ADR-0034](docs/adr/0034-shared-packages-and-llm-provider-config.md)):
+
+- **LLM Provider Configuration** (`packages/llm-provider-config`) — resolves which LLM
+  provider/model/params and credential a call uses: a global default plus an optional
+  per-component override, covering OpenAI, Google Gemini, Anthropic Claude and Ollama via
+  `litellm`. Credentials are never written to a repo file or `.env` — they live in the
+  OS's native credential store via `keyring` (macOS Keychain / Windows Credential
+  Manager / Linux Secret Service), consistent with the single-user local MVP scope
+  (ADR-0024). Exposes a mountable settings page/router each subsystem UI embeds, not a
+  standalone dashboard (ADR-0020). First consumer: `controls-compliance-catalog`'s
+  `llm_client.py`.
 
 **Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
 
@@ -296,6 +315,8 @@ Checklist:
   `specs/001-oscal-ai-conversion` (it planned an `/oscal` router in the flat `src/`,
   ADR-0005 → Implementation status 2026-09-24 and 2026-09-28).
 - [ ] Build #44 outside-in inside the package: UI with stubs → stubbed API → backend.
+- [ ] Create `packages/llm-provider-config/` (ADR-0034) and refactor `llm_client.py`'s
+  single-provider stub to depend on it for provider/model/credential resolution (#76).
 
 ### 8.2 Visualiser API/UI split (step 7)
 

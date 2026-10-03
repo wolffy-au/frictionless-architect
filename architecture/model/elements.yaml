@@ -940,6 +940,17 @@
     (/schema-payload, /refresh, /status). Not one of the six subsystems;
     extracted after the knowledge-graph scaffold (ADR-0005), reading the
     knowledge graph only through the Digital Twin & Knowledge Graph read path.
+- type: ApplicationComponent
+  id: sub-llm-provider-config
+  name: LLM Provider Configuration
+  desc: >-
+    Resolves which LLM provider/model/params and credential a call uses
+    (global default, optional per-component override), over OpenAI, Google
+    Gemini, Anthropic Claude and Ollama via litellm; credentials are held in
+    the OS keychain, never a repo file (ADR-0034). Not one of the six
+    subsystems and not a subsystem UI (ADR-0020) — a shared package other
+    subsystem packages depend on, first consumed by the Controls &
+    Compliance Catalog.
 - type: ApplicationInterface
   id: if-twin-read-path
   name: Knowledge Graph Read Path
@@ -1321,6 +1332,14 @@
   id: art-pkg-modelling-specification
   name: packages/modelling-specification
   props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-llm-provider-config
+  name: packages/llm-provider-config
+  desc: >-
+    Shared package (ADR-0034), not one of the six subsystem packages above —
+    a sibling under platform/packages/ that subsystem packages take as a
+    path dependency.
+  props: {c4: ignore}
 
 # --- E. Work Packages (ARCHITECTURE.md §8, one per step) ---
 - type: WorkPackage
@@ -1507,6 +1526,17 @@
     node-app-server's `orchestration/compose/` stack through the MVP
     milestone; moves to node-hosted-cluster once target architecture is
     built (ADR-0018, updated 2026-09-27).
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-keyring
+  name: OS Credential Store (keyring)
+  desc: >-
+    OS-native credential store — macOS Keychain, Windows Credential Manager,
+    or Linux Secret Service — accessed through the `keyring` library. Holds
+    LLM provider API keys for sub-llm-provider-config; never a repo file or
+    `.env` (ADR-0034). Single-user-local scope only (ADR-0024) — not moved to
+    node-hosted-cluster; a future multi-user/hosted platform swaps this for a
+    server-side secret store behind the same resolution interface instead.
   props: {c4: ignore}
 - type: Node
   id: node-hosted-cluster
