@@ -4,7 +4,8 @@
   - Added principle: XI. Concise, Non-Duplicative Spec Artefacts (incl. embedded PlantUML). Motivated by GH #95, where
     the spec, data model, research, contracts and quickstart restated the same rules and were
     hard to review.
-  - Modified sections: Quality Gates (adds a concise-artefacts check).
+  - Modified sections: Principle X (plans state their model impact); Quality Gates (adds a
+    concise-artefacts check).
   - Templates requiring updates: none; AGENTS.md carries a pointer instead of a copy.
   - Follow-up TODOs: None
 
@@ -188,6 +189,10 @@ contradicts a recorded decision is a defect, not a difference of opinion.
   - An Accepted ADR must be reflected in `ARCHITECTURE.md` and `architecture/model/` in the same PR. When that is not
     possible, open a tracking issue and mark the ADR **A\*** (accepted, not yet reflected) in the `docs/adr/README.md`
     index until it is.
+  - Every plan states its **model impact**: the element, relationship and view ids it adds, changes
+    or retires in `architecture/model/`, or "none". Spec text may name existing ids it serves but
+    does not describe model changes. Tasks include the model edits, `validate.py` and diagram
+    regeneration.
   - Diagrams are generated from `architecture/model/`, never hand-edited. The `wiki/` is derived and never a source.
   - Conflicts between documents are resolved as set out in "Resolving Conflicts Between Documents".
 - **Rationale**: Stale narrative documents mislead anyone who reads them as the current source of truth. Recording
