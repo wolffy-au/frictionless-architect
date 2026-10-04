@@ -1,5 +1,14 @@
 <!--
-  Sync Impact Report (v1.3.0, 2026-09-26):
+  Sync Impact Report (v1.4.0, 2026-10-04):
+  - Version change: v1.3.0 -> v1.4.0
+  - Added principle: XI. Concise, Non-Duplicative Spec Artefacts. Motivated by GH #95, where
+    the spec, data model, research, contracts and quickstart restated the same rules and were
+    hard to review.
+  - Modified sections: Quality Gates (adds a concise-artefacts check).
+  - Templates requiring updates: none; AGENTS.md carries a pointer instead of a copy.
+  - Follow-up TODOs: None
+
+  Previous report (v1.3.0, 2026-09-26):
   - Version change: v1.2.0 -> v1.3.0
   - Modified sections: Detailed References → "Requirements — why".
   - Removed: PROJECT_SPECIFICATION.md is retired. Every section already had a current
@@ -184,6 +193,25 @@ contradicts a recorded decision is a defect, not a difference of opinion.
 - **Rationale**: Stale narrative documents mislead anyone who reads them as the current source of truth. Recording
   decisions once and making every other document follow them keeps the architecture explainable and auditable.
 
+### XI. Concise, Non-Duplicative Spec Artefacts (Say It Once)
+
+Every `speckit-*` artefact is as short as it can be while staying complete, and each fact
+lives in exactly one artefact. Reviewers read these documents; length and repetition make
+them harder to review and let copies drift when a design changes.
+
+- **Rules**:
+  - `spec.md` states what and why only: a mapping or summary table, short user stories,
+    numbered requirements. No mechanics.
+  - `data-model.md` is the single home for ids, relationships, rules and lifecycle.
+  - `research.md` is a decision table (decision, why, rejected). `contracts/` and
+    `quickstart.md` give one example and the commands, then link to `data-model.md`.
+  - `plan.md` summarises in a paragraph and links; it never pastes tables from other artefacts.
+  - When a rule changes, edit it in its one home and replace any restated copy with a link.
+    Prefer editing existing artefacts to regenerating them; commit a snapshot before any
+    regeneration so nothing is lost.
+- **Rationale**: One home per fact keeps specs reviewable and consistent, and applies
+  Principle I's DRY and Principle X's single source of truth to the specs themselves.
+
 ## Development Workflow
 
 Our workflow is designed to ensure that every change is intentional and verified. It follows a sequence of:
@@ -209,6 +237,7 @@ Before any feature is considered "Done," it must pass these gates:
 * **Commit Messages**: Every commit follows Conventional Commits, enforced by commitizen (ADR-0025).
 * **Documentation & Decisions**: READMEs, specs, and inline comments are updated; load-bearing choices have an ADR;
   `ARCHITECTURE.md` and `architecture/model/` agree with the ADR log (Principle X).
+* **Concise Artefacts**: Spec artefacts follow Principle XI: no restated content, each fact in its one home.
 * **Constitution Check**: Implementation must be reviewed against these core principles.
 
 ## Governance
@@ -221,4 +250,4 @@ This constitution is the supreme guide for SpecKit development.
   added here with the next free number, not in a separate document.
 - **Compliance**: All contributors must adhere to these principles; deviations must be justified in the `plan.md` complexity tracking section.
 
-**Version**: 1.3.0 | **Ratified**: 2026-02-18 | **Last Amended**: 2026-09-26
+**Version**: 1.4.0 | **Ratified**: 2026-02-18 | **Last Amended**: 2026-10-04
