@@ -117,7 +117,7 @@ is the lower-cased, hyphenated milestone title plus its number, e.g. milestone 1
 `policy-to-oscal-mvp` gives `plat-policy-to-oscal-mvp-1`. The number keeps it unique and
 anchors identity; the slug keeps it readable. Renaming the milestone changes the slug, so
 hand-authored references fail the build with an unknown id and are fixed in the same
-commit. A Work Package id is `wp-<title-slug>-gh-<issue#>`: the issue title lower-cased, hyphenated and cut at a word boundary to at most 40 characters, then `-gh-` and the issue number. The number guarantees uniqueness, so truncation never collides. As with milestones, retitling an issue changes its id and breaks hand-authored references until they are updated. `desc` carries the milestone `description` for Plateaus; issue bodies are
+commit. A Work Package id is `wp-<title-slug>-gh-<issue#>`: the issue title lower-cased, hyphenated and cut at a word boundary to at most 40 characters (a single word longer than 40 is cut at 40), then `-gh-` and the issue number. The number guarantees uniqueness, so truncation never collides. As with milestones, retitling an issue changes its id and breaks hand-authored references until they are updated. `desc` carries the milestone `description` for Plateaus; issue bodies are
 never imported. A Work Package may be open (planned) or closed (done); `gh-state` records
 which.
 
@@ -170,8 +170,11 @@ object, the build fails with an unknown id, which is the intended signal.
 | A and B in different milestones N, M | one `Triggering` `plat-<slug>-N → plat-<slug>-M` (de-duplicated, no self-loops) |
 | Milestone description names an existing `bfn-*` id | `Realization` `plat-<slug>-M → bfn-…` |
 
-Derivation rule: a link is skipped when a chain already implies it. There is no Work Package →
-Plateau link at all: the Plateau is reached through a Deliverable.
+Derivation rule: a link is skipped when a chain already implies it, judged only against the links
+the importer emits, never hand-authored ones, so output stays a function of GitHub state. A duplicate
+against a hand-authored link is caught by `check_derived.py` over the layer's ids; remove the
+hand-authored link. There is no Work Package → Plateau link at all: the Plateau is reached through a
+Deliverable.
 
 Dropped: any link with an out-of-scope end. A milestone not in the fetched set drops its
 issues (guards a race between the two fetches).
