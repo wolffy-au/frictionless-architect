@@ -33,8 +33,13 @@ Run these, one call each: 'gh api repos/{owner}/{repo}/dependabot/alerts'; 'poet
 'poetry run pip-audit -r $PLATFORM_REQS --no-deps --disable-pip' (platform/); 'poetry run snyk --version'; then, if snyk is \
 present, 'poetry run snyk test --include-ignores' (root), 'poetry run snyk test --file=platform/poetry.lock --package-manager=poetry \
 --include-ignores' (platform/) and 'poetry run snyk code test --include-ignores' (first-party code). Open findings are \
-the vulnerabilities; list every ignored finding separately with its ID, package/file, severity and ignore reason and expiry \
-if shown, so the ignores can be reviewed. Report which dependency set and scanner each finding came from. Do not read .secrets/, run poetry add/lock/update, or install anything. Instead of remediating, give the Output \
+the vulnerabilities; list every ignored finding separately with its ID, package/file, severity and ignore reason and expiry, \
+so the ignores can be reviewed. The CLI does not print policy-file reasons or expiries: Read '.snyk' and 'platform/.snyk' and \
+take them from there (flag any expiring within 14 days or already expired), and list the '.snyk' path excludes too. Only \
+ignores absent from those files are Snyk-UI-managed; say 'not shown' for those. Known, expected caveats: pip-audit skips the editable local packages (controls-compliance-catalog, llm-provider-config) because \
+they are not on PyPI, so note it in one line without treating it as a gap; Snyk may warn about missing lockfile metadata for \
+jaraco.classes/context/functools (keyring dependencies, which ARE in the platform graph: Snyk cannot match the dotted names to \
+the lock's dashed ones), so say Snyk cannot check them and pip-audit covers them. Report which dependency set and scanner each finding came from. Do not read .secrets/, run poetry add/lock/update, or install anything. Instead of remediating, give the Output \
 advisory table (advisory ID | package/file | severity | current -> fixed | recommended action) plus the unresolved \
 list, under '## Findings'."
 
