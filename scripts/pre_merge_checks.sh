@@ -29,6 +29,11 @@ scripts/platform_checks.sh --update
 
 # --- Security Checks ---
 echo "Running Snyk security scan..."
+# SNYK_TOKEN lives in the gitignored .env (also in .secrets/); load it if not already exported.
+if [ -z "${SNYK_TOKEN:-}" ] && [ -f .env ]; then
+  SNYK_TOKEN="$(grep -m1 '^SNYK_TOKEN=' .env | cut -d= -f2- | tr -d "\"'")"
+  export SNYK_TOKEN
+fi
 poetry run snyk auth "${SNYK_TOKEN:?SNYK_TOKEN must be set to run the pre-merge Snyk scan}"
 poetry run snyk test --package-manager=poetry --org=wolffy-au
 poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ignores

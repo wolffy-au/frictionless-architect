@@ -364,6 +364,12 @@ snyk auth <token>
 snyk test --command=python3
 ```
 
+The token is `SNYK_TOKEN` in the gitignored `.env` (also kept in `.secrets/`) — never commit it.
+`scripts/pre_merge_checks.sh` loads it from `.env` when it isn't already exported, then runs
+`snyk test` on the root `poetry.lock`, `snyk code test`, and `snyk test` on
+`platform/poetry.lock`; locally these are **blocking**. In CI (`.github/workflows/ci.yml`)
+the same three scans run but are `continue-on-error` (advisory).
+
 ## Specification and Requirements Management
 
 Experience from implementing feature 002-neo4j-schema-ui has revealed critical practices for managing specifications, plans, and tasks effectively:

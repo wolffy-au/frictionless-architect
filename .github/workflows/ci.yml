@@ -106,6 +106,7 @@ jobs:
 
       - name: Authenticate Snyk
         if: github.actor != 'dependabot[bot]'
+        continue-on-error: true
         run: poetry run snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Scan Test
@@ -113,15 +114,18 @@ jobs:
         # single project, not --all-projects), so it never walks third_party/
         # — --exclude is invalid here (SNYK-CLI-0004: only valid with
         # --all-projects/--yarn-workspaces).
+        # continue-on-error: Snyk is advisory in CI (local pre_merge_checks.sh
+        # remains the blocking gate); findings still show as a failed-but-ignored step.
         if: github.actor != 'dependabot[bot]'
+        continue-on-error: true
         run: poetry run snyk test --package-manager=poetry --severity-threshold=medium --org=wolffy-au
 
       - name: Snyk Scan Test (platform/)
         # platform/ carries its own poetry.lock, so it is a separate project.
         # continue-on-error: this doubled our Snyk test volume per run and the
         # org's test quota is currently exhausted (SNYK-CLI-0000 "Enrichment of
-        # Test Failed" / "Code test limit reached"). Non-blocking until the
-        # quota issue is resolved — see #71 follow-up.
+        # Test Failed" / "Code test limit reached"). All Snyk steps in CI are
+        # now non-blocking; the platform/poetry.lock scan stays so it is still reported.
         if: github.actor != 'dependabot[bot]'
         working-directory: platform
         continue-on-error: true
@@ -135,7 +139,9 @@ jobs:
         # reference content we don't own and can't fix here — is excluded
         # via .dcignore instead (verified locally: --include-ignores with
         # .dcignore in place surfaces only first-party findings).
+        # continue-on-error: advisory in CI, as for the dependency scans above.
         if: github.actor != 'dependabot[bot]'
+        continue-on-error: true
         run: poetry run snyk code test --package-manager=poetry --severity-threshold=medium --org=wolffy-au --include-ignores
 
   sonar:
