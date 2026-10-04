@@ -8,6 +8,15 @@
 
 **Input**: User description: "Map GitHub issues and milestones into the canonical ArchiMate model under architecture/model/, representing them as Implementation & Migration layer elements — but milestone-first and user-facing, not a raw dump of every GitHub issue."
 
+## Clarifications
+
+### Session 2026-10-04
+
+- Q: What should the second GitHub milestone (multi-user collaboration) be titled? → A: `multi-user-collaboration`, giving the Plateau id `plat-multi-user-collaboration-2`.
+- Q: Should every Work Package of a milestone realize the release's Deliverable, or only closed ones? → A: Only closed ones, and no Work Package realizes a Plateau directly. Open Work Packages realize a per-milestone planned Deliverable, which realizes the Plateau.
+- Q: If several releases name the same milestone's Plateau, which release Deliverable does a closed Work Package realize? → A: The first of those releases published after the issue was closed. If there is none yet, the planned Deliverable.
+- Q: Should a GitHub pre-release count as a published release? → A: No. Pre-releases are skipped, as drafts are; only full published releases become Deliverables.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - See milestones as Plateaus (Priority: P1)
@@ -18,7 +27,7 @@ deliberately-scoped past, current, and planned states appear on the model's
 Implementation & Migration views alongside the rest of the architecture.
 
 **Why this priority**: Plateaus are the backbone the rest of this mapping hangs
-off: Work Packages and release Deliverables both realize a Plateau. Without
+off: Deliverables realize a Plateau, and Work Packages realize Deliverables. Without
 them nothing else has anywhere to attach.
 
 **Independent Test**: Run the import against this repository (which has one
@@ -33,8 +42,9 @@ appears as exactly one Plateau element, with no manual YAML editing.
 2. **Given** a milestone description that names an existing business function
    (an identifier beginning `bfn-`), **When** the import runs, **Then** the
    Plateau realizes that business function.
-3. **Given** a milestone description that names no business function, **When**
-   the import runs, **Then** the Plateau is imported without that relationship.
+3. **Given** a milestone description that names no business function, or names
+   an identifier that does not match an existing one, **When** the import runs,
+   **Then** the Plateau is imported without that relationship.
 4. **Given** the import has already run once, **When** it is run again with no
    new GitHub activity, **Then** the Plateaus and their identifiers are
    unchanged.
@@ -44,33 +54,39 @@ appears as exactly one Plateau element, with no manual YAML editing.
 ### User Story 2 - See milestone-assigned issues as Work Packages (Priority: P1)
 
 As a platform architect, I want every issue that is itself assigned to a
-milestone represented as a Work Package realizing that milestone's Plateau,
-whether it is still planned (open) or already done (closed), so that both the
-plan and the historical record toward a given increment are visible in the
-model.
+milestone represented as a Work Package that contributes to that milestone's
+Plateau through a Deliverable, whether it is still planned (open) or already
+done (closed), so that both the plan and the historical record toward a given
+increment are visible in the model.
 
 **Why this priority**: Work Packages are the leaves of the roadmap; without them
 Plateaus are empty headings.
 
 **Independent Test**: Run the import against a repository with open and closed
 milestone-assigned issues and confirm each appears as a Work Package realizing
-that milestone's Plateau, with its open/closed state recorded, and that an
-issue without a milestone of its own does not appear.
+a Deliverable of that milestone's Plateau, with its open/closed state
+recorded, that none realizes the Plateau directly, and that an issue without a
+milestone of its own does not appear.
 
 **Acceptance Scenarios**:
 
-1. **Given** an open or closed issue assigned to a milestone, **When** the
-   import runs, **Then** a Work Package appears, realizing that milestone's
-   Plateau, with its state recorded.
-2. **Given** an issue with no milestone of its own, **When** the import runs,
+1. **Given** an open issue assigned to a milestone, **When** the import runs,
+   **Then** a Work Package appears, realizing that milestone's planned
+   Deliverable, with its state recorded.
+2. **Given** a closed issue assigned to a milestone whose Plateau is named by a
+   release published after the issue was closed, **When** the import runs,
+   **Then** its Work Package realizes the first such release's Deliverable. If
+   no such release exists, it realizes the planned Deliverable instead.
+3. **Given** an issue with no milestone of its own, **When** the import runs,
    **Then** no element is created for it, even if its parent or its
    sub-issues have a milestone.
-3. **Given** an issue's milestone is later changed, **When** the import is
-   re-run, **Then** its realization moves to the new milestone's Plateau.
-4. **Given** an issue is closed or reopened, **When** the import is re-run,
-   **Then** only its recorded state changes; its identifier and relationships
-   stay as they were.
-5. **Given** a parent issue and one of its sub-issues are both imported,
+4. **Given** an issue's milestone is later changed, **When** the import is
+   re-run, **Then** its realization moves to a Deliverable of the new
+   milestone's Plateau.
+5. **Given** an issue is closed or reopened, **When** the import is re-run,
+   **Then** its recorded state changes and, where a qualifying release exists,
+   so does the Deliverable it realizes; its identifier is unchanged.
+6. **Given** a parent issue and one of its sub-issues are both imported,
    **When** the import runs, **Then** the parent aggregates the sub-issue.
 
 ---
@@ -78,9 +94,9 @@ issue without a milestone of its own does not appear.
 ### User Story 3 - See releases as Deliverables (Priority: P2)
 
 As a platform architect, I want every published release represented as a
-Deliverable that the Work Packages of its milestone produce and that realizes
-the milestone's Plateau, so that what actually shipped is distinct from the
-state it delivers.
+Deliverable that the closed Work Packages of its milestone produce and that
+realizes the milestone's Plateau, so that what actually shipped, and in which
+release, is distinct from what is still planned.
 
 **Why this priority**: Releases add the "what shipped" view, but the roadmap is
 useful without them (this repository has none yet), so they follow Stories 1
@@ -94,16 +110,22 @@ name a milestone's Plateau, and confirm the Deliverable realizes that Plateau.
 1. **Given** a published release, **When** the import runs, **Then** a
    Deliverable appears with the release name and tag recorded.
 2. **Given** release notes that name an imported Plateau, **When** the import
-   runs, **Then** the Deliverable realizes that Plateau and the Work Packages of
-   that milestone realize the Deliverable.
-3. **Given** release notes that name no Plateau, **When** the import runs,
-   **Then** the Deliverable is still imported, standing alone.
-4. **Given** a Work Package already realizes a Deliverable that realizes its
-   milestone's Plateau, **When** the import runs, **Then** no direct
-   realization of the Plateau is added for that Work Package, because the chain
-   already implies it.
-5. **Given** a draft (unpublished) release, **When** the import runs, **Then**
-   it is not imported.
+   runs, **Then** the Deliverable realizes that Plateau, and the Work Packages
+   of that milestone closed before the release was published (and not already
+   in an earlier release) realize it, while its open Work Packages keep
+   realizing the planned Deliverable.
+3. **Given** release notes that name no Plateau, or name an identifier that does
+   not match an imported Plateau, **When** the import runs, **Then** the
+   Deliverable is still imported, standing alone.
+4. **Given** any imported Work Package, **When** the import runs, **Then** it
+   has no direct realization of a Plateau; it reaches the Plateau only through
+   a Deliverable.
+5. **Given** a draft or pre-release, **When** the import runs, **Then** it is
+   not imported, and no Work Package is attached to it.
+6. **Given** two releases both name the same Plateau, and a Work Package was
+   closed between them, **When** the import runs, **Then** it realizes the later
+   release only; Work Packages closed before the earlier release realize the
+   earlier one.
 
 ---
 
@@ -182,8 +204,9 @@ point at the old runtime plateau now resolve to it.
    that milestone, and its hand-authored links and view memberships point at the
    imported Plateau.
 2. **Given** the hand-authored plateau and gap for team collaboration, **When**
-   the multi-user collaboration milestone exists, **Then** they are renamed for
-   that milestone and keep their descriptions and links.
+   the `multi-user-collaboration` milestone exists, **Then** they are renamed for
+   that milestone (the plateau becomes `plat-multi-user-collaboration-2`) and keep
+   their descriptions and links.
 3. **Given** an imported Plateau is renamed or deleted on GitHub, **When** the
    model is built, **Then** the build fails naming any hand-authored reference
    that no longer resolves.
@@ -203,7 +226,12 @@ point at the old runtime plateau now resolve to it.
 - A milestone or an imported issue is deleted on GitHub after a prior import:
   the next import reflects current GitHub state and removes it, rather than
   keeping it as a historical ledger.
-- A closed issue is later reopened: only its recorded state changes.
+- A closed issue is later reopened: its recorded state changes and, where a
+  release Deliverable exists, it moves back to realizing the planned
+  Deliverable.
+- A milestone has no Work Packages: no planned Deliverable is created for it.
+- A Work Package is closed after the latest release: it stays with the planned
+  Deliverable until a later release is published, then moves to that release.
 - Dependencies that form a cycle: imported as written; the importer does not
   reject or resolve them.
 - A release's notes name a Plateau that was not imported: the Deliverable is
@@ -223,6 +251,9 @@ point at the old runtime plateau now resolve to it.
   produces a parseable file.
 - A relationship that the model's rules would not permit is never emitted; the
   model must still validate after the layer is merged.
+- Release notes or a milestone description name an identifier that is
+  malformed, unknown, or belongs to an element of the wrong type: it is ignored,
+  the element is still imported, and no relationship is created from it.
 
 ## Requirements *(mandatory)*
 
@@ -232,20 +263,25 @@ point at the old runtime plateau now resolve to it.
   closed/historical alike, as a Plateau element, carrying its title,
   description and, where set, due date.
 - **FR-002**: The import MUST represent every issue that is itself assigned to a
-  milestone as a Work Package element realizing that milestone's Plateau,
-  whether the issue is open or closed. Its open/closed state is recorded as a
-  property, not as a different element type.
+  milestone as a Work Package element, whether the issue is open or closed. Its
+  open/closed state is recorded as a property, not as a different element
+  type. A Work Package MUST NOT realize a Plateau directly; it reaches the
+  Plateau only through a Deliverable (FR-004).
 - **FR-003**: An issue is in scope only when it carries a milestone itself. The
   import MUST NOT infer scope from a parent, a descendant or a label, and any
   other issue MUST NOT be imported as any element.
-- **FR-004**: The import MUST represent every published release as a Deliverable
-  element. Each Work Package of the release's milestone MUST realize it, and it
-  MUST realize the Plateau named in the release notes, when the notes name an
-  imported Plateau.
-- **FR-005**: The import MUST NOT emit a direct realization of a Plateau from a
-  Work Package when that Work Package already realizes a Deliverable that
-  realizes the same Plateau, and in general MUST NOT emit a relationship that an
-  existing chain of relationships already implies.
+- **FR-004**: The import MUST represent every published, non-pre-release release
+  (drafts and pre-releases are skipped) as a Deliverable
+  element that realizes the Plateau named in the release notes, when the notes
+  name an imported Plateau. It MUST also create, for each milestone that has at
+  least one Work Package, one planned Deliverable that realizes that milestone's
+  Plateau. Every closed Work Package MUST realize the first release Deliverable, among
+  those realizing its milestone's Plateau, that was published after the issue
+  was closed, and otherwise the planned Deliverable. Every open Work Package
+  MUST realize the planned Deliverable. A Work Package realizes exactly one
+  Deliverable.
+- **FR-005**: The import MUST NOT emit a relationship that an existing chain of
+  relationships already implies.
 - **FR-006**: GitHub's native "blocked by" dependency between two imported Work
   Packages MUST be imported as a Triggering relationship from the blocker to the
   blocked item. A dependency between Work Packages in different milestones MUST
@@ -264,16 +300,18 @@ point at the old runtime plateau now resolve to it.
 - **FR-010**: A Plateau identifier MUST combine a readable form of the
   milestone title with the milestone number. A Work Package identifier MUST
   combine a readable form of the issue title, cut at a word boundary to a
-  bounded length, with the issue number. A Deliverable identifier MUST combine
-  the release tag. Identifiers MUST be unique and MUST be a pure function of the
+  bounded length, with the issue number. A release Deliverable identifier MUST
+  combine the release tag, and a planned Deliverable identifier MUST combine its
+  milestone's title and number and mark it as planned. Identifiers MUST be unique and MUST be a pure function of the
   GitHub object's current number and title (or tag).
 - **FR-011**: Re-running the import against unchanged GitHub state MUST produce
   byte-identical output; running it twice in a row must change nothing.
 - **FR-012**: Re-running the import after a change on GitHub MUST update only
   the elements and relationships affected by that change.
 - **FR-013**: Re-running the import MUST reflect an issue's current state and
-  milestone: closing or reopening changes only its recorded state; reassigning
-  moves its realization; removing its milestone removes its element.
+  milestone: closing or reopening changes its recorded state (and, where a qualifying
+  release exists, which Deliverable it realizes); reassigning moves its
+  realization to the new milestone; removing its milestone removes its element.
 - **FR-014**: The imported elements and relationships MUST live in a layer that
   is separate from the hand-authored model, merged into the final architecture
   model by the existing build process, and MUST NOT be hand-edited.
@@ -296,11 +334,23 @@ point at the old runtime plateau now resolve to it.
 - **FR-020**: The hand-authored runtime plateau for the first MVP MUST be
   replaced by the imported Plateau for that milestone, with its relationships
   and view memberships retargeted in the same change. The hand-authored
-  collaboration plateau and gap MUST be renamed for the multi-user
-  collaboration milestone.
+  collaboration plateau and gap MUST be renamed for the
+  `multi-user-collaboration` milestone, the plateau taking the identifier
+  `plat-multi-user-collaboration-2`.
 - **FR-021**: The mapping decision (what each GitHub object becomes, the
   identifier scheme, the scope rule and the ownership split) MUST be recorded as
-  an architecture decision record in the same change.
+  an architecture decision record in the same change. The architecture narrative
+  and the model's own documentation MUST be updated to agree with it in that
+  same change; where that is not possible, a tracking issue MUST be opened and
+  the decision marked accepted-but-not-yet-reflected in the decision log's
+  index until it is.
+- **FR-022**: Text read from GitHub (milestone descriptions, release notes,
+  titles) is untrusted. A model identifier named in a milestone description or
+  release notes MUST be honoured only when it exactly matches an existing
+  element of the permitted type (a business function for a Plateau, an imported
+  Plateau for a Deliverable). Any other text MUST be ignored for the purpose of
+  relationships, and no GitHub text MAY change which elements or relationships
+  are emitted beyond what this specification defines.
 
 ### Key Entities
 
@@ -311,8 +361,11 @@ point at the old runtime plateau now resolve to it.
 - **Work Package**: An issue that carries its own milestone, representing a unit
   of planned (open) or completed (closed) work toward a Plateau. Carries the
   issue's number, URL and state.
-- **Deliverable**: A published release, representing what shipped. Produced by
-  the Work Packages of its milestone and realizing the Plateau its notes name.
+- **Deliverable**: Either a published release (what shipped), produced by the
+  Work Packages closed before it was published and not in an earlier release, or
+  the per-milestone planned Deliverable (what is still to ship), produced by the
+  open ones and by closed ones no release yet covers. Each realizes its
+  milestone's Plateau; a release names that Plateau in its notes.
 - **Dependency**: A GitHub "blocked by" link, imported as Triggering between Work
   Packages and, derived from those, between Plateaus.
 - **Gap, baseline Plateau, Strategy elements**: Hand-authored, not imported. A
@@ -325,7 +378,8 @@ point at the old runtime plateau now resolve to it.
 
 - **SC-001**: After an import run, every milestone, published release and
   milestone-assigned issue in the repository is represented by exactly one
-  model element, none missing, none duplicated, and no other issue is
+  model element (plus one planned Deliverable per milestone that has Work
+  Packages), none missing, none duplicated, and no other issue is
   represented by any element.
 - **SC-002**: Running the import twice in a row with no intervening GitHub
   activity produces zero differences in the regenerated layer and architecture
@@ -367,9 +421,10 @@ point at the old runtime plateau now resolve to it.
   milestone or issue changes its identifier. Hand-authored references then fail
   the build with an unknown-identifier error and are updated in the same change.
   This is accepted in exchange for readable identifiers.
-- A second milestone for multi-user collaboration does not yet exist on GitHub.
-  Creating it, and choosing its title, needs the maintainer's approval; until
-  then the hand-authored collaboration plateau and gap keep their current names.
+- A second milestone, titled `multi-user-collaboration`, does not yet exist on
+  GitHub. Its title is settled; creating it is an outward-facing action that
+  still needs the maintainer's approval. Until it exists, the hand-authored
+  collaboration plateau and gap keep their current names.
 - The import runs with the GitHub access already available in this environment
   (`gh` CLI, authenticated); no new credential is in scope.
 - The model reflects current GitHub state as of the last import run; a milestone,
@@ -378,4 +433,4 @@ point at the old runtime plateau now resolve to it.
 - No automated schedule is required; the import is triggered on demand by a
   person or a follow-up task.
 - The architecture decision record for the mapping takes the next free number
-  (0035), because 0034 is already used on `develop`.
+  in the decision log at the time it is filed.
