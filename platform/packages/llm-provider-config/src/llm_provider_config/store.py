@@ -6,6 +6,7 @@ The path is `$LLM_PROVIDER_CONFIG_PATH` if set, else
 
 from __future__ import annotations
 
+import contextlib
 import os
 import tomllib
 from pathlib import Path
@@ -37,8 +38,6 @@ def save_settings(settings: LlmSettings, path: Path | None = None) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     payload = settings.model_dump(mode="json", exclude_none=True)
     target.write_text(tomli_w.dumps(payload), encoding="utf-8")
-    try:
+    with contextlib.suppress(OSError):  # e.g. drvfs/9p mounts; the file holds no secrets either way
         target.chmod(0o600)
-    except OSError:  # e.g. drvfs/9p mounts; the file holds no secrets either way
-        pass
     return target
