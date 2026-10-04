@@ -31,9 +31,10 @@ poetry.lock) and platform/ (platform/pyproject.toml, platform/poetry.lock). \
 $AGENT_BASH_RULE \
 Run these, one call each: 'gh api repos/{owner}/{repo}/dependabot/alerts'; 'poetry run pip-audit -r $ROOT_REQS --no-deps --disable-pip' (root); \
 'poetry run pip-audit -r $PLATFORM_REQS --no-deps --disable-pip' (platform/); 'poetry run snyk --version'; then, if snyk is \
-present, 'poetry run snyk test' (root), 'poetry run snyk test --file=platform/poetry.lock --package-manager=poetry' \
-(platform/) and 'poetry run snyk code test' (first-party code). Report which dependency set and scanner each finding \
-came from. Do not read .secrets/, run poetry add/lock/update, or install anything. Instead of remediating, give the Output \
+present, 'poetry run snyk test --include-ignores' (root), 'poetry run snyk test --file=platform/poetry.lock --package-manager=poetry \
+--include-ignores' (platform/) and 'poetry run snyk code test --include-ignores' (first-party code). Open findings are \
+the vulnerabilities; list every ignored finding separately with its ID, package/file, severity and ignore reason and expiry \
+if shown, so the ignores can be reviewed. Report which dependency set and scanner each finding came from. Do not read .secrets/, run poetry add/lock/update, or install anything. Instead of remediating, give the Output \
 advisory table (advisory ID | package/file | severity | current -> fixed | recommended action) plus the unresolved \
 list, under '## Findings'."
 
