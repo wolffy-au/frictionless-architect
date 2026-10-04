@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-1. **Python 3.12** and repo dependencies (`poetry sync` or `pip install -e .`).
+1. **Python 3.12** and repo dependencies (`poetry install`).
 2. **Neo4j 5.x** with a read-only user (the visualiser only needs read access because it never mutates data).
 3. Verify `sample-data/sample-00/Test Model Full.xml` exists in the repo; the visualiser parses it to seed the diagram bounds, sample nodes, and relationships.
 
@@ -17,30 +17,41 @@ FRICTIONLESS_ARCHITECT_NEO4J_PASSWORD=reader-password
 FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
 FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
 FRICTIONLESS_ARCHITECT_WARNING_TEXT="Sample data unavailable"
-FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF=300
+FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300
 ```
 
-The cache directory stores the normalized payload (`schema_payload.json`) so the UI can display schema metadata even when Neo4j is offline, and `FRICTIONLESS_ARCHITECT_WARNING_TEXT` defines the non-blocking banner shown when the sample file cannot be read.
+The cache directory stores the normalized payload (`schema_payload.json`) so the service can return schema metadata even when Neo4j is offline, and `FRICTIONLESS_ARCHITECT_WARNING_TEXT` defines the non-blocking banner shown when the sample file cannot be read.
 
 ## Start the visualiser
 
 1. Activate your virtual environment and install dependencies:
+
    ```bash
-   source .venv/bin/activate
-   poetry sync
+   poetry install
+   poetry env activate
    ```
+
 2. (Optional) If you want Neo4j to hold the same dataset as the sample XML, use the schema manager with a JSON fixture derived from `Test Model Full.xml`.
 3. Run the FastAPI visualiser:
+
    ```bash
-   uvicorn frictionless_architect.app:app --reload --port 8100
+   poetry run uvicorn frictionless_architect.app:app --reload --port 8100
    ```
-4. Open `http://127.0.0.1:8100/schema-visualizer`:
-   - The Cytoscape-driven diagram replays the ArchiMate view positions and relationships included in the sample file.
-   - The table view surfaces the same element/relationship metadata (identifier, type, source file, coverage badge).
-   - The summary pane keeps every schema entry visible, even when the yellow banner reads “Sample data unavailable” because so few dependencies are blocking the view.
+
+4. Fetch `http://127.0.0.1:8100/schema-payload` (interactive API docs at `/docs`). The
+   service is JSON-only: the server-rendered `/schema-visualizer` page was dropped ahead of
+   the planned `schema-visualizer-ui` extraction (ADR-0005), so there is no browser UI yet.
+   The payload carries:
+
+   - the ArchiMate elements, relationships and views (Neo4j merged with the sample file),
+   - a `warnings` list (for example "Sample data unavailable"), and
+   - `latency_ms` for the build.
 
 ## Workflow tips
 
-- The page polls `/schema-payload/status` to display cache age, Neo4j health, and the latest warning; refreshes happen every 15 seconds so you can monitor recoveries.
-- Pressing **Refresh sample** calls `/schema-payload/refresh`, starts a background rebuild (`202 Accepted`), and keeps the cache-based UI while the loader works.
-- Each `/schema-payload` response includes `latency_ms`, so you can confirm the <2-second load goal and track warnings like missing samples or Neo4j timeouts.
+- `GET /schema-payload/status` reports cache age, Neo4j health (`neo4j_status`), sample
+  file health (`sample_file_status`), the latest warning and whether a refresh is running.
+- `POST /schema-payload/refresh` starts a background rebuild (`202 Accepted`; `409` if one
+  is already running) while `/schema-payload` keeps serving the cached payload.
+- Each `/schema-payload` response includes `latency_ms`, so you can confirm the <2-second
+  load goal and track warnings like missing samples or Neo4j timeouts.
