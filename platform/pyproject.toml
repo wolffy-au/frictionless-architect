@@ -10,23 +10,28 @@ name = "frictionless-architect-platform"
 description = "Poetry monorepo root for the Frictionless Architecture Platform packages."
 requires-python = ">=3.11,<3.14"
 # Each package is listed here and sourced from its path below.
-dependencies = ["controls-compliance-catalog"]
+dependencies = ["controls-compliance-catalog", "llm-provider-config"]
 
 [tool.poetry]
 package-mode = false
 
 [tool.poetry.dependencies]
 controls-compliance-catalog = { path = "packages/controls-compliance-catalog", develop = true }
+llm-provider-config = { path = "packages/llm-provider-config", develop = true }
 
 [dependency-groups]
 tests = [
     "pytest>=9.0.2,<10.0.0",
     "pytest-cov>=7.0.0,<8.0.0",
+    "behave>=1.2.6,<2.0.0",
+    "playwright>=1.49.0,<2.0.0",
+    "httpx>=0.28.0,<0.29.0",
 ]
 
 lint = [
     "mypy>=1.19.1,<2.0.0",
     "pyright>=1.1.407,<2.0.0",
+    "types-pyyaml>=6.0,<7.0",
 ]
 
 [tool.pyright]
@@ -39,6 +44,16 @@ reportMissingTypeStubs = "none"
 strict = true
 show_error_codes = true
 check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "behave.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# behave's @given/@when/@then decorators have no stubs, so strict mode's
+# disallow_untyped_decorators would otherwise flag every step definition.
+module = "playground_steps"
+disallow_untyped_decorators = false
 
 [tool.pytest.ini_options]
 python_files = "*_test.py test_*.py *_spec.py"

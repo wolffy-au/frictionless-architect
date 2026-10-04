@@ -1,6 +1,6 @@
 ---
 title: OSCAL Compliance Content
-generated: 2026-10-01
+generated: 2026-10-03
 generator: claude-sonnet-5
 sources:
   - third_party/README.md
@@ -21,8 +21,8 @@ sources:
 
 This topic covers the vendored OSCAL/FedRAMP reference content, the
 `compliance-trestle` dependency, and how the two together back the platform's
-compliance-automation vision. The decision behind all of it is
-[ADR-0030](docs/adr/0030-vendor-oscal-reference-content.md) — see
+compliance-automation vision. The decision behind all of it is ADR-0030
+(`docs/adr/0030-vendor-oscal-reference-content.md`) — see
 [Architecture Overview](architecture.md) for where it sits in the wider
 decision log.
 
@@ -167,6 +167,69 @@ Both NIST repositories state they are US-government works in the public
 domain in the US, dedicated worldwide under CC0 1.0
 (`third_party/oscal/LICENSE.md`; `third_party/oscal-content/LICENSE.md`).
 
+## Golden-dataset fixtures vendored independently of the submodules
+
+A 2026-09-28 revision of ADR-0030 addresses a risk the 2026-09-20
+`fedramp-automation` substitution (above) had already shown wasn't
+hypothetical: a pinned submodule commit becomes unfetchable outright if its
+upstream disappears, is rewritten, or rate-limits/blocks CI, and relying on
+`third_party/*` being fetchable *at test time* — not just pinned — makes the
+test suite hostage to that same availability risk. The decision: golden-test
+fixtures are vendored as plain committed files under
+`tests/fixtures/golden-oscal/`, never read from `third_party/*` at test time.
+The submodules remain the reference/exploration copies (spec-alignment
+review, ad hoc lookups) but carry no test dependency
+(`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
+(2026-09-28)").
+
+The fixture set is tiered: `slice-1-minimal/` (a small cross-cutting control
+set — AC-2 plus its AC-2.1/AC-2.11 enhancements, AU-2, and IA-3 — chosen to
+show both enhancement-set growth and baseline presence/absence, with no
+FedRAMP excerpt), `slice-2-medium/` (full AC/AU families, catalog, baseline
+profiles, FedRAMP excerpts, Trestle Markdown), and `slice-3-full/` (the
+complete catalog, all four baseline profiles including PRIVACY, all three
+FedRAMP resolved catalogs, the full CSF v2.0 catalog). `slice-1-minimal/`
+further splits into `1a-conversion/` (standard → Trestle Markdown) and
+`1b-resolution/` (catalog + profile → resolved catalog), sharing a top-level
+`catalog/`. Every vendored artefact carries a sidecar `<name>.provenance.yaml`
+(source repo/commit or URL, licence, capture date, extraction method, sha256)
+so staleness or tampering is checkable without re-fetching upstream.
+`tests/fixtures/golden-oscal/standards/` additionally vendors the verbatim
+NIST/FIPS publication PDFs (SP 800-53 rev5, CSF 2.0, FIPS 199, FIPS 200) from
+`nvlpubs.nist.gov`, which have no OSCAL form in any submodule, so control
+prose can be manually traced back to its source document when QA'ing the
+conversion pipeline (`docs/adr/0030-vendor-oscal-reference-content.md`
+§"Implementation note (2026-09-28)"). This resolves the Consequences
+section's `sample-data/oscal/` follow-up below: fixtures belong under
+`tests/fixtures/` per this repo's testing-layout convention, not
+`sample-data/`. See
+[Controls & Compliance Catalog](controls-compliance-catalog.md)
+§"Golden-dataset validation" for how the pipeline's own tests consume this
+tiering.
+
+### Known issue: vendored FedRAMP baselines are rev4, not rev5
+
+`third_party/fedramp-automation` (vendored from `GoComply/fedramp`, commit
+`22fdd080273f5ec98c1c9c07f677659046af63f5`) ships SP 800-53 **Revision 4**
+content, not Revision 5: its resolved-profile-as-catalog XML declares
+`oscal-version` `1.0.0-milestone3` and carries 125/325/421 controls for
+LOW/MODERATE/HIGH respectively — rev4 control counts. Every other fixture
+under `tests/fixtures/golden-oscal/` (the NIST catalog, the SP 800-53B
+baseline profiles, the resolved catalogs derived from them) is rev5, so the
+vendored FedRAMP content cannot legitimately serve as the comparison target
+for an FR-007/SC-003-style check (does the pipeline's rev5-derived output
+match FedRAMP's tailoring?) against the rev5 catalog/profiles used
+everywhere else — the control id sets and structure don't line up. This was
+caught by cross-session review while building the `slice-1-minimal` golden
+dataset and confirmed against the vendored XML and its provenance sidecar.
+
+No rev5-compatible FedRAMP source has been identified yet. This is recorded
+as a known, deliberately-deferred gap: any test or fixture that would
+otherwise assert an FR-007/SC-003-style FedRAMP comparison should skip it
+explicitly or cite this ADR rather than compare against the rev4 content as
+if it were valid (`docs/adr/0030-vendor-oscal-reference-content.md` §"Known
+issue (2026-09-28)").
+
 ## Sample data
 
 `sample-data/oscal/` holds two illustrative PlantUML diagrams — not real
@@ -180,10 +243,15 @@ OSCAL content, just the resolution mechanics:
   resolved catalog combines NIST's own HIGH baseline with FedRAMP's
   independently-tailored HIGH baseline.
 
-ADR-0030 tracks pointing these (and future tests) at real catalog/profile
-files from the vendored submodules as worked examples/fixtures as a
-follow-up, not yet built as part of the vendoring decision itself
-(`docs/adr/0030-vendor-oscal-reference-content.md` §Consequences).
+ADR-0030 originally tracked pointing these (and future tests) at real
+catalog/profile files from the vendored submodules as a follow-up. The
+2026-09-28 revision resolved that follow-up differently: real OSCAL ground
+truth for tests now comes from the `tests/fixtures/golden-oscal/` fixtures
+described above, not from wiring `sample-data/oscal/` up to the submodules —
+fixtures belong under `tests/fixtures/` per this repo's testing-layout
+convention. These two diagrams remain illustrative-only
+(`docs/adr/0030-vendor-oscal-reference-content.md` §Consequences,
+§"Implementation note (2026-09-28)").
 
 ## Consequences and open follow-ups
 

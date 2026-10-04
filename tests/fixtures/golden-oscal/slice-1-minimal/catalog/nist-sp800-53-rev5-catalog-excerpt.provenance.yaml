@@ -1,0 +1,34 @@
+artifact: nist-sp800-53-rev5-catalog-excerpt.json
+source: "NIST SP 800-53 Rev 5 full control catalog, OSCAL JSON representation — excerpted to 5 entries: ac-2, ac-2.1, ac-2.11, au-2, ia-3"
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+source_path: nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+revised_date: "2026-09-28"
+extraction_method: >
+  Hand-written Python script walked catalog.groups[].controls[] to pull out
+  the ac-2 (keeping only its ac-2.1 and ac-2.11 enhancements), au-2 (base
+  only), and ia-3 (base only) control objects verbatim (params and full
+  statement prose unmodified), then wrapped them in a minimal but
+  structurally valid OSCAL catalog shell (uuid/metadata/groups). Script not
+  committed (one-off, not needed again unless slice-1's control selection
+  changes).
+sha256: f0fb4cb823db4844b46e4c3c45e1f9b5fc4b45f37bbcefebf9bc83ad688ec16f
+notes: >
+  This excerpt is NOT the official NIST catalog file — it's a derived subset
+  for testing. Verbatim prose can still be traced back to
+  ../../standards/NIST.SP.800-53r5.pdf for QA.
+
+  2026-09-28 revision: thinned from 33 entries (all AC-2/AU-2/IA-2
+  enhancements) down to exactly 5, and replaced IA-2 with IA-3. IA-2's
+  enhancement selection turned out to be identical across LOW/MODERATE/HIGH
+  (flat, not growing) so it added bulk without adding baseline-diffing
+  signal. IA-3 (Device Identification and Authentication) is a better
+  minimal example: it's absent from the LOW baseline entirely and appears
+  (as a bare base control, no enhancements) at MODERATE and HIGH — a
+  presence/absence signal, distinct from AC-2's enhancement-set-growth
+  signal (0 enhancements pulled at LOW, ac-2.1 only at MODERATE, both
+  ac-2.1 and ac-2.11 at HIGH — see ../profiles). AU-2 is kept as the flat
+  control (selected, unchanged, at all three tiers) for contrast. Final
+  5-entry composition: ac-2, ac-2.1, ac-2.11, au-2, ia-3.

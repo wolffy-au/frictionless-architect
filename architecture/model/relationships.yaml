@@ -770,6 +770,22 @@
 - {type: Serving, source: sub-twin, target: sub-schema-visualizer, label: serves the read path to, props: {c4-label: reads the knowledge graph via}}
 
 # =====================================================================
+# E. LLM provider configuration is a shared package, not a subsystem
+#    (ADR-0034) — same non-subsystem pattern as sub-schema-visualizer
+#    above: composed into sys-platform, consumed as a path-dependency
+#    library rather than Realization-linked to a section-A capability.
+#    It resolves provider/model/credential choice only — it does not wrap
+#    or replace litellm's own call surface, so the actual provider calls
+#    stay on the existing ext-llm -> fn-* / sub-* Serving edges above, and
+#    there is deliberately no Serving edge from this component to its
+#    consumers (e.g. sub-catalog): consumption is a path dependency
+#    (ADR-0002), not a runtime service call.
+# =====================================================================
+- {type: Composition, source: sys-platform, target: sub-llm-provider-config}
+- {type: Association, source: sub-llm-provider-config, target: ext-llm, label: configures provider/model & resolves credentials for calls to}
+- {type: Realization, source: art-pkg-llm-provider-config, target: sub-llm-provider-config}
+
+# =====================================================================
 # E. Packages realise their components
 # =====================================================================
 - {type: Realization, source: art-flat-src, target: sub-schema-visualizer}
@@ -808,6 +824,7 @@
 - {type: Aggregation, source: plat-baseline, target: art-flat-src}
 - {type: Aggregation, source: plat-first-extraction, target: art-flat-src}
 - {type: Aggregation, source: plat-first-extraction, target: art-pkg-controls-compliance-catalog}
+- {type: Aggregation, source: plat-first-extraction, target: art-pkg-llm-provider-config}
 - {type: Aggregation, source: plat-target, target: art-pkg-schema-visualizer-api}
 - {type: Aggregation, source: plat-target, target: art-pkg-digital-twin-knowledge-graph}
 - {type: Aggregation, source: plat-target, target: art-pkg-controls-compliance-catalog}
@@ -815,6 +832,7 @@
 - {type: Aggregation, source: plat-target, target: art-pkg-architecture-governance}
 - {type: Aggregation, source: plat-target, target: art-pkg-conformance-drift-assurance}
 - {type: Aggregation, source: plat-target, target: art-pkg-modelling-specification}
+- {type: Aggregation, source: plat-target, target: art-pkg-llm-provider-config}
 
 # =====================================================================
 # E. Gaps: each lies between two Plateaus (ordering Baseline -> Target);
@@ -855,8 +873,10 @@
 # --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
 - {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
+- {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}
 - {type: Aggregation, source: plat-runtime-mvp, target: node-app-server}
 - {type: Aggregation, source: plat-runtime-mvp, target: sw-neo4j}
+- {type: Aggregation, source: plat-runtime-mvp, target: sw-keyring}
 - {type: Aggregation, source: plat-runtime-target, target: node-hosted-cluster}
 - {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}

@@ -1,0 +1,11 @@
+artifact: NIST.CSWP.29.pdf
+source: "NIST Cybersecurity Framework (CSF) 2.0 — NIST CSWP 29, standalone verbatim publication"
+source_url: "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf?download=1"
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: "verbatim download, unmodified"
+sha256: 3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c
+notes: >
+  Ground-truth source for the CSF v2.0 OSCAL catalog vendored in
+  ../slice-3-full/csf/NIST_CSF_v2.0_catalog.json. Not represented in slice-1 or
+  slice-2 (those are scoped to SP 800-53 / FedRAMP control families).

@@ -1,0 +1,13 @@
+artifact: NIST.FIPS.199.pdf
+source: "FIPS PUB 199, Standards for Security Categorization of Federal Information and Information Systems — standalone verbatim publication"
+source_url: "https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.199.pdf"
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: "verbatim download, unmodified"
+sha256: 73d19f05f71e30f378050f178aa3943c38790bbae56c07f2b5708c5a1a90242f
+notes: >
+  FIPS 199 has no OSCAL representation of its own — NIST never published one.
+  It defines the LOW/MODERATE/HIGH impact-level categorization scheme that
+  FIPS 200 and the SP 800-53B baselines (vendored under
+  ../slice-1-minimal/profiles and ../slice-3-full/profiles) operationalize.
+  Vendored here as background/QA context, not as a source of OSCAL prose.

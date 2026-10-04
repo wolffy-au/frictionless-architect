@@ -122,6 +122,7 @@ type/test suite on push, Conventional Commits check on the message.
   (e.g. "the visualiser lives in `visualizer/`") is intentional, not a typo.
 - Feature work is spec-driven: `speckit-specify` → `speckit-plan` → `speckit-tasks` →
   `speckit-implement`, against `.specify/memory/constitution.md`.
+- Spec artefacts are concise and say each thing once: constitution Principle XI.
 - Releases follow [`RELEASE.md`](RELEASE.md) (or the `release-runner` agent).
 
 ## Skills & Workflows

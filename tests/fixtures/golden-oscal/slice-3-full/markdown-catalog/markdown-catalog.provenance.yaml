@@ -1,0 +1,22 @@
+artifact: "all 1,014 files under this directory (one subfolder per control family)"
+source: >
+  Trestle-editable Markdown catalog, generated (not hand-authored) from
+  ../catalog/NIST_SP-800-53_rev5_catalog.json via compliance-trestle's own
+  CLI: `trestle import` then `trestle author catalog-generate`.
+source_repo: N/A — derived from this repo's own vendored fixture, not from third_party/
+source_path: tests/fixtures/golden-oscal/slice-3-full/catalog/NIST_SP-800-53_rev5_catalog.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105); generated form inherits the same status"
+captured_date: "2026-09-28"
+generation_method: >
+  compliance-trestle v5.1.0 (OSCAL 1.2.1), in a scratch trestle workspace:
+    trestle init --local
+    trestle import -f NIST_SP-800-53_rev5_catalog.json -o slice3-catalog
+    trestle author catalog-generate -n slice3-catalog -o slice3-catalog-md
+  Output copied verbatim into this directory; no manual edits.
+sha256_of_concatenated_sorted_files: f0e25a8a9bc6526cc539954b132c0fd39e7d1418f10ddf69481202d29c65db20
+notes: >
+  Full-catalog counterpart to slice-1-minimal/markdown-catalog: every control
+  and enhancement in the complete SP 800-53 rev5 catalog, in Trestle-editable
+  Markdown form. Same purpose (ready-made valid input for testing the
+  assemble step per User Story 2 of spec 003-oscal-ai-conversion), just at
+  full scale rather than the 3-control minimal set.

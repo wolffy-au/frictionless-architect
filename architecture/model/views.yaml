@@ -404,6 +404,7 @@
   # (GH #61 decision A), so the Profile objects live there.
   members:
     - sub-catalog
+    - sub-llm-provider-config
     - if-catalog-ui
     - fn-policy-upload
     - fn-policy-quality-feedback
@@ -768,6 +769,7 @@
     - sub-assurance
     - sub-modelling
     - sub-schema-visualizer
+    - sub-llm-provider-config
     - if-twin-read-path
     - sw-uvicorn-fastapi
     - techfn-role-journey-composition
@@ -779,6 +781,7 @@
     - art-pkg-architecture-governance
     - art-pkg-conformance-drift-assurance
     - art-pkg-modelling-specification
+    - art-pkg-llm-provider-config
 
 - id: view-technology-ci-check
   name: "Technology: OSCAL Golden-Dataset CI Check"
@@ -846,6 +849,7 @@
     - art-tech-oscal-workspace
     - art-tech-ledger-file
     - sw-neo4j
+    - sw-keyring
     - node-hosted-cluster
 
 - id: view-technology-usage-catalog
@@ -898,6 +902,7 @@
     - art-pkg-architecture-governance
     - art-pkg-conformance-drift-assurance
     - art-pkg-modelling-specification
+    - art-pkg-llm-provider-config
 
 - id: view-runtime-migration
   name: "Runtime Migration: Local Compose to Hosted Cluster"
@@ -916,3 +921,4 @@
     - node-app-server
     - node-hosted-cluster
     - sw-neo4j
+    - sw-keyring

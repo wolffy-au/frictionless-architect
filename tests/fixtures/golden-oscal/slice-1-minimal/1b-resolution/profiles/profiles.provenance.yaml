@@ -1,0 +1,35 @@
+artifact:
+  - NIST_SP-800-53_rev5_LOW-baseline_profile.json
+  - NIST_SP-800-53_rev5_MODERATE-baseline_profile.json
+  - NIST_SP-800-53_rev5_HIGH-baseline_profile.json
+source: "SP 800-53B LOW/MODERATE/HIGH control baselines, OSCAL profile representation (unresolved — selects/tailors controls by reference against the full catalog, does not embed control prose itself)"
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+source_path: nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_{LOW,MODERATE,HIGH}-baseline_profile.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: >
+  Verbatim full-file copy, not excerpted — each profile file is only 7-12 KB
+  in its entirety (it's a selection/tailoring document, not a catalog), so
+  there is nothing smaller than the full file to vendor even at slice-1 scale.
+  PRIVACY baseline omitted here (kept at slice-3 only) since it isn't part of
+  the AC-2/AU-2/IA-3 cross-baseline comparison this slice is built around.
+sha256:
+  NIST_SP-800-53_rev5_LOW-baseline_profile.json: 8fd206017c8d718b44bdef612c2ff321a9fd84d97a515c8ec33c4619accbef6e
+  NIST_SP-800-53_rev5_MODERATE-baseline_profile.json: 9030dbf1f13169947eb97eb101b4bd2f00d3c151b100455a923ac75803f00ea1
+  NIST_SP-800-53_rev5_HIGH-baseline_profile.json: 60576970caef91b2cba56d46e5948b72e3b879434fc2a4840bc4179e5e75cfd7
+notes: >
+  These profiles' `import`/`include-controls` sections reference control ids
+  ac-2, au-2, ia-3 (among many others, since they're unmodified copies of the
+  real full baseline profiles) against the full catalog.
+
+  2026-09-28 revision: these profiles cannot be resolved directly against
+  ../../catalog/nist-sp800-53-rev5-catalog-excerpt.json — each profile's
+  `include-controls` selects a different, and generally larger, set of AC-2
+  enhancements than the excerpt catalog keeps (the excerpt only retains
+  ac-2.1/ac-2.11 as ac-2's children). The actual resolved-catalog excerpts
+  under ../resolved-catalog/ were produced by running `trestle author
+  profile-resolve` against the real, complete slice-3-full catalog and a
+  locally href-retargeted scratch copy of each profile, then hand-trimming
+  the result down to the 5 tracked ids — see
+  ../resolved-catalog/resolved-catalog.provenance.yaml for the exact method.

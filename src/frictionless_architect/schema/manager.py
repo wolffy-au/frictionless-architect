@@ -58,9 +58,11 @@ class SchemaManager:
         self.driver = GraphDatabase.driver(uri, auth=auth)
 
     def close(self) -> None:
+        """Close the Neo4j driver."""
         self.driver.close()
 
     def apply_constraints(self) -> None:
+        """Create the uniqueness constraints and indexes (idempotent)."""
         with self.driver.session() as session:
             for statement in CONSTRAINTS + INDEXES:
                 session.execute_write(self._run_statement, statement)
@@ -70,6 +72,12 @@ class SchemaManager:
         _run_literal(tx, statement)
 
     def ingest_payload(self, payload: Mapping[str, Sequence[Mapping[str, Any]]]) -> None:
+        """Merge a schema payload into the graph.
+
+        Args:
+            payload: Mapping with optional ``elements``, ``relationships``, ``views``
+                and ``diagrams`` lists; missing or empty lists are skipped.
+        """
         elements = payload.get("elements", [])
         relationships = payload.get("relationships", [])
         views = payload.get("views", [])
@@ -217,6 +225,11 @@ MERGE (d)-[:HAS_NODE]->(element)""",
                 )
 
     def record_schema_version(self, name: str) -> None:
+        """Upsert a ``SchemaVersion`` node stamped with the current UTC time.
+
+        Args:
+            name: Schema version name (unique key).
+        """
         with self.driver.session() as session:
             session.execute_write(self._ensure_schema_version, name)
 
@@ -231,6 +244,13 @@ SET sv.applied_at = datetime($timestamp)""",
         )
 
     def run_audit_checks(self) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+        """Run the graph integrity audits.
+
+        Returns:
+            A pair ``(missing_relations, orphan_views)``: View/Diagram relationship
+            references that match no edge, and views with no included elements or no
+            relationship references.
+        """
         with self.driver.session() as session:
             missing_relations = session.execute_read(self._find_missing_relationship_targets)
             orphan_views = session.execute_read(self._find_orphan_views)

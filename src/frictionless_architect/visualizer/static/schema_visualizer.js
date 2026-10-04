@@ -260,8 +260,8 @@
   tableBtn.addEventListener("click", showTableView);
 
   document.addEventListener("DOMContentLoaded", () => {
-    loadPayload();
-    loadStatus();
+    loadPayload().catch((err) => console.error("loadPayload failed", err));
+    loadStatus().catch((err) => console.error("loadStatus failed", err));
     setInterval(loadStatus, 15000);
   });
 })();

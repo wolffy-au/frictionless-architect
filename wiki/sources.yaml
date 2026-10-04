@@ -119,6 +119,7 @@ topics:
       - path: specs/002-neo4j-schema-ui/research.md
       - path: specs/002-neo4j-schema-ui/contracts/api.md
       - path: specs/002-neo4j-schema-ui/checklists/requirements.md
+      - path: specs/002-neo4j-schema-ui/tasks.md
 
   - name: controls-compliance-catalog
     title: Controls & Compliance Catalog
@@ -134,6 +135,22 @@ topics:
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/app.py
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/llm_client.py
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/*.py
+      - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/prompts.yaml
+      - path: platform/packages/controls-compliance-catalog/tests/features/*.feature
+      - path: scripts/run-playground.sh
+
+  - name: llm-provider-config
+    title: LLM Provider Configuration
+    description: The shared llm-provider-config package (ADR-0034) — global default plus per-component LLM provider/model settings, keychain credentials, and the mountable settings router.
+    sources:
+      - path: platform/packages/llm-provider-config/README.md
+      - path: platform/packages/llm-provider-config/pyproject.toml
+      - path: platform/packages/llm-provider-config/specs/README.md
+      - path: platform/packages/llm-provider-config/src/llm_provider_config/*.py
+      - path: docs/adr/0034-shared-packages-and-llm-provider-config.md
 
   - name: non-functionals
     title: Non-Functional Requirements
@@ -155,6 +172,9 @@ topics:
       - path: AGENTS.md
       - path: RELEASE.md
       - path: specs/002-neo4j-schema-ui/quickstart.md
+      - path: CONTRIBUTING.md
+      - path: CODE_OF_CONDUCT.md
+      - path: SECURITY.md
 
   - name: sample-data
     title: Sample Data
@@ -176,5 +196,4 @@ topics:
       - path: .claude/skills/model-archimate/SKILL.md
       - path: .claude/skills/wiki-editor/SKILL.md
       - path: .claude/skills/wiki-librarian/SKILL.md
-      - path: .claude/skills/speckit-*/SKILL.md
       - path: .claude/agents/*.md

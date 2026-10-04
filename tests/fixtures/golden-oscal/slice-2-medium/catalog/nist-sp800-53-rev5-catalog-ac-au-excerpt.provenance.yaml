@@ -1,0 +1,25 @@
+artifact: nist-sp800-53-rev5-catalog-ac-au-excerpt.json
+source: "NIST SP 800-53 Rev 5 full control catalog, OSCAL JSON representation — excerpted to the complete AC and AU control families"
+immediate_source: ../../slice-3-full/catalog/NIST_SP-800-53_rev5_catalog.json
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+source_path: nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-28"
+extraction_method: >
+  Hand-written Python script loaded slice-3-full's full catalog JSON and kept
+  only the two top-level catalog.groups[] entries with id "ac" and "au" in
+  full (all controls, nested control-enhancements, params, and statement
+  prose unmodified), then wrapped them in a minimal but structurally valid
+  OSCAL catalog shell (uuid/metadata/groups). Script not committed (one-off,
+  not needed again unless slice-2's family selection changes).
+sha256: 03150a7110f179eeeaafb40b9f54da40f217e65f4b24a59e48d282f6c8f866aa
+notes: >
+  41 top-level controls across the two families (AC: Access Control, AU:
+  Audit and Accountability), plus their enhancements. Chosen as the
+  "medium" tier because both families are present across every SP 800-53B
+  baseline and every FedRAMP baseline with materially different enhancement
+  selections per impact level, giving more surface for baseline-diffing /
+  profile-resolution testing than slice-1's three individual controls, while
+  remaining far smaller than slice-3's full 20-family catalog. Verbatim prose
+  can still be traced back to ../../standards/NIST.SP.800-53r5.pdf for QA.

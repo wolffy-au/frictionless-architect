@@ -28,3 +28,18 @@ async def test_schema_refresh_handles_concurrent_requests(schema_client_with_slo
     await asyncio.sleep(0.15)
     status = await client.get("/schema-payload/status")
     assert status.json().get("refresh_in_progress") in (True, False)
+
+
+@pytest.mark.asyncio
+async def test_schema_refresh_rejected_during_backoff_after_success(schema_client_with_slow_refresh):
+    client = schema_client_with_slow_refresh
+    first = await client.post("/schema-payload/refresh", json={})
+    assert first.status_code == 202
+    for _ in range(100):
+        status = (await client.get("/schema-payload/status")).json()
+        if not status["refresh_in_progress"] and "last_refresh_completed" in status:
+            break
+        await asyncio.sleep(0.1)
+    second = await client.post("/schema-payload/refresh", json={})
+    assert second.status_code == 429
+    assert int(second.headers["Retry-After"]) > 0

@@ -1,0 +1,78 @@
+# Prompts for the control conversion playground (GH #76).
+# Edit this file to tune the AI candidate; it is re-read on every conversion,
+# so changes apply on the next click with no server restart.
+prose_to_trestle_markdown:
+  system: |
+    You convert a single control's free-text prose into Trestle Markdown
+    control format. Output only the Markdown: no commentary and no code fences.
+
+    The input has the form "<ID> <Title>: <statement prose>".
+
+    Rules:
+    - The first line is a level-1 heading: "# <id> - \[\] <Title>".
+      Lowercase the ID, and write the literal characters \[\] exactly as shown.
+      Do not repeat the ID in the title.
+    - Follow it with a blank line, then "## Control Statement", then a blank
+      line, then the statement prose.
+    - Keep the prose wording verbatim. Do not summarise, correct or add to it.
+      Leave bracketed [Assignment: ...] and [Selection: ...] text exactly as written.
+    - An enhancement ID such as "IA-3(3)" becomes "ia-3.3".
+    - If the statement has lettered parts "(a)", "(b)" and so on, write each as a
+      list item "- \[a.\] <text>" separated by a blank line. Indent nested
+      numbered parts by two spaces as "- \[1.\] <text>". Otherwise write the
+      prose as a single paragraph.
+
+    Example input:
+    IA-3 DEVICE IDENTIFICATION AND AUTHENTICATION
+    Control: Uniquely identify and authenticate [Assignment: organization-defined devices and/or
+    types of devices] before establishing a [Selection (one or more): local; remote; network]
+    connection.
+    Discussion: Devices that require unique device-to-device identification and authentication are
+    defined by type, device, or a combination of type and device. Organization-defined device types
+    include devices that are not owned by the organization. Systems use shared known information
+    (e.g., Media Access Control [MAC], Transmission Control Protocol/Internet Protocol [TCP/IP]
+    addresses) for device identification or organizational authentication solutions (e.g., Institute of
+    Electrical and Electronics Engineers (IEEE) 802.1x and Extensible Authentication Protocol [EAP],
+    RADIUS server with EAP-Transport Layer Security [TLS] authentication, Kerberos) to identify and
+    authenticate devices on local and wide area networks. Organizations determine the required
+    strength of authentication mechanisms based on the security categories of systems and mission
+    or business requirements. Because of the challenges of implementing device authentication on a
+    large scale, organizations can restrict the application of the control to a limited number/type of
+    devices based on mission or business needs.
+    Related Controls: AC-17, AC-18, AC-19, AU-6, CA-3, CA-9, IA-4, IA-5, IA-9, IA-11, SI-4.
+    Control Enhancements:
+    (1) DEVICE IDENTIFICATION AND AUTHENTICATION | CRYPTOGRAPHIC BIDIRECTIONAL AUTHENTICATION
+    Authenticate [Assignment: organization-defined devices and/or types of devices] before
+    establishing [Selection (one or more): local; remote; network] connection using
+    bidirectional authentication that is cryptographically based.
+    Discussion: A local connection is a connection with a device that communicates without the
+    use of a network. A network connection is a connection with a device that communicates
+    through a network. A remote connection is a connection with a device that communicates
+    through an external network. Bidirectional authentication provides stronger protection to
+    validate the identity of other devices for connections that are of greater risk.
+    Related Controls: SC-8, SC-12, SC-13.
+
+    Example output:
+    ---
+    x-trestle-set-params:
+      ia-03.01_odp.01:
+        values:
+      ia-03.01_odp.02:
+        values:
+    x-trestle-global:
+      sort-id: ia-03.01
+    ---
+
+    # ia-3.1 - \[\] Cryptographic Bidirectional Authentication
+
+    ## Control Statement
+
+    Authenticate {{ insert: param, ia-03.01_odp.01 }} before establishing {{ insert: param, ia-03.01_odp.02 }} connection using bidirectional authentication that is cryptographically based.
+
+    ## Control Assessment Objective
+
+    {{ insert: param, ia-03.01_odp.01 }} are authenticated before establishing {{ insert: param, ia-03.01_odp.02 }} connection using bidirectional authentication that is cryptographically based.
+
+    ## Control guidance
+
+    A local connection is a connection with a device that communicates without the use of a network. A network connection is a connection with a device that communicates through a network. A remote connection is a connection with a device that communicates through an external network. Bidirectional authentication provides stronger protection to validate the identity of other devices for connections that are of greater risk.

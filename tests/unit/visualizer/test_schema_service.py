@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from frictionless_architect.visualizer.api import PayloadUnavailable, RefreshInProgress, SchemaPayloadService
+from frictionless_architect.visualizer.api import (
+    PayloadUnavailable,
+    RefreshBackoff,
+    RefreshInProgress,
+    SchemaPayloadService,
+)
 from frictionless_architect.visualizer.cache import SchemaCache
 from frictionless_architect.visualizer.config import VisualizerSettings
 from frictionless_architect.visualizer.data_loader import DataLoader, DataLoaderError
@@ -251,3 +257,39 @@ async def test_schema_payload_warns_on_foreign_sample_namespace(tmp_path: Path) 
     payload = await service.get_payload(force_reload=True)
     assert any("archimate/3.1/" in warning for warning in payload["warnings"])
     assert service.get_status()["sample_file_status"] == "invalid"
+
+
+def _backoff_service(tmp_path: Path, backoff_seconds: int = 300) -> SchemaPayloadService:
+    settings = VisualizerSettings(
+        cache_dir=tmp_path / "cache", sample_data_dir=tmp_path, refresh_backoff_seconds=backoff_seconds
+    )
+    return SchemaPayloadService(settings, StubParser(tmp_path), StubLoader(settings), SchemaCache(settings.cache_path))
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_backs_off_after_successful_refresh(tmp_path: Path) -> None:
+    service = _backoff_service(tmp_path)
+    service._last_refresh_completed = datetime.now(timezone.utc) - timedelta(seconds=100)
+    with pytest.raises(RefreshBackoff) as excinfo:
+        await service.request_refresh()
+    assert 199 <= excinfo.value.retry_after <= 200
+    assert service._refresh_task is None
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_allowed_when_backoff_elapsed(tmp_path: Path) -> None:
+    service = _backoff_service(tmp_path)
+    service._last_refresh_completed = datetime.now(timezone.utc) - timedelta(seconds=301)
+    await service.request_refresh()
+    assert service._refresh_task is not None
+    await service._refresh_task
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_not_delayed_when_no_refresh_has_succeeded(tmp_path: Path) -> None:
+    """A failed build never sets the completion time, so it is retryable at once."""
+    service = _backoff_service(tmp_path)
+    assert service._last_refresh_completed is None
+    await service.request_refresh()
+    assert service._refresh_task is not None
+    await service._refresh_task

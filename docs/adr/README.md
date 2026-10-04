@@ -113,3 +113,8 @@ narrative docs.
 - **A** — [0033](0033-value-streams-per-outcome.md) — One value stream per
   outcome, organised by value recipient (not by role); streams take stages
   over rather than duplicate them
+- **A** — [0034](0034-shared-packages-and-llm-provider-config.md) — Shared
+  cross-subsystem functionality gets its own `platform/packages/` sibling
+  package per concern; first instance is `llm-provider-config`
+  (OpenAI/Gemini/Claude/Ollama via `litellm`, global+per-component overrides,
+  secrets via OS keychain, never `.env`)

@@ -1,0 +1,14 @@
+artifact: NIST.SP.800-53r5.pdf
+source: "NIST Special Publication 800-53 Revision 5, Security and Privacy Controls for Information Systems and Organizations — standalone verbatim publication (not the OSCAL-derived representation)"
+source_url: "https://nvlpubs.nist.gov/nistpubs/specialpublications/NIST.SP.800-53r5.pdf"
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-09-27"
+extraction_method: "verbatim download, unmodified"
+sha256: fc63bcd61715d0181dd8e85998b1e6201ae3515fc6626102101cab1841e11ec6
+notes: >
+  Ground-truth source document for QA'ing the agentic prose-to-OSCAL conversion
+  pipeline: used to manually trace control statement text embedded in the OSCAL
+  catalog (see ../slice-1-minimal/catalog and ../slice-3-full/catalog) back to
+  the original published prose. Kept separate from the OSCAL JSON because the
+  OSCAL catalog already contains the verbatim control text, but this PDF is the
+  independent source of truth to check that text against.

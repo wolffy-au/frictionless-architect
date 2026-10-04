@@ -1,0 +1,32 @@
+artifact:
+  - fedramp-low-ac-au-excerpt.xml
+  - fedramp-moderate-ac-au-excerpt.xml
+  - fedramp-high-ac-au-excerpt.xml
+source: "FedRAMP LOW/MODERATE/HIGH control baselines, OSCAL resolved-profile-as-catalog representation — excerpted to the complete AC and AU control families"
+immediate_source: ../../slice-3-full/fedramp/FedRAMP_{LOW,MODERATE,HIGH}-baseline-resolved-profile_catalog.xml
+source_repo: third_party/fedramp-automation
+source_commit: 22fdd080273f5ec98c1c9c07f677659046af63f5
+source_path: bundled/catalogs/FedRAMP_{LOW,MODERATE,HIGH}-baseline-resolved-profile_catalog.xml
+license: "Public domain — U.S. Government (GSA) work"
+captured_date: "2026-09-28"
+extraction_method: >
+  Kept as trimmed XML (not converted to JSON), same rationale as slice-1: the
+  source format is XML and copying matching <group> subtrees via Python's
+  xml.etree.ElementTree preserves the original structure and prose exactly.
+  Only the ac and au <group> elements are kept, in full (all their <control>
+  children and nested enhancement controls actually pulled into that
+  baseline, unlike slice-1 which trimmed to single controls). <back-matter>
+  is deliberately dropped, same as slice-1 — the full version is preserved in
+  ../../slice-3-full/fedramp. Script not committed (one-off).
+sha256:
+  fedramp-low-ac-au-excerpt.xml: 325c9ba08fdcf6e560b8819a6f7e2a9bb8abbf1a916742eb48e4bba483fe4661
+  fedramp-moderate-ac-au-excerpt.xml: 593732e7539a6710f02399a7be0ca98d43d5e400bae3d78d0d4bd338c58cdfd7
+  fedramp-high-ac-au-excerpt.xml: b905785950ba03158d3d97d0aeb87557ed31dc79e6599fd970007af70e8b2fbf
+notes: >
+  Top-level control counts confirm growth across impact levels: LOW keeps 21
+  AC/AU controls, MODERATE 29, HIGH 30 — a wider spread than slice-1's
+  three-control trio, useful for exercising baseline-diffing logic across a
+  whole family rather than individual controls. As with slice-1, the FedRAMP
+  profile *delta* document (pre-merge with its parent baseline) was
+  deliberately not vendored, per user decision — only this
+  resolved/self-contained form.

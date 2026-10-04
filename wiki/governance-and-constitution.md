@@ -1,7 +1,7 @@
 ---
 title: Governance & Constitution
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-04
+generator: claude-sonnet-5-5
 sources:
   - .specify/memory/constitution.md
 ---
@@ -15,7 +15,7 @@ All governance rules live in a single file, `.specify/memory/constitution.md`
 (the "SpecKit Constitution"). It describes itself as "the root of the
 documentation tree": every other document links back to it
 (`.specify/memory/constitution.md` §"Detailed References (Deeper Detail)").
-Current version **1.3.0**, ratified 2026-02-18, last amended 2026-09-26
+Current version **1.4.0**, ratified 2026-02-18, last amended 2026-10-04
 (`.specify/memory/constitution.md` §"Governance").
 
 The 1.2.0 amendment retired the former `PROJECT_CONSTITUTION.md`. That file
@@ -33,6 +33,8 @@ NFR, and its modelling-IDE inventory went verbatim to GH #59 as unscoped
 backlog. `specs/001-governance-platform` is now the business specification
 (`.specify/memory/constitution.md` Sync Impact Report v1.3.0, §"Requirements —
 why").
+
+The 1.4.0 amendment added Principle XI and the matching quality gate; no templates needed changes, and `AGENTS.md` carries a pointer rather than a copy (`.specify/memory/constitution.md` Sync Impact Report v1.4.0).
 
 ## The document tree
 
@@ -79,6 +81,7 @@ From §"Core Principles":
 | VIII | Durability & Interoperability | Migration/mapping paths for new formats; import/export (ArchiMate exchange, CSV/JSON, plugins) preserves semantics; detect semantic drift after upgrades |
 | IX | Cross-Platform Consistency | Equivalent behaviour and data fidelity across platforms; graceful degradation |
 | X | Decision Traceability & Documentation Integrity | Every load-bearing decision recorded once as an ADR; narratives that contradict it are defects |
+| XI | Concise, Non-Duplicative Spec Artefacts | Every `speckit-*` artefact is as short as completeness allows and each fact has exactly one home |
 
 VII and VIII absorbed the modelling-specific rules of the retired
 `PROJECT_CONSTITUTION.md` (Sync Impact Report). The feature specs cite
@@ -98,6 +101,25 @@ Integrity"):
   `docs/adr/README.md` index until it is.
 - Diagrams are generated from `architecture/model/`, never hand-edited; the
   wiki is derived and never a source.
+
+### Principle XI in practice
+
+Principle XI arrived in 1.4.0 (2026-10-04), motivated by GH #95, where the spec,
+data model, research, contracts and quickstart restated the same rules
+(`.specify/memory/constitution.md` Sync Impact Report v1.4.0, §"XI. Concise,
+Non-Duplicative Spec Artefacts"). Its rules:
+
+- `spec.md` says what and why only; `data-model.md` is the single home for ids,
+  relationships, rules and lifecycle; `research.md` is a decision table;
+  `contracts/` and `quickstart.md` give one example plus commands and link back;
+  `plan.md` summarises in a paragraph and links.
+- Diagrams are embedded PlantUML blocks, validated with `plantuml -checkonly`,
+  drawn once in the artefact that owns the subject (class and state in
+  `data-model.md`, sequence in `contracts/`, activity and deployment in
+  `plan.md`).
+- When a rule changes, edit it in its one home and replace restated copies with a
+  link; prefer editing artefacts to regenerating them, and commit a snapshot
+  before any regeneration.
 
 ## Development workflow
 
@@ -125,6 +147,7 @@ Before a feature is "Done" (§"Quality Gates"):
   (ADR-0025).
 - **Documentation & decisions**: docs updated; load-bearing choices have an
   ADR; `ARCHITECTURE.md` and the model agree with the ADR log.
+- **Concise artefacts**: spec artefacts follow Principle XI, with no restated content.
 - **Constitution Check** against the core principles.
 
 ## Governance of the constitution itself

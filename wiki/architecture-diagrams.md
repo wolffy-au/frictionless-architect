@@ -228,7 +228,11 @@ The Controls & OSCAL stage is drawn as **two** application-layer views
   Provider serves AI-assisted Markdown conversion, and Trestle serves the
   round-trip into an OSCAL Catalog. The view is conversion only: its one
   golden-dataset object is the baseline catalog, the expected output for the
-  Regulatory Standard Document it converts.
+  Regulatory Standard Document it converts. Since ADR-0034 the view also shows the
+  shared LLM Provider Configuration component, associated with the LLM Provider
+  ("configures provider/model & resolves credentials for calls to"), and the
+  container view carries the same edge (`architecture/model/diagrams/application/artefact-oscal.puml`,
+  `c4/container.puml`).
 - `Artefact Flow — OSCAL Profile Resolution`
   (`application/artefact-oscal-resolve`). OSCAL Baseline Tailoring reads the
   OSCAL Catalog and writes the OSCAL Profile, and Trestle's `profile-resolve`
@@ -297,7 +301,7 @@ Two views, added 2026-09-26 (GH #65), render the platform's own restructure
 
 | View | Diagram | Viewpoint | Covers |
 |---|---|---|---|
-| Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, and `if-twin-read-path`, each realized by its package `Artifact` |
+| Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, the shared LLM Provider Configuration component (ADR-0034), and `if-twin-read-path`, each realized by its package `Artifact` |
 | Migration Sequence | `migration/sequence` | `implementation_migration` | The `ARCHITECTURE.md` §8 steps as `WorkPackage`s, their `Deliverable`s, and the Baseline / Transition / Target `Plateau`s and `Gap`s between them |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
@@ -329,9 +333,9 @@ Compliance Catalog](controls-compliance-catalog.md)):
 | Application Structure — Controls & Compliance Catalog | `application/catalog-structure` | `application_structure` | `sub-catalog`'s own component, its `if-catalog-ui` interface, and the artefacts it owns |
 | Technology: OSCAL Golden-Dataset CI Check | `technology/oscal-golden-check` | `custom` | The CI runner and test tool executing `techproc-oscal-golden-check` against the three golden-dataset legs (catalog, profile, resolution) |
 | Technology: Persistence Boundary | `technology/persistence-boundary` | `custom` | What `store-oscal`/`store-ledger` actually run on: local filesystem `Artifact`s on `node-app-server`, not Postgres/Neo4j |
-| Technology: Infrastructure Landscape | `technology/landscape` | `technology` | The pure infrastructure topology — both Nodes, their `SystemSoftware`, and the package `Artifact`s they host — with no `ApplicationComponent`/`DataObject` |
+| Technology: Infrastructure Landscape | `technology/landscape` | `technology` | The pure infrastructure topology — both Nodes, their `SystemSoftware` (including the OS credential store, `sw-keyring`), and the package `Artifact`s they host — with no `ApplicationComponent`/`DataObject` |
 | Technology Usage: Catalog Runtime | `technology/usage-catalog` | `technology_usage` | The demand-side chain `sub-catalog` → its package `Artifact` → `sw-uvicorn-fastapi` → `node-app-server` |
-| Runtime Migration: Local Compose to Hosted Cluster | `technology/runtime-migration` | `implementation_migration` | The `plat-runtime-mvp` → `plat-runtime-target` Plateau/Gap pair (ADR-0018) for the data layer's deployment shape |
+| Runtime Migration: Local Compose to Hosted Cluster | `technology/runtime-migration` | `implementation_migration` | The `plat-runtime-mvp` → `plat-runtime-target` Plateau/Gap pair (ADR-0018) for the data layer's deployment shape; the MVP Plateau also aggregates `sw-keyring`, which is not carried to the hosted target (ADR-0034) |
 
 **Why `view-technology-ci-check` and `view-technology-persistence-boundary`
 are `viewpoint: custom`.** Both mix a `Node`/`Artifact` (Technology) with
@@ -371,6 +375,11 @@ viewpoint.
   Model: Artefact Flow](architecture-model-artefact-flow.md).
 - `c4/context` and `c4/container` picked up small edge changes reflecting the
   same additions.
+- ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
+  Configuration component and its package Artifact to the Packaging, Migration
+  Sequence and Artefact Flow — Controls & OSCAL diagrams, and the OS credential store
+  (`sw-keyring`) to the Technology landscape and Runtime Migration diagrams
+  (`architecture/model/views.yaml`; the regenerated `.puml`/`.svg` pairs).
 - `implementation/packaging` was rewritten from a broad
   `include_types: [Artifact]` scope to an explicit `members:` list, so the new
   non-package Artifacts added for the persistence-boundary slice

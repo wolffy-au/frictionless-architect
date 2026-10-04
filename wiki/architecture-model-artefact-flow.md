@@ -28,7 +28,7 @@ relationships qualified `Read` / `Write` / `ReadWrite`. There are 35 `art-*`
 `DataObject`s. The shared stores `Aggregation`-link the persistent artefacts,
 which ties section C back to section B
 ([Ecosystem](architecture-model-ecosystem.md))
-(`architecture/model/elements.yaml:1023-1229`,
+(`architecture/model/elements.yaml:1057-1288`,
 `architecture/model/relationships.yaml:542-700`).
 
 A dedicated Forensic Ledger Recording function (`fn-ledger-record` →
@@ -53,7 +53,7 @@ Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
 | `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering |
 | `Artefact Flow — Assurance & Specification` | Spec generation; build supervision; the enforcement gate run inline in CI/CD; BAU effectiveness monitoring; drift detection against the roadmap → remediation backlog and POA&M |
 
-Notable artefacts (`architecture/model/elements.yaml:1194-1229`):
+Notable artefacts (`architecture/model/elements.yaml:1252-1288`):
 
 - **OSCAL:** Catalog, Profile, Resolved OSCAL Profile Catalog, Component,
   SSP, Assessment Plan, Assessment Results, and Plan of Action & Milestones.
@@ -225,5 +225,5 @@ Process; see [Architecture Views & Diagrams](architecture-diagrams.md).
 > **Sources disagree on the resolved artefact's name.** `sub-catalog`'s `desc`
 > still says it resolves Profiles "into Resolved Catalogs", and
 > `fn-oscal-profile-resolve`'s `desc` says "a fully resolved OSCAL Catalog"
-> (`architecture/model/elements.yaml:892-898`, `1051-1055`). The artefact
+> (`architecture/model/elements.yaml:892-898`, `1109-1113`). The artefact
 > itself is named Resolved OSCAL Profile Catalog.
