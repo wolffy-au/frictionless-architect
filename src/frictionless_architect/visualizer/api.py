@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import math
 import time
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -37,6 +38,23 @@ class PayloadUnavailable(Exception):
 
 class RefreshInProgress(Exception):
     """Raised when a refresh is requested while another is still running."""
+
+
+class RefreshBackoff(Exception):
+    """Raised when a refresh is requested too soon after a successful one.
+
+    Attributes:
+        retry_after: Whole seconds left until a refresh is accepted again.
+    """
+
+    def __init__(self, retry_after: int) -> None:
+        """Record how long the caller must wait.
+
+        Args:
+            retry_after: Whole seconds left in the backoff window.
+        """
+        super().__init__(f"Refresh backoff active for another {retry_after}s")
+        self.retry_after = retry_after
 
 
 class RefreshRequest(BaseModel):
@@ -114,9 +132,17 @@ class SchemaPayloadService:
 
         Raises:
             RefreshInProgress: If a refresh is already running.
+            RefreshBackoff: If the last successful refresh finished less than
+                ``refresh_backoff_seconds`` ago. Failed refreshes never start the
+                backoff, so they can be retried immediately.
         """
         if self._refresh_task and not self._refresh_task.done():
             raise RefreshInProgress()
+        if self._last_refresh_completed is not None:
+            elapsed = (datetime.now(timezone.utc) - self._last_refresh_completed).total_seconds()
+            remaining = self.settings.refresh_backoff_seconds - elapsed
+            if remaining > 0:
+                raise RefreshBackoff(math.ceil(remaining))
         estimate = max(500, (self._last_latency_ms or 1200) * 2)
         self._refresh_task = asyncio.create_task(self._background_refresh())
         await asyncio.sleep(0)
@@ -354,16 +380,23 @@ async def schema_payload(force_reload: ForceReloadQuery = False) -> dict[str, An
     status_code=202,
     responses={
         409: {"description": "A refresh is already in progress"},
+        429: {"description": "Too soon after the last successful refresh; see Retry-After"},
         503: {"description": "Schema payload unavailable while refreshing"},
     },
 )
 async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
-    """``POST /schema-payload/refresh``: start a background refresh (202; 409 if busy)."""
+    """``POST /schema-payload/refresh``: start a background refresh.
+
+    Returns 202 when started, 409 if one is running, and 429 with ``Retry-After`` while
+    the backoff after the last successful refresh is still active.
+    """
     service = get_schema_service()
     try:
         estimated = await service.request_refresh()
     except RefreshInProgress as exc:
         raise HTTPException(status_code=409, detail="Refresh already running") from exc
+    except RefreshBackoff as exc:
+        raise HTTPException(status_code=429, detail=str(exc), headers={"Retry-After": str(exc.retry_after)}) from exc
     return {"status": "refresh_started", "estimated_completion_ms": estimated}
 
 

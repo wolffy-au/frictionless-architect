@@ -18,7 +18,8 @@ class VisualizerSettings(BaseSettings):
         sample_data_dir: Directory holding ``sample-00/Test Model Full.xml`` and ``schema/``.
         cache_dir: Directory for the cached payload.
         warning_text: Warning raised when the sample model cannot be read.
-        refresh_backoff_seconds: Minimum gap between cache refreshes.
+        refresh_backoff_seconds: Seconds after a successful refresh during which
+            ``POST /schema-payload/refresh`` answers 429 (failed refreshes are not delayed).
     """
 
     model_config = SettingsConfigDict(
