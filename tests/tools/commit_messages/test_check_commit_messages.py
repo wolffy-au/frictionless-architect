@@ -7,7 +7,8 @@ import pytest
 
 SCRIPT = Path(__file__).resolve().parents[3] / "scripts" / "check_commit_messages.py"
 spec = importlib.util.spec_from_file_location("check_commit_messages", SCRIPT)
-assert spec and spec.loader
+assert spec
+assert spec.loader
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
