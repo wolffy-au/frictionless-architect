@@ -24,5 +24,6 @@ OUT_NAME=commit-audit
 STAMP="$(date +%F)-${BASE//\//_}..${REF//\//_}"
 TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git merge-base:*),Bash(git rev-list:*),Bash(git show:*),Bash(git describe:*)"
 TASK="Audit the range $BASE..$REF with base=$BASE and target=$REF. Follow your Steps 1 and 3-4; skip Step 2 (do not run poetry or cz, evaluate the ruleset by hand). Put the per-commit results under '## Findings'."
+TASK="$TASK $AGENT_BASH_RULE"
 
 agent_report_run

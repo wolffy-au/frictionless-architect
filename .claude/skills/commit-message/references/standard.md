@@ -55,6 +55,7 @@ Use the package directory name, not the Python module name.
 - `sample-data` — fixture/sample models
 - `wiki` — the generated `wiki/` (content produced by the `wiki-librarian` skill)
 - `ci` — release/versioning plumbing
+- `scripts` — gate and audit scripts under `scripts/`
 - `deps` — dependency bumps (`chore(deps):`, `build(deps):`)
 - `model` — the ArchiMate model pipeline (`architecture/model/`: `elements.yaml`,
   `relationships.yaml`, `views.yaml`, generated diagrams and build artefacts)

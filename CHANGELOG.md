@@ -1,3 +1,10 @@
+## v0.1.1 (2026-10-04)
+
+### Fix
+
+- **scripts**: list ignored Snyk findings in the vuln audit
+- **scripts**: make weekly audit runs complete without tool denials
+
 ## v0.1.0 (2026-10-04)
 
 ### Feat

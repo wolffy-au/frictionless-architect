@@ -17,6 +17,9 @@
 
 set -euo pipefail
 
+# Append to TASK: the --allowedTools matcher rejects chained commands, so agents must keep Bash calls simple.
+AGENT_BASH_RULE="Use Read, Grep and Glob for files; use Bash only for the allowed commands, one per call (no cd, sed, ls, 'git -C', ';', '&&', '|' or redirects)."
+
 agent_fail() {
   echo "ERROR: $*" >&2
   [ -z "${LOG:-}" ] || echo "See $LOG and $RAW" >&2
@@ -76,6 +79,10 @@ $TASK $baseline Print only the final report as your last message, with a '## Fin
 
   local denials
   denials="$(jq -r '.permission_denials | length' "$RAW")"
+  if [ "$denials" -ne 0 ]; then
+    # claude's stderr is usually empty on a denial; record the denied commands so the .log explains the failure.
+    jq -r '.permission_denials[] | "DENIED \(.tool_name): \(.tool_input.command // (.tool_input | tostring))"' "$RAW" >> "$LOG"
+  fi
   [ "$denials" -eq 0 ] || agent_fail "$denials tool call(s) were denied: $(jq -c '[.permission_denials[].tool_name]' "$RAW")"
 
   grep -q '^## Findings' "$OUT" || agent_fail "report has no '## Findings' section (incomplete run)"
