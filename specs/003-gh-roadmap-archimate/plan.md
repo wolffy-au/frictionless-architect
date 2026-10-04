@@ -42,7 +42,7 @@ as ADR-0035.
 | Principle | Assessment |
 |---|---|
 | I. Code Quality | Small pure functions (fetch → map → render → write); mapping is a pure function over plain dicts, trivially testable. Pass. |
-| II. Testing | TDD order in tasks: stub-`gh` unit tests first, then idempotency/single-change tests, then `build.py` integration. 90% gate applies to the new module if `architecture/model/` is in coverage scope — tasks must confirm and, if excluded, still test it. Pass. |
+| II. Testing | TDD order in tasks: stub-`gh` unit tests first, then idempotency/single-change tests, then `build.py` integration. 90% gate applies to the new module if `architecture/model/` is in coverage scope — T034 adds `architecture/model` to the pre-merge coverage run. Pass. |
 | III. UX Consistency | CLI mirrors `build.py` (`poetry run python architecture/model/import_gh_roadmap.py`); errors name the failing `gh` call and the fix (`gh auth login`). Pass. |
 | IV. Performance | Off hot path; no 200 ms obligation. Pass. |
 | V. Security | Uses the operator's existing `gh` auth; no tokens read, stored or logged; issue/milestone text is untrusted input and is only ever passed through `safe_dump`. `gh` invoked with an argv list, never `shell=True`. Pass. |
