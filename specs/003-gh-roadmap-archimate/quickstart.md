@@ -14,15 +14,9 @@ poetry run python architecture/model/build.py
 Expect: a summary line, then `build.py` reporting a model that validates. On this repo
 today (checked 2026-10-03):
 
-- 1 Plateau `plat-policy-to-oscal-mvp-1` (`policy-to-oscal-mvp`), 0 releases.
-- 1 planned Deliverable `del-policy-to-oscal-mvp-1-planned`, realizing the Plateau.
-- 3 WorkPackages: `wp-markdown-catalogue-converter-gh-44`, `wp-application-layer-dedupe-artefact-views-gh-61`, `wp-vision-single-high-level-archimate-gh-7`, each realizing the planned Deliverable (none realizes the Plateau directly).
-  #7 is closed but no release exists yet, so it stays on the planned Deliverable; the others are open.
-- No `Plateau → bfn-*` link until a milestone description carries an existing `bfn-*` token.
-- No Triggering: #44's blockers (#43, #45, #47–#49) and #7's blocker (#5) have no
-  milestone, so they are out of scope.
-- The other issues are absent, including #47–#49, #76, #83 and its children.
-- No `gap-*`, `plat-baseline` or Strategy element: those are hand-authored.
+1 Plateau, 1 planned Deliverable and 3 Work Packages (#44, #61, #7), each realizing the planned
+Deliverable, and no release, Triggering, Gap or `plat-baseline` (the blockers have no milestone).
+Rules: [data-model.md](data-model.md).
 
 ```plantuml
 @startuml
