@@ -11,20 +11,37 @@ from frictionless_architect.visualizer.config import VisualizerSettings
 
 
 class DataLoaderError(Exception):
-    pass
+    """Raised when a Neo4j query for schema metadata fails."""
 
 
 class DataLoader:
+    """Read-only reader of elements, relationships and views from Neo4j."""
+
     def __init__(self, settings: VisualizerSettings) -> None:
+        """Create a loader; the driver is opened lazily on first ``collect``.
+
+        Args:
+            settings: Visualiser settings supplying the Neo4j URI and credentials.
+        """
         self._settings = settings
         self._driver: Driver | None = None
 
     def close(self) -> None:
+        """Close the Neo4j driver if one was opened."""
         if self._driver:
             self._driver.close()
             self._driver = None
 
     def collect(self) -> dict[str, list[dict[str, Any]]]:
+        """Fetch all elements, relationships and views.
+
+        Returns:
+            A mapping with ``elements``, ``relationships`` and ``views`` lists; all
+            empty when no Neo4j URI is configured.
+
+        Raises:
+            DataLoaderError: If a Neo4j query fails.
+        """
         if not self._settings.neo4j_uri:
             return {"elements": [], "relationships": [], "views": []}
 

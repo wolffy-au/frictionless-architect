@@ -14,6 +14,16 @@ from frictionless_architect.visualizer.namespaces import ARCHIMATE_NS, XSI_NS, r
 
 @dataclass
 class SampleParseResult:
+    """Normalised content of a parsed sample model file.
+
+    Attributes:
+        model: Model-level metadata (identifier, name, ...).
+        elements: Elements keyed by identifier.
+        relationships: Relationships keyed by identifier.
+        views: View definitions with their nodes and connections.
+        file_path: The XML file the data came from.
+    """
+
     model: dict[str, Any]
     elements: dict[str, dict[str, Any]]
     relationships: dict[str, dict[str, Any]]
@@ -22,14 +32,40 @@ class SampleParseResult:
 
     @classmethod
     def empty(cls, sample_file: Path) -> "SampleParseResult":
+        """Build a result with no content, for when the sample cannot be used.
+
+        Args:
+            sample_file: The file that was attempted.
+
+        Returns:
+            An empty result pointing at ``sample_file``.
+        """
         return cls(model={}, elements={}, relationships={}, views=[], file_path=sample_file)
 
 
 class SampleParser:
+    """Parses an ArchiMate 3 exchange-format file into a ``SampleParseResult``."""
+
     def __init__(self, sample_file: Path) -> None:
+        """Create a parser.
+
+        Args:
+            sample_file: Path of the ArchiMate exchange XML to parse.
+        """
         self.sample_file = sample_file
 
     def parse(self) -> SampleParseResult:
+        """Parse the sample file.
+
+        Returns:
+            The normalised model, elements, relationships and views.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            xml.etree.ElementTree.ParseError: If the XML is malformed.
+            ValueError: If the document has no root element.
+            ArchimateNamespaceError: If the root is not in the ArchiMate 3 namespace.
+        """
         tree = _safe_parse(self.sample_file)
         root = tree.getroot()
         if root is None:
