@@ -1,7 +1,7 @@
 ---
 title: Platform Specification & API
-generated: 2026-10-03
-generator: claude-sonnet-5
+generated: 2026-10-04
+generator: claude-sonnet-5-5
 sources:
   - specs/001-governance-platform/spec.md
   - specs/001-governance-platform/contracts/api.yaml
@@ -188,7 +188,7 @@ From `specs/002-neo4j-schema-ui/contracts/api.md`, as implemented in
 | Method & path | Purpose | Responses |
 |---|---|---|
 | `GET /schema-payload` | Aggregated model/element/relationship/view payload for both views. Query param `force_reload` (boolean, default `false`) bypasses the cache. | `200` with `{model, elements, relationships, views, warnings[], latency_ms}`; `503` when neither Neo4j nor sample data is available and no cache exists |
-| `POST /schema-payload/refresh` | Kicks off an async cache rebuild; returns immediately. Optional body `{source}`. | `202` `{status: "refresh_started", estimated_completion_ms}`; `409` if a refresh is already running |
+| `POST /schema-payload/refresh` | Kicks off an async cache rebuild; returns immediately. Optional body `{source}`. | `202` `{status: "refresh_started", estimated_completion_ms}`; `409` if a refresh is already running; `429` + `Retry-After` within `REFRESH_BACKOFF_SECONDS` (default 300) of the last *successful* refresh (failed refreshes are never delayed, so the 5-minute retry holds) |
 | `GET /schema-payload/status` | Cache freshness + connection state for the warning banner | `200` `{cache_age_seconds, neo4j_status, sample_file_status, last_warning, refresh_in_progress, ...}` |
 
 `sample_file_status` takes one of three values. `loaded` means the sample

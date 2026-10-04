@@ -100,8 +100,9 @@ service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
 bundled sample model, falling back to `sample-data/` when Neo4j is unreachable
 (`README.md` §"What is built today"). The FastAPI app is titled "Frictionless
 Architect" (OpenAPI docs at `/docs`) and exposes `GET /schema-payload`,
-`POST /schema-payload/refresh` and `GET /schema-payload/status`
-(`README.md` §"Running the schema visualiser"). See
+`POST /schema-payload/refresh` and `GET /schema-payload/status`; refresh answers `429` with `Retry-After` for
+`FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` (default 300) after a successful
+refresh (`README.md` §"Configuration", §"Running the schema visualiser"). See
 [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md) (spec 002).
 

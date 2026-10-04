@@ -29,7 +29,7 @@ There are two quickstarts, both feature-scoped under `specs/`:
   the schema visualiser. It was realigned on 2026-10-04 with the JSON-only service: it
   now uses `poetry install` / `poetry run uvicorn`, the full
   `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` name, and tells you to fetch
-  `/schema-payload` (docs at `/docs`) because there is no browser UI yet — the old
+  `/schema-payload` (docs at `/docs`; `POST /schema-payload/refresh` returns `429` with `Retry-After` during the backoff after a successful refresh) because there is no browser UI yet — the old
   `/schema-visualizer` page, polling and **Refresh sample** button are gone
   (`specs/002-neo4j-schema-ui/quickstart.md` §"Start the visualiser", §"Workflow tips").
 
@@ -102,7 +102,7 @@ FRICTIONLESS_ARCHITECT_NEO4J_USER=reader
 FRICTIONLESS_ARCHITECT_NEO4J_PASSWORD=reader
 FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
 FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
-FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300   # reserved, not yet enforced
+FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300   # 429 + Retry-After on refresh for this long after a successful one
 
 poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 # then fetch http://127.0.0.1:8100/schema-payload — JSON-only for now, the
@@ -191,7 +191,8 @@ dropped until `acceptance-author` writes real scenarios
   (`AGENTS.md` §"Conventions").
 - Feature work is spec-driven: `speckit-specify` → `speckit-plan` →
   `speckit-tasks` → `speckit-implement`, against
-  `.specify/memory/constitution.md`.
+  `.specify/memory/constitution.md`. Spec artefacts are concise and say each
+  thing once (constitution Principle XI; `AGENTS.md` §"Conventions").
 - **Architecture decisions** are recorded as MADR files under `docs/adr/` —
   `ARCHITECTURE.md` is the narrative, the ADR log is the index. File an ADR for
   any load-bearing choice; the `adr-auditor` agent sweeps for decisions made

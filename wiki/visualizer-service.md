@@ -67,11 +67,13 @@ schema visualiser").
 | `sample_data_dir` | `…_SAMPLE_DATA_DIR` | `sample-data` |
 | `cache_dir` | `…_CACHE_DIR` | `.cache/visualiser` |
 | `warning_text` | `…_WARNING_TEXT` | `"Sample data unavailable"` |
-| `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` (reserved, not yet enforced) |
+| `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` (enforced after a successful refresh) |
 
-The README marks `refresh_backoff_seconds` as "reserved ... not yet enforced by
-the service", and nothing in `src/` reads it beyond the field itself
-(`README.md` §"Configuration"; `src/frictionless_architect/visualizer/config.py:37`).
+`refresh_backoff_seconds` is enforced (commit `2d5bb45`): for that many seconds after a
+*successful* refresh, `POST /schema-payload/refresh` answers `429` with a
+`Retry-After` header; failed refreshes never start the backoff and can be retried
+immediately (`README.md` §"Configuration";
+`src/frictionless_architect/visualizer/config.py:38`).
 `POST /schema-payload/refresh` accepts an optional `source` hint in its body that
 is currently unused (`src/frictionless_architect/visualizer/api.py:42-54`).
 
@@ -82,7 +84,7 @@ Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`
 (`src/frictionless_architect/visualizer/config.py:39-53`). `get_visualizer_settings()` is `lru_cache`d.
 
 The public classes and methods in these modules now carry Google-style docstrings
-(commit `44f1b8e`), and the three routes document their `503`, `202` and `409`
+(commit `44f1b8e`), and the three routes document their `503`, `202`, `409` and `429`
 responses; the OpenAPI docs are served at `/docs` (`README.md` §"Running the
 schema visualiser").
 
@@ -127,7 +129,10 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
    (`src/frictionless_architect/visualizer/api.py:246-282`).
 3. **`request_refresh()`** — spawns a background `asyncio` task that rebuilds
    and re-caches; raises `RefreshInProgress` (→ HTTP 409) if one is already
-   running; the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
+   running, and `RefreshBackoff` (→ HTTP 429 with `Retry-After`, the whole seconds
+   left) if the last successful refresh completed less than
+   `refresh_backoff_seconds` ago
+   (`src/frictionless_architect/visualizer/api.py:43-58,127-146,398-399`); the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
    (`src/frictionless_architect/visualizer/api.py:109-123`).
 4. **`get_status()`** — reports `cache_age_seconds`, `neo4j_status`
    (`disabled`/`available`/`unavailable`), `sample_file_status`

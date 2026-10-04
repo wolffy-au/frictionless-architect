@@ -60,7 +60,7 @@ name, defaulting to the provider name). Unknown fields are rejected
 They are stored in `~/.config/frictionless-architect/llm.toml`, outside the repo tree;
 `LLM_PROVIDER_CONFIG_PATH` overrides the location. A `[default]` table plus optional
 `[components."<id>"]` tables hold no key, only the reference (`README.md`; `platform/packages/llm-provider-config/src/llm_provider_config/store.py`).
-`save_settings` tries `chmod 0o600` and ignores failure on mounts that refuse it
+`save_settings` tries `chmod 0o600` and suppresses `OSError` (via `contextlib.suppress`) on mounts that refuse it
 (`platform/packages/llm-provider-config/src/llm_provider_config/store.py`).
 
 ## Credentials

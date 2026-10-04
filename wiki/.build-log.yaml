@@ -8,20 +8,20 @@ topics:
     sources:
       files:
         README.md:
-          sha256: 53e891d218c0d4d115add9c996b29e21d465b34df284be66fc6e2b587c9e1c45
-          lines: 133
+          sha256: ad586885abe581f9685d15b1e716f3787bc646f9bc5c9636ed87188f5c9c6fcb
+          lines: 134
         specs/001-governance-platform/spec.md:
           sha256: f08d56571b62fc3f64f162c1c65fe27df5f89c3acba3b0b6ac68533680e96f0c
           lines: 199
   governance-and-constitution:
     title: Governance & Constitution
     page: wiki/governance-and-constitution.md
-    built: '2026-09-26'
+    built: '2026-10-04'
     sources:
       files:
         .specify/memory/constitution.md:
-          sha256: 04d8b25c34bd6bd565471d67c7aba3ac0c7c65d899ba8705139bcaf3bc0d9756
-          lines: 224
+          sha256: 8857fc3e9d72b1231bdc80c51536c3764e158d0a25885cd278f6da69555cba83
+          lines: 257
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
@@ -515,7 +515,7 @@ topics:
   platform-spec:
     title: Platform Specification & API
     page: wiki/platform-spec.md
-    built: '2026-10-03'
+    built: '2026-10-04'
     sources:
       files:
         specs/001-governance-platform/contracts/api.yaml:
@@ -528,8 +528,8 @@ topics:
           sha256: b925640f8a25d3afbfbc566668a282309ca94caeca2fbc250b2e0744b7e08a9a
           lines: 34
         specs/002-neo4j-schema-ui/contracts/api.md:
-          sha256: 390d4948021bf5857514709030e061a367be9cb156b3905d6e18e08c4cb164b5
-          lines: 48
+          sha256: c920aac13bce9def038b75329a7c287354c85c120affd0c7e164f26f60f27644
+          lines: 49
         specs/002-neo4j-schema-ui/plan.md:
           sha256: f3746b5b784379389358cf99649691a868f82d23af062e247b56bb9da499df0a
           lines: 58
@@ -646,8 +646,8 @@ topics:
           sha256: 919b9706c81908e3f2a0d96c6f2c0426c4e43522d0cb1c91fa62f27e081515c6
           lines: 61
         platform/packages/llm-provider-config/src/llm_provider_config/store.py:
-          sha256: c880785ecb595e2d970e3d2f2df64b75a4cff432434a5b228ff3691bbbd65a8d
-          lines: 44
+          sha256: 24e067e872039930e9e3ded6e9e13b1aafc17b709db452d968a4b6e5b6ecd4a4
+          lines: 43
   non-functionals:
     title: Non-Functional Requirements
     page: wiki/non-functionals.md
@@ -667,7 +667,7 @@ topics:
           sha256: 48dced7090a65d75210823fe82969b7d6a6a264288b53d11d6fa6ad86848d777
           lines: 3
         src/frictionless_architect/app.py:
-          sha256: 99af6b19c0ad0b86d387d87f9abfc1afcbf50ebae707db18a3e1c635f6f5f984
+          sha256: 8222948a5aa334e84e098a5d1284a9d963604550210b6be8ee6b776e511ff9c8
           lines: 28
         src/frictionless_architect/schema/__init__.py:
           sha256: dfbfb90822e85df88dc25050b6972d3d445d14ea719fd9dae550c9a872690113
@@ -679,14 +679,14 @@ topics:
           sha256: 3e98d3ef453e703987240680bc09250ba02ea808b9d4dd85e3a816f5248e370d
           lines: 1
         src/frictionless_architect/visualizer/api.py:
-          sha256: c6a69d998fd404ab784159b33cc0e6d41c1aefbbd694294bac9d771e1a17b356
-          lines: 374
+          sha256: 2408fe1e0ffc856738b3ef8dbb036b8440b2416d6b375b8510dc5c8feaad455e
+          lines: 407
         src/frictionless_architect/visualizer/cache.py:
           sha256: 3657f8bb2924f14b396212f06affcb14b89d55a1bb5b44964c9355acd1419099
           lines: 51
         src/frictionless_architect/visualizer/config.py:
-          sha256: 86cf74ba52cfbd020bb500a6c376418fb6a42aa9219cec1bb398ffab565f2835
-          lines: 58
+          sha256: 9f7978bde6d08b445bef44e89dc280b00efc6542bdb750fe7ab4e8e0203882ee
+          lines: 59
         src/frictionless_architect/visualizer/data_loader.py:
           sha256: e0e094112e00a88745dc0401bf6a8ce1f4c28a0d453ee1f6838386308f214018
           lines: 108
@@ -706,8 +706,8 @@ topics:
     sources:
       files:
         AGENTS.md:
-          sha256: 1622e47607a521d6f546dcc619ce54b355c9a99def3d56ccec12f69d8a48daca
-          lines: 141
+          sha256: 74452b2c8cadf4bfd34e6fcc399c0c4fb1a8f895778cb6a69eb8fd806f5c80ef
+          lines: 142
         CODE_OF_CONDUCT.md:
           sha256: c135627b08b25735d88156b519d9daacf42c3ce3e7ec08b6b4bc56b1a5c19df7
           lines: 128
@@ -724,7 +724,7 @@ topics:
           sha256: 5552f4fae9e848126bcf0a0d872c628640462d1a8d6b02bd35dc8f33b1090dbb
           lines: 75
         specs/002-neo4j-schema-ui/quickstart.md:
-          sha256: a11947641f27516697a54e6414f54b450032661099edf5292fa0dac6109f7b1d
+          sha256: 46e8aee01242a26d3ec8ffdde6e7b54dcc125c4a228678b568e3439b3a39f1e6
           lines: 57
       urls: {}
   sample-data:
