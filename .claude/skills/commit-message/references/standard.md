@@ -103,7 +103,12 @@ in the same commit that first needs it.
 poetry run cz check --message "<msg>"             # lint one message
 poetry run cz check --rev-range <base>..HEAD      # lint a range
 poetry run cz commit                              # interactive prompt
+poetry run python scripts/check_commit_messages.py --range develop..HEAD   # scopes, length, case
 ```
+
+`scripts/check_commit_messages.py` reads the scope list from this file and `platform/packages/`.
+It runs in `scripts/pre_commit_checks.sh` and as a `commit-msg` hook; imperative mood and body
+quality are left to the `commit-auditor` agent.
 
 commitizen is declared in the `dev` dependency group (`poetry install --with dev`).
 If `poetry run cz` does not work, fall back to the regex/checklist in the

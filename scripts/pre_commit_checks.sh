@@ -11,6 +11,17 @@ echo "Starting pre-commit checks..."
 
 echo "Running pre-commit checks..."
 
+# --- Commit message standard ---
+# Scope list, 72-char subject, case, period and breaking-change rules from the commit-message
+# skill's standard. Covers the commits this branch adds over develop; fails on any violation.
+echo "Checking commit messages..."
+base=$(git rev-parse --verify --quiet develop || git rev-parse --verify --quiet origin/develop || true)
+if [ -n "$base" ]; then
+  poetry run python scripts/check_commit_messages.py --range "$base..HEAD"
+else
+  echo "No develop ref found; skipping commit message check."
+fi
+
 # --- Linting and Formatting Check ---
 echo "Running pymarkdown lint..."
 # Runs pymarkdown for linting markdown files. Assumes pymarkdown is executable in the environment.

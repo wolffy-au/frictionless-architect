@@ -67,6 +67,15 @@ repos:
       - id: commitizen
         stages: [commit-msg]
 
+  # Repo scope list, length and case rules from the commit-message standard.
+  - repo: local
+    hooks:
+      - id: commit-message-standard
+        name: commit message standard
+        entry: python3 scripts/check_commit_messages.py --message-file
+        language: system
+        stages: [commit-msg]
+
   # ── pre-push stage: thorough ────────────────────────────────────────────
   - repo: local
     hooks:
