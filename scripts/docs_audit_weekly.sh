@@ -19,6 +19,7 @@ TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*)"
 TASK="Run the review part of your Steps 2-5 only: skip Steps 1 and 6-11 and do not render diagrams or run poetry. \
 Instead of fixing, list each stale or missing docstring, prose doc, feature-coverage gap and out-of-date diagram \
 with its file and what is wrong, ranked by how far it has drifted. Put them under '## Findings'."
+TASK="$TASK $AGENT_BASH_RULE"
 [ -z "$SCOPE" ] || { TASK="$TASK Scope: $SCOPE."; STAMP="$(date +%F)-$(tr -c 'A-Za-z0-9' '-' <<< "$SCOPE" | sed 's/-*$//')"; }
 
 agent_report_run

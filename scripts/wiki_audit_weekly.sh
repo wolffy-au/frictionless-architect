@@ -18,5 +18,6 @@ TOOLS="Read,Grep,Glob,Bash(poetry run python .claude/skills/wiki-librarian/tools
 TASK="Run all seven checks. The tools may write to wiki/.cache while they run; that is fine. Do not edit or create any file: \
 where your rules say to fix a missing index.md link, report it instead. In the summary, replace 'what was fixed' with 'what needs a fix'. \
 Put every check's results under '## Findings'."
+TASK="$TASK $AGENT_BASH_RULE"
 
 agent_report_run

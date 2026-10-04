@@ -17,6 +17,7 @@ AGENT=spec-alignment
 OUT_NAME=spec-alignment
 TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*)"
 TASK="Follow your Steps 1-5 and Output sections. Do not run poetry commands. Put the ranked gap findings under '## Findings'."
+TASK="$TASK $AGENT_BASH_RULE"
 
 if [ -n "$SPEC" ]; then
   [[ "$SPEC" =~ ^[A-Za-z0-9._-]+$ ]] || agent_fail "invalid spec '$SPEC' (expected e.g. 001 or 002-neo4j)"
