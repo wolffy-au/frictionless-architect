@@ -18,34 +18,36 @@ repo's tooling (`commitizen`, `poetry-dynamic-versioning`, `.github/workflows/ci
   `poetry-dynamic-versioning`, so nothing is written to `pyproject.toml`),
   `major_version_zero = true` (pre-1.0: breaking changes bump the minor, not to 1.0.0),
   `annotated_tag = true`, `update_changelog_on_bump = true`.
-- **`CHANGELOG.md`** is generated/updated by `cz bump` (does not exist yet — the first
-  bump creates it). `cz bump` writes only `CHANGELOG.md` and the tag.
+- **`CHANGELOG.md`** is generated/updated by `cz bump`. `cz bump` writes only
+  `CHANGELOG.md`, a bump commit and a tag. The tag it creates sits on `develop`, so it is
+  deleted and re-created on `main` after the PR merge (§6, §8).
 
 ## Branch model
 
 - Feature work on `feature/**`, fixes on `bugfix/**` (matches `ci.yml` triggers).
 - Integrate to `develop`.
-- **Release from `main`.** Tags are created on `main`.
+- **Release via a `develop` → `main` PR.** `main` only changes via PR and a **human**
+  reviews and merges it manually. Tags are created on `main`, after that merge.
 
 ## Preconditions
 
 - Working tree clean, no untracked files that belong in the release.
-- You are on `main`, up to date with `origin/main`.
+- You are on `develop`, up to date with `origin/develop`.
 - Every commit since the last tag follows Conventional Commits — verify with the
   `commit-auditor` agent first.
-- CI is green on `main`.
+- CI is green on `develop`.
 
 ## Steps
 
-### 1. Sync branches and fast-forward `main` to `develop`
+### 1. Sync `develop` with `main`
 
 ```bash
-git checkout main   && git pull origin main
-git checkout develop && git pull origin develop
-git merge main            # carry any main-only hotfixes into develop
-git checkout main
-git merge --ff-only develop
+git fetch origin
+git checkout develop && git pull --ff-only origin develop
+git merge origin/main     # carry any main-only hotfixes into develop
 ```
+
+Never merge or fast-forward `main` locally.
 
 ### 2. Run the full quality gate
 
@@ -99,39 +101,61 @@ git status --porcelain
 git add -A && git commit -m "docs: refresh docs, diagrams, and specs pre-release"
 ```
 
-### 6. Bump the version and update the changelog
+### 6. Bump the version and update the changelog (on `develop`)
 
 ```bash
-poetry run cz bump          # updates CHANGELOG.md, bumps version, creates the v<X.Y.Z> tag
+poetry run cz bump --dry-run     # confirm the computed version
+poetry run cz bump               # updates CHANGELOG.md, adds a bump commit and tag v<X.Y.Z>
+git tag -d v<X.Y.Z>              # drop the develop-side tag; it is re-created on main (§8)
 ```
 
-Review the generated `CHANGELOG.md` entry and the tag before pushing.
+Review the generated `CHANGELOG.md` entry first.
 
-*First release only:* with no existing `v*` tag, `cz bump` treats the base as `0.0.0`
-and produces the first tag from the commit history. If you want to pin the starting
-point instead, run `poetry run cz bump --increment MINOR` or pass an explicit
-`--tag-version v0.1.0`.
+*First release only:* with no existing `v*` tag, plain `cz bump` fails ("No tag matching
+configuration could be found"). Use `poetry run cz bump --increment MINOR` (0.0.0 → 0.1.0).
 
-### 7. Push `main` and the tag
+### 7. Open the `develop` → `main` PR (human merge gate)
 
 ```bash
-git push origin main --tags
+git push origin develop          # fast-forward only, never force
+gh pr create --base main --head develop    # or update the existing PR
 ```
 
-### 8. Create the GitHub release
+Wait until every check is resolved and green (CI, SonarCloud quality gate, Snyk), then
+**stop**. A human reviews the PR and merges it manually, using a merge commit (not squash
+or rebase, so the bump commit stays reachable from `main`). Do not use `gh pr merge`,
+a local merge, or a push to `main`.
+
+If Snyk fails on account quota ("Code test limit reached", "used your limit of private
+tests") rather than on findings, the human decides whether to accept that.
+
+### 8. Tag `main` after the merge
+
+```bash
+gh pr view --json state,mergedAt   # must be MERGED
+git fetch origin
+git tag -a v<X.Y.Z> -m "bump: version <A> → <X.Y.Z>" origin/main
+git tag -l 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$'   # confirm the name; rename if not
+git merge-base --is-ancestor v<X.Y.Z> origin/main && echo ok
+git push origin v<X.Y.Z>         # push only the tag
+```
+
+The name must match `tag_format = "v$version"` (and `poetry-dynamic-versioning`) exactly.
+
+### 9. Create the GitHub release
 
 Draft notes from the previous release as a template (subject line + summary of all
 commits since the last tag), review, then:
 
 ```bash
-gh release create v<X.Y.Z> --title "v<X.Y.Z>" --notes "<release notes>"
+gh release create v<X.Y.Z> --verify-tag --title "v<X.Y.Z>" --notes "<release notes>"
 ```
 
-### 9. Merge `main` back into `develop`
+### 10. Merge `main` back into `develop`
 
 ```bash
-git checkout develop && git pull origin develop
-git merge main
+git checkout develop && git pull --ff-only origin develop
+git merge --ff-only origin/main   # or a plain merge if develop moved on
 git push origin develop
 ```
 
@@ -209,5 +233,5 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 ```
 
-With that in place, step 7 (`git push origin main --tags`) triggers the publish, and
+With that in place, step 8 (pushing the `v<X.Y.Z>` tag) triggers the publish, and
 this section is deleted.
