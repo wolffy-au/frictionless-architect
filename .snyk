@@ -1,0 +1,13 @@
+# Snyk policy for the repo root (`snyk code test`). Snyk Code supports only path excludes
+# here (per-finding ignores live in the Snyk UI), so keep each entry to one exact file and
+# say why. platform/.snyk holds the dependency ignores for platform/.
+version: v1.25.0
+exclude:
+  code:
+    # Insecure-XML-parser warning only applies to Python < 3.11; we run >=3.11. Test fixtures.
+    - tests/unit/visualizer/test_namespaces.py
+    # Dev tooling, not shipped: --root comes from the developer's own command line
+    # (same class as the other wiki-librarian tool findings ignored as "By design").
+    - .claude/skills/wiki-librarian/tools/build_status.py
+    # LLM_PROVIDER_CONFIG_PATH is an operator-set config location by design, not user input.
+    - platform/packages/llm-provider-config/src/llm_provider_config/store.py
