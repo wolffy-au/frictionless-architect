@@ -41,6 +41,7 @@ dev = [
     "pyyaml (>=6.0,<7.0)",
     "fastembed (>=0.7,<0.9)",
     "numpy (>=1.24)",
+    "pip-audit (>=2.10.1,<3.0.0)",
 ]
 
 tests = [
