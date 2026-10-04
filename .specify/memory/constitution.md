@@ -4,8 +4,8 @@
   - Added principle: XI. Concise, Non-Duplicative Spec Artefacts (incl. embedded PlantUML). Motivated by GH #95, where
     the spec, data model, research, contracts and quickstart restated the same rules and were
     hard to review.
-  - Modified sections: Principle X (plans state their model impact); Quality Gates (adds a
-    concise-artefacts check).
+  - Modified sections: Principle X (plans state their model impact); Quality Gates (adds model-impact
+    and concise-artefacts checks).
   - Templates requiring updates: none; AGENTS.md carries a pointer instead of a copy.
   - Follow-up TODOs: None
 
@@ -246,6 +246,9 @@ Before any feature is considered "Done," it must pass these gates:
 * **Commit Messages**: Every commit follows Conventional Commits, enforced by commitizen (ADR-0025).
 * **Documentation & Decisions**: READMEs, specs, and inline comments are updated; load-bearing choices have an ADR;
   `ARCHITECTURE.md` and `architecture/model/` agree with the ADR log (Principle X).
+* **Model Impact**: Every `plan.md` has a model-impact statement (ids added, changed or retired in
+  `architecture/model/`, or "none"), and `tasks.md` carries the matching model edits, `validate.py` and diagram
+  regeneration (Principle X). A plan without one fails `/speckit-analyze` and review.
 * **Concise Artefacts**: Spec artefacts follow Principle XI: no restated content, each fact in its one home.
 * **Constitution Check**: Implementation must be reviewed against these core principles.
 
