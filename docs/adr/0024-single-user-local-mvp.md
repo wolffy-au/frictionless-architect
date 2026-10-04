@@ -23,3 +23,6 @@ budgets.
   monorepo restructure (ADR-0001/0002) is designed for the multi-component
   platform regardless.
 - Break-Glass, RBAC/ABAC, and hosting concerns are specified but not MVP-blocking.
+- The schema visualiser (spec 002) reads Neo4j through its one configured service
+  credential. Per-user permission passthrough is deferred with RBAC/ABAC
+  (`specs/001` FR-015 / FR-016).

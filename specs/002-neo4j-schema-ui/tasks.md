@@ -13,7 +13,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [x] T001 [P] Create `src/frictionless_architect/visualizer/__init__.py` with a FastAPI router that mounts the schema visualiser endpoints and exposes the static/template directories.
 - [x] T002 [P] Add `src/frictionless_architect/visualizer/config.py` to read Neo4j credentials, cache paths, sample-data location, and warning text from `.env` (per quickstart).
-- [x] T003 [P] Create `src/frictionless_architect/visualizer/static/schema_visualizer.js` and `.../templates/schema_visualizer.html` to host the cytoscape diagram, table view, refresh button, status message, and non-blocking warning banner mentioned in the spec.
+- [x] T003 [P] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Create `src/frictionless_architect/visualizer/static/schema_visualizer.js` and `.../templates/schema_visualizer.html` to host the cytoscape diagram, table view, refresh button, status message, and non-blocking warning banner mentioned in the spec.
 
 ---
 
@@ -35,7 +35,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 **Independent Test**: `/schema-payload` returns element/relationship arrays containing `source_file`, sample instances, coverage warnings, and `warnings` includes "Sample data unavailable" when needed per FR-006.
 
 - [x] T008 [P] [US1] Create `tests/api/test_schema_payload.py` that asserts `/schema-payload` returns element/relationship metadata, includes sample instance identifiers, and populates `warnings` when `Test Model Full.xml` or Neo4j is unavailable.
-- [x] T009 [US1] Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
+- [x] T009 [US1] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
 - [x] T010 [US1] Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
 
 ---
@@ -60,7 +60,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [x] T014 [US3] Create `tests/api/test_schema_status.py` asserting `/schema-payload/status` returns freshness/warning metadata and POST `/schema-payload/refresh` returns 202 when idle and 409 if a refresh is running.
 - [x] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and both honor the retry/backoff rules from the spec.
-- [x] T016 [US3] Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
+- [x] T016 [US3] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
 
 ---
 
@@ -70,6 +70,14 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [x] T017 [P] Update `specs/002-neo4j-schema-ui/quickstart.md` to capture the commands, env vars, access expectations, and warning text discovered while implementing the feature.
 - [x] T018 [P] Run lint/tests (`ruff`, `pytest tests/api`) and ensure `README.md` or developer docs mention the schema visualiser entry point along with the “Sample data unavailable” warning text.
+
+---
+
+## Phase 7: Decisions of 2026-10-04
+
+- [ ] T019 [US3] Add a background task that retries a failed load at most 5 minutes apart until it succeeds, with a test in `tests/api/` (SC-006).
+- [ ] T020 Source the displayed types from the `architecture/model/` type system instead of the Neo4j-plus-sample union (FR-001/004/005); the multi-spec types wait on GH #73.
+- [ ] T021 Remove the unimplemented `401/403` from `contracts/api.md` (FR-007: no per-user auth) and document the `503`, `429` and status fields.
 
 ---
 

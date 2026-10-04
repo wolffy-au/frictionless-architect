@@ -18,6 +18,7 @@ unstructured data ingested from collaboration tools is scrubbed of PII/PHI
 
 ## Consequences
 
-- The gateway may start inside `governance-engine` and split into its own
-  `pii-gateway` package later (`ARCHITECTURE.md` §10 open question).
+- The gateway is its own `pii-gateway` package (#56, resolved 2026-10-04), not part of
+  another package; its subsystem home is set in its own spec. ADR-0031 narrows which
+  ingestion paths it covers.
 - Adds a testable pre-processing stage to every ingestion path (FR-003 → FR-004).

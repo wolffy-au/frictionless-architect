@@ -11,8 +11,15 @@
 
 - Q: How should the visualiser behave if the sample dataset is missing or cannot be loaded? → A: Display a warning banner about the missing data while keeping the schema element and relationship lists visible so analysts can still inspect the model.
 - Q: What performance and availability targets should the schema visualiser guarantee? → A: Load responses should appear within 2 seconds and the feature should maintain 99.5% availability so analysts can rely on it during work hours without overly strict SLAs.
-- Q: What reliability/observability behavior should be enforced when the schema/sample data service fails? → A: Retry the load within 5 minutes, show a non-blocking warning, and keep the read-only schema overview accessible while recovery occurs so analysts can continue referencing definitions.
-- Q: What security posture should the visualiser adopt for access control? → A: Reuse the existing Neo4j read permissions so the visualiser enforces whatever access guardrails already protect the data, avoiding extra auth layers.
+- Q: What reliability/observability behavior should be enforced when the schema/sample data service fails? → A: Retry the load within 5 minutes, show a non-blocking warning, and keep the read-only schema overview accessible while recovery occurs so analysts can continue referencing definitions. *(Retry made automatic, 2026-10-04 below.)*
+- Q: What security posture should the visualiser adopt for access control? → A: Reuse the existing Neo4j read permissions so the visualiser enforces whatever access guardrails already protect the data, avoiding extra auth layers. *(Narrowed to the single service credential, 2026-10-04 below.)*
+
+### Session 2026-10-04
+
+- Q: What is "the schema" behind FR-001/004/005? → A: The `architecture/model/` type system: `pyArchimate.ArchiType` plus the relationship matrix (ADR-0008), extended by the multi-spec types (GH #73). The ArchiMate XSDs only validate sample/exchange XML (ADR-0022).
+- Q: Who is the access model for? → A: A single-user local MVP (ADR-0024): one configured Neo4j service credential, no per-user enforcement.
+- Q: Is SC-006's retry automatic? → A: Yes. After a failed load a background task retries, at most 5 minutes apart, until it succeeds.
+- Q: What happens to the UI requirements? → A: Superseded; the UI is now `schema-visualizer-ui` (#55, ADR-0005/0020). The API contract stays here.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -22,7 +29,7 @@ A data analyst needs to quickly understand the node, relationship, and view type
 
 **Why this priority**: Without a schema overview it is difficult to validate that new queries or dashboards will stay consistent with the defined architecture, so the analyst cannot start work.
 
-**Independent Test**: Open the schema visualiser, confirm all element and relationship types from `sample-data/schema/archimate3_Model.xsd` are listed, and match each to at least one entry from `sample-data/sample-00/Test Model Full.xml`.
+**Independent Test**: Open the schema visualiser, confirm all element and relationship types from the model type system (FR-001) are listed, and match each to at least one entry from `sample-data/sample-00/Test Model Full.xml`.
 
 **Acceptance Scenarios**:
 
@@ -55,7 +62,7 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 
 **Acceptance Scenarios**:
 
-1. **Given** the visualiser loads the provided sample data, **When** the reviewer refreshes the sample view, **Then** the overview again presents the same nodes and relationships together with the source schema filenames (archimate3_Model, archimate3_View).
+1. **Given** the visualiser loads the provided sample data, **When** the reviewer refreshes the sample view, **Then** the overview again presents the same nodes and relationships together with the specification that defines each type.
 
 ---
 
@@ -72,13 +79,13 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 
 ### Functional Requirements
 
-- **FR-001**: System MUST display a concise summary of every node, relationship, and view type declared in the ArchiMate schema files under `sample-data/schema`, ensuring the displayed names and identifiers exactly match the schema definitions (Constitution Principle VII: System Integrity & Accuracy — data accuracy in schema translation).
+- **FR-001**: System MUST display a concise summary of every node, relationship, and view type in the `architecture/model/` type system (`pyArchimate.ArchiType` and the relationship matrix, ADR-0008; extended by the multi-spec types of GH #73, `ArchiType` alone until then), ensuring the displayed names and identifiers exactly match the definitions (Constitution Principle VII: System Integrity & Accuracy — data accuracy in schema translation).
 - **FR-002**: System MUST pair each schema definition with at least one corresponding sample occurrence from `sample-data/sample-00/Test Model Full.xml`, including identifiers, labels, and coordinates, so stakeholders can verify how the schema translates into concrete data (Principle VIII: Durability & Interoperability).
 - **FR-003**: Users MUST be able to switch between a diagram-centric overview (respecting the stored x/y/w/h styling) and a tabular schema breakdown that lists element/relationship attributes, ensuring consistent presentation across formats (Principle IX: Cross-Platform Consistency).
-- **FR-004**: System MUST expose the source schema file name (e.g., `archimate3_Model.xsd`, `archimate3_View.xsd`) alongside each displayed type so updates to those files immediately surface in the UI and reviewers can trace back definitions (Principle VIII: Durability & Interoperability).
+- **FR-004**: System MUST expose the specification that defines each displayed type (e.g., ArchiMate 3.2) alongside it, so reviewers can trace back definitions (Principle VIII: Durability & Interoperability).
 - **FR-005**: System MUST highlight schema coverage gaps by flagging any defined type that lacks a sample entry, providing a clear call-out so data stewards can address missing nodes before further modeling work (Principle VII: System Integrity & Accuracy — verification).
 - **FR-006**: System MUST display a non-blocking warning when the sample data file is missing or unreadable, yet keep the schema summary accessible so users can continue investigation without being forced to restore the sample first (Principle IX: Cross-Platform Consistency).
-- **FR-007**: System MUST enforce the Neo4j read permission model for the visualiser so access mirrors the existing data guardrails without introducing an additional authentication layer (Principle V: Security Practices — access control; Principle VII: System Integrity & Accuracy).
+- **FR-007**: System MUST read Neo4j only through its one configured read-only service credential, with no additional authentication layer (single-user local MVP, ADR-0024); per-user permission enforcement is deferred with RBAC/ABAC (Principle V: Security Practices — access control).
 
 ### Key Entities *(include if feature involves data)*
 
@@ -96,11 +103,11 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 - **SC-003**: Diagram and table views show the same element/relationship set without discrepancies in at least 99% of refreshes, validating cross-platform consistency.
 - **SC-004**: Stakeholder surveys on schema clarity score at least 4 out of 5 for “understandability” once the visualiser is connected to the provided sample dataset.
 - **SC-005**: Schema visualisation actions respond within 2 seconds and availability stays at or above 99.5% so analysts can depend on the tool during their work sessions.
-- **SC-006**: When data access fails, the visualiser retries load within 5 minutes, emits a non-blocking warning, and keeps read-only schema views accessible so analysts can continue referencing definitions during recovery.
-- **SC-007**: Every schema visualisation request respects Neo4j read permissions so only authorized roles can see the data, matching the existing database access control.
+- **SC-006**: When data access fails, the visualiser emits a non-blocking warning, keeps read-only schema views accessible from the cache or sample, and a background task retries the load automatically, at most 5 minutes apart, until it succeeds.
+- **SC-007**: Every schema visualisation request reaches Neo4j only through the configured read-only service credential (ADR-0024).
 
 ## Assumptions
 
-- The Neo4j instance uses the ArchiMate 3 schema definitions provided under `sample-data/schema`, so the UI can rely on those files as the authoritative source.
+- The Neo4j instance holds the `architecture/model/` model, so its type system (FR-001) is the authoritative source; the XSDs under `sample-data/schema` validate sample/exchange XML only (ADR-0022).
 - `sample-data/sample-00/Test Model Full.xml` remains available and representative of the typical dataset, so it can continue to serve as the sample load for demonstrations.
-- Future schema updates will continue to follow the XSD structure (elements, relationships, views) and include explicit identifiers that the UI can match to Neo4j data.
+- Future type additions arrive through the type system and include explicit identifiers that the UI can match to Neo4j data.

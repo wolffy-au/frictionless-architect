@@ -172,7 +172,6 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 
 - **Specify lifecycle CLI** (old 1.1) — this repo's development tooling (`.specify/`), not a
   platform component. Distinct from subsystem 6's executable-spec generation.
-- **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
 - **Security foundations** (old 8) — RBAC and encryption are platform requirements every
   subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
   own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
@@ -406,8 +405,9 @@ Checklist:
 4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
    is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
    dependency, not a fork.)
-5. Is collaboration-tool decision capture still in scope, and where does the PII gateway
-   (ADR-0014, narrowed by ADR-0031) sit? (#56)
+5. Is collaboration-tool decision capture still in scope? *(The PII gateway half is
+   resolved 2026-10-04, #56: it is its own `pii-gateway` package — ADR-0014, narrowed by
+   ADR-0031; its subsystem home is set in its spec.)*
 6. *Resolved 2026-09-26:* `001-governance-platform` becomes `EPIC-001` (ADR-0004, §6).
    `PROJECT_SPECIFICATION.md` was retired instead, so spec 001 is the platform's business
    specification (constitution v1.3.0).
