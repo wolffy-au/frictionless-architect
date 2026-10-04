@@ -59,7 +59,7 @@ No violations; Complexity Tracking is empty.
 
 - Adds the generated layer `architecture/model/gh-roadmap/` (`plat-*`, `del-*`, `wp-*`, their relationships and one view per milestone).
 - Retires `plat-runtime-mvp` (8 relationship lines, 3 view members retargeted to `plat-policy-to-oscal-mvp-1`).
-- Renames `plat-runtime-target` and `gap-runtime-hosted` for `multi-user-collaboration`, (milestone #2, now created).
+- Renames `plat-runtime-target` and `gap-runtime-hosted` for `multi-user-collaboration` (milestone #2, now created).
 - Changes `build.py` (`MODEL_LAYERS`) and `architecture/model/README.md`; regenerate diagrams after `validate.py`.
 
 ## Project Structure

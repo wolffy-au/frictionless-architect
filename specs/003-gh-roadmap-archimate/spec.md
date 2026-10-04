@@ -34,8 +34,9 @@ never touches them.
 As an architect, I want milestones, milestone-assigned issues and releases in the model,
 so the roadmap appears on Implementation & Migration views without hand-editing.
 
-**Independent Test**: Run the import on this repo (1 milestone, 0 releases, 3 milestone issues):
-get 1 Plateau, 1 planned Deliverable and 3 Work Packages, linked as in the table.
+**Independent Test**: Run the import on this repo (2 milestones, 0 releases, 3 issues in the first):
+get 2 Plateaus, 1 planned Deliverable (the second milestone has no Work Packages) and 3 Work
+Packages, linked as in the table.
 
 1. **Given** an open or closed milestone issue, **When** imported, **Then** it is a Work
    Package with its state recorded, realizing a Deliverable and never a Plateau directly.

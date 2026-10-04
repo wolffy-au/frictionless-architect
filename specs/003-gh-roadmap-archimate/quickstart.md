@@ -12,15 +12,15 @@ poetry run python architecture/model/build.py
 ```
 
 Expect: a summary line, then `build.py` reporting a model that validates. On this repo
-today (checked 2026-10-03):
+today (checked 2026-10-04):
 
-1 Plateau, 1 planned Deliverable and 3 Work Packages (#44, #61, #7), each realizing the planned
-Deliverable, and no release, Triggering, Gap or `plat-baseline` (the blockers have no milestone).
+2 Plateaus (`policy-to-oscal-mvp`, `multi-user-collaboration`), 1 planned Deliverable and 3 Work
+Packages (#44, #61, #7), each realizing the planned Deliverable, and no release, Triggering, Gap or `plat-baseline` (the blockers have no milestone).
 Rules: [data-model.md](data-model.md).
 
 ```plantuml
 @startuml
-title Expected output today (checked 2026-10-03)
+title Expected output today (checked 2026-10-04)
 hide empty members
 
 object "plat-policy-to-oscal-mvp-1" as P <<Plateau>> {
@@ -36,12 +36,17 @@ object "wp-application-layer-dedupe-artefact-views-gh-61" as W61 <<WorkPackage>>
 object "wp-vision-single-high-level-archimate-gh-7" as W7 <<WorkPackage>> {
   gh-state = closed
 }
+object "plat-multi-user-collaboration-2" as P2 <<Plateau>> {
+  gh-number = 2
+  gh-state = open
+}
 object "del-policy-to-oscal-mvp-1-planned" as D <<Deliverable>>
 
 W44 --> D : Realization
 W61 --> D : Realization
 W7 --> D : Realization
 D --> P : Realization
+note bottom of P2 : No Work Packages yet, so no planned Deliverable.
 note bottom of P : No Triggering: the blockers of #44 and #7\nhave no milestone, so they are out of scope.
 @enduml
 ```
@@ -83,9 +88,9 @@ Expect exit `2`, a message naming the failing `gh` call, and no file change.
 poetry run python architecture/model/render_diagrams.py
 ```
 
-Expect `diagrams/migration/overview.*` to list the imported Plateau and WorkPackages
-alongside the hand-authored Gaps and the Deliverables, and a `diagrams/migration/plat-policy-to-oscal-mvp-1.*` roadmap
-view for the milestone.
+Expect `diagrams/migration/overview.*` to list the imported Plateaus, Deliverables and Work
+Packages alongside the hand-authored Gaps, and one `diagrams/migration/plat-<slug>-<n>.*`
+roadmap view per milestone.
 
 ## 6. Gates
 
