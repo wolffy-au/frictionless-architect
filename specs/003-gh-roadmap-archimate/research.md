@@ -1,37 +1,36 @@
 # Research: GitHub Roadmap as ArchiMate Implementation & Migration
 
 All Technical Context unknowns are resolved below. Facts about this repository were
-checked on 2026-10-03.
+checked on 2026-10-03/04. Superseded designs (Gap-by-hierarchy, `gh-*` ids, milestone
+inheritance, Work Package → Plateau) are in git history at `f593ea8` and earlier.
 
-## R1. Gap vs WorkPackage: by issue hierarchy, not state
+## R1. Element mapping: Plateau, Deliverable, Work Package only
 
-- **Decision**: An in-scope issue **with sub-issues** is a `Gap` (feature or
-  epic); an in-scope issue **without** is a `WorkPackage` (story or task). Open
-  or closed is a `gh-state` prop on both. (Maintainer direction, 2026-10-03.)
-- **Rationale**: A Gap is the difference between two states and a Work Package is
-  a bounded unit of planned or done work, so the hierarchy maps better than
-  open/closed. State never changes an element's type or relationships, so closing
-  an issue changes one prop and nothing else (FR-007/008). An issue changes kind
-  only when it gains its first or loses its last sub-issue.
-- **Alternatives**: Open → Gap / closed → WorkPackage (the original spec). An
-  open story is planned work, not a state difference, so it mislabelled planned
-  work.
+- **Decision**: Milestone → `Plateau`; published release → `Deliverable`; milestone with
+  at least one Work Package → one planned `Deliverable`; issue with its own milestone →
+  `WorkPackage` (open or closed as a `gh-state` prop). Gaps, `plat-baseline` and Strategy
+  elements stay hand-authored. (Maintainer direction, 2026-10-04.)
+- **Rationale**: A Gap is a difference between two Plateaus, an architectural judgement
+  that GitHub cannot express. Work Packages and Deliverables are what GitHub actually
+  records. Every issue is a Work Package because GitHub cannot tell an epic from a task.
+- **Alternatives**: Gap-by-issue-hierarchy (the earlier design) mislabelled GitHub objects
+  and made the importer own architectural judgements.
 
-## R2. Relationship types (probed against `validate.py`, 2026-10-03)
+## R2. Relationship types (probed against `validate.py`)
 
 | From → To | Legal types | Chosen |
 |---|---|---|
-| WorkPackage → Plateau | Realization, Association, Triggering | **Realization** |
-| Gap → Plateau | Association only | **Association** |
-| Gap → Gap (child feature) | Association, Aggregation, Composition, Specialization | **Aggregation** parent → child |
-| Gap ↔ WorkPackage | Association only | **Association** parent → child |
-| WorkPackage → WorkPackage | Association, Aggregation, Composition, Triggering, Flow, Specialization | **Triggering** (blocker → blocked) |
+| WorkPackage → Deliverable | Realization, Association, … | **Realization** |
+| Deliverable → Plateau | Realization, Association | **Realization** |
+| WorkPackage → Plateau | Realization, Association, Triggering | **never emitted** (FR-003) |
+| WorkPackage → WorkPackage | Association, Aggregation, Composition, Triggering, Flow, Specialization | **Aggregation** (parent → child), **Triggering** (blocker → blocked) |
 | Plateau → Plateau | Association, Aggregation, Composition, Triggering, Flow, Specialization | **Triggering** (derived) |
-| Plateau → BusinessFunction | Realization, Association, Aggregation | **Realization** (FR-015) |
-| Gap → Gap, Gap ↔ WorkPackage | Triggering is **not** legal | not emitted |
+| Plateau → BusinessFunction | Realization, Association, Aggregation | **Realization** |
+| Gap → Plateau | Association only | hand-authored, not emitted |
 
-The Gap → Plateau choice follows the existing `gap-runtime-hosted`, which uses
-`Association` to its Plateaus.
+Realization WP → Plateau is legal, but it is dropped by design: a Work Package reaches its
+Plateau through a Deliverable, so no direct edge would be redundant under the derivation rule
+and would hide which release delivered the work.
 
 ## R3. How the layer is merged by `build.py`
 
@@ -40,114 +39,110 @@ The Gap → Plateau choice follows the existing `gap-runtime-hosted`, which uses
   iterates. It already skips a missing dir silently, so a checkout that has never
   run the importer still builds.
 - **Rationale**: Same `det_id()`/`NS` pass, so no reconciliation step (ADR-0029).
-  The only change is one list and its name. The layer is first-party generated
-  content, not a vendored submodule.
-- **Id collisions**: Every imported id carries the `gh-` prefix. Existing
-  first-party ids use `plat-`, `gap-`, `wp-` and `deliv-`, and none starts `gh-`.
-  `add_elements` already errors on duplicates.
+- **Id collisions**: Ids are type-prefixed, so they share a namespace with hand-authored
+  `plat-*`, `del-*` and `wp-*`. Generated ids are distinguishable by shape
+  (`plat-…-<n>`, `del-release-…`, `del-…-planned`, `wp-…-gh-<n>`) and none matches today's
+  hand-authored ids. `add_elements` already errors on a duplicate, which is the backstop.
 
 ## R4. Stable ids
 
-- **Decision**: `gh-milestone-<number>`, `gh-release-<tag-slug>`,
-  `gh-issue-<number>`.
-- **Rationale**: Issue and milestone numbers are GitHub's own, and the id carries
-  no state or kind. `gh-issue-44` stays the same id if it later becomes a Work
-  Package. Releases have no per-repo number that survives delete-and-recreate, so
-  the tag is the stable key (slugged to kebab).
+- **Decision**: `plat-<title-slug>-<n>`, `del-release-<tag-slug>`,
+  `del-<title-slug>-<n>-planned`, `wp-<title-slug>-gh-<n>`. Slugs are lower-case,
+  hyphenated, cut at a word boundary to at most 40 characters. `gh-*` is only a prop key.
+- **Rationale**: Type prefixes make ids self-describing and keep the source system out of
+  the model. The number guarantees uniqueness so truncation never collides. Retitling
+  changes the id by design, so hand-authored references fail loudly instead of silently
+  pointing at the wrong thing.
 
-## R5. Scope and milestone inheritance
+## R5. Scope
 
-- **Decision**: An issue is in scope when it, an ancestor or a descendant has a
-  milestone. Its own milestone wins over an inherited one. A Gap is also
-  `Association`-linked to the Plateau of each descendant's milestone (US2 S4).
-- **Rationale**: This repo already needs it. #44 is in milestone 1 and has four
-  sub-issues (#47, #48, #49, #76) with no milestone of their own. Under "own
-  milestone only" the stories under a roadmap feature would vanish and the
-  hierarchy would be lost. The spec's FR-004 was reworded to match.
-- **Cost**: Scope is a graph walk, not a field test; it is covered by unit tests.
+- **Decision**: An issue is in scope only if it carries its own milestone; no inheritance
+  from a parent or descendant. Drafts and pre-releases are skipped.
+- **Rationale**: The author controls granularity by choosing which issues get a milestone,
+  and scope becomes a field test rather than a graph walk. #47–#49 and #76 are under #44
+  but carry no milestone, so they stay out.
 
-## R6. Dependencies (FR-005)
+## R6. Which Deliverable a Work Package realizes
 
-- **Decision**: Read GitHub's native `blockedBy`. For in-scope Work Packages A
-  (blocker) and B: `Triggering A → B`. When A and B realize different Plateaus
-  N and M: one `Triggering N → M`, de-duplicated, never self-loops.
-- **Rationale**: `Triggering` is only legal between WorkPackages and between
-  Plateaus (R2), so Gap-level and mixed dependencies are dropped; the
-  parent/child `Association` already ties a Gap to its stories. Dependencies on
-  out-of-scope issues are dropped. Cycles are emitted as written; the importer
-  does not judge them.
-- **Real data**: #44 is blocked by its own children and by #43/#45. The children
-  links drop (Gap involved) as do #43/#45 (out of scope). #48 blocks #47 and #49,
-  and both are in scope, so two Triggering edges appear.
+- **Decision**: Open → the planned Deliverable. Closed → the first release, among those
+  naming its Plateau (exact `plat-*` token), with `published_at` after the issue's
+  `closedAt` (ties by `tag_name`); none → the planned Deliverable.
+- **Rationale**: GitHub has no issue-to-release link, so close time against publish time
+  is the only available signal. It answers "which work packages were part of a release"
+  without a new convention. Reopening naturally moves a Work Package back.
+- **Alternatives**: Last release before closure (rejected: it attributes work to a release
+  that was already published); a manual label (rejected: extra convention to maintain).
 
-## R7. Courses of Action dropped
+## R7. Dependencies
 
-- **Decision**: No `CourseOfAction` elements. Epics are Gaps (R1).
-- **Rationale**: Maintainer direction. Keeping both would model the same GitHub
-  object twice. The spec's original Story 4 / FR-005 were replaced by the
-  dependency story.
+- **Decision**: Read GitHub's native `blockedBy`. For in-scope Work Packages A (blocker)
+  and B: `Triggering A → B`. When A and B belong to different milestones N and M: one
+  `Triggering N → M`, de-duplicated, never self-loops. Parent/child, both imported:
+  `Aggregation` parent → child.
+- **Rationale**: Dependencies on out-of-scope issues are dropped. Cycles are emitted as
+  written; the importer does not judge them.
+- **Real data**: #44 and #7 have blockers without a milestone, so no Triggering appears
+  today.
 
 ## R8. Fetching GitHub state
 
-- **Decision**: `gh api --paginate` REST for milestones (`state=all`) and releases
-  (non-draft only); **one** paginated `gh api graphql` query for issues (`number,
-  title, state, url, labels, milestone{number}, parent{number},
-  subIssues{nodes{number}}, blockedBy{nodes{number}}`). Results are used only after
-  every call succeeds; any non-zero exit aborts the run. All the fields were
-  confirmed to exist on this repo.
+- **Decision**: `gh api --paginate` REST for milestones (`state=all`) and releases;
+  **one** paginated `gh api graphql` query for issues (`number, title, state, closedAt,
+  url, milestone{number}, parent{number}, blockedBy{nodes{number}}`). Drafts and
+  pre-releases are filtered after the fetch. Results are used only after every call
+  succeeds; any non-zero exit aborts the run.
 - **Rationale**: One GraphQL query avoids N+1 calls. `gh` supplies auth, so no new
-  credential is in scope. Nested connections are capped per page (`first: 100`); the
-  importer fails if `hasNextPage` is true on one rather than silently truncating.
-- **Alternatives**: `gh issue list --json` (no hierarchy or dependency data).
+  credential is in scope. Connections are capped per page (`first: 100`); the importer
+  fails if `hasNextPage` is true rather than silently truncating (FR-009).
+- **Alternatives**: `gh issue list --json` (no `parent` or dependency data).
 
-## R9. Determinism and atomic output (FR-006, FR-014)
+## R9. Determinism and atomic output (FR-007, FR-009)
 
-- **Decision**: Sort every list by `(kind, number)`; `yaml.safe_dump(...,
-  sort_keys=False, width=<fixed>, allow_unicode=True)`; no timestamps or run
-  metadata in the output; fixed header comment; props only from GitHub data
-  (`gh-number`, `gh-url`, `gh-state`, `gh-labels` sorted, `gh-due`). Write to
-  `*.tmp` and `os.replace` into place **after** all three files render. A failed
-  fetch leaves the committed layer untouched.
-- **Rationale**: Gives byte-identical re-runs, and a delete is a removal because
-  the layer is regenerated whole each run.
+- **Decision**: Sort every list by `(kind, number)` (releases by `published_at`, tag);
+  `yaml.safe_dump(..., sort_keys=False, width=<fixed>, allow_unicode=True)`; no timestamps;
+  fixed header comment. Write `*.tmp` and `os.replace` after all three files render. A
+  failed fetch leaves the committed layer untouched.
 
-## R10. Hostile text (edge case)
+## R10. Untrusted text (FR-006)
 
-- **Decision**: Titles and descriptions only enter the file as Python strings
-  through `safe_dump`, which quotes them correctly. A test round-trips titles with
-  a colon-space, `#`, quotes, leading `-`/`*`, and newlines. `build.py`'s
-  `_check_null_keys` stays as a backstop.
+- **Decision**: Titles and descriptions enter the file only as Python strings through
+  `safe_dump`. A `bfn-*` token in a milestone description or `plat-*` token in release
+  notes is honoured only on exact match to an existing element of the right type;
+  otherwise ignored. A test round-trips titles with a colon-space, `#`, quotes, leading
+  `-`/`*` and newlines. `build.py`'s `_check_null_keys` stays as a backstop.
 
-## R11. BusinessFunction link (FR-015)
+## R11. BusinessFunction link
 
-- **Decision**: Opt-in and deterministic. A milestone whose description contains a
-  token matching an existing `bfn-*` element id gets `Realization` from its Plateau
-  to that BusinessFunction (the spec says the Plateau realizes it). Anything else
-  gets no link and still imports.
-- **Rationale**: Fuzzy-matching `policy-to-oscal-mvp` against "Policy-to-OSCAL
-  Conversion" is brittle and could invent a wrong relationship (Principle VII). The
-  importer reads the first-party `elements.yaml` for the id set. No milestone
-  carries the token yet, so no link appears until one is authored.
+- **Decision**: Opt-in and deterministic, via the `bfn-*` token (R10). No fuzzy matching:
+  it could invent a wrong relationship (Principle VII). No milestone carries the token
+  yet, so no link appears until one is authored.
 
-## R12. Views and diagrams (FR-012)
+## R12. Views and diagrams (FR-010)
 
 - **Decision**: The generated `gh-roadmap/views.yaml` holds one view per milestone
-  (`implementation_migration` viewpoint) listing that milestone's Plateau, Gaps and
-  WorkPackages. `view-implementation-migration-overview` already uses
-  `include_types` and picks the imported elements up automatically. Diagrams are
-  regenerated with `render_diagrams.py` after a build.
-- **Check in tasks**: `add_views` errors on a missing member id; the importer builds
-  members from the same element set, so they stay in step. Confirm the viewpoint
-  admits Triggering between Work Packages and Plateaus.
+  (`implementation_migration` viewpoint) listing its Plateau, Deliverables and Work
+  Packages. `view-implementation-migration-overview` uses `include_types` and picks the
+  imported elements up. Diagrams are regenerated with `render_diagrams.py`.
+- **Check in tasks**: `add_views` errors on a missing member id; members come from the
+  same element set. Confirm the viewpoint admits Realization WP → Deliverable and
+  Deliverable → Plateau.
 
-## R13. Test strategy
+## R13. Replacing hand-authored elements (FR-011)
 
-- Inject a `run_gh(args) -> str` callable so unit tests feed recorded JSON and
-  never touch the network.
-- Cases: the mapping, scope and milestone inheritance, kind change on sub-issue
-  add/remove, close/reopen as a prop-only diff, reassign, unassign, deleted
-  milestone, release with no milestone, dependencies (in-scope, out-of-scope,
-  Gap-involved, cross-milestone, cycle), hostile titles, `gh` failure → non-zero
-  exit and no files written, double run byte-identical.
-- Integration: build a fixture layer through `build.py` and assert `validate.py`
-  exits 0.
+- **Decision**: In the same change as the first import, delete `plat-runtime-mvp` and
+  retarget its 8 relationship lines and 3 view members to `plat-policy-to-oscal-mvp-1`;
+  rename `plat-runtime-target` and `gap-runtime-hosted` for `multi-user-collaboration`
+  (`plat-multi-user-collaboration-2`). The milestone does not yet exist on GitHub;
+  creating it needs maintainer approval, so the rename waits on it.
+
+## R14. Test strategy
+
+- Inject a `run_gh(args) -> str` callable so unit tests feed recorded JSON and never touch
+  the network.
+- Cases: the mapping; scope (own milestone only); Deliverable attachment (open, closed
+  before/between/after releases, two releases, reopen, tie on `published_at`); drafts and
+  pre-releases skipped; planned Deliverable only with ≥1 Work Package; reassign, unassign,
+  deleted milestone; dependencies (in-scope, out-of-scope, cross-milestone, cycle); untrusted
+  tokens; hostile titles; `gh` failure → exit 2 and no files written; double run
+  byte-identical.
+- Integration: build a fixture layer through `build.py` and assert `validate.py` exits 0.

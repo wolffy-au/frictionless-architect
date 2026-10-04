@@ -1,28 +1,31 @@
 # Implementation Plan: GitHub Roadmap as ArchiMate Implementation & Migration
 
-**Branch**: `feature/gh-95-roadmap-archimate` (issue #95) | **Date**: 2026-10-03 | **Spec**: [spec.md](spec.md)
+**Branch**: `feature/gh-95-roadmap-archimate` (issue #95) | **Date**: 2026-10-04 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `specs/003-gh-roadmap-archimate/spec.md`
 
 ## Summary
 
 A live-refreshable importer, `architecture/model/import_gh_roadmap.py`, pulls
-milestones, releases and issues (with their sub-issue and blocked-by links) through the
+milestones, releases and issues (with their parent and blocked-by links) through the
 `gh` CLI and writes a first-party YAML layer under `architecture/model/gh-roadmap/`
 (`elements.yaml`, `relationships.yaml`, `views.yaml`). `build.py` merges that layer
 through the same `det_id()`/`NS` pass it already uses for `third_party/it4it`
 (ADR-0029), so no second build step or id-reconciliation exists. The importer emits only
-Implementation & Migration elements: milestone → `Plateau` (`plat-<title-slug>-<n>`;
-a Plateau realizes a named BusinessFunction), release → `Deliverable` (`del-release-<tag-slug>`,
-realizing the Plateau named in its notes), and every issue that carries its own
-milestone → `WorkPackage` (`wp-<title-slug>-gh-<n>`, open or closed as a prop) realizing that
-Plateau. `blockedBy` becomes `Triggering` between Work Packages and, derived, between
-Plateaus; parent/child becomes `Aggregation`. Gaps (differences between Plateaus), the
-baseline Plateau and Strategy elements stay hand-authored. Element ids are type-prefixed,
-never `gh-*`. The hand-authored `plat-runtime-mvp` is replaced by the generated
-`plat-policy-to-oscal-mvp-1`, and `plat-runtime-target`/`gap-runtime-hosted` are renamed for the
-multi-user collaboration milestone. Output is deterministic and written atomically only
-after every fetch succeeded. The mapping is filed as ADR-0035 (Principle X).
+Implementation & Migration elements: milestone → `Plateau` (`plat-<title-slug>-<n>`),
+published non-draft non-pre-release release → `Deliverable` (`del-release-<tag-slug>`,
+realizing the Plateau named by an exact `plat-*` token in its notes), a milestone with at
+least one Work Package → one planned `Deliverable` (`del-<title-slug>-<n>-planned`), and
+every issue carrying its own milestone → `WorkPackage` (`wp-<title-slug>-gh-<n>`, open or
+closed as a prop). A Work Package realizes exactly one Deliverable and never a Plateau
+directly: open → planned; closed → the first release published after its `closedAt`, else
+planned. `blockedBy` becomes `Triggering` between Work Packages and, derived, between
+Plateaus; parent/child becomes `Aggregation`. Gaps, the baseline Plateau and Strategy
+elements stay hand-authored. Element ids are type-prefixed, never `gh-*`. The hand-authored
+`plat-runtime-mvp` is replaced by the generated `plat-policy-to-oscal-mvp-1`, and
+`plat-runtime-target`/`gap-runtime-hosted` are renamed for the `multi-user-collaboration`
+milestone. Output is deterministic and written atomically only after every fetch succeeded.
+The mapping is filed as ADR-0035 (Principle X).
 
 ## Technical Context
 
@@ -40,9 +43,9 @@ after every fetch succeeded. The mapping is filed as ADR-0035 (Principle X).
 
 **Performance Goals**: One import under ~30 s for this repo (≈50 issues); not on any hot path (Principle IV N/A)
 
-**Constraints**: Idempotent byte-identical output (FR-006); fail clearly and write nothing on any `gh` failure (FR-014); every emitted relationship legal in the ArchiMate 3.2 matrix (FR-011); YAML built by `yaml.safe_dump`, never string-templated (edge case on hostile titles)
+**Constraints**: Idempotent byte-identical output (FR-007); fail clearly and write nothing on any `gh` failure (FR-009); every emitted relationship legal in the ArchiMate 3.2 matrix (FR-004); YAML built by `yaml.safe_dump`, never string-templated (FR-006, hostile titles)
 
-**Scale/Scope**: 1 milestone, 0 releases, 3 in-scope issues today (#44, #61, #7); hundreds supported; design holds to hundreds of issues
+**Scale/Scope**: 1 milestone, 0 releases, 3 in-scope issues today (#44, #61, #7); a second milestone, `multi-user-collaboration`, is not yet created; hundreds supported; design holds to hundreds of issues
 
 ## Constitution Check
 
@@ -55,7 +58,7 @@ after every fetch succeeded. The mapping is filed as ADR-0035 (Principle X).
 | III. UX Consistency | CLI mirrors `build.py` (`poetry run python architecture/model/import_gh_roadmap.py`); errors name the failing `gh` call and the fix (`gh auth login`). Pass. |
 | IV. Performance | Off hot path; no 200 ms obligation. Pass. |
 | V. Security | Uses the operator's existing `gh` auth; no tokens read, stored or logged; issue/milestone text is untrusted input and is only ever passed through `safe_dump`. `gh` invoked with an argv list, never `shell=True`. Pass. |
-| VI. State Mgmt | Issue lifecycle (open ⇄ closed, kind change, milestone moved/removed) is a documented state table in `data-model.md`. Pass. |
+| VI. State Mgmt | Issue lifecycle (open ⇄ closed, release published after close, milestone moved/removed) is a documented state table in `data-model.md`. Pass. |
 | VII. Integrity | Whole model re-validated by `validate.py` after merge; importer output is a pure function of GitHub state. Pass. |
 | VIII. Durability | Output schema is the existing YAML schema (ADR-0007/0008); stable ids never renumbered. Pass. |
 | IX. Cross-Platform | Pure Python + `gh`; no OS-specific paths. Pass. |
@@ -152,7 +155,9 @@ if (a page reports hasNextPage\nbeyond the cap?) then (yes)
   stop
 endif
 :Keep only issues with their own milestone;
+:Drop draft and pre-release releases;
 :Map milestones to Plateaus, releases to Deliverables,\nissues to Work Packages;
+:Attach each Work Package to one Deliverable\n(planned, or first release after closedAt);
 :Derive links: Realization, Aggregation, Triggering,\nPlateau to business function;
 :Drop links implied by a chain (derivation rule);
 :Sort by (kind, number) and render YAML\nwith yaml.safe_dump, in memory;

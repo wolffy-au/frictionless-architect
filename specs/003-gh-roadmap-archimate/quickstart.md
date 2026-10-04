@@ -14,9 +14,11 @@ poetry run python architecture/model/build.py
 Expect: a summary line, then `build.py` reporting a model that validates. On this repo
 today (checked 2026-10-03):
 
-- 1 Plateau `plat-policy-to-oscal-mvp-1` (`policy-to-oscal-mvp`), 0 releases, realizing `bfn-policy-conversion`.
-- 3 WorkPackages: `wp-markdown-catalogue-converter-gh-44`, `wp-application-layer-dedupe-artefact-views-gh-61`, `wp-vision-single-high-level-archimate-gh-7`, each realizing the Plateau.
-  #7 is closed; the others are open.
+- 1 Plateau `plat-policy-to-oscal-mvp-1` (`policy-to-oscal-mvp`), 0 releases.
+- 1 planned Deliverable `del-policy-to-oscal-mvp-1-planned`, realizing the Plateau.
+- 3 WorkPackages: `wp-markdown-catalogue-converter-gh-44`, `wp-application-layer-dedupe-artefact-views-gh-61`, `wp-vision-single-high-level-archimate-gh-7`, each realizing the planned Deliverable (none realizes the Plateau directly).
+  #7 is closed but no release exists yet, so it stays on the planned Deliverable; the others are open.
+- No `Plateau → bfn-*` link until a milestone description carries an existing `bfn-*` token.
 - No Triggering: #44's blockers (#43, #45, #47–#49) and #7's blocker (#5) have no
   milestone, so they are out of scope.
 - The other issues are absent, including #47–#49, #76, #83 and its children.
@@ -40,32 +42,39 @@ object "wp-application-layer-dedupe-artefact-views-gh-61" as W61 <<WorkPackage>>
 object "wp-vision-single-high-level-archimate-gh-7" as W7 <<WorkPackage>> {
   gh-state = closed
 }
-object "bfn-policy-conversion" as BF <<BusinessFunction>>
+object "del-policy-to-oscal-mvp-1-planned" as D <<Deliverable>>
 
-W44 --> P : Realization
-W61 --> P : Realization
-W7 --> P : Realization
-P --> BF : Realization
+W44 --> D : Realization
+W61 --> D : Realization
+W7 --> D : Realization
+D --> P : Realization
 note bottom of P : No Triggering: the blockers of #44 and #7\nhave no milestone, so they are out of scope.
 @enduml
 ```
 
 The counts will drift as the repo does; re-derive with `gh` before treating them as fixed.
 
-## 2. Idempotency (SC-002, US5.1)
+## 2. Idempotency (SC-002, US3)
 
 ```bash
 poetry run python architecture/model/import_gh_roadmap.py
 git status --short architecture/model/gh-roadmap/   # expect: no output
 ```
 
-## 3. Single change (SC-003, US5.2)
+## 3. Single change (SC-003, US3)
 
 Close one in-scope issue and assign one out-of-scope issue to the milestone on GitHub,
-then re-import. The closed issue should change only its `gh-state` prop. The new issue
-should add its element and relationships (and a `views.yaml` member). Nothing else changes.
+then re-import. The closed issue should change only its `gh-state` prop (and, if a release
+published after its close names the Plateau, the one Deliverable it realizes). The new issue
+should add its element and relationship (and a `views.yaml` member). Nothing else changes.
 
-## 4. Failure leaves the layer untouched (FR-014)
+## 3b. Release attachment (FR-003)
+
+With a published, non-pre-release release whose notes contain `plat-policy-to-oscal-mvp-1`,
+a Work Package closed before that release was published realizes `del-release-<tag>`; open ones stay on the planned
+Deliverable. A draft or pre-release changes nothing.
+
+## 4. Failure leaves the layer untouched (FR-009)
 
 ```bash
 GH_TOKEN=invalid poetry run python architecture/model/import_gh_roadmap.py; echo $?
@@ -74,14 +83,14 @@ git status --short architecture/model/gh-roadmap/   # expect: no output
 
 Expect exit `2`, a message naming the failing `gh` call, and no file change.
 
-## 5. Diagrams (FR-012, SC-004)
+## 5. Diagrams (FR-010, SC-004)
 
 ```bash
 poetry run python architecture/model/render_diagrams.py
 ```
 
 Expect `diagrams/migration/overview.*` to list the imported Plateau and WorkPackages
-alongside the hand-authored Gaps, and a `diagrams/migration/plat-policy-to-oscal-mvp-1.*` roadmap
+alongside the hand-authored Gaps and the Deliverables, and a `diagrams/migration/plat-policy-to-oscal-mvp-1.*` roadmap
 view for the milestone.
 
 ## 6. Gates

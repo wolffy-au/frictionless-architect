@@ -14,7 +14,7 @@ poetry run python architecture/model/build.py   # then merges the layer
 
 - Reads GitHub only through `gh` (argv list, no shell). Needs no new credential.
 - Renders all three files in memory, then replaces them atomically. It never writes a partial layer.
-- Prints one summary line, e.g. `wrote gh-roadmap: 1 milestone, 0 releases, 3 work packages, 0 triggering`, and `unchanged` when the bytes already match.
+- Prints one summary line, e.g. `wrote gh-roadmap: 1 milestone, 0 releases, 1 planned deliverable, 3 work packages, 0 triggering`, and `unchanged` when the bytes already match.
 
 ## Run sequence
 
@@ -34,14 +34,14 @@ Imp -> GH : gh api (milestones, releases)
 GH -> API : REST
 API --> GH : JSON
 GH --> Imp : JSON
-Imp -> GH : gh api graphql (issues, parent, blockedBy)
+Imp -> GH : gh api graphql (issues, closedAt, parent, blockedBy)
 GH -> API : GraphQL
 API --> GH : JSON
 GH --> Imp : JSON
 alt any call fails
   Imp --> Developer : exit 2, nothing written
 else all calls succeed
-  Imp -> Imp : scope, map, derive links, render
+  Imp -> Imp : scope, map, attach Deliverables, derive links, render
   Imp -> Layer : write temp files, then replace
   Imp --> Developer : summary line, exit 0
 end
