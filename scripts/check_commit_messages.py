@@ -4,7 +4,9 @@
 The scope list is read from ``.claude/skills/commit-message/references/standard.md`` (area
 scopes) and ``platform/packages/`` (package scopes), so the standard stays the single source.
 Commitizen only checks the type and subject shape; this adds scope, length, case, trailing
-period and breaking-change rules. Imperative mood and body quality stay with `commit-auditor`.
+period, breaking-change and body-wrap rules. Imperative mood and body quality stay with
+`commit-auditor`. Body lines over 72 columns fail at commit time (``--message-file``) but are
+only warned about in ``--range`` mode, since reworded history means a rebase and force-push.
 
 Usage:
     check_commit_messages.py --range develop..HEAD   # every non-merge commit in the range
@@ -26,6 +28,8 @@ PACKAGES = ROOT / "platform/packages"
 
 TYPES = {"feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"}
 MAX_SUBJECT = 72
+MAX_BODY_LINE = 72
+TRAILER = re.compile(r"^(BREAKING CHANGE|[A-Za-z][A-Za-z-]*): ")
 SUBJECT = re.compile(r"^(?P<type>[a-z]+)(?:\((?P<scope>[^)]*)\))?(?P<bang>!)?: (?P<desc>.+)$")
 AUTO_PREFIXES = ("Merge ", "Revert \"", "fixup! ", "squash! ")
 
@@ -68,6 +72,16 @@ def check_message(message: str, scopes: set[str]) -> list[str]:
     return problems
 
 
+def body_wrap_problems(message: str) -> list[str]:
+    """Return body lines wider than 72 columns; trailers, indented code and bare URLs are exempt."""
+    problems: list[str] = []
+    for number, line in enumerate(message.splitlines()[1:], start=2):
+        exempt = line.startswith((" ", "\t")) or TRAILER.match(line) or len(line.split()) <= 1
+        if len(line) > MAX_BODY_LINE and not exempt:
+            problems.append(f"line {number} is {len(line)} columns (body wraps at {MAX_BODY_LINE})")
+    return problems
+
+
 def commits_in_range(rev_range: str) -> list[tuple[str, str]]:
     """Return (short sha, full message) for each non-merge commit in the range."""
     out = subprocess.run(
@@ -94,6 +108,13 @@ def main(argv: list[str] | None = None) -> int:
     failed = 0
     for label, message in items:
         problems = check_message(message, scopes)
+        wrap = body_wrap_problems(message)
+        if args.message_file:
+            problems += wrap
+        elif wrap:
+            print(f"warning: {label} {message.splitlines()[0]}", file=sys.stderr)
+            for problem in wrap:
+                print(f"  - {problem}", file=sys.stderr)
         if problems:
             failed += 1
             print(f"{label} {message.splitlines()[0] if message else ''}", file=sys.stderr)
