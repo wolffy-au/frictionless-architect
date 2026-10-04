@@ -66,6 +66,13 @@ The mapping is filed as ADR-0035 (Principle X).
 
 No violations; Complexity Tracking is empty.
 
+### Model impact
+
+- Adds the generated layer `architecture/model/gh-roadmap/` (`plat-*`, `del-*`, `wp-*`, their relationships and one view per milestone).
+- Retires `plat-runtime-mvp` (8 relationship lines, 3 view members retargeted to `plat-policy-to-oscal-mvp-1`).
+- Renames `plat-runtime-target` and `gap-runtime-hosted` for `multi-user-collaboration`, once that milestone exists.
+- Changes `build.py` (`MODEL_LAYERS`) and `architecture/model/README.md`; regenerate diagrams after `validate.py`.
+
 ## Project Structure
 
 ### Documentation (this feature)
