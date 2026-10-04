@@ -882,6 +882,13 @@
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
 - {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}
 
+# --- B. Model Collaboration (joint behaviour) ---
+- {type: Aggregation, source: bc-model-collaboration, target: role-ea}
+- {type: Aggregation, source: bc-model-collaboration, target: role-sa}
+- {type: Assignment, source: bc-model-collaboration, target: bi-collaborative-modelling}
+- {type: Association, source: plat-runtime-target, target: bc-model-collaboration, label: enables}
+- {type: Association, source: gap-runtime-hosted, target: bi-collaborative-modelling}
+
 # =====================================================================
 # F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition
 #    is hosted on the existing sw-uvicorn-fastapi/node-app-server pair, and
