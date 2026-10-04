@@ -1019,6 +1019,19 @@
   name: Platform Operations (BAU)
   desc: Watches control effectiveness and drift in run.
 
+# --- B. Collaboration (joint behaviour across more than one role) ---
+- type: BusinessCollaboration
+  id: bc-model-collaboration
+  name: "Model Collaboration"
+  desc: >-
+    Two or more roles working on the same architecture model concurrently
+    (not a single actor's stable function — ArchiMate's collaboration
+    concept for joint behaviour).
+- type: BusinessInteraction
+  id: bi-collaborative-modelling
+  name: "Collaborative Architecture Modelling"
+  desc: Joint authoring/review of the model performed by Model Collaboration.
+
 # --- B. External systems (ApplicationComponent outside the Grouping -> C4 System_Ext) ---
 - type: ApplicationComponent
   id: ext-scm
@@ -1343,80 +1356,6 @@
     path dependency.
   props: {c4: ignore}
 
-# --- E. Work Packages (ARCHITECTURE.md §8, one per step) ---
-- type: WorkPackage
-  id: wp-1-monorepo-skeleton
-  name: 1. Create platform/ Poetry monorepo skeleton
-  desc: Empty, CI green.
-- type: WorkPackage
-  id: wp-2-catalog-extraction
-  name: "2. First extraction: controls-compliance-catalog"
-  desc: >-
-    packages/controls-compliance-catalog, home of the policy-to-OSCAL
-    pipeline (GH #44).
-- type: WorkPackage
-  id: wp-3-prove-pattern
-  name: "3. Prove pattern"
-  desc: Root CI fans out, workspace lock resolves, tests pass.
-- type: WorkPackage
-  id: wp-4-scaffold-twin
-  name: 4. Scaffold digital-twin-knowledge-graph
-  desc: Port prototype-neo4j ideas (ADR-0006, ARCHITECTURE.md §7).
-- type: WorkPackage
-  id: wp-5-vendor-forks
-  name: 5. Vendor confirmed forks into third_party/
-  desc: Submodules, wired to fork-sync.
-- type: WorkPackage
-  id: wp-6-rehome-specs
-  name: 6. Re-home specs to two-tier scheme
-  desc: Patch the .specify scripts (ADR-0004).
-- type: WorkPackage
-  id: wp-7-extract-remaining
-  name: 7. Extract remaining components
-  desc: As work reaches them.
-
-# --- E. Deliverables (only where a step hands over a package) ---
-- type: Deliverable
-  id: del-monorepo-skeleton
-  name: Monorepo skeleton
-  desc: platform/ root pyproject.toml + shared poetry.lock, CI green.
-- type: Deliverable
-  id: del-catalog-pkg
-  name: controls-compliance-catalog package
-- type: Deliverable
-  id: del-twin-pkg-scaffold
-  name: digital-twin-knowledge-graph scaffold
-
-# --- E. Plateaus (states of this platform) ---
-- type: Plateau
-  id: plat-baseline
-  name: "Baseline: flat src/"
-- type: Plateau
-  id: plat-first-extraction
-  name: "Transition: first extraction proven"
-  desc: After step 3 — controls-compliance-catalog in the monorepo, pattern proven.
-- type: Plateau
-  id: plat-target
-  name: "Target: package per subsystem"
-  desc: ARCHITECTURE.md §3.2 layout.
-
-# --- E. Gaps (what changes between consecutive Plateaus) ---
-- type: Gap
-  id: gap-catalog-extracted
-  name: "Gap: controls catalog extracted to its own package"
-  desc: >-
-    Baseline -> Transition. controls-compliance-catalog is created as its
-    own package and the OSCAL conversion code (GH #44) is written there, not
-    in the flat src/. It reads only the framework packs (store-frameworks),
-    not the knowledge graph, so nothing it needs waits on step 4.
-- type: Gap
-  id: gap-subsystems-packaged
-  name: "Gap: remaining subsystems packaged"
-  desc: >-
-    Transition -> Target. The remaining packages are created, including
-    schema-visualizer-api once step 4 has delivered the knowledge-graph read
-    path it consumes (ADR-0005), and the flat src/ is retired.
-
 # =====================================================================
 # F. TECHNOLOGY — first cut, scoped to the policy-to-OSCAL slice (GH #55
 #    follow-up, guided by feature/gh-71-platform-skeleton and
@@ -1551,27 +1490,29 @@
   props: {c4: ignore}
 - type: Plateau
   id: plat-runtime-mvp
-  name: "Runtime: local compose (MVP)"
+  name: "Solo use only"
   desc: >-
     Baseline and current state: node-app-server's docker-compose stack is
     the only deployment shape, through the MVP milestone (ADR-0024,
-    undated).
+    undated). A single user at a time — no concurrent/shared access to the
+    model.
 - type: Plateau
   id: plat-runtime-target
-  name: "Runtime: hosted cluster (target)"
+  name: "Collaborative / team modelling"
   desc: >-
     Target state once past the MVP milestone: the data layer moves to
-    node-hosted-cluster (ADR-0018, updated 2026-09-27). Concrete shape
-    deferred to a follow-up ADR.
+    node-hosted-cluster (ADR-0018, updated 2026-09-27), enabling multiple
+    users to work on the model concurrently. Concrete runtime shape deferred
+    to a follow-up ADR.
 - type: Gap
   id: gap-runtime-hosted
-  name: "Gap: local compose -> hosted cluster"
+  name: "Gap: enable team collaboration"
   desc: >-
     plat-runtime-mvp -> plat-runtime-target. Triggered by reaching the MVP
     milestone (currently undated); the hosted cluster's own shape isn't
-    designed yet, so this Gap records the transition without committing to
-    more than the deliberately underspecified node-hosted-cluster
-    placeholder.
+    designed yet, so this Gap records the transition to concurrent
+    multi-user access without committing to more than the deliberately
+    underspecified node-hosted-cluster placeholder.
 
 # =====================================================================
 # F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved
@@ -1603,3 +1544,71 @@
     re-deriving composition logic in a client-side plugin host or shell
     (ADR-0020, updated 2026-09-27). Hosted on sw-uvicorn-fastapi — not a
     new deployable.
+
+# Packaging-track migration (ARCHITECTURE.md §8), restored from develop
+- type: WorkPackage
+  id: wp-1-monorepo-skeleton
+  name: 1. Create platform/ Poetry monorepo skeleton
+  desc: Empty, CI green.
+- type: WorkPackage
+  id: wp-2-catalog-extraction
+  name: "2. First extraction: controls-compliance-catalog"
+  desc: >-
+    packages/controls-compliance-catalog, home of the policy-to-OSCAL
+    pipeline (GH #44).
+- type: WorkPackage
+  id: wp-3-prove-pattern
+  name: "3. Prove pattern"
+  desc: Root CI fans out, workspace lock resolves, tests pass.
+- type: WorkPackage
+  id: wp-4-scaffold-twin
+  name: 4. Scaffold digital-twin-knowledge-graph
+  desc: Port prototype-neo4j ideas (ADR-0006, ARCHITECTURE.md §7).
+- type: WorkPackage
+  id: wp-5-vendor-forks
+  name: 5. Vendor confirmed forks into third_party/
+  desc: Submodules, wired to fork-sync.
+- type: WorkPackage
+  id: wp-6-rehome-specs
+  name: 6. Re-home specs to two-tier scheme
+  desc: Patch the .specify scripts (ADR-0004).
+- type: WorkPackage
+  id: wp-7-extract-remaining
+  name: 7. Extract remaining components
+  desc: As work reaches them.
+- type: Deliverable
+  id: del-monorepo-skeleton
+  name: Monorepo skeleton
+  desc: platform/ root pyproject.toml + shared poetry.lock, CI green.
+- type: Deliverable
+  id: del-catalog-pkg
+  name: controls-compliance-catalog package
+- type: Deliverable
+  id: del-twin-pkg-scaffold
+  name: digital-twin-knowledge-graph scaffold
+- type: Plateau
+  id: plat-baseline
+  name: "Baseline: flat src/"
+- type: Plateau
+  id: plat-first-extraction
+  name: "Transition: first extraction proven"
+  desc: After step 3 — controls-compliance-catalog in the monorepo, pattern proven.
+- type: Plateau
+  id: plat-target
+  name: "Target: package per subsystem"
+  desc: ARCHITECTURE.md §3.2 layout.
+- type: Gap
+  id: gap-catalog-extracted
+  name: "Gap: controls catalog extracted to its own package"
+  desc: >-
+    Baseline -> Transition. controls-compliance-catalog is created as its
+    own package and the OSCAL conversion code (GH #44) is written there, not
+    in the flat src/. It reads only the framework packs (store-frameworks),
+    not the knowledge graph, so nothing it needs waits on step 4.
+- type: Gap
+  id: gap-subsystems-packaged
+  name: "Gap: remaining subsystems packaged"
+  desc: >-
+    Transition -> Target. The remaining packages are created, including
+    schema-visualizer-api once step 4 has delivered the knowledge-graph read
+    path it consumes (ADR-0005), and the flat src/ is retired.
