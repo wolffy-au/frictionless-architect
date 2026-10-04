@@ -100,9 +100,9 @@ refers to the retired `plat-runtime-mvp`.
 - **FR-006**: A `bfn-*` or `plat-*` id in a description or release notes is honoured only if it exactly matches an existing element of the right type. All other GitHub text is untrusted and ignored for relationships.
 - **FR-007**: Output MUST be deterministic: unchanged GitHub state gives byte-identical files, and a change touches only the affected elements.
 - **FR-008**: The imported layer lives apart from the hand-authored model, is merged by the existing build, and is never hand-edited. The importer never creates, changes or deletes a Gap, the baseline Plateau or a Strategy element.
-- **FR-009**: Provide an on-demand run and a check-only mode. If complete GitHub data cannot be retrieved (unavailable, unauthenticated, rate-limited, unparseable or more than one page), fail with an actionable message and write nothing.
+- **FR-009**: Provide an on-demand run and a check-only mode. If complete GitHub data cannot be retrieved (unavailable, unauthenticated, rate-limited, unparseable, or more issues than the cap in `research.md` R8), fail with an actionable message and write nothing.
 - **FR-010**: Generated diagrams MUST reflect the roadmap: a view per milestone and the overall Implementation & Migration overview.
-- **FR-011**: Replace `plat-runtime-mvp` with the generated Plateau, and rename the hand-authored collaboration plateau and gap for `multi-user-collaboration`, in the same change.
+- **FR-011**: In the same change, retire `plat-runtime-mvp` and `plat-runtime-target`, replaced by the generated Plateaus; rename the hand-authored runtime Gap for `multi-user-collaboration`; and add a Gap from `plat-baseline` to the first MVP.
 - **FR-012**: Record the mapping, id scheme, scope rule and ownership split in an ADR, and update `ARCHITECTURE.md` and the model's documentation in the same change. If that is impossible, open a tracking issue and mark the ADR accepted-but-not-yet-reflected.
 
 ## Success Criteria *(mandatory)*
