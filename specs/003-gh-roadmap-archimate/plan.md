@@ -6,26 +6,14 @@
 
 ## Summary
 
-A live-refreshable importer, `architecture/model/import_gh_roadmap.py`, pulls
-milestones, releases and issues (with their parent and blocked-by links) through the
-`gh` CLI and writes a first-party YAML layer under `architecture/model/gh-roadmap/`
-(`elements.yaml`, `relationships.yaml`, `views.yaml`). `build.py` merges that layer
-through the same `det_id()`/`NS` pass it already uses for `third_party/it4it`
-(ADR-0029), so no second build step or id-reconciliation exists. The importer emits only
-Implementation & Migration elements: milestone → `Plateau` (`plat-<title-slug>-<n>`),
-published non-draft non-pre-release release → `Deliverable` (`del-release-<tag-slug>`,
-realizing the Plateau named by an exact `plat-*` token in its notes), a milestone with at
-least one Work Package → one planned `Deliverable` (`del-<title-slug>-<n>-planned`), and
-every issue carrying its own milestone → `WorkPackage` (`wp-<title-slug>-gh-<n>`, open or
-closed as a prop). A Work Package realizes exactly one Deliverable and never a Plateau
-directly: open → planned; closed → the first release published after its `closedAt`, else
-planned. `blockedBy` becomes `Triggering` between Work Packages and, derived, between
-Plateaus; parent/child becomes `Aggregation`. Gaps, the baseline Plateau and Strategy
-elements stay hand-authored. Element ids are type-prefixed, never `gh-*`. The hand-authored
-`plat-runtime-mvp` is replaced by the generated `plat-policy-to-oscal-mvp-1`, and
-`plat-runtime-target`/`gap-runtime-hosted` are renamed for the `multi-user-collaboration`
-milestone. Output is deterministic and written atomically only after every fetch succeeded.
-The mapping is filed as ADR-0035 (Principle X).
+`architecture/model/import_gh_roadmap.py` reads milestones, releases and issues through the
+`gh` CLI and writes a generated, committed YAML layer under `architecture/model/gh-roadmap/`.
+`build.py` merges it through the existing `det_id()`/`NS` pass (ADR-0029). The importer emits
+only Plateaus, Deliverables and Work Packages; Gaps, the baseline Plateau and Strategy stay
+hand-authored. Mapping, ids, relationships and the Deliverable rule are in
+[data-model.md](data-model.md); decisions in [research.md](research.md). Output is
+deterministic and written atomically only after every fetch succeeds. The mapping is filed
+as ADR-0035.
 
 ## Technical Context
 
@@ -45,7 +33,7 @@ The mapping is filed as ADR-0035 (Principle X).
 
 **Constraints**: Idempotent byte-identical output (FR-007); fail clearly and write nothing on any `gh` failure (FR-009); every emitted relationship legal in the ArchiMate 3.2 matrix (FR-004); YAML built by `yaml.safe_dump`, never string-templated (FR-006, hostile titles)
 
-**Scale/Scope**: 1 milestone, 0 releases, 3 in-scope issues today (#44, #61, #7); a second milestone, `multi-user-collaboration`, is not yet created; hundreds supported; design holds to hundreds of issues
+**Scale/Scope**: 2 milestones (`policy-to-oscal-mvp` #1, `multi-user-collaboration` #2, no issues yet), 0 releases, 3 in-scope issues today (#44, #61, #7); hundreds supported; design holds to hundreds of issues
 
 ## Constitution Check
 
@@ -62,7 +50,8 @@ The mapping is filed as ADR-0035 (Principle X).
 | VII. Integrity | Whole model re-validated by `validate.py` after merge; importer output is a pure function of GitHub state. Pass. |
 | VIII. Durability | Output schema is the existing YAML schema (ADR-0007/0008); stable ids never renumbered. Pass. |
 | IX. Cross-Platform | Pure Python + `gh`; no OS-specific paths. Pass. |
-| X. Decision Traceability | ADR-0035 (mapping + milestone-assigned scope + type-prefixed id scheme + importer/hand-authored ownership split + layer merge) filed in the same PR; `architecture/model/README.md` and `ARCHITECTURE.md` §8 updated to match. Pass (tracked in tasks). |
+| X. Decision Traceability | ADR-0035 filed in the same PR; `architecture/model/README.md` and `ARCHITECTURE.md` §8 updated; model impact stated below. Pass (tracked in tasks). |
+| XI. Concise Artefacts | Detail lives in `data-model.md`; other artefacts link to it. Pass. |
 
 No violations; Complexity Tracking is empty.
 
@@ -70,7 +59,7 @@ No violations; Complexity Tracking is empty.
 
 - Adds the generated layer `architecture/model/gh-roadmap/` (`plat-*`, `del-*`, `wp-*`, their relationships and one view per milestone).
 - Retires `plat-runtime-mvp` (8 relationship lines, 3 view members retargeted to `plat-policy-to-oscal-mvp-1`).
-- Renames `plat-runtime-target` and `gap-runtime-hosted` for `multi-user-collaboration`, once that milestone exists.
+- Renames `plat-runtime-target` and `gap-runtime-hosted` for `multi-user-collaboration`, (milestone #2, now created).
 - Changes `build.py` (`MODEL_LAYERS`) and `architecture/model/README.md`; regenerate diagrams after `validate.py`.
 
 ## Project Structure

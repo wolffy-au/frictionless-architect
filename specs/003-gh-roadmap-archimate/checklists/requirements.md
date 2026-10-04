@@ -32,13 +32,12 @@
 
 ## Notes
 
-- Constitution review (2026-10-04): FR-021 now carries the Principle X same-change sync; FR-022 covers untrusted GitHub text (Principle V). A performance or scale criterion (Principle IV) is deferred by decision.
+- Constitution review (2026-10-04): FR-012 carries the Principle X same-change sync; FR-006 covers untrusted GitHub text (Principle V). A performance or scale criterion (Principle IV) is deferred by decision.
 - Spec number check (2026-10-04): root `specs/003-*` is free on origin/develop. The former `003-oscal-ai-conversion` was re-homed under `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion`, so older prose that says "spec 003" means that one. ADR 0035 is free on develop and every remote branch.
 
 - Revised 2026-10-04 to the agreed mapping: milestones become Plateaus,
   releases Deliverables, milestone-assigned issues Work Packages. Gaps, the
   baseline Plateau and Strategy stay hand-authored. The earlier hierarchy-based
   Gap/inheritance design was dropped.
-- Resolved 2026-10-04: milestone title is `multi-user-collaboration`. Remaining open item: creating it on GitHub needs
-  maintainer approval (see
-  Assumptions).
+- Resolved 2026-10-04: milestone title is `multi-user-collaboration`. Created on GitHub as milestone #2 on 2026-10-04.
+- Re-validated 2026-10-04 against the condensed spec (126 lines): all items pass; 0 markers, 12 FRs, 6 SCs.

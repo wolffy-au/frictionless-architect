@@ -122,5 +122,5 @@ refers to the retired `plat-runtime-mvp`.
 - Dependencies are GitHub "blocked by" links.
 - The model reflects current GitHub state; removed items are removed, not kept as history.
 - Uses the existing authenticated `gh` access; no new credential, no schedule.
-- The `multi-user-collaboration` milestone does not exist yet; creating it needs maintainer approval.
+- The `multi-user-collaboration` milestone exists (GitHub #2) with no issues, so it yields a Plateau and no Work Packages or planned Deliverable yet.
 - Performance and scale targets are deferred.
