@@ -63,8 +63,9 @@ them in a `.env` file at the repository root (loaded automatically when present)
   (default: `.cache/visualiser`; payload file `schema_payload.json`).
 - `FRICTIONLESS_ARCHITECT_WARNING_TEXT` — banner text shown when the sample model
   cannot be loaded (default: `Sample data unavailable`).
-- `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` — reserved: minimum gap between
-  cache refreshes (default: `300`; not yet enforced by the service).
+- `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` — seconds after a *successful*
+  refresh during which `POST /schema-payload/refresh` answers `429` with `Retry-After`
+  (default: `300`; failed refreshes are never delayed).
 
 `scripts/neo4j_schema.py` is a separate CLI that reads its own **unprefixed**
 `NEO4J_URI`, `NEO4J_USER`, and `NEO4J_PASSWORD` (or `--uri` / `--user` /
@@ -90,7 +91,7 @@ package exists.
 | Method | Path | Purpose |
 |---|---|---|
 | `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`); `?force_reload=true` skips cache; `503` if nothing reachable |
-| `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy |
+| `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy; `429` during backoff |
 | `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
 
 ## Platform packages

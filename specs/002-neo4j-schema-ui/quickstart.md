@@ -52,6 +52,6 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
 - `GET /schema-payload/status` reports cache age, Neo4j health (`neo4j_status`), sample
   file health (`sample_file_status`), the latest warning and whether a refresh is running.
 - `POST /schema-payload/refresh` starts a background rebuild (`202 Accepted`; `409` if one
-  is already running) while `/schema-payload` keeps serving the cached payload.
+  is already running; `429` with `Retry-After` for `REFRESH_BACKOFF_SECONDS` after a successful one) while `/schema-payload` keeps serving the cached payload.
 - Each `/schema-payload` response includes `latency_ms`, so you can confirm the <2-second
   load goal and track warnings like missing samples or Neo4j timeouts.

@@ -32,6 +32,7 @@
   }
   ```  
 - **Error (409)**: when a refresh is already running; UI may show a toast and rely on the previous payload until the new one is ready.
+- **Error (429)**: within `REFRESH_BACKOFF_SECONDS` (default 300) of the last *successful* refresh; the `Retry-After` header gives the seconds left. A failed refresh is never delayed, so the 5-minute retry requirement still holds.
 
 ## GET /schema-payload/status
 - **Purpose**: Reports cache freshness, last refresh time, and connection state (used by the warning banner to decide whether the schema list remains visible).  

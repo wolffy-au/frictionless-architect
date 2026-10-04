@@ -1,4 +1,4 @@
-"""FastAPI entry point for the platform app (visualiser today; oscal joins it)."""
+"""FastAPI entry point for the platform app (currently serves the schema visualiser API)."""
 
 from __future__ import annotations
 
