@@ -14,7 +14,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/_agent_report.sh"
 AGENT=wiki-maintenance
 OUT_NAME=wiki-audit
 MODE=root
-TOOLS="Read,Grep,Glob,Bash(poetry run python .claude/skills/wiki-librarian/tools/*:*),Bash(wc:*),Bash(git log:*)"
+TOOLS="Read,Grep,Glob,Bash(poetry run python .claude/skills/wiki-librarian/tools/*),Bash(wc:*),Bash(git log:*)"
 TASK="Run all seven checks. The tools may write to wiki/.cache while they run; that is fine. Do not edit or create any file: \
 where your rules say to fix a missing index.md link, report it instead. In the summary, replace 'what was fixed' with 'what needs a fix'. \
 Put every check's results under '## Findings'."
