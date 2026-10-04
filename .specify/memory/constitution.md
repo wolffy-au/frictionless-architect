@@ -1,7 +1,7 @@
 <!--
   Sync Impact Report (v1.4.0, 2026-10-04):
   - Version change: v1.3.0 -> v1.4.0
-  - Added principle: XI. Concise, Non-Duplicative Spec Artefacts. Motivated by GH #95, where
+  - Added principle: XI. Concise, Non-Duplicative Spec Artefacts (incl. embedded PlantUML). Motivated by GH #95, where
     the spec, data model, research, contracts and quickstart restated the same rules and were
     hard to review.
   - Modified sections: Quality Gates (adds a concise-artefacts check).
@@ -206,6 +206,10 @@ them harder to review and let copies drift when a design changes.
   - `research.md` is a decision table (decision, why, rejected). `contracts/` and
     `quickstart.md` give one example and the commands, then link to `data-model.md`.
   - `plan.md` summarises in a paragraph and links; it never pastes tables from other artefacts.
+  - Diagrams are embedded PlantUML (` ```plantuml ` blocks), validated with `plantuml -checkonly`
+    before commit, and drawn once in the artefact that owns the subject: class and state in
+    `data-model.md`, sequence in `contracts/`, activity and deployment in `plan.md`. Other
+    artefacts link to them rather than redrawing, and a diagram changes with the rule it shows.
   - When a rule changes, edit it in its one home and replace any restated copy with a link.
     Prefer editing existing artefacts to regenerating them; commit a snapshot before any
     regeneration so nothing is lost.
