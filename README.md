@@ -63,8 +63,8 @@ them in a `.env` file at the repository root (loaded automatically when present)
   (default: `.cache/visualiser`; payload file `schema_payload.json`).
 - `FRICTIONLESS_ARCHITECT_WARNING_TEXT` — banner text shown when the sample model
   cannot be loaded (default: `Sample data unavailable`).
-- `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` — minimum gap between cache
-  refreshes (default: `300`).
+- `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` — reserved: minimum gap between
+  cache refreshes (default: `300`; not yet enforced by the service).
 
 `scripts/neo4j_schema.py` is a separate CLI that reads its own **unprefixed**
 `NEO4J_URI`, `NEO4J_USER`, and `NEO4J_PASSWORD` (or `--uri` / `--user` /
@@ -73,7 +73,7 @@ them in a `.env` file at the repository root (loaded automatically when present)
 ## Running the schema visualiser
 
 The visualiser is the FastAPI app `frictionless_architect.app:app` (title
-"Neo4j Schema Visualiser").
+"Frictionless Architect"; the OpenAPI docs are at `/docs`).
 
 ```bash
 poetry run uvicorn frictionless_architect.app:app --reload --port 8100
@@ -89,9 +89,22 @@ package exists.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/schema-payload` | JSON payload; `?force_reload=true` skips cache; `503` if nothing reachable |
+| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`); `?force_reload=true` skips cache; `503` if nothing reachable |
 | `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy |
-| `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning` |
+| `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
+
+## Platform packages
+
+Code being extracted from the flat `src/` layout lives in the `platform/` Poetry
+monorepo (ADR-0002), which has its own lock and virtualenv — run its commands from
+`platform/`. Today it holds:
+
+- [`controls-compliance-catalog`](platform/packages/controls-compliance-catalog/README.md) —
+  policy and standard documents to OSCAL Catalogs and Profiles.
+- [`llm-provider-config`](platform/packages/llm-provider-config/README.md) — shared
+  LLM provider, model and credential resolution.
+
+`bash scripts/platform_checks.sh` runs their quality gate.
 
 ## Related tooling
 
