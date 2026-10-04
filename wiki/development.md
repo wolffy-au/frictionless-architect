@@ -1,7 +1,7 @@
 ---
 title: Development & Quickstart
-generated: 2026-10-03
-generator: claude-sonnet-5
+generated: 2026-10-04
+generator: claude-sonnet-5-5
 sources:
   - specs/001-governance-platform/quickstart.md
   - AGENTS.md
@@ -26,7 +26,12 @@ There are two quickstarts, both feature-scoped under `specs/`:
   the Platform"). Its spec-workflow section is still thin — see
   [Spec-driven workflow](#spec-driven-workflow-speckit) below.
 - `specs/002-neo4j-schema-ui/quickstart.md` — the accurate guide for running
-  the schema visualiser.
+  the schema visualiser. It was realigned on 2026-10-04 with the JSON-only service: it
+  now uses `poetry install` / `poetry run uvicorn`, the full
+  `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` name, and tells you to fetch
+  `/schema-payload` (docs at `/docs`) because there is no browser UI yet — the old
+  `/schema-visualizer` page, polling and **Refresh sample** button are gone
+  (`specs/002-neo4j-schema-ui/quickstart.md` §"Start the visualiser", §"Workflow tips").
 
 ## Prerequisites
 
@@ -97,7 +102,7 @@ FRICTIONLESS_ARCHITECT_NEO4J_USER=reader
 FRICTIONLESS_ARCHITECT_NEO4J_PASSWORD=reader
 FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
 FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
-FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300
+FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300   # reserved, not yet enforced
 
 poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 # then fetch http://127.0.0.1:8100/schema-payload — JSON-only for now, the

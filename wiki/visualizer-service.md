@@ -1,7 +1,7 @@
 ---
 title: Visualizer Service
-generated: 2026-10-02
-generator: claude-sonnet-5
+generated: 2026-10-04
+generator: claude-sonnet-5-5
 sources:
   - src/frictionless_architect/__init__.py
   - src/frictionless_architect/app.py
@@ -42,11 +42,11 @@ docstring. The FastAPI app moved to the shared platform entry point
 `frictionless_architect.app`, which builds
 `app = FastAPI(title="Frictionless Architect", lifespan=lifespan)` and
 includes the visualiser's API router; its `lifespan` closes the Neo4j driver
-on shutdown (`src/frictionless_architect/app.py:13-20`). The lifespan
+on shutdown (`src/frictionless_architect/app.py:14-27`). The lifespan
 does nothing at startup. `get_schema_service()` builds the service lazily
 and memoises it with `@lru_cache(maxsize=1)`, so shutdown closes the one
 shared loader. If no request ever arrived, it builds the service just to
-close it (`src/frictionless_architect/visualizer/api.py:264-278`). The module
+close it (`src/frictionless_architect/visualizer/api.py:315-331`). The module
 docstring anticipates the OSCAL service joining the same app
 (`src/frictionless_architect/app.py:1`). The root package
 `frictionless_architect/__init__.py` is only a docstring with an empty
@@ -59,7 +59,7 @@ schema visualiser").
 
 `VisualizerSettings` (pydantic-settings) reads env vars with prefix
 `FRICTIONLESS_ARCHITECT_` and a `.env` file
-(`src/frictionless_architect/visualizer/config.py:11-25`):
+(`src/frictionless_architect/visualizer/config.py:11-38`):
 
 | Setting | Env var | Default |
 |---|---|---|
@@ -67,13 +67,24 @@ schema visualiser").
 | `sample_data_dir` | `…_SAMPLE_DATA_DIR` | `sample-data` |
 | `cache_dir` | `…_CACHE_DIR` | `.cache/visualiser` |
 | `warning_text` | `…_WARNING_TEXT` | `"Sample data unavailable"` |
-| `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` |
+| `refresh_backoff_seconds` | `…_REFRESH_BACKOFF_SECONDS` | `300` (reserved, not yet enforced) |
+
+The README marks `refresh_backoff_seconds` as "reserved ... not yet enforced by
+the service", and nothing in `src/` reads it beyond the field itself
+(`README.md` §"Configuration"; `src/frictionless_architect/visualizer/config.py:37`).
+`POST /schema-payload/refresh` accepts an optional `source` hint in its body that
+is currently unused (`src/frictionless_architect/visualizer/api.py:42-54`).
 
 Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`;
 `schema_diagram_xsd_path` = `<sample_data_dir>/schema/archimate3_Diagram.xsd`
 (the entry XSD; it includes the View and Model schemas);
 `cache_path` = `<cache_dir>/schema_payload.json`
-(`src/frictionless_architect/visualizer/config.py:27-38`). `get_visualizer_settings()` is `lru_cache`d.
+(`src/frictionless_architect/visualizer/config.py:39-53`). `get_visualizer_settings()` is `lru_cache`d.
+
+The public classes and methods in these modules now carry Google-style docstrings
+(commit `44f1b8e`), and the three routes document their `503`, `202` and `409`
+responses; the OpenAPI docs are served at `/docs` (`README.md` §"Running the
+schema visualiser").
 
 ## Request flow
 
@@ -81,17 +92,17 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
 [Platform Specification & API](platform-spec.md) for the endpoint table.
 
 `SchemaPayloadService` orchestrates payload building
-(`src/frictionless_architect/visualizer/api.py:42-257`):
+(`src/frictionless_architect/visualizer/api.py:56-314`):
 
 1. **`get_payload(force_reload)`** — returns the cached payload unless
    `force_reload` or no cache exists, in which case it builds. If a build
    fails with `PayloadUnavailable` but a cache exists, the stale cache is
-   returned (`src/frictionless_architect/visualizer/api.py:59-70`).
+   returned (`src/frictionless_architect/visualizer/api.py:83-107`).
 2. **`_build_payload()`** (run in a thread) delegates sample/schema loading to
    two helpers, split out from a single larger method to cut its cognitive
    complexity (`e0c70ea refactor: reduce cognitive complexity of
    SchemaPayloadService._build_payload`):
-   - **`_load_sample()`** (`src/frictionless_architect/visualizer/api.py:116-131`)
+   - **`_load_sample()`** (`src/frictionless_architect/visualizer/api.py:168-183`)
      parses the sample XML. A missing or malformed file adds the generic
      `warning_text` and leaves `sample_status` as `missing`; an
      `ArchimateNamespaceError` sets `sample_status = "invalid"` and adds the
@@ -100,34 +111,34 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
      On a successful parse, it runs `validate_sample_against_schema()`
      against `schema_diagram_xsd_path` and adds each returned issue as a
      `warning`.
-   - **`_load_schema()`** (`src/frictionless_architect/visualizer/api.py:133-140`)
+   - **`_load_schema()`** (`src/frictionless_architect/visualizer/api.py:185-192`)
      queries Neo4j via `DataLoader` when `neo4j_uri` is set, returning
      `"disabled"` with empty lists otherwise, or `"unavailable"` with the
      `DataLoaderError` added as a warning.
 
-   `_build_payload()` itself (`src/frictionless_architect/visualizer/api.py:142-192`)
+   `_build_payload()` itself (`src/frictionless_architect/visualizer/api.py:194-244`)
    then raises `PayloadUnavailable` only if **both** Neo4j and sample yield
    nothing; otherwise it builds the set of relationship identifiers from the
-   schema side (`src/frictionless_architect/visualizer/api.py:168-172`) so
+   schema side (`src/frictionless_architect/visualizer/api.py:220-224`) so
    `_merge_elements()` can exclude them —
    a relationship isn't double-listed as an element — and merges schema
    entries with sample entries per identifier, emitting a `warning` for every
    schema type with no sample instance
-   (`src/frictionless_architect/visualizer/api.py:194-257`).
+   (`src/frictionless_architect/visualizer/api.py:246-282`).
 3. **`request_refresh()`** — spawns a background `asyncio` task that rebuilds
    and re-caches; raises `RefreshInProgress` (→ HTTP 409) if one is already
    running; the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
-   (`src/frictionless_architect/visualizer/api.py:72-78`).
+   (`src/frictionless_architect/visualizer/api.py:109-123`).
 4. **`get_status()`** — reports `cache_age_seconds`, `neo4j_status`
    (`disabled`/`available`/`unavailable`), `sample_file_status`
    (`missing`/`loaded`/`invalid`), `last_warning`, `refresh_in_progress`,
-   and refresh timestamps (`src/frictionless_architect/visualizer/api.py:101-114`).
+   and refresh timestamps (`src/frictionless_architect/visualizer/api.py:146-166`).
    The contract defines `invalid` as "root is not an ArchiMate `<model>` in
    the 3.0 namespace", with details in `last_warning`
    (`specs/002-neo4j-schema-ui/contracts/api.md` §"`/schema-payload/status`").
 
 `get_schema_service()` is `lru_cache(maxsize=1)` — one service instance per
-process (`src/frictionless_architect/visualizer/api.py:263-277`).
+process (`src/frictionless_architect/visualizer/api.py:315-331`).
 
 ## Components
 
@@ -164,14 +175,14 @@ doesn't re-export (`src/frictionless_architect/visualizer/sample_parser.py:10`).
 raises `ValueError` if the root is `None`, then calls
 `require_archimate_namespace()` before any extraction. A wrong-namespace
 document therefore raises `ArchimateNamespaceError` instead of yielding an
-empty result (`src/frictionless_architect/visualizer/sample_parser.py:32-37`).
+empty result (`src/frictionless_architect/visualizer/sample_parser.py:70-73`).
 It imports `ARCHIMATE_NS`/`XSI_NS` from `namespaces` rather than defining
 its own (`src/frictionless_architect/visualizer/sample_parser.py:12`).
 Extracts: elements (`identifier`, `xsi:type`, `name`), relationships
 (`identifier`, type, `source`, `target`, remaining attrs as `properties`),
 and views with `node` bounds (`x`/`y`/`w`/`h`, parsed via `int(float(...))`)
 and `connection` refs. `SampleParseResult.empty()` yields a blank result used
-when the file is missing (`src/frictionless_architect/visualizer/sample_parser.py:22-24`).
+when the file is missing (`src/frictionless_architect/visualizer/sample_parser.py:33-42`).
 
 ### `sample_validator` (`src/frictionless_architect/visualizer/sample_validator.py`)
 
@@ -223,7 +234,7 @@ payload `warning`, it never raises from that call site.
 Opens a Neo4j driver lazily with `basic_auth`, runs three read queries in a
 session — `(:Element)`, `(source:Element)-[:ARCHIMATE_RELATIONSHIP]->(target:Element)`,
 `(:View)-[:REPRESENTS_VIEW]->(:Diagram)` — and wraps `Neo4jError` as
-`DataLoaderError` (`src/frictionless_architect/visualizer/data_loader.py:27-91`).
+`DataLoaderError` (`src/frictionless_architect/visualizer/data_loader.py:20-108`).
 Returns empty lists if `neo4j_uri` is unset. The relationship query now reads
 the edge directly rather than a `RelationshipFact` node — see
 [ADR-0028](architecture.md) below.
@@ -231,7 +242,7 @@ the edge directly rather than a `RelationshipFact` node — see
 ### `SchemaCache` (`src/frictionless_architect/visualizer/cache.py`)
 
 Reads/writes the payload as pretty-printed JSON at `cache_path`, creating parent
-dirs on save; `age_seconds()` is `now - mtime` (`src/frictionless_architect/visualizer/cache.py:11-29`).
+dirs on save; `age_seconds()` is `now - mtime` (`src/frictionless_architect/visualizer/cache.py:11-51`).
 
 ## `SchemaManager` (`src/frictionless_architect/schema/manager.py`)
 
@@ -245,12 +256,12 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   `diagrams`. A sanitised element-type string is added as a second node label
   (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:37-50`). Relationship ingestion
   **raises `ValueError`** if either endpoint `Element` is missing
-  (`src/frictionless_architect/schema/manager.py:130-136`) and writes **only**
+  (`src/frictionless_architect/schema/manager.py:140-146`) and writes **only**
   a direct `[:ARCHIMATE_RELATIONSHIP {identifier, type, ...}]` edge — as of
   [ADR-0028](architecture.md), a `View`/`Diagram` no longer gets a
   `(:RelationshipFact)` node; instead `_ingest_views`/`_ingest_diagrams` set
   `v.relationshipIds`/`d.connectionIds` as a plain identifier-list property
-  (`src/frictionless_architect/schema/manager.py:152-217`). This drops
+  (`src/frictionless_architect/schema/manager.py:160-226`). This drops
   relationship ingestion from three write statements (existence check, edge
   `MERGE`, node `MERGE`) to two (existence check, edge `MERGE`).
 - **`record_schema_version(name)`** — MERGEs a `(:SchemaVersion {name})` with
@@ -263,7 +274,7 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   which is a plain string list, not a graph edge, so it can silently reference
   a non-existent relationship); `_find_orphan_views` flags a `View` with zero
   `INCLUDES`-linked elements or an empty `relationshipIds` list
-  (`src/frictionless_architect/schema/manager.py:239-279`, docstring on
+  (`src/frictionless_architect/schema/manager.py:246-299`, docstring on
   `_find_missing_relationship_targets`).
 
 Cypher statements are passed through `_run_literal()` which casts to

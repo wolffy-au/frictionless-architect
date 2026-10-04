@@ -1,15 +1,15 @@
-generated: '2026-10-03'
+generated: '2026-10-04'
 generator: claude-sonnet-5-5
 topics:
   project-overview:
     title: Project Overview
     page: wiki/project-overview.md
-    built: '2026-09-26'
+    built: '2026-10-04'
     sources:
       files:
         README.md:
-          sha256: 6b5f0db2ef10f071be5e76bcf04bfc60c6f55e3d4028bbebd129b9d723f67140
-          lines: 120
+          sha256: 53e891d218c0d4d115add9c996b29e21d465b34df284be66fc6e2b587c9e1c45
+          lines: 133
         specs/001-governance-platform/spec.md:
           sha256: f08d56571b62fc3f64f162c1c65fe27df5f89c3acba3b0b6ac68533680e96f0c
           lines: 199
@@ -615,7 +615,7 @@ topics:
   llm-provider-config:
     title: LLM Provider Configuration
     page: wiki/llm-provider-config.md
-    built: '2026-10-03'
+    built: '2026-10-04'
     sources:
       files:
         docs/adr/0034-shared-packages-and-llm-provider-config.md:
@@ -640,8 +640,8 @@ topics:
           sha256: 1748d8cc655e330de33117b07237e4c22c3f9c8682f8255aa2256c6eee8e998b
           lines: 55
         platform/packages/llm-provider-config/src/llm_provider_config/router.py:
-          sha256: e02ba99b6507002ec3e484668896b8aae4d69353d39bb22b9562423253a481f4
-          lines: 273
+          sha256: 9a0886f925b24a159f5525b96f33a761c07cb4799d9eaed233466f4ce6962ad0
+          lines: 279
         platform/packages/llm-provider-config/src/llm_provider_config/settings.py:
           sha256: 919b9706c81908e3f2a0d96c6f2c0426c4e43522d0cb1c91fa62f27e081515c6
           lines: 61
@@ -660,49 +660,49 @@ topics:
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
-    built: '2026-10-02'
+    built: '2026-10-04'
     sources:
       files:
         src/frictionless_architect/__init__.py:
           sha256: 48dced7090a65d75210823fe82969b7d6a6a264288b53d11d6fa6ad86848d777
           lines: 3
         src/frictionless_architect/app.py:
-          sha256: 5135f33e6d475ed297a9873a9c7cf9731fc72eb56d108b4685760681dd7437c0
-          lines: 20
+          sha256: 99af6b19c0ad0b86d387d87f9abfc1afcbf50ebae707db18a3e1c635f6f5f984
+          lines: 28
         src/frictionless_architect/schema/__init__.py:
           sha256: dfbfb90822e85df88dc25050b6972d3d445d14ea719fd9dae550c9a872690113
           lines: 5
         src/frictionless_architect/schema/manager.py:
-          sha256: dfc271df35bae03081804d10004af81e49da1a175b27f60d14ae8d8e211510ba
-          lines: 279
+          sha256: f27b680106a39ffe87b347d0da58227ccc563337fd7763aaef193463ba0e2841
+          lines: 299
         src/frictionless_architect/visualizer/__init__.py:
           sha256: 3e98d3ef453e703987240680bc09250ba02ea808b9d4dd85e3a816f5248e370d
           lines: 1
         src/frictionless_architect/visualizer/api.py:
-          sha256: ef67960928b36e4ec942b80b8a82a2d40b333ea15114851f72672f97bb282bcd
-          lines: 318
+          sha256: c6a69d998fd404ab784159b33cc0e6d41c1aefbbd694294bac9d771e1a17b356
+          lines: 374
         src/frictionless_architect/visualizer/cache.py:
-          sha256: 7c96a3ee4eb63be70fecc1618a71b7d3083953555bb270f6c7fae608bcdea559
-          lines: 29
+          sha256: 3657f8bb2924f14b396212f06affcb14b89d55a1bb5b44964c9355acd1419099
+          lines: 51
         src/frictionless_architect/visualizer/config.py:
-          sha256: fa6197cb01d53668cc97c105120b23c24ce6bf6f76e5ea7cabffbed6e29403fe
-          lines: 43
+          sha256: 86cf74ba52cfbd020bb500a6c376418fb6a42aa9219cec1bb398ffab565f2835
+          lines: 58
         src/frictionless_architect/visualizer/data_loader.py:
-          sha256: 3d2889ae07eb7fae9f7f7d397cbde12c0783a8adfd8de2a8d424ffd8d0dd0385
-          lines: 91
+          sha256: e0e094112e00a88745dc0401bf6a8ce1f4c28a0d453ee1f6838386308f214018
+          lines: 108
         src/frictionless_architect/visualizer/namespaces.py:
           sha256: c15021a58d638d470a6eba7d6207874fa52558ef764d97466d0bb74393713f19
           lines: 52
         src/frictionless_architect/visualizer/sample_parser.py:
-          sha256: 1b86588afb295f411a7f63d34e682e79efc90c699ae446e687dbaad60bba8e7b
-          lines: 145
+          sha256: 8745ba6a049424a2a95cb86c9d049b73721de5fb0894daf0ee51e0c1ed3a45db
+          lines: 181
         src/frictionless_architect/visualizer/sample_validator.py:
           sha256: 53d9440f80eb48cd662523cf86e7f62810a36f4775117e65a29ac6f4d58b09bf
           lines: 138
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-10-03'
+    built: '2026-10-04'
     sources:
       files:
         AGENTS.md:
@@ -724,8 +724,8 @@ topics:
           sha256: 5552f4fae9e848126bcf0a0d872c628640462d1a8d6b02bd35dc8f33b1090dbb
           lines: 75
         specs/002-neo4j-schema-ui/quickstart.md:
-          sha256: 836367bf01b8e0ee9ee08a4bc99442b98ba83f80f55e9b05c54aaeae225828a7
-          lines: 46
+          sha256: a11947641f27516697a54e6414f54b450032661099edf5292fa0dac6109f7b1d
+          lines: 57
       urls: {}
   sample-data:
     title: Sample Data

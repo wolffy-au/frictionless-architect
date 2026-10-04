@@ -1,7 +1,7 @@
 ---
 title: LLM Provider Configuration
-generated: 2026-10-03
-generator: claude-sonnet-5
+generated: 2026-10-04
+generator: claude-sonnet-5-5
 sources:
   - platform/packages/llm-provider-config/README.md
   - platform/packages/llm-provider-config/pyproject.toml
@@ -93,8 +93,13 @@ prefix and a JSON API under it (`platform/packages/llm-provider-config/src/llm_p
 - `PUT /default`, and `PUT`/`DELETE /components/{id}` — edit settings; unknown
   components give `404`.
 - `PUT`/`DELETE /keys/{provider}` — write to the keychain; `503` with an
-  environment-variable hint where there is no keychain, `422` for keyless providers.
-- `POST /test` — "Test connection": a one-word completion, returning `{ok, message}`.
+  environment-variable hint where there is no keychain, `422` for keyless providers,
+  and `404` when `DELETE` finds no stored key.
+- `POST /test` — "Test connection": a one-word completion, returning `{ok, message}`;
+  `404` for an unknown component.
+
+Each of these non-2xx outcomes is declared in the route's `responses=`, so the
+mounted app's OpenAPI document lists them (`router.py:94`, `101`, `113-117`, `131`, `141`).
 
 The page edits the global default, API keys and per-component overrides; keys are
 never returned. There is no authentication — the single-user local MVP of ADR-0024
@@ -114,5 +119,6 @@ opt-in live check against a local Ollama is gated by `RUN_OLLAMA_TESTS=1` (ADR-0
 Real hosted-provider calls with live keys and the real OS keychain are not exercised
 by the tests described in these sources. The package has no feature specs yet
 (`platform/packages/llm-provider-config/specs/README.md`), so behaviour is documented only by the ADR, README and code.
-`architecture/model/elements.yaml` still lists the providers without GitHub Copilot
-for `sub-llm-provider-config` (that file is not a source of this page).
+`architecture/model/elements.yaml` is not a source of this page, but its
+`sub-llm-provider-config` entry now also names GitHub Copilot as a keyless provider, so the
+earlier mismatch is closed.

@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: 2026-09-26
-generator: claude-opus-5-5
+generated: 2026-10-04
+generator: claude-sonnet-5-5
 sources:
   - README.md
   - specs/001-governance-platform/spec.md
@@ -98,9 +98,22 @@ unscoped backlog in GH #59, not as requirements.
 Only one narrow slice is built: the **Neo4j schema visualiser** — a FastAPI
 service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
 bundled sample model, falling back to `sample-data/` when Neo4j is unreachable
-(`README.md` §"What is built today"). See
+(`README.md` §"What is built today"). The FastAPI app is titled "Frictionless
+Architect" (OpenAPI docs at `/docs`) and exposes `GET /schema-payload`,
+`POST /schema-payload/refresh` and `GET /schema-payload/status`
+(`README.md` §"Running the schema visualiser"). See
 [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md) (spec 002).
+
+## Platform packages
+
+Code being extracted from the flat `src/` layout lives in the `platform/` Poetry
+monorepo (ADR-0002), with its own lock and virtualenv. The README lists two packages
+today: `controls-compliance-catalog` (policy and standard documents to OSCAL Catalogs
+and Profiles) and `llm-provider-config` (shared LLM provider, model and credential
+resolution); `bash scripts/platform_checks.sh` runs their gate (`README.md` §"Platform
+packages"). See [Controls & Compliance Catalog](controls-compliance-catalog.md) and
+[LLM Provider Configuration](llm-provider-config.md).
 
 Not covered by these sources: the MVP scope (single-user, locally run) is
 recorded in ADR-0024 and discussed on [Architecture Overview](architecture.md).
