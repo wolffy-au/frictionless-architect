@@ -27,10 +27,15 @@ topics:
 
   - name: architecture
     title: Architecture Overview
-    description: How the platform is layered, and the load-bearing decisions.
+    description: How the platform is layered and migrated, and the technical standards. Decisions are on the decision-log page.
     sources:
       - path: ARCHITECTURE.md
       - path: TECHNICAL.md
+
+  - name: decision-log
+    title: Architecture Decision Log
+    description: The ADR log — one MADR-lite file per load-bearing decision, with status and consequences.
+    sources:
       - path: docs/adr/*.md
 
   - name: architecture-model
@@ -66,6 +71,13 @@ topics:
       - path: architecture/model/README.md
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
+
+  - name: gh-roadmap-layer
+    title: "GitHub Roadmap Layer"
+    description: How GitHub milestones, issues and releases are imported into the Implementation & Migration layer (spec 003, ADR-0035).
+    sources:
+      - path: specs/003-gh-roadmap-archimate/**/*.md
+      - path: architecture/model/import_gh_roadmap.py
 
   - name: architecture-diagrams
     title: Architecture Views & Diagrams

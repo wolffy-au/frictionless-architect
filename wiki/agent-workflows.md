@@ -198,7 +198,7 @@ teaching models live under `sample-data/sample-0N/` — see
 Architecture decisions are recorded as MADR files under `docs/adr/`
 (`ARCHITECTURE.md` is the narrative, the ADR log is the index). The
 `adr-auditor` agent keeps the log honest — see the maintenance table above and
-[Architecture Overview](architecture.md) §"Decision log". Its standing re-check
+[Architecture Decision Log](decision-log.md). Its standing re-check
 list is now ADR-0017–0019 (still `Proposed`), the ADR-0014 vs ADR-0031 PII
 scope question (GitHub #56), and ADR-0022's namespace defect; ADR-0011's
 §3–4 rework is cited only as a past example, since #50 applied it

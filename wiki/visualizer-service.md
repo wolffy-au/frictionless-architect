@@ -276,7 +276,7 @@ the retry instead of escaping as a raw exception. `close()` releases the driver
 (`src/frictionless_architect/visualizer/data_loader.py:20-108`).
 Returns empty lists if `neo4j_uri` is unset. The relationship query now reads
 the edge directly rather than a `RelationshipFact` node — see
-[ADR-0028](architecture.md) below.
+[ADR-0028](decision-log.md) below.
 
 ### `SchemaCache` (`src/frictionless_architect/visualizer/cache.py`)
 
@@ -297,7 +297,7 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   **raises `ValueError`** if either endpoint `Element` is missing
   (`src/frictionless_architect/schema/manager.py:140-146`) and writes **only**
   a direct `[:ARCHIMATE_RELATIONSHIP {identifier, type, ...}]` edge — as of
-  [ADR-0028](architecture.md), a `View`/`Diagram` no longer gets a
+  [ADR-0028](decision-log.md), a `View`/`Diagram` no longer gets a
   `(:RelationshipFact)` node; instead `_ingest_views`/`_ingest_diagrams` set
   `v.relationshipIds`/`d.connectionIds` as a plain identifier-list property
   (`src/frictionless_architect/schema/manager.py:160-226`). This drops

@@ -1,6 +1,6 @@
 ---
 title: Architecture Views & Diagrams
-generated: 2026-10-01
+generated: 2026-10-05
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -22,8 +22,6 @@ sources:
   - architecture/model/diagrams/technology/oscal-golden-check.svg
   - architecture/model/diagrams/technology/persistence-boundary.puml
   - architecture/model/diagrams/technology/persistence-boundary.svg
-  - architecture/model/diagrams/technology/runtime-migration.puml
-  - architecture/model/diagrams/technology/runtime-migration.svg
   - architecture/model/diagrams/technology/usage-catalog.puml
   - architecture/model/diagrams/technology/usage-catalog.svg
   - architecture/model/diagrams/business/1-policy-conversion.puml
@@ -48,6 +46,14 @@ sources:
   - architecture/model/diagrams/implementation/packaging.svg
   - architecture/model/diagrams/layered/subsystem-capabilities.puml
   - architecture/model/diagrams/layered/subsystem-capabilities.svg
+  - architecture/model/diagrams/migration/overview.puml
+  - architecture/model/diagrams/migration/overview.svg
+  - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.puml
+  - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.svg
+  - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml
+  - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg
+  - architecture/model/diagrams/migration/runtime.puml
+  - architecture/model/diagrams/migration/runtime.svg
   - architecture/model/diagrams/migration/sequence.puml
   - architecture/model/diagrams/migration/sequence.svg
   - architecture/model/diagrams/vision/1-stakeholder.puml
@@ -100,7 +106,7 @@ The merged model has 37 ArchiMate views:
   follow-up) section F, the first Technology-layer cut.
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
-  ([ADR-0029](architecture.md)).
+  ([ADR-0029](decision-log.md)).
 
 The C4 context and container diagrams are **not** views. `render_diagrams.py`
 projects them through `diagram-c4` with `--system "Frictionless Architecture
@@ -117,7 +123,7 @@ kind of view:
 | `application/` | the artefact-flow views |
 | `c4/` | the C4 context and container diagrams |
 | `implementation/` | the Packaging view (section E) |
-| `migration/` | the Migration Sequence view (section E) |
+| `migration/` | the Implementation & Migration views (section E): Migration Sequence, Runtime Migration, the all-layer overview and the generated per-milestone views |
 | `technology/` | the five Technology-layer views (section F) |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
@@ -155,7 +161,7 @@ Numeric prefixes make a directory listing sort in reading order
 The first Value Stream view was renamed from "Value Stream — Governed
 Architecture Delivery" to **Value Stream Hand-offs**. Each stream's recipients,
 outcome and serving capabilities moved to its own `6a`–`6d` view
-([ADR-0033](architecture.md); `architecture/model/views.yaml:141-259`).
+([ADR-0033](decision-log.md); `architecture/model/views.yaml:141-259`).
 `8-requirements-realization` is new. It leaves the question of *why* each
 requirement exists to the Motivation and Goal Realization views
 (`architecture/model/views.yaml:327-352`).
@@ -296,13 +302,18 @@ more) and `ValueStream` (36 more: 7 streams + 29 stages). See the notes on
 
 ### Implementation & Migration views (section E)
 
-Two views, added 2026-09-26 (GH #65), render the platform's own restructure
-(see [Architecture Model](architecture-model.md) §"Packaging and migration"):
+Packaging and Migration Sequence, added 2026-09-26 (GH #65), render the platform's own restructure
+(see [Architecture Model](architecture-model.md) §"Packaging and migration"). Since 2026-10-05
+(ADR-0035, GH #95) the layer also carries Runtime Migration, an all-layer overview and one
+generated view per GitHub milestone, all under `migration/`:
 
 | View | Diagram | Viewpoint | Covers |
 |---|---|---|---|
 | Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, the shared LLM Provider Configuration component (ADR-0034), and `if-twin-read-path`, each realized by its package `Artifact` |
-| Migration Sequence | `migration/sequence` | `implementation_migration` | The `ARCHITECTURE.md` §8 steps as `WorkPackage`s, their `Deliverable`s, and the Baseline / Transition / Target `Plateau`s and `Gap`s between them |
+| Migration Sequence | `migration/sequence` | `implementation_migration` | The `ARCHITECTURE.md` §8 steps as `WorkPackage`s, their `Deliverable`s, and the `Plateau`s and `Gap`s between them (the baseline plus the roadmap-generated `plat-policy-to-oscal-mvp-1`; `gap-oscal-ai-conversion`) |
+| Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
+| Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview` | `implementation_migration` | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
+| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | Generated into `gh-roadmap/views.yaml` by the importer, one per milestone (currently `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`) |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
 mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,
@@ -322,7 +333,7 @@ story, so Migration Sequence stays focused on the step-by-step timeline. It
 
 ### Technology & application-structure views (section F)
 
-Six views, added 2026-09-27 (GH #55 follow-up, alongside the platform
+Five views, added 2026-09-27 (GH #55 follow-up, alongside the platform
 skeleton landing under GH #71), give the model its first Technology-layer
 cut, scoped to the `controls-compliance-catalog` slice (see [Architecture
 Model](architecture-model.md) §"Technology (section F)" and [Controls &
@@ -335,7 +346,6 @@ Compliance Catalog](controls-compliance-catalog.md)):
 | Technology: Persistence Boundary | `technology/persistence-boundary` | `custom` | What `store-oscal`/`store-ledger` actually run on: local filesystem `Artifact`s on `node-app-server`, not Postgres/Neo4j |
 | Technology: Infrastructure Landscape | `technology/landscape` | `technology` | The pure infrastructure topology — both Nodes, their `SystemSoftware` (including the OS credential store, `sw-keyring`), and the package `Artifact`s they host — with no `ApplicationComponent`/`DataObject` |
 | Technology Usage: Catalog Runtime | `technology/usage-catalog` | `technology_usage` | The demand-side chain `sub-catalog` → its package `Artifact` → `sw-uvicorn-fastapi` → `node-app-server` |
-| Runtime Migration: Local Compose to Hosted Cluster | `technology/runtime-migration` | `implementation_migration` | The `plat-runtime-mvp` → `plat-runtime-target` Plateau/Gap pair (ADR-0018) for the data layer's deployment shape; the MVP Plateau also aggregates `sw-keyring`, which is not carried to the hosted target (ADR-0034) |
 
 **Why `view-technology-ci-check` and `view-technology-persistence-boundary`
 are `viewpoint: custom`.** Both mix a `Node`/`Artifact` (Technology) with
@@ -347,8 +357,9 @@ viewpoint's allow-list covers that combination — the same constraint
 **Why this isn't folded into `view-migration`.** `view-migration`'s
 Plateaus/Gaps are the packaging restructure (`ARCHITECTURE.md` §8); the
 runtime-target skeleton is a separate transition story for the data layer's
-deployment shape, so it gets its own view and its own Plateau/Gap pair
-(`plat-runtime-mvp`, `plat-runtime-target`, `gap-runtime-hosted`) rather than
+deployment shape, so it gets its own view (`migration/runtime`) and its own
+Plateau/Gap pair (`plat-policy-to-oscal-mvp-1`, `plat-multi-user-collaboration-2`,
+`gap-policy-to-oscal-mvp-to-multi-user-collaboration`) rather than
 sharing `view-migration`'s `WorkPackage`s.
 
 **`view-technology-landscape` vs. `view-technology-ci-check`.** Both scope
@@ -378,7 +389,7 @@ viewpoint.
 - ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
   Configuration component and its package Artifact to the Packaging, Migration
   Sequence and Artefact Flow — Controls & OSCAL diagrams, and the OS credential store
-  (`sw-keyring`) to the Technology landscape and Runtime Migration diagrams
+  (`sw-keyring`) to the Technology landscape and (now `migration/runtime`) Runtime Migration diagrams
   (`architecture/model/views.yaml`; the regenerated `.puml`/`.svg` pairs).
 - `implementation/packaging` was rewritten from a broad
   `include_types: [Artifact]` scope to an explicit `members:` list, so the new

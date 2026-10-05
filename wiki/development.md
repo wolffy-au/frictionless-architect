@@ -167,7 +167,7 @@ The constitution's "Quality Gates" (see
 
 ```bash
 bash scripts/pre_commit_checks.sh   # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
-bash scripts/pre_merge_checks.sh    # + coverage-gated pytest, frontend UI harness
+bash scripts/pre_merge_checks.sh    # + behave, coverage-gated pytest (src + architecture/model), frontend UI harness
 bash scripts/platform_checks.sh     # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
 ```
 
@@ -184,6 +184,11 @@ payload, refresh, unavailable-sample warnings, the 2-second target and the load 
 `poetry run behave tests/features/` runs as a pre-push hook (`.pre-commit-config.yaml`), as a
 step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
 step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §2 already lists it.
+The scenarios now also cover the GitHub roadmap importer (`tests/features/gh_roadmap_import.feature`).
+
+The merge-gate coverage run measures `--cov=src --cov=architecture/model`, so the importer's
+tests count toward the 90% gate (`scripts/pre_merge_checks.sh`). `[tool.coverage.run]` omits the
+thin `architecture/model/build.py` and `render_diagrams.py` wrappers (`pyproject.toml`).
 
 ## Conventions
 

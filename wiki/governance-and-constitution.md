@@ -1,6 +1,6 @@
 ---
 title: Governance & Constitution
-generated: 2026-10-04
+generated: 2026-10-05
 generator: claude-sonnet-5-5
 sources:
   - .specify/memory/constitution.md
@@ -34,7 +34,7 @@ backlog. `specs/001-governance-platform` is now the business specification
 (`.specify/memory/constitution.md` Sync Impact Report v1.3.0, §"Requirements —
 why").
 
-The 1.4.0 amendment added Principle XI and the matching quality gate; no templates needed changes, and `AGENTS.md` carries a pointer rather than a copy (`.specify/memory/constitution.md` Sync Impact Report v1.4.0).
+The 1.4.0 amendment added Principle XI and the matching quality gate; no templates needed changes, and `AGENTS.md` carries a pointer rather than a copy (`.specify/memory/constitution.md` Sync Impact Report v1.4.0). The same report entry was then extended (no version bump) to modify Principle X and add a **Model Impact** quality gate, described below.
 
 ## The document tree
 
@@ -99,6 +99,10 @@ Integrity"):
   `architecture/model/` **in the same PR**. If that isn't possible, open a
   tracking issue and mark the ADR **A\*** ("accepted, not yet reflected") in the
   `docs/adr/README.md` index until it is.
+- Every plan states its **model impact**: the element, relationship and view
+  ids it adds, changes or retires in `architecture/model/`, or "none". Spec
+  text may name existing ids it serves but does not describe model changes, and
+  tasks include the model edits, `validate.py` and diagram regeneration.
 - Diagrams are generated from `architecture/model/`, never hand-edited; the
   wiki is derived and never a source.
 
@@ -147,6 +151,9 @@ Before a feature is "Done" (§"Quality Gates"):
   (ADR-0025).
 - **Documentation & decisions**: docs updated; load-bearing choices have an
   ADR; `ARCHITECTURE.md` and the model agree with the ADR log.
+- **Model impact**: every `plan.md` has a model-impact statement and `tasks.md`
+  carries the matching model edits, `validate.py` and diagram regeneration; a
+  plan without one fails `/speckit-analyze` and review.
 - **Concise artefacts**: spec artefacts follow Principle XI, with no restated content.
 - **Constitution Check** against the core principles.
 
