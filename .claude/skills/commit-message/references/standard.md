@@ -62,6 +62,7 @@ Use the package directory name, not the Python module name.
 - `third_party` — vendored `third_party/` submodules and their own tooling
   wiring (ruff/pyright excludes, etc.), for content not merged into `build.py`
   (contrast with `model`, used when vendored content like IT4IT is merged in)
+- `visualizer` — the schema visualiser (`src/frictionless_architect/visualizer/`)
 
 Omit the scope for genuinely repo-wide changes. Add a new area scope to this list
 in the same commit that first needs it.
