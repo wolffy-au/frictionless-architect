@@ -1,6 +1,6 @@
 # Implementation Plan: AI-Assisted Policy & Standard Conversion to OSCAL
 
-**Branch**: `003-oscal-ai-conversion` (original; package spec number `001`) | **Date**: 2026-09-23; re-targeted 2026-09-28 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-oscal-ai-conversion` (formerly `003-oscal-ai-conversion`; package spec number `001`) | **Date**: 2026-09-23; re-targeted 2026-09-28 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from
 `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md`
