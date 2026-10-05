@@ -1,0 +1,38 @@
+@startuml
+!include <archimate/Archimate>
+
+title Runtime Migration: Local Compose to Hosted Cluster
+
+Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
+  Business_Role(e_id2b5394f913985a, "Enterprise Architect")
+  Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
+  Business_Interaction(e_ida5ff14a2a5eb53, "Collaborative Architecture Modelling")
+}
+Implementation_Plateau(e_id4accde76fa5858, "baseline")
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
+Implementation_Gap(e_id957bea8a8f2755, "Neo4j Schema Visualiser")
+Implementation_Gap(e_idd9da54d5550b52, "Gap: enable team collaboration")
+Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration") {
+  Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
+}
+Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp") {
+  Technology_Node(e_id87c8b07cea4751, "Linux Application Server")
+}
+
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Assignment(e_id87c8b07cea4751, e_id35bf5bb401c95c, "hosts")
+Rel_Aggregation(e_idb94c55ad2a0756, e_id625e631f1f715e, "")
+Rel_Aggregation(e_idb94c55ad2a0756, e_id35bf5bb401c95c, "")
+Rel_Aggregation(e_id5024d2087dac51, e_id625e631f1f715e, "")
+Rel_Triggering_Right(e_id4accde76fa5858, e_idb94c55ad2a0756, "")
+Rel_Triggering_Right(e_idb94c55ad2a0756, e_id5024d2087dac51, "")
+Rel_Association(e_id957bea8a8f2755, e_id4accde76fa5858, "")
+Rel_Association(e_id957bea8a8f2755, e_idb94c55ad2a0756, "")
+Rel_Association(e_idd9da54d5550b52, e_idb94c55ad2a0756, "")
+Rel_Association(e_idd9da54d5550b52, e_id5024d2087dac51, "")
+Rel_Association(e_id5024d2087dac51, e_id2aa180bf48e258, "enables")
+Rel_Association(e_idd9da54d5550b52, e_ida5ff14a2a5eb53, "")
+
+@enduml

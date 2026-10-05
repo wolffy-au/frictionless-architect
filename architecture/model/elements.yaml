@@ -1019,6 +1019,19 @@
   name: Platform Operations (BAU)
   desc: Watches control effectiveness and drift in run.
 
+# --- B. Collaboration (joint behaviour across more than one role) ---
+- type: BusinessCollaboration
+  id: bc-model-collaboration
+  name: "Model Collaboration"
+  desc: >-
+    Two or more roles working on the same architecture model concurrently
+    (not a single actor's stable function — ArchiMate's collaboration
+    concept for joint behaviour).
+- type: BusinessInteraction
+  id: bi-collaborative-modelling
+  name: "Collaborative Architecture Modelling"
+  desc: Joint authoring/review of the model performed by Model Collaboration.
+
 # --- B. External systems (ApplicationComponent outside the Grouping -> C4 System_Ext) ---
 - type: ApplicationComponent
   id: ext-scm
@@ -1374,8 +1387,6 @@
   id: wp-7-extract-remaining
   name: 7. Extract remaining components
   desc: As work reaches them.
-
-# --- E. Deliverables (only where a step hands over a package) ---
 - type: Deliverable
   id: del-monorepo-skeleton
   name: Monorepo skeleton
@@ -1386,36 +1397,19 @@
 - type: Deliverable
   id: del-twin-pkg-scaffold
   name: digital-twin-knowledge-graph scaffold
-
-# --- E. Plateaus (states of this platform) ---
 - type: Plateau
   id: plat-baseline
-  name: "Baseline: flat src/"
-- type: Plateau
-  id: plat-first-extraction
-  name: "Transition: first extraction proven"
-  desc: After step 3 — controls-compliance-catalog in the monorepo, pattern proven.
-- type: Plateau
-  id: plat-target
-  name: "Target: package per subsystem"
-  desc: ARCHITECTURE.md §3.2 layout.
-
-# --- E. Gaps (what changes between consecutive Plateaus) ---
+  name: baseline
 - type: Gap
-  id: gap-catalog-extracted
-  name: "Gap: controls catalog extracted to its own package"
+  id: gap-oscal-ai-conversion
+  name: AI-Assisted Policy & Standard Conversion to OSCAL
   desc: >-
-    Baseline -> Transition. controls-compliance-catalog is created as its
-    own package and the OSCAL conversion code (GH #44) is written there, not
-    in the flat src/. It reads only the framework packs (store-frameworks),
-    not the knowledge graph, so nothing it needs waits on step 4.
-- type: Gap
-  id: gap-subsystems-packaged
-  name: "Gap: remaining subsystems packaged"
-  desc: >-
-    Transition -> Target. The remaining packages are created, including
-    schema-visualizer-api once step 4 has delivered the knowledge-graph read
-    path it consumes (ADR-0005), and the flat src/ is retired.
+    plat-baseline -> plat-policy-to-oscal-mvp-1. Feature spec
+    platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion.
+    controls-compliance-catalog is created as its own package and the OSCAL
+    conversion code (GH #44) is written there, not in the flat src/. It reads
+    only the framework packs (store-frameworks), not the knowledge graph, so
+    nothing it needs waits on step 4.
 
 # =====================================================================
 # F. TECHNOLOGY — first cut, scoped to the policy-to-OSCAL slice (GH #55
@@ -1549,29 +1543,25 @@
     managed vs. self-managed, and which orchestrator, are deferred to a
     follow-up ADR; nothing in the codebase argues for one option yet.
   props: {c4: ignore}
-- type: Plateau
-  id: plat-runtime-mvp
-  name: "Runtime: local compose (MVP)"
-  desc: >-
-    Baseline and current state: node-app-server's docker-compose stack is
-    the only deployment shape, through the MVP milestone (ADR-0024,
-    undated).
-- type: Plateau
-  id: plat-runtime-target
-  name: "Runtime: hosted cluster (target)"
-  desc: >-
-    Target state once past the MVP milestone: the data layer moves to
-    node-hosted-cluster (ADR-0018, updated 2026-09-27). Concrete shape
-    deferred to a follow-up ADR.
 - type: Gap
-  id: gap-runtime-hosted
-  name: "Gap: local compose -> hosted cluster"
+  id: gap-neo4j-schema-ui
+  name: Neo4j Schema Visualiser
   desc: >-
-    plat-runtime-mvp -> plat-runtime-target. Triggered by reaching the MVP
-    milestone (currently undated); the hosted cluster's own shape isn't
-    designed yet, so this Gap records the transition without committing to
-    more than the deliberately underspecified node-hosted-cluster
-    placeholder.
+    plat-baseline -> plat-policy-to-oscal-mvp-1. Feature spec
+    specs/002-neo4j-schema-ui. Through the MVP milestone node-app-server's
+    docker-compose stack is the only deployment shape (ADR-0024, undated): a
+    single user at a time, with no concurrent or shared access to the model.
+- type: Gap
+  id: gap-policy-to-oscal-mvp-to-multi-user-collaboration
+  name: "Gap: enable team collaboration"
+  desc: >-
+    plat-policy-to-oscal-mvp-1 -> plat-multi-user-collaboration-2. Once past
+    the MVP milestone the data layer moves to node-hosted-cluster (ADR-0018,
+    updated 2026-09-27), so multiple users can work on the model
+    concurrently. The hosted cluster's own shape isn't designed yet, so
+    this Gap records the transition without committing to more than the
+    deliberately underspecified node-hosted-cluster placeholder; the
+    concrete runtime shape is deferred to a follow-up ADR.
 
 # =====================================================================
 # F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved

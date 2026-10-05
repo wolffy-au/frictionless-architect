@@ -236,7 +236,9 @@ async def test_background_refresh_handles_unavailable(tmp_path: Path, caplog: py
     service._refresh_task = asyncio.ensure_future(asyncio.sleep(0))
     with caplog.at_level("WARNING", logger="frictionless_architect.visualizer.api"):
         await service._background_refresh()
-    assert service._refresh_task is None
+    # Read through a variable: mypy narrows the attribute to non-None after the assignment above.
+    refresh_task: object = vars(service)["_refresh_task"]
+    assert refresh_task is None
     assert "Background refresh failed" in caplog.text
 
 
