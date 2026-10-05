@@ -162,7 +162,9 @@ class SampleParser:
 
     def _first_name(self, element: ET.Element) -> str | None:
         name_elem = element.find(f"{{{ARCHIMATE_NS}}}name")
-        return name_elem.text.strip() if name_elem is not None and name_elem.text else None
+        if name_elem is None:
+            return None
+        return (name_elem.text or "").strip() or None
 
     def _lookup_label(self, element_ref: str | None, elements: dict[str, dict[str, Any]]) -> str | None:
         if element_ref and element_ref in elements:
