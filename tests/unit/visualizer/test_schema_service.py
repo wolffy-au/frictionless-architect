@@ -220,7 +220,7 @@ async def test_request_refresh_raises_when_already_running(tmp_path: Path) -> No
 
 
 @pytest.mark.asyncio
-async def test_background_refresh_handles_unavailable(tmp_path: Path) -> None:
+async def test_background_refresh_handles_unavailable(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
     settings = VisualizerSettings(
         neo4j_uri="bolt://localhost:7687",
         neo4j_user="user",
@@ -234,8 +234,10 @@ async def test_background_refresh_handles_unavailable(tmp_path: Path) -> None:
     service = BackgroundFailingService(settings, parser, loader, cache)
 
     service._refresh_task = asyncio.ensure_future(asyncio.sleep(0))
-    await service._background_refresh()
+    with caplog.at_level("WARNING", logger="frictionless_architect.visualizer.api"):
+        await service._background_refresh()
     assert service._refresh_task is None
+    assert "Background refresh failed" in caplog.text
 
 
 @pytest.mark.asyncio

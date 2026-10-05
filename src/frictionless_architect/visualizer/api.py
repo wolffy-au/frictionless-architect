@@ -207,9 +207,9 @@ class SchemaPayloadService:
     async def _background_refresh(self) -> None:
         try:
             await self._build_and_cache()
-        except PayloadUnavailable:
+        except PayloadUnavailable as exc:
             # preserve cache if build fails
-            pass
+            logger.warning("Background refresh failed; keeping the cached payload: %s", exc)
         finally:
             self._refresh_task = None
 
