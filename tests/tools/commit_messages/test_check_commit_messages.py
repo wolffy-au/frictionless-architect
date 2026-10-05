@@ -75,12 +75,14 @@ def test_body_wrap_exempts_trailers_urls_and_code() -> None:
     assert mod.body_wrap_problems(message) == []
 
 
-def test_body_wrap_fails_message_file_but_only_warns_for_range(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_body_wrap_fails_message_file_but_only_warns_for_range(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
     long_body = "docs(specs): trim plan\n\n" + "word " * 15 + "\n"
     path = tmp_path / "msg"
     path.write_text(long_body)
     assert mod.main(["--message-file", str(path)]) == 1
     capsys.readouterr()
-    mod.commits_in_range = lambda _range: [("abc1234", long_body.strip())]
+    monkeypatch.setattr(mod, "commits_in_range", lambda _range: [("abc1234", long_body.strip())])
     assert mod.main(["--range", "x..y"]) == 0
     assert "warning: abc1234" in capsys.readouterr().err
