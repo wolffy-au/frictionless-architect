@@ -1,0 +1,9 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: multi-user-collaboration
+
+Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration")
+
+
+@enduml

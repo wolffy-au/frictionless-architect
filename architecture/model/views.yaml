@@ -915,9 +915,11 @@
   # view-technology-ci-check and view-technology-persistence-boundary apart).
   viewpoint: implementation_migration
   members:
-    - plat-runtime-mvp
-    - plat-runtime-target
-    - gap-runtime-hosted
+    - plat-baseline
+    - plat-policy-to-oscal-mvp-1
+    - plat-multi-user-collaboration-2
+    - gap-baseline-to-policy-to-oscal-mvp
+    - gap-policy-to-oscal-mvp-to-multi-user-collaboration
     - node-app-server
     - node-hosted-cluster
     - sw-neo4j

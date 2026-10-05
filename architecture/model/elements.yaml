@@ -1556,31 +1556,25 @@
     managed vs. self-managed, and which orchestrator, are deferred to a
     follow-up ADR; nothing in the codebase argues for one option yet.
   props: {c4: ignore}
-- type: Plateau
-  id: plat-runtime-mvp
-  name: "Solo use only"
-  desc: >-
-    Baseline and current state: node-app-server's docker-compose stack is
-    the only deployment shape, through the MVP milestone (ADR-0024,
-    undated). A single user at a time — no concurrent/shared access to the
-    model.
-- type: Plateau
-  id: plat-runtime-target
-  name: "Collaborative / team modelling"
-  desc: >-
-    Target state once past the MVP milestone: the data layer moves to
-    node-hosted-cluster (ADR-0018, updated 2026-09-27), enabling multiple
-    users to work on the model concurrently. Concrete runtime shape deferred
-    to a follow-up ADR.
 - type: Gap
-  id: gap-runtime-hosted
+  id: gap-baseline-to-policy-to-oscal-mvp
+  name: "Gap: reach the first MVP (solo use)"
+  desc: >-
+    plat-baseline -> plat-policy-to-oscal-mvp-1. Through the MVP milestone
+    node-app-server's docker-compose stack is the only deployment shape
+    (ADR-0024, undated): a single user at a time, with no concurrent or
+    shared access to the model.
+- type: Gap
+  id: gap-policy-to-oscal-mvp-to-multi-user-collaboration
   name: "Gap: enable team collaboration"
   desc: >-
-    plat-runtime-mvp -> plat-runtime-target. Triggered by reaching the MVP
-    milestone (currently undated); the hosted cluster's own shape isn't
-    designed yet, so this Gap records the transition to concurrent
-    multi-user access without committing to more than the deliberately
-    underspecified node-hosted-cluster placeholder.
+    plat-policy-to-oscal-mvp-1 -> plat-multi-user-collaboration-2. Once past
+    the MVP milestone the data layer moves to node-hosted-cluster (ADR-0018,
+    updated 2026-09-27), so multiple users can work on the model
+    concurrently. The hosted cluster's own shape isn't designed yet, so
+    this Gap records the transition without committing to more than the
+    deliberately underspecified node-hosted-cluster placeholder; the
+    concrete runtime shape is deferred to a follow-up ADR.
 
 # =====================================================================
 # F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved
