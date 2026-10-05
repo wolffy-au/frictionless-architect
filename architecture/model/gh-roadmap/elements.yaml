@@ -36,21 +36,21 @@
     gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/1
 - type: WorkPackage
   id: wp-application-layer-dedupe-artefact-views-gh-61
-  name: '#61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams'
+  name: 'GH-61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams'
   props:
     gh-number: '61'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/61
 - type: WorkPackage
   id: wp-markdown-catalogue-converter-gh-44
-  name: '#44 Markdown catalogue converter'
+  name: GH-44 Markdown catalogue converter
   props:
     gh-number: '44'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/44
 - type: WorkPackage
   id: wp-vision-single-high-level-archimate-gh-7
-  name: '#7 Vision: single high-level ArchiMate diagram for the policy-to-runtime controls lifecycle'
+  name: 'GH-7 Vision: single high-level ArchiMate diagram for the policy-to-runtime controls lifecycle'
   props:
     gh-number: '7'
     gh-state: closed
