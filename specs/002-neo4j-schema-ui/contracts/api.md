@@ -32,7 +32,7 @@
   }
   ```  
 - **Error (409)**: when a refresh is already running; UI may show a toast and rely on the previous payload until the new one is ready.
-- **Error (429)**: within `REFRESH_BACKOFF_SECONDS` (default 300) of the last *successful* refresh; the `Retry-After` header gives the seconds left. A failed refresh is never delayed. This is a manual-refresh throttle, not the SC-006 automatic retry (T019).
+- **Error (429)**: within `REFRESH_BACKOFF_SECONDS` (default 300) of the last *successful* refresh; the `Retry-After` header gives the seconds left. A failed refresh is never delayed. This is a manual-refresh throttle, not the SC-006 automatic retry (see Notes under status).
 
 ## GET /schema-payload/status
 - **Purpose**: Reports cache freshness, last refresh time, and connection state (used by the warning banner to decide whether the schema list remains visible).  
@@ -44,10 +44,11 @@
     "sample_file_status": "loaded",
     "last_warning": "Sample data reload failed at 2026-04-04T10:17:02Z",
     "refresh_in_progress": false,
+    "retry_pending": false,
     "last_refresh_started": "2026-04-04T10:17:01+00:00",
     "last_refresh_completed": "2026-04-04T10:17:02+00:00"
   }
   ```  
-- **Notes**: UI uses this endpoint to enforce the non-blocking warning. `last_refresh_started` / `last_refresh_completed` (ISO 8601) appear once a refresh has run.
+- **Notes**: UI uses this endpoint to enforce the non-blocking warning. `last_refresh_started` / `last_refresh_completed` (ISO 8601) appear once a refresh has run. `retry_pending` is `true` while the SC-006 background retry is active: after a failed load (or Neo4j unreachable) it retries every `RETRY_INTERVAL_SECONDS` (default and maximum 300) until a load succeeds.
 - **`neo4j_status` values**: `disabled` (not configured), `available`, `unavailable` (read failed; warning set, cache or sample served).
 - **`sample_file_status` values**: `loaded` (sample parsed), `missing` (file absent or not well-formed XML), `invalid` (root is not an ArchiMate `<model>` in the `http://www.opengroup.org/xsd/archimate/3.0/` namespace — see ADR-0032; `last_warning` carries the details).

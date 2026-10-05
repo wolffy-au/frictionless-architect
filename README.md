@@ -66,6 +66,8 @@ them in a `.env` file at the repository root (loaded automatically when present)
 - `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` — seconds after a *successful*
   refresh during which `POST /schema-payload/refresh` answers `429` with `Retry-After`
   (default: `300`; failed refreshes are never delayed).
+- `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` — seconds between automatic background
+  retries after a failed load (default and maximum: `300`).
 
 `scripts/neo4j_schema.py` is a separate CLI that reads its own **unprefixed**
 `NEO4J_URI`, `NEO4J_USER`, and `NEO4J_PASSWORD` (or `--uri` / `--user` /

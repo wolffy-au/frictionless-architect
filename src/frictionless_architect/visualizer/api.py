@@ -91,6 +91,7 @@ class SchemaPayloadService:
         self.cache = cache
         self._build_lock = asyncio.Lock()
         self._refresh_task: asyncio.Task[Any] | None = None
+        self._retry_task: asyncio.Task[Any] | None = None
         self._last_refresh_started: datetime | None = None
         self._last_refresh_completed: datetime | None = None
         self._last_latency_ms: int | None = None
@@ -149,6 +150,43 @@ class SchemaPayloadService:
         return estimate
 
     async def _build_and_cache(self) -> dict[str, Any]:
+        try:
+            payload = await self._build_and_cache_once()
+        except PayloadUnavailable:
+            self._ensure_retry()
+            raise
+        if self._neo4j_status == "unavailable":
+            self._ensure_retry()
+        return payload
+
+    def _ensure_retry(self) -> None:
+        if self._retry_task is None or self._retry_task.done():
+            self._retry_task = asyncio.create_task(self._retry_until_loaded())
+
+    async def _retry_until_loaded(self) -> None:
+        """Retry a failed load every ``retry_interval_seconds`` until it succeeds (SC-006)."""
+        try:
+            while True:
+                await asyncio.sleep(self.settings.retry_interval_seconds)
+                try:
+                    await self._build_and_cache_once()
+                except PayloadUnavailable:
+                    continue
+                if self._neo4j_status != "unavailable":
+                    return
+        finally:
+            self._retry_task = None
+
+    async def stop_retry(self) -> None:
+        """Cancel any pending automatic retry (used on shutdown)."""
+        task = self._retry_task
+        if task is None:
+            return
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+        self._retry_task = None
+
+    async def _build_and_cache_once(self) -> dict[str, Any]:
         async with self._build_lock:
             self._last_refresh_started = datetime.now(timezone.utc)
             payload, neo4j_status, sample_status, warnings, latency = await asyncio.to_thread(self._build_payload)
@@ -174,7 +212,7 @@ class SchemaPayloadService:
 
         Returns:
             A mapping with ``cache_age_seconds``, ``neo4j_status``, ``sample_file_status``,
-            ``last_warning``, ``refresh_in_progress`` and, once known,
+            ``last_warning``, ``refresh_in_progress``, ``retry_pending`` and, once known,
             ``last_refresh_started`` / ``last_refresh_completed`` (ISO 8601).
         """
         age = self.cache.age_seconds()
@@ -184,6 +222,7 @@ class SchemaPayloadService:
             "sample_file_status": self._sample_status,
             "last_warning": self._last_warning,
             "refresh_in_progress": bool(self._refresh_task and not self._refresh_task.done()),
+            "retry_pending": bool(self._retry_task and not self._retry_task.done()),
         }
         if self._last_refresh_started:
             status["last_refresh_started"] = self._last_refresh_started.isoformat()
