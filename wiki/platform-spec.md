@@ -1,6 +1,6 @@
 ---
 title: Platform Specification & API
-generated: 2026-10-04
+generated: 2026-10-05
 generator: claude-sonnet-5-5
 sources:
   - specs/001-governance-platform/spec.md
@@ -123,7 +123,14 @@ For a field-level reference, add the contract file as its own wiki topic.
 ArchiMate node/relationship/view definition with curated sample data, serves it
 over FastAPI, and keeps the schema summary usable when sample data or Neo4j is
 unavailable (`specs/002-neo4j-schema-ui/plan.md:6-7`). Implemented — see
-[Visualizer Service](visualizer-service.md).
+[Visualizer Service](visualizer-service.md). Since 2026-10-04 the spec covers the
+JSON API only: the UI that consumes it moved to `schema-visualizer-ui` (#55), so
+the scenarios' rendering behaviour (highlighting, diagram/table switching) and FR-003
+are owned there (`specs/002-neo4j-schema-ui/spec.md` §"User Scenarios & Testing";
+`specs/002-neo4j-schema-ui/plan.md:7`). The types are to come from the
+`architecture/model/` type system (FR-001; task T020, blocked on GH #73), and its
+acceptance scenarios cite the sample's real nodes, VS1 and the Governance Service,
+not a "VS2".
 
 ### Clarified behaviour
 
@@ -162,11 +169,13 @@ Requirements"; see [Governance & Constitution](governance-and-constitution.md)).
 ### Design decisions (research)
 
 `specs/002-neo4j-schema-ui/research.md`: **cytoscape.js** + vanilla JS/HTML
-tables for the UI (over D3 — too low-level; vis.js — larger bundle);
+tables for the UI (over D3 — too low-level; vis.js — larger bundle). That UI choice
+is now owned by `schema-visualizer-ui` (#55) and the plan no longer carries it
+(`specs/002-neo4j-schema-ui/plan.md`);
 **`defusedxml`-wrapped `xml.etree.ElementTree`** to normalize the XSDs +
 `Test Model Full.xml` into a shared JSON payload, with **`xmlschema`** to
 validate against the XSDs (`specs/002-neo4j-schema-ui/research.md` §"Parsing
-ArchiMate schema + sample XML data", corrected 2026-09-25 to match ADR-0022); reuse Neo4j read credentials from `.env` and fall back to
+ArchiMate schema + sample XML data", corrected 2026-09-25 to match ADR-0022); read Neo4j through the one configured read-only service credential (ADR-0024) and fall back to
 a cached JSON payload with a "Sample data unavailable" warning on outage.
 
 > The implementation now matches the research doc on both halves. As of GitHub
@@ -202,8 +211,11 @@ contract lists only the three JSON endpoints. The server-rendered
 [Visualizer Service](visualizer-service.md)).
 
 `warnings` is always present (empty array when clean); `latency_ms` supports
-the < 2s goal. The contract also documents `401/403` from Neo4j credential
-rejection; the implementation surfaces those via the same cache-fallback path.
+the < 2s goal. The contract no longer documents `401/403` (updated 2026-10-04):
+access is the single service credential (ADR-0024), a Neo4j read failure becomes a
+warning and falls back to the cache or sample, and `503` is the only error. The
+status response also lists `refresh_in_progress`, `retry_pending` and the refresh
+timestamps (`specs/002-neo4j-schema-ui/contracts/api.md`).
 
 ### Success criteria
 
@@ -238,8 +250,9 @@ doesn't say whether the spec still passes.
 
 ### Task breakdown
 
-`specs/002-neo4j-schema-ui/tasks.md` breaks the feature into 18 tasks (T001–
-T018) across six phases, and every task is checked off complete: Phase 1
+`specs/002-neo4j-schema-ui/tasks.md` began as 18 tasks (T001–T018) across six
+phases, all checked off, and has since gained Phases 7–9 (T019–T027; see the end of
+this section). The first six phases: Phase 1
 Setup (the FastAPI router, `config.py`, and the static/template scaffold,
 T001–T003); Phase 2 Foundational (the sample parser, Neo4j `data_loader`,
 cache, and `api.py` controllers that every user story depends on, T004–T007);
@@ -254,3 +267,16 @@ three (`specs/002-neo4j-schema-ui/tasks.md` §"Dependencies & Execution
 Order"). All 18 boxes being ticked is consistent with 002's status elsewhere
 on this page as the one fully implemented spec — see
 [Visualizer Service](visualizer-service.md) for the resulting code.
+
+T010, T012 and T013 (the UI tasks) are marked "Delivered; ownership moves to
+`schema-visualizer-ui` (#55), 2026-10-04". Phase 7 ("Decisions of 2026-10-04")
+adds T019, the automatic background retry (SC-006, done), T020, sourcing types
+from the type system (open, waiting on GH #73), and T021, removing the
+unimplemented `401/403` (done). Phase 8 (Convergence) added T022 (a 2-second test,
+SC-005), T023 (warn on duplicate identifiers), T024 and T025 (align `plan.md` and
+`spec.md` with the #55 split), all done. Phase 9 records two gaps found by the
+behave scenarios and still open: T026, where a missing sample with no Neo4j makes
+`GET /schema-payload` answer `503` although FR-006 keeps the schema summary
+accessible, and T027, where a sample in another namespace should report
+`sample_file_status: "invalid"` but stays `missing` when nothing else supplies data
+(`specs/002-neo4j-schema-ui/tasks.md` §Phases 7–9).
