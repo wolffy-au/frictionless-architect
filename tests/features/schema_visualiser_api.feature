@@ -3,11 +3,11 @@
 #
 # Criterion                                        -> Scenario (tags)
 # US1 AS1 element list with sample nodes           -> "Element list shows sample nodes"          @US1 @FR-001 @FR-002
-# US1 AS2 relationship + source/target ids         -> "Association shows source and target"      @US1 @FR-002 (VS2 not in sample)
+# US1 AS2 relationship + source/target ids         -> "Association shows source and target"      @US1 @FR-002
 # US3 AS1 refresh gives same overview              -> "Refreshing the sample view"               @US3 @FR-004
 # Edge 1 type without sample nodes (FR-005)        -> "Type with no sample nodes"                @edge @FR-005
 # Edge 2 nodes sharing identifiers                 -> "Nodes share identifiers"                  @edge
-# Edge 2 duplicate associations                    -> "Duplicate associations" @needs-clarification
+# Edge 2 duplicate associations                    -> "Duplicate associations"
 # Edge 3 other namespace -> status invalid         -> "Sample on another namespace"              @edge
 # Edge 4 / FR-006 sample cannot be loaded          -> "Sample cannot be loaded" (+ no-Neo4j variant @needs-clarification)
 # SC-005 2-second target                           -> "Schema visualisation responds within 2 seconds"
@@ -26,15 +26,14 @@ Feature: Schema visualiser API
   Scenario: Element list shows sample nodes
     Given the sample dataset is loaded
     When they inspect the element list
-    Then each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, VS2) drawn from "sample-data/sample-00/Test Model Full.xml"
+    Then each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, BusinessService Governance Service) drawn from "sample-data/sample-00/Test Model Full.xml"
 
   @US1 @FR-002
   Scenario: Association shows source and target
     Given the schema contains relationships (Association)
     When the user selects that relationship type
-    Then the visualiser highlights the actual relationships between the sample nodes (e.g., the Association between VS1 and VS2) and shows the source/target identifiers
-    # NOTE: highlighting is UI (#55); the API half is asserted. The sample has VS1 only, so the
-    # Association is asserted from VS1 to its target; "VS2" is not in the sample file.
+    Then the visualiser highlights the actual relationships between the sample nodes (e.g., the Association between VS1 and the Governance Service) and shows the source/target identifiers
+    # NOTE: highlighting is UI (#55); the API half is asserted.
 
   @US3 @FR-004
   Scenario: Refreshing the sample view
@@ -54,12 +53,11 @@ Feature: Schema visualiser API
     When the schema payload is requested
     Then the payload warns about the duplicate identifier and is still returned
 
-  @edge @needs-clarification
+  @edge
   Scenario: Duplicate associations
     Given "Test Model Full.xml" defines multiple relationships between the same pair of elements (e.g., duplicate associations)
     When the schema payload is requested
-    Then the visualiser behaves as specified
-    # NOTE: the spec asks "how does the visualiser behave" without stating an outcome.
+    Then every parallel relationship is listed and no duplicate warning is raised
 
   @edge
   Scenario: Sample on another namespace

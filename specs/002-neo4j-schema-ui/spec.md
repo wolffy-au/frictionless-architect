@@ -35,8 +35,8 @@ A data analyst needs to quickly understand the node, relationship, and view type
 
 **Acceptance Scenarios**:
 
-1. **Given** the user opens the schema tab and the sample dataset is loaded, **When** they inspect the element list, **Then** each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, VS2) drawn from `sample-data/sample-00/Test Model Full.xml`.
-2. **Given** the schema contains relationships (Association), **When** the user selects that relationship type, **Then** the visualiser highlights the actual relationships between the sample nodes (e.g., the Association between VS1 and VS2) and shows the source/target identifiers.
+1. **Given** the user opens the schema tab and the sample dataset is loaded, **When** they inspect the element list, **Then** each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, BusinessService Governance Service) drawn from `sample-data/sample-00/Test Model Full.xml`.
+2. **Given** the schema contains relationships (Association), **When** the user selects that relationship type, **Then** the visualiser highlights the actual relationships between the sample nodes (e.g., the Association between VS1 and the Governance Service) and shows the source/target identifiers.
 
 ---
 
@@ -60,7 +60,7 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 
 **Why this priority**: Regression prevention is important, but this story can be validated after the core schema awareness flows are in place.
 
-**Independent Test**: Reload the sample dataset, verify that previously noted sample elements (VS1, VS2) and their association render again, and confirm that the schema summary still references the same definition files.
+**Independent Test**: Reload the sample dataset, verify that previously noted sample elements (VS1, the Governance Service) and their association render again, and confirm that the schema summary still references the same definition files.
 
 **Acceptance Scenarios**:
 
@@ -71,7 +71,7 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 ### Edge Cases
 
 - What happens when the schema references a type (e.g., a new ArchiMate element) with no sample nodes in `sample-data/sample-00`?
-- How does the visualiser behave if `Test Model Full.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers?
+- How does the visualiser behave if `Test Model Full.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers? Parallel relationships with distinct identifiers are all listed; only a repeated identifier raises a warning.
 - What if the validation XSDs are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes? *Resolved (ADR-0032)*: the ArchiMate 3.1 exchange-format XSDs keep the `http://www.opengroup.org/xsd/archimate/3.0/` namespace, so 3.0-namespaced sample data remains valid against them. A sample file declaring any other namespace is reported as a warning naming the expected namespace, and `/schema-payload/status` returns `sample_file_status: "invalid"` rather than rendering an empty model.
 - What warning should appear if `sample-data/sample-00/Test Model Full.xml` cannot be loaded so analysts understand why sample instances are unavailable without being blocked?
 
