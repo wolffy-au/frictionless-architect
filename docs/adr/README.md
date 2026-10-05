@@ -118,3 +118,6 @@ narrative docs.
   package per concern; first instance is `llm-provider-config`
   (OpenAI/Gemini/Claude/Ollama via `litellm`, global+per-component overrides,
   secrets via OS keychain, never `.env`)
+- **A** — [0035](0035-github-roadmap-as-implementation-migration-layer.md) — GitHub milestones,
+  issues and releases imported into the Implementation & Migration layer by
+  `import_gh_roadmap.py`; generated layer merged by `build.py`, never hand-edited
