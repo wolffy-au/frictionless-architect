@@ -93,9 +93,12 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
-      # behave (BDD acceptance) is not gated: tests/features/ holds only a
-      # placeholder scenario. Re-add this hook once acceptance-author writes
-      # real scenarios. [tool.behave] config and CI's (non-blocking) step stay.
+      - id: behave
+        name: behave acceptance
+        entry: poetry run behave tests/features/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
 
       - id: pytest-unit
         name: pytest unit

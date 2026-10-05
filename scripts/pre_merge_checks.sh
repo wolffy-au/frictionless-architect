@@ -41,8 +41,8 @@ poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ign
 # (Snyk Code above already walks platform/ source.)
 (cd platform && snyk test --package-manager=poetry --file=poetry.lock --org=wolffy-au)
 
-# behave (BDD acceptance) is not gated while tests/features/ is a placeholder.
-# Re-add `poetry run behave tests/features/` here once real scenarios exist.
+echo "Running behave acceptance scenarios..."
+poetry run behave tests/features/
 
 echo "Running pytest suites..."
 poetry run pytest --cov-fail-under=90 --cov=src --cov-report=term-missing
