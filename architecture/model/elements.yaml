@@ -1401,13 +1401,15 @@
   id: plat-baseline
   name: baseline
 - type: Gap
-  id: gap-catalog-extracted
-  name: "Gap: controls catalog extracted to its own package"
+  id: gap-oscal-ai-conversion
+  name: AI-Assisted Policy & Standard Conversion to OSCAL
   desc: >-
-    baseline -> policy-to-oscal-mvp. controls-compliance-catalog is created as its
-    own package and the OSCAL conversion code (GH #44) is written there, not
-    in the flat src/. It reads only the framework packs (store-frameworks),
-    not the knowledge graph, so nothing it needs waits on step 4.
+    plat-baseline -> plat-policy-to-oscal-mvp-1. Feature spec
+    platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion.
+    controls-compliance-catalog is created as its own package and the OSCAL
+    conversion code (GH #44) is written there, not in the flat src/. It reads
+    only the framework packs (store-frameworks), not the knowledge graph, so
+    nothing it needs waits on step 4.
 
 # =====================================================================
 # F. TECHNOLOGY — first cut, scoped to the policy-to-OSCAL slice (GH #55
@@ -1542,13 +1544,13 @@
     follow-up ADR; nothing in the codebase argues for one option yet.
   props: {c4: ignore}
 - type: Gap
-  id: gap-baseline-to-policy-to-oscal-mvp
-  name: "Gap: reach the first MVP (solo use)"
+  id: gap-neo4j-schema-ui
+  name: Neo4j Schema Visualiser
   desc: >-
-    plat-baseline -> plat-policy-to-oscal-mvp-1. Through the MVP milestone
-    node-app-server's docker-compose stack is the only deployment shape
-    (ADR-0024, undated): a single user at a time, with no concurrent or
-    shared access to the model.
+    plat-baseline -> plat-policy-to-oscal-mvp-1. Feature spec
+    specs/002-neo4j-schema-ui. Through the MVP milestone node-app-server's
+    docker-compose stack is the only deployment shape (ADR-0024, undated): a
+    single user at a time, with no concurrent or shared access to the model.
 - type: Gap
   id: gap-policy-to-oscal-mvp-to-multi-user-collaboration
   name: "Gap: enable team collaboration"

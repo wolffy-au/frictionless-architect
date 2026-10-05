@@ -59,7 +59,7 @@ No violations; Complexity Tracking is empty.
 
 - Adds the generated layer `architecture/model/gh-roadmap/` (`plat-*`, `del-*`, `wp-*`, their relationships and one view per milestone).
 - Retires `plat-runtime-mvp` and `plat-runtime-target`, replaced by the generated `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2` (milestone #2, now created); every relationship and view member that named them is retargeted.
-- Renames `gap-runtime-hosted` to `gap-policy-to-oscal-mvp-to-multi-user-collaboration` and adds `gap-baseline-to-policy-to-oscal-mvp`, with their Associations and the Triggering between the Plateaus.
+- Renames `gap-runtime-hosted` to `gap-policy-to-oscal-mvp-to-multi-user-collaboration` and adds `gap-neo4j-schema-ui`, with their Associations and the Triggering between the Plateaus.
 - Changes `build.py` (`MODEL_LAYERS`) and `architecture/model/README.md`; regenerate diagrams after `validate.py`.
 
 ## Project Structure
