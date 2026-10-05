@@ -14,7 +14,7 @@ poetry run python architecture/model/build.py   # then merges the layer
 
 - Reads GitHub only through `gh` (argv list, no shell). Needs no new credential.
 - Renders all three files in memory, then replaces them atomically. It never writes a partial layer.
-- Prints one summary line, e.g. `wrote gh-roadmap: 2 milestones, 0 releases, 1 planned deliverable, 3 work packages, 0 triggering`, and `unchanged` when the bytes already match.
+- Prints one summary line, e.g. `wrote gh-roadmap: 2 milestones, 0 releases, 1 unreleased deliverable, 3 work packages, 0 triggering`, and `unchanged` when the bytes already match.
 
 ## Run sequence
 
