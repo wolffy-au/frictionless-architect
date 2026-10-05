@@ -415,3 +415,19 @@ async def test_retry_keeps_going_when_an_attempt_fails_outright(tmp_path: Path, 
     assert RecoveringParser.calls == 4
     assert [d for d in sleeps if d] == [60, 60, 60]
     assert service.get_status()["retry_pending"] is False
+
+
+@pytest.mark.asyncio
+async def test_sample_parse_warnings_reach_the_payload(tmp_path: Path) -> None:
+    class DuplicateParser(StubParser):
+        def parse(self) -> SampleParseResult:
+            result = super().parse()
+            result.warnings = ["Duplicate element identifier E1 in the sample; the last definition is used"]
+            return result
+
+    settings = VisualizerSettings(cache_dir=tmp_path / "cache", sample_data_dir=tmp_path)
+    service = SchemaPayloadService(
+        settings, DuplicateParser(tmp_path), StubLoader(settings), SchemaCache(settings.cache_path)
+    )
+    payload = await service.get_payload(force_reload=True)
+    assert "Duplicate element identifier E1 in the sample; the last definition is used" in payload["warnings"]

@@ -185,3 +185,68 @@ def test_malformed_xml_raises_parse_error(tmp_path: Path) -> None:
 def test_missing_file_raises_file_not_found(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         SampleParser(tmp_path / "absent.xml").parse()
+
+
+DUPLICATE_MODEL_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" identifier="m1">
+  <name xml:lang="en">M</name>
+  <elements>{elements}</elements>
+  <relationships>{relationships}</relationships>
+  <views><diagrams>{views}</diagrams></views>
+</model>
+"""
+
+
+def _parse_sections(tmp_path: Path, elements: str = "", relationships: str = "", views: str = "") -> SampleParseResult:
+    sample = tmp_path / "model.xml"
+    sample.write_text(
+        DUPLICATE_MODEL_TEMPLATE.format(elements=elements, relationships=relationships, views=views), encoding="utf-8"
+    )
+    return SampleParser(sample).parse()
+
+
+def test_clean_sample_has_no_parse_warnings(tmp_path: Path) -> None:
+    result = _parse_sections(
+        tmp_path, elements='<element identifier="e1" xsi:type="BusinessActor"><name>A</name></element>'
+    )
+    assert result.warnings == []
+
+
+def test_duplicate_element_identifier_is_reported_and_the_last_definition_wins(tmp_path: Path) -> None:
+    result = _parse_sections(
+        tmp_path,
+        elements=(
+            '<element identifier="e1" xsi:type="BusinessActor"><name>First</name></element>'
+            '<element identifier="e1" xsi:type="BusinessRole"><name>Second</name></element>'
+        ),
+    )
+    assert result.elements["e1"]["name"] == "Second"
+    assert result.warnings == ["Duplicate element identifier e1 in the sample; the last definition is used"]
+
+
+def test_duplicate_relationship_identifier_is_reported(tmp_path: Path) -> None:
+    rel = '<relationship identifier="r1" source="a" target="b" xsi:type="Association"/>'
+    result = _parse_sections(tmp_path, relationships=rel + rel)
+    assert len(result.relationships) == 1
+    assert result.warnings == ["Duplicate relationship identifier r1 in the sample; the last definition is used"]
+
+
+def test_duplicate_view_identifier_is_reported_and_both_views_are_kept(tmp_path: Path) -> None:
+    view = '<view identifier="v1" xsi:type="Diagram"><name>V</name></view>'
+    result = _parse_sections(tmp_path, views=view + view)
+    assert len(result.views) == 2
+    assert result.warnings == ["Duplicate view identifier v1 in the sample"]
+
+
+def test_parallel_relationships_with_distinct_identifiers_are_not_duplicates(tmp_path: Path) -> None:
+    """Two associations between the same pair are legitimate; only a repeated identifier is a problem."""
+    result = _parse_sections(
+        tmp_path,
+        relationships=(
+            '<relationship identifier="r1" source="a" target="b" xsi:type="Association"/>'
+            '<relationship identifier="r2" source="a" target="b" xsi:type="Association"/>'
+        ),
+    )
+    assert set(result.relationships) == {"r1", "r2"}
+    assert result.warnings == []

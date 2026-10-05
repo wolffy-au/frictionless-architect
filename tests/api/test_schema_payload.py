@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 import pytest
 
 
@@ -35,3 +37,14 @@ async def test_schema_payload_surfaces_xsd_violations_as_warnings(schema_client_
     assert any(w.startswith("XSD: ") and "bogus" in w for w in warnings)
     status = (await schema_client_with_xsd_violation.get("/schema-payload/status")).json()
     assert status["sample_file_status"] == "loaded"
+
+
+@pytest.mark.asyncio
+async def test_schema_payload_builds_within_the_two_second_target(schema_client):
+    """SC-005: a cold build (cache bypassed) answers within 2 seconds and reports its own latency."""
+    started = time.perf_counter()
+    response = await schema_client.get("/schema-payload", params={"force_reload": "true"})
+    elapsed = time.perf_counter() - started
+    assert response.status_code == 200
+    assert elapsed < 2.0
+    assert 0 <= response.json()["latency_ms"] < 2000
