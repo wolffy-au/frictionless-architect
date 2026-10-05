@@ -618,7 +618,7 @@ topics:
   llm-provider-config:
     title: LLM Provider Configuration
     page: wiki/llm-provider-config.md
-    built: '2026-10-04'
+    built: '2026-10-05'
     sources:
       files:
         docs/adr/0034-shared-packages-and-llm-provider-config.md:
@@ -630,8 +630,14 @@ topics:
         platform/packages/llm-provider-config/pyproject.toml:
           sha256: 81c063a54feb612c641b26a653f1c2bca92731efcd9db679a3b497d21a59ced1
           lines: 22
+        platform/packages/llm-provider-config/specs/001-llm-provider-config/checklists/requirements.md:
+          sha256: 7dbcd48e7d0419d2de3f2b965bf1c2adc5bc6c718fdac4acf1319428c858e9f2
+          lines: 36
+        platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md:
+          sha256: c84d48ec2983ec2ea7729d9750088e467e003b422e5da2d2291f1d83678d1c89
+          lines: 154
         platform/packages/llm-provider-config/specs/README.md:
-          sha256: c358b6600d9d2b5a862c14a0205ba772c755f6b9fceb3e51b696e295bfa4ddca
+          sha256: cbd65d7edc896a909248f81c4231326fc3d2d470d3b3162ef0d3cc1171000e67
           lines: 5
         platform/packages/llm-provider-config/src/llm_provider_config/__init__.py:
           sha256: db63f8f305fe004fdb572785d4ac4765d79554f13e9cc77440f571c74c6adc4b
@@ -709,6 +715,12 @@ topics:
     built: '2026-10-05'
     sources:
       files:
+        .github/workflows/ci.yml:
+          sha256: da24a5e3d07d4646f9b8dc88775f9d4be448e8632570a06007d71a67d40c4088
+          lines: 177
+        .pre-commit-config.yaml:
+          sha256: fbcb63deb06d05de891ac8e6432512c61452a1510e97852709d2b798c3ba8a1f
+          lines: 131
         AGENTS.md:
           sha256: 74452b2c8cadf4bfd34e6fcc399c0c4fb1a8f895778cb6a69eb8fd806f5c80ef
           lines: 142
@@ -724,6 +736,9 @@ topics:
         SECURITY.md:
           sha256: 31571f7297e96f97630abc338a44ac2e24c292c5ab94bcba5505037debe8faaa
           lines: 54
+        scripts/pre_merge_checks.sh:
+          sha256: 5d4052bd3798cf3182ba10f35237f0258ccf55cffddde331addb0cba81aa1941
+          lines: 60
         specs/001-governance-platform/quickstart.md:
           sha256: 5552f4fae9e848126bcf0a0d872c628640462d1a8d6b02bd35dc8f33b1090dbb
           lines: 75
