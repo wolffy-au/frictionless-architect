@@ -59,7 +59,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 **Independent Test**: `/schema-payload/status` reports `cache_age_seconds`, `neo4j_status`, `sample_file_status`, and `/schema-payload/refresh` responds with `refresh_started` while respecting the 5-minute retry requirement.
 
 - [x] T014 [US3] Create `tests/api/test_schema_status.py` asserting `/schema-payload/status` returns freshness/warning metadata and POST `/schema-payload/refresh` returns 202 when idle and 409 if a refresh is running.
-- [x] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and both honor the retry/backoff rules from the spec.
+- [x] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and applies the post-success refresh throttle (429); the SC-006 automatic retry is T019.
 - [x] T016 [US3] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
 
 ---
@@ -77,7 +77,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [ ] T019 [US3] Add a background task that retries a failed load at most 5 minutes apart until it succeeds, with a test in `tests/api/` (SC-006).
 - [ ] T020 Source the displayed types from the `architecture/model/` type system instead of the Neo4j-plus-sample union (FR-001/004/005); the multi-spec types wait on GH #73.
-- [ ] T021 Remove the unimplemented `401/403` from `contracts/api.md` (FR-007: no per-user auth) and document the `503`, `429` and status fields.
+- [x] T021 Remove the unimplemented `401/403` from `contracts/api.md` (FR-007: no per-user auth) and document the `503`, `429` and status fields.
 
 ---
 
