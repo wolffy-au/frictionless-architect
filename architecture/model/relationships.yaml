@@ -874,20 +874,24 @@
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
 - {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
 - {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}
-- {type: Aggregation, source: plat-runtime-mvp, target: node-app-server}
-- {type: Aggregation, source: plat-runtime-mvp, target: sw-neo4j}
-- {type: Aggregation, source: plat-runtime-mvp, target: sw-keyring}
-- {type: Aggregation, source: plat-runtime-target, target: node-hosted-cluster}
-- {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
-- {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
-- {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: node-app-server}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-neo4j}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-keyring}
+- {type: Aggregation, source: plat-multi-user-collaboration-2, target: node-hosted-cluster}
+- {type: Aggregation, source: plat-multi-user-collaboration-2, target: sw-neo4j}
+- {type: Triggering, source: plat-baseline, target: plat-policy-to-oscal-mvp-1}
+- {type: Triggering, source: plat-policy-to-oscal-mvp-1, target: plat-multi-user-collaboration-2}
+- {type: Association, source: gap-baseline-to-policy-to-oscal-mvp, target: plat-baseline}
+- {type: Association, source: gap-baseline-to-policy-to-oscal-mvp, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-multi-user-collaboration-2}
 
 # --- B. Model Collaboration (joint behaviour) ---
 - {type: Aggregation, source: bc-model-collaboration, target: role-ea}
 - {type: Aggregation, source: bc-model-collaboration, target: role-sa}
 - {type: Assignment, source: bc-model-collaboration, target: bi-collaborative-modelling}
-- {type: Association, source: plat-runtime-target, target: bc-model-collaboration, label: enables}
-- {type: Association, source: gap-runtime-hosted, target: bi-collaborative-modelling}
+- {type: Association, source: plat-multi-user-collaboration-2, target: bc-model-collaboration, label: enables}
+- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: bi-collaborative-modelling}
 
 # =====================================================================
 # F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition
