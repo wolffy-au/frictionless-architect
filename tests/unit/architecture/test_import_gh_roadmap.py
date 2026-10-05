@@ -69,7 +69,7 @@ def test_work_package_slug_hard_cuts_a_single_long_word(importer: ModuleType) ->
 def test_id_builders(importer: ModuleType) -> None:
     assert importer.plateau_id("policy-to-oscal-mvp", 1) == "plat-policy-to-oscal-mvp-1"
     assert importer.release_id("v0.1.0") == "del-release-v0-1-0"
-    assert importer.planned_id("policy-to-oscal-mvp", 1) == "del-policy-to-oscal-mvp-1-planned"
+    assert importer.unreleased_id("policy-to-oscal-mvp", 1) == "del-policy-to-oscal-mvp-1-unreleased"
     assert importer.work_package_id("Markdown catalogue converter", 44) == "wp-markdown-catalogue-converter-gh-44"
 
 
@@ -294,7 +294,7 @@ def test_main_writes_the_fixture_layer(
 ) -> None:
     assert importer.main(["--repo", REPO], run_gh=make_stub(), layer_dir=tmp_path) == 0
     assert capsys.readouterr().out.strip() == (
-        "wrote gh-roadmap: 2 milestones, 2 releases, 1 planned deliverable, 3 work packages, 0 triggering"
+        "wrote gh-roadmap: 2 milestones, 2 releases, 1 unreleased deliverable, 3 work packages, 0 triggering"
     )
     elements = yaml.safe_load((tmp_path / "elements.yaml").read_text())
     kinds = [e["type"] for e in elements]
@@ -309,7 +309,7 @@ def test_closed_work_package_realizes_a_deliverable_never_a_plateau(kit: Kit) ->
     )
     for wp in ("wp-work-gh-1", "wp-work-gh-2"):
         targets = [t for _, s, t in links(layer, "Realization") if s == wp]
-        assert targets == ["del-mvp-1-planned"]
+        assert targets == ["del-mvp-1-unreleased"]
     assert by_id(layer)["wp-work-gh-1"]["props"]["gh-state"] == "closed"
 
 
@@ -326,16 +326,16 @@ def test_issue_closed_between_two_releases_realizes_the_later_one_only(kit: Kit)
     layer = kit.layer([kit.milestone()], releases, [issue])
     assert links(layer, "Realization") >= {("Realization", "wp-work-gh-1", "del-release-v2")}
     assert not any(s == "wp-work-gh-1" and t != "del-release-v2" for _, s, t in links(layer, "Realization"))
-    assert "del-mvp-1-planned" not in by_id(layer)
+    assert "del-mvp-1-unreleased" not in by_id(layer)
 
 
-def test_issue_closed_after_the_latest_release_stays_planned(kit: Kit) -> None:
+def test_issue_closed_after_the_latest_release_stays_unreleased(kit: Kit) -> None:
     layer = kit.layer(
         [kit.milestone()],
         [kit.release("v1", "2026-01-01T00:00:00Z")],
         [kit.issue(1, state="closed", closed_at="2026-02-01T00:00:00Z")],
     )
-    assert ("Realization", "wp-work-gh-1", "del-mvp-1-planned") in links(layer)
+    assert ("Realization", "wp-work-gh-1", "del-mvp-1-unreleased") in links(layer)
 
 
 def test_release_naming_no_imported_plateau_attaches_nothing(kit: Kit) -> None:
@@ -346,7 +346,7 @@ def test_release_naming_no_imported_plateau_attaches_nothing(kit: Kit) -> None:
     )
     assert "del-release-v1" in by_id(layer)
     assert not [r for r in links(layer, "Realization") if r[1] == "del-release-v1"]
-    assert ("Realization", "wp-work-gh-1", "del-mvp-1-planned") in links(layer)
+    assert ("Realization", "wp-work-gh-1", "del-mvp-1-unreleased") in links(layer)
 
 
 def test_drafts_and_prereleases_never_make_a_deliverable(importer: ModuleType, tmp_path: Path) -> None:
@@ -356,12 +356,12 @@ def test_drafts_and_prereleases_never_make_a_deliverable(importer: ModuleType, t
     assert {"del-release-v0-1-0", "del-release-v0-2-0"} <= ids
 
 
-def test_planned_deliverable_only_for_a_milestone_with_work_packages(kit: Kit) -> None:
+def test_unreleased_deliverable_only_for_a_milestone_with_work_packages(kit: Kit) -> None:
     layer = kit.layer([kit.milestone(), kit.milestone(2, "empty")], [], [kit.issue(1)])
     ids = by_id(layer)
-    assert "del-mvp-1-planned" in ids
-    assert "del-empty-2-planned" not in ids
-    assert ("Realization", "del-mvp-1-planned", "plat-mvp-1") in links(layer)
+    assert "del-mvp-1-unreleased" in ids
+    assert "del-empty-2-unreleased" not in ids
+    assert ("Realization", "del-mvp-1-unreleased", "plat-mvp-1") in links(layer)
 
 
 def test_bfn_token_is_honoured_only_on_an_exact_match(kit: Kit) -> None:
@@ -502,7 +502,7 @@ def test_close_moves_the_link_only_when_a_release_follows(importer: ModuleType, 
     after = yaml.safe_load((tmp_path / "relationships.yaml").read_text())
     gone = [r for r in before if r not in after]
     added = [r for r in after if r not in before]
-    assert gone == [link("Realization", "wp-markdown-catalogue-converter-gh-44", "del-policy-to-oscal-mvp-1-planned")]
+    assert gone == [link("Realization", "wp-markdown-catalogue-converter-gh-44", "del-policy-to-oscal-mvp-1-unreleased")]
     assert added == [link("Realization", "wp-markdown-catalogue-converter-gh-44", "del-release-v0-2-0")]
 
 
@@ -541,12 +541,12 @@ def test_unparseable_or_incomplete_data_leaves_the_layer_untouched(
     assert snapshot(tmp_path) == before
 
 
-def test_reopened_issue_returns_to_the_planned_deliverable(kit: Kit) -> None:
+def test_reopened_issue_returns_to_the_unreleased_deliverable(kit: Kit) -> None:
     release = kit.release("v1", "2026-03-01T00:00:00Z")
     closed = kit.layer([kit.milestone()], [release], [kit.issue(1, state="closed", closed_at="2026-02-01T00:00:00Z")])
     reopened = kit.layer([kit.milestone()], [release], [kit.issue(1)])
     assert ("Realization", "wp-work-gh-1", "del-release-v1") in links(closed)
-    assert ("Realization", "wp-work-gh-1", "del-mvp-1-planned") in links(reopened)
+    assert ("Realization", "wp-work-gh-1", "del-mvp-1-unreleased") in links(reopened)
     assert by_id(reopened)["wp-work-gh-1"]["props"]["gh-state"] == "open"
 
 
@@ -554,8 +554,8 @@ def test_moved_milestone_retargets_only_that_realization(kit: Kit) -> None:
     milestones = [kit.milestone(), kit.milestone(2, "later")]
     before = kit.layer(milestones, [], [kit.issue(1), kit.issue(2)])
     after = kit.layer(milestones, [], [kit.issue(1, milestone=2), kit.issue(2)])
-    assert links(before) - links(after) == {("Realization", "wp-work-gh-1", "del-mvp-1-planned")}
-    assert links(after) - links(before) >= {("Realization", "wp-work-gh-1", "del-later-2-planned")}
+    assert links(before) - links(after) == {("Realization", "wp-work-gh-1", "del-mvp-1-unreleased")}
+    assert links(after) - links(before) >= {("Realization", "wp-work-gh-1", "del-later-2-unreleased")}
 
 
 def test_removed_milestone_removes_the_element_and_its_links(kit: Kit) -> None:

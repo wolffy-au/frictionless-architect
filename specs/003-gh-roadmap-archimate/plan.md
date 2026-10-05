@@ -153,7 +153,7 @@ endif
 :Keep only issues with their own milestone;
 :Drop draft and pre-release releases;
 :Map milestones to Plateaus, releases to Deliverables,\nissues to Work Packages;
-:Attach each Work Package to one Deliverable\n(planned, or first release after closedAt);
+:Attach each Work Package to one Deliverable\n(unreleased, or first release after closedAt);
 :Derive links: Realization, Aggregation, Triggering,\nPlateau to business function;
 :Drop links implied by a chain (derivation rule);
 :Sort by (kind, number) and render YAML\nwith yaml.safe_dump, in memory;
