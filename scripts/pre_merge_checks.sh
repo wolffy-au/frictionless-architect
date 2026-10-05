@@ -45,7 +45,7 @@ echo "Running behave acceptance scenarios..."
 poetry run behave tests/features/
 
 echo "Running pytest suites..."
-poetry run pytest --cov-fail-under=90 --cov=src --cov-report=term-missing
+poetry run pytest --cov-fail-under=90 --cov=src --cov=architecture/model --cov-report=term-missing
 
 echo "Running frontend UI harness..."
 if [ -d frontend ]; then
