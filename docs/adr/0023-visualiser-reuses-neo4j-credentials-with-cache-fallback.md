@@ -20,6 +20,8 @@ but the schema overview must stay usable during short Neo4j / sample-data outage
   database and sample data are unreachable, showing a non-blocking
   "Sample data unavailable" banner while keeping the schema list visible.
 - Cache refreshes are rate-limited (`REFRESH_BACKOFF_SECONDS`, default 300).
+- After a failed load (or an unreachable Neo4j) a background task retries every
+  `RETRY_INTERVAL_SECONDS` (default and maximum 300) until a load succeeds (spec 002 SC-006).
 
 ## Consequences
 

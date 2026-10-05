@@ -18,6 +18,7 @@ FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
 FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
 FRICTIONLESS_ARCHITECT_WARNING_TEXT="Sample data unavailable"
 FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300
+FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS=300
 ```
 
 The cache directory stores the normalized payload (`schema_payload.json`) so the service can return schema metadata even when Neo4j is offline, and `FRICTIONLESS_ARCHITECT_WARNING_TEXT` defines the non-blocking banner shown when the sample file cannot be read.

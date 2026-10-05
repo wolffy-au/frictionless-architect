@@ -104,3 +104,24 @@ async def schema_client_with_xsd_violation(
 
     async with _build_client(monkeypatch, tmp_path, sample_data=sample_data) as client:
         yield client
+
+
+@pytest.fixture
+async def schema_client_recovering_sample(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> AsyncGenerator[httpx.AsyncClient, None]:
+    """The sample model is unreadable on the first load, then readable (SC-006)."""
+    sample_path = REPO_SAMPLE_DATA / "sample-00" / "Test Model Full.xml"
+    original_parse = SampleParser.parse
+    calls = {"n": 0}
+
+    def flaky_parse(_: SampleParser) -> SampleParseResult:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise FileNotFoundError("missing sample")
+        return original_parse(SampleParser(sample_path))
+
+    monkeypatch.setenv("FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS", "0")
+    async with _build_client(monkeypatch, tmp_path, patch_sample_parse=flaky_parse) as client:
+        yield client
+        await api_mod.get_schema_service().stop_retry()

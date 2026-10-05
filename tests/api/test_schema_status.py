@@ -43,3 +43,20 @@ async def test_schema_refresh_rejected_during_backoff_after_success(schema_clien
     second = await client.post("/schema-payload/refresh", json={})
     assert second.status_code == 429
     assert int(second.headers["Retry-After"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_failed_load_is_retried_automatically_until_it_succeeds(schema_client_recovering_sample):
+    """SC-006: after a failed load a background retry loads the payload without a manual refresh."""
+    client = schema_client_recovering_sample
+    assert (await client.get("/schema-payload")).status_code == 503
+    status = (await client.get("/schema-payload/status")).json()
+    assert status["retry_pending"] is True
+    for _ in range(100):
+        status = (await client.get("/schema-payload/status")).json()
+        if not status["retry_pending"]:
+            break
+        await asyncio.sleep(0.05)
+    assert status["retry_pending"] is False
+    assert "last_refresh_completed" in status
+    assert (await client.get("/schema-payload")).status_code == 200
