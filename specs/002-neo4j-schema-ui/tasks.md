@@ -36,7 +36,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [x] T008 [P] [US1] Create `tests/api/test_schema_payload.py` that asserts `/schema-payload` returns element/relationship metadata, includes sample instance identifiers, and populates `warnings` when `Test Model Full.xml` or Neo4j is unavailable.
 - [x] T009 [US1] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
-- [x] T010 [US1] Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
+- [x] T010 [US1] **Delivered; ownership moves to `schema-visualizer-ui` (#55), 2026-10-04.** Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
 
 ---
 
@@ -47,8 +47,8 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 **Independent Test**: The diagram/table pulls from the same dataset (identical element/relationship counts and attribute lists) returned by `/schema-payload`.
 
 - [x] T011 [P] [US2] Create `tests/api/test_schema_view_consistency.py` that validates `/schema-payload` contains matching element/relationship data for both diagram nodes and table rows, including layout bounds from `Test Model Full.xml`.
-- [x] T012 [US2] Extend `schema_visualizer.js` to build the cytoscape diagram from the `views` payload, respecting stored x/y/w/h bounds, and toggle between the diagram and table while showing identical metadata (identifier, label, source file) per FR-003.
-- [x] T013 [US2] Update `templates/schema_visualizer.html` plus CSS to support switching between diagram and table views while keeping the schema list visible and consistent.
+- [x] T012 [US2] **Delivered; ownership moves to `schema-visualizer-ui` (#55), 2026-10-04.** Extend `schema_visualizer.js` to build the cytoscape diagram from the `views` payload, respecting stored x/y/w/h bounds, and toggle between the diagram and table while showing identical metadata (identifier, label, source file) per FR-003.
+- [x] T013 [US2] **Delivered; ownership moves to `schema-visualizer-ui` (#55), 2026-10-04.** Update `templates/schema_visualizer.html` plus CSS to support switching between diagram and table views while keeping the schema list visible and consistent.
 
 ---
 
@@ -108,3 +108,12 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 1. **MVP First**: Complete Phases 1–2 plus Phase 3 (US1) to verify schema coverage, sample warnings, and base endpoints.
 2. **Incremental Delivery**: Add Phase 4 (US2) and Phase 5 (US3) with their tests before finalizing Phase 6.
 3. **Parallel Delivery**: With multiple contributors, assign foundational APIs to one developer while another works on UI tests for US1, etc.
+
+---
+
+## Phase 8: Convergence
+
+- [ ] T022 Add a `tests/api/` test that `GET /schema-payload` answers within 2 seconds on the sample data; no test checks latency today per SC-005 (missing)
+- [ ] T023 Make `sample_parser.py` warn on a repeated element, relationship or view identifier instead of silently overwriting it, with a test per the duplicate-identifier edge case (partial)
+- [ ] T024 Update `plan.md` to the 2026-10-04 decisions (UI moved to #55, single service credential, types from the type system); its summary, testing, constraints and research lines still describe the dropped UI per plan: summary and constraints (partial)
+- [ ] T025 Mark FR-003 and the UI-facing parts of FR-002 and the US2 scenario in `spec.md` as moved to #55, matching tasks T010/T012/T013 per FR-003 (partial)
