@@ -92,9 +92,9 @@ package exists.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`); `?force_reload=true` skips cache; `503` if nothing reachable |
+| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`; includes duplicate-identifier warnings from the sample); `?force_reload=true` skips cache; `503` if nothing reachable |
 | `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy; `429` during backoff |
-| `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
+| `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, `retry_pending`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
 
 ## Platform packages
 
