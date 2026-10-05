@@ -118,7 +118,7 @@ def step_inspect_elements(context: Any) -> None:
 
 
 @then(
-    "each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, VS2) "
+    "each element type from the schema is shown with one or more sample nodes (e.g., ValueStream VS1, BusinessService Governance Service) "
     'drawn from "sample-data/sample-00/Test Model Full.xml"'
 )
 def step_elements_with_samples(context: Any) -> None:
@@ -137,7 +137,7 @@ def step_select_relationship(context: Any) -> None:
 
 @then(
     "the visualiser highlights the actual relationships between the sample nodes "
-    "(e.g., the Association between VS1 and VS2) and shows the source/target identifiers"
+    "(e.g., the Association between VS1 and the Governance Service) and shows the source/target identifiers"
 )
 def step_association(context: Any) -> None:
     associations = [r for r in context.payload["relationships"] if r["type"] == "Association"]
@@ -299,3 +299,27 @@ def step_interval_cap(context: Any) -> None:
     except ValidationError:
         return
     raise AssertionError("an interval above 5 minutes was accepted")
+
+
+@given(
+    '"Test Model Full.xml" defines multiple relationships between the same pair of elements (e.g., duplicate associations)'
+)
+def step_parallel_associations(context: Any) -> None:
+    _edit_sample(
+        context,
+        '<relationship identifier="id-assoc"',
+        '<relationship identifier="id-assoc-2" source="id-vs1" target="id-serv" xsi:type="Association" />\n'
+        '    <relationship identifier="id-assoc"',
+    )
+
+
+@then("every parallel relationship is listed and no duplicate warning is raised")
+def step_parallel_listed(context: Any) -> None:
+    assert context.response.status_code == 200
+    pairs = [
+        r
+        for r in context.payload["relationships"]
+        if r["type"] == "Association" and r["source"] == "id-vs1" and r["target"] == "id-serv"
+    ]
+    assert len(pairs) == 2
+    assert not any("Duplicate" in w for w in context.payload["warnings"])
