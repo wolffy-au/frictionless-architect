@@ -1399,30 +1399,15 @@
   name: digital-twin-knowledge-graph scaffold
 - type: Plateau
   id: plat-baseline
-  name: "Baseline: flat src/"
-- type: Plateau
-  id: plat-first-extraction
-  name: "Transition: first extraction proven"
-  desc: After step 3 — controls-compliance-catalog in the monorepo, pattern proven.
-- type: Plateau
-  id: plat-target
-  name: "Target: package per subsystem"
-  desc: ARCHITECTURE.md §3.2 layout.
+  name: baseline
 - type: Gap
   id: gap-catalog-extracted
   name: "Gap: controls catalog extracted to its own package"
   desc: >-
-    Baseline -> Transition. controls-compliance-catalog is created as its
+    baseline -> policy-to-oscal-mvp. controls-compliance-catalog is created as its
     own package and the OSCAL conversion code (GH #44) is written there, not
     in the flat src/. It reads only the framework packs (store-frameworks),
     not the knowledge graph, so nothing it needs waits on step 4.
-- type: Gap
-  id: gap-subsystems-packaged
-  name: "Gap: remaining subsystems packaged"
-  desc: >-
-    Transition -> Target. The remaining packages are created, including
-    schema-visualizer-api once step 4 has delivered the knowledge-graph read
-    path it consumes (ADR-0005), and the flat src/ is retired.
 
 # =====================================================================
 # F. TECHNOLOGY — first cut, scoped to the policy-to-OSCAL slice (GH #55

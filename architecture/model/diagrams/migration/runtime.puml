@@ -8,7 +8,7 @@ Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
   Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
   Business_Interaction(e_ida5ff14a2a5eb53, "Collaborative Architecture Modelling")
 }
-Implementation_Plateau(e_id4accde76fa5858, "Baseline: flat src/")
+Implementation_Plateau(e_id4accde76fa5858, "baseline")
 Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
 Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
 Implementation_Gap(e_id4b156310597055, "Gap: reach the first MVP (solo use)")
