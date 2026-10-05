@@ -39,14 +39,52 @@ models. The files are committed, deterministic and never hand-edited.
 - **Untrusted text:** only an exact `plat-*` or `bfn-*` id match in a description or
   release body creates a link; everything else from GitHub is ignored.
 - **Ownership:** the importer never creates Gaps, the baseline Plateau or Strategy
-  elements. Those, and the Triggering between Plateaus that orders them, stay
-  hand-authored.
+  elements. Gaps come from the speckit scan below; the baseline Plateau, Strategy elements
+  and the Triggering between Plateaus that orders them stay hand-authored.
 - **Failure:** any incomplete or failed read (including more than 1000 issues) exits
   non-zero and writes nothing; `--check` reports drift without writing.
 - **Cut-over:** `plat-runtime-mvp` and `plat-runtime-target` are retired in favour of the
   generated Plateaus; `gap-runtime-hosted` becomes
   `gap-policy-to-oscal-mvp-to-multi-user-collaboration`, and
-  `gap-baseline-to-policy-to-oscal-mvp` carries the ADR-0024 solo-use narrative.
+  `gap-neo4j-schema-ui` carries the ADR-0024 solo-use narrative.
+
+### Strategy and Implementation & Migration elements, by source
+
+The table above covers what the importer emits. Every other type in the two layers, with
+the ArchiMate 3.2 meaning that decides its source:
+
+| ArchiMate type | Source | Why |
+|---|---|---|
+| Plateau | GitHub milestone (`plat-<slug>-<n>`) | A named state; generated (baseline is hand-authored) |
+| Work Package | GitHub issue (`wp-<slug>-gh-<n>`) | A bounded unit of work; generated |
+| Deliverable | GitHub release (`del-release-<tag-slug>`) | A defined result of work; generated |
+| Gap | Speckit spec plus a mapping file | What is missing between Plateaus, not how it is built |
+| Implementation Event | Not used currently | A go-live, cut-over or freeze date |
+| Capability | Hand-authored | An architectural judgement |
+| Course of Action | **Undecided** (below) | A plan configuring capabilities and resources to reach a goal |
+| Resource | Hand-authored | An asset owned or controlled by a person or organisation |
+| Value Stream | Hand-authored | An architectural judgement |
+
+Gap convention: a Gap is a feature, aligned with the speckit features under `specs/NNN-…`
+(including those under `platform/packages/*/specs/`). Several Gaps may lie between the same
+two Plateaus, one per feature. Each is Associated with its two Plateaus and with the Work
+Packages and Deliverable that deliver it (Association is the only relationship ArchiMate
+allows from a Gap).
+
+- **Source:** a scan of the specs supplies the id (`gap-<spec-slug>`), the title (H1) and the
+  status. The specs do not name their Plateaus, so a hand-authored mapping file lists, per
+  spec directory, the "from" and "to" Plateau ids and any Work Packages or Deliverable to
+  Associate. A spec with no entry yields no Gap.
+- **Output:** a layer of its own, separate from `gh-roadmap/`, merged by `build.py` the same
+  way. The GitHub importer still never creates Gaps.
+- **Validation:** a mapping entry that names an unknown Plateau, Work Package or Deliverable
+  fails the scan and writes nothing.
+
+Open question: whether a Course of Action represents an epic. Epics cannot be told from
+tasks on GitHub today, which is why every in-scope issue is a Work Package. Mapping epics
+to Courses of Action needs a convention (such as an `epic` label) and an agreement that an
+epic is a plan, not just a larger unit of work. Until then Courses of Action stay
+hand-authored.
 
 ## Alternatives considered
 
