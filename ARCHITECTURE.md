@@ -376,6 +376,16 @@ Checklist:
 
 ---
 
+### 8.3 GitHub roadmap layer
+
+The Implementation & Migration layer follows the GitHub roadmap
+([ADR-0035](docs/adr/0035-github-roadmap-as-implementation-migration-layer.md)).
+`architecture/model/import_gh_roadmap.py` turns milestones into Plateaus, milestone issues
+into Work Packages and published releases into Deliverables, writing the committed, generated
+`architecture/model/gh-roadmap/`; `build.py` merges it with the hand-authored model. Gaps, the
+baseline Plateau and the Triggering between Plateaus stay hand-authored. Run it on demand with
+`poetry run python architecture/model/import_gh_roadmap.py` (`--check` reports drift).
+
 ## 9. Cross-cutting migration risks
 
 - **`FRICTIONLESS_ARCHITECT_` env prefix + `frictionless_architect` package name** —

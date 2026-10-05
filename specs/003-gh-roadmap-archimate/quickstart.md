@@ -15,7 +15,9 @@ Expect: a summary line, then `build.py` reporting a model that validates. On thi
 today (checked 2026-10-04):
 
 2 Plateaus (`policy-to-oscal-mvp`, `multi-user-collaboration`), 1 planned Deliverable and 3 Work
-Packages (#44, #61, #7), each realizing the planned Deliverable, and no release, Triggering, Gap or `plat-baseline` (the blockers have no milestone).
+Packages (#44, #61, #7), each realizing the planned Deliverable, plus the two published releases
+(`v0.1.0`, `v0.1.1`; their notes name no Plateau, so neither is attached). No Triggering, Gap or
+`plat-baseline` is generated (the blockers have no milestone).
 Rules: [data-model.md](data-model.md).
 
 ```plantuml
