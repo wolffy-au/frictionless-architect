@@ -24,7 +24,7 @@ Implementation_Deliverable(e_idfd60d816da9a57, "digital-twin-knowledge-graph sca
 Implementation_Plateau(e_id4accde76fa5858, "baseline") {
   Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
 }
-Implementation_Gap(e_idea9942f7e66155, "Gap: controls catalog extracted to its own package")
+Implementation_Gap(e_idf4786be9c1c052, "AI-Assisted Policy & Standard Conversion to OSCAL")
 
 Rel_Triggering_Right(e_idbd449c19b4d151, e_idf7f5656c5dbc55, "")
 Rel_Triggering_Right(e_idf7f5656c5dbc55, e_id8526bedb919051, "")
@@ -37,6 +37,6 @@ Rel_Realization_Up(e_idf7f5656c5dbc55, e_iddb0e3448ac8e55, "")
 Rel_Realization_Up(e_idb5aefc03c12758, e_idfd60d816da9a57, "")
 Rel_Realization_Up(e_iddb0e3448ac8e55, e_idfcb391a9833b5b, "")
 Rel_Realization_Up(e_idfd60d816da9a57, e_id69891242354858, "")
-Rel_Association(e_idea9942f7e66155, e_id4accde76fa5858, "")
+Rel_Association(e_idf4786be9c1c052, e_id4accde76fa5858, "")
 
 @enduml

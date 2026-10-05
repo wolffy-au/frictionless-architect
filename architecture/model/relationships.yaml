@@ -831,8 +831,8 @@
 #    Gap's desc — no Gap -> Artifact or Plateau Triggering edges, which would
 #    only restate that
 # =====================================================================
-- {type: Association, source: gap-catalog-extracted, target: plat-baseline}
-- {type: Association, source: gap-catalog-extracted, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: gap-oscal-ai-conversion, target: plat-baseline}
+- {type: Association, source: gap-oscal-ai-conversion, target: plat-policy-to-oscal-mvp-1}
 
 # =====================================================================
 # F. Technology — golden-dataset regression check (first cut, see the
@@ -870,8 +870,8 @@
 - {type: Aggregation, source: plat-multi-user-collaboration-2, target: sw-neo4j}
 - {type: Triggering, source: plat-baseline, target: plat-policy-to-oscal-mvp-1}
 - {type: Triggering, source: plat-policy-to-oscal-mvp-1, target: plat-multi-user-collaboration-2}
-- {type: Association, source: gap-baseline-to-policy-to-oscal-mvp, target: plat-baseline}
-- {type: Association, source: gap-baseline-to-policy-to-oscal-mvp, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: gap-neo4j-schema-ui, target: plat-baseline}
+- {type: Association, source: gap-neo4j-schema-ui, target: plat-policy-to-oscal-mvp-1}
 - {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-policy-to-oscal-mvp-1}
 - {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-multi-user-collaboration-2}
 
