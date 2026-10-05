@@ -110,7 +110,7 @@ Element ids are prefixed by ArchiMate object type, never by source system.
 | Milestone | Plateau | `plat-<title-slug>-<n>` | milestone `title` | `gh-number`, `gh-url`, `gh-state`, `gh-due` (if set) |
 | Release | Deliverable | `del-release-<tag-slug>` | release `name` or `tag_name` | `gh-tag`, `gh-url`, `gh-published` |
 | Milestone with at least one Work Package | Deliverable (planned) | `del-<title-slug>-<n>-planned` | `<milestone title> (planned)` | `gh-number` |
-| In-scope issue | WorkPackage | `wp-<title-slug>-gh-<n>` | `#<n> <title>` | `gh-number`, `gh-url`, `gh-state` |
+| In-scope issue | WorkPackage | `wp-<title-slug>-gh-<n>` | `GH-<n> <title>` | `gh-number`, `gh-url`, `gh-state` |
 
 `gh-*` appears only as a **prop key** (provenance), never as an element id. A Plateau id
 is the lower-cased, hyphenated milestone title plus its number, e.g. milestone 1

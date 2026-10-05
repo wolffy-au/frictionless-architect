@@ -195,7 +195,7 @@ def sample_layer(reverse: bool = False) -> dict[str, list[dict[str, Any]]]:
     elements: list[dict[str, Any]] = [
         {"type": "Plateau", "id": "plat-b-2", "name": "b"},
         {"type": "Plateau", "id": "plat-a-1", "name": "a", "props": {"z": "1", "a": "2"}},
-        {"type": "WorkPackage", "id": "wp-x-gh-3", "name": "#3 x"},
+        {"type": "WorkPackage", "id": "wp-x-gh-3", "name": "GH-3 x"},
     ]
     rels = [{"type": "Realization", "source": "wp-x-gh-3", "target": "plat-a-1"}]
     views = [{"id": "view-plat-a-1", "name": "a", "members": ["plat-a-1"]}]
@@ -389,7 +389,7 @@ def test_hostile_text_is_escaped_and_round_trips(importer: ModuleType, kit: Kit,
     elements = {e["id"]: e for e in parsed["elements.yaml"]}
     plateau = next(e for e in elements.values() if e["type"] == "Plateau")
     assert (plateau["name"], plateau["desc"]) == (text, text)
-    assert next(e for e in elements.values() if e["type"] == "WorkPackage")["name"] == f"#1 {text}"
+    assert next(e for e in elements.values() if e["type"] == "WorkPackage")["name"] == f"GH-1 {text}"
     assert all(i.startswith(("plat-", "del-", "wp-")) for i in elements)
 
 

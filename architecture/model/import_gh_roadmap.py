@@ -335,7 +335,7 @@ def build_layer(
         target = _deliverable_for(issue, pid, planned, per_plateau)
         elements.append(
             _element(
-                "WorkPackage", wid, f"#{issue.number} {issue.title}",
+                "WorkPackage", wid, f"GH-{issue.number} {issue.title}",
                 props=_props(gh_number=str(issue.number), gh_url=issue.url, gh_state=issue.state),
             )
         )  # fmt: skip
