@@ -815,35 +815,24 @@
 - {type: Realization, source: wp-4-scaffold-twin, target: del-twin-pkg-scaffold}
 - {type: Realization, source: del-catalog-pkg, target: art-pkg-controls-compliance-catalog}
 - {type: Realization, source: del-twin-pkg-scaffold, target: art-pkg-digital-twin-knowledge-graph}
-- {type: Realization, source: wp-3-prove-pattern, target: plat-first-extraction}
-- {type: Realization, source: wp-7-extract-remaining, target: plat-target}
+- {type: Realization, source: wp-3-prove-pattern, target: plat-policy-to-oscal-mvp-1}
 
 # =====================================================================
 # E. Plateaus: which packages make up each state (ordered by the Gaps below)
 # =====================================================================
 - {type: Aggregation, source: plat-baseline, target: art-flat-src}
-- {type: Aggregation, source: plat-first-extraction, target: art-flat-src}
-- {type: Aggregation, source: plat-first-extraction, target: art-pkg-controls-compliance-catalog}
-- {type: Aggregation, source: plat-first-extraction, target: art-pkg-llm-provider-config}
-- {type: Aggregation, source: plat-target, target: art-pkg-schema-visualizer-api}
-- {type: Aggregation, source: plat-target, target: art-pkg-digital-twin-knowledge-graph}
-- {type: Aggregation, source: plat-target, target: art-pkg-controls-compliance-catalog}
-- {type: Aggregation, source: plat-target, target: art-pkg-reusable-architecture-library}
-- {type: Aggregation, source: plat-target, target: art-pkg-architecture-governance}
-- {type: Aggregation, source: plat-target, target: art-pkg-conformance-drift-assurance}
-- {type: Aggregation, source: plat-target, target: art-pkg-modelling-specification}
-- {type: Aggregation, source: plat-target, target: art-pkg-llm-provider-config}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: art-flat-src}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: art-pkg-controls-compliance-catalog}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: art-pkg-llm-provider-config}
 
 # =====================================================================
-# E. Gaps: each lies between two Plateaus (ordering Baseline -> Target);
+# E. Gaps: each lies between two Plateaus (ordering baseline -> multi-user-collaboration);
 #    the packages that differ are the Plateaus' Aggregations, named in each
 #    Gap's desc — no Gap -> Artifact or Plateau Triggering edges, which would
 #    only restate that
 # =====================================================================
-- {type: Association, source: gap-catalog-extracted, target: plat-baseline}
-- {type: Association, source: gap-catalog-extracted, target: plat-first-extraction}
-- {type: Association, source: gap-subsystems-packaged, target: plat-first-extraction}
-- {type: Association, source: gap-subsystems-packaged, target: plat-target}
+- {type: Association, source: gap-oscal-ai-conversion, target: plat-baseline}
+- {type: Association, source: gap-oscal-ai-conversion, target: plat-policy-to-oscal-mvp-1}
 
 # =====================================================================
 # F. Technology — golden-dataset regression check (first cut, see the
@@ -874,13 +863,24 @@
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
 - {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
 - {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}
-- {type: Aggregation, source: plat-runtime-mvp, target: node-app-server}
-- {type: Aggregation, source: plat-runtime-mvp, target: sw-neo4j}
-- {type: Aggregation, source: plat-runtime-mvp, target: sw-keyring}
-- {type: Aggregation, source: plat-runtime-target, target: node-hosted-cluster}
-- {type: Aggregation, source: plat-runtime-target, target: sw-neo4j}
-- {type: Association, source: gap-runtime-hosted, target: plat-runtime-mvp}
-- {type: Association, source: gap-runtime-hosted, target: plat-runtime-target}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: node-app-server}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-neo4j}
+- {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-keyring}
+- {type: Aggregation, source: plat-multi-user-collaboration-2, target: node-hosted-cluster}
+- {type: Aggregation, source: plat-multi-user-collaboration-2, target: sw-neo4j}
+- {type: Triggering, source: plat-baseline, target: plat-policy-to-oscal-mvp-1}
+- {type: Triggering, source: plat-policy-to-oscal-mvp-1, target: plat-multi-user-collaboration-2}
+- {type: Association, source: gap-neo4j-schema-ui, target: plat-baseline}
+- {type: Association, source: gap-neo4j-schema-ui, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-multi-user-collaboration-2}
+
+# --- B. Model Collaboration (joint behaviour) ---
+- {type: Aggregation, source: bc-model-collaboration, target: role-ea}
+- {type: Aggregation, source: bc-model-collaboration, target: role-sa}
+- {type: Assignment, source: bc-model-collaboration, target: bi-collaborative-modelling}
+- {type: Association, source: plat-multi-user-collaboration-2, target: bc-model-collaboration, label: enables}
+- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: bi-collaborative-modelling}
 
 # =====================================================================
 # F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition

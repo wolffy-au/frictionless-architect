@@ -890,10 +890,7 @@
     - del-catalog-pkg
     - del-twin-pkg-scaffold
     - plat-baseline
-    - plat-first-extraction
-    - plat-target
-    - gap-catalog-extracted
-    - gap-subsystems-packaged
+    - gap-oscal-ai-conversion
     - art-flat-src
     - art-pkg-schema-visualizer-api
     - art-pkg-digital-twin-knowledge-graph
@@ -906,7 +903,7 @@
 
 - id: view-runtime-migration
   name: "Runtime Migration: Local Compose to Hosted Cluster"
-  diagram: technology/runtime-migration
+  diagram: migration/runtime
   # GH #55's runtime-target skeleton (ADR-0018, updated 2026-09-27): the
   # MVP -> target Plateau/Gap for the data layer's deployment shape.
   # Deliberately its own view, not folded into view-migration — that view's
@@ -915,10 +912,31 @@
   # view-technology-ci-check and view-technology-persistence-boundary apart).
   viewpoint: implementation_migration
   members:
-    - plat-runtime-mvp
-    - plat-runtime-target
-    - gap-runtime-hosted
+    - plat-baseline
+    - plat-policy-to-oscal-mvp-1
+    - plat-multi-user-collaboration-2
+    - gap-neo4j-schema-ui
+    - gap-policy-to-oscal-mvp-to-multi-user-collaboration
     - node-app-server
     - node-hosted-cluster
     - sw-neo4j
     - sw-keyring
+    - bc-model-collaboration
+    - bi-collaborative-modelling
+    - role-ea
+    - role-sa
+
+- id: view-implementation-migration-overview
+  name: "Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables"
+  diagram: migration/overview
+  # Every Plateau/Gap/WorkPackage/Deliverable in the model, regardless of
+  # which transition story it belongs to (packaging, runtime/collaboration,
+  # and any future GH-roadmap-imported ones) — the one place to see the
+  # whole Implementation & Migration layer at once. CourseOfAction is a
+  # Strategy-layer concept the implementation_migration viewpoint doesn't
+  # admit, so epic-level groupings won't appear here even once imported.
+  # Unlike view-migration and view-runtime-migration this is deliberately
+  # include_types, not members: it should pick up new elements of these
+  # types automatically rather than needing to be hand-maintained.
+  viewpoint: implementation_migration
+  include_types: [Plateau, Gap, WorkPackage, Deliverable]
