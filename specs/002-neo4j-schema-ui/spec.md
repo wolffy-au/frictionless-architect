@@ -23,6 +23,8 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
+Rendering in the scenarios below (highlighting, diagram/table switching) is owned by `schema-visualizer-ui` (#55); this spec's API supplies the data.
+
 ### User Story 1 - Schema Exploration (Priority: P1)
 
 A data analyst needs to quickly understand the node, relationship, and view types defined in the Neo4j dataset so they can confidently plan queries and reports that align with the existing model.
@@ -81,7 +83,7 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 
 - **FR-001**: System MUST display a concise summary of every node, relationship, and view type in the `architecture/model/` type system (`pyArchimate.ArchiType` and the relationship matrix, ADR-0008; extended by the multi-spec types of GH #73, `ArchiType` alone until then), ensuring the displayed names and identifiers exactly match the definitions (Constitution Principle VII: System Integrity & Accuracy — data accuracy in schema translation).
 - **FR-002**: System MUST pair each schema definition with at least one corresponding sample occurrence from `sample-data/sample-00/Test Model Full.xml`, including identifiers, labels, and coordinates, so stakeholders can verify how the schema translates into concrete data (Principle VIII: Durability & Interoperability).
-- **FR-003**: Users MUST be able to switch between a diagram-centric overview (respecting the stored x/y/w/h styling) and a tabular schema breakdown that lists element/relationship attributes, ensuring consistent presentation across formats (Principle IX: Cross-Platform Consistency).
+- **FR-003**: Users MUST be able to switch between a diagram-centric overview (respecting the stored x/y/w/h styling) and a tabular schema breakdown that lists element/relationship attributes, ensuring consistent presentation across formats (Principle IX: Cross-Platform Consistency). *Moved to `schema-visualizer-ui` (#55); this spec keeps the payload both views read.*
 - **FR-004**: System MUST expose the specification that defines each displayed type (e.g., ArchiMate 3.2) alongside it, so reviewers can trace back definitions (Principle VIII: Durability & Interoperability).
 - **FR-005**: System MUST highlight schema coverage gaps by flagging any defined type that lacks a sample entry, providing a clear call-out so data stewards can address missing nodes before further modeling work (Principle VII: System Integrity & Accuracy — verification).
 - **FR-006**: System MUST display a non-blocking warning when the sample data file is missing or unreadable, yet keep the schema summary accessible so users can continue investigation without being forced to restore the sample first (Principle IX: Cross-Platform Consistency).

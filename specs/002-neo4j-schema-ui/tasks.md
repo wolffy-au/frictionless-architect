@@ -113,7 +113,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 ## Phase 8: Convergence
 
-- [ ] T022 Add a `tests/api/` test that `GET /schema-payload` answers within 2 seconds on the sample data; no test checks latency today per SC-005 (missing)
-- [ ] T023 Make `sample_parser.py` warn on a repeated element, relationship or view identifier instead of silently overwriting it, with a test per the duplicate-identifier edge case (partial)
-- [ ] T024 Update `plan.md` to the 2026-10-04 decisions (UI moved to #55, single service credential, types from the type system); its summary, testing, constraints and research lines still describe the dropped UI per plan: summary and constraints (partial)
-- [ ] T025 Mark FR-003 and the UI-facing parts of FR-002 and the US2 scenario in `spec.md` as moved to #55, matching tasks T010/T012/T013 per FR-003 (partial)
+- [x] T022 Add a `tests/api/` test that `GET /schema-payload` answers within 2 seconds on the sample data; no test checks latency today per SC-005 (missing)
+- [x] T023 Make `sample_parser.py` warn on a repeated element, relationship or view identifier instead of silently overwriting it, with a test per the duplicate-identifier edge case (partial)
+- [x] T024 Update `plan.md` to the 2026-10-04 decisions (UI moved to #55, single service credential, types from the type system); its summary, testing, constraints and research lines still describe the dropped UI per plan: summary and constraints (partial)
+- [x] T025 Mark FR-003 and the UI-facing parts of FR-002 and the US2 scenario in `spec.md` as moved to #55, matching tasks T010/T012/T013 per FR-003 (partial)
