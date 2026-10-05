@@ -152,7 +152,7 @@ least one Work Package realizes it, and a milestone with no Work Packages gets n
 | Owner | Elements |
 |---|---|
 | Importer | milestone Plateaus, release and unreleased Deliverables, Work Packages, their Realization/Aggregation/Triggering links, the Plateau→BusinessFunction link |
-| Hand-authored | baseline Plateau (`plat-baseline`), Gaps (`gap-<from>-to-<to>`), Strategy elements, links from Plateaus to technology/capabilities |
+| Hand-authored | baseline Plateau (`plat-baseline`), Gaps (`gap-<spec-slug>`, per ADR-0035), Strategy elements, links from Plateaus to technology/capabilities |
 
 Hand-authored relationships and views may reference importer ids. If GitHub deletes the
 object, the build fails with an unknown id, which is the intended signal.
@@ -182,7 +182,8 @@ issues (guards a race between the two fetches).
 ## Gaps and ordering
 
 A Gap is the difference between two Plateaus, so it is an architectural judgement and is
-hand-authored: `Association` from each Plateau to the Gap (the only legal type). The
+hand-authored and aligned to a speckit feature (`gap-<spec-slug>`; ADR-0035): `Association`
+from each Plateau to the Gap (the only legal type). The
 first MVP comes from `plat-baseline`, which represents the start state before any
 milestone. Ordering between Plateaus comes from hand-authored `Triggering` between them
 (including to a milestone with no issues yet) plus dependency-derived Triggering.
