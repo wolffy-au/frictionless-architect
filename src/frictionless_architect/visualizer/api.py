@@ -104,7 +104,8 @@ class SchemaPayloadService:
 
         Args:
             force_reload: Rebuild instead of reading the cache. A failed rebuild falls
-                back to the cached payload when one exists.
+                back to the cached payload when one exists. A failed or Neo4j-degraded
+                build also schedules the automatic background retry.
 
         Returns:
             The payload with ``model``, ``elements``, ``relationships``, ``views``,
@@ -160,11 +161,16 @@ class SchemaPayloadService:
         return payload
 
     def _ensure_retry(self) -> None:
+        """Start the background retry unless one is already running."""
         if self._retry_task is None or self._retry_task.done():
             self._retry_task = asyncio.create_task(self._retry_until_loaded())
 
     async def _retry_until_loaded(self) -> None:
-        """Retry a failed load every ``retry_interval_seconds`` until it succeeds (SC-006)."""
+        """Rebuild every ``retry_interval_seconds`` until Neo4j is no longer unavailable (SC-006).
+
+        Failed builds (``PayloadUnavailable``) are swallowed and retried. Clears
+        ``_retry_task`` on exit, including cancellation by ``stop_retry``.
+        """
         try:
             while True:
                 await asyncio.sleep(self.settings.retry_interval_seconds)
@@ -178,7 +184,7 @@ class SchemaPayloadService:
             self._retry_task = None
 
     async def stop_retry(self) -> None:
-        """Cancel any pending automatic retry (used on shutdown)."""
+        """Cancel any pending automatic retry and wait for it to finish (used on shutdown)."""
         task = self._retry_task
         if task is None:
             return

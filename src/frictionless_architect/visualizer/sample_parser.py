@@ -61,8 +61,11 @@ class SampleParser:
     def parse(self) -> SampleParseResult:
         """Parse the sample file.
 
+        Repeated element or relationship identifiers keep the last definition; repeated
+        view identifiers are kept as-is. Each repeat adds an entry to ``warnings``.
+
         Returns:
-            The normalised model, elements, relationships and views.
+            The normalised model, elements, relationships and views, plus ``warnings``.
 
         Raises:
             FileNotFoundError: If the file does not exist.
