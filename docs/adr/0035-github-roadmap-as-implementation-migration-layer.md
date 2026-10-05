@@ -61,7 +61,7 @@ the ArchiMate 3.2 meaning that decides its source:
 | Gap | Speckit spec plus a mapping file | What is missing between Plateaus, not how it is built |
 | Implementation Event | Not used currently | A go-live, cut-over or freeze date |
 | Capability | Hand-authored | An architectural judgement |
-| Course of Action | **Undecided** (below) | A plan configuring capabilities and resources to reach a goal |
+| Course of Action | Hand-authored | An architectural judgement: a plan configuring capabilities and resources to reach a goal |
 | Resource | Hand-authored | An asset owned or controlled by a person or organisation |
 | Value Stream | Hand-authored | An architectural judgement |
 
@@ -80,11 +80,9 @@ allows from a Gap).
 - **Validation:** a mapping entry that names an unknown Plateau, Work Package or Deliverable
   fails the scan and writes nothing.
 
-Open question: whether a Course of Action represents an epic. Epics cannot be told from
-tasks on GitHub today, which is why every in-scope issue is a Work Package. Mapping epics
-to Courses of Action needs a convention (such as an `epic` label) and an agreement that an
-epic is a plan, not just a larger unit of work. Until then Courses of Action stay
-hand-authored.
+Course of Action is hand-authored. GitHub cannot tell an epic from a task, and an epic is
+only a larger unit of work, not a plan, so epics stay Work Packages (a parent issue
+Aggregates its children).
 
 ## Alternatives considered
 
