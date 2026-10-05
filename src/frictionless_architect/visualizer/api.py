@@ -240,6 +240,8 @@ class SchemaPayloadService:
             add_warning(str(exc))
             return "invalid", SampleParseResult.empty(self.settings.sample_model_path)
 
+        for issue in sample_result.warnings:
+            add_warning(issue)
         for issue in validate_sample_against_schema(
             self.settings.sample_model_path,
             self.settings.schema_diagram_xsd_path,
