@@ -70,7 +70,7 @@ A stakeholder reviewing the Neo4j data needs a reproducible way to verify that a
 
 - What happens when the schema references a type (e.g., a new ArchiMate element) with no sample nodes in `sample-data/sample-00`?
 - How does the visualiser behave if `Test Model Full.xml` defines multiple relationships between the same pair of elements (e.g., duplicate associations) or if nodes share identifiers?
-- What if the schema files are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes? *Resolved (ADR-0032)*: the ArchiMate 3.1 exchange-format XSDs keep the `http://www.opengroup.org/xsd/archimate/3.0/` namespace, so 3.0-namespaced sample data remains valid against them. A sample file declaring any other namespace is reported as a warning naming the expected namespace, and `/schema-payload/status` returns `sample_file_status: "invalid"` rather than rendering an empty model.
+- What if the validation XSDs are updated to a newer ArchiMate version (e.g., 3.1) but the sample data remains on 3.0-style nodes? *Resolved (ADR-0032)*: the ArchiMate 3.1 exchange-format XSDs keep the `http://www.opengroup.org/xsd/archimate/3.0/` namespace, so 3.0-namespaced sample data remains valid against them. A sample file declaring any other namespace is reported as a warning naming the expected namespace, and `/schema-payload/status` returns `sample_file_status: "invalid"` rather than rendering an empty model.
 - What warning should appear if `sample-data/sample-00/Test Model Full.xml` cannot be loaded so analysts understand why sample instances are unavailable without being blocked?
 
 ## Requirements *(mandatory)*
@@ -90,9 +90,9 @@ All requirements explicitly account for Constitution Principles VII-IX where app
 ### Key Entities *(include if feature involves data)*
 
 - **Model**: Represents the top-level container defined by the ArchiMate schema (identifier, name, namespace) and the entry point for loading sample data (`Test Model Full.xml`).
-- **Element Type**: A schema-defined node (e.g., ValueStream) with identifier, label, and allowable attributes; used to group sample nodes so users can understand each type's meaning.
-- **Relationship Type**: Defines allowable connections (e.g., Association) with source/target restrictions; the UI should show sample relationships together with schema-defined directionality.
-- **Diagram / View Node**: The visual specification from `archimate3_View.xsd` (x, y, width, height, style) that the UI uses to recreate layout previews from the sample file.
+- **Element Type**: A node type from the model type system (FR-001) (e.g., ValueStream) with identifier, label, and allowable attributes; used to group sample nodes so users can understand each type's meaning.
+- **Relationship Type**: Defines allowable connections (e.g., Association) with source/target restrictions from the relationship matrix; the UI should show sample relationships together with that directionality.
+- **Diagram / View Node**: The visual specification (x, y, width, height, style) in the ArchiMate exchange format (`archimate3_View.xsd` validates it) that the UI uses to recreate layout previews from the sample file.
 
 ## Success Criteria *(mandatory)*
 
