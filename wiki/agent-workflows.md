@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-10-03
+generated: 2026-10-05
 generator: claude-sonnet-5
 sources:
   - .claude/agents/README.md
@@ -97,7 +97,7 @@ merge** (`.claude/agents/README.md:24-29`).
 | `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, the constitution. |
 | `adr-auditor` | branch + **draft** PR | Audit `docs/adr/` against the decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, constitution, `specs/**`) and recent commits; report missing / stale / misaligned / superseded records and draft `Status: Proposed` ADR stubs plus status edits. Leaves the PR **draft** — a human writes and attests the decision (`.claude/agents/README.md:30-31`). |
 | `wiki-maintenance` | flags only | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Never regenerates pages. |
-| `release-runner` | branch + tag + release | Run `RELEASE.md` end to end: gates, `cz bump`, tag, GitHub release, merge back. Stops on any red gate; pushes tag / creates release only after an explicit go-ahead. |
+| `release-runner` | branch + tag + release | Run `RELEASE.md` end to end (§1–§10): gates, `cz bump` on `develop`, then open the `develop` → `main` PR and **stop at the human merge gate** (it never merges, and never pushes to `main`). After the human merge it tags `origin/main`, creates the release with `--verify-tag`, and merges back. Stops on any red gate; pushes the tag / creates the release only after an explicit go-ahead (`.claude/agents/release-runner.md`). |
 
 Several of these are wired into `RELEASE.md` step 5 (`docs-uplift`,
 `spec-alignment`, `adr-auditor`) — see [Development & Quickstart](development.md).

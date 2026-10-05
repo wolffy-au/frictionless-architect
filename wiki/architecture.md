@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-10-03
+generated: 2026-10-05
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -155,7 +155,7 @@ dissolved (`ARCHITECTURE.md` §4):
 - **Specify lifecycle CLI** (old 1.1) — this repo's development tooling
   (`.specify/`), not a platform component; distinct from subsystem 6's
   executable-spec generation.
-- **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
+- **PII anonymization gateway** (old 1.2, ADR-0014) — its own `pii-gateway` package since 2026-10-04 (#56); its subsystem home is set in its spec, and ADR-0031 narrows the ingestion paths it covers. The package does not exist yet.
 - **Security foundations** (old 8) — RBAC and encryption are platform
   requirements every subsystem meets (`specs/001-governance-platform/spec.md` FR-016/017,
   `NONFUNCTIONALS.md`); scanning the platform's own deployment is operational
@@ -327,7 +327,9 @@ CI assumes one package.
 Open questions (`ARCHITECTURE.md` §10): whether anything ever leaves the
 monorepo; one constitution vs. per-component addenda; which upstream to fork
 for the ArchiMate parser; whether collaboration-tool decision capture is still
-in scope and where the PII gateway sits (ADR-0014 narrowed by ADR-0031 — #56);
+in scope (the PII-gateway half was resolved 2026-10-04, #56: it is its own
+`pii-gateway` package, ADR-0014 narrowed by ADR-0031, with its subsystem home
+set in its spec);
 whether `src/frictionless_architect/` stays importable as an umbrella namespace
 package during the transition. The library-vs-HTTP question, `sample_parser.py`'s
 home, and the step-2/step-4 ordering gap (Q10) are all marked resolved by
@@ -367,8 +369,8 @@ not re-ratified in a spec). No record is currently A\*.
 | 0020 | Each subsystem ships its own UI (`ui/` beside `api/`); no central dashboard (revised 2026-09-26 from a single Vite/Backstage dashboard) | A |
 | 0021 | Schema visualiser uses cytoscape.js + coordinated tables | A |
 | 0022 | Schema visualiser parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema` (corrected 2026-09-25 from `lxml` + `xmlschema`; XSD validation implemented 2026-09-26, #53) | A |
-| 0023 | Visualiser reuses Neo4j read credentials; caches payloads offline | A |
-| 0024 | MVP is single-user and locally run (scoping compromise) | A |
+| 0023 | Visualiser reuses Neo4j read credentials; caches payloads offline; retries a failed load in the background (SC-006) | A |
+| 0024 | MVP is single-user and locally run (scoping compromise); Neo4j is read through one service credential, per-user passthrough deferred with RBAC/ABAC | A |
 | 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
 | 0027 | Capability layer carries a value stream and an explicit motivation spine (updated 2026-09-26: four outcomes, streams per 0033, no derived edges) | A |

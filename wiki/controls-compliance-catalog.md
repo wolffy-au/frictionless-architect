@@ -1,6 +1,6 @@
 ---
 title: Controls & Compliance Catalog
-generated: 2026-10-03
+generated: 2026-10-05
 generator: claude-sonnet-5
 sources:
   - platform/packages/controls-compliance-catalog/README.md
@@ -46,7 +46,11 @@ The package is a standalone Poetry project under `platform/` (shared
 one declared spec so far is `001-oscal-ai-conversion`, re-homed here from
 the repo-root `specs/003-oscal-ai-conversion` on 2026-09-28 — per-package
 spec numbering restarts at `001` (`ARCHITECTURE.md` §6, ADR-0005's
-"Implementation status (2026-09-28)" note; `specs/README.md`). `dependencies`
+"Implementation status (2026-09-28)" note; `platform/packages/controls-compliance-catalog/specs/README.md`). That `001` is not
+the root `specs/001-governance-platform`, so specs are cited by package and slug
+(`platform/packages/controls-compliance-catalog/specs/README.md`). The spec and plan headers keep `003-oscal-ai-conversion` as
+the original branch name and say so
+(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md`). `dependencies`
 in `pyproject.toml`, empty at extraction, now declares the stack the
 AI-conversion pipeline and its playground spikes actually run on: `fastapi
 (>=0.141.0,<0.142.0)` and `uvicorn (>=0.43.0,<0.44.0)` for the API surface,

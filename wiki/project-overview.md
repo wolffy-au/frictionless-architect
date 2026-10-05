@@ -1,6 +1,6 @@
 ---
 title: Project Overview
-generated: 2026-10-04
+generated: 2026-10-05
 generator: claude-sonnet-5-5
 sources:
   - README.md
@@ -102,7 +102,10 @@ bundled sample model, falling back to `sample-data/` when Neo4j is unreachable
 Architect" (OpenAPI docs at `/docs`) and exposes `GET /schema-payload`,
 `POST /schema-payload/refresh` and `GET /schema-payload/status`; refresh answers `429` with `Retry-After` for
 `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` (default 300) after a successful
-refresh (`README.md` §"Configuration", §"Running the schema visualiser"). See
+refresh. A failed load is retried in the background every
+`FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` (default and maximum 300), and the
+status endpoint reports `retry_pending`
+(`README.md` §"Configuration", §"Running the schema visualiser"). See
 [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md) (spec 002).
 
