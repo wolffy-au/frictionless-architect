@@ -20,8 +20,11 @@ generator: claude-sonnet-5
   quality gates.
 - [Architecture Overview](architecture.md) — the governance-layer-at-root
   principle, current vs. target state, the six-subsystem → package mapping
-  (per-subsystem UIs), the Poetry monorepo decision, the migration sequence, and the full `docs/adr/`
-  decision log.
+  (per-subsystem UIs), the Poetry monorepo decision and the migration sequence.
+- [Architecture Decision Log](decision-log.md) — the full `docs/adr/` decision log
+  (MADR index and per-decision summaries).
+- [GitHub Roadmap Layer](gh-roadmap-layer.md) — spec 003: GitHub milestones,
+  releases and issues imported as ArchiMate Plateaus, Deliverables and Work Packages.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: files, schema, the `build.py` pipeline, and the vendored IT4IT 3.0

@@ -43,7 +43,7 @@ this content now grounds.
 
 ## Split vendoring approach
 
-[ADR-0029](architecture.md)'s IT4IT pattern — a `third_party/` submodule of
+[ADR-0029](decision-log.md)'s IT4IT pattern — a `third_party/` submodule of
 ArchiMate-schema YAML, merged into the model by `build.py`'s shared
 `det_id()`/`NS` pass — doesn't transfer to OSCAL: NIST/FedRAMP content is
 real OSCAL JSON/XML in OSCAL's own schema, and `compliance-trestle` is a
@@ -90,7 +90,7 @@ describes what each upstream is rather than the controls it contains.
 `compliance-trestle` is the opposite case: an ordinary Poetry **main
 dependency** (`pyproject.toml` — `"compliance-trestle (>=5.1.0,<6.0.0)"`,
 alongside `fastapi`, `neo4j`, `uvicorn`), not a `third_party/` submodule. Per
-[ADR-0002](architecture.md), `third_party/` is reserved for forks the repo
+[ADR-0002](decision-log.md), `third_party/` is reserved for forks the repo
 tracks and potentially patches; only trestle's published library/CLI
 behaviour (Markdown-authoring, OSCAL round-trip) is needed, so it follows the
 normal `poetry update`/Dependabot upgrade path instead of `fork-sync`
