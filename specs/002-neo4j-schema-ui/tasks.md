@@ -75,7 +75,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 ## Phase 7: Decisions of 2026-10-04
 
-- [ ] T019 [US3] Add a background task that retries a failed load at most 5 minutes apart until it succeeds, with a test in `tests/api/` (SC-006).
+- [x] T019 [US3] Add a background task that retries a failed load at most 5 minutes apart until it succeeds, with a test in `tests/api/` (SC-006).
 - [ ] T020 Source the displayed types from the `architecture/model/` type system instead of the Neo4j-plus-sample union (FR-001/004/005); the multi-spec types wait on GH #73.
 - [x] T021 Remove the unimplemented `401/403` from `contracts/api.md` (FR-007: no per-user auth) and document the `503`, `429` and status fields.
 
