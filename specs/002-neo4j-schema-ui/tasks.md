@@ -117,3 +117,8 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 - [x] T023 Make `sample_parser.py` warn on a repeated element, relationship or view identifier instead of silently overwriting it, with a test per the duplicate-identifier edge case (partial)
 - [x] T024 Update `plan.md` to the 2026-10-04 decisions (UI moved to #55, single service credential, types from the type system); its summary, testing, constraints and research lines still describe the dropped UI per plan: summary and constraints (partial)
 - [x] T025 Mark FR-003 and the UI-facing parts of FR-002 and the US2 scenario in `spec.md` as moved to #55, matching tasks T010/T012/T013 per FR-003 (partial)
+
+## Phase 9: Convergence (behave findings)
+
+- [ ] T026 Keep the schema summary accessible when the sample is missing or unreadable and Neo4j is not configured: `GET /schema-payload` returns 503 today and the warning shows only on `/schema-payload/status`; add a test and fix per FR-006 (contradicts)
+- [ ] T027 Report `sample_file_status: "invalid"` for a sample in another namespace even when nothing else supplies data: the build returns 503 and the status stays "missing"; add a test and fix per Edge 3 (partial)
