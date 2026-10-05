@@ -1,0 +1,164 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        },
+        "nodes": [
+          {
+            "number": 10,
+            "title": "Design the schema",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/10",
+            "milestone": {
+              "number": 1
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": []
+            }
+          },
+          {
+            "number": 11,
+            "title": "Build the importer",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/11",
+            "milestone": {
+              "number": 1
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": [
+                {
+                  "number": 10
+                }
+              ]
+            }
+          },
+          {
+            "number": 12,
+            "title": "Roll out to the team",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/12",
+            "milestone": {
+              "number": 2
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": [
+                {
+                  "number": 11
+                }
+              ]
+            }
+          },
+          {
+            "number": 13,
+            "title": "Epic: importer",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/13",
+            "milestone": {
+              "number": 1
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": []
+            }
+          },
+          {
+            "number": 14,
+            "title": "Importer tests",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/14",
+            "milestone": {
+              "number": 1
+            },
+            "parent": {
+              "number": 13
+            },
+            "blockedBy": {
+              "nodes": []
+            }
+          },
+          {
+            "number": 15,
+            "title": "Blocked by an unmilestoned issue",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/15",
+            "milestone": {
+              "number": 1
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": [
+                {
+                  "number": 90
+                }
+              ]
+            }
+          },
+          {
+            "number": 16,
+            "title": "Cycle one",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/16",
+            "milestone": {
+              "number": 1
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": [
+                {
+                  "number": 17
+                }
+              ]
+            }
+          },
+          {
+            "number": 17,
+            "title": "Cycle two",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/17",
+            "milestone": {
+              "number": 1
+            },
+            "parent": null,
+            "blockedBy": {
+              "nodes": [
+                {
+                  "number": 16
+                }
+              ]
+            }
+          },
+          {
+            "number": 18,
+            "title": "Child of an unmilestoned parent",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/18",
+            "milestone": {
+              "number": 1
+            },
+            "parent": {
+              "number": 91
+            },
+            "blockedBy": {
+              "nodes": []
+            }
+          }
+        ]
+      }
+    }
+  }
+}

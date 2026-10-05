@@ -1,0 +1,51 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {"hasNextPage": false, "endCursor": null},
+        "nodes": [
+          {
+            "number": 44,
+            "title": "Markdown catalogue converter",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/44",
+            "milestone": {"number": 1},
+            "parent": null,
+            "blockedBy": {"nodes": []}
+          },
+          {
+            "number": 61,
+            "title": "Application layer dedupe artefact views",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/61",
+            "milestone": {"number": 1},
+            "parent": null,
+            "blockedBy": {"nodes": []}
+          },
+          {
+            "number": 7,
+            "title": "Vision: single high-level ArchiMate",
+            "state": "CLOSED",
+            "closedAt": "2026-09-30T10:00:00Z",
+            "url": "https://github.com/o/r/issues/7",
+            "milestone": {"number": 1},
+            "parent": null,
+            "blockedBy": {"nodes": []}
+          },
+          {
+            "number": 99,
+            "title": "Child of a milestone issue, no milestone itself",
+            "state": "OPEN",
+            "closedAt": null,
+            "url": "https://github.com/o/r/issues/99",
+            "milestone": null,
+            "parent": {"number": 44},
+            "blockedBy": {"nodes": []}
+          }
+        ]
+      }
+    }
+  }
+}

@@ -41,6 +41,8 @@ import yaml
 HERE = Path(__file__).parent
 REPO = HERE.parents[1]
 VIEWS = HERE / "views.yaml"
+# Generated gh-roadmap layer (ADR-0035): its per-milestone views render beside the hand-authored ones.
+ROADMAP_VIEWS = HERE / "gh-roadmap" / "views.yaml"
 DIAGRAMS = HERE / "diagrams"
 # Vendored models (ADR-0029) each carry their own views.yaml, rendering into
 # their own diagrams/ dir — (views file, diagrams dir) pairs, same order as
@@ -86,10 +88,14 @@ def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     view-derived plus the fixed C4 pair. `diagram_root` is DIAGRAMS or a
     vendored model's diagrams dir."""
     jobs: list[tuple[Path, list[str]]] = []
-    views_file = (
-        VIEWS if diagram_root == DIAGRAMS else next(vf for vf, root in VENDORED_VIEW_SOURCES if root == diagram_root)
+    views_files = (
+        [VIEWS, ROADMAP_VIEWS]
+        if diagram_root == DIAGRAMS
+        else [next(vf for vf, root in VENDORED_VIEW_SOURCES if root == diagram_root)]
     )
-    if views_file.exists():
+    for views_file in views_files:
+        if not views_file.exists():
+            continue
         for v in yaml.safe_load(views_file.read_text()) or []:
             slug = v.get("diagram")
             if not slug:
