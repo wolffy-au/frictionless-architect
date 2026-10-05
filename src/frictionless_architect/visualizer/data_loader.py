@@ -5,13 +5,13 @@ from __future__ import annotations
 from typing import Any
 
 from neo4j import Driver, GraphDatabase, basic_auth
-from neo4j.exceptions import Neo4jError
+from neo4j.exceptions import DriverError, Neo4jError
 
 from frictionless_architect.visualizer.config import VisualizerSettings
 
 
 class DataLoaderError(Exception):
-    """Raised when a Neo4j query for schema metadata fails."""
+    """Raised when Neo4j cannot be reached or a query for schema metadata fails."""
 
 
 class DataLoader:
@@ -40,27 +40,26 @@ class DataLoader:
             empty when no Neo4j URI is configured.
 
         Raises:
-            DataLoaderError: If a Neo4j query fails.
+            DataLoaderError: If Neo4j is unreachable (``ServiceUnavailable``, ``SessionExpired``,
+                other driver errors) or a query fails (``Neo4jError``, including ``AuthError``).
         """
         if not self._settings.neo4j_uri:
             return {"elements": [], "relationships": [], "views": []}
 
         try:
-            self._ensure_driver()
-            assert self._driver is not None
-            with self._driver.session() as session:
+            with self._ensure_driver().session() as session:
                 elements = session.execute_read(self._fetch_elements)
                 relationships = session.execute_read(self._fetch_relationships)
                 views = session.execute_read(self._fetch_views)
-        except Neo4jError as exc:
+        except (Neo4jError, DriverError) as exc:
             raise DataLoaderError(f"Neo4j query failed: {exc}") from exc
         return {"elements": elements, "relationships": relationships, "views": views}
 
-    def _ensure_driver(self) -> None:
-        if self._driver:
-            return
-        auth = basic_auth(self._settings.neo4j_user, self._settings.neo4j_password)
-        self._driver = GraphDatabase.driver(self._settings.neo4j_uri, auth=auth)
+    def _ensure_driver(self) -> Driver:
+        if self._driver is None:
+            auth = basic_auth(self._settings.neo4j_user, self._settings.neo4j_password)
+            self._driver = GraphDatabase.driver(self._settings.neo4j_uri, auth=auth)
+        return self._driver
 
     @staticmethod
     def _fetch_elements(tx: Any) -> list[dict[str, Any]]:
