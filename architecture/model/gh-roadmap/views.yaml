@@ -10,7 +10,7 @@
   viewpoint: implementation_migration
   diagram: migration/plat-policy-to-oscal-mvp-1
   members:
-  - del-policy-to-oscal-mvp-1-planned
+  - del-policy-to-oscal-mvp-1-unreleased
   - del-release-v0-1-0
   - del-release-v0-1-1
   - plat-policy-to-oscal-mvp-1

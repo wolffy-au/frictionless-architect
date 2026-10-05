@@ -108,8 +108,8 @@ def release_id(tag: str) -> str:
     return f"del-release-{slugify(tag)}"
 
 
-def planned_id(title: str, number: int) -> str:
-    return f"del-{slugify(title)}-{number}-planned"
+def unreleased_id(title: str, number: int) -> str:
+    return f"del-{slugify(title)}-{number}-unreleased"
 
 
 def work_package_id(title: str, number: int) -> str:
@@ -281,14 +281,14 @@ def _when(stamp: str) -> datetime:
     return datetime.fromisoformat(stamp)
 
 
-def _deliverable_for(issue: Issue, pid: str, planned: str, per_plateau: dict[str, list[Release]]) -> str:
-    """Open: the planned Deliverable. Closed: the first release published after closing, else planned."""
+def _deliverable_for(issue: Issue, pid: str, unreleased: str, per_plateau: dict[str, list[Release]]) -> str:
+    """Open: the unreleased Deliverable. Closed: the first release published after closing, else unreleased."""
     if issue.state == "closed" and issue.closed_at:
         closed = _when(issue.closed_at)
         for release in per_plateau.get(pid, []):
             if _when(release.published_at) > closed:
                 return release_id(release.tag)
-    return planned
+    return unreleased
 
 
 def drop_derived(rels: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -327,12 +327,12 @@ def build_layer(
     elements, rels = elements + release_elements, rels + release_rels
 
     in_scope = {i.number: i for i in issues if i.milestone in plateau_by_number}
-    planned_for: set[int] = set()
+    unreleased_for: set[int] = set()
     for issue in in_scope.values():
         assert issue.milestone is not None
         pid, wid = plateau_by_number[issue.milestone], work_package_id(issue.title, issue.number)
-        planned = planned_id(_title(milestones, issue.milestone), issue.milestone)
-        target = _deliverable_for(issue, pid, planned, per_plateau)
+        unreleased = unreleased_id(_title(milestones, issue.milestone), issue.milestone)
+        target = _deliverable_for(issue, pid, unreleased, per_plateau)
         elements.append(
             _element(
                 "WorkPackage", wid, f"GH-{issue.number} {issue.title}",
@@ -340,15 +340,15 @@ def build_layer(
             )
         )  # fmt: skip
         rels.append(_link("Realization", wid, target))
-        if target == planned:
-            planned_for.add(issue.milestone)
+        if target == unreleased:
+            unreleased_for.add(issue.milestone)
     rels += _dependencies(in_scope, plateau_by_number)
-    for number in sorted(planned_for):
+    for number in sorted(unreleased_for):
         title = _title(milestones, number)
         elements.append(
-            _element("Deliverable", planned_id(title, number), f"{title} (planned)", props={"gh-number": str(number)})
+            _element("Deliverable", unreleased_id(title, number), f"{title} (unreleased)", props={"gh-number": str(number)})
         )
-        rels.append(_link("Realization", planned_id(title, number), plateau_by_number[number]))
+        rels.append(_link("Realization", unreleased_id(title, number), plateau_by_number[number]))
     return {
         "elements.yaml": elements,
         "relationships.yaml": drop_derived(rels),
@@ -458,10 +458,10 @@ def write_layer(files: dict[str, bytes], directory: Path) -> None:
 def _summary(layer: Layer) -> str:
     kinds = [e["type"] for e in layer["elements.yaml"]]
     triggers = sum(1 for r in layer["relationships.yaml"] if r["type"] == "Triggering")
-    planned = sum(1 for e in layer["elements.yaml"] if e["id"].endswith("-planned"))
+    unreleased = sum(1 for e in layer["elements.yaml"] if e["id"].endswith("-unreleased"))
     return (
-        f"gh-roadmap: {kinds.count('Plateau')} milestones, {kinds.count('Deliverable') - planned} releases, "
-        f"{planned} planned deliverable{'' if planned == 1 else 's'}, {kinds.count('WorkPackage')} work packages, "
+        f"gh-roadmap: {kinds.count('Plateau')} milestones, {kinds.count('Deliverable') - unreleased} releases, "
+        f"{unreleased} unreleased deliverable{'' if unreleased == 1 else 's'}, {kinds.count('WorkPackage')} work packages, "
         f"{triggers} triggering"
     )
 

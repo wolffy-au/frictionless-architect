@@ -3,7 +3,7 @@
 
 title Roadmap: policy-to-oscal-mvp
 
-Implementation_Deliverable(e_id81c17bb8a4cd53, "policy-to-oscal-mvp (planned)")
+Implementation_Deliverable(e_ide553dac909af52, "policy-to-oscal-mvp (unreleased)")
 Implementation_Deliverable(e_id314ed2487dd05b, "v0.1.0")
 Implementation_Deliverable(e_id2e464c827cef55, "v0.1.1")
 Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
@@ -11,11 +11,11 @@ Implementation_WorkPackage(e_id340c952eaee456, "GH-61 Application layer: dedupe 
 Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue converter")
 Implementation_WorkPackage(e_id8683212dafbd5b, "GH-7 Vision: single high-level ArchiMate diagram for the policy-to-runtime controls lifecycle")
 
-Rel_Realization_Up(e_id81c17bb8a4cd53, e_idb94c55ad2a0756, "")
+Rel_Realization_Up(e_ide553dac909af52, e_idb94c55ad2a0756, "")
 Rel_Realization_Up(e_id314ed2487dd05b, e_idb94c55ad2a0756, "")
 Rel_Realization_Up(e_id2e464c827cef55, e_idb94c55ad2a0756, "")
-Rel_Realization_Up(e_id340c952eaee456, e_id81c17bb8a4cd53, "")
-Rel_Realization_Up(e_idec7bd9bf840c5d, e_id81c17bb8a4cd53, "")
+Rel_Realization_Up(e_id340c952eaee456, e_ide553dac909af52, "")
+Rel_Realization_Up(e_idec7bd9bf840c5d, e_ide553dac909af52, "")
 Rel_Realization_Up(e_id8683212dafbd5b, e_id314ed2487dd05b, "")
 
 @enduml

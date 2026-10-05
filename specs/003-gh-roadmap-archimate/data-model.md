@@ -53,8 +53,8 @@ package "Generated layer (importer owns)" {
     id = del-release-<tag-slug>
     gh-tag
   }
-  class PlannedDeliverable {
-    id = del-<title-slug>-<n>-planned
+  class UnreleasedDeliverable {
+    id = del-<title-slug>-<n>-unreleased
   }
   class WorkPackage {
     id = wp-<title-slug>-gh-<n>
@@ -70,11 +70,11 @@ package "Hand-authored (never emitted)" {
 
 Milestone --> Plateau : maps to
 Release --> Deliverable : maps to\n(not draft, not pre-release)
-Milestone --> PlannedDeliverable : one per milestone\nwith Work Packages
+Milestone --> UnreleasedDeliverable : one per milestone\nwith Work Packages
 Issue --> WorkPackage : only when it has\nits own milestone
-WorkPackage --> PlannedDeliverable : Realization\n(open, or closed with no later release)
+WorkPackage --> UnreleasedDeliverable : Realization\n(open, or closed with no later release)
 WorkPackage --> Deliverable : Realization\n(closed, first release after closedAt)
-PlannedDeliverable --> Plateau : Realization
+UnreleasedDeliverable --> Plateau : Realization
 Deliverable --> Plateau : Realization\n(plat-* token in notes)
 Plateau --> BusinessFunction : Realization\n(bfn-* token in description)
 WorkPackage --> WorkPackage : Aggregation (parent/child)\nTriggering (blockedBy)
@@ -109,7 +109,7 @@ Element ids are prefixed by ArchiMate object type, never by source system.
 |---|---|---|---|---|
 | Milestone | Plateau | `plat-<title-slug>-<n>` | milestone `title` | `gh-number`, `gh-url`, `gh-state`, `gh-due` (if set) |
 | Release | Deliverable | `del-release-<tag-slug>` | release `name` or `tag_name` | `gh-tag`, `gh-url`, `gh-published` |
-| Milestone with at least one Work Package | Deliverable (planned) | `del-<title-slug>-<n>-planned` | `<milestone title> (planned)` | `gh-number` |
+| Milestone with at least one Work Package | Deliverable (unreleased) | `del-<title-slug>-<n>-unreleased` | `<milestone title> (unreleased)` | `gh-number` |
 | In-scope issue | WorkPackage | `wp-<title-slug>-gh-<n>` | `GH-<n> <title>` | `gh-number`, `gh-url`, `gh-state` |
 
 `gh-*` appears only as a **prop key** (provenance), never as an element id. A Plateau id
@@ -118,7 +118,7 @@ is the lower-cased, hyphenated milestone title plus its number, e.g. milestone 1
 anchors identity; the slug keeps it readable. Renaming the milestone changes the slug, so
 hand-authored references fail the build with an unknown id and are fixed in the same
 commit. A Work Package id is `wp-<title-slug>-gh-<issue#>`: the issue title lower-cased, hyphenated and cut at a word boundary to at most 40 characters (a single word longer than 40 is cut at 40), then `-gh-` and the issue number. The number guarantees uniqueness, so truncation never collides. As with milestones, retitling an issue changes its id and breaks hand-authored references until they are updated. `desc` carries the milestone `description` for Plateaus; issue bodies are
-never imported. A Work Package may be open (planned) or closed (done); `gh-state` records
+never imported. A Work Package may be open or closed (done); `gh-state` records
 which.
 
 ## Untrusted text and id tokens
@@ -137,21 +137,21 @@ Release notes, milestone descriptions and titles come from GitHub and are untrus
 
 A Work Package realizes exactly one Deliverable and never a Plateau directly.
 
-1. Open Work Package: the planned Deliverable of its milestone.
+1. Open Work Package: the unreleased Deliverable of its milestone.
 2. Closed Work Package: among the release Deliverables that realize its milestone's Plateau
    (named by a `plat-*` token in the notes), the **first published after the issue's
-   `closedAt`**. If there is none, the planned Deliverable.
+   `closedAt`**. If there is none, the unreleased Deliverable.
 3. Releases are ordered by `published_at`; ties break on `tag_name`, so output is deterministic.
 
 A closed issue therefore moves to a later release once one is published after it, and a reopened
-issue moves back to the planned Deliverable. The planned Deliverable is emitted only when at
+issue moves back to the unreleased Deliverable. The unreleased Deliverable is emitted only when at
 least one Work Package realizes it, and a milestone with no Work Packages gets none.
 
 ## Ownership split
 
 | Owner | Elements |
 |---|---|
-| Importer | milestone Plateaus, release and planned Deliverables, Work Packages, their Realization/Aggregation/Triggering links, the Plateau→BusinessFunction link |
+| Importer | milestone Plateaus, release and unreleased Deliverables, Work Packages, their Realization/Aggregation/Triggering links, the Plateau→BusinessFunction link |
 | Hand-authored | baseline Plateau (`plat-baseline`), Gaps (`gap-<from>-to-<to>`), Strategy elements, links from Plateaus to technology/capabilities |
 
 Hand-authored relationships and views may reference importer ids. If GitHub deletes the
@@ -161,9 +161,9 @@ object, the build fails with an unknown id, which is the intended signal.
 
 | Condition | Relationship |
 |---|---|
-| Open Work Package, or closed with no qualifying release | `Realization` `wp-<slug>-gh-N → del-<slug>-M-planned` |
+| Open Work Package, or closed with no qualifying release | `Realization` `wp-<slug>-gh-N → del-<slug>-M-unreleased` |
 | Closed Work Package with a qualifying release | `Realization` `wp-<slug>-gh-N → del-release-<tag>` (see "Which Deliverable a Work Package realizes") |
-| Milestone has at least one Work Package | `Realization` `del-<slug>-M-planned → plat-<slug>-M` |
+| Milestone has at least one Work Package | `Realization` `del-<slug>-M-unreleased → plat-<slug>-M` |
 | Release notes name an imported `plat-*` id | `Realization` `del-release-<tag> → plat-*` |
 | Parent and child both imported | `Aggregation` `wp-<slug>-gh-P → wp-<slug>-gh-C` |
 | Work Package B blocked by Work Package A | `Triggering` `wp-<slug>-gh-A → wp-<slug>-gh-B` |
@@ -193,8 +193,8 @@ State is derived each run from GitHub, not stored.
 
 | GitHub change | Next import |
 |---|---|
-| Open ⇄ closed | Same id; `gh-state` changes, and the Deliverable realized may change (planned ⇄ release) |
-| Release published after a closed issue | The issue's Realization moves from the planned Deliverable to that release |
+| Open ⇄ closed | Same id; `gh-state` changes, and the Deliverable realized may change (unreleased ⇄ release) |
+| Release published after a closed issue | The issue's Realization moves from the unreleased Deliverable to that release |
 | Milestone A → B | Same id; Realization retargets to a Deliverable of B |
 | Milestone removed from the issue | Element and links removed |
 | Parent set or cleared | Aggregation added or removed |
@@ -209,18 +209,18 @@ title Issue lifecycle as seen by the importer
 hide empty description
 
 [*] --> OutOfScope : issue created
-OutOfScope --> Planned : milestone assigned\nand issue open
+OutOfScope --> Unreleased : milestone assigned\nand issue open
 OutOfScope --> Done : milestone assigned\nand issue closed
-Planned --> Done : issue closed\n(gh-state changes; release chosen\nby first release after closedAt)
-Done --> Planned : issue reopened\n(back to planned Deliverable)
-Planned --> Planned : milestone moved\n(Realization retargeted)\nor issue retitled (id changes)
+Unreleased --> Done : issue closed\n(gh-state changes; release chosen\nby first release after closedAt)
+Done --> Unreleased : issue reopened\n(back to unreleased Deliverable)
+Unreleased --> Unreleased : milestone moved\n(Realization retargeted)\nor issue retitled (id changes)
 Done --> Done : milestone moved or retitled
-Planned --> OutOfScope : milestone removed\nor issue deleted
+Unreleased --> OutOfScope : milestone removed\nor issue deleted
 Done --> OutOfScope : milestone removed\nor issue deleted
 
 state OutOfScope : no element, no links
-state Planned : WorkPackage emitted,\ngh-state = open,\nrealizes planned Deliverable
-state Done : WorkPackage emitted,\ngh-state = closed,\nrealizes first release after closedAt,\nelse planned Deliverable
+state Unreleased : WorkPackage emitted,\ngh-state = open,\nrealizes unreleased Deliverable
+state Done : WorkPackage emitted,\ngh-state = closed,\nrealizes first release after closedAt,\nelse unreleased Deliverable
 @enduml
 ```
 
@@ -238,4 +238,4 @@ state Done : WorkPackage emitted,\ngh-state = closed,\nrealizes first release af
 8. Drafts and pre-releases never produce a Deliverable.
 9. A `bfn-*` or `plat-*` token that does not exactly match an existing element of the right type
    creates no relationship.
-10. A planned Deliverable exists only for a milestone with at least one Work Package.
+10. An unreleased Deliverable exists only for a milestone with at least one Work Package.

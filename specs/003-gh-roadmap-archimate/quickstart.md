@@ -14,8 +14,8 @@ poetry run python architecture/model/build.py
 Expect: a summary line, then `build.py` reporting a model that validates. On this repo
 today (checked 2026-10-04):
 
-2 Plateaus (`policy-to-oscal-mvp`, `multi-user-collaboration`), 1 planned Deliverable and 3 Work
-Packages (#44, #61, #7), each realizing the planned Deliverable, plus the two published releases
+2 Plateaus (`policy-to-oscal-mvp`, `multi-user-collaboration`), 1 unreleased Deliverable and 3 Work
+Packages (#44, #61, #7), each realizing the unreleased Deliverable, plus the two published releases
 (`v0.1.0`, `v0.1.1`; their notes name no Plateau, so neither is attached). No Triggering, Gap or
 `plat-baseline` is generated (the blockers have no milestone).
 Rules: [data-model.md](data-model.md).
@@ -42,13 +42,13 @@ object "plat-multi-user-collaboration-2" as P2 <<Plateau>> {
   gh-number = 2
   gh-state = open
 }
-object "del-policy-to-oscal-mvp-1-planned" as D <<Deliverable>>
+object "del-policy-to-oscal-mvp-1-unreleased" as D <<Deliverable>>
 
 W44 --> D : Realization
 W61 --> D : Realization
 W7 --> D : Realization
 D --> P : Realization
-note bottom of P2 : No Work Packages yet, so no planned Deliverable.
+note bottom of P2 : No Work Packages yet, so no unreleased Deliverable.
 note bottom of P : No Triggering: the blockers of #44 and #7\nhave no milestone, so they are out of scope.
 @enduml
 ```
@@ -72,7 +72,7 @@ should add its element and relationship (and a `views.yaml` member). Nothing els
 ## 3b. Release attachment (FR-003)
 
 With a published, non-pre-release release whose notes contain `plat-policy-to-oscal-mvp-1`,
-a Work Package closed before that release was published realizes `del-release-<tag>`; open ones stay on the planned
+a Work Package closed before that release was published realizes `del-release-<tag>`; open ones stay on the unreleased
 Deliverable. A draft or pre-release changes nothing.
 
 ## 4. Failure leaves the layer untouched (FR-009)

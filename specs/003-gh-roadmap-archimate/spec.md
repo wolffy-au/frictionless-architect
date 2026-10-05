@@ -10,8 +10,8 @@ Implementation & Migration elements, milestone-first and user-facing, not a dump
 ### Session 2026-10-04
 
 - Second milestone is titled `multi-user-collaboration` (Plateau `plat-multi-user-collaboration-2`).
-- Only closed Work Packages realize a release Deliverable; open ones realize a planned Deliverable. No Work Package realizes a Plateau directly.
-- A closed Work Package realizes the first release, among those naming its Plateau, published after it closed; otherwise the planned Deliverable.
+- Only closed Work Packages realize a release Deliverable; open ones realize an unreleased Deliverable. No Work Package realizes a Plateau directly.
+- A closed Work Package realizes the first release, among those naming its Plateau, published after it closed; otherwise the unreleased Deliverable.
 - Pre-releases are skipped, like drafts.
 
 ## Mapping
@@ -21,7 +21,7 @@ Implementation & Migration elements, milestone-first and user-facing, not a dump
 | Milestone | Plateau | Realizes a business function it names (`bfn-*`) |
 | Issue with its own milestone, open or closed | Work Package | Realizes one Deliverable (below); aggregates sub-issues; triggers the issues it blocks |
 | Published release (not draft or pre-release) | Deliverable | Realizes the Plateau it names |
-| Milestone with at least one Work Package | Planned Deliverable | Realizes the milestone's Plateau |
+| Milestone with at least one Work Package | Unreleased Deliverable | Realizes the milestone's Plateau |
 | Issue dependency across milestones | none | One Plateau → Plateau Triggering |
 
 Gaps, the baseline Plateau and Strategy elements stay hand-authored, so the importer
@@ -35,7 +35,7 @@ As an architect, I want milestones, milestone-assigned issues and releases in th
 so the roadmap appears on Implementation & Migration views without hand-editing.
 
 **Independent Test**: Run the import on this repo (2 milestones, 0 releases, 3 issues in the first):
-get 2 Plateaus, 1 planned Deliverable (the second milestone has no Work Packages) and 3 Work
+get 2 Plateaus, 1 unreleased Deliverable (the second milestone has no Work Packages) and 3 Work
 Packages, linked as in the table.
 
 1. **Given** an open or closed milestone issue, **When** imported, **Then** it is a Work
@@ -45,7 +45,7 @@ Packages, linked as in the table.
 3. **Given** two releases name one Plateau and an issue closed between them, **When**
    imported, **Then** it realizes the later release only.
 4. **Given** an issue closed after the latest release, **When** imported, **Then** it stays
-   on the planned Deliverable until a later release is published.
+   on the unreleased Deliverable until a later release is published.
 
 ### User Story 2 - See dependencies and hierarchy (P2)
 
@@ -84,7 +84,7 @@ refers to the retired `plat-runtime-mvp`.
 ### Edge Cases
 
 - Issue reassigned or its milestone removed: its link moves, or its element is removed.
-- Reopened issue: state returns, and it moves back to the planned Deliverable if no release covers it.
+- Reopened issue: state returns, and it moves back to the unreleased Deliverable if no release covers it.
 - Retitled issue or milestone: its id changes, so hand-authored references fail the build until updated.
 - Dependency cycles: imported as written.
 - Hostile characters in titles or descriptions: escaped; the file still parses.
@@ -94,7 +94,7 @@ refers to the retired `plat-runtime-mvp`.
 
 - **FR-001**: Import every milestone as a Plateau, every in-scope issue as a Work Package, and every published release as a Deliverable, per the Mapping table.
 - **FR-002**: An issue is in scope only if it carries its own milestone; scope is never inferred from a parent, descendant or label.
-- **FR-003**: A Work Package MUST realize exactly one Deliverable and MUST NOT realize a Plateau directly. Open ones realize the planned Deliverable; closed ones realize the first qualifying release (see Clarifications), else the planned one.
+- **FR-003**: A Work Package MUST realize exactly one Deliverable and MUST NOT realize a Plateau directly. Open ones realize the unreleased Deliverable; closed ones realize the first qualifying release (see Clarifications), else the unreleased one.
 - **FR-004**: Never emit a relationship that an existing chain already implies, or one ArchiMate forbids between its end types. The model MUST still validate after the merge.
 - **FR-005**: Ids are prefixed by element type, never by source system, and are a pure function of the object's number and title (or tag). Source number and URL are properties.
 - **FR-006**: A `bfn-*` or `plat-*` id in a description or release notes is honoured only if it exactly matches an existing element of the right type. All other GitHub text is untrusted and ignored for relationships.
@@ -107,7 +107,7 @@ refers to the retired `plat-runtime-mvp`.
 
 ## Success Criteria *(mandatory)*
 
-- **SC-001**: Every milestone, published release and milestone issue is represented exactly once, plus one planned Deliverable per milestone with Work Packages, and nothing else.
+- **SC-001**: Every milestone, published release and milestone issue is represented exactly once, plus one unreleased Deliverable per milestone with Work Packages, and nothing else.
 - **SC-002**: Two consecutive runs with no GitHub change produce zero differences.
 - **SC-003**: One GitHub change alters only the elements tied to it.
 - **SC-004**: A stakeholder can view a milestone's plan, delivered work and releases as a diagram without hand-editing the layer.
@@ -123,5 +123,5 @@ refers to the retired `plat-runtime-mvp`.
 - Dependencies are GitHub "blocked by" links.
 - The model reflects current GitHub state; removed items are removed, not kept as history.
 - Uses the existing authenticated `gh` access; no new credential, no schedule.
-- The `multi-user-collaboration` milestone exists (GitHub #2) with no issues, so it yields a Plateau and no Work Packages or planned Deliverable yet.
+- The `multi-user-collaboration` milestone exists (GitHub #2) with no issues, so it yields a Plateau and no Work Packages or unreleased Deliverable yet.
 - Performance and scale targets are deferred.

@@ -10,15 +10,15 @@ Generated, committed, **never hand-edited**. Same schema as `architecture/model/
   name: policy-to-oscal-mvp
   props: {gh-number: "1", gh-state: open, gh-url: "https://github.com/…/milestone/1"}
 - type: Deliverable
-  id: del-policy-to-oscal-mvp-1-planned
-  name: policy-to-oscal-mvp (planned)
+  id: del-policy-to-oscal-mvp-1-unreleased
+  name: policy-to-oscal-mvp (unreleased)
 - type: WorkPackage
   id: wp-markdown-catalogue-converter-gh-44
   name: "#44 Markdown catalogue converter"
   props: {gh-number: "44", gh-state: open, gh-url: "…"}
 # relationships.yaml
-- {type: Realization, source: wp-markdown-catalogue-converter-gh-44, target: del-policy-to-oscal-mvp-1-planned}
-- {type: Realization, source: del-policy-to-oscal-mvp-1-planned, target: plat-policy-to-oscal-mvp-1}
+- {type: Realization, source: wp-markdown-catalogue-converter-gh-44, target: del-policy-to-oscal-mvp-1-unreleased}
+- {type: Realization, source: del-policy-to-oscal-mvp-1-unreleased, target: plat-policy-to-oscal-mvp-1}
 # views.yaml: one view per milestone, viewpoint implementation_migration, diagram migration/<plateau id>
 ```
 
@@ -29,5 +29,5 @@ Generated, committed, **never hand-edited**. Same schema as `architecture/model/
 3. Free text is escaped by `yaml.safe_dump`.
 4. Gaps, the baseline Plateau and Strategy elements are never emitted.
 
-The remaining rules (scope, ids, one Deliverable per Work Package, planned Deliverable
+The remaining rules (scope, ids, one Deliverable per Work Package, unreleased Deliverable
 condition) are the invariants in [data-model.md](../data-model.md).

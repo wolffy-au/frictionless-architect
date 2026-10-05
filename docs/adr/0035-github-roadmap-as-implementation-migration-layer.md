@@ -25,12 +25,12 @@ models. The files are committed, deterministic and never hand-edited.
 | Milestone | Plateau | `plat-<slug>-<n>` |
 | Issue with its own milestone | Work Package | `wp-<slug>-gh-<n>` |
 | Published release (not draft or pre-release) | Deliverable | `del-release-<tag-slug>` |
-| Milestone with Work Packages | Planned Deliverable | `del-<slug>-<n>-planned` |
+| Milestone with Work Packages | Unreleased Deliverable | `del-<slug>-<n>-unreleased` |
 
 - **Scope:** an issue is in scope only if it carries its own milestone; scope is never
   inferred from a parent, child or label.
 - **Realization:** a Work Package realizes exactly one Deliverable, never a Plateau. A
-  closed one realizes the first release published after `closedAt`, else the planned one.
+  closed one realizes the first release published after `closedAt`, else the unreleased one.
 - **Dependencies:** `blockedBy` becomes Triggering between Work Packages, lifted to a
   de-duplicated Plateau Triggering across milestones; a parent and child both in scope
   are joined by Aggregation. Links to unimported issues are dropped.
