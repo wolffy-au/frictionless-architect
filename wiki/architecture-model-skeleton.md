@@ -17,7 +17,7 @@ business layers. It is part of the [Architecture Model](architecture-model.md), 
 schema, build pipeline and IT4IT alignment.
 
 Section A is the subset that stays true however the component boundaries finally
-land ([ADR-0010](architecture.md)). It is **decomposition input, not the final
+land ([ADR-0010](decision-log.md)). It is **decomposition input, not the final
 architecture**. Even so, it carries a full TOGAF ADM Phase A vision, and since
 PR #62 it also carries a Phase B business layer. In brief:
 
@@ -28,7 +28,7 @@ PR #62 it also carries a Phase B business layer. In brief:
 - **Business:** 15 processes grouped under 9 business functions, and the business
   objects they read and write.
 
-[ADR-0027](architecture.md) and [ADR-0033](architecture.md) record the shape.
+[ADR-0027](decision-log.md) and [ADR-0033](decision-log.md) record the shape.
 The README counts the section as "5 stakeholders, 4 assessments, 4 drivers,
 1 goal, 4 outcomes, 3 principles, 4 constraints, 9 functional requirements",
 "8 capabilities, 3 courses of action, 5 resources + 4 value streams … with 11
@@ -185,7 +185,7 @@ realize instead.
 ### Capabilities
 
 There are eight capabilities, named as *abilities* rather than after the artefact they own
-([ADR-0027](architecture.md); `architecture/model/elements.yaml:315-381`).
+([ADR-0027](decision-log.md); `architecture/model/elements.yaml:315-381`).
 Every capability realizes at least one requirement
 (`architecture/model/relationships.yaml:15-45`), and each is `Assignment`-linked
 from the resource that equips it (`architecture/model/relationships.yaml:47-57`):
@@ -238,7 +238,7 @@ The links are (`architecture/model/relationships.yaml:70-80`):
 
 ### Value streams — one per outcome
 
-[ADR-0033](architecture.md) replaced the single six-stage "Governed Architecture
+[ADR-0033](decision-log.md) replaced the single six-stage "Governed Architecture
 Delivery" stream with **four streams, one per outcome**, organised by who
 *receives* the value. That gives 15 `ValueStream` elements: 4 streams and 11
 stages (`architecture/model/elements.yaml:431-539`). Each stream realizes its
@@ -255,7 +255,7 @@ capability that enables it (`architecture/model/relationships.yaml:81-88`,
 | Drift to Remediation | Enterprise Architecture ("sustained coherence") | Observe As-Built State (Knowledge Management) → Reconcile & Remediate (Drift Detection) |
 
 Stages *move* between streams rather than being duplicated
-([ADR-0033](architecture.md)):
+([ADR-0033](decision-log.md)):
 
 - "Prove Compliance" now belongs to Obligation to Evidence, and "Reconcile &
   Remediate" to Drift to Remediation.

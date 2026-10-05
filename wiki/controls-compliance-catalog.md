@@ -48,8 +48,7 @@ the repo-root `specs/003-oscal-ai-conversion` on 2026-09-28 — per-package
 spec numbering restarts at `001` (`ARCHITECTURE.md` §6, ADR-0005's
 "Implementation status (2026-09-28)" note; `platform/packages/controls-compliance-catalog/specs/README.md`). That `001` is not
 the root `specs/001-governance-platform`, so specs are cited by package and slug
-(`platform/packages/controls-compliance-catalog/specs/README.md`). The spec and plan headers keep `003-oscal-ai-conversion` as
-the original branch name and say so
+(`platform/packages/controls-compliance-catalog/specs/README.md`). The spec and plan headers now give the feature branch as `001-oscal-ai-conversion`, "formerly `003-oscal-ai-conversion`", and note that the package's spec number `001` is separate from the root `specs/001-governance-platform`
 (`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md`). `dependencies`
 in `pyproject.toml`, empty at extraction, now declares the stack the
 AI-conversion pipeline and its playground spikes actually run on: `fastapi

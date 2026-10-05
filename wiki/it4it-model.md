@@ -14,7 +14,7 @@ sources:
 
 `third_party/it4it` is a git submodule — [`wolffy-au/frictionless-it4it`](https://github.com/wolffy-au/frictionless-it4it)
 — holding a hand-authored transcription of the Open Group's IT4IT 3.0
-value-stream reference model, vendored per [ADR-0029](architecture.md). It
+value-stream reference model, vendored per [ADR-0029](decision-log.md). It
 is **not an official Open Group artifact** (`third_party/it4it/README.md`).
 This page covers the vendored repo's own content; how it's consumed —
 merged into the platform's own model, the touchpoint bridges that stay
