@@ -148,7 +148,7 @@ topics:
     sources:
       - path: platform/packages/llm-provider-config/README.md
       - path: platform/packages/llm-provider-config/pyproject.toml
-      - path: platform/packages/llm-provider-config/specs/README.md
+      - path: platform/packages/llm-provider-config/specs/**/*.md
       - path: platform/packages/llm-provider-config/src/llm_provider_config/*.py
       - path: docs/adr/0034-shared-packages-and-llm-provider-config.md
 
@@ -172,6 +172,9 @@ topics:
       - path: AGENTS.md
       - path: RELEASE.md
       - path: specs/002-neo4j-schema-ui/quickstart.md
+      - path: .pre-commit-config.yaml
+      - path: scripts/pre_merge_checks.sh
+      - path: .github/workflows/ci.yml
       - path: CONTRIBUTING.md
       - path: CODE_OF_CONDUCT.md
       - path: SECURITY.md

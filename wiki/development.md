@@ -7,6 +7,9 @@ sources:
   - AGENTS.md
   - RELEASE.md
   - specs/002-neo4j-schema-ui/quickstart.md
+  - .pre-commit-config.yaml
+  - scripts/pre_merge_checks.sh
+  - .github/workflows/ci.yml
   - CONTRIBUTING.md
   - CODE_OF_CONDUCT.md
   - SECURITY.md
@@ -156,7 +159,7 @@ The constitution's "Quality Gates" (see
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
 | `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |
-| `behave` | BDD acceptance — **not currently gated** (see note below the table) |
+| `behave` | BDD acceptance — gated on pre-push, in `pre_merge_checks.sh` and (blocking) in CI (see note below the table) |
 | `commitizen` | Conventional Commits + version inference |
 | `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token in `.secrets/`) |
 | `snyk` | dependency / security scan (`TECHNICAL.md` §"Snyk"). `SNYK_TOKEN` lives in the gitignored `.env`; `pre_merge_checks.sh` loads it and runs `snyk test` on the root lock, `snyk code test`, and `snyk test` on `platform/poetry.lock`. These are blocking locally and advisory (`continue-on-error`) in CI. |
@@ -176,11 +179,11 @@ root `src/` tree and is folded into `pre_commit_checks.sh`'s run, since
 `platform/` carries its own `poetry.lock` and virtualenv (see "Repository
 layout" below).
 
-`behave` is **not currently gated**: `tests/features/` holds only a placeholder
-scenario, so the behave pre-push hook and the `pre_merge_checks.sh` step were
-dropped until `acceptance-author` writes real scenarios
-(`.pre-commit-config.yaml`; CI still runs `behave` non-blocking). `RELEASE.md`
-§2 still lists it and has not caught up.
+`behave` is **gated**: `tests/features/` holds real scenarios for the spec 002 API (schema
+payload, refresh, unavailable-sample warnings, the 2-second target and the load retry), so
+`poetry run behave tests/features/` runs as a pre-push hook (`.pre-commit-config.yaml`), as a
+step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
+step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §2 already lists it.
 
 ## Conventions
 

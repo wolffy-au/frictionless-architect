@@ -1,10 +1,12 @@
 ---
 title: LLM Provider Configuration
-generated: 2026-10-04
+generated: 2026-10-05
 generator: claude-sonnet-5-5
 sources:
   - platform/packages/llm-provider-config/README.md
   - platform/packages/llm-provider-config/pyproject.toml
+  - platform/packages/llm-provider-config/specs/001-llm-provider-config/checklists/requirements.md
+  - platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md
   - platform/packages/llm-provider-config/specs/README.md
   - platform/packages/llm-provider-config/src/llm_provider_config/__init__.py
   - platform/packages/llm-provider-config/src/llm_provider_config/credentials.py
@@ -26,7 +28,8 @@ a given call uses, as a thin layer over `litellm` (`platform/packages/llm-provid
 ADR-0034, which also sets the general rule that a capability needed by more than one
 subsystem gets its own named sibling package rather than a catch-all `common`
 (`docs/adr/0034-shared-packages-and-llm-provider-config.md` §Decision). It is still
-`version = "0.0.0"`, Python `>=3.11,<3.14`, and has no feature specs of its own yet
+`version = "0.0.0"`, Python `>=3.11,<3.14`, and has one retroactive feature spec,
+[`001-llm-provider-config`](#the-spec-001-llm-provider-config)
 (`pyproject.toml`; `platform/packages/llm-provider-config/specs/README.md`). Its first consumer is
 [Controls & Compliance Catalog](controls-compliance-catalog.md); see
 [Architecture Overview](architecture.md) for where shared packages sit.
@@ -106,6 +109,42 @@ never returned. There is no authentication — the single-user local MVP of ADR-
 — so the server should bind to localhost (`README.md`). `controls-compliance-catalog`
 mounts it at `/settings/llm` and its playground links to it.
 
+## The spec (`001-llm-provider-config`)
+
+A retroactive, draft spec dated 2026-10-05, written from the shipped code because the
+package stores API keys and so falls under constitution Principle V (never commit
+secrets, validate all input, use environment variables for configuration). Its number is
+per package and separate from the root `specs/001-governance-platform`
+(`platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md`, header;
+`platform/packages/llm-provider-config/specs/README.md`). It has five user stories —
+choose a provider and model once (P1), store a key without it touching the repo (P1), run
+with no credential store (P2), override and test one feature (P2), mount the page in any
+subsystem (P3) — plus 16 functional requirements and 6 success criteria (`platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md`
+§User Scenarios, §Requirements, §Success Criteria).
+
+The Principle V requirements are:
+
+- **No secrets in files.** Keys are never written to the settings file, a repo file or a
+  `.env`, and the settings file lives outside the repo by default (FR-004).
+- **Keychain only, never echoed.** Keys go to the OS credential store and no endpoint or
+  page returns one; only the key's source is reported (FR-005, FR-006).
+- **Plaintext fallback made visible.** The environment variable is used only when the
+  credential store has no entry, every such use logs a warning, and a stored key wins
+  (FR-007, SC-003).
+- **Validation.** Every input is validated, and invalid input leaves stored state unchanged
+  (FR-011, SC-004); a key for a keyless provider or a blank key is refused (FR-009).
+- **Owner-only file.** The settings file should be written readable by its owner where the
+  filesystem allows (FR-012).
+
+**Accepted risk (FR-016).** The package does not authenticate callers, matching the
+single-user local MVP of ADR-0024, and the documentation must say the page is bound to
+localhost. The spec treats localhost-only as a deployment rule the package does not
+enforce: exposing the page more widely would let anyone replace stored keys or point calls
+at another endpoint (`platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md` §Edge Cases, FR-016). The spec was written from the code
+and has not been checked against it by a convergence run, so a requirement may be stricter
+than what is built; its own assumptions say such a disagreement is raised as a finding
+(`platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md` §Assumptions).
+
 ## Development
 
 From `platform/`: `poetry install`, then `poetry run pytest
@@ -117,8 +156,9 @@ opt-in live check against a local Ollama is gated by `RUN_OLLAMA_TESTS=1` (ADR-0
 ## Not covered by current sources
 
 Real hosted-provider calls with live keys and the real OS keychain are not exercised
-by the tests described in these sources. The package has no feature specs yet
-(`platform/packages/llm-provider-config/specs/README.md`), so behaviour is documented only by the ADR, README and code.
+by the tests described in these sources. The spec has no plan or task list yet
+(`platform/packages/llm-provider-config/specs/README.md`), and has not been converged
+against the code.
 `architecture/model/elements.yaml` is not a source of this page, but its
 `sub-llm-provider-config` entry now also names GitHub Copilot as a keyless provider, so the
 earlier mismatch is closed.
