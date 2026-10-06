@@ -26,14 +26,21 @@ should read from it directly.
   the *independent* ground truth for tracing OSCAL-embedded control prose
   back to its original published source — used to QA the agentic
   prose-to-OSCAL conversion pipeline, not just to validate OSCAL structure.
+- `slice-0-conversion/` — conversion-only starter (no profiles); see below.
 - `slice-1-minimal/`, `slice-2-medium/`, `slice-3-full/` — the same three
   axes of OSCAL content (catalog, profiles, FedRAMP resolved baselines, CSF),
   each slice a strict superset of scope over the last. See below.
+
+Every OSCAL `.json` file also has a sibling `.yaml` (same basename), a lossless
+re-serialisation of the JSON, so both OSCAL formats Trestle reads are covered. The YAML
+checksums live in each sidecar's `yaml_representation` block. FedRAMP XML has no YAML
+sibling.
 
 ## Tier / slice growth model
 
 | Slice | Scope | Status |
 |---|---|---|
+| `slice-0-conversion` | Conversion only, no profiles: 2 simple base controls (PS-9, SC-25) with catalog + Trestle Markdown. Easiest starting point for the AI converter | populated |
 | `slice-1-minimal` | Exactly 5 entries (AC-2 + its AC-2.1/AC-2.11 enhancements, AU-2, IA-3) chosen to show both enhancement-set growth and presence/absence across the SP 800-53B baselines. Split into `1a-conversion/` (standard → Markdown, User Stories 1→2) and `1b-resolution/` (profile + catalog → resolved catalog, User Story 3). No FedRAMP excerpt (dropped for simplicity — see slice-1's own README) | populated |
 | `slice-2-medium` | Full AC and AU control families — catalog, baseline profiles, FedRAMP excerpts, Trestle Markdown | populated |
 | `slice-3-full` | Complete files: full catalog, all baselines (incl. PRIVACY), all FedRAMP resolved baselines, full CSF 2.0 catalog | populated |
