@@ -1,0 +1,9 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: pattern-blueprint-traceability-mvp
+
+Implementation_Plateau(e_idc33d8de46a5452, "pattern-blueprint-traceability-mvp")
+
+
+@enduml

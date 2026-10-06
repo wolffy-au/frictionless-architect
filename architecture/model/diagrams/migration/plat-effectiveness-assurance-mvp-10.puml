@@ -1,0 +1,9 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: effectiveness-assurance-mvp
+
+Implementation_Plateau(e_id4f676e80353d57, "effectiveness-assurance-mvp")
+
+
+@enduml

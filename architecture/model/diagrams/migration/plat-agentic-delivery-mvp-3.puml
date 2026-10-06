@@ -1,0 +1,13 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: agentic-delivery-mvp
+
+Implementation_Deliverable(e_id4cc303f180c551, "agentic-delivery-mvp (unreleased)")
+Implementation_Plateau(e_idc934b858568255, "agentic-delivery-mvp")
+Implementation_WorkPackage(e_idd1979fe2c3d35b, "GH-25 model: group the remaining 5 ungrouped outcome-realization processes into BusinessFunctions")
+
+Rel_Realization_Up(e_id4cc303f180c551, e_idc934b858568255, "")
+Rel_Realization_Up(e_idd1979fe2c3d35b, e_id4cc303f180c551, "")
+
+@enduml
