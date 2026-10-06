@@ -1,0 +1,22 @@
+artifact: "all files under this directory (ps/, sc/)"
+source: >
+  Trestle-editable Markdown catalog, generated (not hand-authored) from
+  ../catalog/nist-sp800-53-rev5-catalog-ps9-sc25-excerpt.json via
+  compliance-trestle's own CLI: `trestle import` then
+  `trestle author catalog-generate`.
+source_repo: N/A — derived from this repo's own vendored fixture, not from third_party/
+source_path: tests/fixtures/golden-oscal/slice-0-conversion/catalog/nist-sp800-53-rev5-catalog-ps9-sc25-excerpt.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105); generated form inherits the same status"
+captured_date: "2026-10-03"
+generation_method: >
+  compliance-trestle (OSCAL 1.2.1), in a scratch trestle workspace:
+    trestle init --local
+    trestle import -f nist-sp800-53-rev5-catalog-ps9-sc25-excerpt.json -o s0
+    trestle author catalog-generate -n s0 -o s0-md
+  Output copied verbatim; no manual edits.
+sha256_of_concatenated_sorted_files: 1c7eba33f868b4d9bb4efbd59e681ba3ea7fae6f70b9410ecf55e0eff51a2350
+notes: >
+  Two files (ps-9.md, sc-25.md): the smallest valid input for the assemble
+  step, and the simplest target for the AI conversion step. Same fixture
+  caveat as slice-1: generated from the published catalog, not produced by
+  the AI converter.
