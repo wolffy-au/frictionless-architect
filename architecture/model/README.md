@@ -19,7 +19,8 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 |---|---|
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
+| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
+| `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`). Same schema as `views.yaml`; ids unique across both |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` (see below) |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views. Merged by `build.py`, never hand-edited |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
@@ -36,6 +37,18 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 - **`id`** — stable kebab id. Hashed to a deterministic UUID, so regeneration
   never churns identifiers (or diagrams). **Never renumber a live id.**
 - **`name` / `desc`** — top-level keys, not inside `props`.
+- **`context`** — optional top-level key: the element's bounded context. Defaults
+  to `platform` for first-party files and to the layer directory's name for
+  `third_party/<name>` and `gh-roadmap/`. Written to the XML as a `context`
+  property. A view's `context:` (default `[platform]`) limits which contexts its
+  `include_types` sweep draws from; `members` are always honoured. `platform` in a view's `context:` covers the whole
+  first-party family. First-party contexts: `platform` (shared kernel — motivation,
+  strategy, business layer, infrastructure, migration, external systems, shared
+  stores) plus the eight platform packages (`controls-compliance-catalog`,
+  `reusable-architecture-library`, `digital-twin-knowledge-graph`,
+  `architecture-governance`, `conformance-drift-assurance`, `modelling-specification`,
+  `schema-visualizer-api`, `llm-provider-config`), which own their subsystem, its
+  functions, interface and the artefacts it writes.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read`|`Write`|`ReadWrite`) on `Access` relationships,
   `requirement-type`, and `archimate-analogue` on a BusinessObject whose
