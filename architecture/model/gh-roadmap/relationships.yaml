@@ -9,8 +9,32 @@
   source: del-release-v0-1-1
   target: plat-policy-to-oscal-mvp-1
 - type: Realization
+  source: plat-agentic-delivery-mvp-3
+  target: bfn-agentic-delivery
+- type: Realization
+  source: plat-architecture-strategy-mvp-7
+  target: bfn-architecture-strategy
+- type: Realization
+  source: plat-drift-management-mvp-5
+  target: bfn-drift-management
+- type: Realization
+  source: plat-effectiveness-assurance-mvp-10
+  target: bfn-effectiveness-assurance
+- type: Realization
+  source: plat-pattern-blueprint-traceability-mvp-6
+  target: bfn-pattern-blueprint-traceability
+- type: Realization
   source: plat-policy-to-oscal-mvp-1
   target: bfn-policy-conversion
+- type: Realization
+  source: plat-release-enforcement-mvp-9
+  target: bfn-release-enforcement
+- type: Realization
+  source: plat-release-management-mvp-4
+  target: bfn-release-management
+- type: Realization
+  source: plat-solution-design-mvp-8
+  target: bfn-solution-design
 - type: Realization
   source: wp-application-layer-dedupe-artefact-views-gh-61
   target: del-policy-to-oscal-mvp-1-unreleased

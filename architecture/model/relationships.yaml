@@ -879,7 +879,8 @@
 - {type: Aggregation, source: bc-model-collaboration, target: role-ea}
 - {type: Aggregation, source: bc-model-collaboration, target: role-sa}
 - {type: Assignment, source: bc-model-collaboration, target: bi-collaborative-modelling}
-- {type: Association, source: plat-multi-user-collaboration-2, target: bc-model-collaboration, label: enables}
+- {type: Realization, source: plat-multi-user-collaboration-2, target: bc-model-collaboration}
+- {type: Realization, source: bc-model-collaboration, target: cap-digital-twin}
 - {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: bi-collaborative-modelling}
 
 # =====================================================================
