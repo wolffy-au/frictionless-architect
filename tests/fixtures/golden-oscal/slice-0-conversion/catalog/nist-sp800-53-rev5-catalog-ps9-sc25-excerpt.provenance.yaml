@@ -1,0 +1,25 @@
+artifact: nist-sp800-53-rev5-catalog-ps9-sc25-excerpt.json
+source: "NIST SP 800-53 Rev 5 full control catalog, OSCAL JSON representation — excerpted to 2 entries: ps-9, sc-25"
+source_repo: third_party/oscal-content
+source_commit: 78650f02ad9321bb7b817846f8fbd4f2bcd620de
+source_path: nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+license: "Public domain — U.S. Government work, not subject to copyright (17 U.S.C. § 105)"
+captured_date: "2026-10-03"
+extraction_method: >
+  Walked catalog.groups[].controls[] of ../../slice-3-full/catalog/NIST_SP-800-53_rev5_catalog.json
+  to pull the ps-9 and sc-25 control objects verbatim (params and full prose
+  unmodified), wrapped in a minimal OSCAL catalog shell with a fresh uuid and
+  edited metadata title/remarks. One-off script, not committed.
+sha256: b952e3f0bbad1594192cad2c9ea3cb37d2521e75b5ca5d49149ecee6672f9bf8
+notes: >
+  Chosen as the easiest conversion inputs in SP 800-53 Rev 5: base controls
+  with no enhancements, a flat (single-paragraph) statement and at most one
+  parameter. ps-9 has no parameters at all; sc-25 has one. Contrast slice-1's
+  au-2 (five parameters, lettered sub-items). Prose traces to
+  ../../standards/NIST.SP.800-53r5.pdf.
+yaml_representation:
+  extraction_method: >
+    Lossless JSON -> YAML re-serialisation (yaml.safe_dump, key order
+    preserved); parsed content is identical to the JSON.
+  sha256:
+    nist-sp800-53-rev5-catalog-ps9-sc25-excerpt.yaml: 2f3ff087887409d8a31d06cb0d2c7ee8e976cb72402a486acc7e4b2906387032

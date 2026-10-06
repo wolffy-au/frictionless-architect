@@ -28,3 +28,12 @@ notes: >
   will work for exactly the AC and AU controls/enhancements pulled into each
   baseline; resolving against any control id outside those two families will
   fail since the excerpt catalog only contains AC and AU.
+yaml_representation:
+  extraction_method: >
+    Lossless JSON -> YAML re-serialisation of the verbatim JSON artifact(s)
+    above (yaml.safe_dump, key order preserved); parsed content is identical
+    to the JSON. Same source, licence and capture date apply.
+  sha256:
+    NIST_SP-800-53_rev5_HIGH-baseline_profile.yaml: bfdd498d48d8e0e8f2a4b0cc172a4c4df01e3d05ddade8952054c79841b10699
+    NIST_SP-800-53_rev5_LOW-baseline_profile.yaml: de427775e29e5e07b3a992bdc32c4d6d70bb598dbf20d63b8c581d370c6d3fd4
+    NIST_SP-800-53_rev5_MODERATE-baseline_profile.yaml: df86e7b396f951011a34f09b437537cc76847bf8ac45b31e290b14c03cd0b68a
