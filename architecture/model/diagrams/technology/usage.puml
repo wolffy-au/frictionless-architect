@@ -1,0 +1,136 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology Usage
+
+Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
+  Application_Function(e_id973425b560995f, "Upload Policy / Standard Document")
+  Application_Function(e_id40061cb7ae1c53, "Policy Prose Quality Feedback")
+  Application_Function(e_id7ce9f3c91f1f53, "AI-Assisted Markdown Conversion")
+  Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
+  Application_Function(e_id71815b3c9d365f, "OSCAL Structural Validation")
+  Application_Function(e_id959e350a39c158, "OSCAL Baseline Tailoring")
+  Application_Function(e_id9395f0bc80c955, "OSCAL Profile Resolution")
+}
+Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
+  Application_Function(e_iddd11da366c175c, "Pattern Authoring & Control Mapping")
+  Application_Function(e_ide1ad558dbdf859, "Blueprint Authoring & Component Mapping")
+  Application_Function(e_idf6a4f65b28fc5e, "Solution Design Composition")
+  Application_Function(e_iddc37081ec05957, "Threat Modelling")
+  Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")
+}
+Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
+  Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
+  Application_Function(e_id1877d57ef1ec5e, "Forensic Ledger Recording")
+}
+Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance") {
+  Application_Function(e_id26722845c7215d, "Comparative Evaluation & Decision")
+}
+Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
+  Application_Function(e_id29feb234dcb55b, "Agentic Build Supervision")
+  Application_Function(e_id40274d7630725c, "Controls Effectiveness Monitoring")
+  Application_Function(e_id5447be33805351, "Drift & Deviation Detection")
+}
+Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
+  Application_Function(e_id4cb42acdf9de59, "Specification Generation")
+}
+Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
+Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_Component(e_id4a7b9c4171d855, "Source Control") {
+  Application_Function(e_id4726a7b252935e, "Specification & Code Versioning")
+  Application_Function(e_iddc6b0701e84d59, "Change Review (Pull Request)")
+}
+Application_Component(e_iddc67769c419e5d, "CI/CD Pipeline") {
+  Application_Function(e_id782a43253ca752, "Build & Test")
+  Application_Function(e_idbf7bcc015b2d5d, "Controls Enforcement Gate")
+  Application_Function(e_idd08a9177cbed58, "Release Deployment")
+}
+Application_Component(e_idd9989f19521155, "Cloud & Infrastructure Platforms")
+Application_Component(e_idaabfebfc7b9858, "IT Service Management / Backlog") {
+  Application_Function(e_id4f7913b2b40d5d, "Backlog Management")
+  Application_Function(e_id48bea3230a3159, "Change Management")
+}
+Application_Component(e_id0aed952692a556, "compliance-trestle")
+Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
+Application_Component(e_idaf80425d61fd58, "RFP / Vendor Submissions")
+Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
+Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
+Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
+Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
+Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Technology_Node(e_ida2b7d071930453, "CI Runner") {
+  Technology_SystemSoftware(e_id32ef66e0cc7a59, "pytest") {
+    Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
+  }
+}
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
+  Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+  Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
+    Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+  }
+  Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
+}
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
+Rel_Serving_Up(e_id0aed952692a556, e_id71815b3c9d365f, "runs `trestle validate` for")
+Rel_Serving_Up(e_id0aed952692a556, e_id959e350a39c158, "provides profile authoring for")
+Rel_Serving_Up(e_id0aed952692a556, e_id9395f0bc80c955, "realizes profile-resolve for")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id7ce9f3c91f1f53, "provides the document -> Markdown conversion model for")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id40061cb7ae1c53, "provides the prose-review model for")
+Rel_Flow_Right(e_id8926bd09002459, e_id71815b3c9d365f, "generated catalog (converted) validated by")
+Rel_Flow_Right(e_idaf80425d61fd58, e_id3b0beba52b5a5c, "candidate solution inputs")
+Rel_Serving_Up(e_id82f04fecbdd85e, e_id3b0beba52b5a5c, "renders candidate & solution models with")
+Rel_Flow_Right(e_idd9989f19521155, e_id3da203d482f955, "current-state configuration")
+Rel_Flow_Right(e_iddc67769c419e5d, e_id3da203d482f955, "deployment events & gate outcomes")
+Rel_Association(e_id0d5bd02b5ffe5e, e_id3b0beba52b5a5c, "governs patterns & assesses candidate options")
+Rel_Flow_Right(e_id0d5bd02b5ffe5e, e_id3b0beba52b5a5c, "hands chosen solution to Composer for detailed design")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id0d5bd02b5ffe5e, "requests ADR & evaluation drafts from")
+Rel_Flow_Right(e_id492c882252a953, e_iddc67769c419e5d, "expected controls")
+Rel_Flow_Right(e_idd9989f19521155, e_id492c882252a953, "runtime control signals")
+Rel_Flow_Right(e_id492c882252a953, e_idaabfebfc7b9858, "remediation backlog items")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id82f04fecbdd85e, "requests draft specifications from")
+Rel_Flow_Right(e_id82f04fecbdd85e, e_id4a7b9c4171d855, "specifications")
+Rel_Serving_Up(e_id3a42c87ebb235a, e_id2ef30ba1d68054, "renders candidate models for")
+Rel_Flow_Right(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
+Rel_Flow_Right(e_idbf7bcc015b2d5d, e_id1877d57ef1ec5e, "records gate outcomes to")
+Rel_Flow_Right(e_id5447be33805351, e_id1877d57ef1ec5e, "records drift events to")
+Rel_Flow_Right(e_iddc6b0701e84d59, e_id782a43253ca752, "merged change triggers")
+Rel_Flow_Right(e_id29feb234dcb55b, e_iddc6b0701e84d59, "conformant agent changes")
+Rel_Flow_Right(e_id29feb234dcb55b, e_id1877d57ef1ec5e, "records agent actions to")
+Rel_Flow_Right(e_id8926bd09002459, e_id1877d57ef1ec5e, "records conversion provenance to")
+Rel_Serving_Up(e_id3da203d482f955, e_idd18b3d46fade58, "serves the read path to")
+Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
+Rel_Realization_Up(e_id2b059f9c51b053, e_id305eddd7c8dc55, "")
+Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")
+Rel_Realization_Up(e_id9b247a70d9f258, e_id3da203d482f955, "")
+Rel_Realization_Up(e_id11f06faa9d2d5d, e_idd18b3d46fade58, "")
+Rel_Realization_Up(e_id69891242354858, e_id3da203d482f955, "")
+Rel_Realization_Up(e_idfcb391a9833b5b, e_ide4bef3733af65a, "")
+Rel_Realization_Up(e_id3ac7123fc98d52, e_id3b0beba52b5a5c, "")
+Rel_Realization_Up(e_id880eb98a22b15c, e_id0d5bd02b5ffe5e, "")
+Rel_Realization_Up(e_idb422fae52e4652, e_id492c882252a953, "")
+Rel_Realization_Up(e_id42d611ba8e6759, e_id82f04fecbdd85e, "")
+Rel_Flow_Right(e_id8926bd09002459, e_id2f83bc5585b95c, "generated catalog checked by")
+Rel_Flow_Right(e_id959e350a39c158, e_id2f83bc5585b95c, "generated profile checked by")
+Rel_Flow_Right(e_id9395f0bc80c955, e_id2f83bc5585b95c, "generated resolved catalog checked by")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id2f83bc5585b95c, "provides LLM-as-judge paraphrase comparison for")
+Rel_Serving_Up(e_id0aed952692a556, e_id2f83bc5585b95c, "runs real profile-resolve for")
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
+Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id3ac7123fc98d52, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id880eb98a22b15c, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_idb422fae52e4652, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id42d611ba8e6759, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

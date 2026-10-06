@@ -1,0 +1,41 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology
+
+Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
+Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
+Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
+Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
+Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Technology_Node(e_ida2b7d071930453, "CI Runner") {
+  Technology_SystemSoftware(e_id32ef66e0cc7a59, "pytest") {
+    Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
+  }
+}
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
+  Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+  Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
+    Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+  }
+  Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
+}
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
+Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id3ac7123fc98d52, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id880eb98a22b15c, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_idb422fae52e4652, e_id6603be277fb85c, "ui/ fragment composed by")
+Rel_Realization_Up(e_id42d611ba8e6759, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml
