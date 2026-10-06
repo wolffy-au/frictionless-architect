@@ -20,71 +20,20 @@
 # `render_diagrams.py`. Vision-phase (TOGAF ADM Phase A) views render under
 # diagrams/vision/.
 #
+# Generic one-per-viewpoint views (include_types only) live in
+# views-viewpoints.yaml; view ids must be unique across both files.
+#
+# `context:` (optional, default `[platform]`) lists the element contexts a view's
+# `include_types` sweep draws from. Every element has a `context` (default
+# `platform`; layers default to their dir name: `it4it`, `gh-roadmap`).
+# Explicit `members` are always honoured whatever their context.
+#
 # The C4 context / container diagrams are NOT views — render_diagrams.py
 # projects them via diagram-c4 with --system "Frictionless Architecture Platform".
 
 # =====================================================================
 # TOGAF ADM Phase A — Architecture Vision
 # =====================================================================
-
-- id: view-stakeholder
-  name: Stakeholder
-  viewpoint: stakeholder
-  diagram: vision/1-stakeholder
-  # The case for change: who holds which driver, the assessments that make each
-  # driver urgent, and the goal + outcomes they drive toward.
-  # Outcome and Stakeholder are scoped explicitly (not via include_types)
-  # because the IT4IT import added a second Outcome element
-  # (it4it-outcome-digital-product) and 24 more Stakeholder elements —
-  # an include_types: [..., Outcome/Stakeholder] here would pull them into a
-  # platform-only view. Same fix applies everywhere below
-  # Outcome/Capability/ValueStream/Stakeholder appear in include_types.
-  include_types: [Assessment, Driver, Goal]
-  members:
-    - outcome-drift-reconciled
-    - outcome-change-at-ai-speed
-    - outcome-compliance-before-release
-    - outcome-accountable-automation
-    - stk-exec
-    - stk-regulator
-    - stk-architecture
-    - stk-delivery
-    - stk-risk-compliance
-
-- id: view-motivation
-  name: Motivation
-  viewpoint: motivation
-  diagram: vision/2-motivation
-  # The whole motivation model — stakeholders, assessments, drivers, goal,
-  # outcome, principles, requirements, constraints — and how they relate.
-  # Stakeholder scoped explicitly (not via include_types), same reason as
-  # view-stakeholder above — the IT4IT import added 24 more Stakeholder
-  # elements that an include_types: [Stakeholder, ...] would pull in here.
-  include_types:
-    [Assessment, Driver, Goal, Principle, Requirement, Constraint]
-  members:
-    - outcome-drift-reconciled
-    - outcome-change-at-ai-speed
-    - outcome-compliance-before-release
-    - outcome-accountable-automation
-    - stk-exec
-    - stk-regulator
-    - stk-architecture
-    - stk-delivery
-    - stk-risk-compliance
-
-- id: view-goal-realization
-  name: Goal Realization
-  viewpoint: goal_realization
-  diagram: vision/3-goal-realization
-  # How the goal refines into the outcomes, and how principles, requirements and
-  # constraints realize them.
-  include_types: [Goal, Principle, Requirement, Constraint]
-  members:
-    - outcome-drift-reconciled
-    - outcome-change-at-ai-speed
-    - outcome-compliance-before-release
-    - outcome-accountable-automation
 
 - id: view-strategy
   name: Strategy
@@ -95,8 +44,8 @@
   # recipient stakeholders belong to the Value Stream view; the goal linkage
   # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
   # stops at the strategy layer — see Goal Realization for that.
-  # Capability is scoped via members, not include_types — see the note on
-  # view-stakeholder above; the IT4IT import added 42 more Capability elements.
+  # Capability is scoped via members, not include_types — the IT4IT import
+  # added 42 more Capability elements.
   include_types: [CourseOfAction, Resource]
   # GH #20: the capability-to-capability Serving mesh (control mappings,
   # expected controls, etc.) is the Capability Map view's own story, not
@@ -323,35 +272,6 @@
     - bfn-drift-management
     - bfn-architecture-strategy
     - bfn-solution-design
-
-- id: view-requirements-realization
-  name: Requirements Realization
-  viewpoint: requirements_realization
-  diagram: vision/8-requirements-realization
-  # Which capability realizes each functional requirement — every capability
-  # realizes at least one (ADR-0027 #1). Why each requirement exists
-  # (principle/constraint Influence, Requirement -> Outcome) is the
-  # Motivation and Goal Realization views' story, not this one's.
-  # Capability scoped via members, not include_types — see notes above; the
-  # IT4IT import added Capability elements.
-  include_types: [Requirement]
-  # GH #20: the capability-to-capability Serving mesh is the Capability Map
-  # view's own story — exclude it so it doesn't repeat incidentally.
-  exclude:
-    - {type: Serving, source_type: Capability, target_type: Capability}
-  members:
-    - cap-digital-twin
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-forensic-ledger
-    - cap-drift-dashboard
-    - cap-human-approval-workflow
-    - cap-control-catalog
-    - cap-reusable-architecture
-
-# =====================================================================
-# Cross-cutting / later-phase views
-# =====================================================================
 
 - id: view-delivery
   name: Delivery Choreography
@@ -921,18 +841,3 @@
     - bi-collaborative-modelling
     - role-ea
     - role-sa
-
-- id: view-implementation-migration-overview
-  name: "Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables"
-  diagram: migration/overview
-  # Every Plateau/Gap/WorkPackage/Deliverable in the model, regardless of
-  # which transition story it belongs to (packaging, runtime/collaboration,
-  # and any future GH-roadmap-imported ones) — the one place to see the
-  # whole Implementation & Migration layer at once. CourseOfAction is a
-  # Strategy-layer concept the implementation_migration viewpoint doesn't
-  # admit, so epic-level groupings won't appear here even once imported.
-  # Unlike view-migration and view-runtime-migration this is deliberately
-  # include_types, not members: it should pick up new elements of these
-  # types automatically rather than needing to be hand-maintained.
-  viewpoint: implementation_migration
-  include_types: [Plateau, Gap, WorkPackage, Deliverable]

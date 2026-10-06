@@ -1,0 +1,16 @@
+@startuml
+!include <archimate/Archimate>
+
+title Organization
+
+Business_Role(e_id10a12f8c7cac51, "Security Architect / Threat Modeller")
+Business_Role(e_id2c72565ddd6c52, "Developer")
+Business_Role(e_id5e264d2f4bb551, "Compliance Officer / Auditor")
+Business_Role(e_id2c489ee6594253, "Platform Operations (BAU)")
+Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
+  Business_Role(e_id2b5394f913985a, "Enterprise Architect")
+  Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
+}
+
+
+@enduml

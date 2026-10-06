@@ -892,6 +892,7 @@
     c4: system
 - type: ApplicationComponent
   id: sub-catalog
+  context: controls-compliance-catalog
   name: Controls & Compliance Catalog
   desc: >-
     Converts policy/standard documents (authored externally, outside the
@@ -900,6 +901,7 @@
     Catalogs.
 - type: ApplicationComponent
   id: sub-library
+  context: reusable-architecture-library
   name: Reusable Architecture Library
   desc: >-
     Composable patterns, blueprints and solution designs with OSCAL references,
@@ -907,12 +909,14 @@
     governance to decide on.
 - type: ApplicationComponent
   id: sub-twin
+  context: digital-twin-knowledge-graph
   name: Digital Twin & Knowledge Graph
   desc: >-
     Maintains the Architecture Knowledge Graph: an intent plane and a
     current-state digital twin plane.
 - type: ApplicationComponent
   id: sub-governance
+  context: architecture-governance
   name: Architecture Governance
   desc: >-
     Comparative evaluation of candidate options, impact assessment, the decision
@@ -921,6 +925,7 @@
     Architecture Library.
 - type: ApplicationComponent
   id: sub-assurance
+  context: conformance-drift-assurance
   name: Conformance & Drift Assurance
   desc: >-
     Supervises agentic development to enforce controls at build, supplies the
@@ -928,12 +933,14 @@
     effectiveness in BAU, and detects and reports architecture drift.
 - type: ApplicationComponent
   id: sub-modelling
+  context: modelling-specification
   name: Modelling & Specification
   desc: >-
     Out-of-the-box ArchiMate / C4 / UML modelling, and generation of development
     specifications.
 - type: ApplicationComponent
   id: sub-schema-visualizer
+  context: schema-visualizer-api
   name: Schema Visualiser API
   desc: >-
     Serves the aggregated ArchiMate schema and sample-model coverage as JSON
@@ -942,6 +949,7 @@
     knowledge graph only through the Digital Twin & Knowledge Graph read path.
 - type: ApplicationComponent
   id: sub-llm-provider-config
+  context: llm-provider-config
   name: LLM Provider Configuration
   desc: >-
     Resolves which LLM provider/model/params and credential a call uses
@@ -955,6 +963,7 @@
     Compliance Catalog.
 - type: ApplicationInterface
   id: if-twin-read-path
+  context: digital-twin-knowledge-graph
   name: Knowledge Graph Read Path
   desc: >-
     Narrow, in-process library interface over the Neo4j read path and
@@ -962,6 +971,7 @@
     and free of leaked Neo4j driver types (ADR-0005).
 - type: ApplicationInterface
   id: if-catalog-ui
+  context: controls-compliance-catalog
   name: Compliance Catalog UI
   desc: >-
     Human-facing interface where the Compliance Officer / Auditor uploads
@@ -1080,12 +1090,14 @@
 # --- C. Functions: Controls & Compliance Catalog ---
 - type: ApplicationFunction
   id: fn-policy-upload
+  context: controls-compliance-catalog
   name: Upload Policy / Standard Document
   desc: >-
     Accept an uploaded custom policy/standard document or upstream
     regulatory standard text and stage it for conversion.
 - type: ApplicationFunction
   id: fn-policy-quality-feedback
+  context: controls-compliance-catalog
   name: Policy Prose Quality Feedback
   desc: >-
     Use an LLM to review an uploaded or authored policy/standard document's
@@ -1093,6 +1105,7 @@
     before it is converted.
 - type: ApplicationFunction
   id: fn-ai-markdown-conversion
+  context: controls-compliance-catalog
   name: AI-Assisted Markdown Conversion
   desc: >-
     Use an LLM to convert a verbatim policy/standard document (custom-authored
@@ -1100,12 +1113,14 @@
     structure Trestle's author commands expect.
 - type: ApplicationFunction
   id: fn-oscal-conversion
+  context: controls-compliance-catalog
   name: OSCAL Catalog Generation
   desc: >-
     Convert Trestle-editable Markdown into OSCAL Catalogs via a Trestle
     round-trip (import / author / assemble).
 - type: ApplicationFunction
   id: fn-oscal-validation
+  context: controls-compliance-catalog
   name: OSCAL Structural Validation
   desc: >-
     Run `trestle validate` against a generated OSCAL Catalog before it is
@@ -1116,6 +1131,7 @@
     this runs on every conversion, not just in CI against the golden dataset.
 - type: ApplicationFunction
   id: fn-baseline-tailoring
+  context: controls-compliance-catalog
   name: OSCAL Baseline Tailoring
   desc: >-
     Select and tailor controls (parameters, modifications) from one or more
@@ -1123,6 +1139,7 @@
     commands.
 - type: ApplicationFunction
   id: fn-oscal-profile-resolve
+  context: controls-compliance-catalog
   name: OSCAL Profile Resolution
   desc: >-
     Resolve an OSCAL Profile against its source Catalog(s) into a fully
@@ -1131,30 +1148,35 @@
 # --- C. Functions: Reusable Architecture Library ---
 - type: ApplicationFunction
   id: fn-pattern-authoring
+  context: reusable-architecture-library
   name: Pattern Authoring & Control Mapping
   desc: >-
     Author technology-agnostic architecture patterns and map them to the
     controls of a Resolved OSCAL Profile Catalog.
 - type: ApplicationFunction
   id: fn-blueprint-authoring
+  context: reusable-architecture-library
   name: Blueprint Authoring & Component Mapping
   desc: >-
     Derive implementation blueprints from patterns and map them to OSCAL
     Component Definitions.
 - type: ApplicationFunction
   id: fn-solution-compose
+  context: reusable-architecture-library
   name: Solution Design Composition
   desc: >-
     Compose blueprints and patterns into a solution design and emit its OSCAL
     System Security Plan.
 - type: ApplicationFunction
   id: fn-threat-model
+  context: reusable-architecture-library
   name: Threat Modelling
   desc: >-
     Attach threats and mitigations to patterns, blueprints and solution
     designs.
 - type: ApplicationFunction
   id: fn-options-model
+  context: reusable-architecture-library
   name: Future-State & Options Modelling
   desc: >-
     Model one or more candidate future-state architectures, including competing
@@ -1163,12 +1185,14 @@
 # --- C. Functions: Digital Twin & Knowledge Graph ---
 - type: ApplicationFunction
   id: fn-twin-ingest
+  context: digital-twin-knowledge-graph
   name: Digital Twin Ingestion
   desc: >-
     Build the current-state digital twin plane from live infrastructure state
     and deployment events.
 - type: ApplicationFunction
   id: fn-ledger-record
+  context: digital-twin-knowledge-graph
   name: Forensic Ledger Recording
   desc: >-
     Append every agent action, gate decision, specification evaluation and
@@ -1178,6 +1202,7 @@
 # --- C. Functions: Architecture Governance ---
 - type: ApplicationFunction
   id: fn-governance-eval
+  context: architecture-governance
   name: Comparative Evaluation & Decision
   desc: >-
     Compare candidate options, assess impact against intent and twin, record the
@@ -1186,6 +1211,7 @@
 # --- C. Functions: Conformance & Drift Assurance ---
 - type: ApplicationFunction
   id: fn-build-supervision
+  context: conformance-drift-assurance
   name: Agentic Build Supervision
   desc: >-
     Build-time control enforcement: intercept and evaluate every agent-generated
@@ -1203,12 +1229,14 @@
     for process controls (e.g. no agent self-validation); block or pass.
 - type: ApplicationFunction
   id: fn-effectiveness-monitor
+  context: conformance-drift-assurance
   name: Controls Effectiveness Monitoring
   desc: >-
     Monitor whether deployed controls remain effective in BAU and record the
     evidence.
 - type: ApplicationFunction
   id: fn-drift-engine
+  context: conformance-drift-assurance
   name: Drift & Deviation Detection
   desc: >-
     Diff the current-state twin against the transition state in effect on the
@@ -1218,10 +1246,12 @@
 # --- C. Functions: Modelling & Specification ---
 - type: ApplicationFunction
   id: fn-notation-engine
+  context: modelling-specification
   name: Modelling & Notation Rendering
   desc: Render ArchiMate / C4 / UML models against the bundled metamodels.
 - type: ApplicationFunction
   id: fn-spec-generator
+  context: modelling-specification
   name: Specification Generation
   desc: >-
     Generate development specifications from patterns, blueprints and solution
@@ -1266,41 +1296,41 @@
     its compliance approval evidence.
 
 # --- C. Artefacts (DataObject) ---
-- {type: DataObject, id: do-policy-doc, name: Policy / Standard Document, desc: "Verbatim custom policy or standard document (e.g. Word/PDF), not yet machine-readable."}
-- {type: DataObject, id: do-regulatory-standard, name: Regulatory Standard Document, desc: "Verbatim upstream regulatory standard text (e.g. NIST CSF, NIST SP 800-53), supplied as a document input -- not a system integration -- to fn-ai-markdown-conversion."}
-- {type: DataObject, id: do-trestle-markdown, name: Trestle-Editable Markdown Catalog, desc: AI-converted Markdown catalog structure ready for Trestle's author/assemble commands.}
-- {type: DataObject, id: do-baseline, name: Regulatory Baseline Catalog, desc: "Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input."}
-- {type: DataObject, id: do-baseline-profile, name: Regulatory Baseline Profile, desc: "Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input."}
-- {type: DataObject, id: do-baseline-resolved-catalog, name: Regulatory Resolved Baseline Catalog, desc: "Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input."}
-- {type: DataObject, id: do-oscal-catalog, name: OSCAL Catalog, desc: "Machine-readable control catalog.", props: {status-lifecycle: "converting -> converted -> validating -> validated | conversion_failed | validation_failed (controls-compliance-catalog spec 001 oscal-catalog-status.puml)"}}
-- {type: DataObject, id: do-oscal-profile, name: OSCAL Profile, desc: Tailored control selection / baseline.}
-- {type: DataObject, id: do-oscal-resolved-catalog, name: Resolved OSCAL Profile Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
-- {type: DataObject, id: do-oscal-component, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
-- {type: DataObject, id: do-oscal-ssp, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
-- {type: DataObject, id: do-pattern, name: Architecture Pattern, desc: "Technology-agnostic, reusable design with mapped controls."}
-- {type: DataObject, id: do-blueprint, name: Implementation Blueprint, desc: Technology-specific realisation of one or more patterns.}
-- {type: DataObject, id: do-solution-design, name: Solution Design, desc: Composed solution — SolutionComponents under a SolutionDesign.}
-- {type: DataObject, id: do-threat-model, name: Threat Model, desc: "Threats and mitigations attached to a pattern, blueprint or design."}
-- {type: DataObject, id: do-infra-state, name: Live Infrastructure State, desc: Observed configuration of the running platforms.}
-- {type: DataObject, id: do-deploy-event, name: Deployment Event, desc: A release / deployment recorded by the pipeline.}
-- {type: DataObject, id: do-twin, name: Current-State Digital Twin, desc: The as-built plane of the Architecture Knowledge Graph.}
-- {type: DataObject, id: do-candidate-arch, name: Candidate Architecture Option, desc: A proposed future-state or vendor solution under evaluation.}
+- {type: DataObject, id: do-policy-doc, context: controls-compliance-catalog, name: Policy / Standard Document, desc: "Verbatim custom policy or standard document (e.g. Word/PDF), not yet machine-readable."}
+- {type: DataObject, id: do-regulatory-standard, context: controls-compliance-catalog, name: Regulatory Standard Document, desc: "Verbatim upstream regulatory standard text (e.g. NIST CSF, NIST SP 800-53), supplied as a document input -- not a system integration -- to fn-ai-markdown-conversion."}
+- {type: DataObject, id: do-trestle-markdown, context: controls-compliance-catalog, name: Trestle-Editable Markdown Catalog, desc: AI-converted Markdown catalog structure ready for Trestle's author/assemble commands.}
+- {type: DataObject, id: do-baseline, context: controls-compliance-catalog, name: Regulatory Baseline Catalog, desc: "Upstream NIST/FedRAMP OSCAL catalog, e.g. NIST SP 800-53 rev5 via oscal-content -- used as golden-dataset validation data for the AI markdown converter, not a production pipeline input."}
+- {type: DataObject, id: do-baseline-profile, context: controls-compliance-catalog, name: Regulatory Baseline Profile, desc: "Upstream NIST LOW/MODERATE/HIGH/PRIVACY baseline profiles (OSCAL Profile) vendored via oscal-content -- used as golden-dataset validation data for profile generation, not a production pipeline input."}
+- {type: DataObject, id: do-baseline-resolved-catalog, context: controls-compliance-catalog, name: Regulatory Resolved Baseline Catalog, desc: "Upstream FedRAMP LOW/MODERATE/HIGH resolved baseline catalogs vendored via fedramp-automation's bundled/catalogs -- used as golden-dataset validation data for profile resolution, not a production pipeline input."}
+- {type: DataObject, id: do-oscal-catalog, context: controls-compliance-catalog, name: OSCAL Catalog, desc: "Machine-readable control catalog.", props: {status-lifecycle: "converting -> converted -> validating -> validated | conversion_failed | validation_failed (controls-compliance-catalog spec 001 oscal-catalog-status.puml)"}}
+- {type: DataObject, id: do-oscal-profile, context: controls-compliance-catalog, name: OSCAL Profile, desc: Tailored control selection / baseline.}
+- {type: DataObject, id: do-oscal-resolved-catalog, context: controls-compliance-catalog, name: Resolved OSCAL Profile Catalog, desc: Fully resolved/tailored control set produced by resolving an OSCAL Profile against its source Catalog(s) (trestle profile-resolve) -- the operative control baseline for downstream use.}
+- {type: DataObject, id: do-oscal-component, context: reusable-architecture-library, name: OSCAL Component Definition, desc: Control implementation claims for a reusable blueprint.}
+- {type: DataObject, id: do-oscal-ssp, context: reusable-architecture-library, name: OSCAL System Security Plan, desc: Control implementation for a specific solution design.}
+- {type: DataObject, id: do-pattern, context: reusable-architecture-library, name: Architecture Pattern, desc: "Technology-agnostic, reusable design with mapped controls."}
+- {type: DataObject, id: do-blueprint, context: reusable-architecture-library, name: Implementation Blueprint, desc: Technology-specific realisation of one or more patterns.}
+- {type: DataObject, id: do-solution-design, context: reusable-architecture-library, name: Solution Design, desc: Composed solution — SolutionComponents under a SolutionDesign.}
+- {type: DataObject, id: do-threat-model, context: reusable-architecture-library, name: Threat Model, desc: "Threats and mitigations attached to a pattern, blueprint or design."}
+- {type: DataObject, id: do-infra-state, context: digital-twin-knowledge-graph, name: Live Infrastructure State, desc: Observed configuration of the running platforms.}
+- {type: DataObject, id: do-deploy-event, context: digital-twin-knowledge-graph, name: Deployment Event, desc: A release / deployment recorded by the pipeline.}
+- {type: DataObject, id: do-twin, context: digital-twin-knowledge-graph, name: Current-State Digital Twin, desc: The as-built plane of the Architecture Knowledge Graph.}
+- {type: DataObject, id: do-candidate-arch, context: reusable-architecture-library, name: Candidate Architecture Option, desc: A proposed future-state or vendor solution under evaluation.}
 - {type: DataObject, id: do-target-architecture, name: Target State Architecture, desc: The adopted future-state architecture — the end state of the Architecture Roadmap.}
-- {type: DataObject, id: do-architecture-roadmap, name: Architecture Roadmap, desc: The time-sequenced transition from current to target state — what should be true by when.}
-- {type: DataObject, id: do-adr, name: Architecture Decision Record, desc: The chosen option with its rationale and trade-offs.}
-- {type: DataObject, id: do-impact-assessment, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
-- {type: DataObject, id: do-archived-option, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
+- {type: DataObject, id: do-architecture-roadmap, context: conformance-drift-assurance, name: Architecture Roadmap, desc: The time-sequenced transition from current to target state — what should be true by when.}
+- {type: DataObject, id: do-adr, context: architecture-governance, name: Architecture Decision Record, desc: The chosen option with its rationale and trade-offs.}
+- {type: DataObject, id: do-impact-assessment, context: architecture-governance, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
+- {type: DataObject, id: do-archived-option, context: architecture-governance, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
 - {type: DataObject, id: do-release-candidate, name: Release Candidate, desc: A build submitted to the enforcement gate.}
-- {type: DataObject, id: do-oscal-assessment-plan, name: OSCAL Assessment Plan, desc: "Scope and method for a pre-release assessment run, generated ahead of the gate check and imported by its Assessment Results."}
-- {type: DataObject, id: do-oscal-ar, name: OSCAL Assessment Results, desc: Findings on whether an SSP's declared control implementations are satisfied.}
+- {type: DataObject, id: do-oscal-assessment-plan, context: conformance-drift-assurance, name: OSCAL Assessment Plan, desc: "Scope and method for a pre-release assessment run, generated ahead of the gate check and imported by its Assessment Results."}
+- {type: DataObject, id: do-oscal-ar, context: conformance-drift-assurance, name: OSCAL Assessment Results, desc: Findings on whether an SSP's declared control implementations are satisfied.}
 - {type: DataObject, id: do-gate-decision, name: Gate Decision, desc: Pass / block outcome with the controls evaluated — the pre-release instance of an OSCAL Assessment Results.}
-- {type: DataObject, id: do-effectiveness-evidence, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}
-- {type: DataObject, id: do-drift-report, name: Classified Drift Finding, desc: "A deviation of current state from intent, classified and prioritised."}
-- {type: DataObject, id: do-remediation-item, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
-- {type: DataObject, id: do-oscal-poam, name: OSCAL Plan of Action & Milestones, desc: "Open control deficiencies from OSCAL Assessment Results — release-gate and BAU — with their target remediation milestones, for external compliance reporting."}
-- {type: DataObject, id: do-dev-spec, name: Development Specification, desc: "Executable spec derived from patterns, blueprints and designs."}
-- {type: DataObject, id: do-metamodel, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
-- {type: DataObject, id: do-ledger-entry, name: Ledger Entry, desc: "A single immutable forensic record — actor, action, target artefact, timestamp, outcome."}
+- {type: DataObject, id: do-effectiveness-evidence, context: conformance-drift-assurance, name: Control Effectiveness Evidence, desc: BAU evidence that a control is (or is not) working — the continuous-monitoring instance of an OSCAL Assessment Results.}
+- {type: DataObject, id: do-drift-report, context: conformance-drift-assurance, name: Classified Drift Finding, desc: "A deviation of current state from intent, classified and prioritised."}
+- {type: DataObject, id: do-remediation-item, context: conformance-drift-assurance, name: Remediation Backlog Item, desc: A drift finding promoted to actionable delivery work.}
+- {type: DataObject, id: do-oscal-poam, context: conformance-drift-assurance, name: OSCAL Plan of Action & Milestones, desc: "Open control deficiencies from OSCAL Assessment Results — release-gate and BAU — with their target remediation milestones, for external compliance reporting."}
+- {type: DataObject, id: do-dev-spec, context: modelling-specification, name: Development Specification, desc: "Executable spec derived from patterns, blueprints and designs."}
+- {type: DataObject, id: do-metamodel, context: modelling-specification, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
+- {type: DataObject, id: do-ledger-entry, context: digital-twin-knowledge-graph, name: Ledger Entry, desc: "A single immutable forensic record — actor, action, target artefact, timestamp, outcome."}
 
 # =====================================================================
 # E. IMPLEMENTATION & MIGRATION — the platform's own restructure
@@ -1322,34 +1352,42 @@
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-schema-visualizer-api
+  context: schema-visualizer-api
   name: packages/schema-visualizer-api
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-digital-twin-knowledge-graph
+  context: digital-twin-knowledge-graph
   name: packages/digital-twin-knowledge-graph
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-controls-compliance-catalog
+  context: controls-compliance-catalog
   name: packages/controls-compliance-catalog
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-reusable-architecture-library
+  context: reusable-architecture-library
   name: packages/reusable-architecture-library
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-architecture-governance
+  context: architecture-governance
   name: packages/architecture-governance
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-conformance-drift-assurance
+  context: conformance-drift-assurance
   name: packages/conformance-drift-assurance
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-modelling-specification
+  context: modelling-specification
   name: packages/modelling-specification
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-llm-provider-config
+  context: llm-provider-config
   name: packages/llm-provider-config
   desc: >-
     Shared package (ADR-0034), not one of the six subsystem packages above —
