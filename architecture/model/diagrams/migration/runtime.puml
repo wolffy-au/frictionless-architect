@@ -32,7 +32,7 @@ Rel_Association(e_id957bea8a8f2755, e_id4accde76fa5858, "")
 Rel_Association(e_id957bea8a8f2755, e_idb94c55ad2a0756, "")
 Rel_Association(e_idd9da54d5550b52, e_idb94c55ad2a0756, "")
 Rel_Association(e_idd9da54d5550b52, e_id5024d2087dac51, "")
-Rel_Association(e_id5024d2087dac51, e_id2aa180bf48e258, "enables")
+Rel_Realization_Up(e_id5024d2087dac51, e_id2aa180bf48e258, "")
 Rel_Association(e_idd9da54d5550b52, e_ida5ff14a2a5eb53, "")
 
 @enduml

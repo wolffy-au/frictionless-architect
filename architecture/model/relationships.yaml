@@ -810,12 +810,11 @@
 - {type: Triggering, source: wp-4-scaffold-twin, target: wp-5-vendor-forks}
 - {type: Triggering, source: wp-5-vendor-forks, target: wp-6-rehome-specs}
 - {type: Triggering, source: wp-6-rehome-specs, target: wp-7-extract-remaining}
-- {type: Realization, source: wp-1-monorepo-skeleton, target: del-monorepo-skeleton}
-- {type: Realization, source: wp-2-catalog-extraction, target: del-catalog-pkg}
-- {type: Realization, source: wp-4-scaffold-twin, target: del-twin-pkg-scaffold}
-- {type: Realization, source: del-catalog-pkg, target: art-pkg-controls-compliance-catalog}
-- {type: Realization, source: del-twin-pkg-scaffold, target: art-pkg-digital-twin-knowledge-graph}
+- {type: Realization, source: wp-1-monorepo-skeleton, target: plat-policy-to-oscal-mvp-1}
+- {type: Realization, source: wp-2-catalog-extraction, target: art-pkg-controls-compliance-catalog}
+- {type: Realization, source: wp-4-scaffold-twin, target: art-pkg-digital-twin-knowledge-graph}
 - {type: Realization, source: wp-3-prove-pattern, target: plat-policy-to-oscal-mvp-1}
+- {type: Aggregation, source: plat-multi-user-collaboration-2, target: art-pkg-digital-twin-knowledge-graph}
 
 # =====================================================================
 # E. Plateaus: which packages make up each state (ordered by the Gaps below)
@@ -831,8 +830,8 @@
 #    Gap's desc — no Gap -> Artifact or Plateau Triggering edges, which would
 #    only restate that
 # =====================================================================
-- {type: Association, source: gap-oscal-ai-conversion, target: plat-baseline}
-- {type: Association, source: gap-oscal-ai-conversion, target: plat-policy-to-oscal-mvp-1}
+- {type: Association, source: plat-baseline, target: gap-oscal-ai-conversion}
+- {type: Association, source: plat-policy-to-oscal-mvp-1, target: gap-oscal-ai-conversion}
 
 # =====================================================================
 # F. Technology — golden-dataset regression check (first cut, see the
@@ -870,10 +869,10 @@
 - {type: Aggregation, source: plat-multi-user-collaboration-2, target: sw-neo4j}
 - {type: Triggering, source: plat-baseline, target: plat-policy-to-oscal-mvp-1}
 - {type: Triggering, source: plat-policy-to-oscal-mvp-1, target: plat-multi-user-collaboration-2}
-- {type: Association, source: gap-neo4j-schema-ui, target: plat-baseline}
-- {type: Association, source: gap-neo4j-schema-ui, target: plat-policy-to-oscal-mvp-1}
-- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-policy-to-oscal-mvp-1}
-- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: plat-multi-user-collaboration-2}
+- {type: Association, source: plat-baseline, target: gap-neo4j-schema-ui}
+- {type: Association, source: plat-policy-to-oscal-mvp-1, target: gap-neo4j-schema-ui}
+- {type: Association, source: plat-policy-to-oscal-mvp-1, target: gap-policy-to-oscal-mvp-to-multi-user-collaboration}
+- {type: Association, source: plat-multi-user-collaboration-2, target: gap-policy-to-oscal-mvp-to-multi-user-collaboration}
 
 # --- B. Model Collaboration (joint behaviour) ---
 - {type: Aggregation, source: bc-model-collaboration, target: role-ea}
@@ -881,7 +880,7 @@
 - {type: Assignment, source: bc-model-collaboration, target: bi-collaborative-modelling}
 - {type: Realization, source: plat-multi-user-collaboration-2, target: bc-model-collaboration}
 - {type: Realization, source: bc-model-collaboration, target: cap-digital-twin}
-- {type: Association, source: gap-policy-to-oscal-mvp-to-multi-user-collaboration, target: bi-collaborative-modelling}
+- {type: Association, source: bi-collaborative-modelling, target: gap-policy-to-oscal-mvp-to-multi-user-collaboration}
 
 # =====================================================================
 # F. Per-subsystem UI composition (ADR-0020, GH #55 item 7): composition

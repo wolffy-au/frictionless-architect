@@ -4,19 +4,26 @@
   viewpoint: implementation_migration
   diagram: migration/plat-agentic-delivery-mvp-3
   members:
+  - del-agentic-delivery-mvp-3-unreleased
   - plat-agentic-delivery-mvp-3
+  - wp-model-group-the-remaining-5-ungrouped-gh-25
 - id: view-plat-architecture-strategy-mvp-7
   name: 'Roadmap: architecture-strategy-mvp'
   viewpoint: implementation_migration
   diagram: migration/plat-architecture-strategy-mvp-7
   members:
+  - del-architecture-strategy-mvp-7-unreleased
   - plat-architecture-strategy-mvp-7
+  - wp-architecture-md-still-describes-the-old-gh-50
+  - wp-model-the-technology-layer-packages-as-gh-55
 - id: view-plat-drift-management-mvp-5
   name: 'Roadmap: drift-management-mvp'
   viewpoint: implementation_migration
   diagram: migration/plat-drift-management-mvp-5
   members:
+  - del-drift-management-mvp-5-unreleased
   - plat-drift-management-mvp-5
+  - wp-model-doc-consistency-cleanup-stale-gh-63
 - id: view-plat-effectiveness-assurance-mvp-10
   name: 'Roadmap: effectiveness-assurance-mvp'
   viewpoint: implementation_migration
@@ -44,8 +51,15 @@
   - del-release-v0-1-0
   - del-release-v0-1-1
   - plat-policy-to-oscal-mvp-1
+  - wp-add-compliance-trestle-dependency-and-gh-23
+  - wp-adr-decide-the-oscal-trestle-vendoring-gh-19
   - wp-application-layer-dedupe-artefact-views-gh-61
+  - wp-ci-checkout-git-submodules-gh-21
   - wp-markdown-catalogue-converter-gh-44
+  - wp-migration-steps-1-3-platform-monorepo-gh-71
+  - wp-model-wire-gh-7-bfn-into-outcome-gh-20
+  - wp-oscal-spec-alignment-review-gh-24
+  - wp-vendor-nist-fedramp-oscal-content-as-gh-22
   - wp-vision-single-high-level-archimate-gh-7
 - id: view-plat-release-enforcement-mvp-9
   name: 'Roadmap: release-enforcement-mvp'
@@ -64,4 +78,6 @@
   viewpoint: implementation_migration
   diagram: migration/plat-solution-design-mvp-8
   members:
+  - del-solution-design-mvp-8-unreleased
   - plat-solution-design-mvp-8
+  - wp-resolve-migration-order-gap-schema-gh-60

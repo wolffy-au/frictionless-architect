@@ -1,0 +1,15 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: architecture-strategy-mvp
+
+Implementation_Deliverable(e_id891b59559d2954, "architecture-strategy-mvp (unreleased)")
+Implementation_Plateau(e_id726fa9a2d0835f, "architecture-strategy-mvp")
+Implementation_WorkPackage(e_id0d0b53b9527a58, "GH-50 ARCHITECTURE.md still describes the old 8-component split, not the 6-subsystem decomposition")
+Implementation_WorkPackage(e_id6440e8a7ae7655, "GH-55 Model the technology layer: packages as Artifacts and an Implementation & Deployment view")
+
+Rel_Realization_Up(e_id891b59559d2954, e_id726fa9a2d0835f, "")
+Rel_Realization_Up(e_id0d0b53b9527a58, e_id891b59559d2954, "")
+Rel_Realization_Up(e_id6440e8a7ae7655, e_id891b59559d2954, "")
+
+@enduml

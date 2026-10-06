@@ -886,10 +886,9 @@
     - wp-5-vendor-forks
     - wp-6-rehome-specs
     - wp-7-extract-remaining
-    - del-monorepo-skeleton
-    - del-catalog-pkg
-    - del-twin-pkg-scaffold
     - plat-baseline
+    - plat-policy-to-oscal-mvp-1
+    - plat-multi-user-collaboration-2
     - gap-oscal-ai-conversion
     - art-flat-src
     - art-pkg-schema-visualizer-api
