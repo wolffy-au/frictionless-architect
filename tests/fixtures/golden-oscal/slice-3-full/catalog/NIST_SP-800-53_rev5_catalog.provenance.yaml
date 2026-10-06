@@ -11,3 +11,10 @@ notes: >
   Complete catalog including full statement/prose for every control and
   enhancement. Verbatim prose can be traced back to
   ../../standards/NIST.SP.800-53r5.pdf.
+yaml_representation:
+  extraction_method: >
+    Lossless JSON -> YAML re-serialisation of the verbatim JSON artifact(s)
+    above (yaml.safe_dump, key order preserved); parsed content is identical
+    to the JSON. Same source, licence and capture date apply.
+  sha256:
+    NIST_SP-800-53_rev5_catalog.yaml: 84c90f40faf5d001631a460fd4a56c41b8723a39aaa1a761ea3bb537a6bba3ec
