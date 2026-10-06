@@ -19,6 +19,38 @@
     gh-tag: v0.1.1
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.1.1
 - type: Plateau
+  id: plat-agentic-delivery-mvp-3
+  name: agentic-delivery-mvp
+  desc: MVP for the agentic delivery execution business function (bfn-agentic-delivery).
+  props:
+    gh-number: '3'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/3
+- type: Plateau
+  id: plat-architecture-strategy-mvp-7
+  name: architecture-strategy-mvp
+  desc: MVP for the architecture strategy business function (bfn-architecture-strategy).
+  props:
+    gh-number: '7'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/7
+- type: Plateau
+  id: plat-drift-management-mvp-5
+  name: drift-management-mvp
+  desc: MVP for the drift management business function (bfn-drift-management).
+  props:
+    gh-number: '5'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/5
+- type: Plateau
+  id: plat-effectiveness-assurance-mvp-10
+  name: effectiveness-assurance-mvp
+  desc: MVP for the controls effectiveness assurance business function (bfn-effectiveness-assurance).
+  props:
+    gh-number: '10'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/10
+- type: Plateau
   id: plat-multi-user-collaboration-2
   name: multi-user-collaboration
   desc: 'Collaborative / team modelling: more than one architect working on the model at once. Plateau plat-multi-user-collaboration-2 in the architecture model.'
@@ -27,6 +59,14 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/2
 - type: Plateau
+  id: plat-pattern-blueprint-traceability-mvp-6
+  name: pattern-blueprint-traceability-mvp
+  desc: MVP for the pattern & blueprint traceability business function (bfn-pattern-blueprint-traceability).
+  props:
+    gh-number: '6'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/6
+- type: Plateau
   id: plat-policy-to-oscal-mvp-1
   name: policy-to-oscal-mvp
   desc: MVP for the policy-to-OSCAL conversion business function (bfn-policy-conversion).
@@ -34,6 +74,30 @@
     gh-number: '1'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/1
+- type: Plateau
+  id: plat-release-enforcement-mvp-9
+  name: release-enforcement-mvp
+  desc: MVP for the release controls enforcement business function (bfn-release-enforcement).
+  props:
+    gh-number: '9'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/9
+- type: Plateau
+  id: plat-release-management-mvp-4
+  name: release-management-mvp
+  desc: MVP for the release management business function (bfn-release-management).
+  props:
+    gh-number: '4'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/4
+- type: Plateau
+  id: plat-solution-design-mvp-8
+  name: solution-design-mvp
+  desc: MVP for the solution design business function (bfn-solution-design).
+  props:
+    gh-number: '8'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/8
 - type: WorkPackage
   id: wp-application-layer-dedupe-artefact-views-gh-61
   name: 'GH-61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams'
