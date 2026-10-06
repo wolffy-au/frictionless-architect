@@ -41,6 +41,8 @@ import yaml
 HERE = Path(__file__).parent
 REPO = HERE.parents[1]
 VIEWS = HERE / "views.yaml"
+# Generic one-per-standard-viewpoint views (include_types only), split out of views.yaml.
+VIEWPOINT_VIEWS = HERE / "views-viewpoints.yaml"
 # Generated gh-roadmap layer (ADR-0035): its per-milestone views render beside the hand-authored ones.
 ROADMAP_VIEWS = HERE / "gh-roadmap" / "views.yaml"
 DIAGRAMS = HERE / "diagrams"
@@ -89,7 +91,7 @@ def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     vendored model's diagrams dir."""
     jobs: list[tuple[Path, list[str]]] = []
     views_files = (
-        [VIEWS, ROADMAP_VIEWS]
+        [VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS]
         if diagram_root == DIAGRAMS
         else [next(vf for vf, root in VENDORED_VIEW_SOURCES if root == diagram_root)]
     )

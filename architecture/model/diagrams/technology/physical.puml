@@ -1,0 +1,11 @@
+@startuml
+!include <archimate/Archimate>
+
+title Physical
+
+Technology_Node(e_ida2b7d071930453, "CI Runner")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server")
+Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
+
+
+@enduml

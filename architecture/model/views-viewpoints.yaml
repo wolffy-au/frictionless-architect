@@ -1,0 +1,376 @@
+# Generic ArchiMate viewpoint views — one per standard viewpoint, swept by
+# `include_types` only (never `members`), so new elements of those types appear
+# automatically. Same schema and loader as views.yaml; hand-curated and
+# scoped views stay there. View ids must be unique across both files.
+#
+# Diagram paths are under diagrams/ like any other view.
+
+- id: view-organization
+  name: Organization
+  context: platform
+  viewpoint: organization
+  diagram: business/organization
+  # ArchiMate 3.2 §14 Organization viewpoint: which roles exist and which
+  # collaborations they take part in — competencies, authority
+  # and responsibilities. The model has no BusinessActor or Location elements
+  # yet, so only roles, the model-collaboration and its interface appear;
+  # add actors/locations as members when they are modelled.
+  include_types: [BusinessActor, BusinessRole, BusinessCollaboration, Location, BusinessInterface]
+
+- id: view-application-structure
+  name: Application Structure
+  context: platform
+  # Generic Application Structure viewpoint (ArchiMate 3.2 §14): the structure
+  # of every application component and the data it owns. Swept by type, not
+  # members, so new components/interfaces/data objects appear automatically;
+  # view-application-structure-catalog is the single-application zoom of this.
+  viewpoint: application_structure
+  diagram: application/structure
+  include_types: [ApplicationComponent, ApplicationInterface, ApplicationCollaboration, DataObject]
+
+- id: view-information-structure
+  name: Information Structure
+  context: platform
+  # Generic Information Structure viewpoint (ArchiMate 3.2 §14): the structure
+  # of the information used across the platform — business objects, how they
+  # are represented, the data objects that realise them, and the artifacts
+  # that persist those. Swept by type, not members, so new elements of these
+  # types appear automatically. Representation and Meaning are not yet
+  # modelled, so only BusinessObject, DataObject and Artifact appear for now.
+  viewpoint: information_structure
+  diagram: business/information-structure
+  include_types: [BusinessObject, Representation, DataObject, Artifact, Meaning]
+
+- id: view-technology
+  name: Technology
+  context: platform
+  # Generic Technology viewpoint (ArchiMate 3.2 §14): every piece of software
+  # and hardware technology supporting the application layer. Swept by type,
+  # not members, so new technology elements appear automatically;
+  # view-technology-landscape is the hand-curated infrastructure-topology cut.
+  viewpoint: technology
+  diagram: technology/overview
+  include_types:
+    - Location
+    - Node
+    - TechnologyCollaboration
+    - Device
+    - SystemSoftware
+    - TechnologyInterface
+    - CommunicationNetwork
+    - Path
+    - TechnologyProcess
+    - TechnologyFunction
+    - TechnologyInteraction
+    - TechnologyService
+    - TechnologyEvent
+    - Artifact
+
+- id: view-physical
+  name: Physical
+  context: platform
+  # Generic Physical viewpoint (ArchiMate 3.2 §14): equipment and facilities,
+  # how they are connected via networks, and the materials they handle. Swept
+  # by type, not members. The model has no Device, Equipment, Facility,
+  # DistributionNetwork or Material elements yet, so only its Nodes appear
+  # for now — the diagram stays empty-ish until the physical layer is modelled.
+  viewpoint: physical
+  diagram: technology/physical
+  include_types:
+    - Location
+    - Node
+    - Device
+    - Equipment
+    - Facility
+    - Path
+    - CommunicationNetwork
+    - DistributionNetwork
+    - Material
+
+- id: view-product
+  name: Product
+  context: platform
+  # Generic Product viewpoint (ArchiMate 3.2 §14): products as compositions of
+  # business, application and technology services, their contracts, the
+  # interfaces they are offered through and the events around them. Swept by
+  # type, not members. Spans every layer, so it renders very large here — the
+  # model has no Product, Contract, Value, Material or any *Service elements
+  # yet, which are what give the viewpoint its shape.
+  viewpoint: product
+  diagram: business/product
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - BusinessInterface
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessService
+    - BusinessObject
+    - Product
+    - Contract
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+    - TechnologyService
+    - Artifact
+    - Material
+    - Value
+
+- id: view-application-usage
+  name: Application Usage
+  context: platform
+  # Generic Application Usage viewpoint (ArchiMate 3.2 §14): how applications
+  # support business processes and each other — the dependencies of business
+  # behaviour on application components, services and data. Swept by type,
+  # not members. Spans the Business and Application layers, so it renders
+  # large; the model has no ApplicationService elements yet, which is what
+  # normally links the two layers.
+  viewpoint: application_usage
+  diagram: application/usage
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessObject
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+
+- id: view-technology-usage
+  name: Technology Usage
+  context: platform
+  # Generic Technology Usage viewpoint (ArchiMate 3.2 §14): how applications
+  # are supported by software and hardware technology — the demand side,
+  # application through to the infrastructure it runs on. Swept by type, not
+  # members; view-technology-usage-catalog is the single-application zoom.
+  # Spans the Application and Technology layers, so it renders large. DataObject
+  # is in the spec's element table but not in the vendored Archi allow-list
+  # (archi-viewpoints.xml), which the build enforces, so it is omitted.
+  viewpoint: technology_usage
+  diagram: technology/usage
+  include_types:
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - Node
+    - Device
+    - TechnologyCollaboration
+    - SystemSoftware
+    - TechnologyInterface
+    - CommunicationNetwork
+    - Path
+    - TechnologyProcess
+    - TechnologyFunction
+    - TechnologyInteraction
+    - TechnologyService
+    - TechnologyEvent
+    - Artifact
+
+- id: view-business-process-cooperation
+  name: Business Process Cooperation
+  context: platform
+  # Generic Business Process Cooperation viewpoint (ArchiMate 3.2 §14): how
+  # business processes relate to each other and their environment — causal
+  # relationships, mapping onto functions, realised services and shared data.
+  # Swept by type, not members; view-delivery and the view-business-* views
+  # are the curated cuts. Spans the Business and Application layers, so it
+  # renders very large. Representation and the *Service types are not yet
+  # modelled.
+  viewpoint: business_process_cooperation
+  diagram: business/process-cooperation
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - Location
+    - BusinessInterface
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessService
+    - BusinessObject
+    - Representation
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+
+- id: view-application-cooperation
+  name: Application Cooperation
+  context: platform
+  # Generic Application Cooperation viewpoint (ArchiMate 3.2 §14): the
+  # application landscape — components and the information flows or services
+  # between them. Swept by type, not members; the view-artefact-* views are
+  # the curated per-subsystem cuts. Application layer only, but with every
+  # component, function and data object it still renders large. Location and
+  # the *Service/Event types are not yet modelled.
+  viewpoint: application_cooperation
+  diagram: application/cooperation
+  include_types:
+    - Location
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+
+- id: view-service-realization
+  name: Service Realization
+  context: platform
+  # Generic Service Realization viewpoint (ArchiMate 3.2 §14): how business
+  # services are realised by the underlying processes and, sometimes, by
+  # application components — the "view from the outside" on business
+  # processes. Swept by type, not members. The model has no BusinessService,
+  # ApplicationService or Representation elements yet, which are what give
+  # the viewpoint its shape; until then it is a dump of business and
+  # application elements and renders very large.
+  viewpoint: service_realization
+  diagram: business/service-realization
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - BusinessInterface
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessService
+    - BusinessObject
+    - Representation
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+
+- id: view-implementation-migration-overview
+  name: "Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables"
+  context: [platform, gh-roadmap]
+  diagram: migration/overview
+  # Every Plateau/Gap/WorkPackage/Deliverable in the model, regardless of
+  # which transition story it belongs to (packaging, runtime/collaboration,
+  # or imported from the GitHub roadmap, which lives in the gh-roadmap
+  # context and so needs it listed above) — the one place to see the
+  # whole Implementation & Migration layer at once. CourseOfAction is a
+  # Strategy-layer concept the implementation_migration viewpoint doesn't
+  # admit, so epic-level groupings won't appear here even once imported.
+  # Unlike view-migration and view-runtime-migration this is deliberately
+  # include_types, not members: it should pick up new elements of these
+  # types automatically rather than needing to be hand-maintained.
+  viewpoint: implementation_migration
+  include_types: [Plateau, Gap, WorkPackage, Deliverable]
+
+
+- id: view-implementation-deployment
+  name: Implementation and Deployment
+  context: platform
+  # Generic Implementation and Deployment viewpoint (ArchiMate 3.2 §14): how
+  # applications are realised on the infrastructure — components mapped onto
+  # artifacts, and the data they use onto the storage beneath. Swept by type,
+  # not members; view-packaging is the curated cut. Spans the Application and
+  # Technology layers, so it renders large. Node is not in this viewpoint's
+  # allow-list (see view-packaging), so the hosting Nodes do not appear.
+  viewpoint: implementation_deployment
+  diagram: implementation/deployment
+  include_types:
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+    - SystemSoftware
+    - TechnologyInterface
+    - Path
+    - TechnologyProcess
+    - TechnologyFunction
+    - TechnologyInteraction
+    - TechnologyService
+    - Artifact
+
+- id: view-stakeholder
+  name: Stakeholder
+  context: platform
+  viewpoint: stakeholder
+  diagram: vision/1-stakeholder
+  # The case for change: who holds which driver, the assessments that make each
+  # driver urgent, and the goal + outcomes they drive toward. Swept by type, so
+  # the IT4IT import's extra Stakeholder and Outcome elements appear here too.
+  include_types: [Stakeholder, Assessment, Driver, Goal, Outcome]
+
+- id: view-motivation
+  name: Motivation
+  context: platform
+  viewpoint: motivation
+  diagram: vision/2-motivation
+  # The whole motivation model — stakeholders, assessments, drivers, goal,
+  # outcome, principles, requirements, constraints — and how they relate.
+  # Swept by type, so the IT4IT import's extra Stakeholder and Outcome
+  # elements appear here too.
+  include_types:
+    [Stakeholder, Assessment, Driver, Goal, Outcome, Principle, Requirement, Constraint, Value, Meaning]
+
+- id: view-goal-realization
+  name: Goal Realization
+  context: platform
+  viewpoint: goal_realization
+  diagram: vision/3-goal-realization
+  # How the goal refines into the outcomes, and how principles, requirements and
+  # constraints realize them. Swept by type, so any IT4IT Outcome appears too.
+  include_types: [Goal, Outcome, Principle, Requirement, Constraint]
+
+- id: view-requirements-realization
+  name: Requirements Realization
+  context: platform
+  viewpoint: requirements_realization
+  diagram: vision/8-requirements-realization
+  # Which capability realizes each functional requirement — every capability
+  # realizes at least one (ADR-0027 #1). Why each requirement exists
+  # (principle/constraint Influence, Requirement -> Outcome) is the
+  # Motivation and Goal Realization views' story, not this one's.
+  # Swept by type, so the IT4IT import's Capability elements appear too.
+  include_types: [Requirement, Capability, Goal, Principle, Constraint, Outcome, Value, Meaning, CourseOfAction, Resource, ValueStream]
+  # GH #20: the capability-to-capability Serving mesh is the Capability Map
+  # view's own story — exclude it so it doesn't repeat incidentally.
+  # exclude:
+  #   - {type: Serving, source_type: Capability, target_type: Capability}

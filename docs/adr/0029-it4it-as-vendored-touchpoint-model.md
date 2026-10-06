@@ -41,6 +41,15 @@ separate build step, no separate `.xml`, and no new ID-reconciliation
 machinery: the `it4it-` prefix alone guarantees the merged `id:` strings stay
 unique, which is all `det_id()` needs.
 
+Merging into one model does not mean one undifferentiated scope. Every element
+carries a `context` (a bounded context, in DDD terms): first-party elements
+default to `platform`, and a layer's elements default to its directory name
+(`it4it`, `gh-roadmap`). A view's `include_types` sweep draws only from the
+contexts in its `context:` (default `[platform]`), so IT4IT and the roadmap
+import do not leak into platform views; explicit `members` are honoured
+whatever their context. A view that spans contexts (e.g. the capability
+bridges) names them in `context:` or lists the elements as `members`.
+
 ## Consequences
 
 - IT4IT updates independently via `fork-sync`, on its own cadence, without
