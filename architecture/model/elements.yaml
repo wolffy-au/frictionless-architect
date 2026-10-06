@@ -1387,16 +1387,6 @@
   id: wp-7-extract-remaining
   name: 7. Extract remaining components
   desc: As work reaches them.
-- type: Deliverable
-  id: del-monorepo-skeleton
-  name: Monorepo skeleton
-  desc: platform/ root pyproject.toml + shared poetry.lock, CI green.
-- type: Deliverable
-  id: del-catalog-pkg
-  name: controls-compliance-catalog package
-- type: Deliverable
-  id: del-twin-pkg-scaffold
-  name: digital-twin-knowledge-graph scaffold
 - type: Plateau
   id: plat-baseline
   name: baseline

@@ -1,0 +1,13 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: drift-management-mvp
+
+Implementation_Deliverable(e_id0ddaa4bf9fcd56, "drift-management-mvp (unreleased)")
+Implementation_Plateau(e_id5e6e2234873251, "drift-management-mvp")
+Implementation_WorkPackage(e_idcc4eb66ae9285f, "GH-63 Model/doc consistency cleanup: stale counts, Profile-vs-resolved-catalog naming, drift-management target-vs-transition state")
+
+Rel_Realization_Up(e_id0ddaa4bf9fcd56, e_id5e6e2234873251, "")
+Rel_Realization_Up(e_idcc4eb66ae9285f, e_id0ddaa4bf9fcd56, "")
+
+@enduml
