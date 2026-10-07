@@ -870,7 +870,7 @@
 - {type: Triggering, source: plat-baseline, target: plat-policy-to-oscal-mvp-1}
 - {type: Triggering, source: plat-policy-to-oscal-mvp-1, target: plat-multi-user-collaboration-2}
 - {type: Association, source: plat-baseline, target: gap-neo4j-schema-ui}
-- {type: Association, source: plat-policy-to-oscal-mvp-1, target: gap-neo4j-schema-ui}
+- {type: Association, source: plat-architecture-strategy-mvp-7, target: gap-neo4j-schema-ui}
 - {type: Association, source: plat-policy-to-oscal-mvp-1, target: gap-policy-to-oscal-mvp-to-multi-user-collaboration}
 - {type: Association, source: plat-multi-user-collaboration-2, target: gap-policy-to-oscal-mvp-to-multi-user-collaboration}
 
