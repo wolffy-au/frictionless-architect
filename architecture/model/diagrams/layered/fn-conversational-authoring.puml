@@ -9,6 +9,7 @@ Motivation_Assessment(e_id62397473120e57, "Architectural drift is accumulating a
 Motivation_Goal(e_id76f6d8b4d70151, "Frictionless Architecture & Governance at Machine Speed")
 Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
 Motivation_Requirement(e_id945f98ac87fe5d, "Authoritative Digital Twin of System State")
+Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance")
 Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
   Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
 }
@@ -27,7 +28,10 @@ Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
 }
 Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
 Application_DataObject(e_idd52b11acc8ff53, "Notation Metamodel")
-Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+}
 
 Rel_Realization_Up(e_id18ec07397a9d5f, e_id945f98ac87fe5d, "")
 Rel_Association(e_id3bf463ccf22a53, e_idb3458ded88aa5a, "")
@@ -35,8 +39,10 @@ Rel_Influence(e_idb3458ded88aa5a, e_id62397473120e57, "")
 Rel_Influence(e_id62397473120e57, e_id79b6a1e545325d, "")
 Rel_Realization_Up(e_id79b6a1e545325d, e_id76f6d8b4d70151, "")
 Rel_Realization_Up(e_id945f98ac87fe5d, e_id79b6a1e545325d, "")
+Rel_Association(e_id6c60f4feb89058, e_id18ec07397a9d5f, "validates proposals against the twin (GH #108)")
 Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
 Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_id82f04fecbdd85e, e_id6c60f4feb89058, "")
 Rel_Serving_Up(e_id82f04fecbdd85e, e_id2b5394f913985a, "converses on model changes with (GH #108)")
 Rel_Serving_Up(e_id82f04fecbdd85e, e_ide2cb7f3efa6256, "converses on model changes with (GH #108)")
 Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "writes the digital twin plane")
@@ -45,6 +51,8 @@ Rel_Access_r(e_id3a42c87ebb235a, e_ide500d303f47455, "renders")
 Rel_Access_r(e_id7cc5a30769435c, e_idd52b11acc8ff53, "validates proposed changes against")
 Rel_Access_w(e_id7cc5a30769435c, e_ide500d303f47455, "proposes model deltas as")
 Rel_Serving_Up(e_id7cc5a30769435c, e_id3a42c87ebb235a, "renders the view under discussion live via")
-Rel_Access_w(e_id625e631f1f715e, e_id989d401ffdae55, "persists")
+Rel_Assignment(e_id87c8b07cea4751, e_id420f57c4d41e52, "hosts (MVP)")
+Rel_Assignment(e_id625e631f1f715e, e_id420f57c4d41e52, "writes to")
+Rel_Realization_Up(e_id420f57c4d41e52, e_id989d401ffdae55, "")
 
 @enduml
