@@ -3,7 +3,11 @@
 
 title Roadmap: pattern-blueprint-traceability-mvp
 
+Implementation_Deliverable(e_id47763e4ecc1e5b, "pattern-blueprint-traceability-mvp (unreleased)")
 Implementation_Plateau(e_idc33d8de46a5452, "pattern-blueprint-traceability-mvp")
+Implementation_WorkPackage(e_idcd31097b54e551, "GH-46 Sample simple implications")
 
+Rel_Realization_Up(e_id47763e4ecc1e5b, e_idc33d8de46a5452, "")
+Rel_Realization_Up(e_idcd31097b54e551, e_id47763e4ecc1e5b, "")
 
 @enduml
