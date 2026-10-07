@@ -401,14 +401,35 @@
   diagram: layered/fn-conversational-authoring
   # Traces this feature end to end through every layer it actually touches,
   # following only edges that already exist in the model (no element was
-  # added or re-wired to make this thread connect). Notably: sub-modelling
-  # (where fn-conversational-authoring lives) realizes cap-spec-engine, not
-  # cap-digital-twin — sub-twin is the component that realizes cap-digital-twin.
-  # The thread shows the two subsystems meeting at the shared store-akg, not
-  # a direct capability realization from sub-modelling; that seam is real and
-  # worth seeing, not an artefact of this view. sw-neo4j is included via its
-  # new Serving edge into store-akg (the persistence layer underneath the
-  # knowledge graph both subsystems share).
+  # added or re-wired to make this thread connect, except where noted).
+  # sub-modelling now realizes a new Strategy capability,
+  # cap-conversational-governance, which Serves cap-spec-engine and is
+  # Associated with cap-digital-twin — closing the seam the first cut of
+  # this view surfaced (sub-modelling had no capability-realization path
+  # to the capability process-target-state-definition and #83's
+  # bc-model-collaboration both realize). The Technology layer reaches this
+  # thread via node-app-server -> art-tech-neo4j-volume -> store-akg
+  # (Assignment/Realization, matching the art-tech-oscal-workspace /
+  # art-tech-ledger-file pattern elsewhere in the model) with
+  # sw-neo4j Assigned to the same artifact — not a direct SystemSoftware ->
+  # DataObject edge, which the matrix doesn't permit as Serving/Realization
+  # anyway (only Access/Association) and which skipped the Artifact the
+  # rest of the model always interposes between a Node and the store it backs.
+  #
+  # OPEN QUESTION for speckit-specify: the sub-modelling -> role-ea /
+  # sub-modelling -> role-sa Serving edges ("converses on model changes
+  # with") are modelled directly at the component level, bypassing the
+  # business layer. role-ea's business function (bfn-architecture-strategy
+  # -> process-target-state-definition) happens to already be in this
+  # thread, but that process doesn't actually route the conversation —
+  # it's a coincidence of role-ea owning both. role-sa's only assigned
+  # business function (bfn-solution-design -> process-solution-design)
+  # has no relationship to this capability at all. Decide during
+  # speckit-specify whether conversational authoring needs a standing
+  # business process/function of its own (shared by both roles) or
+  # whether it's deliberately unmodelled at the business layer as an
+  # ad-hoc, any-role capability — don't let the coincidence above imply
+  # the former has already been decided.
   members:
     - stk-architecture
     - driver-sustainability
@@ -417,6 +438,7 @@
     - goal-frictionless-architecture
     - req-authoritative-twin
     - cap-digital-twin
+    - cap-conversational-governance
     - res-akg
     - bfn-architecture-strategy
     - process-target-state-definition
@@ -430,6 +452,8 @@
     - do-candidate-arch
     - store-akg
     - sw-neo4j
+    - art-tech-neo4j-volume
+    - node-app-server
 
 - id: view-dataflow-oscal
   name: Data Flow — Controls & OSCAL

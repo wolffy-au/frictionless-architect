@@ -211,6 +211,8 @@
 - {type: Serving, source: cap-control-catalog, target: cap-reusable-architecture, label: control mappings}
 - {type: Serving, source: cap-control-catalog, target: cap-control-plane, label: expected controls}
 - {type: Serving, source: cap-spec-engine, target: cap-control-plane, label: executable spec}
+- {type: Serving, source: cap-conversational-governance, target: cap-spec-engine, label: "validated authoring (GH #108)"}
+- {type: Association, source: cap-conversational-governance, target: cap-digital-twin, label: "validates proposals against the twin (GH #108)"}
 - {type: Serving, source: cap-forensic-ledger, target: cap-human-approval-workflow, label: decision evidence}
 - {type: Serving, source: cap-control-plane, target: cap-human-approval-workflow, label: escalations}
 
@@ -424,6 +426,7 @@
 - {type: Realization, source: sub-twin, target: cap-digital-twin}
 - {type: Realization, source: sub-twin, target: cap-forensic-ledger}
 - {type: Realization, source: sub-modelling, target: cap-spec-engine}
+- {type: Realization, source: sub-modelling, target: cap-conversational-governance}
 - {type: Realization, source: sub-assurance, target: cap-control-plane}
 - {type: Realization, source: sub-assurance, target: cap-drift-dashboard}
 - {type: Realization, source: sub-governance, target: cap-human-approval-workflow}
@@ -871,7 +874,10 @@
 # --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
 - {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
-- {type: Access, source: sw-neo4j, target: store-akg, label: persists, props: {access_type: Write}}
+- {type: Assignment, source: node-app-server, target: art-tech-neo4j-volume, label: hosts (MVP)}
+- {type: Assignment, source: node-hosted-cluster, target: art-tech-neo4j-volume, label: hosts (target)}
+- {type: Assignment, source: sw-neo4j, target: art-tech-neo4j-volume, label: writes to}
+- {type: Realization, source: art-tech-neo4j-volume, target: store-akg}
 - {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: node-app-server}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-neo4j}

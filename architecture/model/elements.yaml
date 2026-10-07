@@ -381,6 +381,17 @@
     the reusable basis for new solution architecture and specification
     generation, and model candidate and future-state architecture options for
     governance decisions.
+- type: Capability
+  id: cap-conversational-governance
+  name: Conversational Architecture Governance
+  desc: >-
+    GH #108: let an architect author model changes in natural language,
+    validated against the bundled metamodel and configurable enterprise
+    conventions before being proposed, with candidate duplicates surfaced
+    for an explicit human decision. Sits between spec generation and the
+    digital twin it validates proposals against — serves cap-spec-engine
+    and is associated with cap-digital-twin, but realizes neither; it is
+    the authoring discipline, not the store or the generator.
 
 # =====================================================================
 # A. STRATEGY — Courses of action (the strategic initiatives the capabilities
@@ -1501,6 +1512,16 @@
     001 research.md R3). Backs store-ledger — no new
     infra: local filesystem on node-app-server, not Postgres/Neo4j
     (ADR-0018 Postgres integration remains unbuilt).
+  props: {c4: ignore}
+- type: Artifact
+  id: art-tech-neo4j-volume
+  name: Neo4j Graph Database Files
+  desc: >-
+    GH #108: the on-disk database files sw-neo4j reads/writes (ADR-0018) —
+    a Docker volume under node-app-server's `orchestration/compose/` stack
+    through the MVP milestone, moving to node-hosted-cluster once target
+    architecture is built. Backs store-akg — the artefact previously
+    missing between sw-neo4j and store-akg.
   props: {c4: ignore}
 - type: Node
   id: node-app-server
