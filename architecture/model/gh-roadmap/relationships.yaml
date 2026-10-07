@@ -9,6 +9,12 @@
   source: del-drift-management-mvp-5-unreleased
   target: plat-drift-management-mvp-5
 - type: Realization
+  source: del-multi-user-collaboration-2-unreleased
+  target: plat-multi-user-collaboration-2
+- type: Realization
+  source: del-pattern-blueprint-traceability-mvp-6-unreleased
+  target: plat-pattern-blueprint-traceability-mvp-6
+- type: Realization
   source: del-policy-to-oscal-mvp-1-unreleased
   target: plat-policy-to-oscal-mvp-1
 - type: Realization
@@ -48,6 +54,9 @@
   source: plat-solution-design-mvp-8
   target: bfn-solution-design
 - type: Realization
+  source: wp-add-bounded-context-tagging-and-generic-gh-105
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
   source: wp-add-compliance-trestle-dependency-and-gh-23
   target: del-release-v0-1-0
 - type: Realization
@@ -62,6 +71,15 @@
 - type: Realization
   source: wp-ci-checkout-git-submodules-gh-21
   target: del-release-v0-1-0
+- type: Realization
+  source: wp-epic-conversational-architecture-gh-68
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
+  source: wp-epic-multi-specification-modelling-gh-73
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
+  source: wp-epic-multi-user-access-to-architecture-gh-83
+  target: del-multi-user-collaboration-2-unreleased
 - type: Realization
   source: wp-markdown-catalogue-converter-gh-44
   target: del-policy-to-oscal-mvp-1-unreleased
@@ -86,6 +104,9 @@
 - type: Realization
   source: wp-resolve-migration-order-gap-schema-gh-60
   target: del-solution-design-mvp-8-unreleased
+- type: Realization
+  source: wp-sample-simple-implications-gh-46
+  target: del-pattern-blueprint-traceability-mvp-6-unreleased
 - type: Realization
   source: wp-vendor-nist-fedramp-oscal-content-as-gh-22
   target: del-release-v0-1-0
