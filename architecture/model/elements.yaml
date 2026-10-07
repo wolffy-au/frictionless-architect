@@ -1358,35 +1358,24 @@
 
 # --- E. Work Packages (ARCHITECTURE.md §8, one per step) ---
 - type: WorkPackage
-  id: wp-1-monorepo-skeleton
-  name: 1. Create platform/ Poetry monorepo skeleton
-  desc: Empty, CI green.
-- type: WorkPackage
-  id: wp-2-catalog-extraction
-  name: "2. First extraction: controls-compliance-catalog"
+  id: wp-71-migration-steps-1-3
+  name: "GH-71 Migration steps 1–3"
   desc: >-
-    packages/controls-compliance-catalog, home of the policy-to-OSCAL
-    pipeline (GH #44).
+    platform/ Poetry monorepo skeleton (empty, CI green); first extraction
+    controls-compliance-catalog, home of the policy-to-OSCAL pipeline
+    (GH #44); root CI fan-out proven, workspace lock resolves, tests pass.
 - type: WorkPackage
-  id: wp-3-prove-pattern
-  name: "3. Prove pattern"
-  desc: Root CI fans out, workspace lock resolves, tests pass.
-- type: WorkPackage
-  id: wp-4-scaffold-twin
-  name: 4. Scaffold digital-twin-knowledge-graph
+  id: wp-106-scaffold-twin
+  name: GH-106 Scaffold digital-twin-knowledge-graph
   desc: Port prototype-neo4j ideas (ADR-0006, ARCHITECTURE.md §7).
 - type: WorkPackage
-  id: wp-5-vendor-forks
-  name: 5. Vendor confirmed forks into third_party/
-  desc: Submodules, wired to fork-sync.
+  id: wp-vendor-it4it
+  name: "GH-4 Vendor IT4IT into third_party/"
+  desc: Submodule, wired to fork-sync (ADR-0029).
 - type: WorkPackage
-  id: wp-6-rehome-specs
-  name: 6. Re-home specs to two-tier scheme
+  id: wp-107-rehome-specs
+  name: GH-107 Re-home specs to two-tier scheme
   desc: Patch the .specify scripts (ADR-0004).
-- type: WorkPackage
-  id: wp-7-extract-remaining
-  name: 7. Extract remaining components
-  desc: As work reaches them.
 - type: Plateau
   id: plat-baseline
   name: baseline
