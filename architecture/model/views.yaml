@@ -395,6 +395,42 @@
     - cap-drift-dashboard
     - cap-human-approval-workflow
 
+- id: view-gh108-conversational-authoring
+  name: "Feature Steel Thread: Conversational Model Authoring (GH #108)"
+  viewpoint: layered
+  diagram: layered/fn-conversational-authoring
+  # Traces this feature end to end through every layer it actually touches,
+  # following only edges that already exist in the model (no element was
+  # added or re-wired to make this thread connect). Notably: sub-modelling
+  # (where fn-conversational-authoring lives) realizes cap-spec-engine, not
+  # cap-digital-twin — sub-twin is the component that realizes cap-digital-twin.
+  # The thread shows the two subsystems meeting at the shared store-akg, not
+  # a direct capability realization from sub-modelling; that seam is real and
+  # worth seeing, not an artefact of this view. sw-neo4j is included via its
+  # new Serving edge into store-akg (the persistence layer underneath the
+  # knowledge graph both subsystems share).
+  members:
+    - stk-architecture
+    - driver-sustainability
+    - assess-drift-debt
+    - outcome-drift-reconciled
+    - goal-frictionless-architecture
+    - req-authoritative-twin
+    - cap-digital-twin
+    - res-akg
+    - bfn-architecture-strategy
+    - process-target-state-definition
+    - role-ea
+    - role-sa
+    - sub-twin
+    - sub-modelling
+    - fn-conversational-authoring
+    - fn-notation-engine
+    - do-metamodel
+    - do-candidate-arch
+    - store-akg
+    - sw-neo4j
+
 - id: view-dataflow-oscal
   name: Data Flow — Controls & OSCAL
   viewpoint: application_cooperation
@@ -624,6 +660,7 @@
     - fn-options-model
     - fn-governance-eval
     - fn-notation-engine
+    - fn-conversational-authoring
     - ext-cloud
     - ext-cicd
     - fn-cicd-deploy

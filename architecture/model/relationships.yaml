@@ -448,6 +448,8 @@
 - {type: Serving, source: sub-assurance, target: role-ops, label: watches control effectiveness & drift in}
 - {type: Serving, source: sub-assurance, target: role-compliance, label: watches control status in}
 - {type: Serving, source: sub-modelling, target: role-dev, label: consumes specifications from}
+- {type: Serving, source: sub-modelling, target: role-ea, label: "converses on model changes with (GH #108)"}
+- {type: Serving, source: sub-modelling, target: role-sa, label: "converses on model changes with (GH #108)"}
 
 # =====================================================================
 # B. Authoring / OSCAL chain
@@ -594,6 +596,7 @@
 - {type: Assignment, source: sub-assurance, target: fn-effectiveness-monitor}
 - {type: Assignment, source: sub-assurance, target: fn-drift-engine}
 - {type: Assignment, source: sub-modelling, target: fn-notation-engine}
+- {type: Assignment, source: sub-modelling, target: fn-conversational-authoring}
 - {type: Assignment, source: sub-modelling, target: fn-spec-generator}
 - {type: Assignment, source: ext-scm, target: fn-scm-versioning}
 - {type: Assignment, source: ext-scm, target: fn-scm-change-review}
@@ -661,6 +664,9 @@
 - {type: Access, source: fn-notation-engine, target: do-metamodel, label: constrained by, props: {access_type: Read}}
 - {type: Access, source: fn-notation-engine, target: do-candidate-arch, label: renders, props: {access_type: Read}}
 - {type: Serving, source: fn-notation-engine, target: fn-options-model, label: renders candidate models for}
+- {type: Access, source: fn-conversational-authoring, target: do-metamodel, label: validates proposed changes against, props: {access_type: Read}}
+- {type: Access, source: fn-conversational-authoring, target: do-candidate-arch, label: proposes model deltas as, props: {access_type: Write}}
+- {type: Serving, source: fn-conversational-authoring, target: fn-notation-engine, label: renders the view under discussion live via}
 
 # =====================================================================
 # C. Forensic ledger — every governed action lands an immutable record
@@ -865,6 +871,7 @@
 # --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
 - {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
+- {type: Access, source: sw-neo4j, target: store-akg, label: persists, props: {access_type: Write}}
 - {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: node-app-server}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-neo4j}

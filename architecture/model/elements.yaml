@@ -1221,6 +1221,16 @@
   name: Modelling & Notation Rendering
   desc: Render ArchiMate / C4 / UML models against the bundled metamodels.
 - type: ApplicationFunction
+  id: fn-conversational-authoring
+  name: Conversational Model Authoring
+  desc: >-
+    GH #108: natural-language authoring of model changes — validated against
+    the bundled metamodel and configurable enterprise/domain conventions
+    before being proposed, with candidate duplicates surfaced for an explicit
+    human decision rather than silently merged or created. Renders the
+    element(s)/view under discussion live via fn-notation-engine as the
+    conversation proceeds.
+- type: ApplicationFunction
   id: fn-spec-generator
   name: Specification Generation
   desc: >-
