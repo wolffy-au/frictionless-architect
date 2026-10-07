@@ -14,7 +14,10 @@
   members:
   - del-architecture-strategy-mvp-7-unreleased
   - plat-architecture-strategy-mvp-7
+  - wp-add-bounded-context-tagging-and-generic-gh-105
   - wp-architecture-md-still-describes-the-old-gh-50
+  - wp-epic-conversational-architecture-gh-68
+  - wp-epic-multi-specification-modelling-gh-73
   - wp-model-the-technology-layer-packages-as-gh-55
 - id: view-plat-drift-management-mvp-5
   name: 'Roadmap: drift-management-mvp'
@@ -35,13 +38,17 @@
   viewpoint: implementation_migration
   diagram: migration/plat-multi-user-collaboration-2
   members:
+  - del-multi-user-collaboration-2-unreleased
   - plat-multi-user-collaboration-2
+  - wp-epic-multi-user-access-to-architecture-gh-83
 - id: view-plat-pattern-blueprint-traceability-mvp-6
   name: 'Roadmap: pattern-blueprint-traceability-mvp'
   viewpoint: implementation_migration
   diagram: migration/plat-pattern-blueprint-traceability-mvp-6
   members:
+  - del-pattern-blueprint-traceability-mvp-6-unreleased
   - plat-pattern-blueprint-traceability-mvp-6
+  - wp-sample-simple-implications-gh-46
 - id: view-plat-policy-to-oscal-mvp-1
   name: 'Roadmap: policy-to-oscal-mvp'
   viewpoint: implementation_migration

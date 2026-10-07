@@ -3,7 +3,11 @@
 
 title Roadmap: multi-user-collaboration
 
+Implementation_Deliverable(e_idc953517679225e, "multi-user-collaboration (unreleased)")
 Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration")
+Implementation_WorkPackage(e_ida2391cc6745852, "GH-83 Epic: multi-user access to architecture models (RBAC + collaboration)")
 
+Rel_Realization_Up(e_idc953517679225e, e_id5024d2087dac51, "")
+Rel_Realization_Up(e_ida2391cc6745852, e_idc953517679225e, "")
 
 @enduml

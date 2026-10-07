@@ -15,6 +15,16 @@
   props:
     gh-number: '5'
 - type: Deliverable
+  id: del-multi-user-collaboration-2-unreleased
+  name: multi-user-collaboration (unreleased)
+  props:
+    gh-number: '2'
+- type: Deliverable
+  id: del-pattern-blueprint-traceability-mvp-6-unreleased
+  name: pattern-blueprint-traceability-mvp (unreleased)
+  props:
+    gh-number: '6'
+- type: Deliverable
   id: del-policy-to-oscal-mvp-1-unreleased
   name: policy-to-oscal-mvp (unreleased)
   props:
@@ -119,6 +129,13 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/8
 - type: WorkPackage
+  id: wp-add-bounded-context-tagging-and-generic-gh-105
+  name: GH-105 Add bounded-context tagging and generic ArchiMate viewpoint views
+  props:
+    gh-number: '105'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/105
+- type: WorkPackage
   id: wp-add-compliance-trestle-dependency-and-gh-23
   name: GH-23 Add compliance-trestle dependency and model it in the architecture model
   props:
@@ -153,6 +170,27 @@
     gh-number: '21'
     gh-state: closed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/21
+- type: WorkPackage
+  id: wp-epic-conversational-architecture-gh-68
+  name: 'GH-68 Epic: conversational architecture modelling with live ArchiMate views'
+  props:
+    gh-number: '68'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/68
+- type: WorkPackage
+  id: wp-epic-multi-specification-modelling-gh-73
+  name: 'GH-73 Epic: multi-specification modelling (ArchiMate + UML + OSCAL types per element)'
+  props:
+    gh-number: '73'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/73
+- type: WorkPackage
+  id: wp-epic-multi-user-access-to-architecture-gh-83
+  name: 'GH-83 Epic: multi-user access to architecture models (RBAC + collaboration)'
+  props:
+    gh-number: '83'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/83
 - type: WorkPackage
   id: wp-markdown-catalogue-converter-gh-44
   name: GH-44 Markdown catalogue converter
@@ -209,6 +247,13 @@
     gh-number: '60'
     gh-state: closed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/60
+- type: WorkPackage
+  id: wp-sample-simple-implications-gh-46
+  name: 'GH-46 Sample simple implications '
+  props:
+    gh-number: '46'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/46
 - type: WorkPackage
   id: wp-vendor-nist-fedramp-oscal-content-as-gh-22
   name: GH-22 Vendor NIST/FedRAMP OSCAL content as third_party submodules
