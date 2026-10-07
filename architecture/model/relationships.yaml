@@ -804,17 +804,16 @@
 #    no knowledge-graph dependency; schema-visualizer-api follows step 4, which
 #    delivers the read path it consumes (ADR-0005, GH #60).
 # =====================================================================
-- {type: Triggering, source: wp-1-monorepo-skeleton, target: wp-2-catalog-extraction}
-- {type: Triggering, source: wp-2-catalog-extraction, target: wp-3-prove-pattern}
-- {type: Triggering, source: wp-3-prove-pattern, target: wp-4-scaffold-twin}
-- {type: Triggering, source: wp-4-scaffold-twin, target: wp-5-vendor-forks}
-- {type: Triggering, source: wp-5-vendor-forks, target: wp-6-rehome-specs}
-- {type: Triggering, source: wp-6-rehome-specs, target: wp-7-extract-remaining}
-- {type: Realization, source: wp-1-monorepo-skeleton, target: plat-policy-to-oscal-mvp-1}
-- {type: Realization, source: wp-2-catalog-extraction, target: art-pkg-controls-compliance-catalog}
-- {type: Realization, source: wp-4-scaffold-twin, target: art-pkg-digital-twin-knowledge-graph}
-- {type: Realization, source: wp-3-prove-pattern, target: plat-policy-to-oscal-mvp-1}
+- {type: Triggering, source: wp-71-migration-steps-1-3, target: wp-106-scaffold-twin}
+- {type: Triggering, source: wp-106-scaffold-twin, target: wp-vendor-it4it}
+- {type: Triggering, source: wp-vendor-it4it, target: wp-107-rehome-specs}
+- {type: Realization, source: wp-71-migration-steps-1-3, target: del-policy-to-oscal-mvp-1-unreleased}
+- {type: Realization, source: wp-71-migration-steps-1-3, target: art-pkg-controls-compliance-catalog}
+- {type: Realization, source: wp-106-scaffold-twin, target: art-pkg-digital-twin-knowledge-graph}
+- {type: Realization, source: wp-vendor-it4it, target: del-architecture-strategy-mvp-7-unreleased}
+- {type: Realization, source: wp-107-rehome-specs, target: art-pkg-modelling-specification}
 - {type: Aggregation, source: plat-multi-user-collaboration-2, target: art-pkg-digital-twin-knowledge-graph}
+- {type: Aggregation, source: plat-solution-design-mvp-8, target: art-pkg-modelling-specification}
 
 # =====================================================================
 # E. Plateaus: which packages make up each state (ordered by the Gaps below)

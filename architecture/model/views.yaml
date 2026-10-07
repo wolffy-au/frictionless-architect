@@ -879,13 +879,10 @@
   # persistence-boundary slice (art-tech-oscal-workspace, art-tech-ledger-file)
   # — listed explicitly instead.
   members:
-    - wp-1-monorepo-skeleton
-    - wp-2-catalog-extraction
-    - wp-3-prove-pattern
-    - wp-4-scaffold-twin
-    - wp-5-vendor-forks
-    - wp-6-rehome-specs
-    - wp-7-extract-remaining
+    - wp-71-migration-steps-1-3
+    - wp-106-scaffold-twin
+    - wp-vendor-it4it
+    - wp-107-rehome-specs
     - plat-baseline
     - plat-policy-to-oscal-mvp-1
     - plat-multi-user-collaboration-2
