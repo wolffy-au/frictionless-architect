@@ -70,6 +70,7 @@ Technology_Node(e_ida2b7d071930453, "CI Runner") {
     Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
   }
 }
+Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
 Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
   Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
   Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
@@ -133,6 +134,9 @@ Rel_Serving_Up(e_id2610ae0cc2cc50, e_id2f83bc5585b95c, "provides LLM-as-judge pa
 Rel_Serving_Up(e_id0aed952692a556, e_id2f83bc5585b95c, "runs real profile-resolve for")
 Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
 Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Assignment(e_id87c8b07cea4751, e_id420f57c4d41e52, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id420f57c4d41e52, "hosts (target)")
+Rel_Assignment(e_id625e631f1f715e, e_id420f57c4d41e52, "writes to")
 Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
 Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6603be277fb85c, "mounts package routers for")
 Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
