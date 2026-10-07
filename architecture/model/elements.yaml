@@ -1537,7 +1537,7 @@
   id: gap-neo4j-schema-ui
   name: Neo4j Schema Visualiser
   desc: >-
-    plat-baseline -> plat-policy-to-oscal-mvp-1. Feature spec
+    plat-baseline -> plat-architecture-strategy-mvp-7. Feature spec
     specs/002-neo4j-schema-ui. Through the MVP milestone node-app-server's
     docker-compose stack is the only deployment shape (ADR-0024, undated): a
     single user at a time, with no concurrent or shared access to the model.
