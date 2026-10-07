@@ -126,7 +126,9 @@ Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)")
   Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
   Technology_Artifact(e_id16c8e0db81fa5f, "packages/portal")
 }
-Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x") {
+  Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
+}
 Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
 Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
 
@@ -294,7 +296,7 @@ Rel_Serving_Up(e_id2610ae0cc2cc50, e_id2f83bc5585b95c, "provides LLM-as-judge pa
 Rel_Serving_Up(e_id0aed952692a556, e_id2f83bc5585b95c, "runs real profile-resolve for")
 Rel_Realization_Up(e_id1ae7a35dbecd59, e_idb18c37abc9ff51, "")
 Rel_Realization_Up(e_id100dd210f7455d, e_ida4a5b51705f555, "")
-Rel_Access_w(e_id625e631f1f715e, e_id989d401ffdae55, "persists")
+Rel_Realization_Up(e_id420f57c4d41e52, e_id989d401ffdae55, "")
 Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
 Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6603be277fb85c, "mounts package routers for")
 Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")

@@ -86,6 +86,7 @@ Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
 Technology_Artifact(e_id16c8e0db81fa5f, "packages/portal")
 Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
 Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
 
 Rel_Specialization_Up(e_idd915b3e838bf5b, e_ide330e703d24759, "externally-published instance")
 Rel_Specialization_Up(e_id2df79965778556, e_id1d03973d3f5b52, "resolved instance")
@@ -137,5 +138,6 @@ Rel_Specialization_Up(e_idba85a2c1b90d5c, e_id54ef3a7ba52853, "pre-release insta
 Rel_Specialization_Up(e_id1cec8e0c65ff5c, e_id54ef3a7ba52853, "continuous-monitoring instance")
 Rel_Realization_Up(e_id1ae7a35dbecd59, e_idb18c37abc9ff51, "")
 Rel_Realization_Up(e_id100dd210f7455d, e_ida4a5b51705f555, "")
+Rel_Realization_Up(e_id420f57c4d41e52, e_id989d401ffdae55, "")
 
 @enduml
