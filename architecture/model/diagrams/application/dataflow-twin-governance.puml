@@ -15,6 +15,7 @@ Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance") {
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
+  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
 }
 Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
   Application_DataObject(e_ide732c9a4b52a59, "Current-State Digital Twin")
@@ -62,6 +63,9 @@ Rel_Access_w(e_id26722845c7215d, e_id0f0ef898faa15b, "archives with rationale")
 Rel_Access_r(e_id3a42c87ebb235a, e_idd52b11acc8ff53, "constrained by")
 Rel_Access_r(e_id3a42c87ebb235a, e_ide500d303f47455, "renders")
 Rel_Serving_Up(e_id3a42c87ebb235a, e_id2ef30ba1d68054, "renders candidate models for")
+Rel_Access_r(e_id7cc5a30769435c, e_idd52b11acc8ff53, "validates proposed changes against")
+Rel_Access_w(e_id7cc5a30769435c, e_ide500d303f47455, "proposes model deltas as")
+Rel_Serving_Up(e_id7cc5a30769435c, e_id3a42c87ebb235a, "renders the view under discussion live via")
 Rel_Access_w(e_id1877d57ef1ec5e, e_idfd63e49cbb7150, "appends")
 Rel_Flow_Right(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
 
