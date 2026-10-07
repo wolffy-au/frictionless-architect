@@ -1,0 +1,50 @@
+@startuml
+!include <archimate/Archimate>
+
+title Feature Steel Thread: Conversational Model Authoring (GH #108)
+
+Motivation_Driver(e_idb3458ded88aa5a, "Systemic Sustainability & Complexity Management")
+Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")
+Motivation_Assessment(e_id62397473120e57, "Architectural drift is accumulating as unmanaged risk")
+Motivation_Goal(e_id76f6d8b4d70151, "Frictionless Architecture & Governance at Machine Speed")
+Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuously")
+Motivation_Requirement(e_id945f98ac87fe5d, "Authoritative Digital Twin of System State")
+Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
+  Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+}
+Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph")
+Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
+  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
+}
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_ide500d303f47455, "Candidate Architecture Option")
+}
+Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
+  Business_Function(e_id5794c15b037251, "Architecture Strategy") {
+    Business_Process(e_id395c9c2923aa56, "Target State Definition")
+  }
+}
+Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
+Application_DataObject(e_idd52b11acc8ff53, "Notation Metamodel")
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x")
+
+Rel_Realization_Up(e_id18ec07397a9d5f, e_id945f98ac87fe5d, "")
+Rel_Association(e_id3bf463ccf22a53, e_idb3458ded88aa5a, "")
+Rel_Influence(e_idb3458ded88aa5a, e_id62397473120e57, "")
+Rel_Influence(e_id62397473120e57, e_id79b6a1e545325d, "")
+Rel_Realization_Up(e_id79b6a1e545325d, e_id76f6d8b4d70151, "")
+Rel_Realization_Up(e_id945f98ac87fe5d, e_id79b6a1e545325d, "")
+Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")
+Rel_Serving_Up(e_id82f04fecbdd85e, e_id2b5394f913985a, "converses on model changes with (GH #108)")
+Rel_Serving_Up(e_id82f04fecbdd85e, e_ide2cb7f3efa6256, "converses on model changes with (GH #108)")
+Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "writes the digital twin plane")
+Rel_Access_r(e_id3a42c87ebb235a, e_idd52b11acc8ff53, "constrained by")
+Rel_Access_r(e_id3a42c87ebb235a, e_ide500d303f47455, "renders")
+Rel_Access_r(e_id7cc5a30769435c, e_idd52b11acc8ff53, "validates proposed changes against")
+Rel_Access_w(e_id7cc5a30769435c, e_ide500d303f47455, "proposes model deltas as")
+Rel_Serving_Up(e_id7cc5a30769435c, e_id3a42c87ebb235a, "renders the view under discussion live via")
+Rel_Access_w(e_id625e631f1f715e, e_id989d401ffdae55, "persists")
+
+@enduml
