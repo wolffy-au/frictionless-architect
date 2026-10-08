@@ -1,7 +1,7 @@
 @startuml
 !include <archimate/Archimate>
 
-title Artefact Flow — Library & Design
+title Data Flow — Library & Design
 
 Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_iddd11da366c175c, "Pattern Authoring & Control Mapping")
