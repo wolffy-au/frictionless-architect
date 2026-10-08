@@ -431,6 +431,10 @@
 # =====================================================================
 # B. Subsystems serve the people (Serving subsystem -> role; C4 reverses it)
 # =====================================================================
+# Derivable (Composition sub-catalog -> interface + Serving interface -> role),
+# kept deliberately: the C4 projection drops the ApplicationInterface, so
+# without this edge sub-catalog would render with no relationship to
+# role-compliance at the container level (GH #99; accepted in check_derived.py).
 - {type: Serving, source: sub-catalog, target: role-compliance, label: authors control content in}
 - {type: Composition, source: sub-catalog, target: if-catalog-ui}
 - {type: Serving, source: if-catalog-ui, target: role-compliance, label: "upload, feedback & status UI"}
@@ -766,7 +770,8 @@
 - {type: Serving, source: if-twin-read-path, target: sub-schema-visualizer, label: path-dependency library}
 # Derivable (Composition sub-twin -> interface + Serving interface -> visualiser),
 # kept deliberately: the C4 projection drops the ApplicationInterface, so without
-# this edge the visualiser container renders with no relationships.
+# this edge the visualiser container renders with no relationships
+# (GH #99; accepted in check_derived.py).
 - {type: Serving, source: sub-twin, target: sub-schema-visualizer, label: serves the read path to, props: {c4-label: reads the knowledge graph via}}
 
 # =====================================================================
