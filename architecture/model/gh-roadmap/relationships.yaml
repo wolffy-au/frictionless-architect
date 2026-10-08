@@ -102,6 +102,9 @@
   source: wp-oscal-spec-alignment-review-gh-24
   target: del-release-v0-1-0
 - type: Realization
+  source: wp-re-home-specs-to-two-tier-scheme-adr-gh-107
+  target: del-solution-design-mvp-8-unreleased
+- type: Realization
   source: wp-resolve-migration-order-gap-schema-gh-60
   target: del-solution-design-mvp-8-unreleased
 - type: Realization
