@@ -241,6 +241,13 @@
     gh-state: closed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/24
 - type: WorkPackage
+  id: wp-re-home-specs-to-two-tier-scheme-adr-gh-107
+  name: GH-107 Re-home specs/ to two-tier scheme (ADR-0004, migration step 6)
+  props:
+    gh-number: '107'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/107
+- type: WorkPackage
   id: wp-resolve-migration-order-gap-schema-gh-60
   name: 'GH-60 Resolve migration-order gap: schema-visualizer-api split depends on digital-twin-knowledge-graph scaffolded later'
   props:
