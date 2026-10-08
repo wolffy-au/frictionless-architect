@@ -113,6 +113,12 @@ refers to the retired `plat-runtime-mvp`.
 - **SC-004**: A stakeholder can view a milestone's plan, delivered work and releases as a diagram without hand-editing the layer.
 - **SC-005**: When GitHub is unreachable or incomplete, every run fails with a message naming the cause and leaves all files unchanged.
 - **SC-006**: After first import the first-MVP milestone appears once and no link refers to the retired plateau.
+- **SC-007**: A full import at the 1000-issue cap (`research.md` R8, R14) completes within 2 minutes wall-clock.
+  GH #104 measured this repo's run (~100 issues, one GraphQL page) at 4–6s wall-clock across 4 `gh` calls
+  (repo resolve, milestones, releases, one issues page), each call taking 0.5–2s; a synthetic 1000-issue
+  fixture built and rendered the layer in under 2s of pure computation (no network). Ten sequential issue
+  pages at the cap are therefore expected to finish in well under a minute in practice; the 2-minute figure
+  keeps headroom for GitHub API slowness or rate-limit backoff.
 
 ## Assumptions
 
@@ -124,4 +130,4 @@ refers to the retired `plat-runtime-mvp`.
 - The model reflects current GitHub state; removed items are removed, not kept as history.
 - Uses the existing authenticated `gh` access; no new credential, no schedule.
 - The `multi-user-collaboration` milestone exists (GitHub #2) with no issues, so it yields a Plateau and no Work Packages or unreleased Deliverable yet.
-- Performance and scale targets are deferred.
+- Performance and scale target: SC-007 (GH #104); the 1000-issue cap (`research.md` R8) stands.

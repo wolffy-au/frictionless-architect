@@ -1,7 +1,8 @@
-"""Unit tests for architecture/model/import_gh_roadmap.py (GH #95)."""
+"""Unit tests for architecture/model/import_gh_roadmap.py (GH #95, GH #104)."""
 
 import json
 import subprocess
+import time
 from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
@@ -186,6 +187,32 @@ def test_exactly_the_issue_cap_succeeds(importer: ModuleType) -> None:
 def test_more_issues_than_the_cap_fails(importer: ModuleType) -> None:
     with pytest.raises(importer.GhError, match="1000"):
         importer.fetch_issues(make_stub(issues=pages_of(1000, True)), REPO)
+
+
+# --- performance and scale (GH #104, spec.md SC-007, research.md R14) -------------
+
+# The real-world budget for a full import at the 1000-issue cap is 2 minutes wall-clock
+# (spec.md SC-007), dominated by ten sequential `gh api graphql` round trips. These tests
+# run against a stubbed `run_gh` with no network, so they do not exercise that network
+# time; they guard against the computation itself (build_layer, render, write) regressing
+# to something pathological, with a budget well inside the no-network measurement of
+# ~2s taken for GH #104 (generous headroom for slower CI hardware).
+SYNTHETIC_COMPUTE_BUDGET_SECONDS = 15.0
+
+
+def test_synthetic_1000_issue_roadmap_imports_within_the_compute_budget(importer: ModuleType, tmp_path: Path) -> None:
+    start = time.monotonic()
+    rc = importer.main(["--repo", REPO], run_gh=make_stub(issues=pages_of(1000, False)), layer_dir=tmp_path)
+    elapsed = time.monotonic() - start
+    assert rc == 0
+    assert elapsed < SYNTHETIC_COMPUTE_BUDGET_SECONDS, f"synthetic 1000-issue import took {elapsed:.2f}s"
+    assert list(tmp_path.iterdir())  # the layer was written
+
+
+def test_synthetic_1001_issue_roadmap_exits_2_and_writes_nothing(importer: ModuleType, tmp_path: Path) -> None:
+    rc = importer.main(["--repo", REPO], run_gh=make_stub(issues=pages_of(1000, True)), layer_dir=tmp_path)
+    assert rc == 2
+    assert list(tmp_path.iterdir()) == []
 
 
 # --- render and write --------------------------------------------------------------
