@@ -121,3 +121,6 @@ narrative docs.
 - **A** — [0035](0035-github-roadmap-as-implementation-migration-layer.md) — GitHub milestones,
   issues and releases imported into the Implementation & Migration layer by
   `import_gh_roadmap.py`; generated layer merged by `build.py`, never hand-edited
+- **A** — [0036](0036-element-id-prefix-scheme.md) — An element id prefix names
+  the element's own ArchiMate type; `art-*` is reserved for genuine `Artifact`
+  elements, `DataObject` elements use `do-*`
