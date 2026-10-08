@@ -25,6 +25,22 @@ An enterprise or solution architect describes a model change in plain language (
 
 **Independent Test**: Describe a single well-formed change in conversation and confirm a diagram reflecting it appears without any manual file edit or render command.
 
+```plantuml
+@startuml
+left to right direction
+actor Architect
+rectangle "Conversational Model Authoring" {
+  usecase "Propose Model Change" as UC1
+  usecase "Auto-Render Applied Change" as UC2
+  usecase "Request Diagram Render" as UC3
+}
+Architect --> UC1
+UC1 .> UC2 : <<extend>>\n(auto-render configured)
+Architect --> UC3
+UC3 .> UC1 : <<include>>
+@enduml
+```
+
 **Acceptance Scenarios**:
 
 1. **Given** an architect describes a valid, unambiguous model change, **When** the agent proposes the delta, **Then** it validates cleanly against the metamodel and configured conventions and is applied.
@@ -40,6 +56,28 @@ Invalid, duplicate, and non-idiomatic proposals are never applied, auto-correcte
 **Why this priority**: Without this, the agent cannot be trusted to touch the canonical model — the same concern that makes conversational authoring risky in the first place.
 
 **Independent Test**: Describe a change that breaks a metamodel rule, one that duplicates an existing element, and one that proposes a direct relationship where the model's convention is to interpose intermediary elements; confirm all three produce an explanation and none is applied without an explicit decision.
+
+```plantuml
+@startuml
+left to right direction
+actor Architect
+rectangle "Conversational Model Authoring" {
+  usecase "Propose Model Change" as UC1
+  usecase "Reject with Explanation" as UC2
+  usecase "Resolve Duplicate Candidate" as UC3
+  usecase "Resolve Pattern Suggestion" as UC4
+  usecase "Override Objection" as UC5
+}
+Architect --> UC1
+UC2 .> UC1 : <<extend>>
+UC3 .> UC1 : <<extend>>
+UC4 .> UC1 : <<extend>>
+Architect --> UC5
+UC5 .> UC2 : <<extend>>
+UC5 .> UC3 : <<extend>>
+UC5 .> UC4 : <<extend>>
+@enduml
+```
 
 **Acceptance Scenarios**:
 
@@ -57,6 +95,19 @@ Every applied change is classified Current, Transition, or Target, and that clas
 **Why this priority**: Valuable and explicitly required by the issue, but the conversational loop (P1) delivers value even before state querying is wired up end to end.
 
 **Independent Test**: Apply a change while specifying its state, then ask the agent what state that change belongs to, independent of any other feature in this spec.
+
+```plantuml
+@startuml
+left to right direction
+actor Architect
+rectangle "Conversational Model Authoring" {
+  usecase "Query Applied Change State" as UC1
+  usecase "Classify Ambiguous State" as UC2
+}
+Architect --> UC1
+Architect --> UC2
+@enduml
+```
 
 **Acceptance Scenarios**:
 
