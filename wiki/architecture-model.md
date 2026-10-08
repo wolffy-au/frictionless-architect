@@ -327,7 +327,7 @@ conversion), both exposed via a new `ApplicationInterface`,
 uses to upload documents, review feedback, and track status. A third,
 `fn-oscal-validation`, models the `trestle validate` step that already
 existed in the pipeline narrative but not as its own function, with
-`art-oscal-catalog` gaining a `status-lifecycle` property
+`do-oscal-catalog` gaining a `status-lifecycle` property
 (`converting → converted → validating → validated` /
 `conversion_failed` / `validation_failed`) to carry that state explicitly.
 
@@ -469,7 +469,7 @@ OSCAL Assessment Plan (wired into both the pre-release gate and continuous-BAU
 monitoring cadences, per OSCAL's required `import-ap` reference on every
 Assessment Results instance) and an OSCAL Plan of Action & Milestones sidecar
 of the remediation backlog, and fixed an internal wording inconsistency in
-`art-oscal-component`'s description — bringing it to 296 elements / 594
+`do-oscal-component`'s description — bringing it to 296 elements / 594
 relationships / 21 views.
 
 Three passes on 2026-09-21/22 followed:
@@ -490,7 +490,7 @@ on `architecture/model/`, commits `fce0731`, `7304e53`, `f4458ff`).
 A 2026-09-24 fix quoted 12 DataObject `desc` values and one IT4IT bridge
 label. In the flow-style `{...}` YAML entries, an unquoted comma had been
 silently cutting each value short. Among the lost text were the golden-dataset
-artefacts' "not a production pipeline input" caveat and `art-ledger-entry`'s
+artefacts' "not a production pipeline input" caveat and `do-ledger-entry`'s
 actor/action/target fields. The full text is now restored, for example the
 `cap-control-plane` → `it4it-cap-product-development` label "supervises the
 AI agents doing the coding, unit verification, and defect correction this
@@ -535,7 +535,7 @@ gaps that the Markdown catalogue converter (#44) depends on:
   objects (Catalog, Profile, Resolved OSCAL Profile Catalog) instead of
   `bo-regulatory-standard`.
 - A new Association, "expected OSCAL output for (golden pair)", links
-  `art-baseline` to `art-regulatory-standard`.
+  `do-baseline` to `do-regulatory-standard`.
 - The two OSCAL artefact views were split: Controls & OSCAL is now
   conversion only, and OSCAL Profile Resolution carries tailoring and
   resolution.

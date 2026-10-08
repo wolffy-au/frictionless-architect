@@ -70,7 +70,7 @@ converting policy/standard documents alongside its drafting uses
 The former `ext-regsources` ("Regulatory Content Sources") external system
 has been **removed**. It implied a system integration with upstream
 regulators that does not exist. Upstream regulatory text now enters as a
-plain document artefact, `art-regulatory-standard`, on the same footing as
+plain document artefact, `do-regulatory-standard`, on the same footing as
 a custom policy document (see "Controls & OSCAL" in
 [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md)). See
 [OSCAL Compliance Content](oscal-compliance.md) for the vendored OSCAL

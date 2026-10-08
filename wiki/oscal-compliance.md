@@ -31,7 +31,7 @@ decision log.
 The architecture model already commits to OSCAL-based compliance in its
 vision — `process-policy-authoring`/`fn-policy-authoring` and
 `process-oscal-conversion`/`fn-oscal-conversion` name "Trestle Markdown" and a
-"Trestle round-trip," and a full artefact chain of `bo-oscal-*`/`art-oscal-*`
+"Trestle round-trip," and a full artefact chain of `bo-oscal-*`/`do-oscal-*`
 DataObjects models Catalog, Profile, Component Definition, SSP, and
 Assessment Results — but until ADR-0030 none of it was backed by real
 content or tooling: `sample-data/oscal/` held only two illustrative PlantUML
