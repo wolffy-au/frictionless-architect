@@ -433,11 +433,36 @@ def test_derivation_filter_drops_only_implied_links(importer: ModuleType) -> Non
     assert importer.drop_derived(cycle) == sorted(cycle, key=lambda r: r["source"])
 
 
+def issues_with_milestone_7_issue() -> list[str]:
+    """gh_issues.json plus one issue under milestone 7, so the importer emits
+    del-architecture-strategy-mvp-7-unreleased (needed by the hand-authored
+    wp-vendor-it4it Realization onto that Deliverable)."""
+    page = json.loads(fixture_text("gh_issues.json"))
+    page["data"]["repository"]["issues"]["nodes"].append(
+        {
+            "number": 200,
+            "title": "Architecture strategy placeholder",
+            "state": "CLOSED",
+            "closedAt": "2026-09-30T10:00:00Z",
+            "url": "https://github.com/o/r/issues/200",
+            "milestone": {"number": 7},
+            "parent": None,
+            "blockedBy": {"nodes": []},
+        }
+    )
+    return [json.dumps(page)]
+
+
 def test_fixture_layer_builds_and_validates(
     importer: ModuleType, build_mod: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     layer_dir = tmp_path / "gh-roadmap"
-    assert importer.main(["--repo", REPO], run_gh=make_stub(), layer_dir=layer_dir) == 0
+    # The hand-authored layer references plat-architecture-strategy-mvp-7 and
+    # plat-solution-design-mvp-8 (and their -unreleased Deliverables) directly, so the
+    # stubbed milestone set must cover those numbers too, not just 1 and 2, and at
+    # least one in-scope issue must target milestone 7 so its Deliverable is created.
+    stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=issues_with_milestone_7_issue())
+    assert importer.main(["--repo", REPO], run_gh=stub, layer_dir=layer_dir) == 0
     monkeypatch.setattr(build_mod, "MODEL_LAYERS", [*build_mod.VENDORED_MODELS, layer_dir])
     out = MODEL_DIR.parents[1] / "build" / "test-gh-roadmap-model.xml"  # build.py prints OUT relative to the repo
     out.parent.mkdir(exist_ok=True)
@@ -502,7 +527,9 @@ def test_close_moves_the_link_only_when_a_release_follows(importer: ModuleType, 
     after = yaml.safe_load((tmp_path / "relationships.yaml").read_text())
     gone = [r for r in before if r not in after]
     added = [r for r in after if r not in before]
-    assert gone == [link("Realization", "wp-markdown-catalogue-converter-gh-44", "del-policy-to-oscal-mvp-1-unreleased")]
+    assert gone == [
+        link("Realization", "wp-markdown-catalogue-converter-gh-44", "del-policy-to-oscal-mvp-1-unreleased")
+    ]
     assert added == [link("Realization", "wp-markdown-catalogue-converter-gh-44", "del-release-v0-2-0")]
 
 
@@ -645,7 +672,21 @@ def test_dependency_layer_still_validates(
     importer: ModuleType, build_mod: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     layer_dir = tmp_path / "gh-roadmap"
-    stub = make_stub(issues=[fixture_text("gh_issues_dependencies.json")])
+    page = json.loads(fixture_text("gh_issues_dependencies.json"))
+    # Same milestone-7 need as test_fixture_layer_builds_and_validates above.
+    page["data"]["repository"]["issues"]["nodes"].append(
+        {
+            "number": 200,
+            "title": "Architecture strategy placeholder",
+            "state": "CLOSED",
+            "closedAt": "2026-09-30T10:00:00Z",
+            "url": "https://github.com/o/r/issues/200",
+            "milestone": {"number": 7},
+            "parent": None,
+            "blockedBy": {"nodes": []},
+        }
+    )
+    stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=[json.dumps(page)])
     assert importer.main(["--repo", REPO], run_gh=stub, layer_dir=layer_dir) == 0
     monkeypatch.setattr(build_mod, "MODEL_LAYERS", [*build_mod.VENDORED_MODELS, layer_dir])
     out = MODEL_DIR.parents[1] / "build" / "test-gh-roadmap-model.xml"
