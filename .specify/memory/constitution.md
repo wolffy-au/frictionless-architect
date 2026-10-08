@@ -212,14 +212,28 @@ them harder to review and let copies drift when a design changes.
     `quickstart.md` give one example and the commands, then link to `data-model.md`.
   - `plan.md` summarises in a paragraph and links; it never pastes tables from other artefacts.
   - Diagrams are embedded PlantUML (` ```plantuml ` blocks), validated with `plantuml -checkonly`
-    before commit, and drawn once in the artefact that owns the subject: class and state in
-    `data-model.md`, sequence in `contracts/`, activity and deployment in `plan.md`. Other
-    artefacts link to them rather than redrawing, and a diagram changes with the rule it shows.
+    before commit, and drawn once in the artefact that owns the subject. A graphical UML
+    representation is preferred over an equivalent plain-text one wherever a standard diagram
+    type fits:
+    - `spec.md`: a use-case diagram per User Story (actor(s) plus that story's scenarios as
+      use cases), alongside — never instead of — the given/when/then prose, which stays the
+      acceptance-criteria source of truth.
+    - `data-model.md`: class and state diagrams.
+    - `contracts/`: sequence diagrams.
+    - `plan.md`: activity and deployment diagrams, plus a component or package diagram in
+      place of a plain-text directory/dependency tree in Project Structure.
+    - Any other standard UML diagram (object, composite structure, communication, timing,
+      interaction overview) is permitted wherever it communicates a structure or interaction
+      more clearly than prose, drawn once in the artefact owning that subject.
+    Other artefacts link to a diagram rather than redrawing it, and a diagram changes with the
+    rule it shows.
   - When a rule changes, edit it in its one home and replace any restated copy with a link.
     Prefer editing existing artefacts to regenerating them; commit a snapshot before any
     regeneration so nothing is lost.
 - **Rationale**: One home per fact keeps specs reviewable and consistent, and applies
-  Principle I's DRY and Principle X's single source of truth to the specs themselves.
+  Principle I's DRY and Principle X's single source of truth to the specs themselves. A
+  graphical representation also reviews faster than prose and, unlike prose, can seed the
+  canonical ArchiMate/C4 model directly if the design it shows later needs representing there.
 
 ## Development Workflow
 
@@ -262,4 +276,4 @@ This constitution is the supreme guide for SpecKit development.
   added here with the next free number, not in a separate document.
 - **Compliance**: All contributors must adhere to these principles; deviations must be justified in the `plan.md` complexity tracking section.
 
-**Version**: 1.4.0 | **Ratified**: 2026-02-18 | **Last Amended**: 2026-10-04
+**Version**: 1.5.0 | **Ratified**: 2026-02-18 | **Last Amended**: 2026-10-08
