@@ -30,6 +30,13 @@ generalisation semantics that chain discovery does not model.
 Advisory only: exit 0 always. This is a warn-don't-block check, run
 alongside `validate.py`, not a metamodel legality check.
 
+Accepted exceptions (GH #99): a finding that is a deliberate, reviewed
+duplication rather than an authoring mistake can be recorded in
+`SERVING_EXCEPTIONS` / `_accepted_reason` below with a one-line reason,
+instead of being removed from the source model. Accepted findings still
+print (so the full picture stays visible) but are labelled `[accepted]` and
+excluded from the "unexplained" count the exit summary is based on.
+
     poetry run python check_derived.py MODEL[.archimate|.xml] [--json] [--strict]
 """
 
@@ -50,6 +57,56 @@ except ImportError:
     raise SystemExit(2) from None
 
 
+# --- Accepted exceptions (GH #99) ----------------------------------------
+#
+# Exact (type, source name, target name) duplicates that were reviewed and
+# kept deliberately, each with a one-line reason. These are first-party,
+# hand-authored relationships where the direct edge carries presentational
+# weight the chain alone doesn't: the C4 projection (`diagram-c4`) only
+# promotes ApplicationComponent elements to containers, so a chain that
+# routes through an ApplicationInterface (e.g. `if-catalog-ui`,
+# `if-twin-read-path`) disappears at the container level unless the direct
+# Serving edge is also modelled. See `architecture/model/relationships.yaml`
+# for the matching inline comments.
+SERVING_EXCEPTIONS: dict[tuple[str, str, str], str] = {
+    (
+        "Serving",
+        "Controls & Compliance Catalog",
+        "Compliance Officer / Auditor",
+    ): "kept for the C4 container view: if-catalog-ui (an ApplicationInterface) is dropped from the C4 projection, so this direct edge is the only one left there.",
+    (
+        "Serving",
+        "Digital Twin & Knowledge Graph",
+        "Schema Visualiser API",
+    ): "kept for the C4 container view: if-twin-read-path (an ApplicationInterface) is dropped from the C4 projection, so this direct edge is the only one left there.",
+}
+
+# Any Flow duplicate between two IT4IT value-stream elements (names
+# "IT4IT: ..."): the vendored third_party/it4it relationships.yaml (ADR-0029)
+# carries the IT4IT standard's own dense, multi-directional value-stream Flow
+# diagram verbatim rather than a simple chain — several stream pairs flow
+# both ways in the source standard itself. That is reference-model content
+# this repo does not hand-edit; see third_party/it4it/relationships.yaml's
+# "Stream-to-stream network" comment and ADR-0029 ("no touchpoint-filtering
+# — build.py imports the whole vendored file").
+IT4IT_FLOW_EXCEPTION_REASON = (
+    "vendored verbatim from the IT4IT standard's own dense, multi-directional "
+    "value-stream Flow diagram (ADR-0029, third_party/it4it); not a local "
+    "modelling duplication to prune."
+)
+
+
+def _accepted_reason(finding: dict) -> str | None:
+    """Return the one-line reason a finding is an accepted exception, else None."""
+    if (
+        finding["type"] == "Flow"
+        and finding["source"].startswith("IT4IT: ")
+        and finding["target"].startswith("IT4IT: ")
+    ):
+        return IT4IT_FLOW_EXCEPTION_REASON
+    return SERVING_EXCEPTIONS.get((finding["type"], finding["source"], finding["target"]))
+
+
 def check(path: str, include_dependency: bool = True) -> dict:
     model = Model("check_derived")
     model.read(path)
@@ -59,28 +116,31 @@ def check(path: str, include_dependency: bool = True) -> dict:
         rel = duplicate.relationship
         for chain in duplicate.implying_chains:
             via = chain.intermediate
-            findings.append(
-                {
-                    "relationship": rel.uuid,
-                    "type": rel.type,
-                    "source": chain.leg1.source.name,
-                    "target": chain.leg2.target.name,
-                    "via": via.name,
-                    "chain": f"{chain.leg1.type} then {chain.leg2.type}",
-                    "detail": (
-                        f"{rel.type} {chain.leg1.source.name!r} -> "
-                        f"{chain.leg2.target.name!r} duplicates the derived relationship "
-                        f"already implied by {chain.leg1.type} -> {via.name!r} -> {chain.leg2.type}"
-                    ),
-                }
-            )
+            finding = {
+                "relationship": rel.uuid,
+                "type": rel.type,
+                "source": chain.leg1.source.name,
+                "target": chain.leg2.target.name,
+                "via": via.name,
+                "chain": f"{chain.leg1.type} then {chain.leg2.type}",
+                "detail": (
+                    f"{rel.type} {chain.leg1.source.name!r} -> "
+                    f"{chain.leg2.target.name!r} duplicates the derived relationship "
+                    f"already implied by {chain.leg1.type} -> {via.name!r} -> {chain.leg2.type}"
+                ),
+            }
+            finding["accepted_reason"] = _accepted_reason(finding)
+            findings.append(finding)
+
+    unexplained = [f for f in findings if not f["accepted_reason"]]
 
     return {
         "path": path,
         "checked_relationships": len(model.rels_dict),
         "extended_scope": include_dependency,
         "findings": findings,
-        "clean": not findings,
+        "unexplained_count": len(unexplained),
+        "clean": not unexplained,
     }
 
 
@@ -109,12 +169,19 @@ def main() -> int:
     else:
         scope = "extended" if result["extended_scope"] else "strict"
         print(f"{result['path']}: {result['checked_relationships']} relationships checked ({scope} scope)")
-        if result["clean"]:
+        if not result["findings"]:
             print("no likely-derived relationships found")
         else:
-            print(f"{len(result['findings'])} possible derived relationship(s) — advisory, review by hand:")
-            for f in result["findings"]:
+            accepted = [f for f in result["findings"] if f["accepted_reason"]]
+            unexplained = [f for f in result["findings"] if not f["accepted_reason"]]
+            print(
+                f"{len(result['findings'])} possible derived relationship(s) found "
+                f"({len(accepted)} accepted exception(s), {len(unexplained)} unexplained):"
+            )
+            for f in unexplained:
                 print(f"  [{f['type']}] {f['detail']}")
+            for f in accepted:
+                print(f"  [{f['type']}] [accepted] {f['detail']} — {f['accepted_reason']}")
 
     return 0  # advisory only — never fails the build
 
