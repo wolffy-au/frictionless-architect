@@ -413,11 +413,11 @@
     - fn-oscal-validation
     - ext-llm
     - ext-trestle
-    - art-policy-doc
-    - art-regulatory-standard
-    - art-trestle-markdown
-    - art-baseline
-    - art-oscal-catalog
+    - do-policy-doc
+    - do-regulatory-standard
+    - do-trestle-markdown
+    - do-baseline
+    - do-oscal-catalog
     - store-oscal
 
 - id: view-artefact-oscal-resolve
@@ -439,11 +439,11 @@
     - fn-baseline-tailoring
     - fn-oscal-profile-resolve
     - ext-trestle
-    - art-oscal-catalog
-    - art-oscal-profile
-    - art-baseline-profile
-    - art-oscal-resolved-catalog
-    - art-baseline-resolved-catalog
+    - do-oscal-catalog
+    - do-oscal-profile
+    - do-baseline-profile
+    - do-oscal-resolved-catalog
+    - do-baseline-resolved-catalog
     - store-oscal
 
 - id: view-business-controls-catalog
@@ -600,13 +600,13 @@
     - fn-blueprint-authoring
     - fn-solution-compose
     - fn-threat-model
-    - art-oscal-resolved-catalog
-    - art-oscal-component
-    - art-oscal-ssp
-    - art-pattern
-    - art-blueprint
-    - art-solution-design
-    - art-threat-model
+    - do-oscal-resolved-catalog
+    - do-oscal-component
+    - do-oscal-ssp
+    - do-pattern
+    - do-blueprint
+    - do-solution-design
+    - do-threat-model
     - store-patterns
     - store-oscal
 
@@ -628,16 +628,16 @@
     - ext-cicd
     - fn-cicd-deploy
     - ext-rfp
-    - art-infra-state
-    - art-deploy-event
-    - art-twin
-    - art-solution-design
-    - art-candidate-arch
-    - art-impact-assessment
-    - art-adr
-    - art-archived-option
-    - art-ledger-entry
-    - art-metamodel
+    - do-infra-state
+    - do-deploy-event
+    - do-twin
+    - do-solution-design
+    - do-candidate-arch
+    - do-impact-assessment
+    - do-adr
+    - do-archived-option
+    - do-ledger-entry
+    - do-metamodel
     - store-akg
     - store-ledger
 
@@ -663,23 +663,23 @@
     - fn-cicd-deploy
     - fn-itsm-backlog
     - fn-itsm-change
-    - art-pattern
-    - art-blueprint
-    - art-solution-design
-    - art-dev-spec
-    - art-oscal-ssp
-    - art-oscal-catalog
-    - art-release-candidate
-    - art-oscal-assessment-plan
-    - art-gate-decision
-    - art-ledger-entry
-    - art-effectiveness-evidence
-    - art-twin
-    - art-adr
-    - art-architecture-roadmap
-    - art-drift-report
-    - art-remediation-item
-    - art-oscal-poam
+    - do-pattern
+    - do-blueprint
+    - do-solution-design
+    - do-dev-spec
+    - do-oscal-ssp
+    - do-oscal-catalog
+    - do-release-candidate
+    - do-oscal-assessment-plan
+    - do-gate-decision
+    - do-ledger-entry
+    - do-effectiveness-evidence
+    - do-twin
+    - do-adr
+    - do-architecture-roadmap
+    - do-drift-report
+    - do-remediation-item
+    - do-oscal-poam
 
 - id: view-application-structure-catalog
   name: Application Structure — Controls & Compliance Catalog
@@ -687,19 +687,19 @@
   # application (component, interface, and the data it owns), as opposed to
   # view-artefact-oscal / -oscal-resolve's artefact-flow-through-functions
   # story. ApplicationFunction isn't a viewpoint-legal element here, so
-  # ownership is shown via the sub-catalog -> art-* Aggregations added
+  # ownership is shown via the sub-catalog -> do-* Aggregations added
   # alongside the fn-* Write-access edges they mirror.
   viewpoint: application_structure
   diagram: application/catalog-structure
   members:
     - sub-catalog
     - if-catalog-ui
-    - art-policy-doc
-    - art-regulatory-standard
-    - art-trestle-markdown
-    - art-oscal-catalog
-    - art-oscal-profile
-    - art-oscal-resolved-catalog
+    - do-policy-doc
+    - do-regulatory-standard
+    - do-trestle-markdown
+    - do-oscal-catalog
+    - do-oscal-profile
+    - do-oscal-resolved-catalog
 
 - id: view-it4it-capability-bridges
   name: "IT4IT: Capability Bridges"
@@ -800,15 +800,15 @@
     - sw-pytest
     - techproc-oscal-golden-check
     - fn-oscal-conversion
-    - art-oscal-catalog
-    - art-baseline
-    - art-regulatory-standard
+    - do-oscal-catalog
+    - do-baseline
+    - do-regulatory-standard
     - fn-baseline-tailoring
-    - art-oscal-profile
-    - art-baseline-profile
+    - do-oscal-profile
+    - do-baseline-profile
     - fn-oscal-profile-resolve
-    - art-oscal-resolved-catalog
-    - art-baseline-resolved-catalog
+    - do-oscal-resolved-catalog
+    - do-baseline-resolved-catalog
     - ext-llm
     - ext-trestle
 
@@ -835,8 +835,8 @@
   # SystemSoftware, TechnologyProcess, Artifact -- no ApplicationComponent or
   # DataObject), covering both Nodes side by side. Distinct from
   # view-technology-ci-check, which is scoped to the CI slice plus the
-  # application-layer concepts (fn-oscal-conversion, art-oscal-catalog,
-  # art-baseline) that view-technology-ci-check needs and this one excludes.
+  # application-layer concepts (fn-oscal-conversion, do-oscal-catalog,
+  # do-baseline) that view-technology-ci-check needs and this one excludes.
   viewpoint: technology
   diagram: technology/landscape
   members:

@@ -277,27 +277,27 @@
 - {type: Triggering, source: process-baseline-tailoring, target: process-profile-resolution, label: tailored profile feeds resolution}
 - {type: Specialization, source: bo-oscal-resolved-catalog, target: bo-oscal-catalog, label: resolved instance}
 - {type: Association, source: bo-oscal-resolved-catalog, target: bo-oscal-profile, label: fulfills the profile's control selection}
-- {type: Realization, source: art-oscal-resolved-catalog, target: bo-oscal-resolved-catalog}
+- {type: Realization, source: do-oscal-resolved-catalog, target: bo-oscal-resolved-catalog}
 - {type: Triggering, source: process-policy-authoring, target: process-oscal-conversion, label: authored content feeds}
 - {type: Realization, source: fn-ai-markdown-conversion, target: process-oscal-conversion}
 - {type: Realization, source: fn-oscal-conversion, target: process-oscal-conversion}
 - {type: Realization, source: fn-oscal-validation, target: process-oscal-conversion}
 - {type: Realization, source: fn-baseline-tailoring, target: process-baseline-tailoring}
 - {type: Realization, source: fn-oscal-profile-resolve, target: process-profile-resolution}
-- {type: Realization, source: art-policy-doc, target: bo-policy-doc}
-- {type: Realization, source: art-regulatory-standard, target: bo-regulatory-standard}
-- {type: Specialization, source: art-regulatory-standard, target: art-policy-doc, label: externally-published instance}
-- {type: Realization, source: art-baseline, target: bo-oscal-catalog}
-- {type: Specialization, source: art-baseline, target: art-oscal-catalog, label: vendored instance (golden-dataset validation data)}
-- {type: Association, source: art-baseline, target: art-regulatory-standard, label: expected OSCAL output for (golden pair)}
-- {type: Realization, source: art-baseline-profile, target: bo-oscal-profile}
-- {type: Specialization, source: art-baseline-profile, target: art-oscal-profile, label: vendored instance (golden-dataset validation data)}
-- {type: Realization, source: art-oscal-catalog, target: bo-oscal-catalog}
-- {type: Realization, source: art-oscal-profile, target: bo-oscal-profile}
-- {type: Specialization, source: art-oscal-resolved-catalog, target: art-oscal-catalog, label: resolved instance}
-- {type: Association, source: art-oscal-resolved-catalog, target: art-oscal-profile, label: fulfills the profile's control selection}
-- {type: Realization, source: art-baseline-resolved-catalog, target: bo-oscal-resolved-catalog}
-- {type: Specialization, source: art-baseline-resolved-catalog, target: art-oscal-resolved-catalog, label: vendored instance (golden-dataset validation data)}
+- {type: Realization, source: do-policy-doc, target: bo-policy-doc}
+- {type: Realization, source: do-regulatory-standard, target: bo-regulatory-standard}
+- {type: Specialization, source: do-regulatory-standard, target: do-policy-doc, label: externally-published instance}
+- {type: Realization, source: do-baseline, target: bo-oscal-catalog}
+- {type: Specialization, source: do-baseline, target: do-oscal-catalog, label: vendored instance (golden-dataset validation data)}
+- {type: Association, source: do-baseline, target: do-regulatory-standard, label: expected OSCAL output for (golden pair)}
+- {type: Realization, source: do-baseline-profile, target: bo-oscal-profile}
+- {type: Specialization, source: do-baseline-profile, target: do-oscal-profile, label: vendored instance (golden-dataset validation data)}
+- {type: Realization, source: do-oscal-catalog, target: bo-oscal-catalog}
+- {type: Realization, source: do-oscal-profile, target: bo-oscal-profile}
+- {type: Specialization, source: do-oscal-resolved-catalog, target: do-oscal-catalog, label: resolved instance}
+- {type: Association, source: do-oscal-resolved-catalog, target: do-oscal-profile, label: fulfills the profile's control selection}
+- {type: Realization, source: do-baseline-resolved-catalog, target: bo-oscal-resolved-catalog}
+- {type: Specialization, source: do-baseline-resolved-catalog, target: do-oscal-resolved-catalog, label: vendored instance (golden-dataset validation data)}
 
 # =====================================================================
 # A. Pattern Control Traceability (business layer, parallel to release enforcement)
@@ -314,7 +314,7 @@
 - {type: Triggering, source: process-profile-resolution, target: process-pattern-traceability, label: resolved controls feed traceability mapping}
 - {type: Flow, source: process-baseline-tailoring, target: process-effectiveness-monitoring, label: tailored baseline flows to}
 - {type: Realization, source: fn-pattern-authoring, target: process-pattern-traceability}
-- {type: Realization, source: art-pattern, target: bo-architecture-pattern}
+- {type: Realization, source: do-pattern, target: bo-architecture-pattern}
 - {type: Association, source: bo-architecture-pattern, target: bo-oscal-resolved-catalog, label: maps to}
 - {type: Specialization, source: bo-implementation-blueprint, target: bo-architecture-pattern, label: specializes for a technology}
 - {type: Access, source: process-blueprint-traceability, target: bo-architecture-pattern, label: refines, props: {access_type: Read}}
@@ -323,14 +323,14 @@
 - {type: Access, source: process-blueprint-traceability, target: bo-oscal-component, label: maps enablement & gaps to, props: {access_type: Write}}
 - {type: Triggering, source: process-pattern-traceability, target: process-blueprint-traceability, label: mapped pattern feeds blueprint derivation}
 # Blueprints are composed into a solution design (fn-solution-compose reads
-# art-blueprint), and the solution design is what the spec generator reads
-# (fn-spec-generator reads art-solution-design) — the hand-off from the
+# do-blueprint), and the solution design is what the spec generator reads
+# (fn-spec-generator reads do-solution-design) — the hand-off from the
 # control-content chain into the delivery chain.
 - {type: Triggering, source: process-blueprint-traceability, target: process-solution-design, label: blueprints composed into}
 - {type: Triggering, source: process-solution-design, target: process-spec-generation, label: solution design specified}
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
-- {type: Realization, source: art-blueprint, target: bo-implementation-blueprint}
-- {type: Realization, source: art-oscal-component, target: bo-oscal-component}
+- {type: Realization, source: do-blueprint, target: bo-implementation-blueprint}
+- {type: Realization, source: do-oscal-component, target: bo-oscal-component}
 - {type: Association, source: bo-implementation-blueprint, target: bo-oscal-component, label: maps enablement & gaps to}
 - {type: Aggregation, source: bo-solution-design, target: bo-solution-component, label: composed of}
 - {type: Specialization, source: bo-solution-component, target: bo-implementation-blueprint, label: instance of}
@@ -339,8 +339,8 @@
 # Reconciliation compares current state against the target state
 # (bfn-drift-management) — an information Flow, not a trigger.
 - {type: Flow, source: process-target-state-definition, target: process-state-discovery, label: target state reconciled against}
-- {type: Realization, source: art-solution-design, target: bo-solution-design}
-- {type: Realization, source: art-oscal-ssp, target: bo-oscal-ssp}
+- {type: Realization, source: do-solution-design, target: bo-solution-design}
+- {type: Realization, source: do-oscal-ssp, target: bo-oscal-ssp}
 
 # =====================================================================
 # A. Release Controls Enforcement & BAU Effectiveness (business layer,
@@ -372,15 +372,15 @@
 - {type: Aggregation, source: bo-conformance-backlog, target: bo-drift-finding, label: records}
 - {type: Access, source: process-drift-review, target: bo-drift-finding, label: triages, props: {access_type: Read}}
 - {type: Access, source: process-drift-review, target: bo-conformance-backlog, label: updates triage status in, props: {access_type: ReadWrite}}
-- {type: Realization, source: art-twin, target: bo-current-state-architecture}
-- {type: Realization, source: art-target-architecture, target: bo-target-state-architecture}
-- {type: Realization, source: art-oscal-poam, target: bo-oscal-poam}
-- {type: Realization, source: art-architecture-roadmap, target: bo-architecture-roadmap}
+- {type: Realization, source: do-twin, target: bo-current-state-architecture}
+- {type: Realization, source: do-target-architecture, target: bo-target-state-architecture}
+- {type: Realization, source: do-oscal-poam, target: bo-oscal-poam}
+- {type: Realization, source: do-architecture-roadmap, target: bo-architecture-roadmap}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
 - {type: Access, source: process-effectiveness-monitoring, target: bo-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
 - {type: Association, source: bo-oscal-poam, target: bo-oscal-assessment-results, label: tracks remediation of}
-- {type: Realization, source: art-drift-report, target: bo-drift-finding}
-- {type: Association, source: bo-conformance-backlog, target: art-remediation-item, label: approved findings raised as}
+- {type: Realization, source: do-drift-report, target: bo-drift-finding}
+- {type: Association, source: bo-conformance-backlog, target: do-remediation-item, label: approved findings raised as}
 - {type: Assignment, source: role-ops, target: bfn-effectiveness-assurance}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-assessment-plan, label: generates, props: {access_type: Write}}
@@ -394,11 +394,11 @@
 - {type: Realization, source: fn-build-supervision, target: process-agentic-crew}
 - {type: Realization, source: fn-enforcement-gate, target: process-cicd-pipeline}
 - {type: Realization, source: fn-effectiveness-monitor, target: process-effectiveness-monitoring}
-- {type: Realization, source: art-gate-decision, target: bo-release-gate-decision}
-- {type: Realization, source: art-effectiveness-evidence, target: bo-control-effectiveness-evidence}
-- {type: Realization, source: art-oscal-assessment-plan, target: bo-oscal-assessment-plan}
-- {type: Realization, source: art-oscal-ar, target: bo-oscal-assessment-results}
-- {type: Association, source: art-oscal-ar, target: art-oscal-assessment-plan, label: imports (per OSCAL's required import-ap)}
+- {type: Realization, source: do-gate-decision, target: bo-release-gate-decision}
+- {type: Realization, source: do-effectiveness-evidence, target: bo-control-effectiveness-evidence}
+- {type: Realization, source: do-oscal-assessment-plan, target: bo-oscal-assessment-plan}
+- {type: Realization, source: do-oscal-ar, target: bo-oscal-assessment-results}
+- {type: Association, source: do-oscal-ar, target: do-oscal-assessment-plan, label: imports (per OSCAL's required import-ap)}
 - {type: Realization, source: process-effectiveness-monitoring, target: cap-control-catalog}
 
 # =====================================================================
@@ -459,7 +459,7 @@
 - {type: Serving, source: fn-policy-upload, target: if-catalog-ui, label: exposed via}
 - {type: Serving, source: fn-policy-quality-feedback, target: if-catalog-ui, label: exposed via}
 - {type: Flow, source: fn-oscal-conversion, target: fn-oscal-validation, label: "generated catalog (converted) validated by"}
-- {type: Access, source: fn-oscal-validation, target: art-oscal-catalog, label: "validates (converted -> validating -> validated/validation_failed)", props: {access_type: ReadWrite}}
+- {type: Access, source: fn-oscal-validation, target: do-oscal-catalog, label: "validates (converted -> validating -> validated/validation_failed)", props: {access_type: ReadWrite}}
 - type: Access
   source: sub-catalog
   target: store-frameworks
@@ -478,12 +478,12 @@
 #    Feeds view-application-structure-catalog, the Application Structure
 #    viewpoint, which cannot show ApplicationFunction)
 # =====================================================================
-- {type: Access, source: sub-catalog, target: art-policy-doc, label: owns, props: {access_type: Write}}
-- {type: Access, source: sub-catalog, target: art-regulatory-standard, label: owns, props: {access_type: Write}}
-- {type: Access, source: sub-catalog, target: art-trestle-markdown, label: owns, props: {access_type: Write}}
-- {type: Access, source: sub-catalog, target: art-oscal-catalog, label: owns, props: {access_type: Write}}
-- {type: Access, source: sub-catalog, target: art-oscal-profile, label: owns, props: {access_type: Write}}
-- {type: Access, source: sub-catalog, target: art-oscal-resolved-catalog, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: do-policy-doc, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: do-regulatory-standard, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: do-trestle-markdown, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: do-oscal-catalog, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: do-oscal-profile, label: owns, props: {access_type: Write}}
+- {type: Access, source: sub-catalog, target: do-oscal-resolved-catalog, label: owns, props: {access_type: Write}}
 
 # =====================================================================
 # B. Reusable Architecture Library
@@ -602,18 +602,18 @@
 # =====================================================================
 # C. Stage 1 — Controls & OSCAL
 # =====================================================================
-- {type: Access, source: fn-policy-upload, target: art-policy-doc, label: stages, props: {access_type: Write}}
-- {type: Access, source: fn-policy-upload, target: art-regulatory-standard, label: stages, props: {access_type: Write}}
-- {type: Access, source: fn-policy-quality-feedback, target: art-policy-doc, label: reviews prose in, props: {access_type: Read}}
-- {type: Access, source: fn-ai-markdown-conversion, target: art-policy-doc, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-ai-markdown-conversion, target: art-trestle-markdown, label: generates, props: {access_type: Write}}
-- {type: Access, source: fn-oscal-conversion, target: art-trestle-markdown, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-oscal-conversion, target: art-oscal-catalog, label: generates, props: {access_type: Write}}
-- {type: Access, source: fn-baseline-tailoring, target: art-oscal-catalog, label: selects controls from, props: {access_type: Read}}
-- {type: Access, source: fn-baseline-tailoring, target: art-oscal-profile, label: tailors, props: {access_type: Write}}
-- {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-catalog, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-profile, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-oscal-profile-resolve, target: art-oscal-resolved-catalog, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-policy-upload, target: do-policy-doc, label: stages, props: {access_type: Write}}
+- {type: Access, source: fn-policy-upload, target: do-regulatory-standard, label: stages, props: {access_type: Write}}
+- {type: Access, source: fn-policy-quality-feedback, target: do-policy-doc, label: reviews prose in, props: {access_type: Read}}
+- {type: Access, source: fn-ai-markdown-conversion, target: do-policy-doc, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-ai-markdown-conversion, target: do-trestle-markdown, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-oscal-conversion, target: do-trestle-markdown, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-oscal-conversion, target: do-oscal-catalog, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-baseline-tailoring, target: do-oscal-catalog, label: selects controls from, props: {access_type: Read}}
+- {type: Access, source: fn-baseline-tailoring, target: do-oscal-profile, label: tailors, props: {access_type: Write}}
+- {type: Access, source: fn-oscal-profile-resolve, target: do-oscal-catalog, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-oscal-profile-resolve, target: do-oscal-profile, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-oscal-profile-resolve, target: do-oscal-resolved-catalog, label: generates, props: {access_type: Write}}
 
 # =====================================================================
 # C. Stage 2 — Library & Design
@@ -621,47 +621,47 @@
 # Mirrors the business layer: patterns are mapped to (and blueprints checked
 # against) the resolved control set, which is generated output — read, never
 # written, by the Library.
-- {type: Access, source: fn-pattern-authoring, target: art-oscal-resolved-catalog, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-pattern-authoring, target: art-pattern, label: authors, props: {access_type: Write}}
-- {type: Association, source: art-pattern, target: art-oscal-resolved-catalog, label: maps to}
-- {type: Access, source: fn-blueprint-authoring, target: art-pattern, label: refines, props: {access_type: Read}}
-- {type: Access, source: fn-blueprint-authoring, target: art-oscal-resolved-catalog, label: checks enablement against, props: {access_type: Read}}
-- {type: Access, source: fn-blueprint-authoring, target: art-blueprint, label: authors, props: {access_type: Write}}
-- {type: Access, source: fn-blueprint-authoring, target: art-oscal-component, label: maps blueprint to, props: {access_type: Write}}
-- {type: Access, source: fn-solution-compose, target: art-blueprint, label: composes, props: {access_type: Read}}
-- {type: Access, source: fn-solution-compose, target: art-pattern, label: composes, props: {access_type: Read}}
-- {type: Access, source: fn-solution-compose, target: art-solution-design, label: produces, props: {access_type: Write}}
-- {type: Access, source: fn-solution-compose, target: art-oscal-ssp, label: derives & emits, props: {access_type: Write}}
-- {type: Association, source: art-oscal-ssp, target: art-solution-design, label: derived from}
-- {type: Access, source: fn-threat-model, target: art-pattern, label: assesses, props: {access_type: Read}}
-- {type: Access, source: fn-threat-model, target: art-blueprint, label: assesses, props: {access_type: Read}}
-- {type: Access, source: fn-threat-model, target: art-solution-design, label: assesses, props: {access_type: Read}}
-- {type: Access, source: fn-threat-model, target: art-threat-model, label: produces, props: {access_type: Write}}
+- {type: Access, source: fn-pattern-authoring, target: do-oscal-resolved-catalog, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-pattern-authoring, target: do-pattern, label: authors, props: {access_type: Write}}
+- {type: Association, source: do-pattern, target: do-oscal-resolved-catalog, label: maps to}
+- {type: Access, source: fn-blueprint-authoring, target: do-pattern, label: refines, props: {access_type: Read}}
+- {type: Access, source: fn-blueprint-authoring, target: do-oscal-resolved-catalog, label: checks enablement against, props: {access_type: Read}}
+- {type: Access, source: fn-blueprint-authoring, target: do-blueprint, label: authors, props: {access_type: Write}}
+- {type: Access, source: fn-blueprint-authoring, target: do-oscal-component, label: maps blueprint to, props: {access_type: Write}}
+- {type: Access, source: fn-solution-compose, target: do-blueprint, label: composes, props: {access_type: Read}}
+- {type: Access, source: fn-solution-compose, target: do-pattern, label: composes, props: {access_type: Read}}
+- {type: Access, source: fn-solution-compose, target: do-solution-design, label: produces, props: {access_type: Write}}
+- {type: Access, source: fn-solution-compose, target: do-oscal-ssp, label: derives & emits, props: {access_type: Write}}
+- {type: Association, source: do-oscal-ssp, target: do-solution-design, label: derived from}
+- {type: Access, source: fn-threat-model, target: do-pattern, label: assesses, props: {access_type: Read}}
+- {type: Access, source: fn-threat-model, target: do-blueprint, label: assesses, props: {access_type: Read}}
+- {type: Access, source: fn-threat-model, target: do-solution-design, label: assesses, props: {access_type: Read}}
+- {type: Access, source: fn-threat-model, target: do-threat-model, label: produces, props: {access_type: Write}}
 
 # =====================================================================
 # C. Stage 3 — Digital Twin & Governance
 # =====================================================================
-- {type: Access, source: ext-cloud, target: art-infra-state, label: reports, props: {access_type: Write}}
-- {type: Access, source: fn-cicd-deploy, target: art-deploy-event, label: records, props: {access_type: Write}}
-- {type: Access, source: fn-twin-ingest, target: art-infra-state, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-twin-ingest, target: art-deploy-event, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-twin-ingest, target: art-twin, label: builds, props: {access_type: Write}}
-- {type: Access, source: ext-rfp, target: art-candidate-arch, label: submits, props: {access_type: Write}}
-- {type: Access, source: fn-options-model, target: art-solution-design, label: draws on, props: {access_type: Read}}
-- {type: Access, source: fn-options-model, target: art-candidate-arch, label: models, props: {access_type: Write}}
-- {type: Access, source: fn-governance-eval, target: art-candidate-arch, label: evaluates, props: {access_type: Read}}
-- {type: Access, source: fn-governance-eval, target: art-twin, label: reads for impact, props: {access_type: Read}}
-- {type: Access, source: fn-governance-eval, target: art-impact-assessment, label: produces, props: {access_type: Write}}
-- {type: Access, source: fn-governance-eval, target: art-adr, label: records, props: {access_type: Write}}
-- {type: Access, source: fn-governance-eval, target: art-archived-option, label: archives with rationale, props: {access_type: Write}}
-- {type: Access, source: fn-notation-engine, target: art-metamodel, label: constrained by, props: {access_type: Read}}
-- {type: Access, source: fn-notation-engine, target: art-candidate-arch, label: renders, props: {access_type: Read}}
+- {type: Access, source: ext-cloud, target: do-infra-state, label: reports, props: {access_type: Write}}
+- {type: Access, source: fn-cicd-deploy, target: do-deploy-event, label: records, props: {access_type: Write}}
+- {type: Access, source: fn-twin-ingest, target: do-infra-state, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-twin-ingest, target: do-deploy-event, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-twin-ingest, target: do-twin, label: builds, props: {access_type: Write}}
+- {type: Access, source: ext-rfp, target: do-candidate-arch, label: submits, props: {access_type: Write}}
+- {type: Access, source: fn-options-model, target: do-solution-design, label: draws on, props: {access_type: Read}}
+- {type: Access, source: fn-options-model, target: do-candidate-arch, label: models, props: {access_type: Write}}
+- {type: Access, source: fn-governance-eval, target: do-candidate-arch, label: evaluates, props: {access_type: Read}}
+- {type: Access, source: fn-governance-eval, target: do-twin, label: reads for impact, props: {access_type: Read}}
+- {type: Access, source: fn-governance-eval, target: do-impact-assessment, label: produces, props: {access_type: Write}}
+- {type: Access, source: fn-governance-eval, target: do-adr, label: records, props: {access_type: Write}}
+- {type: Access, source: fn-governance-eval, target: do-archived-option, label: archives with rationale, props: {access_type: Write}}
+- {type: Access, source: fn-notation-engine, target: do-metamodel, label: constrained by, props: {access_type: Read}}
+- {type: Access, source: fn-notation-engine, target: do-candidate-arch, label: renders, props: {access_type: Read}}
 - {type: Serving, source: fn-notation-engine, target: fn-options-model, label: renders candidate models for}
 
 # =====================================================================
 # C. Forensic ledger — every governed action lands an immutable record
 # =====================================================================
-- {type: Access, source: fn-ledger-record, target: art-ledger-entry, label: appends, props: {access_type: Write}}
+- {type: Access, source: fn-ledger-record, target: do-ledger-entry, label: appends, props: {access_type: Write}}
 - {type: Flow, source: fn-governance-eval, target: fn-ledger-record, label: records decisions to}
 - {type: Flow, source: fn-enforcement-gate, target: fn-ledger-record, label: records gate outcomes to}
 - {type: Flow, source: fn-drift-engine, target: fn-ledger-record, label: records drift events to}
@@ -669,72 +669,72 @@
 # =====================================================================
 # C. Stage 4 — Assurance & Specification
 # =====================================================================
-- {type: Access, source: fn-spec-generator, target: art-pattern, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-spec-generator, target: art-blueprint, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-spec-generator, target: art-solution-design, label: reads, props: {access_type: Read}}
-- {type: Access, source: fn-spec-generator, target: art-dev-spec, label: generates, props: {access_type: Write}}
-- {type: Access, source: fn-scm-versioning, target: art-dev-spec, label: versions, props: {access_type: Read}}
-- {type: Access, source: fn-scm-change-review, target: art-dev-spec, label: reviews against, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: do-pattern, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: do-blueprint, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: do-solution-design, label: reads, props: {access_type: Read}}
+- {type: Access, source: fn-spec-generator, target: do-dev-spec, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-scm-versioning, target: do-dev-spec, label: versions, props: {access_type: Read}}
+- {type: Access, source: fn-scm-change-review, target: do-dev-spec, label: reviews against, props: {access_type: Read}}
 - {type: Flow, source: fn-scm-change-review, target: fn-cicd-build, label: merged change triggers}
-- {type: Access, source: fn-cicd-build, target: art-release-candidate, label: packages, props: {access_type: Write}}
-- {type: Access, source: fn-build-supervision, target: art-dev-spec, label: enforces, props: {access_type: Read}}
-- {type: Access, source: fn-build-supervision, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
+- {type: Access, source: fn-cicd-build, target: do-release-candidate, label: packages, props: {access_type: Write}}
+- {type: Access, source: fn-build-supervision, target: do-dev-spec, label: enforces, props: {access_type: Read}}
+- {type: Access, source: fn-build-supervision, target: do-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
 - {type: Flow, source: fn-build-supervision, target: fn-scm-change-review, label: conformant agent changes}
 - {type: Flow, source: fn-build-supervision, target: fn-ledger-record, label: records agent actions to}
 - {type: Flow, source: fn-oscal-conversion, target: fn-ledger-record, label: records conversion provenance to}
-- {type: Access, source: fn-enforcement-gate, target: art-release-candidate, label: evaluates, props: {access_type: Read}}
-- {type: Access, source: fn-enforcement-gate, target: art-ledger-entry, label: verifies process controls from, props: {access_type: Read}}
-- {type: Access, source: fn-enforcement-gate, target: art-dev-spec, label: checks against, props: {access_type: Read}}
-- {type: Access, source: fn-enforcement-gate, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
-- {type: Access, source: fn-enforcement-gate, target: art-oscal-catalog, label: checks against, props: {access_type: Read}}
-- {type: Access, source: fn-enforcement-gate, target: art-oscal-assessment-plan, label: generates, props: {access_type: Write}}
-- {type: Access, source: fn-enforcement-gate, target: art-gate-decision, label: issues, props: {access_type: Write}}
-- {type: Access, source: fn-cicd-deploy, target: art-gate-decision, label: acts on, props: {access_type: Read}}
-- {type: Access, source: fn-itsm-change, target: art-gate-decision, label: attaches as approval evidence, props: {access_type: Read}}
-- {type: Access, source: fn-effectiveness-monitor, target: art-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
-- {type: Access, source: fn-effectiveness-monitor, target: art-oscal-assessment-plan, label: generates, props: {access_type: Write}}
-- {type: Access, source: fn-effectiveness-monitor, target: art-twin, label: observes, props: {access_type: Read}}
-- {type: Access, source: fn-effectiveness-monitor, target: art-effectiveness-evidence, label: records, props: {access_type: Write}}
-- {type: Specialization, source: art-gate-decision, target: art-oscal-ar, label: pre-release instance}
-- {type: Specialization, source: art-effectiveness-evidence, target: art-oscal-ar, label: continuous-monitoring instance}
-- {type: Access, source: fn-drift-engine, target: art-twin, label: reads current state, props: {access_type: Read}}
-- {type: Access, source: fn-drift-engine, target: art-adr, label: reads intent, props: {access_type: Read}}
-- {type: Access, source: fn-drift-engine, target: art-architecture-roadmap, label: reconciles against the transition state in effect, props: {access_type: Read}}
-- {type: Access, source: fn-drift-engine, target: art-drift-report, label: classifies, props: {access_type: Write}}
-- {type: Access, source: fn-drift-engine, target: art-remediation-item, label: promotes to, props: {access_type: Write}}
-- {type: Access, source: fn-itsm-backlog, target: art-remediation-item, label: schedules, props: {access_type: ReadWrite}}
-- {type: Access, source: fn-enforcement-gate, target: art-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
-- {type: Access, source: fn-effectiveness-monitor, target: art-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
+- {type: Access, source: fn-enforcement-gate, target: do-release-candidate, label: evaluates, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: do-ledger-entry, label: verifies process controls from, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: do-dev-spec, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: do-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: do-oscal-catalog, label: checks against, props: {access_type: Read}}
+- {type: Access, source: fn-enforcement-gate, target: do-oscal-assessment-plan, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-enforcement-gate, target: do-gate-decision, label: issues, props: {access_type: Write}}
+- {type: Access, source: fn-cicd-deploy, target: do-gate-decision, label: acts on, props: {access_type: Read}}
+- {type: Access, source: fn-itsm-change, target: do-gate-decision, label: attaches as approval evidence, props: {access_type: Read}}
+- {type: Access, source: fn-effectiveness-monitor, target: do-oscal-ssp, label: reads expected controls, props: {access_type: Read}}
+- {type: Access, source: fn-effectiveness-monitor, target: do-oscal-assessment-plan, label: generates, props: {access_type: Write}}
+- {type: Access, source: fn-effectiveness-monitor, target: do-twin, label: observes, props: {access_type: Read}}
+- {type: Access, source: fn-effectiveness-monitor, target: do-effectiveness-evidence, label: records, props: {access_type: Write}}
+- {type: Specialization, source: do-gate-decision, target: do-oscal-ar, label: pre-release instance}
+- {type: Specialization, source: do-effectiveness-evidence, target: do-oscal-ar, label: continuous-monitoring instance}
+- {type: Access, source: fn-drift-engine, target: do-twin, label: reads current state, props: {access_type: Read}}
+- {type: Access, source: fn-drift-engine, target: do-adr, label: reads intent, props: {access_type: Read}}
+- {type: Access, source: fn-drift-engine, target: do-architecture-roadmap, label: reconciles against the transition state in effect, props: {access_type: Read}}
+- {type: Access, source: fn-drift-engine, target: do-drift-report, label: classifies, props: {access_type: Write}}
+- {type: Access, source: fn-drift-engine, target: do-remediation-item, label: promotes to, props: {access_type: Write}}
+- {type: Access, source: fn-itsm-backlog, target: do-remediation-item, label: schedules, props: {access_type: ReadWrite}}
+- {type: Access, source: fn-enforcement-gate, target: do-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
+- {type: Access, source: fn-effectiveness-monitor, target: do-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
 
 # =====================================================================
 # C. Stores aggregate the persistent artefacts (ties C back to section B)
 # =====================================================================
-- {type: Aggregation, source: store-oscal, target: art-oscal-catalog}
-- {type: Aggregation, source: store-oscal, target: art-oscal-profile}
-- {type: Aggregation, source: store-oscal, target: art-oscal-resolved-catalog}
-- {type: Aggregation, source: store-oscal, target: art-oscal-component}
-- {type: Aggregation, source: store-oscal, target: art-oscal-ssp}
-- {type: Aggregation, source: store-oscal, target: art-oscal-assessment-plan}
-- {type: Aggregation, source: store-oscal, target: art-oscal-ar}
-- {type: Aggregation, source: store-oscal, target: art-oscal-poam}
-- {type: Aggregation, source: store-patterns, target: art-pattern}
-- {type: Aggregation, source: store-patterns, target: art-blueprint}
-- {type: Aggregation, source: store-patterns, target: art-solution-design}
-- {type: Aggregation, source: store-patterns, target: art-threat-model}
-- {type: Aggregation, source: store-akg, target: art-twin}
-- {type: Aggregation, source: store-akg, target: art-candidate-arch}
-- {type: Aggregation, source: store-akg, target: art-adr}
-- {type: Aggregation, source: store-akg, target: art-target-architecture}
-- {type: Aggregation, source: store-akg, target: art-architecture-roadmap}
-- {type: Aggregation, source: store-akg, target: art-impact-assessment}
-- {type: Aggregation, source: store-akg, target: art-archived-option}
-- {type: Aggregation, source: store-akg, target: art-drift-report}
-- {type: Aggregation, source: store-akg, target: art-effectiveness-evidence}
-- {type: Aggregation, source: store-frameworks, target: art-baseline}
-- {type: Aggregation, source: store-frameworks, target: art-baseline-profile}
-- {type: Aggregation, source: store-frameworks, target: art-baseline-resolved-catalog}
-- {type: Aggregation, source: store-frameworks, target: art-metamodel}
-- {type: Aggregation, source: store-ledger, target: art-ledger-entry}
+- {type: Aggregation, source: store-oscal, target: do-oscal-catalog}
+- {type: Aggregation, source: store-oscal, target: do-oscal-profile}
+- {type: Aggregation, source: store-oscal, target: do-oscal-resolved-catalog}
+- {type: Aggregation, source: store-oscal, target: do-oscal-component}
+- {type: Aggregation, source: store-oscal, target: do-oscal-ssp}
+- {type: Aggregation, source: store-oscal, target: do-oscal-assessment-plan}
+- {type: Aggregation, source: store-oscal, target: do-oscal-ar}
+- {type: Aggregation, source: store-oscal, target: do-oscal-poam}
+- {type: Aggregation, source: store-patterns, target: do-pattern}
+- {type: Aggregation, source: store-patterns, target: do-blueprint}
+- {type: Aggregation, source: store-patterns, target: do-solution-design}
+- {type: Aggregation, source: store-patterns, target: do-threat-model}
+- {type: Aggregation, source: store-akg, target: do-twin}
+- {type: Aggregation, source: store-akg, target: do-candidate-arch}
+- {type: Aggregation, source: store-akg, target: do-adr}
+- {type: Aggregation, source: store-akg, target: do-target-architecture}
+- {type: Aggregation, source: store-akg, target: do-architecture-roadmap}
+- {type: Aggregation, source: store-akg, target: do-impact-assessment}
+- {type: Aggregation, source: store-akg, target: do-archived-option}
+- {type: Aggregation, source: store-akg, target: do-drift-report}
+- {type: Aggregation, source: store-akg, target: do-effectiveness-evidence}
+- {type: Aggregation, source: store-frameworks, target: do-baseline}
+- {type: Aggregation, source: store-frameworks, target: do-baseline-profile}
+- {type: Aggregation, source: store-frameworks, target: do-baseline-resolved-catalog}
+- {type: Aggregation, source: store-frameworks, target: do-metamodel}
+- {type: Aggregation, source: store-ledger, target: do-ledger-entry}
 
 # =====================================================================
 # D. IT4IT TOUCHPOINTS — this platform's own capabilities aligned to IT4IT
@@ -838,14 +838,14 @@
 # =====================================================================
 - {type: Assignment, source: node-ci-runner, target: sw-pytest}
 - {type: Assignment, source: sw-pytest, target: techproc-oscal-golden-check}
-- {type: Access, source: techproc-oscal-golden-check, target: art-oscal-catalog, label: checks against golden dataset, props: {access_type: Read}}
-- {type: Access, source: techproc-oscal-golden-check, target: art-baseline, label: golden-dataset baseline, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: do-oscal-catalog, label: checks against golden dataset, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: do-baseline, label: golden-dataset baseline, props: {access_type: Read}}
 - {type: Flow, source: fn-oscal-conversion, target: techproc-oscal-golden-check, label: generated catalog checked by}
-- {type: Access, source: techproc-oscal-golden-check, target: art-oscal-profile, label: checks against golden dataset, props: {access_type: Read}}
-- {type: Access, source: techproc-oscal-golden-check, target: art-baseline-profile, label: golden-dataset baseline, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: do-oscal-profile, label: checks against golden dataset, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: do-baseline-profile, label: golden-dataset baseline, props: {access_type: Read}}
 - {type: Flow, source: fn-baseline-tailoring, target: techproc-oscal-golden-check, label: generated profile checked by}
-- {type: Access, source: techproc-oscal-golden-check, target: art-oscal-resolved-catalog, label: checks against golden dataset, props: {access_type: Read}}
-- {type: Access, source: techproc-oscal-golden-check, target: art-baseline-resolved-catalog, label: golden-dataset baseline, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: do-oscal-resolved-catalog, label: checks against golden dataset, props: {access_type: Read}}
+- {type: Access, source: techproc-oscal-golden-check, target: do-baseline-resolved-catalog, label: golden-dataset baseline, props: {access_type: Read}}
 - {type: Flow, source: fn-oscal-profile-resolve, target: techproc-oscal-golden-check, label: generated resolved catalog checked by}
 - {type: Serving, source: ext-llm, target: techproc-oscal-golden-check, label: provides LLM-as-judge paraphrase comparison for}
 - {type: Serving, source: ext-trestle, target: techproc-oscal-golden-check, label: runs real profile-resolve for}
