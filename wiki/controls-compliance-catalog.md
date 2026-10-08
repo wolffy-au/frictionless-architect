@@ -161,7 +161,7 @@ all first-party Pydantic v2 models unless noted as a filesystem artefact:
 - **TrestleEditableMarkdownCatalog** — filesystem artefact + status record;
   lifecycle `converting → converted → validating → validated` or
   `conversion_failed` / `validation_failed` (mirrored in the architecture
-  model as `art-oscal-catalog`'s `status-lifecycle` property).
+  model as `do-oscal-catalog`'s `status-lifecycle` property).
 - **ValidationReport** — ported shape, always carries the note "Structural
   validation only; not an audit opinion." (FR-010/SC-004).
 - **ApprovalRecord** — derived from the ledger, not an independent store
