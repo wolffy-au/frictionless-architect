@@ -99,7 +99,7 @@ New elements (`architecture/model/elements.yaml`):
 | ValueStream | `vs-intent-to-model` | Intent to Model |
 | Outcome | `outcome-architect-authored-model` | Architect-Authored Model Changes |
 | BusinessProcess | `process-conversational-authoring` | Conversational Model Authoring |
-| DataObject | `art-convention-rules` | Enterprise Convention Rules |
+| DataObject | `do-convention-rules` | Enterprise Convention Rules |
 
 New relationships (`architecture/model/relationships.yaml`):
 
@@ -109,8 +109,8 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Realization process-conversational-authoring → cap-conversational-governance`
 - `Realization fn-conversational-authoring → process-conversational-authoring` (the settled app function now realizes a business process, resolving Assumption 6)
 - `Serving process-conversational-authoring → role-ea` and `→ role-sa` (shared standing process, not per-role ad hoc)
-- `Aggregation store-frameworks → art-convention-rules` (same pattern as `art-metamodel`)
-- `Access fn-conversational-authoring → art-convention-rules` (Read)
+- `Aggregation store-frameworks → do-convention-rules` (same pattern as `do-metamodel`)
+- `Access fn-conversational-authoring → do-convention-rules` (Read)
 
 Override Decision Records are **not** a model element: per R7 they're auto-drafted ADR stubs
 under `docs/adr/`, so no new DataObject, aggregation or access relationship exists for them.
