@@ -60,6 +60,16 @@ unique, which is all `det_id()` needs.
   `.claude/skills/fork-sync/forks.yml`, though as an authored repo (not a fork
   of an existing upstream) `fork-sync` on it is a no-op until it has a real
   upstream.
+- The vendored value-stream `Flow` edges (`third_party/it4it/relationships.yaml`)
+  carry the IT4IT standard's own dense, multi-directional stream-to-stream
+  network verbatim, not a simple chain — several stream pairs flow both ways
+  in the source standard itself. `.claude/skills/model-archimate/scripts/check_derived.py`
+  (GH #99) flags the resulting two-hop duplicates as advisory findings; they
+  are recorded there as an accepted exception (any `Flow` duplicate between
+  two IT4IT value-stream elements) rather than edited out, because "no
+  touchpoint-filtering" above means this repo does not hand-prune vendored
+  relationships — a real correction belongs upstream in `frictionless-it4it`,
+  pulled in on the next `fork-sync`.
 
 ## Alternatives considered
 
