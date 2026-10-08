@@ -119,9 +119,20 @@ plugins = [
 ]
 
 # Skill / build tooling lives outside src/ and is exercised by tests/tools/.
-# Type-check the tests, not these script modules pulled in through them.
+# Type-check the tests, not these script modules pulled in through them (GH #101).
+# Baseline mypy error counts with the override emptied (see GH #101 for detail):
+# wiki_common (11 errors): dict/type-arg gaps throughout its JSON-ish helpers — biggest
+#   single-module fix, left for its own pass.
+# verify_wiki (4 errors): same dict/type-arg gaps, inherited from wiki_common's shapes.
+# build_status (0 errors): clean already, but stays listed pending its own de-override
+#   pass so the override list and this comment are updated together per module.
+# resolve_sources (0 errors): clean already; same reasoning as build_status.
+# semsearch (2 errors): tuple/type-arg gap plus a `Returning Any` from a stdlib call.
+# build (0 errors): clean already, but pyArchimate objects it builds from are largely
+#   untyped, so a real strict pass needs stub work, not just this override removed.
+# viewpoints (2 errors): `Returning Any` plus an `Optional` not narrowed before indexing.
 [[tool.mypy.overrides]]
-module = ["wiki_common", "verify_wiki", "build_status", "resolve_sources", "semsearch", "build", "import_gh_roadmap", "viewpoints"]
+module = ["wiki_common", "verify_wiki", "build_status", "resolve_sources", "semsearch", "build", "viewpoints"]
 ignore_errors = true
 
 [[tool.mypy.overrides]]
