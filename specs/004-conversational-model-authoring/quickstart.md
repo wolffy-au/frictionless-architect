@@ -44,9 +44,8 @@ type(s); `decide` with `action: "keep-direct"` applies the direct form anyway (i
 ## 5. Override traceability (US2 Scenario 4, FR-014)
 
 Repeat step 2 or 3, then call `decide` with `action: "override"` and a `rationale`. Expect
-`status: "applied"` and a non-null `override_decision_id`; confirm the ledger
-(`store-ledger`/`art-override-decision`) carries an entry whose `objection_detail` matches
-what was overridden.
+`status: "applied"` and a non-null `override_decision_id`; confirm `docs/adr/` now has a new
+`Status: Proposed` ADR stub whose body's `objection_detail` matches what was overridden (R7).
 
 ## 6. Render, auto and on-request (US1 Scenarios 2–3, SC-005)
 

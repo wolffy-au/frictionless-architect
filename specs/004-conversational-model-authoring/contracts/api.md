@@ -26,7 +26,7 @@ alt invalid or duplicate or non-idiomatic
   alt architect overrides
     Architect -> Chat : proceed anyway + rationale
     Chat -> Model : apply delta
-    Chat -> Chat : record Override Decision Record (store-ledger)
+    Chat -> Chat : draft Override Decision Record (ADR stub, docs/adr/)
   end
 else valid, no flags
   Val --> Chat : clean
@@ -81,6 +81,7 @@ duplicate, accept-pattern/keep-direct on a pattern suggestion, or overriding a r
   ```json
   { "delta_id": "d1", "status": "applied", "state_classification": "Transition", "override_decision_id": null }
   ```
+  `override_decision_id` is the auto-drafted ADR stub's number (R7, e.g. `"0037"`); `null` when no objection was overridden.
 - **Error (409)**: `delta_id` is not in `flagged`/`validated` status (already applied or discarded) — the UI should re-propose.
 - **Error (422)**: ambiguous state classification (US3 Scenario 2) — response carries `{"needs": "state_classification"}`; resubmit with `{ "action": "apply", "state_classification": "Transition" }`.
 
