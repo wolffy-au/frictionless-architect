@@ -1,7 +1,7 @@
 @startuml
 !include <archimate/Archimate>
 
-title Artefact Flow — Digital Twin & Governance
+title Data Flow — Digital Twin & Governance
 
 Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")

@@ -1,7 +1,7 @@
 @startuml
 !include <archimate/Archimate>
 
-title Artefact Flow — Assurance & Specification
+title Data Flow — Assurance & Specification
 
 Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
   Application_Function(e_id29feb234dcb55b, "Agentic Build Supervision")

@@ -1,7 +1,7 @@
 @startuml
 !include <archimate/Archimate>
 
-title Artefact Flow — Controls & OSCAL
+title Data Flow — Controls & OSCAL
 
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Interface(e_id95791e10ad1d54, "Compliance Catalog UI")

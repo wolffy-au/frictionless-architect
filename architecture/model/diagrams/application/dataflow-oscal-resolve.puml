@@ -1,7 +1,7 @@
 @startuml
 !include <archimate/Archimate>
 
-title Artefact Flow — OSCAL Profile Resolution
+title Data Flow — OSCAL Profile Resolution
 
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
