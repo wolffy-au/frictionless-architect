@@ -36,8 +36,8 @@ read/write, matching `architecture/model/build.py`'s own YAML authoring
 **Storage**: `architecture/model/*.yaml` for applied changes (regenerated via `build.py`'s
 logic, now ported into the package per R2, never hand-edited); new
 `architecture/model/conventions.yaml` for Enterprise
-Convention Rules (new persistent surface, Assumption 2); Override Decision Records appended
-to the existing Forensic Audit Ledger (`store-ledger`) rather than a new store. Candidate
+Convention Rules (new persistent surface, Assumption 2); Override Decision Records are
+auto-drafted ADR stubs under `docs/adr/` (R7), not a `store-ledger` entry or new store. Candidate
 Deltas are **in-process memory only**, keyed by conversation/session id — no database, per the
 session-scoped Clarification and the single-user-local MVP (ADR-0024)
 
@@ -84,7 +84,7 @@ scale, not a multi-tenant one
 | VII. Integrity | Every candidate is validated against the same pyArchimate checks `build.py`/`validate.py` already enforce, before, not after, it reaches `architecture/model/`. Pass. |
 | VIII. Durability | Applied changes land in the existing YAML schema (ADR-0007/0008) via the existing regeneration path; no new on-disk format for the model itself. Pass. |
 | IX. Cross-Platform | FastAPI/Python, no OS-specific paths beyond what the existing visualiser already assumes. Pass. |
-| X. Decision Traceability | Model impact stated below; **ADR-0036 required** before `/speckit-tasks` for: package location, validation-module incorporation (shared between the skill and the app without forking, Assumption 1), Enterprise Convention Rule config surface, Override Decision Record reusing `store-ledger`, and the business-layer/ValueStream wiring (Assumption 6). Tracked as a plan follow-up, not yet filed. |
+| X. Decision Traceability | Model impact stated below; **ADR-0036 required** before `/speckit-tasks` for: package location, validation-module incorporation (shared between the skill and the app without forking, Assumption 1), Enterprise Convention Rule config surface, the Override Decision Record auto-drafted-ADR mechanism (R7), and the business-layer/ValueStream wiring (Assumption 6). Tracked as a plan follow-up, not yet filed. |
 | XI. Concise Artefacts | Entity detail lives only in `data-model.md`; this plan links to it rather than restating fields. |
 
 No violations; Complexity Tracking is empty — a new platform package is the sanctioned
@@ -100,7 +100,6 @@ New elements (`architecture/model/elements.yaml`):
 | Outcome | `outcome-architect-authored-model` | Architect-Authored Model Changes |
 | BusinessProcess | `process-conversational-authoring` | Conversational Model Authoring |
 | DataObject | `art-convention-rules` | Enterprise Convention Rules |
-| DataObject | `art-override-decision` | Override Decision Record |
 
 New relationships (`architecture/model/relationships.yaml`):
 
@@ -111,8 +110,10 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Realization fn-conversational-authoring → process-conversational-authoring` (the settled app function now realizes a business process, resolving Assumption 6)
 - `Serving process-conversational-authoring → role-ea` and `→ role-sa` (shared standing process, not per-role ad hoc)
 - `Aggregation store-frameworks → art-convention-rules` (same pattern as `art-metamodel`)
-- `Aggregation store-ledger → art-override-decision` (same pattern as `art-ledger-entry` — reuses the Forensic Audit Ledger rather than a new store)
-- `Access fn-conversational-authoring → art-convention-rules` (Read), `Access fn-conversational-authoring → art-override-decision` (Write)
+- `Access fn-conversational-authoring → art-convention-rules` (Read)
+
+Override Decision Records are **not** a model element: per R7 they're auto-drafted ADR stubs
+under `docs/adr/`, so no new DataObject, aggregation or access relationship exists for them.
 
 No existing element, relationship or view is retired or renamed. `tasks.md` carries the YAML
 edits, `build.py` regeneration and `validate.py`/shared-module re-check (Principle X).
