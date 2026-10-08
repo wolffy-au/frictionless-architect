@@ -61,7 +61,7 @@ ViewRequest ..> CandidateDelta : may follow one, to render it
 
 ## Candidate Delta
 
-Concept and `art-candidate-arch` mapping: spec.md Key Entities. Fields:
+Concept and `do-candidate-arch` mapping: spec.md Key Entities. Fields:
 
 | Field | Type | Notes |
 |---|---|---|
@@ -98,7 +98,7 @@ Discarded and Applied are terminal; a discarded delta is never resumed (R8).
 
 Concept: spec.md Key Entities. **New persistent surface** — lives in
 `architecture/model/conventions.yaml`, alongside `store-frameworks` (new artifact
-`art-convention-rules`, Assumption 2).
+`do-convention-rules`, Assumption 2).
 
 | Field | Type | Notes |
 |---|---|---|

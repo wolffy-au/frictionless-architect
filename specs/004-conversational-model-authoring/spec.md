@@ -148,7 +148,7 @@ Architect --> UC2
 
 ### Key Entities *(include if feature involves data)*
 
-- **Candidate Delta**: A proposed, not-yet-applied set of model element/relationship additions or changes derived from one natural-language request; carries its own validation and duplicate-check outcome until the architect accepts, rejects, or revises it. Session-scoped — if the conversation is closed or interrupted first, the pending delta is discarded, not resumed. Maps to the model's existing `art-candidate-arch` artifact.
+- **Candidate Delta**: A proposed, not-yet-applied set of model element/relationship additions or changes derived from one natural-language request; carries its own validation and duplicate-check outcome until the architect accepts, rejects, or revises it. Session-scoped — if the conversation is closed or interrupted first, the pending delta is discarded, not resumed. Maps to the model's existing `do-candidate-arch` data object.
 - **Enterprise Convention Rule**: A configurable rule (naming, altitude-of-language, allowed element subset, interposed-element patterns, etc.) checked in addition to the fixed ArchiMate metamodel rules; organisation-specific and editable, unlike the metamodel rules. New model surface — see Assumptions.
 - **Duplicate Candidate**: An existing element or relationship flagged under the FR-005 match rule as plausibly the same real-world thing as a proposed one; requires an explicit keep-both, merge, or reject decision.
 - **Pattern Suggestion**: A flagged case where a proposed direct relationship could be expressed more faithfully via an established intermediary-element pattern already used elsewhere in the model; requires an analogous explicit decision, but is not itself a duplicate.
