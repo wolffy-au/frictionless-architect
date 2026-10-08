@@ -165,22 +165,19 @@ Concept and `views.yaml` mapping: spec.md Key Entities. Fields:
 
 ## Override Decision Record
 
-Concept: spec.md Key Entities. **New persistent surface** (Constitution Principle X) —
-appended to the existing `store-ledger` (Forensic Audit Ledger) as artifact
-`art-override-decision` (R7), not a new store.
+Concept: spec.md Key Entities. **New persistent surface** (Constitution Principle X) — an
+auto-drafted `Status: Proposed` ADR stub under `docs/adr/`, not a `store-ledger` entry (R7):
+architecture-decision traceability stays on the ADR log, separate from the controls/compliance
+evidence `store-ledger` backs. `adr-auditor`'s normal sweep picks the stub up for review.
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | string | Ledger entry id, same scheme as `art-ledger-entry` |
+| `id` | string | ADR number assigned on draft, e.g. `0037` |
 | `overridden_objection` | `rejection \| duplicate \| pattern` | Which of FR-004/FR-006/FR-008's objections was overridden |
 | `objection_detail` | string | The specific rule/duplicate/pattern the agent cited |
 | `rationale` | string or `null` | Architect's stated reason; `null` when none was given (R11, Edge Case 7) |
 | `applied_delta_summary` | string | What was actually applied once overridden |
-| `timestamp` | ISO 8601 | Append time |
-
-Load-bearing by definition (Constitution Principle X) — each Override Decision Record is a
-candidate ADR; `adr-auditor` picks these up from the ledger during its normal sweep, no new
-tooling required.
+| `timestamp` | ISO 8601 | Draft time |
 
 ## Invariants (asserted by tests)
 
