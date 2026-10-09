@@ -346,7 +346,9 @@ def build_layer(
     for number in sorted(unreleased_for):
         title = _title(milestones, number)
         elements.append(
-            _element("Deliverable", unreleased_id(title, number), f"{title} (unreleased)", props={"gh-number": str(number)})
+            _element(
+                "Deliverable", unreleased_id(title, number), f"{title} (unreleased)", props={"gh-number": str(number)}
+            )
         )
         rels.append(_link("Realization", unreleased_id(title, number), plateau_by_number[number]))
     return {

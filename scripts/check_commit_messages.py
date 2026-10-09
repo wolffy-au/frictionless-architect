@@ -31,7 +31,7 @@ MAX_SUBJECT = 72
 MAX_BODY_LINE = 72
 TRAILER = re.compile(r"^(BREAKING CHANGE|[A-Za-z][A-Za-z-]*): ")
 SUBJECT = re.compile(r"^(?P<type>[a-z]+)(?:\((?P<scope>[^)]*)\))?(?P<bang>!)?: (?P<desc>.+)$")
-AUTO_PREFIXES = ("Merge ", "Revert \"", "fixup! ", "squash! ")
+AUTO_PREFIXES = ("Merge ", 'Revert "', "fixup! ", "squash! ")
 
 
 def area_scopes(standard: Path = STANDARD) -> set[str]:
@@ -86,7 +86,10 @@ def commits_in_range(rev_range: str) -> list[tuple[str, str]]:
     """Return (short sha, full message) for each non-merge commit in the range."""
     out = subprocess.run(
         ["git", "log", "--no-merges", "--format=%h%x1f%B%x1e", rev_range],
-        check=True, capture_output=True, text=True, cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
     ).stdout
     pairs = (entry.strip("\n").partition("\x1f") for entry in out.split("\x1e") if entry.strip())
     return [(sha.strip(), body.strip()) for sha, _, body in pairs]
@@ -121,8 +124,10 @@ def main(argv: list[str] | None = None) -> int:
             for problem in problems:
                 print(f"  - {problem}", file=sys.stderr)
     if failed:
-        print(f"{failed} commit message(s) break the standard "
-              "(.claude/skills/commit-message/references/standard.md).", file=sys.stderr)
+        print(
+            f"{failed} commit message(s) break the standard (.claude/skills/commit-message/references/standard.md).",
+            file=sys.stderr,
+        )
         return 1
     return 0
 
