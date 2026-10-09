@@ -1357,6 +1357,23 @@
     path dependency.
   props: {c4: ignore}
 
+# GH #103: of the eight art-pkg-* Artifacts above, four are aggregated by a
+# Plateau below (controls-compliance-catalog + llm-provider-config under
+# plat-policy-to-oscal-mvp-1; digital-twin-knowledge-graph under
+# plat-multi-user-collaboration-2; modelling-specification under
+# plat-solution-design-mvp-8) because each has a WorkPackage that actually
+# performs its extraction (wp-71 / wp-106 / wp-107 below). The other four —
+# art-pkg-schema-visualizer-api, art-pkg-reusable-architecture-library,
+# art-pkg-architecture-governance, art-pkg-conformance-drift-assurance — have
+# no GH issue extracting them yet, so per that same pattern there is no
+# Plateau to honestly aggregate them under; they stay unaggregated until one
+# of them gets its own milestone-scoped WorkPackage. Also per GH #103:
+# wp-7-extract-remaining (the former step-7 catch-all for "whatever's left")
+# was already dropped in a prior commit because it carried no GH issue and
+# realized nothing (consistent with ADR-0035's "an issue is in scope only if
+# it carries its own milestone" rule) — there is deliberately no Realization
+# to re-add for it.
+
 # --- E. Work Packages (ARCHITECTURE.md §8, one per step) ---
 - type: WorkPackage
   id: wp-71-migration-steps-1-3
