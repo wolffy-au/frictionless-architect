@@ -30,7 +30,7 @@ import argparse
 import sys
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, cast
 
 from defusedxml.ElementTree import parse as _safe_parse
 
@@ -150,7 +150,7 @@ def _load_guidance() -> dict[str, dict[str, Any]]:
     import yaml  # local import: pyyaml is a dev dependency
 
     data = yaml.safe_load(GUIDANCE_YAML.read_text()) or {}
-    return data.get("guidance", {})
+    return cast(dict[str, dict[str, Any]], data.get("guidance", {}))
 
 
 @lru_cache(maxsize=1)
@@ -239,8 +239,8 @@ def _fmt_set(s: set[str], unrestricted: bool) -> str:
 
 
 def _cmd_list() -> int:
-    for slug in known_slugs():
-        print(f"{slug:28}  {get_viewpoint(slug)['name']}")
+    for slug, vp in sorted(load_viewpoints().items()):
+        print(f"{slug:28}  {vp['name']}")
     return 0
 
 
