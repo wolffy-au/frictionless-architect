@@ -14,6 +14,16 @@
 
 - Q: When checking a proposed element against existing ones, how strict should the "likely duplicate" match be before it's flagged? → A: Fuzzy match across name, type, and description together — any two of the three being similar triggers a flag.
 - Q: If the architect closes or interrupts the conversation while a candidate delta is still pending, does it survive to the next session? → A: Session-scoped only — an interrupted session's pending delta is discarded; the architect re-describes it next time.
+- Q: If a proposed element resembles an existing one that sits in a different Current/Transition/Target state, should the agent still flag it as a likely duplicate? → A: State is irrelevant to duplication; flag as a duplicate regardless of state, then let the keep/merge/reject decision account for state.
+- Q: If a second proposal in the same conversation touches an element already modified earlier but not yet applied, does it build on the pending delta or validate fresh against the last-applied state? → A: Build on the pending delta — the new proposal amends/extends the still-unapplied candidate; one delta accumulates until explicitly applied or discarded.
+- Q: When an architect overrides an objection without giving a rationale, must the agent require one before recording the override? → A: Rationale is optional — the agent records the override immediately even with no stated reason, leaving the rationale field blank.
+- Q: When a view request resolves to more than one plausible existing view, or to none, should the agent ask the architect to disambiguate or make a best-guess choice? → A: Ask the architect to disambiguate (pick from matches, or restate if none match) rather than guessing.
+- Q: When a proposed direct relationship is legal but no established intermediary-element pattern exists yet for that relationship shape, is it applied as-is or does the absence of a pattern itself require a decision? → A: Apply the direct form as-is — absence of a pattern is not itself a reason to require a decision.
+
+### Session 2026-10-09
+
+- Q: Does validating a candidate delta against the ArchiMate metamodel (FR-002) mean checking the whole model with the delta applied, or only the delta's own internal consistency in isolation? → A: Validate the whole resulting model (delta applied) — a break anywhere is caught, so a change valid on its own but breaking referential integrity elsewhere cannot slip through.
+- Q: When an architect rejects the agent's proposed fix for an already-rejected change, what should the agent do next? → A: Ask the architect to restate or refine the request — the agent does not auto-retry a different fix, and does not drop the request.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -118,13 +128,13 @@ Architect --> UC2
 
 ### Edge Cases
 
-- What happens when a proposed change touches an element or relationship already modified earlier in the same conversation but not yet applied?
-- How does the agent handle a described view request that resolves to more than one plausible existing view, or to no existing view at all?
-- What happens when a duplicate candidate exists in a different Current/Transition/Target state than the proposed change — is that a duplicate at all, or a legitimate Plateau variant?
-- What happens when a proposed direct relationship is legal per the metamodel but no established intermediary-element pattern exists yet for that relationship shape — is it applied as-is, or does the absence of a pattern itself need a decision?
-- How does the agent handle a change request that is valid on its own but would break an existing element's referential integrity elsewhere in the model?
-- What happens when the architect rejects the agent's proposed fix for a rejected change — does the agent retry, ask again, or drop the request?
-- What happens when the architect overrides an objection without giving a rationale — does the agent require one before recording the override, or record it as absent?
+- A proposed change touching an element or relationship already modified earlier in the same conversation but not yet applied amends/extends the still-pending candidate delta, rather than being validated as an independent proposal against the last-applied model state.
+- A described view request that resolves to more than one plausible existing view, or to none at all, is never guessed: the agent asks the architect to disambiguate among the matches, or to restate the request when nothing matches.
+- A duplicate candidate in a different Current/Transition/Target state than the proposed change is still flagged as a duplicate (state is not a differentiator in the match); the architect's keep/merge/reject decision is where a legitimate Plateau variant gets kept.
+- A proposed direct relationship that is legal per the metamodel, but for which no established intermediary-element pattern exists yet, is applied as-is — the absence of a pattern is not itself grounds to require a decision.
+- A change request that is valid on its own but would break an existing element's referential integrity elsewhere in the model cannot reach "applied": FR-002 validates the whole resulting model with the delta applied, not just the delta in isolation, so the break is caught and the change is rejected like any other metamodel violation.
+- When the architect rejects the agent's proposed fix for an already-rejected change, the agent does not auto-retry a different fix and does not drop the request: it asks the architect to restate or refine what they want.
+- An architect who overrides an objection without giving a rationale still has the override recorded immediately — the rationale field is left blank, not required before recording.
 - What happens to a pending (proposed but not yet decided) candidate delta if the conversation is closed or interrupted before the architect accepts, rejects, or revises it?
 
 ## Requirements *(mandatory)*
@@ -132,29 +142,32 @@ Architect --> UC2
 ### Functional Requirements
 
 - **FR-001**: The agent MUST accept a natural-language description of an intended model change and propose a candidate model delta from it.
-- **FR-002**: The agent MUST validate every candidate delta against the ArchiMate metamodel (relationship-matrix legality and referential integrity) before it is applied.
+- **FR-002**: The agent MUST validate every candidate delta against the ArchiMate metamodel (relationship-matrix legality and referential integrity) before it is applied, checking the whole model with the delta applied — not just the delta in isolation — so a change that is valid on its own but breaks referential integrity elsewhere in the model is also caught.
 - **FR-003**: The agent MUST validate every candidate delta against a configurable set of enterprise/domain conventions, separate from and in addition to the fixed ArchiMate metamodel rules.
 - **FR-004**: When a candidate delta fails metamodel or convention validation, the agent MUST reject it with a specific, actionable explanation of which rule it violated, and propose a corrected alternative rather than applying, auto-correcting, or dropping it silently.
-- **FR-005**: Before applying a new element or relationship, the agent MUST check it against existing elements for likely duplicates, flagging a candidate when at least two of name, type, and description are similar to an existing element.
+- **FR-005**: Before applying a new element or relationship, the agent MUST check it against existing elements for likely duplicates, flagging a candidate when at least two of name, type, and description are similar to an existing element, regardless of whether the existing element's Current/Transition/Target state matches the proposed change's state.
 - **FR-006**: When a likely duplicate is found, the agent MUST present the candidate duplicate(s) to the architect and require an explicit keep-both, merge, or reject decision before applying anything.
 - **FR-007**: The agent MUST NOT silently deduplicate or silently create a duplicate under any circumstance.
-- **FR-008**: Before applying a direct relationship, the agent MUST check whether the model's established authoring conventions normally interpose intermediary element(s) for that relationship shape, and if so, flag it and propose the intermediary-element alternative, requiring an explicit decision before applying the direct form.
+- **FR-008**: Before applying a direct relationship, the agent MUST check whether the model's established authoring conventions normally interpose intermediary element(s) for that relationship shape, and if so, flag it and propose the intermediary-element alternative, requiring an explicit decision before applying the direct form. When no such established pattern exists yet for that relationship shape, the direct form is applied as-is without requiring a decision — the absence of a pattern is not itself grounds to flag.
 - **FR-009**: Every change the agent applies MUST be classified as Current, Transition, or Target state.
 - **FR-010**: The classification of an applied change MUST remain queryable after the fact.
 - **FR-011**: Whether a diagram renders automatically after every applied change, or only on an explicit view/object request, MUST be a configurable choice, not a hardcoded behavior.
 - **FR-012**: When configured for automatic rendering, the agent MUST render the affected element(s) as a live diagram immediately after a change is applied, without a manual render step.
 - **FR-013**: The agent MUST render a diagram for an explicitly requested object or described view without a manual render step, reflecting the model's state at the time of the request, regardless of the automatic-rendering configuration.
-- **FR-014**: When an architect overrides the agent's rejection, duplicate flag, or pattern suggestion and proceeds anyway, the agent MUST record the override as a traceable decision — what was overridden, the agent's original objection, and the architect's rationale — for later review, rather than discarding it once applied.
+- **FR-014**: When an architect overrides the agent's rejection, duplicate flag, or pattern suggestion and proceeds anyway, the agent MUST record the override as a traceable decision — what was overridden, the agent's original objection, and the architect's rationale if one was given — for later review, rather than discarding it once applied. The architect's rationale is optional; the agent MUST NOT block or re-prompt for one before recording the override.
+- **FR-015**: When a later request in the same conversation touches an element or relationship already part of the pending candidate delta, the agent MUST amend/extend that pending delta rather than validating the new request as an independent delta against the last-applied model state.
+- **FR-016**: When a view request resolves to more than one plausible existing view, or to none, the agent MUST ask the architect to disambiguate among the matches, or to restate the request, rather than guessing or rendering an unconfirmed choice.
+- **FR-017**: When the architect rejects the agent's proposed fix for an already-rejected change, the agent MUST ask the architect to restate or refine the request rather than automatically retrying a different fix or dropping the request unprompted.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Candidate Delta**: A proposed, not-yet-applied set of model element/relationship additions or changes derived from one natural-language request; carries its own validation and duplicate-check outcome until the architect accepts, rejects, or revises it. Session-scoped — if the conversation is closed or interrupted first, the pending delta is discarded, not resumed. Maps to the model's existing `do-candidate-arch` data object.
+- **Candidate Delta**: A proposed, not-yet-applied set of model element/relationship additions or changes derived from one or more natural-language requests in a conversation; carries its own validation and duplicate-check outcome until the architect accepts, rejects, or revises it. A later request in the same conversation that touches an element or relationship already part of the pending delta amends/extends it rather than starting a second, independent delta — one accumulating candidate per conversation until it is applied or discarded. Session-scoped — if the conversation is closed or interrupted first, the pending delta is discarded, not resumed. Maps to the model's existing `do-candidate-arch` data object.
 - **Enterprise Convention Rule**: A configurable rule (naming, altitude-of-language, allowed element subset, interposed-element patterns, etc.) checked in addition to the fixed ArchiMate metamodel rules; organisation-specific and editable, unlike the metamodel rules. New model surface — see Assumptions.
 - **Duplicate Candidate**: An existing element or relationship flagged under the FR-005 match rule as plausibly the same real-world thing as a proposed one; requires an explicit keep-both, merge, or reject decision.
 - **Pattern Suggestion**: A flagged case where a proposed direct relationship could be expressed more faithfully via an established intermediary-element pattern already used elsewhere in the model; requires an analogous explicit decision, but is not itself a duplicate.
 - **State Classification**: The Current, Transition, or Target tag attached to an applied change, consistent with the model's existing `bo-current-state-architecture` / `bo-transition-state-architecture` / `bo-target-state-architecture` analogues.
-- **View Request**: An architect's request — by naming an existing object or describing a scope — that resolves to a diagram to render live, against the model's existing `views.yaml` entries.
-- **Override Decision Record**: What was overridden, the agent's original objection, and the architect's rationale, captured when an architect proceeds against the agent's objection. Load-bearing by definition (Constitution Principle X) — expect an ADR draft.
+- **View Request**: An architect's request — by naming an existing object or describing a scope — that resolves to a diagram to render live, against the model's existing `views.yaml` entries. A request matching more than one plausible view, or none, is never resolved by guessing — the architect is asked to disambiguate or restate it.
+- **Override Decision Record**: What was overridden, the agent's original objection, and the architect's rationale, captured when an architect proceeds against the agent's objection. The rationale is optional — recorded as blank, not required, when the architect gives none. Load-bearing by definition (Constitution Principle X) — expect an ADR draft.
 
 Of these, only **Enterprise Convention Rule** and **Override Decision Record** are new persistent surface; the rest map to elements, business objects, artifacts, or views already in `architecture/model/`, or are transient (never persisted).
 

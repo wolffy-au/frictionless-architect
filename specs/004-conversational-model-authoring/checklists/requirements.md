@@ -45,3 +45,17 @@
 - `/speckit-clarify` (2026-10-08) resolved two gaps: the duplicate-match threshold (FR-005,
   now "at least two of name/type/description similar") and candidate-delta persistence across
   an interrupted session (session-scoped, discarded — see Key Entities and Edge Cases).
+- `/speckit-clarify` (2026-10-08, second pass) resolved the remaining five open Edge Cases
+  questions: duplicate matching ignores state (FR-005), a later request in the same
+  conversation amends the pending delta rather than starting a second one (new FR-015),
+  override rationale is optional, not required, before recording (FR-014 tightened), an
+  absent intermediary-element pattern is not itself grounds to flag (FR-008 tightened), and
+  an ambiguous/unresolvable view request is never guessed (new FR-016). Two Edge Cases items
+  — the rejected-fix retry flow and a change breaking referential integrity elsewhere —
+  remain open, deferred as lower-impact (see Completion Report).
+- `/speckit-clarify` (2026-10-09) closed both remaining Edge Cases items: FR-002 validates
+  the whole resulting model with the delta applied, not the delta in isolation, so a change
+  valid on its own but breaking referential integrity elsewhere is already caught and rejected
+  (FR-002 tightened, no new FR needed); and a rejected fix for an already-rejected change is
+  never auto-retried or dropped — the agent asks the architect to restate/refine (new FR-017).
+  No Edge Cases items remain open.
