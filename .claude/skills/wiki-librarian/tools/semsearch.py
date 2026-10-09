@@ -29,6 +29,7 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
+from typing import cast
 
 import wiki_common as wc
 
@@ -473,7 +474,7 @@ def cmd_search(args: argparse.Namespace) -> int:
 
     db = connect()
     sql = "SELECT path, start_line, end_line, heading, text, vector FROM chunks"
-    params: tuple = ()
+    params: tuple[str, ...] = ()
     if args.scope == "wiki":
         sql += " WHERE path LIKE 'wiki/%'"
     elif args.scope == "sources":
@@ -549,7 +550,7 @@ def main() -> int:
     REPO = _default_root()
     DB_PATH = REPO / "index.sqlite"
 
-    return args.func(args)
+    return cast(int, args.func(args))
 
 
 if __name__ == "__main__":
