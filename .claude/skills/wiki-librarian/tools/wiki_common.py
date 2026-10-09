@@ -19,6 +19,7 @@ import hashlib
 import io
 import os
 import re
+from typing import Any
 
 import yaml
 
@@ -71,19 +72,19 @@ def apply_root(cli_root: str | None) -> None:
     os.chdir(resolved)
 
 
-def load_yaml(path: str, default=None):
+def load_yaml(path: str, default: Any = None) -> Any:
     if not os.path.exists(path):
         return default
     with io.open(path, encoding="utf-8") as fh:
         return yaml.safe_load(fh) or default
 
 
-def load_topics() -> list[dict]:
+def load_topics() -> list[dict[str, Any]]:
     doc = load_yaml(SOURCES_FILE, {}) or {}
     return doc.get("topics") or []
 
 
-def load_build_log() -> dict:
+def load_build_log() -> dict[str, Any]:
     return load_yaml(BUILD_LOG, {}) or {}
 
 
@@ -102,7 +103,7 @@ def sha256_file(path: str) -> str:
         return sha256_bytes(fh.read())
 
 
-def file_fingerprint(path: str) -> dict | None:
+def file_fingerprint(path: str) -> dict[str, Any] | None:
     """`{sha256, lines}` for a repo file, or None if it does not exist.
 
     `lines` counts newline-terminated lines plus a trailing partial line, so
@@ -132,7 +133,7 @@ def _norm(p: str) -> str:
     return os.path.normpath(p).replace(os.sep, "/")
 
 
-def resolve_topic(topic: dict) -> dict:
+def resolve_topic(topic: dict[str, Any]) -> dict[str, Any]:
     """Expand a topic's declared sources into concrete items.
 
     Returns:
@@ -144,7 +145,7 @@ def resolve_topic(topic: dict) -> dict:
         }
     """
     files: set[str] = set()
-    urls: list[dict] = []
+    urls: list[dict[str, Any]] = []
     unmatched: list[str] = []
     for src in topic.get("sources") or []:
         if not isinstance(src, dict):
@@ -169,7 +170,7 @@ def resolve_topic(topic: dict) -> dict:
     }
 
 
-def resolve_all() -> list[dict]:
+def resolve_all() -> list[dict[str, Any]]:
     return [resolve_topic(t) for t in load_topics()]
 
 
@@ -190,7 +191,7 @@ def page_path(name: str) -> str:
 # --------------------------------------------------------------------------
 
 
-def _diff_fingerprints(current: dict[str, str], logged: dict, noun: str) -> list[str]:
+def _diff_fingerprints(current: dict[str, str], logged: dict[str, Any], noun: str) -> list[str]:
     """Compare {key: path-to-fingerprint} against a logged {key: {sha256}} map.
 
     `current` maps each present source key (repo path, or URL) to the file whose
@@ -209,7 +210,7 @@ def _diff_fingerprints(current: dict[str, str], logged: dict, noun: str) -> list
     return reasons
 
 
-def topic_status(resolved: dict, log: dict) -> tuple[str, list[str]]:
+def topic_status(resolved: dict[str, Any], log: dict[str, Any]) -> tuple[str, list[str]]:
     """Classify one resolved topic against the build log.
 
     Returns (status, reasons) where status is one of NEW, STALE, FRESH.
@@ -232,7 +233,7 @@ def topic_status(resolved: dict, log: dict) -> tuple[str, list[str]]:
     return ("STALE", reasons) if reasons else ("FRESH", [])
 
 
-def orphan_topics(log: dict) -> list[str]:
+def orphan_topics(log: dict[str, Any]) -> list[str]:
     live = {t.get("name") for t in load_topics()}
     return sorted(n for n in (log.get("topics") or {}) if n not in live)
 
