@@ -27,6 +27,7 @@ import io
 import os
 import re
 import sys
+from typing import Any
 
 import wiki_common as wc
 
@@ -55,7 +56,7 @@ def _frontmatter_sources(text: str) -> list[str]:
     return out
 
 
-def check_topic_page_log(resolved: dict, pages: dict, log_topics: dict) -> list[Finding]:
+def check_topic_page_log(resolved: dict[str, Any], pages: dict[str, Any], log_topics: dict[str, Any]) -> list[Finding]:
     found: list[Finding] = []
     for name in resolved:
         if name not in pages:
@@ -71,7 +72,7 @@ def check_topic_page_log(resolved: dict, pages: dict, log_topics: dict) -> list[
     return found
 
 
-def check_index_links(resolved: dict, pages: dict) -> list[Finding]:
+def check_index_links(resolved: dict[str, Any], pages: dict[str, Any]) -> list[Finding]:
     index_text = _read(wc.INDEX_FILE) if os.path.isfile(wc.INDEX_FILE) else ""
     linked = set(re.findall(r"\]\(\s*([A-Za-z0-9._-]+)\.md\s*\)", index_text))
     return [
@@ -79,7 +80,7 @@ def check_index_links(resolved: dict, pages: dict) -> list[Finding]:
     ]
 
 
-def check_page(name: str, path: str, resolved: dict) -> list[Finding]:
+def check_page(name: str, path: str, resolved: dict[str, Any]) -> list[Finding]:
     found: list[Finding] = []
     text = _read(path)
     cites = wc.CITE_FILE_RE.findall(text)
@@ -96,7 +97,7 @@ def check_page(name: str, path: str, resolved: dict) -> list[Finding]:
     return found
 
 
-def check_stray_caches(resolved: dict) -> list[Finding]:
+def check_stray_caches(resolved: dict[str, Any]) -> list[Finding]:
     if not os.path.isdir(wc.CACHE_DIR):
         return []
     referenced = {wc.url_cache_path(u["url"]) for r in resolved.values() for u in r["urls"]}
