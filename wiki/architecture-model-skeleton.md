@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Skeleton"
-generated: 2026-10-01
+generated: 2026-10-08
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -184,11 +184,11 @@ realize instead.
 
 ### Capabilities
 
-There are eight capabilities, named as *abilities* rather than after the artefact they own
-([ADR-0027](architecture.md); `architecture/model/elements.yaml:315-381`).
-Every capability realizes at least one requirement
-(`architecture/model/relationships.yaml:15-45`), and each is `Assignment`-linked
-from the resource that equips it (`architecture/model/relationships.yaml:47-57`):
+There are nine capabilities, named as *abilities* rather than after the artefact they own
+([ADR-0027](architecture.md); `architecture/model/elements.yaml:315-389`).
+Eight realize at least one requirement
+(`architecture/model/relationships.yaml:15-45`) and are each `Assignment`-linked
+from the resource that equips them (`architecture/model/relationships.yaml:47-57`):
 
 | Capability (`id`) | Realizes | Resource |
 |---|---|---|
@@ -200,6 +200,22 @@ from the resource that equips it (`architecture/model/relationships.yaml:47-57`)
 | Human Oversight & Approval (`cap-human-approval-workflow`) | `req-human-signoff` | Enterprise Architecture Practice |
 | Control & Obligation Management (`cap-control-catalog`) | `req-regulatory-mapping`, `req-control-catalog` | OSCAL Control Content |
 | Reusable Architecture Curation (`cap-reusable-architecture`) | `req-reusable-architecture` | Enterprise Architecture Practice |
+
+**Conversational Architecture Governance** (`cap-conversational-governance`,
+added for GH #108) is the ninth, and the one exception to "realizes a
+requirement, assigned from a resource": it realizes no requirement and is
+assigned no resource yet — the `do-convention-rules` / Enterprise Convention
+Rules surface and the GH #108 motivation wiring
+(`specs/004-conversational-model-authoring/plan.md` "Model impact") are
+planned but not yet applied to the model. It lets an architect author model
+changes in natural language, validated against the bundled metamodel and
+configurable enterprise conventions before being proposed, with candidate
+duplicates surfaced for an explicit human decision — `Serving` `cap-spec-engine`
+("validated authoring") and `Association`-linked to `cap-digital-twin`
+("validates proposals against the twin"), realized by `sub-modelling`, the
+same subsystem that realizes Executable Specification Generation
+(`architecture/model/elements.yaml` `cap-conversational-governance`;
+`architecture/model/relationships.yaml:214-215`, `429`).
 
 The fifth resource, **Accumulated Evidence Record** (`res-evidence-record`), is new.
 It is "the growing, append-only body of recorded agent" actions and decisions

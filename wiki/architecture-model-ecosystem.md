@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Ecosystem"
-generated: 2026-10-01
+generated: 2026-10-08
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -42,7 +42,7 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 | Digital Twin & Knowledge Graph (`sub-twin`) | The Architecture Knowledge Graph: intent plane + current-state twin plane | `cap-digital-twin`, `cap-forensic-ledger` |
 | Architecture Governance (`sub-governance`) | Comparative evaluation, the decision + its ADR, archival of rejected options — pure decision-making (options are modelled in the Library) | `cap-human-approval-workflow` |
 | Conformance & Drift Assurance (`sub-assurance`) | Supervises agentic development to enforce controls at build and supplies the *expected controls* that the CI/CD pipeline's inline release gate verifies; BAU effectiveness monitor; drift engine + dashboard | `cap-control-plane`, `cap-drift-dashboard` |
-| Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation | `cap-spec-engine` |
+| Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation; since GH #108, conversational natural-language model authoring validated against the metamodel and enterprise conventions before proposal | `cap-spec-engine`, `cap-conversational-governance` |
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
 view back to the skeleton (`architecture/model/relationships.yaml:419-428`).

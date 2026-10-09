@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-10-05
+generated: 2026-10-08
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -40,6 +40,8 @@ sources:
   - docs/adr/0032-archimate-exchange-namespace-3-0.md
   - docs/adr/0033-value-streams-per-outcome.md
   - docs/adr/0034-shared-packages-and-llm-provider-config.md
+  - docs/adr/0035-github-roadmap-as-implementation-migration-layer.md
+  - docs/adr/0036-element-id-prefix-scheme.md
   - docs/adr/README.md
 ---
 
@@ -381,6 +383,8 @@ not re-ratified in a spec). No record is currently A\*.
 | 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
 | 0033 | One value stream per outcome, organised by value recipient (not by role); streams take stages over rather than duplicate them | A |
 | 0034 | Shared cross-subsystem functionality gets its own `platform/packages/` sibling package; first instance `llm-provider-config` (global + per-component LLM settings, OS-keychain secrets, never `.env`) | A |
+| 0035 | GitHub milestones/issues/releases are imported as the Implementation & Migration layer (Plateau/Work Package/Deliverable), merged through the same `det_id`/`NS` pass as vendored models; Gaps come from a speckit-spec scan instead | A |
+| 0036 | An element id prefix names the element's own ArchiMate type only, never a business-term synonym; `art-*` means genuine Artifact only, the 35 former `art-*` DataObjects renamed `do-*` | A |
 
 The **P** rows (0017–0019) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -544,6 +548,41 @@ carries this as a skeleton-only Plateau/Gap pair (`plat-runtime-mvp` →
 `plat-runtime-target`, `gap-runtime-hosted`) kept separate from the §8
 packaging-restructure Plateaus — a different transition story. See
 [Architecture Model](architecture-model.md).
+
+ADR-0035 (Accepted 2026-10-05, GH #95) replaces the hand-authored
+Implementation & Migration layer with one generated from GitHub itself.
+`architecture/model/import_gh_roadmap.py` reads milestones, issues and
+releases through the `gh` CLI and writes `architecture/model/gh-roadmap/`,
+merged by `build.py` as a model layer through the same `det_id`/`NS` pass as
+vendored models (ADR-0029): a milestone becomes a Plateau, an in-scope issue
+(one that carries its own milestone — never inferred from a parent, child or
+label) becomes a Work Package, and a published release becomes a
+Deliverable, with a Work Package realizing exactly one Deliverable, never a
+Plateau directly. Gaps are not imported from GitHub: a scan of the speckit
+specs under `specs/NNN-…` (including `platform/packages/*/specs/`) supplies
+them, Associated with a hand-authored mapping file's "from"/"to" Plateaus and
+any delivering Work Packages/Deliverable — Association being the only
+relationship ArchiMate allows from a Gap. The baseline Plateau, Strategy
+elements and Capability/Course of Action/Resource/Value Stream stay
+hand-authored; the importer never creates a Gap or a baseline Plateau. This
+cuts over `plat-runtime-mvp`/`plat-runtime-target` and `gap-runtime-hosted`
+from ADR-0018's hand-authored Plateau/Gap pair to the generated ones
+(`docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`
+§Decision, §Consequences).
+
+ADR-0036 (Accepted 2026-10-08, GH #109) records that an element id prefix
+must name the element's own ArchiMate type, never a loose business-term
+synonym — closing a collision where `art-` had come to mean both the genuine
+`Artifact` type (code packages, deployment artefacts) and, separately, the
+business term "artefact" applied to 35 `DataObject`-typed elements (policy
+documents, OSCAL catalogs, baselines, the ADR/roadmap/gate-decision chain).
+GH #108's own planning work mistyped a new `DataObject` as `Artifact` because
+of exactly this ambiguity, caught only by a manual check. The fix renames
+those 35 elements `do-*`; `art-*` now exclusively denotes genuine Artifacts
+(`art-flat-src`, `art-pkg-*`, `art-tech-oscal-workspace`,
+`art-tech-ledger-file`). The ADR carries the live prefix legend and does not
+change `build.py`'s id-hashing scheme from ADR-0007
+(`docs/adr/0036-element-id-prefix-scheme.md` §Context, §Decision).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).

@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-10-01
+generated: 2026-10-08
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -37,11 +37,14 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 382 elements, 797 relationships and 37 views. Of those,
-240 elements, 562 relationships and 33 views are the platform's own sections
-A–C, E and F (below) plus the IT4IT touchpoint bridge. The rest (142 / 235 / 4) is
-the vendored IT4IT reference model, merged in at build time
-([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
+current merged model is 417 elements, 853 relationships and 49 views
+(`architecture/model/build.py` output, 2026-10-08) — up from 382/797/37 mainly
+through the GitHub-roadmap import (ADR-0035, see "Packaging and migration"
+below) and the GH #108 conversational-authoring additions (a new value
+stream, outcome, business process and the `do-convention-rules` data
+object). The IT4IT reference model (142 elements / 235 relationships / 4
+views, unchanged) is merged in at build time alongside the first-party
+sections ([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
 generated `frictionless-architect.xml` is committed but never hand-edited —
 same status as the `.puml` / `.svg` diagrams.
 
@@ -229,26 +232,49 @@ aggregate). Each package-Artifact `Realization`-links to the
 (`architecture/model/relationships.yaml` §"E. Packages realise their
 components").
 
-**Work Packages, Deliverables, Plateaus and Gaps.** The seven
-`ARCHITECTURE.md` §8 steps become `WorkPackage` elements chained by
-`Triggering` edges in sequence (1 → 2 → … → 7); three carry a `Realization` to
-a `Deliverable` (the monorepo skeleton, the `controls-compliance-catalog`
-package, and the `digital-twin-knowledge-graph` scaffold), and each
-package-shaped Deliverable in turn `Realization`-links to its Artifact. Three
-`Plateau`s mark platform states — `Baseline: flat src/`, `Transition: first
-extraction proven` (after step 3), and `Target: package per subsystem`
-(`ARCHITECTURE.md` §3.2 layout) — each `Aggregation`-linking the Artifacts that
-exist in that state (Baseline has only `art-flat-src`; Target has every
-package Artifact except `art-flat-src`). Two `Gap` elements sit between
-consecutive Plateaus and describe what changes, `Association`-linked to the
-Plateau either side: "controls catalog extracted to its own package" (Baseline
-→ Transition) and "remaining subsystems packaged" (Transition → Target, which
-includes `schema-visualizer-api` once step 4 has delivered the read path it
-consumes) (`architecture/model/elements.yaml` §"E. Work Packages" onward;
-`architecture/model/relationships.yaml` §"E. Migration sequence", §"E.
-Plateaus", §"E. Gaps"). No `Gap → Artifact` or `Plateau → Triggering` edges
-are modelled, since either would only restate what the Aggregations and
-Work-Package chain already carry.
+**Work Packages, Deliverables, Plateaus and Gaps — now GitHub-generated
+(ADR-0035).** The hand-authored seven-step `ARCHITECTURE.md` §8 WorkPackage
+chain and its `plat-runtime-mvp`/`plat-runtime-target` Plateau pair described
+in earlier revisions of this page are **retired**. `import_gh_roadmap.py`
+reads GitHub milestones, issues and releases through the `gh` CLI and writes
+`architecture/model/gh-roadmap/{elements,relationships,views}.yaml`, merged
+by `build.py` as its own model layer through the same `det_id`/`NS` hashing
+pass used for the vendored IT4IT model (ADR-0029). A milestone becomes a
+`Plateau` (`plat-<slug>-<n>`), an in-scope issue (one that carries its own
+milestone — never inferred from a parent, child or label) becomes a
+`WorkPackage` (`wp-<slug>-gh-<n>`), and a published release becomes a
+`Deliverable` (`del-release-<tag-slug>`); a milestone with Work Packages but
+no matching release yet gets an "Unreleased Deliverable"
+(`del-<slug>-<n>-unreleased`). A Work Package realizes exactly one
+Deliverable, never a Plateau directly
+(`docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`
+§Decision). Only four hand-authored `WorkPackage`s survive in
+`elements.yaml` itself — `wp-71-migration-steps-1-3`, `wp-106-scaffold-twin`,
+`wp-vendor-it4it`, `wp-107-rehome-specs` — predating the import and not yet
+consolidated onto their matching GitHub issues.
+
+Gaps are **not** imported from GitHub. A scan of the speckit specs under
+`specs/NNN-…` (including `platform/packages/*/specs/`) supplies each Gap's
+id (`gap-<spec-slug>`), title and status; a hand-authored mapping file gives
+the "from"/"to" Plateau ids and any Work Packages/Deliverable to
+`Association`-link (the only relationship ArchiMate allows from a Gap) — the
+importer itself never creates a Gap, the baseline Plateau, or Strategy
+elements (`docs/adr/0035-…` §Decision, "Gap convention"). Three `Gap`s
+remain first-party in `elements.yaml`: `gap-oscal-ai-conversion`
+(`plat-baseline` → the GitHub-generated `plat-policy-to-oscal-mvp-1`),
+`gap-neo4j-schema-ui` (`plat-baseline` → `plat-architecture-strategy-mvp-7`,
+carrying the ADR-0024 solo-use narrative), and
+`gap-policy-to-oscal-mvp-to-multi-user-collaboration` (the renamed
+`gap-runtime-hosted` — `plat-policy-to-oscal-mvp-1` →
+`plat-multi-user-collaboration-2`, recording ADR-0018's phased hosted-cluster
+move). `plat-baseline` is the one hand-authored Plateau; every other Plateau
+a Gap references now comes from `gh-roadmap/elements.yaml`
+(`architecture/model/elements.yaml` §"E. Work Packages", §"Gaps";
+ADR-0035 §"Cut-over"). `architecture/model/README.md`'s own "Model contents"
+table (§Model contents, row E) still describes the retired seven-step
+WorkPackage/Plateau scheme rather than this GitHub-generated one — not yet
+updated for the ADR-0035 cutover, flagged here rather than silently
+repeated.
 
 **Views.** Two new views render section E: `Packaging`
 (`diagrams/implementation/packaging`, `viewpoint: implementation_deployment`)
@@ -562,3 +588,22 @@ schema-visualiser-UI-home Serving edge (ADR-0005 + ADR-0020), and the
 catalog's upload/feedback functions and interface. That brings the
 platform's own model to 237 elements / 555 relationships / 33 views (379 /
 790 / 37 merged with the unchanged IT4IT reference).
+
+A 2026-10-05 pass (GH #95, [ADR-0035](architecture.md)) added the
+GitHub-roadmap import described in "Packaging and migration" above and
+retired the hand-authored seven-step WorkPackage chain and the
+`plat-runtime-mvp`/`plat-runtime-target` Plateau pair in its favour. A
+follow-on 2026-10-08 pass ([ADR-0036](architecture.md), GH #109) renamed the
+35 `DataObject` elements previously prefixed `art-*` ("artefact", the
+business term) to `do-*`, so `art-*` now names only genuine `Artifact`-typed
+elements — closing a prefix collision that had mistyped a draft
+`DataObject` as `Artifact` during GH #108's own planning. The same window's
+GH #108 work (`feat(model): anchor conversational model authoring`,
+`fix(model): close capability/persistence gaps`) added the Intent to Model
+value stream, the Architect-Authored Model Changes outcome, the
+Conversational Model Authoring business process, and the Enterprise
+Convention Rules data object, from the planning work for GH #108
+(`specs/004-conversational-model-authoring/`, not a wiki source — cited for
+context only). The merged model now stands at 417 elements
+/ 853 relationships / 49 views (`architecture/model/build.py` output,
+2026-10-08).

@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: 2026-10-05
+generated: 2026-10-09
 generator: claude-sonnet-5-5
 sources:
   - specs/001-governance-platform/quickstart.md
@@ -158,7 +158,7 @@ The constitution's "Quality Gates" (see
 | `ruff` | lint + format (line length 120) |
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
-| `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |
+| `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` over `src` and, since GH #95, `architecture/model` too (`RELEASE.md` §2; `scripts/pre_merge_checks.sh`) |
 | `behave` | BDD acceptance — gated on pre-push, in `pre_merge_checks.sh` and (blocking) in CI (see note below the table) |
 | `commitizen` | Conventional Commits + version inference |
 | `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token in `.secrets/`) |
@@ -184,6 +184,14 @@ payload, refresh, unavailable-sample warnings, the 2-second target and the load 
 `poetry run behave tests/features/` runs as a pre-push hook (`.pre-commit-config.yaml`), as a
 step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
 step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §2 already lists it.
+
+**GitHub roadmap staleness check (GH #95).** `pre_merge_checks.sh` also runs
+`poetry run python architecture/model/import_gh_roadmap.py --check` before
+the pytest step, failing the gate if GitHub's milestones/issues/releases
+have moved on since `architecture/model/gh-roadmap/` was last generated.
+`scripts/refresh_gh_roadmap.sh` re-runs the importer, rebuilds the model XML
+and regenerates diagrams for review; a fix is committing its output
+([ADR-0035](architecture.md); `scripts/pre_merge_checks.sh`).
 
 ## Conventions
 

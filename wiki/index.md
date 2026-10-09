@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-10-03
+generated: 2026-10-09
 generator: claude-sonnet-5
 ---
 
@@ -24,9 +24,9 @@ generator: claude-sonnet-5
   decision log.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
-  generated: files, schema, the `build.py` pipeline, and the vendored IT4IT 3.0
-  reference model (`third_party/it4it`, merged in at build time — 379 elements,
-  790 relationships, 37 views).
+  generated: files, schema, the `build.py` pipeline, the generated GitHub-roadmap layer
+  (ADR-0035), and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
+  merged in at build time — 417 elements, 853 relationships, 49 views).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
   stakeholders, drivers, assessments, goal and four outcomes, principles,
   constraints, requirements, capabilities, strategy, four value streams, and the

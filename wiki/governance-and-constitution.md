@@ -1,7 +1,7 @@
 ---
 title: Governance & Constitution
-generated: 2026-10-04
-generator: claude-sonnet-5-5
+generated: 2026-10-08
+generator: claude-sonnet-5
 sources:
   - .specify/memory/constitution.md
 ---
@@ -15,7 +15,7 @@ All governance rules live in a single file, `.specify/memory/constitution.md`
 (the "SpecKit Constitution"). It describes itself as "the root of the
 documentation tree": every other document links back to it
 (`.specify/memory/constitution.md` §"Detailed References (Deeper Detail)").
-Current version **1.4.0**, ratified 2026-02-18, last amended 2026-10-04
+Current version **1.5.0**, ratified 2026-02-18, last amended 2026-10-08
 (`.specify/memory/constitution.md` §"Governance").
 
 The 1.2.0 amendment retired the former `PROJECT_CONSTITUTION.md`. That file
@@ -35,6 +35,14 @@ backlog. `specs/001-governance-platform` is now the business specification
 why").
 
 The 1.4.0 amendment added Principle XI and the matching quality gate; no templates needed changes, and `AGENTS.md` carries a pointer rather than a copy (`.specify/memory/constitution.md` Sync Impact Report v1.4.0).
+
+The 1.5.0 amendment (2026-10-08) broadened Principle XI's diagram taxonomy: a use-case
+diagram per `spec.md` User Story (actors plus that story's scenarios, alongside — never
+replacing — the given/when/then acceptance criteria), and a component/package diagram in
+`plan.md`'s Project Structure in place of a plain-text tree, plus any other standard UML
+type wherever it communicates more clearly than prose (§"XI. Concise, Non-Duplicative Spec
+Artefacts"). The header's Sync Impact Report comment has not yet been updated to record this
+bump.
 
 ## The document tree
 
@@ -114,9 +122,14 @@ Non-Duplicative Spec Artefacts"). Its rules:
   `contracts/` and `quickstart.md` give one example plus commands and link back;
   `plan.md` summarises in a paragraph and links.
 - Diagrams are embedded PlantUML blocks, validated with `plantuml -checkonly`,
-  drawn once in the artefact that owns the subject (class and state in
-  `data-model.md`, sequence in `contracts/`, activity and deployment in
-  `plan.md`).
+  drawn once in the artefact that owns the subject, with a graphical UML
+  representation preferred over an equivalent plain-text one wherever a standard
+  diagram type fits: a use-case diagram per User Story in `spec.md` (alongside,
+  never instead of, the given/when/then prose); class and state diagrams in
+  `data-model.md`; sequence diagrams in `contracts/`; activity, deployment, and a
+  component/package diagram (replacing a plain-text directory/dependency tree) in
+  `plan.md`; any other standard UML type elsewhere it communicates more clearly
+  than prose.
 - When a rule changes, edit it in its one home and replace restated copies with a
   link; prefer editing artefacts to regenerating them, and commit a snapshot
   before any regeneration.

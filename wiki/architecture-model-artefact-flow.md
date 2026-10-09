@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Artefact Flow"
-generated: 2026-10-01
+generated: 2026-10-09
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -14,10 +14,11 @@ sources:
 Section C of `elements.yaml`: the application-layer input/output pipeline
 (`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
 
-Section C has 27 `ApplicationFunction`s (24 before a 2026-09-27 pass added
-three — see "Controls & OSCAL" below):
+Section C has 28 `ApplicationFunction`s (24 before a 2026-09-27 pass added
+three — see "Controls & OSCAL" below — and a GH #108 pass added a
+twenty-eighth, `fn-conversational-authoring`):
 
-- 20 are platform functions, each `Assignment`-linked to its subsystem.
+- 21 are platform functions, each `Assignment`-linked to its subsystem.
 - 7 are external-system functions, each assigned to its external system:
   - Source Control: versioning and change review
   - CI/CD Pipeline: build, the Controls Enforcement Gate and deploy
@@ -40,19 +41,20 @@ result, every governed action lands an immutable record
 
 > **Sources disagree on counts.** The README's section-C summary still gives
 > the older figures of 15 functions and 25 DataObjects
-> (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 24
+> (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 28
 > and 35.
 
 Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
-`589-679`):
+`589-679`). Each was renamed from "Artefact Flow — …" to "Data Flow — …" on
+develop; this page follows the current name:
 
 | View | Covers |
 |---|---|
-| `Artefact Flow — Controls & OSCAL` | Policy/standard document → AI-assisted Trestle Markdown → OSCAL Catalog, plus the golden-dataset catalog that validates it. Conversion only: the Profile objects moved to the next view (GH #61 decision A) |
-| `Artefact Flow — OSCAL Profile Resolution` | OSCAL Catalog → tailored OSCAL Profile → Resolved OSCAL Profile Catalog via Trestle's profile authoring and `profile-resolve`, with the golden-dataset profile and resolved baselines as validation data. `fn-oscal-conversion` is repeated as the Catalog's writer |
-| `Artefact Flow — Library & Design` | Pattern → blueprint → solution-design composition, OSCAL Component/SSP emission, threat modelling |
-| `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering |
-| `Artefact Flow — Assurance & Specification` | Spec generation; build supervision; the enforcement gate run inline in CI/CD; BAU effectiveness monitoring; drift detection against the roadmap → remediation backlog and POA&M |
+| `Data Flow — Controls & OSCAL` | Policy/standard document → AI-assisted Trestle Markdown → OSCAL Catalog, plus the golden-dataset catalog that validates it. Conversion only: the Profile objects moved to the next view (GH #61 decision A) |
+| `Data Flow — OSCAL Profile Resolution` | OSCAL Catalog → tailored OSCAL Profile → Resolved OSCAL Profile Catalog via Trestle's profile authoring and `profile-resolve`, with the golden-dataset profile and resolved baselines as validation data. `fn-oscal-conversion` is repeated as the Catalog's writer |
+| `Data Flow — Library & Design` | Pattern → blueprint → solution-design composition, OSCAL Component/SSP emission, threat modelling |
+| `Data Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering; since GH #108, conversational model authoring |
+| `Data Flow — Assurance & Specification` | Spec generation; build supervision; the enforcement gate run inline in CI/CD; BAU effectiveness monitoring; drift detection against the roadmap → remediation backlog and POA&M |
 
 Notable artefacts (`architecture/model/elements.yaml:1252-1288`):
 
@@ -88,6 +90,35 @@ CI/CD Pipeline, not to a platform subsystem. It verifies artefact-observable
 controls directly on the release candidate. It "verifies process controls
 from" the forensic ledger and reads the expected controls from the SSP
 (`architecture/model/relationships.yaml:564`, `648-654`).
+
+**Conversational Model Authoring** (`fn-conversational-authoring`, GH #108)
+is `Assignment`-linked to `sub-modelling`, alongside `fn-notation-engine` and
+`fn-spec-generator`. It reads `do-metamodel` ("validates proposed changes
+against") and writes `do-candidate-arch` ("proposes model deltas as") — the
+same two artefacts `fn-notation-engine` already reads and renders — and
+`Serving`s `fn-notation-engine` ("renders the view under discussion live
+via"), so the view the architect is talking about updates live as the
+conversation proceeds
+(`architecture/model/relationships.yaml:666-668`). It is scoped into the
+`Data Flow — Digital Twin & Governance` view and into a dedicated steel-thread
+view, `Feature Steel Thread: Conversational Model Authoring (GH #108)`
+(`architecture/model/views.yaml:398-452`), which traces the feature through
+every layer it touches end to end: `sub-modelling` now realizes a Strategy
+capability, `cap-conversational-governance` (see
+[Skeleton](architecture-model-skeleton.md)), and at the Technology layer
+`sw-neo4j` writes to a new Artifact, `art-tech-neo4j-volume`, which
+`Realization`-links to `store-akg` — the same
+Node → Artifact → DataObject persistence pattern used for
+`art-tech-oscal-workspace` and `art-tech-ledger-file` elsewhere in the model,
+replacing an initial direct `sw-neo4j` → `store-akg` Access edge that the
+model's own type matrix doesn't actually permit. The steel-thread view's own
+comments leave an open question for `speckit-specify`: `sub-modelling`'s
+`Serving` edges to `role-ea`/`role-sa` ("converses on model changes with")
+are modelled directly at the component level, bypassing the business layer,
+and whether conversational authoring needs a standing business process of
+its own (role-sa's only assigned business function has no relationship to
+this capability at all) is deliberately left undecided
+(`architecture/model/views.yaml:398-427`).
 
 ## Controls & OSCAL — how policy becomes OSCAL
 
