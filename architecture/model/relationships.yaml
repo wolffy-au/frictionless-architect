@@ -78,6 +78,12 @@
 - {type: Serving, source: coa-executable-governance, target: vs-obligation-to-evidence}
 - {type: Serving, source: coa-executable-governance, target: vs-exception-to-decision}
 - {type: Serving, source: coa-living-twin, target: vs-drift-to-remediation}
+# GH #108 (ADR-0037 R12): same pattern as the other four outcome streams above.
+- {type: Serving, source: coa-executable-governance, target: vs-intent-to-model}
+# The capability also serves the stream directly (plan.md Model impact) — unlike the
+# CourseOfAction->ValueStream edges above, no Capability->ValueStream edge existed
+# elsewhere in this model before this feature.
+- {type: Serving, source: cap-conversational-governance, target: vs-intent-to-model}
 # Each value stream's value recipients.
 - {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
 - {type: Association, source: stk-exec, target: vs-governed-delivery, label: time to market}
@@ -86,6 +92,7 @@
 - {type: Association, source: stk-exec, target: vs-exception-to-decision, label: accountable automation}
 - {type: Association, source: stk-risk-compliance, target: vs-exception-to-decision, label: examinable decisions}
 - {type: Association, source: stk-architecture, target: vs-drift-to-remediation, label: sustained coherence}
+- {type: Association, source: stk-architecture, target: vs-intent-to-model, label: "validated authoring (GH #108)"}
 
 # =====================================================================
 # A. Stakeholders hold drivers; drivers are analysed into assessments
@@ -115,6 +122,7 @@
 - {type: Realization, source: vs-obligation-to-evidence, target: outcome-compliance-before-release}
 - {type: Realization, source: vs-exception-to-decision, target: outcome-accountable-automation}
 - {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-reconciled}
+- {type: Realization, source: vs-intent-to-model, target: outcome-architect-authored-model}
 - {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
@@ -233,6 +241,7 @@
 - {type: Realization, source: process-blueprint-traceability, target: cap-reusable-architecture}
 - {type: Realization, source: process-solution-design, target: cap-reusable-architecture}
 - {type: Realization, source: process-target-state-definition, target: cap-digital-twin}
+- {type: Realization, source: process-conversational-authoring, target: cap-conversational-governance}
 
 # =====================================================================
 # A. Process chain (the end-to-end choreography)
@@ -671,7 +680,14 @@
 - {type: Serving, source: fn-notation-engine, target: fn-options-model, label: renders candidate models for}
 - {type: Access, source: fn-conversational-authoring, target: do-metamodel, label: validates proposed changes against, props: {access_type: Read}}
 - {type: Access, source: fn-conversational-authoring, target: do-candidate-arch, label: proposes model deltas as, props: {access_type: Write}}
+- {type: Access, source: fn-conversational-authoring, target: do-convention-rules, label: validates proposed changes against, props: {access_type: Read}}
 - {type: Serving, source: fn-conversational-authoring, target: fn-notation-engine, label: renders the view under discussion live via}
+- {type: Realization, source: fn-conversational-authoring, target: process-conversational-authoring}
+# Shared standing process, served to both roles (plan.md Model impact) -- not a
+# per-role bfn Assignment like the other business-layer processes above, since
+# conversational authoring is used by whichever of the two is at the keyboard.
+- {type: Serving, source: process-conversational-authoring, target: role-ea}
+- {type: Serving, source: process-conversational-authoring, target: role-sa}
 
 # =====================================================================
 # C. Forensic ledger — every governed action lands an immutable record
@@ -749,6 +765,7 @@
 - {type: Aggregation, source: store-frameworks, target: do-baseline-profile}
 - {type: Aggregation, source: store-frameworks, target: do-baseline-resolved-catalog}
 - {type: Aggregation, source: store-frameworks, target: do-metamodel}
+- {type: Aggregation, source: store-frameworks, target: do-convention-rules}
 - {type: Aggregation, source: store-ledger, target: do-ledger-entry}
 
 # =====================================================================
