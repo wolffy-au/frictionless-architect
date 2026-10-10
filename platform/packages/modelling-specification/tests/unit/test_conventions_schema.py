@@ -34,7 +34,7 @@ def test_seeded_interposed_pattern_rule_matches_the_sw_neo4j_precedent() -> None
     (rule,) = [r for r in _load() if r["id"] == "conv-interposed-neo4j-volume"]
     assert rule["kind"] == "interposed-pattern"
     assert rule["enabled"] is True
-    params = rule["params"]
+    params: dict[str, object] = rule["params"]  # type: ignore[assignment]
     assert params["source_type"] == "SystemSoftware"
     assert params["relationship_type"] == "Assignment"
     assert params["target_type"] == "DataObject"
