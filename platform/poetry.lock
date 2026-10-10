@@ -4908,6 +4908,18 @@ slack = ["envwrap", "slack-sdk"]
 telegram = ["envwrap", "requests"]
 
 [[package]]
+name = "types-defusedxml"
+version = "0.7.0.20260504"
+description = "Typing stubs for defusedxml"
+optional = false
+python-versions = ">=3.10"
+groups = ["lint"]
+files = [
+    {file = "types_defusedxml-0.7.0.20260504-py3-none-any.whl", hash = "sha256:a959e3a0a43b93e464bd625d91ec9193a2703ddc10443bdd627792485fae0b10"},
+    {file = "types_defusedxml-0.7.0.20260504.tar.gz", hash = "sha256:2ab2828a3f97111ba1c16cee273ad4124a831fc9198c41bf8368ff6ea48ad300"},
+]
+
+[[package]]
 name = "types-pyyaml"
 version = "6.0.12.20260906"
 description = "Typing stubs for PyYAML"
@@ -5159,4 +5171,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "76ee14246b861fde4717f2c265b94e1c745446100af897642c5d2dbbd5c3a7f2"
+content-hash = "186a31f1d0f59d3832c9469e5744d760cec0c7b9a7d137326900fff00390f06c"

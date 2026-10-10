@@ -24,8 +24,3 @@ def load_script(name: str) -> ModuleType:
 @pytest.fixture(scope="session")
 def importer() -> ModuleType:
     return load_script("import_gh_roadmap")
-
-
-@pytest.fixture(scope="session")
-def build_mod() -> ModuleType:
-    return load_script("build")

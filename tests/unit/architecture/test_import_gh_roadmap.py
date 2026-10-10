@@ -517,28 +517,10 @@ def issues_with_milestone_7_issue() -> list[str]:
     return [json.dumps(page)]
 
 
-def test_fixture_layer_builds_and_validates(
-    importer: ModuleType, build_mod: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    layer_dir = tmp_path / "gh-roadmap"
-    # The hand-authored layer references plat-architecture-strategy-mvp-7 and
-    # plat-solution-design-mvp-8 (and their -unreleased Deliverables) directly, so the
-    # stubbed milestone set must cover those numbers too, not just 1 and 2, and at
-    # least one in-scope issue must target milestone 7 so its Deliverable is created.
-    stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=issues_with_milestone_7_issue())
-    assert importer.main(["--repo", REPO], run_gh=stub, layer_dir=layer_dir) == 0
-    monkeypatch.setattr(build_mod, "MODEL_LAYERS", [*build_mod.VENDORED_MODELS, layer_dir])
-    # build.py prints OUT relative to the repo (`OUT.relative_to(HERE.parents[1])`), so it
-    # can't live under tmp_path; tmp_path.name is still unique per test/worker, which keeps
-    # concurrent runs (e.g. under pytest-xdist) from racing on the same output file.
-    out = MODEL_DIR.parents[1] / "build" / f"test-gh-roadmap-model-{tmp_path.name}.xml"
-    out.parent.mkdir(exist_ok=True)
-    monkeypatch.setattr(build_mod, "OUT", out)
-    try:
-        assert build_mod.main() == 0
-    finally:
-        out.unlink(missing_ok=True)
-
+# NOTE: "does the generated layer build and validate cleanly" moved to
+# platform/packages/modelling-specification/tests/unit/test_model_io_gh_roadmap_layer.py
+# (ADR-0037, R2) -- that assertion needs `model_io`'s in-process build/validate, which
+# only lives in the platform package's venv now that `build.py` is a thin wrapper.
 
 # --- US3: refresh safely (T018, T019) ----------------------------------------------
 
@@ -735,31 +717,6 @@ def test_transitive_triggering_is_not_repeated(kit: Kit) -> None:
     assert len(triggers) == 2
 
 
-def test_dependency_layer_still_validates(
-    importer: ModuleType, build_mod: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    layer_dir = tmp_path / "gh-roadmap"
-    page = json.loads(fixture_text("gh_issues_dependencies.json"))
-    # Same milestone-7 need as test_fixture_layer_builds_and_validates above.
-    page["data"]["repository"]["issues"]["nodes"].append(
-        {
-            "number": 200,
-            "title": "Architecture strategy placeholder",
-            "state": "CLOSED",
-            "closedAt": "2026-09-30T10:00:00Z",
-            "url": "https://github.com/o/r/issues/200",
-            "milestone": {"number": 7},
-            "parent": None,
-            "blockedBy": {"nodes": []},
-        }
-    )
-    stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=[json.dumps(page)])
-    assert importer.main(["--repo", REPO], run_gh=stub, layer_dir=layer_dir) == 0
-    monkeypatch.setattr(build_mod, "MODEL_LAYERS", [*build_mod.VENDORED_MODELS, layer_dir])
-    out = MODEL_DIR.parents[1] / "build" / f"test-gh-roadmap-model-{tmp_path.name}.xml"
-    out.parent.mkdir(exist_ok=True)
-    monkeypatch.setattr(build_mod, "OUT", out)
-    try:
-        assert build_mod.main() == 0
-    finally:
-        out.unlink(missing_ok=True)
+# NOTE: "does the dependency-shaped layer build and validate cleanly" moved to
+# platform/packages/modelling-specification/tests/unit/test_model_io_gh_roadmap_layer.py
+# (ADR-0037, R2) -- see test_fixture_layer_builds_and_validates's note above.
