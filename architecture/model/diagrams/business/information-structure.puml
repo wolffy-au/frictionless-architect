@@ -61,6 +61,7 @@ Application_DataObject(e_ide155670d2bae58, "Framework Pack Library") {
   Application_DataObject(e_idc94206b4da0c5a, "Regulatory Baseline Profile")
   Application_DataObject(e_id56a0c6c23c275d, "Regulatory Resolved Baseline Catalog")
   Application_DataObject(e_idd52b11acc8ff53, "Notation Metamodel")
+  Application_DataObject(e_id9f5c9c73328255, "Enterprise Convention Rules")
 }
 Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger") {
   Application_DataObject(e_idfd63e49cbb7150, "Ledger Entry")

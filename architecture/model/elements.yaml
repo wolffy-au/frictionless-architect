@@ -164,6 +164,15 @@
     Agentic delivery runs at machine speed while every decision it cannot
     deterministically validate has a named human owner, and every action it
     takes is recorded as contemporaneous, examinable evidence.
+- type: Outcome
+  id: outcome-architect-authored-model
+  name: Architect-Authored Model Changes
+  desc: >-
+    GH #108: an architect's natural-language intent becomes a validated model
+    change without a manual YAML edit or render step — every change is
+    checked against the metamodel and the enterprise's own conventions
+    before it reaches the knowledge graph, with rejections explained and
+    overrides traceable.
 
 # =====================================================================
 # A. MOTIVATION — Principles (constitution-level; cross-binding)
@@ -551,6 +560,16 @@
     Observed state is continuously reconciled against intent and classified
     drift is routed to remediation.
 
+- type: ValueStream
+  id: vs-intent-to-model
+  name: Intent to Model
+  desc: >-
+    GH #108 (ADR-0037 R12): an architect's natural-language request becomes
+    a validated, applied change to the architecture knowledge graph —
+    proposed, checked against the metamodel and the enterprise's own
+    conventions, and either applied or explained and traceably overridden.
+    A single stage, unlike the other four outcome streams (Assumption 6).
+
 # =====================================================================
 # A. BUSINESS — Processes (the orchestration choreography between components)
 # =====================================================================
@@ -608,6 +627,15 @@
     Architecture — where the estate should be heading — and the Architecture
     Roadmap that sequences the transition to it, taking open regulatory
     remediation milestones from the OSCAL POA&M as input.
+- type: BusinessProcess
+  id: process-conversational-authoring
+  name: Conversational Model Authoring
+  desc: >-
+    GH #108 (ADR-0037 R12): the Enterprise/Solution Architect describes a
+    model change in natural language; the agent validates it against the
+    metamodel and Enterprise Convention Rules before applying it, explaining
+    and recording any rejection or override rather than applying or
+    discarding silently.
 - type: BusinessProcess
   id: process-solution-design
   name: Solution Design Composition
@@ -1385,6 +1413,7 @@
 - {type: DataObject, id: do-oscal-poam, context: conformance-drift-assurance, name: OSCAL Plan of Action & Milestones, desc: "Open control deficiencies from OSCAL Assessment Results — release-gate and BAU — with their target remediation milestones, for external compliance reporting."}
 - {type: DataObject, id: do-dev-spec, context: modelling-specification, name: Development Specification, desc: "Executable spec derived from patterns, blueprints and designs."}
 - {type: DataObject, id: do-metamodel, context: modelling-specification, name: Notation Metamodel, desc: ArchiMate / C4 / UML metamodel used to constrain modelling.}
+- {type: DataObject, id: do-convention-rules, context: modelling-specification, name: Enterprise Convention Rules, desc: "GH #108: organisation-specific authoring conventions (naming, altitude, allowed-subset, interposed-element patterns) the conversational agent validates proposed deltas against, alongside the fixed ArchiMate metamodel (ADR-0037 R6/R13)."}
 - {type: DataObject, id: do-ledger-entry, context: digital-twin-knowledge-graph, name: Ledger Entry, desc: "A single immutable forensic record — actor, action, target artefact, timestamp, outcome."}
 
 # =====================================================================

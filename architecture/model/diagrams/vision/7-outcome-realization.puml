@@ -34,6 +34,7 @@ Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
   Strategy_ValueStream(e_id12b58c7f12735c, "Observe As-Built State")
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
+Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")

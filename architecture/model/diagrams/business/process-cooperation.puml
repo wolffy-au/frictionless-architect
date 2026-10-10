@@ -4,6 +4,7 @@
 scale max 3800 width
 title Business Process Cooperation
 
+Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
@@ -114,6 +115,7 @@ Application_DataObject(e_ide155670d2bae58, "Framework Pack Library") {
   Application_DataObject(e_idc94206b4da0c5a, "Regulatory Baseline Profile")
   Application_DataObject(e_id56a0c6c23c275d, "Regulatory Resolved Baseline Catalog")
   Application_DataObject(e_idd52b11acc8ff53, "Notation Metamodel")
+  Application_DataObject(e_id9f5c9c73328255, "Enterprise Convention Rules")
 }
 Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger") {
   Application_DataObject(e_idfd63e49cbb7150, "Ledger Entry")
@@ -385,7 +387,11 @@ Rel_Access_r(e_id3a42c87ebb235a, e_ide500d303f47455, "renders")
 Rel_Serving_Up(e_id3a42c87ebb235a, e_id2ef30ba1d68054, "renders candidate models for")
 Rel_Access_r(e_id7cc5a30769435c, e_idd52b11acc8ff53, "validates proposed changes against")
 Rel_Access_w(e_id7cc5a30769435c, e_ide500d303f47455, "proposes model deltas as")
+Rel_Access_r(e_id7cc5a30769435c, e_id9f5c9c73328255, "validates proposed changes against")
 Rel_Serving_Up(e_id7cc5a30769435c, e_id3a42c87ebb235a, "renders the view under discussion live via")
+Rel_Realization_Up(e_id7cc5a30769435c, e_id5959dd7c3bbe59, "")
+Rel_Serving_Up(e_id5959dd7c3bbe59, e_id2b5394f913985a, "")
+Rel_Serving_Up(e_id5959dd7c3bbe59, e_ide2cb7f3efa6256, "")
 Rel_Access_w(e_id1877d57ef1ec5e, e_idfd63e49cbb7150, "appends")
 Rel_Flow(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
 Rel_Flow(e_idbf7bcc015b2d5d, e_id1877d57ef1ec5e, "records gate outcomes to")

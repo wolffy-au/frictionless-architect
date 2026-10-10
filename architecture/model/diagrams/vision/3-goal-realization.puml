@@ -8,6 +8,7 @@ Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuous
 Motivation_Outcome(e_id3be36e7ab88a59, "Approved Change Reaches Production at AI Speed")
 Motivation_Outcome(e_id4f39e9ec8e4656, "Compliance Proven Before Release")
 Motivation_Outcome(e_ide8275430b0ad5e, "Accountable, Auditable Automation")
+Motivation_Outcome(e_id162419e4eb6659, "Architect-Authored Model Changes")
 Motivation_Principle(e_id8b3d2adaff0f54, "Deterministic Human Accountability")
 Motivation_Principle(e_id8f1bfcbb03b55c, "Forensic Auditability")
 Motivation_Principle(e_id2f7936741a0951, "Policy as Code")
