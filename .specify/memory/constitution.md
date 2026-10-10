@@ -1,5 +1,16 @@
 <!--
-  Sync Impact Report (v1.4.0, 2026-10-04):
+  Sync Impact Report (v1.5.0, 2026-10-08):
+  - Version change: v1.4.0 -> v1.5.0
+  - Modified sections: Principle XI's diagram taxonomy broadened — use-case diagrams for
+    spec.md User Stories (alongside, never instead of, given/when/then prose), component/
+    package diagrams in plan.md's Project Structure in place of plain-text directory/
+    dependency trees, and any other standard UML diagram type permitted wherever it
+    communicates a structure or interaction more clearly than prose.
+  - Added principle: None (Principle XI itself was broadened, not added — see v1.4.0 below).
+  - Templates requiring updates: none.
+  - Follow-up TODOs: None
+
+  Previous report (v1.4.0, 2026-10-04):
   - Version change: v1.3.0 -> v1.4.0
   - Added principle: XI. Concise, Non-Duplicative Spec Artefacts (incl. embedded PlantUML). Motivated by GH #95, where
     the spec, data model, research, contracts and quickstart restated the same rules and were
