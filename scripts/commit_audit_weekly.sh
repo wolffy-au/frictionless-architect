@@ -26,7 +26,7 @@ AGENT=commit-auditor
 OUT_NAME=commit-audit
 STAMP="$(date +%F)-${BASE//\//_}..${REF//\//_}"
 TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git merge-base:*),Bash(git rev-list:*),Bash(git show:*),Bash(git describe:*)"
-TASK="Audit the range $BASE..$REF with base=$BASE and target=$REF. Follow your Steps 1 and 3-4; skip Step 2 (do not run poetry or cz, evaluate the ruleset by hand). Put the per-commit results under '## Findings'."
+TASK="Audit the range $BASE..$REF with base=$BASE and target=$REF. Follow your Steps 1 and 3-4; skip Step 2 (do not run poetry or cz, evaluate the ruleset by hand). For subject length, regex, casing and punctuation checks, evaluate the subjects already listed in Step 1 by reading them — do not shell out to 'git log --grep' or any other regex-bearing Bash command; those get denied under this run's tool allowlist and will fail the whole run. Put the per-commit results under '## Findings'."
 TASK="$TASK $AGENT_BASH_RULE"
 
 agent_workdir
