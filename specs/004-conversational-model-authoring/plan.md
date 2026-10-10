@@ -65,8 +65,8 @@ until accepted; never silently apply, autocorrect or drop (FR-004/007); session-
 only, nothing resumes after an interruption (Clarification 2); single architect at a time
 (Assumption 5, ADR-0024)
 
-**Scale/Scope**: One architect, one conversation at a time; current model is 416 elements /
-852 relationships / 49 views (`build.py` output, 2026-10-08) — validation runs against that
+**Scale/Scope**: One architect, one conversation at a time; current model is 417 elements /
+853 relationships / 49 views (`build.py` output, 2026-10-10) — validation runs against that
 scale, not a multi-tenant one
 
 ## Constitution Check
@@ -143,6 +143,7 @@ skinparam componentStyle rectangle
 package "platform/packages/modelling-specification" {
   [model_io.py] as ModelIO
   [validation/\n(metamodel, conventions,\nduplicates, patterns)] as Validation
+  [validation/fixes.py] as Fixes
   [authoring/\n(delta, overrides, state)] as Authoring
   [rendering.py] as Rendering
   [router.py] as Router
@@ -159,6 +160,7 @@ Authoring --> ModelIO
 Authoring --> Validation
 Authoring ..> LLMConfig : propose (R4)
 Validation --> ModelIO
+Validation --> Fixes : proposed_fix (R14)
 Rendering --> ModelIO
 Cli --> ModelIO
 Cli --> Validation
