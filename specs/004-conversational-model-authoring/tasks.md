@@ -36,10 +36,10 @@ become thin wrappers per R2.
 
 **Purpose**: Scaffold the new platform package before any logic is ported into it.
 
-- [ ] T001 Create `platform/packages/modelling-specification/` package skeleton: `pyproject.toml`, `src/modelling_specification/__init__.py`, `tests/unit/__init__.py`, `tests/api/__init__.py`, `README.md`, `specs/` (pointer to `specs/004-conversational-model-authoring/`), matching `platform/packages/controls-compliance-catalog`'s layout (plan.md Project Structure)
-- [ ] T002 [P] Author `platform/packages/modelling-specification/pyproject.toml`: `fastapi`, `uvicorn`, `pyarchimate` (runtime dependency, R3), `rapidfuzz` (runtime dependency, R3), `pyyaml`, a path dependency on `llm-provider-config`, `litellm` (plan.md Primary Dependencies)
-- [ ] T003 [P] Add `platform/packages/modelling-specification` to the `platform/` Poetry workspace and refresh `platform/poetry.lock`
-- [ ] T004 [P] Configure `ruff`/`pyright`/`mypy` strict for the new package consistent with `scripts/platform_checks.sh`'s per-package gate
+- [X] T001 Create `platform/packages/modelling-specification/` package skeleton: `pyproject.toml`, `src/modelling_specification/__init__.py`, `tests/unit/__init__.py`, `tests/api/__init__.py`, `README.md`, `specs/` (pointer to `specs/004-conversational-model-authoring/`), matching `platform/packages/controls-compliance-catalog`'s layout (plan.md Project Structure)
+- [X] T002 [P] Author `platform/packages/modelling-specification/pyproject.toml`: `fastapi`, `uvicorn`, `pyarchimate` (runtime dependency, R3), `rapidfuzz` (runtime dependency, R3), `pyyaml`, a path dependency on `llm-provider-config`, `litellm` (plan.md Primary Dependencies)
+- [X] T003 [P] Add `platform/packages/modelling-specification` to the `platform/` Poetry workspace and refresh `platform/poetry.lock`
+- [X] T004 [P] Configure `ruff`/`pyright`/`mypy` strict for the new package consistent with `scripts/platform_checks.sh`'s per-package gate — satisfied by `platform/pyproject.toml`'s existing monorepo-wide `[tool.pyright]`/`[tool.mypy]` config (glob `packages`/`packages/*/src`+`tests`); `py.typed` added so pyright/mypy treat the package as typed
 
 **Checkpoint**: Package scaffold exists, installable via `cd platform && poetry install`.
 

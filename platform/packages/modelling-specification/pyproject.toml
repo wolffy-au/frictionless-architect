@@ -1,0 +1,27 @@
+[project]
+name = "modelling-specification"
+description = "Modelling Specification: conversational ArchiMate model authoring (GH #108)."
+# Frozen placeholder, as at the repo root -- versioning moves to the monorepo
+# root with the rest of the commitizen setup (ADR-0002, Consequences).
+version = "0.0.0"
+requires-python = ">=3.11,<3.14"
+readme = "README.md"
+dependencies = [
+    "fastapi (>=0.141.0,<0.142.0)",
+    "uvicorn (>=0.43.0,<0.44.0)",
+    "pyarchimate (>=1.12.3,<2.0.0)",
+    "rapidfuzz (>=3.14.3,<4.0.0)",
+    "pyyaml (>=6.0,<7.0)",
+    "llm-provider-config",
+    "litellm (>=1.0.0,<2.0.0)",
+]
+
+[tool.poetry]
+packages = [{ include = "modelling_specification", from = "src" }]
+
+[tool.poetry.dependencies]
+llm-provider-config = { path = "../llm-provider-config", develop = true }
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
