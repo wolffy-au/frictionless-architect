@@ -135,7 +135,7 @@ Architect --> UC2
 - A change request that is valid on its own but would break an existing element's referential integrity elsewhere in the model cannot reach "applied": FR-002 validates the whole resulting model with the delta applied, not just the delta in isolation, so the break is caught and the change is rejected like any other metamodel violation.
 - When the architect rejects the agent's proposed fix for an already-rejected change, the agent does not auto-retry a different fix and does not drop the request: it asks the architect to restate or refine what they want.
 - An architect who overrides an objection without giving a rationale still has the override recorded immediately — the rationale field is left blank, not required before recording.
-- What happens to a pending (proposed but not yet decided) candidate delta if the conversation is closed or interrupted before the architect accepts, rejects, or revises it?
+- A pending (proposed but not yet decided) candidate delta is session-scoped: if the conversation is closed or interrupted before the architect accepts, rejects, or revises it, the delta is discarded rather than resumed — the architect re-describes it next time.
 
 ## Requirements *(mandatory)*
 
