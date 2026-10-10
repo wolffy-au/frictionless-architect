@@ -72,6 +72,15 @@ topics:
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
 
+  - name: architecture-model-migration
+    title: "Architecture Model: Packaging, Migration & Technology"
+    description: Sections E and F of the model — the platform's own packaging/migration restructure and its first Technology-layer cut — split out once Architecture Model passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+
   - name: gh-roadmap-layer
     title: "GitHub Roadmap Layer"
     description: How GitHub milestones, issues and releases are imported into the Implementation & Migration layer (spec 003, ADR-0035).
@@ -111,6 +120,8 @@ topics:
       - path: pyproject.toml
       - path: sample-data/oscal/**
       - path: docs/adr/0030-vendor-oscal-reference-content.md
+      - path: tests/fixtures/golden-oscal/README.md
+      - path: tests/fixtures/golden-oscal/*/README.md
 
   - name: data-model
     title: Data Model

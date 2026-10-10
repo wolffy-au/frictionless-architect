@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-10-03
+generated: 2026-10-10
 generator: claude-sonnet-5
 ---
 
@@ -27,9 +27,9 @@ generator: claude-sonnet-5
   releases and issues imported as ArchiMate Plateaus, Deliverables and Work Packages.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
-  generated: files, schema, the `build.py` pipeline, and the vendored IT4IT 3.0
-  reference model (`third_party/it4it`, merged in at build time — 379 elements,
-  790 relationships, 37 views).
+  generated: files, schema, the `build.py` pipeline, the generated GitHub
+  roadmap layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
+  merged in at build time — 414 elements, 840 relationships, 48 views total).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
   stakeholders, drivers, assessments, goal and four outcomes, principles,
   constraints, requirements, capabilities, strategy, four value streams, and the
@@ -40,6 +40,9 @@ generator: claude-sonnet-5
 - [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md) —
   section C: the application functions and artefacts of the input/output
   pipeline, including the policy-to-OSCAL chain.
+- [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) —
+  sections E and F: the platform's own packaging/migration restructure (Work
+  Packages, Plateaus, Gaps) and its first Technology-layer cut.
 - [Architecture Views & Diagrams](architecture-diagrams.md) — how those views
   map to ArchiMate viewpoints, the TOGAF Phase A vision-view set, the IT4IT
   reference views, and how to regenerate every `.puml`/`.svg` diagram.

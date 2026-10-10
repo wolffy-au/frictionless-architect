@@ -1,21 +1,21 @@
 ---
 title: Architecture Views & Diagrams
-generated: 2026-10-05
+generated: 2026-10-10
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
-  - architecture/model/diagrams/application/artefact-assurance-spec.puml
-  - architecture/model/diagrams/application/artefact-assurance-spec.svg
-  - architecture/model/diagrams/application/artefact-library.puml
-  - architecture/model/diagrams/application/artefact-library.svg
-  - architecture/model/diagrams/application/artefact-oscal-resolve.puml
-  - architecture/model/diagrams/application/artefact-oscal-resolve.svg
-  - architecture/model/diagrams/application/artefact-oscal.puml
-  - architecture/model/diagrams/application/artefact-oscal.svg
-  - architecture/model/diagrams/application/artefact-twin-governance.puml
-  - architecture/model/diagrams/application/artefact-twin-governance.svg
   - architecture/model/diagrams/application/catalog-structure.puml
   - architecture/model/diagrams/application/catalog-structure.svg
+  - architecture/model/diagrams/application/dataflow-assurance-spec.puml
+  - architecture/model/diagrams/application/dataflow-assurance-spec.svg
+  - architecture/model/diagrams/application/dataflow-library.puml
+  - architecture/model/diagrams/application/dataflow-library.svg
+  - architecture/model/diagrams/application/dataflow-oscal-resolve.puml
+  - architecture/model/diagrams/application/dataflow-oscal-resolve.svg
+  - architecture/model/diagrams/application/dataflow-oscal.puml
+  - architecture/model/diagrams/application/dataflow-oscal.svg
+  - architecture/model/diagrams/application/dataflow-twin-governance.puml
+  - architecture/model/diagrams/application/dataflow-twin-governance.svg
   - architecture/model/diagrams/technology/landscape.puml
   - architecture/model/diagrams/technology/landscape.svg
   - architecture/model/diagrams/technology/oscal-golden-check.puml
@@ -48,10 +48,26 @@ sources:
   - architecture/model/diagrams/layered/subsystem-capabilities.svg
   - architecture/model/diagrams/migration/overview.puml
   - architecture/model/diagrams/migration/overview.svg
+  - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.puml
+  - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.svg
+  - architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml
+  - architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.svg
+  - architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml
+  - architecture/model/diagrams/migration/plat-drift-management-mvp-5.svg
+  - architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.puml
+  - architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.svg
   - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.puml
   - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.svg
+  - architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.puml
+  - architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.svg
   - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml
   - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg
+  - architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.puml
+  - architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.svg
+  - architecture/model/diagrams/migration/plat-release-management-mvp-4.puml
+  - architecture/model/diagrams/migration/plat-release-management-mvp-4.svg
+  - architecture/model/diagrams/migration/plat-solution-design-mvp-8.puml
+  - architecture/model/diagrams/migration/plat-solution-design-mvp-8.svg
   - architecture/model/diagrams/migration/runtime.puml
   - architecture/model/diagrams/migration/runtime.svg
   - architecture/model/diagrams/migration/sequence.puml
@@ -98,12 +114,15 @@ For what the model itself *means* (its elements, relationships and content secti
 
 ## Views and diagrams
 
-The merged model has 37 ArchiMate views:
+The merged model has 48 ArchiMate views:
 
-- 33 are declared in this repo's own `views.yaml`. They cover sections A–C,
+- 34 are declared in this repo's own `views.yaml`. They cover sections A–C,
   the IT4IT touchpoint bridge, section E (since 2026-09-26, GH #65) — the
   platform's own packaging and migration — and (since 2026-09-27, GH #55
   follow-up) section F, the first Technology-layer cut.
+- 10 are generated into `architecture/model/gh-roadmap/views.yaml` by
+  `import_gh_roadmap.py`, one per GitHub milestone — see
+  [GitHub Roadmap Layer](gh-roadmap-layer.md).
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
   ([ADR-0029](decision-log.md)).
@@ -120,7 +139,7 @@ kind of view:
 | `vision/` | TOGAF Phase A views |
 | `business/` | Phase B business-layer views |
 | `layered/` | the cross-layer Subsystems & Capabilities view |
-| `application/` | the artefact-flow views |
+| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036) |
 | `c4/` | the C4 context and container diagrams |
 | `implementation/` | the Packaging view (section E) |
 | `migration/` | the Implementation & Migration views (section E): Migration Sequence, Runtime Migration, the all-layer overview and the generated per-milestone views |
@@ -224,23 +243,24 @@ because all of them are projections of the same model
   layers line up" is what that viewpoint is for
   (`architecture/model/views.yaml:370-396`). It previously used
   `outcome_realization` under `cross-layer/`.
-- **The five `Artefact Flow — …` views** use `application_cooperation`.
+- **The five `Data Flow — …` views** use `application_cooperation`.
 - **IT4IT: Capability Bridges** uses `capability`.
 
 The Controls & OSCAL stage is drawn as **two** application-layer views
 (`architecture/model/views.yaml:398-443`):
 
-- `Artefact Flow — Controls & OSCAL` (`application/artefact-oscal`). The LLM
+- `Data Flow — Controls & OSCAL` (`application/dataflow-oscal`, renamed from
+  `artefact-oscal` 2026-10-08, GH #109 / ADR-0036). The LLM
   Provider serves AI-assisted Markdown conversion, and Trestle serves the
   round-trip into an OSCAL Catalog. The view is conversion only: its one
   golden-dataset object is the baseline catalog, the expected output for the
   Regulatory Standard Document it converts. Since ADR-0034 the view also shows the
   shared LLM Provider Configuration component, associated with the LLM Provider
   ("configures provider/model & resolves credentials for calls to"), and the
-  container view carries the same edge (`architecture/model/diagrams/application/artefact-oscal.puml`,
+  container view carries the same edge (`architecture/model/diagrams/application/dataflow-oscal.puml`,
   `c4/container.puml`).
-- `Artefact Flow — OSCAL Profile Resolution`
-  (`application/artefact-oscal-resolve`). OSCAL Baseline Tailoring reads the
+- `Data Flow — OSCAL Profile Resolution`
+  (`application/dataflow-oscal-resolve`, renamed from `artefact-oscal-resolve`). OSCAL Baseline Tailoring reads the
   OSCAL Catalog and writes the OSCAL Profile, and Trestle's `profile-resolve`
   turns the profile and its catalog into the **Resolved OSCAL Profile
   Catalog**. OSCAL Catalog Generation is repeated from the first view as the
@@ -310,15 +330,15 @@ generated view per GitHub milestone, all under `migration/`:
 | View | Diagram | Viewpoint | Covers |
 |---|---|---|---|
 | Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, the shared LLM Provider Configuration component (ADR-0034), and `if-twin-read-path`, each realized by its package `Artifact` |
-| Migration Sequence | `migration/sequence` | `implementation_migration` | The `ARCHITECTURE.md` §8 steps as `WorkPackage`s, their `Deliverable`s, and the `Plateau`s and `Gap`s between them (the baseline plus the roadmap-generated `plat-policy-to-oscal-mvp-1`; `gap-oscal-ai-conversion`) |
+| Migration Sequence | `migration/sequence` | `implementation_migration` | The four hand-authored `WorkPackage`s (`wp-71-migration-steps-1-3`, `wp-106-scaffold-twin`, `wp-vendor-it4it`, `wp-107-rehome-specs`), the Artifacts/Plateaus they realize directly (no `Deliverable` element any more), and the `Plateau`s and `Gap`s between them (the baseline plus the roadmap-generated `plat-policy-to-oscal-mvp-1`; `gap-oscal-ai-conversion`) |
 | Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
 | Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview` | `implementation_migration` | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
-| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | Generated into `gh-roadmap/views.yaml` by the importer, one per milestone (currently `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`) |
+| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | Generated into `gh-roadmap/views.yaml` by the importer, one per milestone — ten currently, one per business-function MVP (`plat-policy-to-oscal-mvp-1` through `plat-effectiveness-assurance-mvp-10`) |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
 mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,
 one `exclude:` entry per relationship type) — that cooperation story belongs to
-the Artefact Flow views, not this one. No `Node`/`SystemSoftware` technology
+the Data Flow views, not this one. No `Node`/`SystemSoftware` technology
 layer is scoped yet; the deployment half of the `implementation_deployment`
 viewpoint is left for GH #55 (`architecture/model/views.yaml` §"Implementation
 & Migration").
@@ -369,8 +389,8 @@ by side); the CI Check view additionally pulls in the application-layer
 functions and artefacts the golden-dataset check actually validates
 (`architecture/model/views.yaml` comments).
 
-**Application Structure vs. Artefact Flow.** `view-application-structure-catalog`
-is a different cut from the existing `application/artefact-oscal(-resolve)`
+**Application Structure vs. Data Flow.** `view-application-structure-catalog`
+is a different cut from the existing `application/dataflow-oscal(-resolve)`
 views: those show artefacts flowing *through* `ApplicationFunction`s across
 the whole Controls & OSCAL stage; this one shows one component's internal
 structure — `sub-catalog`, its interface, and the artefacts it owns — using
@@ -380,15 +400,16 @@ viewpoint.
 
 **Changes to existing diagrams from the same pass:**
 
-- `application/artefact-oscal` and `application/artefact-oscal-resolve` gained
-  edges for the three new section-C functions (`fn-policy-upload`,
-  `fn-policy-quality-feedback`, `fn-oscal-validation`) — see [Architecture
-  Model: Artefact Flow](architecture-model-artefact-flow.md).
+- `application/dataflow-oscal` and `application/dataflow-oscal-resolve`
+  (renamed from `artefact-oscal`/`artefact-oscal-resolve` 2026-10-08, GH #109 /
+  ADR-0036) gained edges for the three new section-C functions
+  (`fn-policy-upload`, `fn-policy-quality-feedback`, `fn-oscal-validation`) —
+  see [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 - `c4/context` and `c4/container` picked up small edge changes reflecting the
   same additions.
 - ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
   Configuration component and its package Artifact to the Packaging, Migration
-  Sequence and Artefact Flow — Controls & OSCAL diagrams, and the OS credential store
+  Sequence and Data Flow — Controls & OSCAL diagrams, and the OS credential store
   (`sw-keyring`) to the Technology landscape and (now `migration/runtime`) Runtime Migration diagrams
   (`architecture/model/views.yaml`; the regenerated `.puml`/`.svg` pairs).
 - `implementation/packaging` was rewritten from a broad
