@@ -26,10 +26,11 @@ Minimal pyArchimate shape:
 
 ```python
 from pyArchimate import Model
+
 m = Model("my-model")
-m.read("model.archimate")                       # or start empty
+m.read("model.archimate")  # or start empty
 comp = m.get_or_create_element("ApplicationComponent", "Billing")
-svc  = m.get_or_create_element("ApplicationService", "Invoicing")
+svc = m.get_or_create_element("ApplicationService", "Invoicing")
 m.get_or_create_relationship("Realization", comp, svc)
 m.write("model.archimate")
 ```

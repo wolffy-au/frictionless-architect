@@ -35,6 +35,7 @@ lint = [
     "mypy>=1.19.1,<2.0.0",
     "pyright>=1.1.407,<2.0.0",
     "types-pyyaml>=6.0,<7.0",
+    "types-defusedxml>=0.7.0.20260504,<0.8.0.0",
 ]
 
 [tool.pyright]
@@ -42,14 +43,24 @@ typeCheckingMode = "basic"
 reportMissingImports = true
 reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
+# modelling_specification.model_io imports `viewpoints` from the model-archimate skill
+# scripts via a runtime sys.path hack (same pattern root's build.py used before ADR-0037
+# ported it here) -- extraPaths gives pyright the same resolution statically.
+extraPaths = ["../.claude/skills/model-archimate/scripts"]
 
 [tool.mypy]
 strict = true
 show_error_codes = true
 check_untyped_defs = true
+# Same sys.path hack as pyright's extraPaths above, for mypy's own resolution of `viewpoints`.
+mypy_path = ["../.claude/skills/model-archimate/scripts"]
 
 [[tool.mypy.overrides]]
 module = "behave.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pyArchimate.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
