@@ -6,11 +6,12 @@ param([switch]$Unregister)
 
 $prefix = 'FrictionlessArchitect-Audit-'
 
-# Script, day, time. Two days carry two audits, 10 minutes apart.
+# Script, day, time. Three days carry two audits, 10 minutes apart.
 $reminders = @(
   @{ Script = 'vuln_audit_weekly.sh';           Day = 'Monday';    Time = '09:00' },
   @{ Script = 'quality_audit_weekly.sh';        Day = 'Tuesday';   Time = '09:00' },
   @{ Script = 'spec_alignment_weekly.sh';       Day = 'Wednesday'; Time = '09:00' },
+  @{ Script = 'refactor_audit_weekly.sh';       Day = 'Wednesday'; Time = '09:10' },
   @{ Script = 'adr_audit_weekly.sh';            Day = 'Thursday';  Time = '09:00' },
   @{ Script = 'commit_audit_weekly.sh';         Day = 'Thursday';  Time = '09:10' },
   @{ Script = 'docs_audit_weekly.sh';           Day = 'Friday';    Time = '09:00' },
