@@ -325,7 +325,8 @@ Checklist:
 Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
 from the shared FastAPI app in `frictionless_architect/app.py`. The server-rendered HTML
 route was dropped on 2026-09-13, leaving `visualizer/static/` and `templates/` orphaned
-(ADR-0005 → Implementation status).
+(ADR-0005 → Implementation status); those orphaned files were deleted outright on
+2026-10-10 rather than kept as a Vite-app starting point.
 
 ```plantuml
 @startuml
@@ -335,7 +336,6 @@ skinparam componentStyle rectangle
 package "BEFORE  src/frictionless_architect/visualizer/" {
   [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
   [data_loader.py sample_parser.py\n(+ schema/manager.py)] as before_kg
-  [static/ + templates/\n(orphaned)] as before_ui
   before_api --> before_kg
 }
 
@@ -363,8 +363,8 @@ Checklist:
   `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
   §4).
 - ~~Drop the HTML route + Jinja/static mounts; keep `/schema-payload*`.~~ Done 2026-09-13.
-- Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy;
-  delete the orphaned `visualizer/static/` and `templates/`.
+- ~~Delete the orphaned `visualizer/static/` and `templates/`.~~ Done 2026-10-10.
+- Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy.
 - Add CORS config to the API (same-origin today, so none).
 - `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the
   package; `test_data_loader.py` / `test_sample_parser.py` follow their code to
