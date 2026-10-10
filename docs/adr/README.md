@@ -124,3 +124,8 @@ narrative docs.
 - **A** — [0036](0036-element-id-prefix-scheme.md) — An element id prefix names
   the element's own ArchiMate type; `art-*` is reserved for genuine `Artifact`
   elements, `DataObject` elements use `do-*`
+- **P** — [0037](0037-conversational-model-authoring-architecture.md) — Conversational
+  model authoring: new `platform/packages/modelling-specification` package, validation
+  logic ported from `build.py`/`render_diagrams.py`, Enterprise Convention Rules in
+  `conventions.yaml`, overrides as auto-drafted ADR stubs, new `vs-intent-to-model`
+  business wiring

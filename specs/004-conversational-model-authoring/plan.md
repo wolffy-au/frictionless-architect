@@ -19,8 +19,8 @@ ADR-0035) keep one deterministic, non-conversational pipeline rather than a seco
 implementation (R2). A FastAPI router, mounted per ADR-0020, serves the chat turn and a render
 endpoint the split-screen UI polls after apply or on request (FR-011–FR-013). Entities, ids
 and lifecycles are in [data-model.md](data-model.md); decisions in [research.md](research.md).
-The business-layer wiring Assumption 6 defers to this plan is in "Model impact" below, to be
-filed as ADR-0036 before `/speckit-tasks`.
+The business-layer wiring Assumption 6 defers to this plan is in "Model impact" below, filed
+as ADR-0037 before `/speckit-tasks`.
 
 ## Technical Context
 
@@ -84,7 +84,7 @@ scale, not a multi-tenant one
 | VII. Integrity | Every candidate is validated against the same pyArchimate checks `build.py`/`validate.py` already enforce, before, not after, it reaches `architecture/model/`. Pass. |
 | VIII. Durability | Applied changes land in the existing YAML schema (ADR-0007/0008) via the existing regeneration path; no new on-disk format for the model itself. Pass. |
 | IX. Cross-Platform | FastAPI/Python, no OS-specific paths beyond what the existing visualiser already assumes. Pass. |
-| X. Decision Traceability | Model impact stated below; **ADR-0036 required** before `/speckit-tasks` for: package location, validation-module incorporation (shared between the skill and the app without forking, Assumption 1), Enterprise Convention Rule config surface, the Override Decision Record auto-drafted-ADR mechanism (R7), and the business-layer/ValueStream wiring (Assumption 6). Tracked as a plan follow-up, not yet filed. |
+| X. Decision Traceability | Model impact stated below; **ADR-0037 filed** for: package location, validation-module incorporation (shared between the skill and the app without forking, Assumption 1), Enterprise Convention Rule config surface, the Override Decision Record auto-drafted-ADR mechanism (R7), and the business-layer/ValueStream wiring (Assumption 6). |
 | XI. Concise Artefacts | Entity detail lives only in `data-model.md`; this plan links to it rather than restating fields. |
 
 No violations; Complexity Tracking is empty — a new platform package is the sanctioned
@@ -178,8 +178,8 @@ end note
 Also changed: `architecture/model/conventions.yaml` (NEW, Enterprise Convention Rules);
 `elements.yaml`/`relationships.yaml` (see "Model impact"); `diagrams/strategy/`,
 `diagrams/business/` (regenerated); root `pyproject.toml` (drops `pyarchimate`/`rapidfuzz`
-entirely once the three scripts above are thin wrappers, R2); `docs/adr/0036-*.md` (NEW,
-filed before `/speckit-tasks`) and `docs/adr/README.md` (index row).
+entirely once the three scripts above are thin wrappers, R2); `docs/adr/0037-*.md` (filed)
+and `docs/adr/README.md` (index row, added).
 
 **Structure Decision**: New platform package, not `src/frictionless_architect` — the model
 already designates `art-pkg-modelling-specification` as subsystem 6's home and ADR-0002's
