@@ -118,6 +118,19 @@ def validate_sample_against_schema(sample_path: Path, schema_path: Path) -> list
 
     `schema_path` is the entry XSD; for a model with diagrams that is
     `archimate3_Diagram.xsd`, which includes the View and Model schemas.
+
+    This function never raises: missing files, namespace mismatches, schema
+    load failures and XSD validation errors are all reported as strings in
+    the returned list instead of propagating as exceptions.
+
+    Args:
+        sample_path: Path to the sample ArchiMate exchange-format XML.
+        schema_path: Path to the entry XSD to validate against.
+
+    Returns:
+        A list of human-readable issue strings; empty when the sample is
+        valid. XSD-schema issues are prefixed ``"XSD: "``, and reporting
+        stops (with a final summary entry) after ``MAX_XSD_ISSUES`` of them.
     """
     if not sample_path.exists():
         return [f"Sample XML missing at {sample_path}"]
