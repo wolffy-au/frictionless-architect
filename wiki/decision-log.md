@@ -1,6 +1,6 @@
 ---
 title: Architecture Decision Log
-generated: 2026-10-05
+generated: 2026-10-10
 generator: claude-sonnet-5
 sources:
   - docs/adr/0000-adr-template.md
@@ -39,6 +39,7 @@ sources:
   - docs/adr/0033-value-streams-per-outcome.md
   - docs/adr/0034-shared-packages-and-llm-provider-config.md
   - docs/adr/0035-github-roadmap-as-implementation-migration-layer.md
+  - docs/adr/0036-element-id-prefix-scheme.md
   - docs/adr/README.md
 ---
 
@@ -91,6 +92,7 @@ not re-ratified in a spec). No record is currently A\*.
 | 0033 | One value stream per outcome, organised by value recipient (not by role); streams take stages over rather than duplicate them | A |
 | 0034 | Shared cross-subsystem functionality gets its own `platform/packages/` sibling package; first instance `llm-provider-config` (global + per-component LLM settings, OS-keychain secrets, never `.env`) | A |
 | 0035 | The GitHub roadmap (milestones, issues, releases) is imported into the Implementation & Migration layer by `import_gh_roadmap.py`; the generated layer is merged by `build.py` and never hand-edited | A |
+| 0036 | An element id prefix names the element's own ArchiMate type, never a loose business synonym; the 35 `DataObject` elements once prefixed `art-` move to `do-`, freeing `art-` for genuine `Artifact`-typed elements | A |
 
 The **P** rows (0017–0019) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -156,6 +158,35 @@ writes nothing, and `--check` reports drift. The same cut-over retired
 Plateaus (`docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`
 §Decision; `ARCHITECTURE.md` §8.3). See
 [Architecture Model](architecture-model.md).
+
+ADR-0036 (Accepted 2026-10-08, GH #109) names the convention that was
+missing when `art-` drifted into meaning two different things: the genuine
+ArchiMate `Artifact` type (code packages, deployment artefacts) and,
+separately, 35 `DataObject` elements prefixed `art-` for the business term
+"artefact". The collision caused a real mistyping in GH #108's planning work,
+caught only by manual review. The decision: a prefix always names the
+element's own ArchiMate type, never a business synonym or role name that
+could be mistaken for a different type. The 35 colliding `DataObject`
+elements — the artefact input/output pipeline: policy documents, OSCAL
+catalogs/profiles, baselines, blueprints, the ADR/roadmap/gate-decision
+chain — are renamed `do-*`; `art-*` now exclusively denotes `Artifact`-typed
+elements (`art-flat-src`, `art-pkg-*`, `art-tech-oscal-workspace`,
+`art-tech-ledger-file`). Redefining `art-` to mean "artefact" instead was
+rejected: `Artifact` is the rarer group and the name an ArchiMate-literate
+reader expects it to mean
+(`docs/adr/0036-element-id-prefix-scheme.md` §Decision, §Alternatives
+considered). See [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
+
+ADR-0029 gained an **addendum in place** on 2026-10-08 (GH #99): the vendored
+IT4IT value-stream `Flow` edges carry the standard's own dense,
+multi-directional network verbatim, which `check_derived.py` flags as
+advisory two-hop duplicates. Because this repo does not hand-prune vendored
+relationships (the ADR's "no touchpoint-filtering" rule), the duplicates are
+recorded as an accepted exception in the check itself rather than edited
+out — a real correction belongs upstream in `frictionless-it4it`, pulled in
+on the next `fork-sync`
+(`docs/adr/0029-it4it-as-vendored-touchpoint-model.md` §Consequences). See
+[IT4IT Reference Model](it4it-model.md).
 
 ADR-0010 was **revised in place** on 2026-09-26 (GH #65) to cover a second
 kind of load-bearing content: the model now also carries the platform's own

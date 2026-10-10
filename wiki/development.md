@@ -1,7 +1,7 @@
 ---
 title: Development & Quickstart
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-10
+generator: claude-sonnet-5
 sources:
   - specs/001-governance-platform/quickstart.md
   - AGENTS.md
@@ -185,6 +185,13 @@ payload, refresh, unavailable-sample warnings, the 2-second target and the load 
 step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
 step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §2 already lists it.
 The scenarios now also cover the GitHub roadmap importer (`tests/features/gh_roadmap_import.feature`).
+
+`pre_merge_checks.sh` also fails (exit 1) if the generated GitHub roadmap layer (see
+[GitHub Roadmap Layer](gh-roadmap-layer.md)) has fallen behind GitHub — it runs
+`poetry run python architecture/model/import_gh_roadmap.py --check` right after the
+`pre_commit_checks.sh` step and before the lock refresh. Fix a failure with
+`scripts/refresh_gh_roadmap.sh`, which re-runs the importer, rebuilds the model XML and
+regenerates diagrams for review, then commit the result (`scripts/pre_merge_checks.sh`).
 
 The merge-gate coverage run measures `--cov=src --cov=architecture/model`, so the importer's
 tests count toward the 90% gate (`scripts/pre_merge_checks.sh`). `[tool.coverage.run]` omits the

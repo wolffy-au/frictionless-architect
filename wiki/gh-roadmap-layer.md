@@ -1,7 +1,7 @@
 ---
 title: GitHub Roadmap Layer
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-10
+generator: claude-sonnet-5
 sources:
   - specs/003-gh-roadmap-archimate/checklists/requirements.md
   - specs/003-gh-roadmap-archimate/contracts/gh-roadmap-layer.md
@@ -150,13 +150,26 @@ published after a close moves the Work Package to that release; a milestone chan
 retargets Realization; removing the milestone or deleting the issue removes the
 element (the model is a current-state ledger, not history).
 
+## Performance
+
+SC-007 / R14 (GH #104) budget a full import at the 1000-issue cap to 2 minutes
+wall-clock. Measured: this repo's actual run (~100 issues, one GraphQL page)
+takes 4–6s over 4 `gh` calls (repo resolve, milestones, releases, one issues
+page), each 0.5–2s; a synthetic 1000-issue fixture with network mocked out
+built and rendered the layer in under 2s of pure computation. The bottleneck
+at the cap is ten sequential `gh api graphql` round trips, not compute, so the
+measurements support keeping the cap rather than raising it
+(`specs/003-gh-roadmap-archimate/spec.md` §SC-007; `research.md` R14).
+
 ## Expected output on this repo
 
-Checked 2026-10-04 (`specs/003-gh-roadmap-archimate/quickstart.md` §1): 2 Plateaus (`policy-to-oscal-mvp`,
-`multi-user-collaboration`), 1 unreleased Deliverable, 3 Work Packages (#44, #61, #7)
-and two published releases (`v0.1.0`, `v0.1.1`) whose notes name no Plateau. No
-Triggering is generated. The quickstart itself warns that counts drift; re-derive
-with `gh`.
+As of 2026-10-09, re-derived from `architecture/model/gh-roadmap/*.yaml`: 10
+Plateaus (`policy-to-oscal-mvp` through `effectiveness-assurance-mvp`, one per
+business-function MVP milestone), 9 Deliverables (7 unreleased, plus the two
+published releases `v0.1.0` and `v0.1.1`, whose notes name no Plateau), and 21
+Work Packages. No cross-milestone Triggering is generated yet (no issue in one
+milestone currently blocks an issue in another). Counts drift as GitHub state
+changes; re-derive with `gh` rather than trusting this snapshot.
 
 ## Invariants
 
