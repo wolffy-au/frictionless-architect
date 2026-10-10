@@ -59,5 +59,11 @@ class VisualizerSettings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_visualizer_settings() -> VisualizerSettings:
-    """Return the process-wide settings instance (cached after first call)."""
+    """Return the process-wide settings instance (cached after first call).
+
+    Returns:
+        The ``VisualizerSettings`` built from ``FRICTIONLESS_ARCHITECT_*``
+        environment variables (or ``.env``), memoised for the life of the
+        process.
+    """
     return VisualizerSettings()

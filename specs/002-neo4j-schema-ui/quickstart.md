@@ -32,7 +32,20 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
    poetry env activate
    ```
 
-2. (Optional) If you want Neo4j to hold the same dataset as the sample XML, use the schema manager with a JSON fixture derived from `Test Model Full.xml`.
+2. (Optional) If you want Neo4j to hold the same dataset as the sample XML, bootstrap it
+   with `scripts/neo4j_schema.py`, passing a JSON fixture derived from
+   `Test Model Full.xml` (elements, relationships, views, diagrams):
+
+   ```bash
+   poetry run python scripts/neo4j_schema.py all --data-file <path/to/fixture.json>
+   ```
+
+   `all` applies constraints/indexes, ingests the fixture, records the schema
+   version and runs the integrity audit in one go. This script reads its own
+   **unprefixed** `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` (not the
+   `FRICTIONLESS_ARCHITECT_NEO4J_*` variables above) — see the README's "Related
+   tooling" section for the subcommand reference.
+
 3. Run the FastAPI visualiser:
 
    ```bash
@@ -50,9 +63,20 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
 
 ## Workflow tips
 
-- `GET /schema-payload/status` reports cache age, Neo4j health (`neo4j_status`), sample
-  file health (`sample_file_status`), the latest warning and whether a refresh is running.
+- `GET /schema-payload/status` reports cache age, Neo4j health (`neo4j_status`: `disabled`
+  when no Neo4j is configured, `available`, or `unavailable`), sample file health
+  (`sample_file_status`: `missing`, `invalid`, or `loaded`), the latest warning, whether a
+  refresh is running (`refresh_in_progress`) and whether the automatic background retry
+  has a rebuild scheduled or running (`retry_pending`).
 - `POST /schema-payload/refresh` starts a background rebuild (`202 Accepted`; `409` if one
   is already running; `429` with `Retry-After` for `REFRESH_BACKOFF_SECONDS` after a successful one) while `/schema-payload` keeps serving the cached payload.
+- `GET /schema-payload?force_reload=true` rebuilds instead of serving the cache, but if
+  that rebuild fails and a payload is already cached, it still returns the cached payload
+  (HTTP 200) rather than a `503` — a `503` only happens when the rebuild fails with nothing
+  cached to fall back on.
+- When `neo4j_status` is `unavailable`, the service automatically retries the load every
+  `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` seconds (default and maximum `300`) until
+  it succeeds; watch `retry_pending` on `GET /schema-payload/status` to see it in flight.
 - Each `/schema-payload` response includes `latency_ms`, so you can confirm the <2-second
-  load goal and track warnings like missing samples or Neo4j timeouts.
+  load goal and track warnings like missing samples, duplicate sample identifiers, XSD
+  validation issues (`XSD: ...`), or Neo4j timeouts.

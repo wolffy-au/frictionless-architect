@@ -6,6 +6,7 @@ import asyncio
 import logging
 import math
 import time
+from collections.abc import Callable
 from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Annotated, Any
@@ -75,7 +76,7 @@ class SchemaPayloadService:
     """Builds, caches and refreshes the merged Neo4j + sample schema payload."""
 
     def __init__(
-        self, settings: "VisualizerSettings", parser: SampleParser, loader: DataLoader, cache: SchemaCache
+        self, settings: VisualizerSettings, parser: SampleParser, loader: DataLoader, cache: SchemaCache
     ) -> None:
         """Wire the service to its collaborators.
 
@@ -236,7 +237,7 @@ class SchemaPayloadService:
             status["last_refresh_completed"] = self._last_refresh_completed.isoformat()
         return status
 
-    def _load_sample(self, add_warning: Any) -> tuple[str, SampleParseResult]:
+    def _load_sample(self, add_warning: Callable[[str], None]) -> tuple[str, SampleParseResult]:
         try:
             sample_result = self.parser.parse()
         except (FileNotFoundError, ParseError):
@@ -255,7 +256,7 @@ class SchemaPayloadService:
             add_warning(issue)
         return "loaded", sample_result
 
-    def _load_schema(self, add_warning: Any) -> tuple[str, dict[str, list[dict[str, Any]]]]:
+    def _load_schema(self, add_warning: Callable[[str], None]) -> tuple[str, dict[str, list[dict[str, Any]]]]:
         if not self.settings.neo4j_uri:
             return "disabled", {"elements": [], "relationships": [], "views": []}
         try:
@@ -320,7 +321,7 @@ class SchemaPayloadService:
         self,
         schema_elements: list[dict[str, Any]],
         sample_elements: dict[str, dict[str, Any]],
-        add_warning: Any,
+        add_warning: Callable[[str], None],
         relationship_ids: set[str],
     ) -> list[dict[str, Any]]:
         model_file = MODEL_SCHEMA_FILE
@@ -357,7 +358,7 @@ class SchemaPayloadService:
         self,
         schema_relationships: list[dict[str, Any]],
         sample_relationships: dict[str, dict[str, Any]],
-        add_warning: Any,
+        add_warning: Callable[[str], None],
     ) -> list[dict[str, Any]]:
         model_file = MODEL_SCHEMA_FILE
         schema_map = {rel.get("identifier"): rel for rel in schema_relationships if rel.get("identifier")}
@@ -387,7 +388,13 @@ logger = logging.getLogger(__name__)
 
 @lru_cache(maxsize=1)
 def get_schema_service() -> SchemaPayloadService:
-    """Return the process-wide ``SchemaPayloadService`` (built once from settings)."""
+    """Return the process-wide ``SchemaPayloadService`` (built once from settings).
+
+    Returns:
+        The memoised ``SchemaPayloadService``, wired to a ``SampleParser``,
+        ``DataLoader`` and ``SchemaCache`` built from the current
+        ``VisualizerSettings``.
+    """
     settings = get_visualizer_settings()
     logger.debug(
         "Visualizer settings read: neo4j_uri=%s, neo4j_user=%s, sample_data_dir=%s, sample_model_path=%s, cache_dir=%s",
@@ -414,7 +421,21 @@ RefreshRequestBody = Annotated[RefreshRequest, Body()]
     responses={503: {"description": "Schema payload unavailable when both sample data and Neo4j are unreachable"}},
 )
 async def schema_payload(force_reload: ForceReloadQuery = False) -> dict[str, Any]:
-    """``GET /schema-payload``: return the schema payload (503 if unavailable)."""
+    """``GET /schema-payload``: return the schema payload (503 if unavailable).
+
+    Args:
+        force_reload: Rebuild instead of serving the cache. If the rebuild
+            fails but a cached payload exists, the cached payload is
+            returned instead of a 503.
+
+    Returns:
+        The payload with ``model``, ``elements``, ``relationships``, ``views``,
+        ``warnings`` and ``latency_ms``.
+
+    Raises:
+        HTTPException: 503 if the payload cannot be built and nothing is
+            cached (neither Neo4j nor the sample model is reachable).
+    """
     service = get_schema_service()
     try:
         return await service.get_payload(force_reload)
@@ -434,8 +455,18 @@ async def schema_payload(force_reload: ForceReloadQuery = False) -> dict[str, An
 async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
     """``POST /schema-payload/refresh``: start a background refresh.
 
-    Returns 202 when started, 409 if one is running, and 429 with ``Retry-After`` while
-    the backoff after the last successful refresh is still active.
+    Args:
+        request: The request body. ``request.source`` is accepted but
+            currently unused.
+
+    Returns:
+        A mapping with ``status`` (``"refresh_started"``) and
+        ``estimated_completion_ms`` when a refresh is accepted (HTTP 202).
+
+    Raises:
+        HTTPException: 409 if a refresh is already running, or 429 (with a
+            ``Retry-After`` header) if called too soon after the last
+            successful refresh.
     """
     service = get_schema_service()
     try:
@@ -449,6 +480,14 @@ async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
 
 @router.get("/schema-payload/status")
 async def schema_payload_status() -> dict[str, Any]:
-    """``GET /schema-payload/status``: report cache and source health."""
+    """``GET /schema-payload/status``: report cache and source health.
+
+    Returns:
+        A mapping with ``cache_age_seconds``, ``neo4j_status``,
+        ``sample_file_status``, ``last_warning``, ``refresh_in_progress``,
+        ``retry_pending`` and, once known, ``last_refresh_started`` /
+        ``last_refresh_completed`` (ISO 8601). See
+        ``SchemaPayloadService.get_status`` for the value ranges.
+    """
     service = get_schema_service()
     return service.get_status()

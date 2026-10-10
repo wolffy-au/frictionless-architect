@@ -35,6 +35,19 @@ def require_archimate_namespace(root: ET.Element, source: Path | str) -> None:
 
     Namespaced lookups silently match nothing on a document in any other
     namespace, so the mismatch is checked up front and reported explicitly.
+
+    Args:
+        root: The parsed document's root element.
+        source: Path or label identifying the document, used only to build
+            the error message.
+
+    Returns:
+        None.
+
+    Raises:
+        ArchimateNamespaceError: If ``root`` has no namespace, uses a
+            namespace other than ``ARCHIMATE_NS``, or is not a ``<model>``
+            element.
     """
     namespace, local_name = _split_tag(root.tag)
     if not namespace:
