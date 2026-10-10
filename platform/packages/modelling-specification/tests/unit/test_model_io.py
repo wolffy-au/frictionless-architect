@@ -313,6 +313,66 @@ def test_add_views_without_exclude_renders_every_in_scope_edge() -> None:
     assert len(model.views[0].conns) == 1
 
 
+def test_add_views_exclude_elements_by_id_prefix_overrides_include_types() -> None:
+    els = [
+        {"id": "cap-first-party", "type": "capability", "name": "First Party"},
+        {"id": "it4it-vendored", "type": "capability", "name": "Vendored"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, [])
+    model_io.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "include_types": ["capability"],
+                "exclude_elements": [{"id_prefix": "it4it-"}],
+            }
+        ],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    assert len(view.nodes) == 1
+    (node,) = view.nodes
+    assert node.ref == by_id["cap-first-party"].uuid
+
+
+def test_add_views_exclude_elements_by_type_and_id_both_must_match() -> None:
+    els = [
+        {"id": "cap-a", "type": "capability", "name": "Cap A"},
+        {"id": "cap-b", "type": "capability", "name": "Cap B"},
+        {"id": "vs-a", "type": "value-stream", "name": "VS A"},
+    ]
+    model, elements, by_id, types, errors = _model_with(els, [])
+    model_io.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "include_types": ["capability", "value-stream"],
+                # neither key alone matches vs-a (wrong type) or cap-b (wrong id) --
+                # only cap-a, which matches both, is excluded.
+                "exclude_elements": [{"type": "capability", "id": "cap-a"}],
+            }
+        ],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    on_view = {node.ref for node in view.nodes}
+    assert on_view == {by_id["cap-b"].uuid, by_id["vs-a"].uuid}
+
+
 def test_load_path_flags_flow_value_truncated_by_unquoted_comma(tmp_path: Any) -> None:
     f = tmp_path / "elements.yaml"
     f.write_text("- {type: DataObject, id: art-x, name: X, desc: first part, lost tail}\n")
