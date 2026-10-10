@@ -7,6 +7,7 @@ Motivation_Outcome(e_id79b6a1e545325d, "Drift Detected and Reconciled Continuous
 Motivation_Outcome(e_id3be36e7ab88a59, "Approved Change Reaches Production at AI Speed")
 Motivation_Outcome(e_id4f39e9ec8e4656, "Compliance Proven Before Release")
 Motivation_Outcome(e_ide8275430b0ad5e, "Accountable, Auditable Automation")
+Motivation_Outcome(e_id162419e4eb6659, "Architect-Authored Model Changes")
 Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
 Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
 Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
@@ -15,6 +16,7 @@ Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconci
 Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
 Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
 Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance")
 Strategy_ValueStream(e_idcd5e1d4017725d, "Governed Architecture Delivery") {
   Strategy_ValueStream(e_id447909387df55c, "Establish Reuse Baseline")
   Strategy_ValueStream(e_id01dab436206551, "Specify the Change")
@@ -34,7 +36,7 @@ Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
   Strategy_ValueStream(e_id12b58c7f12735c, "Observe As-Built State")
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
-Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
+Strategy_ValueStream(e_id12f51f6c841755, "Intent to Model")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
@@ -58,6 +60,7 @@ Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
 }
 Business_Function(e_id5794c15b037251, "Architecture Strategy") {
   Business_Process(e_id395c9c2923aa56, "Target State Definition")
+  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 }
 Business_Function(e_id86f3d2dd174754, "Solution Design") {
   Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
@@ -69,10 +72,12 @@ Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
   Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 }
 
+Rel_Serving_Up(e_id6c60f4feb89058, e_id12f51f6c841755, "")
 Rel_Realization_Up(e_idcd5e1d4017725d, e_id3be36e7ab88a59, "")
 Rel_Realization_Up(e_id7ee8cdbf8ddc57, e_id4f39e9ec8e4656, "")
 Rel_Realization_Up(e_idc55b78731ffe56, e_ide8275430b0ad5e, "")
 Rel_Realization_Up(e_idfa7e21ab28235c, e_id79b6a1e545325d, "")
+Rel_Realization_Up(e_id12f51f6c841755, e_id162419e4eb6659, "")
 Rel_Serving_Up(e_id752d1de3794f5f, e_id447909387df55c, "")
 Rel_Serving_Up(e_idafba1b4ab1e756, e_id01dab436206551, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_id36fbfe00214758, "")
@@ -96,6 +101,7 @@ Rel_Triggering(e_idb542830057125a, e_id57940702bdfc58, "not deterministically va
 Rel_Flow(e_id2d06864964375b, e_idf362f39778065d, "approval")
 Rel_Triggering(e_idf362f39778065d, e_id12b58c7f12735c, "")
 Rel_Flow(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
+Rel_Association(e_id6c60f4feb89058, e_id18ec07397a9d5f, "validates proposals against the twin (GH #108)")
 Rel_Realization_Up(e_id65467a0befb959, e_idafba1b4ab1e756, "")
 Rel_Realization_Up(e_id799f46ebb7e15b, e_id4a1c34ab69d151, "woven enforcement")
 Rel_Realization_Up(e_id3a7a27eefeb751, e_id41aa3eb894c852, "")
@@ -110,6 +116,7 @@ Rel_Realization_Up(e_id65065ee24d3c54, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id378927722a8d5a, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id4991c823f6d55b, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_id5959dd7c3bbe59, e_id6c60f4feb89058, "")
 Rel_Triggering(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
 Rel_Triggering(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
 Rel_Triggering(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")

@@ -4,7 +4,6 @@
 scale max 3800 width
 title Application Usage
 
-Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
@@ -143,6 +142,7 @@ Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
     }
     Business_Function(e_id5794c15b037251, "Architecture Strategy") {
       Business_Process(e_id395c9c2923aa56, "Target State Definition")
+      Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
     }
     Business_Function(e_idc1376562b9a354, "Drift Management") {
       Business_Process(e_id3a7a27eefeb751, "Architecture Reconciliation")
