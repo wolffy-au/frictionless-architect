@@ -105,7 +105,7 @@ Concept: spec.md Key Entities. **New persistent surface** — lives in
 | `id` | string | e.g. `conv-naming-camel-free` |
 | `kind` | enum | `naming \| altitude \| allowed-subset \| interposed-pattern` |
 | `scope` | list of ArchiMate types or `*` | What this rule applies to |
-| `params` | kind-specific | E.g. for `interposed-pattern`: `{source_type, relationship_type, target_type, intermediary_types[]}` (R6) |
+| `params` | kind-specific | `interposed-pattern`: `{source_type, relationship_type, target_type, intermediary_types[]}` (R6). `naming`: `{pattern}` — a regex the proposed `name` MUST match. `altitude`: `{banned_terms[]}` — `name`/`desc` MUST NOT contain any of these. `allowed-subset`: `{allowed_types[]}` — the proposed type MUST be one of these for the rule's `scope` (R13) |
 | `enabled` | bool | Default `true`; organisation can turn a rule off without deleting it |
 
 `conventions.py` (R6) loads this file once per validation call; a malformed entry fails the
