@@ -20,8 +20,9 @@ Schema (see ``architecture/model/README.md``):
   ``props`` (optional; ``access_type`` for Access, ``c4-label`` overrides
   ``label`` in the C4 projection only)
 * view: ``id`` / ``name`` / ``members`` (element ids) and/or ``include_types``
-  / ``viewpoint`` (optional standard-viewpoint slug; see the model-archimate
-  skill's ``reference/archi-viewpoints.xml`` -- a declared viewpoint is enforced)
+  (optionally narrowed by ``exclude_elements``) / ``viewpoint`` (optional
+  standard-viewpoint slug; see the model-archimate skill's
+  ``reference/archi-viewpoints.xml`` -- a declared viewpoint is enforced)
 
 ``id`` values are hashed to deterministic UUIDs so regeneration does not churn
 identifiers (and therefore diagrams).
@@ -224,17 +225,21 @@ def add_relationships(m: Model, rels: list[dict[str, Any]], by_id: dict[str, Ele
 
 
 def _view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by_id: dict[str, str]) -> set[str]:
-    """Element ids in scope for a view -- same members/include_types rule as `add_views`."""
+    """Element ids in scope for a view -- same members/include_types/exclude_elements rule as `add_views`."""
     want = set(v.get("members") or [])
     types = {
         _CANON.get(str(t).strip().replace("_", "").replace("-", "").lower()) for t in (v.get("include_types") or [])
     }
     scope = _view_scope(v, {e.get("context", DEFAULT_CONTEXT) for e in elements}, [])
+    exclude_patterns = _compile_exclude_element_patterns(v, [])
     return {
         e["id"]
         for e in elements
-        if e["id"] in want
-        or (types and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope)
+        if (
+            e["id"] in want
+            or (types and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope)
+        )
+        and not _element_excluded(e["id"], exclude_patterns, types_by_id)
     }
 
 
@@ -386,6 +391,33 @@ def _view_scope(v: dict[str, Any], known_contexts: set[str], errors: list[str]) 
     return scope
 
 
+def _compile_exclude_element_patterns(v: dict[str, Any], errors: list[str]) -> list[dict[str, str | None]]:
+    """Compile a view's `exclude_elements:` entries (see `add_views`) into matchers."""
+    patterns: list[dict[str, str | None]] = []
+    for ex in v.get("exclude_elements") or []:
+        ctx = f"view {v['id']} exclude_elements"
+        patterns.append(
+            {
+                "type": canon(ex["type"], errors, ctx) if "type" in ex else None,
+                "id": ex.get("id"),
+                "id_prefix": ex.get("id_prefix"),
+            }
+        )
+    return patterns
+
+
+def _element_excluded(eid: str, patterns: list[dict[str, str | None]], types_by_id: dict[str, str]) -> bool:
+    for p in patterns:
+        if p["type"] and p["type"] != types_by_id.get(eid):
+            continue
+        if p["id"] and p["id"] != eid:
+            continue
+        if p["id_prefix"] and not eid.startswith(p["id_prefix"]):
+            continue
+        return True
+    return False
+
+
 def add_views(
     m: Model,
     views: list[dict[str, Any]],
@@ -431,6 +463,20 @@ def add_views(
     always honoured regardless of context, so a view that names elements from
     another context needs no scope entry for them.
 
+    A view may also declare `exclude_elements:` -- a list of patterns that
+    drop otherwise-selected elements (via `members` or `include_types`)
+    before nodes/connections are built. Each entry may give `type`
+    (ArchiMate concept name), `id` (a specific element id) and/or
+    `id_prefix`; an element is excluded when every key given in an entry
+    matches (omitted keys are wildcards). This lets a view use
+    `include_types` for a type that is otherwise polluted by a vendored
+    layer sharing the same ArchiMate type -- e.g. `third_party/it4it`
+    contributes 42 Capability / 35 Outcome / 28 ValueStream elements, all
+    `it4it-`-prefixed, so `{id_prefix: "it4it-"}` keeps those out of a
+    first-party view without reverting to an explicit `members` allow-list
+    that silently drops any new first-party element of that type until
+    someone remembers to add it.
+
     The richer view schema (auto-membership rules) is still deferred."""
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
     known_contexts = {e.get("context", DEFAULT_CONTEXT) for e in elements}
@@ -451,9 +497,12 @@ def add_views(
         on_view: set[str] = set()  # element uuids with a node on this view
         view_el_types: set[str] = set()
         scope = _view_scope(v, known_contexts, errors)
+        exclude_element_patterns = _compile_exclude_element_patterns(v, errors)
         for e in elements:
             swept = bool(types) and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope
-            selected = e["id"] in want or swept
+            selected = (e["id"] in want or swept) and not _element_excluded(
+                e["id"], exclude_element_patterns, types_by_id
+            )
             if selected and e["id"] in by_id:
                 el = by_id[e["id"]]
                 view.add(ref=el, uuid=det_id(v["id"], "node", el.uuid))
