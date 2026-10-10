@@ -220,13 +220,13 @@
   # import (third_party/it4it) contributes its own Capability/Outcome/
   # ValueStream elements under an `it4it-` id prefix, which exclude_elements
   # below keeps off this view.
-  # GH #7: the four bfn-* BusinessFunctions are added as members (not via
-  # include_types — BusinessFunction is a different type from the
-  # BusinessProcess this view otherwise auto-includes) so the "major area"
-  # groupings Composition-nest their already-realizing processes here too.
-  # GH #25: same rationale for the 3 bfn-* BusinessFunctions grouping the
-  # spec-generation -> build -> release -> drift-discovery -> triage thread,
-  # a separate lifecycle from GH #7's controls-lifecycle groupings.
+  # GH #7/#25: BusinessFunction is also include_types, not members -- no
+  # vendored layer contributes one (unlike Capability/Outcome/ValueStream),
+  # so there's nothing for exclude_elements to filter. The 9 bfn-* "major
+  # area" groupings (4 from GH #7's controls lifecycle, 3 from GH #25's
+  # spec-generation -> build -> release -> drift-discovery -> triage
+  # thread, plus bfn-architecture-strategy/bfn-solution-design)
+  # Composition-nest their already-realizing processes here automatically.
   # Note: 4 of these capabilities (cap-digital-twin, cap-control-plane,
   # cap-control-catalog, cap-reusable-architecture) appear nested inside a
   # Strategy_Resource box in the Strategy view (Resource --Assignment-->
@@ -242,17 +242,7 @@
   # view's story; here Flow/Triggering are left undirected so the layout is
   # driven by the realization chain (process -> capability -> stage -> outcome).
   no_direction: [Flow, Triggering]
-  include_types: [BusinessProcess, Capability, ValueStream, Outcome]
-  members:
-    - bfn-policy-conversion
-    - bfn-pattern-blueprint-traceability
-    - bfn-release-enforcement
-    - bfn-effectiveness-assurance
-    - bfn-agentic-delivery
-    - bfn-release-management
-    - bfn-drift-management
-    - bfn-architecture-strategy
-    - bfn-solution-design
+  include_types: [BusinessProcess, BusinessFunction, Capability, ValueStream, Outcome]
 
 - id: view-delivery
   name: Delivery Choreography
