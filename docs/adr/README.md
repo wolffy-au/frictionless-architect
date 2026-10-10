@@ -90,7 +90,8 @@ narrative docs.
 - **A** — [0024](0024-single-user-local-mvp.md) — MVP is single-user and locally
   run (explicit scoping compromise)
 - **A** — [0025](0025-conventional-commits-scm-versioning.md) — Conventional
-  Commits + commitizen; SCM-derived versions; branch model
+  Commits + commitizen; SCM-derived versions; branch model; local/CI gates
+  tighten from advisory to blocking once real coverage backs them
 - **A** — [0026](0026-fsm-action-endpoints-for-governed-entities.md) —
   Governed-lifecycle entities are FSMs with action-based endpoints
 - **A** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
