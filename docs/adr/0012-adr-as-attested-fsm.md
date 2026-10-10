@@ -30,4 +30,10 @@ the graph (FR-014).
 - ADR is a canonical example of the FSM + action-endpoint pattern (ADR-0026).
 - The concrete cryptographic scheme and identity/certificate model is a deferred
   solution decision (`specs/001` §"Deferred solution decisions").
-- This ADR log's own records follow the same lifecycle in their `Status` field.
+- This ADR log's own records follow an analogous, not identical, lifecycle: its
+  `Status` field (`0000-adr-template.md`) uses `Proposed | Accepted | Superseded
+  by ADR-NNNN | Deprecated`, not this entity's `Draft → Under Review → Approved →
+  Superseded`. `Proposed` covers both `Draft` and `Under Review`; `Accepted` ≈
+  `Approved`; `Superseded` ≈ `Superseded`. `Deprecated` (a record retired with no
+  replacement) has no equivalent state here, since this FSM always moves to
+  `Superseded` rather than being retired outright.
