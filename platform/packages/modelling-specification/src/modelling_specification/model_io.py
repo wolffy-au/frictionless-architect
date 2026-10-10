@@ -51,11 +51,17 @@ SKILL_SCRIPTS = REPO_ROOT / ".claude" / "skills" / "model-archimate" / "scripts"
 # det_id()/NS pass below -- their own id prefix (e.g. `it4it-`) is what keeps
 # the merged id space unique, not any separate reconciliation step.
 THIRD_PARTY = REPO_ROOT / "third_party"
+# Ownership scope: every element carries a `context` (a bounded context, in DDD
+# terms). First-party elements default to this one; a layer's elements default
+# to the layer directory's name (`it4it`, `gh-roadmap`). An explicit `context:`
+# on an element wins. Views sweep `include_types` only within their `context:`.
+DEFAULT_CONTEXT = "platform"
 VENDORED_MODELS = [THIRD_PARTY / "it4it"]
 # Every optional layer merged into the same pass: the vendored models plus the
 # generated GitHub roadmap (GH #95, import_gh_roadmap.py), whose ids are
 # prefixed by ArchiMate type (plat-, del-, wp-) rather than by source system.
 MODEL_LAYERS = [*VENDORED_MODELS, HERE / "gh-roadmap"]
+LAYER_CONTEXTS = {p.name for p in MODEL_LAYERS}
 
 # The model-archimate skill owns the standard-viewpoint reference and the
 # conformance check a view is held to when it declares `viewpoint:`.
@@ -139,6 +145,22 @@ def load_layers(filename: str, errors: list[str]) -> list[dict[str, Any]]:
     return merged
 
 
+def tag_contexts(elements: list[dict[str, Any]], context: str) -> list[dict[str, Any]]:
+    """Give every element without an explicit `context:` the default `context`."""
+    for e in elements:
+        e.setdefault("context", context)
+    return elements
+
+
+def load_layer_elements(errors: list[str]) -> list[dict[str, Any]]:
+    """`elements.yaml` from every optional layer, each tagged with its layer's context."""
+    merged: list[dict[str, Any]] = []
+    for model_dir in MODEL_LAYERS:
+        loaded = load_path(model_dir / "elements.yaml", errors, optional=True)
+        merged += tag_contexts(loaded, model_dir.name)
+    return merged
+
+
 def add_elements(
     m: Model, elements: list[dict[str, Any]], errors: list[str]
 ) -> tuple[dict[str, Element], dict[str, str]]:
@@ -168,6 +190,7 @@ def add_elements(
         assert isinstance(el, Element)  # ct is never ArchiType.View here
         for k, v in (e.get("props") or {}).items():
             el.prop(str(k), str(v))
+        el.prop("context", str(e.get("context", DEFAULT_CONTEXT)))
         by_id[yid] = el
         types[yid] = ct
     return by_id, types
@@ -206,7 +229,13 @@ def _view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_b
     types = {
         _CANON.get(str(t).strip().replace("_", "").replace("-", "").lower()) for t in (v.get("include_types") or [])
     }
-    return {e["id"] for e in elements if e["id"] in want or (types and types_by_id.get(e["id"]) in types)}
+    scope = _view_scope(v, {e.get("context", DEFAULT_CONTEXT) for e in elements}, [])
+    return {
+        e["id"]
+        for e in elements
+        if e["id"] in want
+        or (types and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope)
+    }
 
 
 def _check_driver_bypasses_assessment(
@@ -342,6 +371,21 @@ def _relationship_excluded(
     return False
 
 
+def _view_scope(v: dict[str, Any], known_contexts: set[str], errors: list[str]) -> set[str]:
+    """The contexts a view's `include_types` sweep draws from (default `platform`).
+
+    `platform` stands for the whole first-party family — `platform` itself (the
+    shared kernel) plus every package context — i.e. every context that is not
+    a layer's."""
+    raw = v.get("context") or [DEFAULT_CONTEXT]
+    scope = {raw} if isinstance(raw, str) else set(raw)
+    if unknown := scope - known_contexts:
+        errors.append(f"view {v['id']} context names unknown context(s): {sorted(unknown)}")
+    if DEFAULT_CONTEXT in scope:
+        scope |= known_contexts - LAYER_CONTEXTS
+    return scope
+
+
 def add_views(
     m: Model,
     views: list[dict[str, Any]],
@@ -381,8 +425,15 @@ def add_views(
     edge on that view regardless of which specific capabilities are
     involved.
 
+    A view's `include_types` sweep only picks up elements whose `context` is in
+    the view's `context:` (a name or list; default `[platform]`, which covers every
+    first-party context). Explicit `members` are
+    always honoured regardless of context, so a view that names elements from
+    another context needs no scope entry for them.
+
     The richer view schema (auto-membership rules) is still deferred."""
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
+    known_contexts = {e.get("context", DEFAULT_CONTEXT) for e in elements}
     for v in views:
         if "id" not in v or "name" not in v:
             errors.append(f"view missing id/name: {v!r}")
@@ -399,8 +450,10 @@ def add_views(
         view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
         on_view: set[str] = set()  # element uuids with a node on this view
         view_el_types: set[str] = set()
+        scope = _view_scope(v, known_contexts, errors)
         for e in elements:
-            selected = e["id"] in want or (types and types_by_id.get(e["id"]) in types)
+            swept = bool(types) and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope
+            selected = e["id"] in want or swept
             if selected and e["id"] in by_id:
                 el = by_id[e["id"]]
                 view.add(ref=el, uuid=det_id(v["id"], "node", el.uuid))
@@ -438,11 +491,22 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
     m = Model("frictionless-architect")
     errors: list[str] = []
 
-    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    elements = tag_contexts(load("elements.yaml", errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
     by_id, types_by_id = add_elements(m, elements, errors)
     rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors)
     add_relationships(m, rels, by_id, errors)
-    views = load("views.yaml", errors, optional=True) + load_layers("views.yaml", errors)
+    views = (
+        load("views.yaml", errors, optional=True)
+        + load("views-viewpoints.yaml", errors, optional=True)
+        + load_layers("views.yaml", errors)
+    )
+    seen_views: set[str] = set()
+    for v in views:
+        if (vid := v.get("id")) is None:
+            continue  # add_views reports the missing id
+        if vid in seen_views:
+            errors.append(f"duplicate view id: {vid}")
+        seen_views.add(vid)
     add_views(m, views, elements, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
 
@@ -464,7 +528,14 @@ def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
         path_label = "<in-memory>"
     else:
         model = Model("validate")
-        model.read(str(path_or_model))
+        try:
+            # pyArchimate's Model.read() calls sys.exit(1) on an unreadable file
+            # instead of raising -- normalise that to a real exception so the
+            # CLI's `except Exception` handler can report it cleanly instead of
+            # the process crashing with an uncaught SystemExit.
+            model.read(str(path_or_model))
+        except SystemExit as exc:
+            raise OSError(f"could not read {path_or_model!s} as an ArchiMate model") from exc
         path_label = str(path_or_model)
 
     findings: list[dict[str, Any]] = []

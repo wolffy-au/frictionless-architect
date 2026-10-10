@@ -45,6 +45,8 @@ MODEL_REL = str(OUT.relative_to(REPO_ROOT))
 
 HERE = REPO_ROOT / "architecture" / "model"
 VIEWS = HERE / "views.yaml"
+# Generic one-per-standard-viewpoint views (include_types only), split out of views.yaml.
+VIEWPOINT_VIEWS = HERE / "views-viewpoints.yaml"
 # Generated gh-roadmap layer (ADR-0035): its per-milestone views render beside the hand-authored ones.
 ROADMAP_VIEWS = HERE / "gh-roadmap" / "views.yaml"
 DIAGRAMS = HERE / "diagrams"
@@ -95,7 +97,7 @@ def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     vendored model's diagrams dir."""
     jobs: list[tuple[Path, list[str]]] = []
     views_files = (
-        [VIEWS, ROADMAP_VIEWS]
+        [VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS]
         if diagram_root == DIAGRAMS
         else [next(vf for vf, root in VENDORED_VIEW_SOURCES if root == diagram_root)]
     )
@@ -206,12 +208,13 @@ def render_diagrams(*, check: bool, svg: bool) -> tuple[int, list[str], list[str
 def _find_view(view_id: str) -> dict[str, Any]:
     """Look up a `views.yaml` entry by `id` across every views file (first-party,
     gh-roadmap, vendored). Raises `ViewNotFoundError` if none match."""
-    for views_file in (VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
+    for views_file in (VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
         if not views_file.exists():
             continue
         for v in yaml.safe_load(views_file.read_text()) or []:
-            if v.get("id") == view_id:
-                return v
+            view: dict[str, Any] = v
+            if view.get("id") == view_id:
+                return view
     raise ViewNotFoundError(f"no view with id {view_id!r} in views.yaml")
 
 
