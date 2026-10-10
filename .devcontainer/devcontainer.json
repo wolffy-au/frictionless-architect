@@ -6,7 +6,8 @@
     "remoteUser": "devcontainer",
     "updateRemoteUserUID": true,
     "runArgs": [
-        "--network=host"
+        "--network=host",
+        "--pids-limit=0"
     ],
     "features": {
         "ghcr.io/devcontainers/features/common-utils:2": {
