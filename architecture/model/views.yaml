@@ -212,8 +212,14 @@
   diagram: vision/7-outcome-realization
   # How business processes realize capabilities, which serve the value
   # streams, each of which realizes one outcome — the end-to-end realization chain.
-  # Capability/ValueStream scoped via members, not include_types — see notes
-  # above; the IT4IT import added elements of both types.
+  # Capability/ValueStream/Outcome are include_types, not an explicit members
+  # allow-list, so a new first-party element of one of these types shows up
+  # here automatically instead of silently staying orphaned until someone
+  # remembers to add it to this list (GH #108 postmortem: outcome-architect
+  # -authored-model and friends did exactly that on first add). The IT4IT
+  # import (third_party/it4it) contributes its own Capability/Outcome/
+  # ValueStream elements under an `it4it-` id prefix, which exclude_elements
+  # below keeps off this view.
   # GH #7: the four bfn-* BusinessFunctions are added as members (not via
   # include_types — BusinessFunction is a different type from the
   # BusinessProcess this view otherwise auto-includes) so the "major area"
@@ -230,39 +236,14 @@
   # view's own story, not this one's — exclude it so it doesn't repeat.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
+  exclude_elements:
+    - {id_prefix: "it4it-"}
   # The process chain's own left-to-right order is the Delivery Choreography
   # view's story; here Flow/Triggering are left undirected so the layout is
   # driven by the realization chain (process -> capability -> stage -> outcome).
   no_direction: [Flow, Triggering]
-  include_types: [BusinessProcess]
+  include_types: [BusinessProcess, Capability, ValueStream, Outcome]
   members:
-    - outcome-change-at-ai-speed
-    - outcome-compliance-before-release
-    - outcome-accountable-automation
-    - outcome-drift-reconciled
-    - vs-governed-delivery
-    - vss-baseline
-    - vss-specify
-    - vss-build
-    - vss-release
-    - vs-obligation-to-evidence
-    - vss-control-baseline
-    - vss-prove
-    - vs-exception-to-decision
-    - vss-escalate
-    - vss-signoff
-    - vss-record
-    - vs-drift-to-remediation
-    - vss-observe
-    - vss-reconcile
-    - cap-digital-twin
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-forensic-ledger
-    - cap-drift-dashboard
-    - cap-human-approval-workflow
-    - cap-control-catalog
-    - cap-reusable-architecture
     - bfn-policy-conversion
     - bfn-pattern-blueprint-traceability
     - bfn-release-enforcement
