@@ -101,6 +101,14 @@ flat app. The 2026-09-24 note's reason for the neutral
 visualiser's alone again until the visualiser is extracted into
 `schema-visualizer-api`.
 
+## Implementation status (2026-10-10)
+
+Deleted the orphaned `visualizer/static/schema_visualizer.js` and
+`visualizer/templates/schema_visualizer.html` outright rather than keeping them as a
+starting point for `schema-visualizer-ui`: nothing in `src/` mounted or rendered them, and
+the new package starts fresh as a Vite app (`ARCHITECTURE.md` §8.2), not from this
+server-rendered code.
+
 ## Alternatives considered
 
 - **Keep the visualiser first; scaffold a minimal `digital-twin-knowledge-graph`

@@ -1,0 +1,15 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: solution-design-mvp
+
+Implementation_Deliverable(e_id664b1e75548f5b, "solution-design-mvp (unreleased)")
+Implementation_Plateau(e_id2465dc90ecdc5f, "solution-design-mvp")
+Implementation_WorkPackage(e_id3e99ac1ff48453, "GH-107 Re-home specs/ to two-tier scheme (ADR-0004, migration step 6)")
+Implementation_WorkPackage(e_id24e4227880f657, "GH-60 Resolve migration-order gap: schema-visualizer-api split depends on digital-twin-knowledge-graph scaffolded later")
+
+Rel_Realization_Up(e_id664b1e75548f5b, e_id2465dc90ecdc5f, "")
+Rel_Realization_Up(e_id3e99ac1ff48453, e_id664b1e75548f5b, "")
+Rel_Realization_Up(e_id24e4227880f657, e_id664b1e75548f5b, "")
+
+@enduml

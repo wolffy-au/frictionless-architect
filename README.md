@@ -66,6 +66,8 @@ them in a `.env` file at the repository root (loaded automatically when present)
 - `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` — seconds after a *successful*
   refresh during which `POST /schema-payload/refresh` answers `429` with `Retry-After`
   (default: `300`; failed refreshes are never delayed).
+- `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` — seconds between automatic background
+  retries after a failed load (default and maximum: `300`).
 
 `scripts/neo4j_schema.py` is a separate CLI that reads its own **unprefixed**
 `NEO4J_URI`, `NEO4J_USER`, and `NEO4J_PASSWORD` (or `--uri` / `--user` /
@@ -90,9 +92,98 @@ package exists.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`); `?force_reload=true` skips cache; `503` if nothing reachable |
+| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`; includes duplicate-identifier warnings from the sample); `?force_reload=true` rebuilds instead of serving the cache; `503` only if nothing reachable *and* nothing cached |
 | `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy; `429` during backoff |
-| `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
+| `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, `retry_pending`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
+
+`?force_reload=true` tries to rebuild the payload from Neo4j and the sample file.
+If that rebuild fails (e.g. Neo4j is down and the sample is missing) but a payload
+was cached from an earlier successful build, `/schema-payload` still returns that
+cached payload (HTTP 200) instead of a `503` — the forced reload is best-effort, not
+all-or-nothing. A `503` only happens when the rebuild fails *and* there is no cache
+to fall back on.
+
+`GET /schema-payload/status` fields that take a small set of values:
+
+- `neo4j_status`: `disabled` (no `FRICTIONLESS_ARCHITECT_NEO4J_URI` configured —
+  sample-only mode), `available` (last load from Neo4j succeeded), or
+  `unavailable` (Neo4j is configured but the last load failed; a background retry
+  is scheduled — see `retry_pending` below).
+- `sample_file_status`: `missing` (the sample XML could not be found/parsed),
+  `invalid` (found, but not a valid ArchiMate exchange-format `<model>`), or
+  `loaded` (parsed successfully; `warnings` may still list XSD validation issues).
+- `refresh_in_progress`: `true` while a `POST /schema-payload/refresh` rebuild is
+  running.
+- `retry_pending`: `true` while the automatic background retry (below) has a
+  rebuild scheduled or running.
+
+### Automatic retry and offline-cache fallback
+
+If a build finds `neo4j_status: unavailable` (Neo4j configured but unreachable),
+the service schedules an automatic background retry every
+`FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` seconds (default and maximum
+`300`) until a load succeeds or stops being degraded — no client action is
+needed. Poll `GET /schema-payload/status` and watch `retry_pending`: `true` means
+a retry is scheduled or running; it clears once Neo4j is reachable again (or you
+can also watch `neo4j_status` go back to `available`).
+
+Whether reached via automatic retry or normal cache-first `GET /schema-payload`
+calls, the cached `schema_payload.json` under `FRICTIONLESS_ARCHITECT_CACHE_DIR`
+(default `.cache/visualiser`) is what keeps the service answering when Neo4j
+drops out entirely: as long as one build has ever succeeded, every later
+`/schema-payload` call — forced reload or not — can fall back to that cache
+rather than failing.
+
+### Sample warnings reference
+
+The payload's `warnings` list (and `GET /schema-payload/status`'s `last_warning`,
+which holds the most recent one) is always non-fatal — the service still comes up
+and serves what it can. The shapes to expect:
+
+- **Duplicate identifiers** — `Duplicate element identifier <id> in the sample;
+  the last definition is used`, `Duplicate relationship identifier <id> in the
+  sample; the last definition is used`, or `Duplicate view identifier <id> in the
+  sample`. The sample model keeps the *last* definition for a repeated element or
+  relationship identifier (silently overwriting earlier ones in memory) and keeps
+  all definitions for a repeated view identifier; either way, each repeat after
+  the first appends one of these warnings so the collision isn't silent.
+- **Missing sample coverage** — `Missing sample entry for <type> <name>` for an
+  element, or `Missing sample entry for <type> <identifier>` for a relationship:
+  Neo4j defines it but the sample XML has no matching instance, so the merged
+  payload entry's `coverage` is `false` and `sample_instances` is empty.
+- **XSD schema-validation issues** (ADR-0022) — every build validates the sample
+  against the bundled ArchiMate XSDs
+  (`sample-data/schema/archimate3_Diagram.xsd` and its includes):
+  - `XSD: <reason> (at <path>)` — a schema-validation error, with the offending
+    element path. More than `MAX_XSD_ISSUES` (50) of these truncates the list
+    with a final `XSD: further XSD issues suppressed after the first 50`.
+  - `Relationship … references missing …` / `View … references missing …` — a
+    hand-written check (not from the XSD) that names a dangling relationship or
+    view reference by identifier, which raw XSD key/keyref errors don't do.
+- **Sample load failures** — if the sample file is missing or unparseable, the
+  configured `FRICTIONLESS_ARCHITECT_WARNING_TEXT` (default `Sample data
+  unavailable`) is used instead; `sample_file_status` reports `missing` or
+  `invalid` (see above).
+
+### Sample-only mode (no Neo4j)
+
+To run with no Neo4j instance at all:
+
+1. Leave `FRICTIONLESS_ARCHITECT_NEO4J_URI` unset (or empty) — this is the
+   default, so an `.env` that simply omits it is enough.
+2. Keep `sample-data/sample-00/Test Model Full.xml` in place; it's checked into
+   the repo, so no extra setup is needed.
+3. Start the service as usual:
+
+   ```bash
+   poetry run uvicorn frictionless_architect.app:app --reload --port 8100
+   ```
+
+4. `GET /schema-payload/status` will report `neo4j_status: disabled` and
+   `sample_file_status: loaded`; `GET /schema-payload` serves the sample-derived
+   payload, with no Neo4j connection attempted. Once that first load succeeds, no
+   automatic retry is scheduled (retries are for a configured-but-unreachable
+   Neo4j, or a build that fails outright — not the disabled case).
 
 ## Platform packages
 
@@ -107,11 +198,38 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
 
 `bash scripts/platform_checks.sh` runs their quality gate.
 
-## Related tooling
+## Operations: seeding Neo4j
+
+This is operator tooling for standing up the database, not an end-user feature of the
+visualiser — the visualiser itself is read-only against whatever Neo4j already holds.
 
 - `scripts/neo4j_schema.py` — CLI that bootstraps the ArchiMate schema in Neo4j
-  (`SchemaManager`). Subcommands: `constraints`, `ingest` (needs `--data-file`),
-  `version`, `audit`, `all`.
+  directly via `SchemaManager`, independent of the FastAPI service. Subcommands:
+  - `constraints` — create the uniqueness constraints and indexes (idempotent).
+  - `ingest --data-file <path.json>` — merge a JSON fixture (elements,
+    relationships, views, diagrams) into the graph.
+  - `version [--version-name <name>]` — stamp a `SchemaVersion` node with the
+    current time (default name: `initial-constraints`).
+  - `audit` — report dangling view/diagram relationship references and views
+    with no members.
+  - `all` — run `constraints`, `ingest`, `version` and `audit` in sequence (the
+    whole bootstrap in one command; still needs `--data-file`).
+
+  Example, bootstrapping from a JSON fixture (no fixture ships in the repo today;
+  `<path/to/fixture.json>` is a mapping with optional `elements`, `relationships`,
+  `views` and `diagrams` lists, matching `SchemaManager.ingest_payload`):
+
+  ```bash
+  poetry run python scripts/neo4j_schema.py all --data-file <path/to/fixture.json>
+  ```
+
+  Unlike the FastAPI service's `FRICTIONLESS_ARCHITECT_*` settings, this script
+  reads its connection details from **unprefixed** `NEO4J_URI`, `NEO4J_USER` and
+  `NEO4J_PASSWORD` — either already exported in the environment, or in the same
+  root `.env` file (loaded via `python-dotenv`; see `scripts/neo4j_schema.py`'s
+  `load_env`) alongside unrelated names, or via `--uri` / `--user` / `--password`
+  flags. Setting only the `FRICTIONLESS_ARCHITECT_NEO4J_*` variables has no effect
+  on this script.
 
 ## Running the tests
 

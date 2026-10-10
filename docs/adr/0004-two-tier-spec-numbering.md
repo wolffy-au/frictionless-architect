@@ -27,6 +27,9 @@ Per-component work will make this worse.
   v1.3.0); `002-neo4j-schema-ui` →
   `packages/schema-visualizer-api/specs/001-*`; `002-arch-kg-semantics` (stub) →
   `packages/digital-twin-knowledge-graph/specs/002-*` or delete.
+- `003-gh-roadmap-archimate` (added 2026-10-05) continues the flat, un-migrated
+  `specs/NNN-*` numbering too — the same backlog this ADR describes, not a new
+  instance of it.
 - The `.specify` scripts need patching before per-component specs can be created.
 - Root keeps one platform constitution; per-component constitutions are optional
   lighter addenda.

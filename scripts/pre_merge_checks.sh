@@ -8,6 +8,10 @@ cd "$(git rev-parse --show-toplevel)"
 echo "💡 Running pre-merge checks (includes pre-commit and heavier suites)..."
 scripts/pre_commit_checks.sh
 
+echo "Checking the generated GitHub roadmap layer is current..."
+# Fails (exit 1) if GitHub has moved on; fix with scripts/refresh_gh_roadmap.sh, review and commit.
+poetry run python architecture/model/import_gh_roadmap.py --check
+
 echo "Updating dependency locks to the latest compatible versions..."
 # CI only runs `poetry install` against the committed lock — this is where
 # poetry.lock actually gets refreshed. If it changes, it must be committed
@@ -41,11 +45,11 @@ poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ign
 # (Snyk Code above already walks platform/ source.)
 (cd platform && snyk test --package-manager=poetry --file=poetry.lock --org=wolffy-au)
 
-# behave (BDD acceptance) is not gated while tests/features/ is a placeholder.
-# Re-add `poetry run behave tests/features/` here once real scenarios exist.
+echo "Running behave acceptance scenarios..."
+poetry run behave tests/features/
 
 echo "Running pytest suites..."
-poetry run pytest --cov-fail-under=90 --cov=src --cov-report=term-missing
+poetry run pytest --cov-fail-under=90 --cov=src --cov=architecture/model --cov-report=term-missing
 
 echo "Running frontend UI harness..."
 if [ -d frontend ]; then

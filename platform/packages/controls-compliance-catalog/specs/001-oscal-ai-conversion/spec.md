@@ -1,6 +1,6 @@
 # Feature Specification: AI-Assisted Policy & Standard Conversion to OSCAL
 
-**Feature Branch**: `003-oscal-ai-conversion`
+**Feature Branch**: `001-oscal-ai-conversion` (formerly `003-oscal-ai-conversion`; this package's spec number is `001`, separate from the root `specs/001-governance-platform`)
 
 **Created**: 2026-09-22
 

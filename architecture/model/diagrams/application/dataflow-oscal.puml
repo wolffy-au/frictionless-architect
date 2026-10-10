@@ -1,0 +1,50 @@
+@startuml
+!include <archimate/Archimate>
+
+title Data Flow — Controls & OSCAL
+
+Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
+  Application_Interface(e_id95791e10ad1d54, "Compliance Catalog UI")
+  Application_Function(e_id973425b560995f, "Upload Policy / Standard Document")
+  Application_Function(e_id40061cb7ae1c53, "Policy Prose Quality Feedback")
+  Application_Function(e_id7ce9f3c91f1f53, "AI-Assisted Markdown Conversion")
+  Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
+  Application_Function(e_id71815b3c9d365f, "OSCAL Structural Validation")
+}
+Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
+  Application_DataObject(e_idcc681c494fb159, "OSCAL Catalog")
+}
+Application_Component(e_id0aed952692a556, "compliance-trestle")
+Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
+Application_DataObject(e_id927f60a254485e, "Policy / Standard Document")
+Application_DataObject(e_idd08116e0443f59, "Regulatory Standard Document")
+Application_DataObject(e_id3329e928e27e5f, "Trestle-Editable Markdown Catalog")
+Application_DataObject(e_id651b1df4514d51, "Regulatory Baseline Catalog")
+
+Rel_Specialization_Up(e_idd08116e0443f59, e_id927f60a254485e, "externally-published instance")
+Rel_Specialization_Up(e_id651b1df4514d51, e_idcc681c494fb159, "vendored instance (golden-dataset validation data)")
+Rel_Association(e_id651b1df4514d51, e_idd08116e0443f59, "expected OSCAL output for (golden pair)")
+Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
+Rel_Serving_Up(e_id0aed952692a556, e_id71815b3c9d365f, "runs `trestle validate` for")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id7ce9f3c91f1f53, "provides the document -> Markdown conversion model for")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id40061cb7ae1c53, "provides the prose-review model for")
+Rel_Serving_Up(e_id973425b560995f, e_id95791e10ad1d54, "exposed via")
+Rel_Serving_Up(e_id40061cb7ae1c53, e_id95791e10ad1d54, "exposed via")
+Rel_Flow_Right(e_id8926bd09002459, e_id71815b3c9d365f, "generated catalog (converted) validated by")
+Rel_Access_rw(e_id71815b3c9d365f, e_idcc681c494fb159, "validates (converted -> validating -> validated/validation_failed)")
+Rel_Access_w(e_ide4bef3733af65a, e_idb18c37abc9ff51, "publishes Catalogs, Profiles & Resolved Catalogs")
+Rel_Access_w(e_ide4bef3733af65a, e_id927f60a254485e, "owns")
+Rel_Access_w(e_ide4bef3733af65a, e_idd08116e0443f59, "owns")
+Rel_Access_w(e_ide4bef3733af65a, e_id3329e928e27e5f, "owns")
+Rel_Access_w(e_ide4bef3733af65a, e_idcc681c494fb159, "owns")
+Rel_Access_w(e_id973425b560995f, e_id927f60a254485e, "stages")
+Rel_Access_w(e_id973425b560995f, e_idd08116e0443f59, "stages")
+Rel_Access_r(e_id40061cb7ae1c53, e_id927f60a254485e, "reviews prose in")
+Rel_Access_r(e_id7ce9f3c91f1f53, e_id927f60a254485e, "reads")
+Rel_Access_w(e_id7ce9f3c91f1f53, e_id3329e928e27e5f, "generates")
+Rel_Access_r(e_id8926bd09002459, e_id3329e928e27e5f, "reads")
+Rel_Access_w(e_id8926bd09002459, e_idcc681c494fb159, "generates")
+Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
+
+@enduml

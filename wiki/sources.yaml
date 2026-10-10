@@ -27,10 +27,15 @@ topics:
 
   - name: architecture
     title: Architecture Overview
-    description: How the platform is layered, and the load-bearing decisions.
+    description: How the platform is layered and migrated, and the technical standards. Decisions are on the decision-log page.
     sources:
       - path: ARCHITECTURE.md
       - path: TECHNICAL.md
+
+  - name: decision-log
+    title: Architecture Decision Log
+    description: The ADR log — one MADR-lite file per load-bearing decision, with status and consequences.
+    sources:
       - path: docs/adr/*.md
 
   - name: architecture-model
@@ -67,6 +72,22 @@ topics:
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
 
+  - name: architecture-model-migration
+    title: "Architecture Model: Packaging, Migration & Technology"
+    description: Sections E and F of the model — the platform's own packaging/migration restructure and its first Technology-layer cut — split out once Architecture Model passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+
+  - name: gh-roadmap-layer
+    title: "GitHub Roadmap Layer"
+    description: How GitHub milestones, issues and releases are imported into the Implementation & Migration layer (spec 003, ADR-0035).
+    sources:
+      - path: specs/003-gh-roadmap-archimate/**/*.md
+      - path: architecture/model/import_gh_roadmap.py
+
   - name: architecture-diagrams
     title: Architecture Views & Diagrams
     description: How the model's ArchiMate views map to viewpoints and rendered C4/PlantUML diagrams, and how to regenerate them.
@@ -99,6 +120,8 @@ topics:
       - path: pyproject.toml
       - path: sample-data/oscal/**
       - path: docs/adr/0030-vendor-oscal-reference-content.md
+      - path: tests/fixtures/golden-oscal/README.md
+      - path: tests/fixtures/golden-oscal/*/README.md
 
   - name: data-model
     title: Data Model
@@ -148,7 +171,7 @@ topics:
     sources:
       - path: platform/packages/llm-provider-config/README.md
       - path: platform/packages/llm-provider-config/pyproject.toml
-      - path: platform/packages/llm-provider-config/specs/README.md
+      - path: platform/packages/llm-provider-config/specs/**/*.md
       - path: platform/packages/llm-provider-config/src/llm_provider_config/*.py
       - path: docs/adr/0034-shared-packages-and-llm-provider-config.md
 
@@ -172,6 +195,9 @@ topics:
       - path: AGENTS.md
       - path: RELEASE.md
       - path: specs/002-neo4j-schema-ui/quickstart.md
+      - path: .pre-commit-config.yaml
+      - path: scripts/pre_merge_checks.sh
+      - path: .github/workflows/ci.yml
       - path: CONTRIBUTING.md
       - path: CODE_OF_CONDUCT.md
       - path: SECURITY.md

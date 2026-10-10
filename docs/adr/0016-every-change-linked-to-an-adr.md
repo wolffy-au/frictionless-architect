@@ -22,3 +22,11 @@ platform produces ADRs (FR-005) and ties each change to one.
   same discipline via this `docs/adr/` log for its *own* load-bearing decisions.
 - ADR conflict detection (ADR-0012, FR-014) depends on decisions being captured
   in the graph rather than lost in chat.
+- Extended 2026-10-04 (constitution Principle X, commits `1a7408d`/`491d8e7`): a
+  `speckit-plan` must state its own **model impact** — the element, relationship
+  and view ids it adds, changes or retires in `architecture/model/`, or "none" —
+  so a plan's effect on the model is traceable the same way a technical change is
+  traceable to an ADR. `tasks.md` then carries the matching model edits,
+  `validate.py` and diagram regeneration. Recorded directly in the constitution
+  (its own Sync Impact Report) rather than as a separate ADR, since it is a
+  procedural extension of this decision, not a new one.

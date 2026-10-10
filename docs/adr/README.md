@@ -90,7 +90,8 @@ narrative docs.
 - **A** — [0024](0024-single-user-local-mvp.md) — MVP is single-user and locally
   run (explicit scoping compromise)
 - **A** — [0025](0025-conventional-commits-scm-versioning.md) — Conventional
-  Commits + commitizen; SCM-derived versions; branch model
+  Commits + commitizen; SCM-derived versions; branch model; local/CI gates
+  tighten from advisory to blocking once real coverage backs them
 - **A** — [0026](0026-fsm-action-endpoints-for-governed-entities.md) —
   Governed-lifecycle entities are FSMs with action-based endpoints
 - **A** — [0027](0027-capability-value-stream-and-motivation-spine.md) —
@@ -118,3 +119,9 @@ narrative docs.
   package per concern; first instance is `llm-provider-config`
   (OpenAI/Gemini/Claude/Ollama via `litellm`, global+per-component overrides,
   secrets via OS keychain, never `.env`)
+- **A** — [0035](0035-github-roadmap-as-implementation-migration-layer.md) — GitHub milestones,
+  issues and releases imported into the Implementation & Migration layer by
+  `import_gh_roadmap.py`; generated layer merged by `build.py`, never hand-edited
+- **A** — [0036](0036-element-id-prefix-scheme.md) — An element id prefix names
+  the element's own ArchiMate type; `art-*` is reserved for genuine `Artifact`
+  elements, `DataObject` elements use `do-*`

@@ -20,6 +20,8 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
 | `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
+| `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` (see below) |
+| `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views. Merged by `build.py`, never hand-edited |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
 | `render_diagrams.py` | `frictionless-architect.xml` → every `.puml` / `.svg` (view `diagram:` key + C4) |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
@@ -106,6 +108,17 @@ poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .
 (one `.puml`/`.svg` pair per view, TOGAF Phase A views under `diagrams/vision/`)
 plus the two C4 diagrams. `--check` fails if any committed diagram is stale
 (CI / pre-commit); `--no-svg` skips the PlantUML render.
+
+## GitHub roadmap layer
+
+```bash
+poetry run python architecture/model/import_gh_roadmap.py          # gh -> gh-roadmap/
+poetry run python architecture/model/import_gh_roadmap.py --check  # exit 1 if it would change
+```
+
+Needs an authenticated `gh`. Output is deterministic; a failed or incomplete read writes
+nothing. Mapping and ownership rules: [ADR-0035](../../docs/adr/0035-github-roadmap-as-implementation-migration-layer.md).
+Run `build.py` and `render_diagrams.py` afterwards.
 
 ## Provenance
 

@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: 2026-10-01
+generated: 2026-10-10
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -20,9 +20,9 @@ platform, stored as graph-loadable YAML. Every other form — the ArchiMate XML,
 the C4 / PlantUML diagrams, and (later) the Neo4j seed — is a generated
 projection of these files (`architecture/model/README.md` §"Architecture
 model"). The decision and its rationale are recorded in
-[ADR-0007](architecture.md) (graph-loadable YAML is canonical; the `.xml`
+[ADR-0007](decision-log.md) (graph-loadable YAML is canonical; the `.xml`
 exchange format is chosen over Archi-native `.archimate` for diff legibility)
-and [ADR-0008](architecture.md) (`type` is a bare ArchiMate 3.2 concept name).
+and [ADR-0008](decision-log.md) (`type` is a bare ArchiMate 3.2 concept name).
 
 ```text
 elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
@@ -37,11 +37,15 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 382 elements, 797 relationships and 37 views. Of those,
-240 elements, 562 relationships and 33 views are the platform's own sections
-A–C, E and F (below) plus the IT4IT touchpoint bridge. The rest (142 / 235 / 4) is
-the vendored IT4IT reference model, merged in at build time
-([ADR-0029](architecture.md) — see "IT4IT alignment" below). The
+current merged model is 414 elements, 840 relationships and 48 views. Of
+those, 232 elements, 559 relationships and 34 views are hand-authored in this
+repo's own `elements.yaml`/`relationships.yaml`/`views.yaml` (sections A–C, E
+and F, plus the IT4IT touchpoint bridge); 40 elements, 46 relationships and 10
+views are generated into `architecture/model/gh-roadmap/` by
+`import_gh_roadmap.py` (see "GitHub roadmap layer" below); and 142 elements,
+235 relationships and 4 views are the vendored IT4IT reference model, merged
+in at build time ([ADR-0029](decision-log.md) — see "IT4IT alignment" below).
+The
 generated `frictionless-architect.xml` is committed but never hand-edited —
 same status as the `.puml` / `.svg` diagrams.
 
@@ -52,6 +56,8 @@ same status as the `.puml` / `.svg` diagrams.
 | `elements.yaml` | Every element: `type` / `id` / `name` / `desc?` / `props?` (`architecture/model/README.md` §"Files") |
 | `relationships.yaml` | Every relationship: `type` / `source` / `target` / `label?` / `props?` |
 | `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
+| `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` |
+| `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views, merged by `build.py`, never hand-edited |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
 | `diagrams/` | **Generated** `.puml` / `.svg` |
@@ -134,14 +140,26 @@ them together rather than aborting on the first
 | A. Motivation + Strategy + Business — the load-bearing skeleton (4 outcomes, 4 value streams, 15 processes, 9 functions) | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
 | B. Application — the six-subsystem ecosystem | [Architecture Model: Ecosystem](architecture-model-ecosystem.md) |
 | C. Application — the artefact input/output pipeline | [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md) |
+| E. Implementation & Migration — the platform's own restructure; F. Technology — the first Technology-layer cut | [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) |
 
 Section D (the IT4IT capability bridges) is relationships-only and has no
-element row of its own; section E (Implementation & Migration — the
-platform's own restructure) and the newer section F (Technology) are covered
-on this page, in "Packaging and migration" and "Technology (section F)"
-below, rather than on a separate per-layer page. A further block, the IT4IT
-alignment itself, is vendored rather than first-party and is also covered
-below.
+element row of its own. A further block, the IT4IT alignment itself, is
+vendored rather than first-party and is covered below, in "IT4IT alignment".
+
+## GitHub roadmap layer
+
+`import_gh_roadmap.py` reads GitHub milestones, issues and releases through an
+authenticated `gh` and writes `gh-roadmap/{elements,relationships,views}.yaml`:
+**generated**, committed, deterministic and never hand-edited. Milestones become
+Plateaus (`plat-<slug>-<n>`), issues with their own milestone become Work
+Packages (`wp-<slug>-gh-<n>`), published releases become Deliverables
+(`del-release-<tag-slug>`), and per-milestone views are emitted alongside.
+A failed or incomplete read writes nothing; `--check` exits 1 if the files
+would change; run `build.py` and `render_diagrams.py` afterwards. Gaps, the
+baseline Plateau and Strategy elements stay hand-authored. The mapping and
+ownership rules are ADR-0035 (`architecture/model/README.md` §"GitHub roadmap
+layer"; `docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`).
+See [Architecture Overview](architecture.md).
 
 ## Build pipeline
 
@@ -149,10 +167,12 @@ below.
 (`architecture/model/build.py:426-454`):
 
 1. Load `elements.yaml`, `relationships.yaml` and (optionally) `views.yaml`,
-   each concatenated with the same file from every vendored model directory
-   in `VENDORED_MODELS` — currently only `third_party/it4it`. A submodule that
-   was never initialised is skipped silently, not flagged
-   (`architecture/model/build.py:48-53`, `126-133`).
+   each concatenated with the same file from every optional layer in
+   `MODEL_LAYERS`: the vendored models (`VENDORED_MODELS` — currently only
+   `third_party/it4it`) plus the generated `architecture/model/gh-roadmap/`.
+   A layer directory that is missing — a submodule never initialised, or the
+   importer never run — is skipped silently, not flagged
+   (`architecture/model/build.py` `MODEL_LAYERS`, `load_layers()`).
 2. Add elements, then relationships, then views to a pyArchimate `Model`.
    Every element, relationship, view, node and connection gets a
    deterministic UUID from `det_id()` — a `uuid5` over the fixed namespace
@@ -180,180 +200,18 @@ turns the tail into a stray key with a null value. No model field is
 legitimately null, so every null value is reported as that truncation and
 fails the build (`architecture/model/build.py:83-119`).
 
-## Packaging and migration (section E)
+## Packaging, migration and technology (sections E, F)
 
-Section E models the platform's **own** restructure — the `ARCHITECTURE.md`
-§8 migration described in [Architecture Overview](architecture.md) — as
-first-class ArchiMate Implementation & Migration elements, added 2026-09-26
-(GH #65) and reflected in [ADR-0010](architecture.md), revised in place to
-cover this wider scope (`architecture/model/README.md` §"Model contents").
-The technology layer this section originally deferred is now covered — see
-"Technology (section F)" below.
-
-**New application-layer elements.** The `Schema Visualiser API`
-(`sub-schema-visualizer`) is modelled as an `ApplicationComponent` — not one
-of the six subsystems — that reads the knowledge graph only through a new
-`Knowledge Graph Read Path` `ApplicationInterface` (`if-twin-read-path`), never
-directly. The wiring is deliberately explicit rather than left derivable: a
-`Composition` from the Digital Twin subsystem to the interface, a `Serving`
-from the interface to the visualiser (labelled "path-dependency library"), and
-— kept only because the C4 projection drops `ApplicationInterface` nodes and
-the edge would otherwise disappear from the container view — a direct
-`Serving` from the Digital Twin subsystem to the visualiser itself
-(`architecture/model/relationships.yaml` §"E. Schema visualiser consumes the
-knowledge-graph read path"). This is the graph-level record of the
-library-not-HTTP decision in
-[ADR-0005](architecture.md).
-
-**Shared package (ADR-0034).** `sub-llm-provider-config` ("LLM Provider
-Configuration") is a second non-subsystem `ApplicationComponent`: composed into
-`sys-platform`, with an `Association` to `ext-llm` ("configures provider/model &
-resolves credentials for calls to") and a `Realization` from its package Artifact.
-No `Serving` edge runs to its consumers, because consumption is a path dependency
-(ADR-0002) rather than a runtime service call, and the real provider calls stay on
-the existing `ext-llm` edges (`architecture/model/relationships.yaml` §"E. LLM
-provider configuration is a shared package, not a subsystem"). It appears in
-the Artefact Flow — Controls & OSCAL and Packaging views, and its package Artifact in
-the Packaging and Migration Sequence views (`architecture/model/views.yaml`).
-
-**Artifacts (code packages, `c4: ignore`).** Nine `Artifact` elements: today's
-flat `art-flat-src`, plus one per target package —
-`schema-visualizer-api`, `digital-twin-knowledge-graph`,
-`controls-compliance-catalog`, `reusable-architecture-library`,
-`architecture-governance`, `conformance-drift-assurance`,
-`modelling-specification`, and the shared `llm-provider-config`
-(`art-pkg-llm-provider-config`, which the Transition and Target Plateaus both
-aggregate). Each package-Artifact `Realization`-links to the
-`ApplicationComponent` it ships; `art-flat-src` currently realizes both
-`sub-schema-visualizer` and `sub-twin`, since neither has been extracted yet
-(`architecture/model/relationships.yaml` §"E. Packages realise their
-components").
-
-**Work Packages, Deliverables, Plateaus and Gaps.** The seven
-`ARCHITECTURE.md` §8 steps become `WorkPackage` elements chained by
-`Triggering` edges in sequence (1 → 2 → … → 7); three carry a `Realization` to
-a `Deliverable` (the monorepo skeleton, the `controls-compliance-catalog`
-package, and the `digital-twin-knowledge-graph` scaffold), and each
-package-shaped Deliverable in turn `Realization`-links to its Artifact. Three
-`Plateau`s mark platform states — `Baseline: flat src/`, `Transition: first
-extraction proven` (after step 3), and `Target: package per subsystem`
-(`ARCHITECTURE.md` §3.2 layout) — each `Aggregation`-linking the Artifacts that
-exist in that state (Baseline has only `art-flat-src`; Target has every
-package Artifact except `art-flat-src`). Two `Gap` elements sit between
-consecutive Plateaus and describe what changes, `Association`-linked to the
-Plateau either side: "controls catalog extracted to its own package" (Baseline
-→ Transition) and "remaining subsystems packaged" (Transition → Target, which
-includes `schema-visualizer-api` once step 4 has delivered the read path it
-consumes) (`architecture/model/elements.yaml` §"E. Work Packages" onward;
-`architecture/model/relationships.yaml` §"E. Migration sequence", §"E.
-Plateaus", §"E. Gaps"). No `Gap → Artifact` or `Plateau → Triggering` edges
-are modelled, since either would only restate what the Aggregations and
-Work-Package chain already carry.
-
-**Views.** Two new views render section E: `Packaging`
-(`diagrams/implementation/packaging`, `viewpoint: implementation_deployment`)
-scopes to the six subsystem `ApplicationComponent`s, `if-twin-read-path`, and
-their realizing Artifacts, excluding the subsystem-to-subsystem `Serving` /
-`Flow` / `Association` mesh (that's the Artefact Flow views' story, not
-packaging's); `Migration Sequence` (`diagrams/migration/sequence`) renders the
-Work-Package → Deliverable → Artifact → Plateau → Gap chain, replacing the old
-hand-drawn `ARCHITECTURE.md` §8 diagram with a generated one. The C4 container
-view also gained the Schema Visualiser API component. See
-[Architecture Views & Diagrams](architecture-diagrams.md).
-
-## Technology (section F)
-
-Added as a first cut (GH #55 follow-up), deliberately scoped only to the
-policy-to-OSCAL slice — not a general technology-layer rollout. Two
-unrelated infrastructure stories share the section because both came out of
-the same GH #55 decision round:
-
-**CI golden-dataset check.** `node-ci-runner` (a GitHub Actions runner,
-`c4: ignore`) hosts `sw-pytest`, which runs
-`techproc-oscal-golden-check` — the CI check comparing each of the three
-pipeline artefacts (Catalog, Profile, Resolved Catalog) against its golden
-dataset counterpart before merge
-([Controls & Compliance Catalog](controls-compliance-catalog.md) spec 001
-FR-006/FR-007). This is testing infrastructure, not a user-facing
-capability, hence `c4: ignore` throughout.
-
-**Persistence boundary and runtime target.** `node-app-server` — the shared
-deployment target already serving the visualiser — hosts two local
-filesystem Artifacts (`art-tech-oscal-workspace`, the Trestle workspace tree;
-`art-tech-ledger-file`, the forensic ledger JSONL) realising the existing
-`store-oscal`/`store-ledger` DataObjects, plus `sw-uvicorn-fastapi`, the
-shared ASGI runtime now explicitly modelled as hosting
-`art-pkg-controls-compliance-catalog`. The modelling threshold applied here:
-a third-party library gets its own `ext-*` element only when it performs a
-distinctive, named capability a modelled function depends on — `ext-trestle`
-qualifies (the Markdown↔OSCAL round-trip), but `xmlschema`/`defusedxml`
-(the visualiser's XML parsing/validation) stay unmodelled as internal
-plumbing behind an existing function. `sw-keyring` ("OS Credential Store (keyring)") is also modelled as
-SystemSoftware, hosted on `node-app-server` and aggregated by `plat-runtime-mvp`: it holds
-the LLM provider API keys for `sub-llm-provider-config` and, being single-user local
-scope (ADR-0024), is not carried to `node-hosted-cluster` — a hosted platform would swap
-it for a server-side secret store behind the same resolution interface
-(`architecture/model/elements.yaml` `sw-keyring`; ADR-0034). A deliberately underspecified
-`node-hosted-cluster` Node, plus a `plat-runtime-mvp` → `plat-runtime-target`
-Plateau pair and the `gap-runtime-hosted` Gap between them, record
-[ADR-0018](architecture.md)'s 2026-09-27 phasing decision (local compose
-through the MVP milestone, then a hosted cluster whose concrete shape is
-deferred to a follow-up ADR) — kept as its own `view-runtime-migration`
-view, separate from the packaging-restructure Plateaus in section E.
-
-**Per-subsystem UI composition.** A new `TechnologyFunction`,
-`techfn-role-journey-composition`, records [ADR-0020](architecture.md)'s
-2026-09-27 resolution: each subsystem's `ui/` stays its own independently
-owned fragment, composed for a user server-side, per role journey, hosted
-directly on the shared `sw-uvicorn-fastapi`/`node-app-server` pair rather
-than a new SystemSoftware/Node. It is modelled as a `TechnologyFunction`
-rather than one more subsystem-owned `fn-*`, because composition is
-cross-subsystem and owned by no single subsystem, unlike every
-`Assignment`-owned application function in section C. The six
-`art-pkg-<subsystem>` package Artifacts each `Realization`-link to it as
-their `ui/` fragment's composition point. A related edge resolves where the
-schema-visualiser UI itself lives: `sub-schema-visualizer` gets a direct
-`Serving` to `role-ea`, composing into that role's existing journey
-alongside `sub-library`/`sub-governance`/`sub-assurance`, rather than
-standing up a seventh subsystem or a standalone dashboard (ADR-0005 +
-ADR-0020).
-
-**New application-layer functions.** Two new `ApplicationFunction`s round
-out the catalog's upload/feedback path ahead of its own UI build:
-`fn-policy-upload` (accept an uploaded document, stage it for conversion)
-and `fn-policy-quality-feedback` (LLM-reviewed prose-quality feedback before
-conversion), both exposed via a new `ApplicationInterface`,
-`if-catalog-ui` — the human-facing surface the Compliance Officer/Auditor
-uses to upload documents, review feedback, and track status. A third,
-`fn-oscal-validation`, models the `trestle validate` step that already
-existed in the pipeline narrative but not as its own function, with
-`art-oscal-catalog` gaining a `status-lifecycle` property
-(`converting → converted → validating → validated` /
-`conversion_failed` / `validation_failed`) to carry that state explicitly.
-
-**New views.** Four views render section F:
-`view-technology-ci-check` (the CI slice, `viewpoint: custom` since mixing
-a Node with application-layer concepts isn't covered by a standard
-viewpoint's allow-list), `view-technology-persistence-boundary` (storage
-location, also `viewpoint: custom` for the same reason),
-`view-technology-landscape` (the standard Technology viewpoint — pure
-infrastructure topology, both Nodes side by side), and
-`view-technology-usage-catalog` (the standard Technology Usage viewpoint —
-the demand side, `sub-catalog` through to `node-app-server`, which
-`view-packaging`'s `implementation_deployment` viewpoint can't show since
-it excludes `Node`). A fifth, `view-application-structure-catalog`
-(the standard Application Structure viewpoint), also landed alongside these
-— `sub-catalog`'s own internal structure (component, interface, the
-artefacts it owns), shown via new `sub-catalog → art-*` ownership `Access`
-edges rather than `ApplicationFunction`-mediated flow, since Application
-Structure isn't a viewpoint `ApplicationFunction` can appear on. See
-[Architecture Views & Diagrams](architecture-diagrams.md).
+Section E (Implementation & Migration — the platform's own restructure) and
+section F (Technology — the first Technology-layer cut) moved to their own
+page once this one passed ~500 lines: see
+[Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md).
 
 ## IT4IT alignment — vendored as its own repo, imported at build time
 
 The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
 `elements.yaml`/`relationships.yaml`, tagged `props: {source: it4it}` so it
-could be filtered from the platform's own model. [ADR-0029](architecture.md)
+could be filtered from the platform's own model. [ADR-0029](decision-log.md)
 moved it out: it now lives in `third_party/it4it`, a **git submodule**
 pointing at `wolffy-au/frictionless-it4it` on GitHub, in the same
 `elements.yaml` / `relationships.yaml` / `views.yaml` schema this repo uses.
@@ -362,7 +220,7 @@ pointing at `wolffy-au/frictionless-it4it` on GitHub, in the same
 separate `.xml`, and no ID-reconciliation machinery. Every IT4IT element and
 relationship keeps the `it4it-` id prefix it always had, and that prefix
 alone is what keeps the merged id space collision-free
-(`architecture/model/build.py` — `VENDORED_MODELS`, `load_vendored()`).
+(`architecture/model/build.py` — `VENDORED_MODELS`, `load_layers()`).
 
 This is a decision about *packaging*, not content — nothing about the IT4IT
 data itself changed:
@@ -401,18 +259,22 @@ model, so IT4IT elements never pollute a platform-only diagram.
 
 If IT4IT is ever consumed via its own independently-generated `.xml` (its own
 `build.py` / `NS`) instead of raw YAML, this merged-hashing approach no
-longer holds — that would need its own ADR ([ADR-0029](architecture.md)
+longer holds — that would need its own ADR ([ADR-0029](decision-log.md)
 §"Consequences").
 
 ## Views and diagrams
 
-29 ArchiMate views cover the merged model — 25 declared in this repo's own
-`views.yaml` (sections A–C plus the IT4IT touchpoint bridge) plus 4 declared
-in `third_party/it4it/views.yaml` for the vendored IT4IT reference (see
-"IT4IT alignment" above), loaded the same way its elements/relationships are
-([ADR-0029](architecture.md)). How those views map to ArchiMate viewpoints,
-which ones cover the IT4IT reference content, and how they're rendered into
-`.puml`/`.svg` diagrams is covered in
+48 ArchiMate views cover the merged model (see "What this is" above for the
+element/relationship/view breakdown by layer): 34 declared in this repo's own
+`views.yaml` (25 for sections A–C plus the IT4IT touchpoint bridge, 9 for
+sections E/F — see
+[Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md)),
+10 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
+"GitHub roadmap layer" above), and 4 declared in `third_party/it4it/views.yaml`
+for the vendored IT4IT reference (see "IT4IT alignment" above), loaded the
+same way its elements/relationships are ([ADR-0029](decision-log.md)). How
+those views map to ArchiMate viewpoints, which ones cover the IT4IT reference
+content, and how they're rendered into `.puml`/`.svg` diagrams is covered in
 [Architecture Views & Diagrams](architecture-diagrams.md), not this topic.
 
 ## Provenance
@@ -420,7 +282,7 @@ which ones cover the IT4IT reference content, and how they're rendered into
 Section A was extracted from `prototype/nodes.yaml` at `prototype-neo4j`
 (`d0c30b4`); section B was ported from the retired
 `sample-data/archimate/build_frictionless_architect.py`; section C was authored
-2026-08-30. A 2026-08-30 pass ([ADR-0027](architecture.md)) renamed the
+2026-08-30. A 2026-08-30 pass ([ADR-0027](decision-log.md)) renamed the
 capabilities as abilities, added `req-authoritative-twin` /
 `req-immutable-audit-ledger` so every capability has a contract, moved
 `req-regulatory-mapping` to `cap-control-catalog`, added the `Governed
@@ -451,7 +313,7 @@ the same window. Full history is in the ADR log — see
 for the exact commit sequence, which `README.md`'s own Provenance section does
 not yet narrate).
 
-A later pass ([ADR-0029](architecture.md), 2026-09-13) vendored the IT4IT
+A later pass ([ADR-0029](decision-log.md), 2026-09-13) vendored the IT4IT
 content out of this repo entirely: `third_party/it4it` (a git submodule)
 now holds its `elements.yaml`/`relationships.yaml`/`views.yaml`/
 `diagrams/vision/`, `build.py`/`render_diagrams.py` merge it in at build
@@ -462,14 +324,14 @@ capability-bridge touchpoint relationships and view stayed first-party.
 A 2026-09-20 pass (GH #20, #23) landed the per-view `exclude:` mechanism and
 used it to suppress the incidental capability-mesh leak on seven views,
 closed the `view-strategy` value-stream orphan with `coa-*` → value-stream
-`Serving` edges, and — per [ADR-0030](architecture.md) — added `ext-trestle`
+`Serving` edges, and — per [ADR-0030](decision-log.md) — added `ext-trestle`
 to the OSCAL conversion chain, bringing the model to 290 elements / 578
 relationships / 21 views. A 2026-09-20 GH #24 spec-alignment review then added
 OSCAL Assessment Plan (wired into both the pre-release gate and continuous-BAU
 monitoring cadences, per OSCAL's required `import-ap` reference on every
 Assessment Results instance) and an OSCAL Plan of Action & Milestones sidecar
 of the remediation backlog, and fixed an internal wording inconsistency in
-`art-oscal-component`'s description — bringing it to 296 elements / 594
+`do-oscal-component`'s description — bringing it to 296 elements / 594
 relationships / 21 views.
 
 Three passes on 2026-09-21/22 followed:
@@ -490,7 +352,7 @@ on `architecture/model/`, commits `fce0731`, `7304e53`, `f4458ff`).
 A 2026-09-24 fix quoted 12 DataObject `desc` values and one IT4IT bridge
 label. In the flow-style `{...}` YAML entries, an unquoted comma had been
 silently cutting each value short. Among the lost text were the golden-dataset
-artefacts' "not a production pipeline input" caveat and `art-ledger-entry`'s
+artefacts' "not a production pipeline input" caveat and `do-ledger-entry`'s
 actor/action/target fields. The full text is now restored, for example the
 `cap-control-plane` → `it4it-cap-product-development` label "supervises the
 AI agents doing the coding, unit verification, and defect correction this
@@ -505,7 +367,7 @@ A 2026-09-26 pass (PR #62) reworked the business layer and the vision set:
 - **Outcomes and value streams.** The goal is now realized by four outcomes,
   and each outcome has its own value stream, organised by who receives its
   value. Stages were moved between streams rather than duplicated
-  ([ADR-0033](architecture.md)). The vision set grew from seven to thirteen
+  ([ADR-0033](decision-log.md)). The vision set grew from seven to thirteen
   views: a Value Stream Hand-offs view, one view per stream (`6a`–`6d`), and a
   new Requirements Realization view.
 - **Business layer.** It now has 15 business processes grouped under 9
@@ -535,7 +397,7 @@ gaps that the Markdown catalogue converter (#44) depends on:
   objects (Catalog, Profile, Resolved OSCAL Profile Catalog) instead of
   `bo-regulatory-standard`.
 - A new Association, "expected OSCAL output for (golden pair)", links
-  `art-baseline` to `art-regulatory-standard`.
+  `do-baseline` to `do-regulatory-standard`.
 - The two OSCAL artefact views were split: Controls & OSCAL is now
   conversion only, and OSCAL Profile Resolution carries tailoring and
   resolution.
@@ -547,9 +409,9 @@ That brings the model to 337 elements / 690 relationships / 29 views
 A 2026-09-26 pass (GH #65, #60) added section E — see "Packaging and
 migration" above — bringing the platform's own model to 220 elements / 495
 relationships / 27 views (362 / 730 / 31 merged with the unchanged 142 / 235 /
-4-element IT4IT reference). [ADR-0010](architecture.md) was revised in place
+4-element IT4IT reference). [ADR-0010](decision-log.md) was revised in place
 to cover this wider load-bearing scope, and
-[ADR-0005](architecture.md) was revised the same day to make
+[ADR-0005](decision-log.md) was revised the same day to make
 `controls-compliance-catalog` the first extraction instead of the visualiser
 split (`architecture/model/README.md` §"Model contents"; see [Architecture
 Overview](architecture.md) §"Migration sequence").

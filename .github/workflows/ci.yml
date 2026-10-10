@@ -65,9 +65,7 @@ jobs:
         run: poetry run mypy
 
       - name: Run behave tests
-        # tests/features/ is a placeholder — not gated until real scenarios exist.
-        # Drop `|| true` once there is real BDD coverage to enforce.
-        run: poetry run behave tests/features/ || true
+        run: poetry run behave tests/features/
 
       - name: Run pytest for unit and integration tests
         run: poetry run pytest --cov-fail-under=90

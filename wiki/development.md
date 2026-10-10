@@ -1,12 +1,15 @@
 ---
 title: Development & Quickstart
-generated: 2026-10-04
-generator: claude-sonnet-5-5
+generated: 2026-10-10
+generator: claude-sonnet-5
 sources:
   - specs/001-governance-platform/quickstart.md
   - AGENTS.md
   - RELEASE.md
   - specs/002-neo4j-schema-ui/quickstart.md
+  - .pre-commit-config.yaml
+  - scripts/pre_merge_checks.sh
+  - .github/workflows/ci.yml
   - CONTRIBUTING.md
   - CODE_OF_CONDUCT.md
   - SECURITY.md
@@ -103,12 +106,20 @@ FRICTIONLESS_ARCHITECT_NEO4J_PASSWORD=reader
 FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR=sample-data
 FRICTIONLESS_ARCHITECT_CACHE_DIR=.cache/visualiser
 FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS=300   # 429 + Retry-After on refresh for this long after a successful one
+FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS=300    # seconds between automatic retries after a failed load (default and max 300)
 
 poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 # then fetch http://127.0.0.1:8100/schema-payload — JSON-only for now, the
 # server-rendered /schema-visualizer HTML page was dropped 2026-09-13
 # (see Visualizer Service)
 ```
+
+If a load fails (nothing reachable, or Neo4j `unavailable`), the service retries
+in the background every `RETRY_INTERVAL_SECONDS` until a load succeeds, and
+`GET /schema-payload/status` reports `retry_pending` while that retry is alive
+(`README.md` §"Configuration";
+`specs/002-neo4j-schema-ui/quickstart.md`; see the retry flow in
+[Visualizer Service](visualizer-service.md)).
 
 `scripts/neo4j_schema.py` is a separate CLI that reads its own **unprefixed**
 `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` (or `--uri` / `--user` /
@@ -148,14 +159,15 @@ The constitution's "Quality Gates" (see
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
 | `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |
-| `behave` | BDD acceptance — **not currently gated** (see note below the table) |
+| `behave` | BDD acceptance — gated on pre-push, in `pre_merge_checks.sh` and (blocking) in CI (see note below the table) |
 | `commitizen` | Conventional Commits + version inference |
 | `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token in `.secrets/`) |
-| `snyk` | dependency / security scan (`TECHNICAL.md` §"Snyk") |
+| `snyk` | dependency / security scan (`TECHNICAL.md` §"Snyk"). `SNYK_TOKEN` lives in the gitignored `.env`; `pre_merge_checks.sh` loads it and runs `snyk test` on the root lock, `snyk code test`, and `snyk test` on `platform/poetry.lock`. These are blocking locally and advisory (`continue-on-error`) in CI. |
+| `pip-audit` | Python dependency audit, now a declared dev dependency (`pyproject.toml`) |
 
 ```bash
 bash scripts/pre_commit_checks.sh   # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
-bash scripts/pre_merge_checks.sh    # + coverage-gated pytest, frontend UI harness
+bash scripts/pre_merge_checks.sh    # + behave, coverage-gated pytest (src + architecture/model), frontend UI harness
 bash scripts/platform_checks.sh     # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
 ```
 
@@ -167,11 +179,23 @@ root `src/` tree and is folded into `pre_commit_checks.sh`'s run, since
 `platform/` carries its own `poetry.lock` and virtualenv (see "Repository
 layout" below).
 
-`behave` is **not currently gated**: `tests/features/` holds only a placeholder
-scenario, so the behave pre-push hook and the `pre_merge_checks.sh` step were
-dropped until `acceptance-author` writes real scenarios
-(`.pre-commit-config.yaml`; CI still runs `behave` non-blocking). `RELEASE.md`
-§2 still lists it and has not caught up.
+`behave` is **gated**: `tests/features/` holds real scenarios for the spec 002 API (schema
+payload, refresh, unavailable-sample warnings, the 2-second target and the load retry), so
+`poetry run behave tests/features/` runs as a pre-push hook (`.pre-commit-config.yaml`), as a
+step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
+step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §2 already lists it.
+The scenarios now also cover the GitHub roadmap importer (`tests/features/gh_roadmap_import.feature`).
+
+`pre_merge_checks.sh` also fails (exit 1) if the generated GitHub roadmap layer (see
+[GitHub Roadmap Layer](gh-roadmap-layer.md)) has fallen behind GitHub — it runs
+`poetry run python architecture/model/import_gh_roadmap.py --check` right after the
+`pre_commit_checks.sh` step and before the lock refresh. Fix a failure with
+`scripts/refresh_gh_roadmap.sh`, which re-runs the importer, rebuilds the model XML and
+regenerates diagrams for review, then commit the result (`scripts/pre_merge_checks.sh`).
+
+The merge-gate coverage run measures `--cov=src --cov=architecture/model`, so the importer's
+tests count toward the 90% gate (`scripts/pre_merge_checks.sh`). `[tool.coverage.run]` omits the
+thin `architecture/model/build.py` and `render_diagrams.py` wrappers (`pyproject.toml`).
 
 ## Conventions
 
@@ -201,9 +225,12 @@ dropped until `acceptance-author` writes real scenarios
 ## Releases
 
 `RELEASE.md` is the end-to-end procedure (the `release-runner` agent executes it
-step by step). Summary (`RELEASE.md` §"Steps"):
+step by step). `main` only changes via PR, so the merge into `main` is a **human
+gate**: the agent opens the PR, waits for green checks, and stops. Summary
+(`RELEASE.md` §"Steps"):
 
-1. Sync branches; fast-forward `main` to `develop` (`--ff-only`).
+1. Sync `develop` with `main` (`git merge origin/main`); never merge or
+   fast-forward `main` locally.
 2. Full quality gate — `bash scripts/pre_merge_checks.sh` must pass clean.
 3. SonarCloud — nothing `OPEN` (resolve with `quality-uplift`).
 4. Security — no open Snyk findings **at any severity** (the release gate drops
@@ -211,18 +238,25 @@ step by step). Summary (`RELEASE.md` §"Steps"):
    §4) or open Dependabot findings (resolve with `vulnerability-remediator`).
 5. Refresh docs/specs/diagrams against the code — run `docs-uplift`,
    `spec-alignment`, and `adr-auditor`; commit regenerated artefacts.
-6. `poetry run cz bump` — updates `CHANGELOG.md`, bumps the version, creates the
-   `v<X.Y.Z>` tag (commitizen infers the bump from the commit history;
-   `major_version_zero = true`, so pre-1.0 breaking changes bump the minor).
-7. `git push origin main --tags`.
-8. `gh release create v<X.Y.Z>`.
-9. Merge `main` back into `develop`.
+6. `poetry run cz bump` **on `develop`** — updates `CHANGELOG.md`, adds a bump commit
+   and the `v<X.Y.Z>` tag (commitizen infers the bump from the commit history;
+   `major_version_zero = true`, so pre-1.0 breaking changes bump the minor). The
+   first release needs `--increment MINOR`. The develop-side tag is then deleted,
+   to be re-created on `main`.
+7. Push `develop`, open or update the `develop` → `main` PR, wait for CI, SonarCloud
+   and Snyk to be green, then **stop**. A human merges it with a merge commit
+   (not squash or rebase). Never use `gh pr merge`, a local merge, or a push to
+   `main`. If Snyk fails on account quota rather than findings, the human decides.
+8. After the merge, tag `origin/main` with an annotated `v<X.Y.Z>`, check the name
+   matches `^v[0-9]+\.[0-9]+\.[0-9]+$`, and push only the tag.
+9. `gh release create v<X.Y.Z> --verify-tag`.
+10. Merge `main` back into `develop`.
 
 **Not yet configured** (`RELEASE.md` §"Not yet configured"): no
 `.github/workflows/release.yml`, no PyPI project, and it is undecided whether
 this codebase is distributed as a package at all — `ARCHITECTURE.md` §5 only
 anticipates *per-package* publish if a component is open-sourced standalone.
-Until then, releases stop at step 9 (tag + GitHub release, no artifact upload).
+Until then, releases stop at step 9 (tag + GitHub release, no artifact upload; step 10 is the merge back).
 `CHANGELOG.md` does not exist yet; the first `cz bump` creates it.
 
 ## Spec-driven workflow (SpecKit)

@@ -166,3 +166,58 @@ def test_schema_is_built_once_per_path() -> None:
     info = _load_schema.cache_info()
     assert info.misses == 1
     assert info.hits == 1
+
+
+def test_dangling_relationship_source_is_flagged(tmp_path: Path) -> None:
+    body = (
+        "<elements>"
+        '<element identifier="e-1" xsi:type="BusinessActor"><name>A</name></element>'
+        "</elements>"
+        "<relationships>"
+        '<relationship identifier="r-1" xsi:type="Association" source="e-gone" target="e-1"/>'
+        "</relationships>"
+    )
+    issues = validate_sample_against_schema(_write(tmp_path, MODEL_OPEN + body + "</model>\n"), SCHEMA_PATH)
+    assert "Relationship r-1 source e-gone is missing" in issues
+    assert not any("target" in issue and "missing" in issue for issue in issues)
+
+
+def test_view_node_referencing_a_missing_element_is_flagged(tmp_path: Path) -> None:
+    body = (
+        "<elements>"
+        '<element identifier="e-1" xsi:type="BusinessActor"><name>A</name></element>'
+        "</elements>"
+        "<views><diagrams>"
+        '<view identifier="v-1" xsi:type="Diagram"><name>V</name>'
+        '<node identifier="n-1" elementRef="e-gone" xsi:type="Element" x="0" y="0" w="10" h="10"/>'
+        "</view></diagrams></views>"
+    )
+    issues = validate_sample_against_schema(_write(tmp_path, MODEL_OPEN + body + "</model>\n"), SCHEMA_PATH)
+    assert "View node references missing element e-gone" in issues
+
+
+def test_references_to_existing_items_raise_no_reference_issues(tmp_path: Path) -> None:
+    body = (
+        "<elements>"
+        '<element identifier="e-1" xsi:type="BusinessActor"><name>A</name></element>'
+        '<element identifier="e-2" xsi:type="BusinessRole"><name>B</name></element>'
+        "</elements>"
+        "<relationships>"
+        '<relationship identifier="r-1" xsi:type="Assignment" source="e-1" target="e-2"/>'
+        "</relationships>"
+    )
+    issues = validate_sample_against_schema(_write(tmp_path, MODEL_OPEN + body + "</model>\n"), SCHEMA_PATH)
+    assert not any("is missing" in issue or "references missing" in issue for issue in issues)
+
+
+def test_elements_missing_an_identifier_or_type_are_tolerated(tmp_path: Path) -> None:
+    """Metadata gathering must skip them rather than crash; the XSD reports what is actually wrong."""
+    body = (
+        "<elements>"
+        '<element xsi:type="BusinessActor"><name>No id</name></element>'
+        '<element identifier="e-1"><name>No type</name></element>'
+        "</elements>"
+    )
+    issues = validate_sample_against_schema(_write(tmp_path, MODEL_OPEN + body + "</model>\n"), SCHEMA_PATH)
+    assert issues, "the XSD requires an identifier and an xsi:type"
+    assert all(issue.startswith("XSD: ") for issue in issues)

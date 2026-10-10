@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from defusedxml.ElementTree import parse as _safe_parse
 
 from frictionless_architect.visualizer.namespaces import ARCHIMATE_NS, XSI_NS, require_archimate_namespace
+
+_DUPLICATE_LAST_WINS = "Duplicate {kind} identifier {identifier} in the sample; the last definition is used"
 
 
 @dataclass
@@ -22,6 +24,7 @@ class SampleParseResult:
         relationships: Relationships keyed by identifier.
         views: View definitions with their nodes and connections.
         file_path: The XML file the data came from.
+        warnings: Problems found while parsing, such as repeated identifiers.
     """
 
     model: dict[str, Any]
@@ -29,6 +32,7 @@ class SampleParseResult:
     relationships: dict[str, dict[str, Any]]
     views: list[dict[str, Any]]
     file_path: Path
+    warnings: list[str] = field(default_factory=list)
 
     @classmethod
     def empty(cls, sample_file: Path) -> "SampleParseResult":
@@ -57,8 +61,11 @@ class SampleParser:
     def parse(self) -> SampleParseResult:
         """Parse the sample file.
 
+        Repeated element or relationship identifiers keep the last definition; repeated
+        view identifiers are kept as-is. Each repeat adds an entry to ``warnings``.
+
         Returns:
-            The normalised model, elements, relationships and views.
+            The normalised model, elements, relationships and views, plus ``warnings``.
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -71,23 +78,27 @@ class SampleParser:
         if root is None:
             raise ValueError(f"Sample XML {self.sample_file} has no root element")
         require_archimate_namespace(root, self.sample_file)
-        elements = self._parse_elements(root)
-        relationships = self._parse_relationships(root)
-        views = self._parse_views(root, elements)
+        warnings: list[str] = []
+        elements = self._parse_elements(root, warnings)
+        relationships = self._parse_relationships(root, warnings)
+        views = self._parse_views(root, elements, warnings)
         return SampleParseResult(
             model=self._extract_model(root),
             elements=elements,
             relationships=relationships,
             views=views,
             file_path=self.sample_file,
+            warnings=warnings,
         )
 
-    def _parse_elements(self, root: ET.Element) -> dict[str, dict[str, Any]]:
+    def _parse_elements(self, root: ET.Element, warnings: list[str]) -> dict[str, dict[str, Any]]:
         result: dict[str, dict[str, Any]] = {}
         for element in root.findall(f".//{{{ARCHIMATE_NS}}}elements/{{{ARCHIMATE_NS}}}element"):
             identifier = element.attrib.get("identifier")
             if not identifier:
                 continue
+            if identifier in result:
+                warnings.append(_DUPLICATE_LAST_WINS.format(kind="element", identifier=identifier))
             elem_type = element.attrib.get(f"{{{XSI_NS}}}type") or "Element"
             result[identifier] = {
                 "identifier": identifier,
@@ -96,12 +107,14 @@ class SampleParser:
             }
         return result
 
-    def _parse_relationships(self, root: ET.Element) -> dict[str, dict[str, Any]]:
+    def _parse_relationships(self, root: ET.Element, warnings: list[str]) -> dict[str, dict[str, Any]]:
         result: dict[str, dict[str, Any]] = {}
         for relationship in root.findall(f".//{{{ARCHIMATE_NS}}}relationships/{{{ARCHIMATE_NS}}}relationship"):
             identifier = relationship.attrib.get("identifier")
             if not identifier:
                 continue
+            if identifier in result:
+                warnings.append(_DUPLICATE_LAST_WINS.format(kind="relationship", identifier=identifier))
             rel_type = relationship.attrib.get(f"{{{XSI_NS}}}type") or "Relationship"
             result[identifier] = {
                 "identifier": identifier,
@@ -116,15 +129,21 @@ class SampleParser:
             }
         return result
 
-    def _parse_views(self, root: ET.Element, elements: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    def _parse_views(
+        self, root: ET.Element, elements: dict[str, dict[str, Any]], warnings: list[str]
+    ) -> list[dict[str, Any]]:
         views_elem = root.find(f"./{{{ARCHIMATE_NS}}}views/{{{ARCHIMATE_NS}}}diagrams")
         if views_elem is None:
             return []
         views: list[dict[str, Any]] = []
+        seen: set[str] = set()
         for view in views_elem.findall(f"{{{ARCHIMATE_NS}}}view"):
             identifier = view.attrib.get("identifier")
             if not identifier:
                 continue
+            if identifier in seen:
+                warnings.append(f"Duplicate view identifier {identifier} in the sample")
+            seen.add(identifier)
             view_dict: dict[str, Any] = {
                 "identifier": identifier,
                 "name": self._first_name(view),
@@ -162,7 +181,9 @@ class SampleParser:
 
     def _first_name(self, element: ET.Element) -> str | None:
         name_elem = element.find(f"{{{ARCHIMATE_NS}}}name")
-        return name_elem.text.strip() if name_elem is not None and name_elem.text else None
+        if name_elem is None:
+            return None
+        return (name_elem.text or "").strip() or None
 
     def _lookup_label(self, element_ref: str | None, elements: dict[str, dict[str, Any]]) -> str | None:
         if element_ref and element_ref in elements:

@@ -172,7 +172,6 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 
 - **Specify lifecycle CLI** (old 1.1) — this repo's development tooling (`.specify/`), not a
   platform component. Distinct from subsystem 6's executable-spec generation.
-- **PII anonymization gateway** (old 1.2, ADR-0014) — scope undecided (#56).
 - **Security foundations** (old 8) — RBAC and encryption are platform requirements every
   subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
   own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
@@ -326,7 +325,8 @@ Checklist:
 Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
 from the shared FastAPI app in `frictionless_architect/app.py`. The server-rendered HTML
 route was dropped on 2026-09-13, leaving `visualizer/static/` and `templates/` orphaned
-(ADR-0005 → Implementation status).
+(ADR-0005 → Implementation status); those orphaned files were deleted outright on
+2026-10-10 rather than kept as a Vite-app starting point.
 
 ```plantuml
 @startuml
@@ -336,7 +336,6 @@ skinparam componentStyle rectangle
 package "BEFORE  src/frictionless_architect/visualizer/" {
   [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
   [data_loader.py sample_parser.py\n(+ schema/manager.py)] as before_kg
-  [static/ + templates/\n(orphaned)] as before_ui
   before_api --> before_kg
 }
 
@@ -364,8 +363,8 @@ Checklist:
   `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
   §4).
 - ~~Drop the HTML route + Jinja/static mounts; keep `/schema-payload*`.~~ Done 2026-09-13.
-- Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy;
-  delete the orphaned `visualizer/static/` and `templates/`.
+- ~~Delete the orphaned `visualizer/static/` and `templates/`.~~ Done 2026-10-10.
+- Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy.
 - Add CORS config to the API (same-origin today, so none).
 - `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the
   package; `test_data_loader.py` / `test_sample_parser.py` follow their code to
@@ -376,6 +375,16 @@ Checklist:
   `uvicorn schema_visualizer_api:app`; update `README.md`.
 
 ---
+
+### 8.3 GitHub roadmap layer
+
+The Implementation & Migration layer follows the GitHub roadmap
+([ADR-0035](docs/adr/0035-github-roadmap-as-implementation-migration-layer.md)).
+`architecture/model/import_gh_roadmap.py` turns milestones into Plateaus, milestone issues
+into Work Packages and published releases into Deliverables, writing the committed, generated
+`architecture/model/gh-roadmap/`; `build.py` merges it with the hand-authored model. Gaps, the
+baseline Plateau and the Triggering between Plateaus stay hand-authored. Run it on demand with
+`poetry run python architecture/model/import_gh_roadmap.py` (`--check` reports drift).
 
 ## 9. Cross-cutting migration risks
 
@@ -406,8 +415,9 @@ Checklist:
 4. Which upstream gets forked for the ArchiMate Exchange Format parser? (OSCAL tooling
    is resolved — see ADR-0030: vendored reference content + a plain `compliance-trestle`
    dependency, not a fork.)
-5. Is collaboration-tool decision capture still in scope, and where does the PII gateway
-   (ADR-0014, narrowed by ADR-0031) sit? (#56)
+5. Is collaboration-tool decision capture still in scope? *(The PII gateway half is
+   resolved 2026-10-04, #56: it is its own `pii-gateway` package — ADR-0014, narrowed by
+   ADR-0031; its subsystem home is set in its spec.)*
 6. *Resolved 2026-09-26:* `001-governance-platform` becomes `EPIC-001` (ADR-0004, §6).
    `PROJECT_SPECIFICATION.md` was retired instead, so spec 001 is the platform's business
    specification (constitution v1.3.0).

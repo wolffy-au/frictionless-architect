@@ -35,7 +35,19 @@ def _run_literal(tx: ManagedTransaction, statement: object, **parameters: Any) -
 
 
 def sanitize_label(value: str | None) -> str:
-    """Sanitize a string so it can safely become a Neo4j label."""
+    """Sanitize a string so it can safely become a Neo4j label.
+
+    Non-word characters are replaced with ``_``; if the cleaned result still
+    doesn't start with a letter, it is prefixed with ``T_`` (Neo4j labels must
+    start with a letter).
+
+    Args:
+        value: The raw string to sanitize, or ``None``.
+
+    Returns:
+        The sanitized label, or ``""`` if ``value`` is ``None``, empty, or
+        reduces to nothing after cleaning.
+    """
 
     if not value:
         return ""
@@ -54,15 +66,35 @@ class SchemaManager:
     """Controller for Neo4j constraints, ingestion, migrations, and audits."""
 
     def __init__(self, uri: str, user: str, password: str) -> None:
+        """Open a Neo4j driver connection for schema management operations.
+
+        Args:
+            uri: Bolt connection URI for the Neo4j cluster (e.g. ``bolt://host:7687``).
+            user: Username for basic authentication.
+            password: Password for basic authentication.
+        """
         auth = basic_auth(user, password)
         self.driver = GraphDatabase.driver(uri, auth=auth)
 
     def close(self) -> None:
-        """Close the Neo4j driver."""
+        """Close the Neo4j driver.
+
+        Raises:
+            neo4j.exceptions.Neo4jError: If the underlying driver fails to
+                close its connections cleanly.
+        """
         self.driver.close()
 
     def apply_constraints(self) -> None:
-        """Create the uniqueness constraints and indexes (idempotent)."""
+        """Create the uniqueness constraints and indexes (idempotent).
+
+        Returns:
+            None.
+
+        Raises:
+            neo4j.exceptions.Neo4jError: If a constraint or index statement
+                fails against the connected Neo4j cluster.
+        """
         with self.driver.session() as session:
             for statement in CONSTRAINTS + INDEXES:
                 session.execute_write(self._run_statement, statement)
@@ -77,6 +109,13 @@ class SchemaManager:
         Args:
             payload: Mapping with optional ``elements``, ``relationships``, ``views``
                 and ``diagrams`` lists; missing or empty lists are skipped.
+
+        Returns:
+            None.
+
+        Raises:
+            ValueError: If a relationship references a source or target
+                element identifier that does not exist in the graph.
         """
         elements = payload.get("elements", [])
         relationships = payload.get("relationships", [])

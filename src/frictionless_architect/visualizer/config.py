@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,6 +21,8 @@ class VisualizerSettings(BaseSettings):
         warning_text: Warning raised when the sample model cannot be read.
         refresh_backoff_seconds: Seconds after a successful refresh during which
             ``POST /schema-payload/refresh`` answers 429 (failed refreshes are not delayed).
+        retry_interval_seconds: Seconds between automatic retries after a failed load
+            (SC-006: at most 5 minutes).
     """
 
     model_config = SettingsConfigDict(
@@ -36,6 +39,7 @@ class VisualizerSettings(BaseSettings):
     cache_dir: Path = Path(".cache/visualiser")
     warning_text: str = "Sample data unavailable"
     refresh_backoff_seconds: int = 300
+    retry_interval_seconds: int = Field(default=300, ge=0, le=300)
 
     @property
     def sample_model_path(self) -> Path:
@@ -55,5 +59,11 @@ class VisualizerSettings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_visualizer_settings() -> VisualizerSettings:
-    """Return the process-wide settings instance (cached after first call)."""
+    """Return the process-wide settings instance (cached after first call).
+
+    Returns:
+        The ``VisualizerSettings`` built from ``FRICTIONLESS_ARCHITECT_*``
+        environment variables (or ``.env``), memoised for the life of the
+        process.
+    """
     return VisualizerSettings()

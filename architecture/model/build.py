@@ -51,6 +51,10 @@ VALIDATOR = SKILL_SCRIPTS / "validate.py"
 # the merged id space unique, not any separate reconciliation step.
 THIRD_PARTY = HERE.parents[1] / "third_party"
 VENDORED_MODELS = [THIRD_PARTY / "it4it"]
+# Every optional layer merged into the same pass: the vendored models plus the
+# generated GitHub roadmap (GH #95, import_gh_roadmap.py), whose ids are
+# prefixed by ArchiMate type (plat-, del-, wp-) rather than by source system.
+MODEL_LAYERS = [*VENDORED_MODELS, HERE / "gh-roadmap"]
 
 # The model-archimate skill owns the standard-viewpoint reference and the
 # conformance check a view is held to when it declares `viewpoint:`.
@@ -123,12 +127,13 @@ def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str,
     return load_path(HERE / name, errors, optional)
 
 
-def load_vendored(filename: str, errors: list[str]) -> list[dict[str, Any]]:
-    """Load `filename` from every vendored model dir (ADR-0029). A missing
-    submodule checkout (never initialized) is silently skipped, same as any
-    other optional input — `git submodule update --init` fixes it."""
+def load_layers(filename: str, errors: list[str]) -> list[dict[str, Any]]:
+    """Load `filename` from every optional model layer: the vendored models
+    (ADR-0029) and the generated gh-roadmap dir. A missing dir (a submodule never
+    initialized, or the importer never run) is silently skipped, same as any
+    other optional input — `git submodule update --init` fixes the former."""
     merged: list[dict[str, Any]] = []
-    for model_dir in VENDORED_MODELS:
+    for model_dir in MODEL_LAYERS:
         merged += load_path(model_dir / filename, errors, optional=True)
     return merged
 
@@ -427,11 +432,11 @@ def main() -> int:
     m = Model("frictionless-architect")
     errors: list[str] = []
 
-    elements = load("elements.yaml", errors) + load_vendored("elements.yaml", errors)
+    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
     by_id, types_by_id = add_elements(m, elements, errors)
-    rels = load("relationships.yaml", errors) + load_vendored("relationships.yaml", errors)
+    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors)
     add_relationships(m, rels, by_id, errors)
-    views = load("views.yaml", errors, optional=True) + load_vendored("views.yaml", errors)
+    views = load("views.yaml", errors, optional=True) + load_layers("views.yaml", errors)
     add_views(m, views, elements, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
 

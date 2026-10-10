@@ -13,7 +13,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [x] T001 [P] Create `src/frictionless_architect/visualizer/__init__.py` with a FastAPI router that mounts the schema visualiser endpoints and exposes the static/template directories.
 - [x] T002 [P] Add `src/frictionless_architect/visualizer/config.py` to read Neo4j credentials, cache paths, sample-data location, and warning text from `.env` (per quickstart).
-- [x] T003 [P] Create `src/frictionless_architect/visualizer/static/schema_visualizer.js` and `.../templates/schema_visualizer.html` to host the cytoscape diagram, table view, refresh button, status message, and non-blocking warning banner mentioned in the spec.
+- [x] T003 [P] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Create `src/frictionless_architect/visualizer/static/schema_visualizer.js` and `.../templates/schema_visualizer.html` to host the cytoscape diagram, table view, refresh button, status message, and non-blocking warning banner mentioned in the spec.
 
 ---
 
@@ -35,8 +35,8 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 **Independent Test**: `/schema-payload` returns element/relationship arrays containing `source_file`, sample instances, coverage warnings, and `warnings` includes "Sample data unavailable" when needed per FR-006.
 
 - [x] T008 [P] [US1] Create `tests/api/test_schema_payload.py` that asserts `/schema-payload` returns element/relationship metadata, includes sample instance identifiers, and populates `warnings` when `Test Model Full.xml` or Neo4j is unavailable.
-- [x] T009 [US1] Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
-- [x] T010 [US1] Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
+- [x] T009 [US1] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Update `src/frictionless_architect/visualizer/static/schema_visualizer.js` to render the schema summary, table of elements, coverage badges, and warning banner text, fetching `/schema-payload` and `/schema-payload/status` per the quickstart workflow.
+- [x] T010 [US1] **Delivered; ownership moves to `schema-visualizer-ui` (#55), 2026-10-04.** Refine `schema_visualizer.html` and the JS bundle so selecting a relationship/element highlights the connection and displays source/target identifiers, matching FR-002/FR-005.
 
 ---
 
@@ -47,8 +47,8 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 **Independent Test**: The diagram/table pulls from the same dataset (identical element/relationship counts and attribute lists) returned by `/schema-payload`.
 
 - [x] T011 [P] [US2] Create `tests/api/test_schema_view_consistency.py` that validates `/schema-payload` contains matching element/relationship data for both diagram nodes and table rows, including layout bounds from `Test Model Full.xml`.
-- [x] T012 [US2] Extend `schema_visualizer.js` to build the cytoscape diagram from the `views` payload, respecting stored x/y/w/h bounds, and toggle between the diagram and table while showing identical metadata (identifier, label, source file) per FR-003.
-- [x] T013 [US2] Update `templates/schema_visualizer.html` plus CSS to support switching between diagram and table views while keeping the schema list visible and consistent.
+- [x] T012 [US2] **Delivered; ownership moves to `schema-visualizer-ui` (#55), 2026-10-04.** Extend `schema_visualizer.js` to build the cytoscape diagram from the `views` payload, respecting stored x/y/w/h bounds, and toggle between the diagram and table while showing identical metadata (identifier, label, source file) per FR-003.
+- [x] T013 [US2] **Delivered; ownership moves to `schema-visualizer-ui` (#55), 2026-10-04.** Update `templates/schema_visualizer.html` plus CSS to support switching between diagram and table views while keeping the schema list visible and consistent.
 
 ---
 
@@ -59,8 +59,8 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 **Independent Test**: `/schema-payload/status` reports `cache_age_seconds`, `neo4j_status`, `sample_file_status`, and `/schema-payload/refresh` responds with `refresh_started` while respecting the 5-minute retry requirement.
 
 - [x] T014 [US3] Create `tests/api/test_schema_status.py` asserting `/schema-payload/status` returns freshness/warning metadata and POST `/schema-payload/refresh` returns 202 when idle and 409 if a refresh is running.
-- [x] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and both honor the retry/backoff rules from the spec.
-- [x] T016 [US3] Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
+- [x] T015 [US3] Enhance `api.py` so `/schema-payload/refresh` triggers a background rebuild, `/schema-payload/status` reflects cache age/connection state, and applies the post-success refresh throttle (429); the SC-006 automatic retry is T019.
+- [x] T016 [US3] **Superseded 2026-10-04: UI dropped, now `schema-visualizer-ui` (#55).** Add a refresh control, warning banner state, and status indicator to `schema_visualizer.js`/`schema_visualizer.html` that calls `/refresh` and `/status`, displays “Sample data unavailable,” and keeps the schema list accessible per FR-006.
 
 ---
 
@@ -70,6 +70,14 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 - [x] T017 [P] Update `specs/002-neo4j-schema-ui/quickstart.md` to capture the commands, env vars, access expectations, and warning text discovered while implementing the feature.
 - [x] T018 [P] Run lint/tests (`ruff`, `pytest tests/api`) and ensure `README.md` or developer docs mention the schema visualiser entry point along with the “Sample data unavailable” warning text.
+
+---
+
+## Phase 7: Decisions of 2026-10-04
+
+- [x] T019 [US3] Add a background task that retries a failed load at most 5 minutes apart until it succeeds, with a test in `tests/api/` (SC-006).
+- [ ] T020 Source the displayed types from the `architecture/model/` type system instead of the Neo4j-plus-sample union (FR-001/004/005); the multi-spec types wait on GH #73.
+- [x] T021 Remove the unimplemented `401/403` from `contracts/api.md` (FR-007: no per-user auth) and document the `503`, `429` and status fields.
 
 ---
 
@@ -100,3 +108,17 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 1. **MVP First**: Complete Phases 1–2 plus Phase 3 (US1) to verify schema coverage, sample warnings, and base endpoints.
 2. **Incremental Delivery**: Add Phase 4 (US2) and Phase 5 (US3) with their tests before finalizing Phase 6.
 3. **Parallel Delivery**: With multiple contributors, assign foundational APIs to one developer while another works on UI tests for US1, etc.
+
+---
+
+## Phase 8: Convergence
+
+- [x] T022 Add a `tests/api/` test that `GET /schema-payload` answers within 2 seconds on the sample data; no test checks latency today per SC-005 (missing)
+- [x] T023 Make `sample_parser.py` warn on a repeated element, relationship or view identifier instead of silently overwriting it, with a test per the duplicate-identifier edge case (partial)
+- [x] T024 Update `plan.md` to the 2026-10-04 decisions (UI moved to #55, single service credential, types from the type system); its summary, testing, constraints and research lines still describe the dropped UI per plan: summary and constraints (partial)
+- [x] T025 Mark FR-003 and the UI-facing parts of FR-002 and the US2 scenario in `spec.md` as moved to #55, matching tasks T010/T012/T013 per FR-003 (partial)
+
+## Phase 9: Convergence (behave findings)
+
+- [ ] T026 Keep the schema summary accessible when the sample is missing or unreadable and Neo4j is not configured: `GET /schema-payload` returns 503 today and the warning shows only on `/schema-payload/status`; add a test and fix per FR-006 (contradicts)
+- [ ] T027 Report `sample_file_status: "invalid"` for a sample in another namespace even when nothing else supplies data: the build returns 503 and the status stays "missing"; add a test and fix per Edge 3 (partial)

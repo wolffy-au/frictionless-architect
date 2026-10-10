@@ -58,3 +58,31 @@ def test_message_file_mode(tmp_path: Path) -> None:
     bad.write_text("docs(spec): trim plan\n")
     assert mod.main(["--message-file", str(good)]) == 0
     assert mod.main(["--message-file", str(bad)]) == 1
+
+
+def test_body_wrap_flags_long_prose_lines() -> None:
+    message = "docs(specs): trim plan\n\n" + "word " * 15 + "\n"
+    assert any("columns" in p for p in mod.body_wrap_problems(message))
+
+
+def test_body_wrap_exempts_trailers_urls_and_code() -> None:
+    message = (
+        "docs(specs): trim plan\n\n"
+        "https://example.com/" + "a" * 80 + "\n"
+        "    " + "indented " * 12 + "\n"
+        "Co-Authored-By: " + "N" * 70 + " <noreply@example.com>\n"
+    )
+    assert mod.body_wrap_problems(message) == []
+
+
+def test_body_wrap_fails_message_file_but_only_warns_for_range(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    long_body = "docs(specs): trim plan\n\n" + "word " * 15 + "\n"
+    path = tmp_path / "msg"
+    path.write_text(long_body)
+    assert mod.main(["--message-file", str(path)]) == 1
+    capsys.readouterr()
+    monkeypatch.setattr(mod, "commits_in_range", lambda _range: [("abc1234", long_body.strip())])
+    assert mod.main(["--range", "x..y"]) == 0
+    assert "warning: abc1234" in capsys.readouterr().err
