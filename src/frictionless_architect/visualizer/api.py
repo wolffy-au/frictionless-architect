@@ -62,7 +62,8 @@ class RefreshRequest(BaseModel):
     """Body of ``POST /schema-payload/refresh``.
 
     Attributes:
-        source: Optional free-text hint of what triggered the refresh (currently unused).
+        source: Optional free-text hint of what triggered the refresh (e.g.
+            ``"manual"``). Logged alongside the refresh outcome for tracing.
     """
 
     source: str | None = None
@@ -127,8 +128,13 @@ class SchemaPayloadService:
                 raise exc
         return cached
 
-    async def request_refresh(self) -> int:
+    async def request_refresh(self, source: str | None = None) -> int:
         """Start a background rebuild of the cache.
+
+        Args:
+            source: Optional free-text hint of what triggered the refresh
+                (e.g. ``"manual"``). Logged alongside the refresh outcome so
+                failures can be traced back to their caller.
 
         Returns:
             Estimated completion time in milliseconds.
@@ -147,7 +153,8 @@ class SchemaPayloadService:
             if remaining > 0:
                 raise RefreshBackoff(math.ceil(remaining))
         estimate = max(500, (self._last_latency_ms or 1200) * 2)
-        self._refresh_task = asyncio.create_task(self._background_refresh())
+        logger.info("Refresh requested (source=%s)", source or "unspecified")
+        self._refresh_task = asyncio.create_task(self._background_refresh(source))
         await asyncio.sleep(0)
         return estimate
 
@@ -205,12 +212,14 @@ class SchemaPayloadService:
             self._last_refresh_completed = datetime.now(timezone.utc)
             return payload
 
-    async def _background_refresh(self) -> None:
+    async def _background_refresh(self, source: str | None = None) -> None:
         try:
             await self._build_and_cache()
         except PayloadUnavailable as exc:
             # preserve cache if build fails
-            logger.warning("Background refresh failed; keeping the cached payload: %s", exc)
+            logger.warning(
+                "Background refresh failed (source=%s); keeping the cached payload: %s", source or "unspecified", exc
+            )
         finally:
             self._refresh_task = None
 
@@ -456,8 +465,8 @@ async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
     """``POST /schema-payload/refresh``: start a background refresh.
 
     Args:
-        request: The request body. ``request.source`` is accepted but
-            currently unused.
+        request: The request body. ``request.source`` is logged alongside
+            the refresh outcome for tracing.
 
     Returns:
         A mapping with ``status`` (``"refresh_started"``) and
@@ -470,7 +479,7 @@ async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
     """
     service = get_schema_service()
     try:
-        estimated = await service.request_refresh()
+        estimated = await service.request_refresh(request.source)
     except RefreshInProgress as exc:
         raise HTTPException(status_code=409, detail="Refresh already running") from exc
     except RefreshBackoff as exc:

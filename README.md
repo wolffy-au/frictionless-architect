@@ -198,13 +198,13 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
 
 `bash scripts/platform_checks.sh` runs their quality gate.
 
-## Related tooling
+## Operations: seeding Neo4j
 
-- `scripts/neo4j_schema.py` — internal/advanced CLI that bootstraps the ArchiMate
-  schema in Neo4j directly via `SchemaManager`, independent of the FastAPI service.
-  Whether this is a supported user-facing tool or purely an internal bootstrap
-  utility is still an open product decision; treat the labeling here as
-  provisional. Subcommands:
+This is operator tooling for standing up the database, not an end-user feature of the
+visualiser — the visualiser itself is read-only against whatever Neo4j already holds.
+
+- `scripts/neo4j_schema.py` — CLI that bootstraps the ArchiMate schema in Neo4j
+  directly via `SchemaManager`, independent of the FastAPI service. Subcommands:
   - `constraints` — create the uniqueness constraints and indexes (idempotent).
   - `ingest --data-file <path.json>` — merge a JSON fixture (elements,
     relationships, views, diagrams) into the graph.
