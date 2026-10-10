@@ -1,14 +1,16 @@
 #!/bin/bash
-# Report-only run of the spec-alignment agent (.claude/agents/spec-alignment.md).
-# Writes the traceability report to .cache/spec-alignment/<date>.md; the agent is read-only already.
-# Schedule it from cron / a systemd timer / Windows Task Scheduler, or run it by hand.
+# Weekly run of the spec-alignment agent (.claude/agents/spec-alignment.md).
+# By default: an interactive session in worktree ../<repo>-spec-alignment, detached at the ref (opened in Herdr when
+# run inside it). The agent is read-only: it reports the gaps, asks which to pursue, and hands those back as concrete
+# speckit steps or ready-to-file issues. --report-only: the unattended report in .cache/spec-alignment/<date>.md.
 #
-# Usage: scripts/spec_alignment_weekly.sh [git-ref] [spec]
+# Usage: scripts/spec_alignment_weekly.sh [--report-only] [git-ref] [spec]
 #   git-ref  branch/tag to check (default: develop)
 #   spec     spec directory prefix to focus on, e.g. "001" or "002-neo4j" (default: all of specs/)
 
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_agent_report.sh"
+agent_parse_flags "$@"; set -- "${AGENT_ARGS[@]+"${AGENT_ARGS[@]}"}"
 
 REF="${1:-develop}"
 SPEC="${2:-}"
@@ -27,4 +29,5 @@ if [ -n "$SPEC" ]; then
   STAMP="$(date +%F)-spec-$SPEC"
 fi
 
-agent_report_run
+agent_workdir
+agent_run

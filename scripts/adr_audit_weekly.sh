@@ -1,15 +1,17 @@
 #!/bin/bash
-# Report-only run of the adr-auditor agent (.claude/agents/adr-auditor.md), via the shared driver _agent_report.sh.
-# Writes the findings to .cache/adr-audit/<date>.md; creates no branch, commit or PR.
-# Exits non-zero if claude fails, any tool call was denied, or the report is missing its findings.
-# Schedule it from cron / a systemd timer / Windows Task Scheduler, or run it by hand.
+# Weekly run of the adr-auditor agent (.claude/agents/adr-auditor.md), via the shared driver _agent_report.sh.
+# By default: an interactive session in worktree ../<repo>-adr-audit on feature/adr-audit-<date> (opened in Herdr when
+# run inside it). The agent audits, asks which findings to act on, then drafts Proposed ADR stubs / Status edits for
+# those and commits them. --report-only: the unattended report in .cache/adr-audit/<date>.md, no branch, commit or PR;
+# exits non-zero if claude fails, any tool call was denied, or the report is missing its findings.
 #
-# Usage: scripts/adr_audit_weekly.sh [git-ref] [adr-list]
+# Usage: scripts/adr_audit_weekly.sh [--report-only] [git-ref] [adr-list]
 #   git-ref   branch/tag to audit (default: develop)
 #   adr-list  comma-separated ADR numbers to focus on, e.g. "14,31" or "0014,0031" (default: all)
 
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_agent_report.sh"
+agent_parse_flags "$@"; set -- "${AGENT_ARGS[@]+"${AGENT_ARGS[@]}"}"
 
 cd "$(git rev-parse --show-toplevel)"
 
@@ -38,7 +40,10 @@ fi
 
 AGENT=adr-auditor
 OUT_NAME=adr-audit
+BRANCH="feature/adr-audit-$(date +%F)"
+FIX_TASK="Follow your Steps 7-9 (draft, lint, commit) for the chosen findings."
 TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*),Bash(git submodule status)"
 TASK="Follow your Steps 2-6, skip Steps 1 and 7-11. $SCOPE $AGENT_BASH_RULE Report the final Output section."
 
-agent_report_run
+agent_workdir
+agent_run
