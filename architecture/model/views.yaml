@@ -254,6 +254,17 @@
   # Application layers — the standard Layered viewpoint, which exists for
   # showing how layers line up.
   viewpoint: layered
+  # Capability is include_types, not members — a new first-party Capability
+  # (e.g. cap-conversational-governance) now appears automatically instead
+  # of silently staying off the view (GH #117); exclude_elements keeps the
+  # IT4IT import's vendored Capability elements off this platform-only
+  # view. ApplicationComponent stays members — this view's original 6
+  # subsystems only, not the external systems or the newer
+  # sub-llm-provider-config/sub-schema-visualizer, none of which have a
+  # Capability realization edge.
+  include_types: [Capability]
+  exclude_elements:
+    - {id_prefix: "it4it-"}
   # GH #20: the capability-to-capability Serving mesh is the Capability Map
   # view's own story, not this one's (ApplicationComponent -> Capability) —
   # exclude it so it doesn't repeat incidentally.
@@ -266,14 +277,6 @@
     - sub-governance
     - sub-assurance
     - sub-modelling
-    - cap-control-catalog
-    - cap-reusable-architecture
-    - cap-digital-twin
-    - cap-forensic-ledger
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-drift-dashboard
-    - cap-human-approval-workflow
 
 - id: view-gh108-conversational-authoring
   name: "Feature Steel Thread: Conversational Model Authoring (GH #108)"
