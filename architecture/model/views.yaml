@@ -98,10 +98,11 @@
   # vs-intent-to-model) now appears automatically instead of silently
   # staying off the view (GH #117); exclude_elements keeps the IT4IT
   # import's 36 vendored ValueStream elements (7 streams + 29 stages) off
-  # this platform-only view. vs-intent-to-model has no stage decomposition
-  # and no hand-off edges to the other streams yet, so it renders here as
-  # an unconnected box — accurate to the model's current state, not a
-  # rendering bug.
+  # this platform-only view. vs-intent-to-model has no internal stage
+  # decomposition (ADR-0037 — nothing comparable to decompose within one
+  # conversational turn), but it does hand off into vss-baseline like any
+  # other stream, so it renders connected into Governed Architecture
+  # Delivery, not as a floating box.
   include_types: [ValueStream]
   exclude_elements:
     - {id_prefix: "it4it-"}
