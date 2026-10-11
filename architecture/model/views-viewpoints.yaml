@@ -320,6 +320,14 @@
   # types automatically rather than needing to be hand-maintained.
   viewpoint: implementation_migration
   include_types: [Plateau, Gap, WorkPackage, Deliverable]
+  # Triggering joins no_direction so the WorkPackage sequence reads
+  # top-to-bottom: graphviz's own default rank direction is top-to-bottom,
+  # and REL_DIRECTION's "Right" hint for Triggering was the only thing
+  # forcing this ~45-element view into an unreadable left-to-right ribbon
+  # (same fix as view-delivery above). Realization keeps its "Up" hint —
+  # that already points vertically, reinforcing top-to-bottom instead of
+  # fighting it.
+  no_direction: [Triggering]
 
 
 - id: view-implementation-deployment
