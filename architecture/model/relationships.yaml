@@ -685,11 +685,6 @@
 - {type: Access, source: fn-conversational-authoring, target: do-convention-rules, label: validates proposed changes against, props: {access_type: Read}}
 - {type: Serving, source: fn-conversational-authoring, target: fn-notation-engine, label: renders the view under discussion live via}
 - {type: Realization, source: fn-conversational-authoring, target: process-conversational-authoring}
-# Shared standing process, served to both roles (plan.md Model impact) -- not a
-# per-role bfn Assignment like the other business-layer processes above, since
-# conversational authoring is used by whichever of the two is at the keyboard.
-- {type: Serving, source: process-conversational-authoring, target: role-ea}
-- {type: Serving, source: process-conversational-authoring, target: role-sa}
 
 # =====================================================================
 # C. Forensic ledger — every governed action lands an immutable record
