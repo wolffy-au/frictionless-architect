@@ -97,7 +97,10 @@ end note
   a `ui/` `pnpm` sub-tree beside its `api/`, inside the same monorepo, not a separate repo,
   until JS weight demands `turborepo`. There is no central dashboard package; composition
   is server-composed per role journey, not a client-side shell or Backstage plugins
-  (ADR-0020); build tooling for the `ui/` trees remains open (#55).
+  (ADR-0020); build tooling for the `ui/` trees remains open (#55). The composition
+  host is `packages/portal`: it mounts each package's router under its own prefix and
+  owns only chrome, navigation and role landing pages, never feature logic (ADR-0020
+  update 2026-10-11, #120).
 
 ### 3.2 Target directory layout
 
@@ -124,7 +127,8 @@ frictionless-architect/                 # ROOT — governance & orchestration
         ├── conformance-drift-assurance/     # subsystem 5
         ├── modelling-specification/         # subsystem 6
         ├── schema-visualizer-api/           # from today's src/, after step 4 (§8)
-        └── llm-provider-config/             # shared, not a subsystem (ADR-0034)
+        ├── llm-provider-config/             # shared, not a subsystem (ADR-0034)
+        └── portal/                          # composition host, no feature logic (ADR-0020, #120)
 ```
 
 Each `packages/<name>/` carries its own `pyproject.toml`, `src/`, `tests/`, `README.md`,
@@ -189,8 +193,8 @@ package, built and gated the same way but carrying no subsystem UI obligation
   OS's native credential store via `keyring` (macOS Keychain / Windows Credential
   Manager / Linux Secret Service), falling back to the provider's environment variable
   (with a logged warning) where there is no keychain, e.g. CI or headless hosts;
-  consistent with the single-user local MVP scope (ADR-0024). Exposes a mountable settings page/router each subsystem UI embeds, not a
-  standalone dashboard (ADR-0020). First consumer: `controls-compliance-catalog`'s
+  consistent with the single-user local MVP scope (ADR-0024). Exposes a mountable settings page/router, not a
+  standalone dashboard; `packages/portal` mounts it once for every package (ADR-0020). First consumer: `controls-compliance-catalog`'s
   `llm_client.py`.
 
 **Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
@@ -318,7 +322,8 @@ Checklist:
 - [x] Create `packages/llm-provider-config/` (ADR-0034) and refactor `llm_client.py`'s
   single-provider stub to depend on it for provider/model/credential resolution (#76).
   The mountable settings UI router is built (`create_settings_router`) and mounted by
-  `controls-compliance-catalog` at `/settings/llm`; a portal can mount the same router later.
+  `controls-compliance-catalog` at `/settings/llm`; `packages/portal` will mount it once
+  for every package (#120).
 
 ### 8.2 Visualiser API/UI split (step 7)
 
