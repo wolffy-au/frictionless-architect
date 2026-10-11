@@ -368,6 +368,9 @@
 - {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
 - {type: Composition, source: bfn-architecture-strategy, target: process-target-state-definition, label: comprises}
 - {type: Assignment, source: role-ea, target: bfn-architecture-strategy}
+- {type: Composition, source: bfn-conversational-authoring, target: process-conversational-authoring, label: comprises}
+- {type: Assignment, source: role-ea, target: bfn-conversational-authoring}
+- {type: Assignment, source: role-sa, target: bfn-conversational-authoring}
 - {type: Composition, source: bfn-solution-design, target: process-solution-design, label: comprises}
 - {type: Assignment, source: role-sa, target: bfn-solution-design}
 - {type: Access, source: process-solution-design, target: bo-solution-design, label: composes, props: {access_type: Write}}

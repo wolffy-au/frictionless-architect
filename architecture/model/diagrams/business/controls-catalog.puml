@@ -3,7 +3,9 @@
 
 title Business — Controls & Compliance Catalog
 
-Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
+Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
+  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
+}
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
 }
@@ -79,6 +81,8 @@ Rel_Triggering_Right(e_id5959dd7c3bbe59, e_id4991c823f6d55b, "validated changes 
 Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Specialization_Up(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
 Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
+Rel_Assignment(e_id2b5394f913985a, e_idd35dc0fbf5a554, "")
+Rel_Assignment(e_ide2cb7f3efa6256, e_idd35dc0fbf5a554, "")
 Rel_Access_w(e_id4991c823f6d55b, e_id4b5ad5a2100656, "composes")
 Rel_Access_w(e_id799f46ebb7e15b, e_idd18d048900f05b, "records control deficiencies in")
 Rel_Access_w(e_id18a08f8aff8057, e_idd18d048900f05b, "records control deficiencies in")
