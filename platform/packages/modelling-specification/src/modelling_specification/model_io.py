@@ -267,6 +267,85 @@ def _check_driver_bypasses_assessment(
                 )
 
 
+def _first_party_ids(elements: list[dict[str, Any]], types_by_id: dict[str, str], archi_type: str) -> list[str]:
+    """Element ids of `archi_type`, excluding vendored content (`it4it-`-prefixed,
+    ADR-0029) -- vendored layers follow their own source standard's motivation
+    structure, not this model's, so they are out of scope for the checks below."""
+    return [e["id"] for e in elements if types_by_id.get(e["id"]) == archi_type and not e["id"].startswith("it4it-")]
+
+
+def _check_capability_realizes_requirement(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]], types_by_id: dict[str, str], errors: list[str]
+) -> None:
+    """Every first-party Capability must realize at least one Requirement
+    (component -> contract) -- learned the hard way on GH #108's
+    cap-conversational-governance, added without one and caught only by hand."""
+    realized_by = {
+        r["source"] for r in rels if r["type"] == "Realization" and types_by_id.get(r["target"]) == "Requirement"
+    }
+    for cap in _first_party_ids(elements, types_by_id, "Capability"):
+        if cap not in realized_by:
+            errors.append(f"capability {cap!r} realizes no Requirement (every capability must realize at least one)")
+
+
+def _check_outcome_structural_completeness(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]], types_by_id: dict[str, str], errors: list[str]
+) -> None:
+    """Every first-party Outcome must realize the Goal, be realized by at
+    least one Requirement, and be influenced by at least one Assessment --
+    the "expected neighbours" every Outcome in this model carries. Learned
+    the hard way on GH #108's outcome-intent-becomes-model-truth, which
+    shipped with none of this, caught only by hand."""
+    realizes_goal = {r["source"] for r in rels if r["type"] == "Realization" and types_by_id.get(r["target"]) == "Goal"}
+    realized_by_requirement = {
+        r["target"] for r in rels if r["type"] == "Realization" and types_by_id.get(r["source"]) == "Requirement"
+    }
+    influenced_by_assessment = {
+        r["target"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["source"]) == "Assessment"
+    }
+    for outcome in _first_party_ids(elements, types_by_id, "Outcome"):
+        if outcome not in realizes_goal:
+            errors.append(f"outcome {outcome!r} does not realize the Goal")
+        if outcome not in realized_by_requirement:
+            errors.append(f"outcome {outcome!r} is realized by no Requirement")
+        if outcome not in influenced_by_assessment:
+            errors.append(f"outcome {outcome!r} is influenced by no Assessment")
+
+
+def _check_driver_and_assessment_structural_completeness(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]], types_by_id: dict[str, str], errors: list[str]
+) -> None:
+    """Every first-party Driver must be held by at least one Stakeholder and
+    influence at least one Assessment; every first-party Assessment must be
+    influenced by at least one Driver and influence at least one Outcome --
+    the other half of the Stakeholder -> Driver -> Assessment -> Outcome
+    chain `_check_outcome_structural_completeness` checks from the Outcome
+    end."""
+    driver_targets_of_assessment_influence = {
+        r["source"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["target"]) == "Assessment"
+    }
+    stakeholder_held_drivers = {
+        r["target"] for r in rels if r["type"] == "Association" and types_by_id.get(r["source"]) == "Stakeholder"
+    }
+    for driver in _first_party_ids(elements, types_by_id, "Driver"):
+        if driver not in driver_targets_of_assessment_influence:
+            errors.append(f"driver {driver!r} influences no Assessment")
+        if driver not in stakeholder_held_drivers:
+            errors.append(f"driver {driver!r} is held by no Stakeholder")
+
+    assessment_influenced_by_driver = {
+        r["target"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["source"]) == "Driver"
+    }
+    assessment_influences_outcome = {
+        r["source"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["target"]) == "Outcome"
+    }
+    for assessment in _first_party_ids(elements, types_by_id, "Assessment"):
+        if assessment not in assessment_influenced_by_driver:
+            errors.append(f"assessment {assessment!r} is influenced by no Driver")
+        if assessment not in assessment_influences_outcome:
+            errors.append(f"assessment {assessment!r} influences no Outcome")
+
+
 def _check_derived_goal_edges(
     elements: list[dict[str, Any]],
     rels: list[dict[str, Any]],
@@ -277,7 +356,22 @@ def _check_derived_goal_edges(
     `A -> B -> Goal` is a candidate for removal as derived -- *unless* some
     view holds both A and the Goal without B in scope, in which case the
     direct edge is the only way that view can show the connection at all,
-    and it stays."""
+    and it stays.
+
+    Overlaps on purpose with the skill's `check_derived.py` (which also
+    flags `A -> Goal` as a duplicate of `A -> B -> Goal`, via
+    `pyArchimate.derivation`'s formal DR2/DR3/DR5/DR7/DR8 rules across all
+    seven "certain" relationship types, not just Goal-targeted ones): that
+    script is a whole-model, run-by-hand/CI audit with a static exception
+    table (`SERVING_EXCEPTIONS`), while this is in the hot build/validate
+    path and already knows the one exemption `check_derived.py` has to
+    hand-list per case -- a direct edge a *view* still needs is load-bearing,
+    so it is kept automatically here instead of requiring a new
+    `SERVING_EXCEPTIONS` entry there. Neither replaces the other: this one
+    only covers Goal-targeted edges and only the two kinds (Realization,
+    Influence) this layer uses; `check_derived.py` is the generic sweep
+    across every relationship type and both Application/Strategy and
+    Motivation layers."""
     warnings: list[str] = []
     targets_of: dict[str, set[str]] = {}
     for r in rels:
@@ -313,11 +407,16 @@ def check_motivation_conventions(
     errors: list[str],
 ) -> list[str]:
     """Project-specific motivation-layer conventions pyArchimate's metamodel gate
-    doesn't (and shouldn't) know about -- both learned the hard way from earlier
-    modelling passes on this file. See `_check_driver_bypasses_assessment`
-    (hard error) and `_check_derived_goal_edges` (soft warning; never blocks
-    the build)."""
+    doesn't (and shouldn't) know about -- all learned the hard way from earlier
+    modelling passes on this file. See `_check_driver_bypasses_assessment`,
+    `_check_capability_realizes_requirement`,
+    `_check_outcome_structural_completeness` and
+    `_check_driver_and_assessment_structural_completeness` (all hard errors)
+    and `_check_derived_goal_edges` (soft warning; never blocks the build)."""
     _check_driver_bypasses_assessment(elements, rels, types_by_id, errors)
+    _check_capability_realizes_requirement(elements, rels, types_by_id, errors)
+    _check_outcome_structural_completeness(elements, rels, types_by_id, errors)
+    _check_driver_and_assessment_structural_completeness(elements, rels, types_by_id, errors)
     return _check_derived_goal_edges(elements, rels, views, types_by_id)
 
 

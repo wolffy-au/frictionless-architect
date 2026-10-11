@@ -17,6 +17,17 @@
 # same pattern as `do-metamodel`. A malformed entry fails validation naming the
 # offending `id`, never silently skipped (FR-007's "never silently" posture).
 
+# Complements, doesn't duplicate, the skill's check_derived.py: that script
+# is a whole-model, run-by-hand/CI *audit* for direct edges a formal
+# ArchiMate derivation rule (pyArchimate.derivation, DR2/DR3/DR5/DR7/DR8)
+# already implies, found *after* they're committed. interposed-pattern rules
+# here are the opposite direction — a single candidate delta, checked
+# *before* it's applied, for shapes this enterprise has decided should
+# always go through an intermediary even where no formal derivation rule
+# forces it. Each one is typically seeded from a check_derived.py finding or
+# an existing precedent (this one, from sw-neo4j -> art-tech-neo4j-volume ->
+# store-akg) once a reviewer decides the shape should be enforced going
+# forward, not just flagged after the fact.
 - id: conv-interposed-neo4j-volume
   kind: interposed-pattern
   scope: ["*"]
