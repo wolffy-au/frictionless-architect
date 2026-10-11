@@ -46,7 +46,7 @@
   # stops at the strategy layer — see Goal Realization for that.
   # Capability and Outcome are include_types, not members — a new
   # first-party element of either type (e.g. cap-conversational-governance,
-  # outcome-architect-authored-model) now appears automatically instead of
+  # outcome-intent-becomes-model-truth) now appears automatically instead of
   # silently staying off the view (GH #117); exclude_elements keeps the
   # IT4IT import's vendored Capability/Outcome elements off this
   # platform-only view. ValueStream stays members, not include_types — the
