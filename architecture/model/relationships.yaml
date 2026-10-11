@@ -206,7 +206,13 @@
 # sign-off returns to release as a Flow (an approval, not a second trigger —
 # a Triggering there would make prove -> release derived via the escalation
 # path). A release triggers observation of the new as-built state, and
-# reconciled drift re-enters delivery as a new change to specify.
+# reconciled drift re-enters delivery as a new change to specify. A
+# conversationally-authored, applied change to the knowledge graph is what
+# vss-baseline's "blueprints and solution designs" are curated from (GH #108)
+# — vs-intent-to-model stays its own single-stage stream (ADR-0037) but hands
+# off into the baseline like any other stream, same pattern as
+# vss-reconcile -> vss-specify below.
+- {type: Triggering, source: vs-intent-to-model, target: vss-baseline, label: validated change extends the baseline}
 - {type: Triggering, source: vss-baseline, target: vss-specify}
 - {type: Triggering, source: vss-specify, target: vss-build}
 - {type: Triggering, source: vss-control-baseline, target: vss-prove}
