@@ -196,6 +196,159 @@ so the same gap can't recur silently.
 
 ---
 
+## Phase 7: UI Phase — Split-Screen Conversational Authoring UI
+
+**Purpose**: Close the one real gap between GH #108's narrative and the backend delivered
+in Phase 3–6: a browser UI over the already-complete JSON API (`plan.md` UI Phase,
+`research.md` R15–R19). No new entity, FR, or model impact (`data-model.md`/`plan.md` UI
+Phase notes) — this phase is a thin `fetch()` client over the existing `propose`/`decide`/
+`render`/`config`/`state` contract (`contracts/api.md`'s `GET /authoring/` route).
+
+**Independent Test**: Open `http://127.0.0.1:8001/authoring/` (`quickstart.md` step 10),
+type a request, confirm the proposal's validation/duplicates/pattern suggestions render in
+the chat pane, pick a Current/Transition/Target state, apply, and confirm the render pane
+below updates with the affected view's SVG at full width (R19).
+
+### Tests for UI Phase ⚠️
+
+- [ ] T067 [P] Contract test `GET /authoring/` returns `200 text/html` containing the
+  page's expected element ids (`#chat-input`, `#send`, `#state-select`, `#apply`,
+  `#render-pane` — exact ids fixed by T071's implementation), mirroring
+  `controls_compliance_catalog`'s `test_playground_page_is_served` pattern, in
+  `platform/packages/modelling-specification/tests/api/test_ui.py` (plan.md Project
+  Structure)
+- [ ] T068 Extend `platform/packages/modelling-specification/tests/features/environment.py`
+  to also start a live `uvicorn` server on a free port (background thread) and a
+  `playwright.sync_api` Chromium browser instance, alongside — not instead of — the
+  existing `TestClient`/isolated-model-tmpdir/fake-LLM fixtures the propose/reject/state
+  step files already depend on, mirroring `controls_compliance_catalog`'s own
+  `environment.py` (the server runs in-process in a thread, so the existing
+  `model_io.HERE`/`model_io.OUT`/`overrides.ADR_DIR` monkeypatches in `before_scenario`
+  still reach it; `rendering.py` binds its own `OUT`/`VIEWS` at import time just as the
+  existing docstring already notes, so the live server's render pane serves the real,
+  read-only committed model, same as the TestClient-based scenarios)
+- [ ] T069 [P] Behave scenarios for the UI walkthrough (quickstart.md step 10) in
+  `platform/packages/modelling-specification/tests/features/conversational_authoring_ui.feature`:
+  open `/authoring/`, type a request, see `validation_result`/`duplicates`/
+  `pattern_suggestions` render in the chat pane, pick a state, apply, confirm the render
+  pane updates with the affected view's SVG at full width (`acceptance-author`)
+- [ ] T070 [P] Step definitions for T069's scenarios driving `context.page` (Playwright)
+  against `context.base_url` (T068) in
+  `platform/packages/modelling-specification/tests/features/steps/ui_steps.py`
+
+### Implementation for UI Phase
+
+- [ ] T071 Implement `platform/packages/modelling-specification/src/modelling_specification/ui.py`:
+  `GET /authoring/` returning a self-contained `text/html` `HTMLResponse` (inline
+  `<style>`/`<script>`, no build step, no Jinja2/static-asset pipeline), mirroring
+  `controls_compliance_catalog.playground.api`'s `_PAGE_TEMPLATE`/`_PAGE` module-level-string
+  pattern (R15) — horizontal split (R19): a compact chat pane (textarea + Send) on top, a
+  render pane below it spanning the full window width
+- [ ] T072 Mount `ui.py`'s router in
+  `platform/packages/modelling-specification/src/modelling_specification/app.py` alongside
+  the existing JSON `router`, the same way `controls_compliance_catalog.app` mounts
+  `playground.api.router` (plan.md Project Structure)
+- [ ] T073 [US1] Implement the chat pane's propose flow in `ui.py`'s inline `<script>`:
+  `POST /authoring/sessions` on page load to obtain a `session_id`; `POST
+  /authoring/sessions/{id}/propose` on Send, rendering `validation_result.findings[]`
+  (each with its `proposed_fix`), `duplicates[]`, and `pattern_suggestions[]` verbatim in
+  the shape the API already returns rather than a parallel presentation (Constitution
+  Check Principle III) — `session_id`/`delta_id` held as page-scoped JS state only (R16),
+  no new server-side session concept
+- [ ] T074 [US3] Implement the apply control: a required Current/Transition/Target
+  `<select>` with no pre-selected option; the Apply button stays disabled until a value is
+  chosen (R17) — `onclick` posts `POST .../decide` with `{"action": "apply",
+  "state_classification": "<selected>"}` rather than relying on the API's `422
+  {"needs": "state_classification"}` round-trip
+- [ ] T075 [US2] Implement the duplicate/pattern/rejection decision controls in the chat
+  pane: keep-both/merge/reject buttons for a `duplicates[]` entry (FR-006), accept-pattern/
+  keep-direct buttons for a `pattern_suggestions[]` entry (FR-008), and an override control
+  (action `override`, with an optional free-text rationale field — FR-014 — that must not
+  block submission when left blank, R11) for a rejected/flagged delta — each wired to the
+  matching `decide` action
+- [ ] T076 [US1] Implement the render pane's client-side flow: call `GET
+  /authoring/render?...&format=svg` and inline the response body directly as the pane's
+  HTML (R18) — both automatically, right after a successful `apply` when `auto_render` is
+  `true`, and on an explicit "show" request naming an object or describing a view (FR-012,
+  FR-013); when the response is `300 {"ambiguous_candidates": [...]}` or `404`, surface
+  that in the chat pane and ask the architect to disambiguate/restate rather than guessing
+  (FR-016)
+- [ ] T077 [US1] Implement an `auto_render` toggle control in the page itself, backed by
+  `GET`/`PUT /authoring/config` (FR-011) — a visible UI control, not only an API-level
+  setting invisible to the one caller that most needs it
+
+**Checkpoint**: The split-screen UI is live and exercises the full propose→validate→
+apply/decide→render loop against the real API, for all three user stories, in a browser.
+
+### Polish for UI Phase
+
+- [ ] T078 Execute `quickstart.md` step 10 end to end against
+  `./scripts/run-modelling_specification.sh`, confirming the horizontal split (R19) renders
+  correctly in a real browser
+- [ ] T079 Run `bash scripts/pre_commit_checks.sh` and `bash scripts/platform_checks.sh`
+  with the UI phase's new tests included; confirm the 90% coverage gate still holds
+- [ ] T080 Post a summary comment on GH issue #108 noting the UI phase landed (pointing at
+  the commit hash), closing the one narrative gap the
+  [2026-10-11 handoff comment](https://github.com/wolffy-au/frictionless-architect/issues/108#issuecomment-6108567957)
+  flagged, and confirm with the maintainer whether the issue should close or stay open for
+  any further follow-up
+
+---
+
+## Reconciliation: `accept-pattern` must synthesize the intermediary form, not discard (2026-10-11 clarify)
+
+**Purpose**: `/speckit-clarify` (2026-10-11) tightened FR-008: accepting a Pattern
+Suggestion now MUST have the agent synthesize the required intermediary element(s) and
+apply the intermediary-element form directly — reversing the already-built behavior, which
+today discards the candidate (`router.py`'s `decide` groups `accept-pattern` with `reject`,
+`status → DISCARDED`, no write) and makes the architect re-describe it. Closing the gap also
+surfaced a schema prerequisite: the one real precedent this convention was seeded from
+(`sw-neo4j --Assignment--> art-tech-neo4j-volume --Realization--> store-akg`,
+`architecture/model/conventions.yaml`'s `conv-interposed-neo4j-volume`) uses a **different**
+relationship type on each leg — the existing `interposed-pattern` params
+(`source_type`/`relationship_type`/`target_type`/`intermediary_types[]`) only name the
+source→intermediary type via the proposed relationship's own `relationship_type`; nothing
+names the intermediary→target type, so synthesis cannot be implemented without that field.
+
+- [X] T081 [Model] Add a `target_relationship_type` field to the `interposed-pattern`
+  Enterprise Convention Rule schema — the relationship type connecting the synthesized
+  intermediary to the target, distinct from the existing `relationship_type` (source→
+  intermediary); set it to `Realization` on `conv-interposed-neo4j-volume` in
+  `architecture/model/conventions.yaml`, matching the real `art-tech-neo4j-volume →
+  store-akg` precedent it was seeded from; document the new field in `data-model.md`'s
+  Enterprise Convention Rule params table (plan.md/data-model.md Principle XI home)
+- [X] T082 [US2] Implement intermediary-form synthesis in
+  `platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py`
+  (or a new `authoring/` module, implementer's choice): given a flagged `PatternSuggestion`,
+  synthesize the intermediary element(s) named in `established_pattern.intermediary_types[]`
+  (one per type, id derived as `<intermediary_type>-<source_id>-<target_id>`, lowercased/
+  slugified) and replace the proposed direct relationship with `source
+  --relationship_type--> intermediary --target_relationship_type--> target` (T081's new
+  field), returning a delta shaped like any other candidate delta so it can be re-validated
+  before applying (FR-002/003 still apply to the synthesized form)
+- [X] T083 [US2] Update `decide` in
+  `platform/packages/modelling-specification/src/modelling_specification/router.py`
+  (currently line ~166's combined `if body.action in ("reject", "accept-pattern")` branch):
+  split `accept-pattern` into its own branch that calls T082's synthesis, re-validates the
+  result, and on success applies it via the existing `_finalize`/`_apply_and_respond` path
+  (same as `keep-both`/`keep-direct`) rather than setting `status → DISCARDED`; `reject`
+  keeps its current discard-only behavior unchanged
+- [X] T084 [P] [US2] Update/replace the `accept-pattern` assertions in
+  `platform/packages/modelling-specification/tests/api/test_decide_objections.py` (currently
+  asserting discard/no-write) to assert the synthesized intermediary element and both
+  connecting relationships were written on `apply`; add a unit test for T082's synthesis
+  function covering id derivation and both relationship legs
+  (`platform/packages/modelling-specification/tests/unit/test_patterns.py`)
+- [X] T085 [P] Update `quickstart.md` step 4 ("Pattern suggestion") to describe the new
+  `accept-pattern` behavior (applies the synthesized intermediary form) in place of "the
+  architect re-describes the intermediary form explicitly in a fresh `propose`"
+
+**Checkpoint**: `decide` action `accept-pattern` applies the intermediary-element form
+end-to-end (FR-008, spec.md Clarifications 2026-10-11), with the same validate-before-write
+guarantee every other `apply`-resulting action already has.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -214,6 +367,10 @@ so the same gap can't recur silently.
   - US3 (P2) extends the `decide` `apply` path (T028) with state classification — implement
     after US1's apply path exists.
 - **Polish (Phase 6)**: Depends on all three user stories being complete.
+- **UI Phase (Phase 7)**: Depends on Phases 3–5 (US1/US2/US3) being complete — it is a thin
+  client over endpoints those phases build; does not depend on Phase 6 (Polish) having run
+  first, but should land before the feature is considered fully done per GH #108's
+  narrative (`plan.md` UI Phase, `research.md` R15–R19).
 
 ### Within Each User Story
 
@@ -232,6 +389,9 @@ so the same gap can't recur silently.
   files (`duplicates.py`, `patterns.py`, `conventions.py` vs. `delta.py`, `metamodel.py`) —
   but US2's `decide`-wiring tasks (T043–T048) depend on US1's `propose`/`decide` endpoints
   (T027, T028) existing first.
+- T067, T069, T070 (UI Phase tests, different files) in parallel once T068's live-server/
+  Playwright fixture lands; T073–T077 (UI Phase implementation, all within `ui.py`) are
+  edits to one file and are sequential, not parallel, despite being independently described.
 
 ---
 
@@ -267,12 +427,21 @@ Task: "Behave scenarios for US1 in tests/features/conversational_authoring_propo
 4. Add US3 → every applied change carries a queryable Current/Transition/Target
    classification.
 5. Polish → gates green, skill parity confirmed, root dependencies trimmed.
+6. Add UI Phase → the split-screen browser UI GH #108's narrative describes lands over the
+   already-complete API, closing the one gap found when comparing the backend against the
+   issue (`plan.md` UI Phase, `research.md` R15–R19).
 
 ## Notes
 
 - `[P]` tasks touch different files with no dependency on an incomplete task.
 - `[Model]` tags on T013–T016 mark `architecture/model/` YAML edits specifically, since
   they are shared foundational data rather than package code.
+- `[UI]`-equivalent tasks (T067–T080, unlabeled by user story since the UI Phase adds no
+  new FR/entity — `plan.md`/`data-model.md` UI Phase notes) carry a `[US1]`/`[US2]`/`[US3]`
+  label only where a task implements that specific story's decision flow in the page
+  (T073/T076/T077 US1, T074 US3, T075 US2); the page scaffold, mount, and test-infra tasks
+  (T067–T072, T078–T080) stay unlabeled, consistent with how Setup/Foundational/Polish tasks
+  elsewhere in this file carry no story label.
 - Every FR-xxx and R-xxx citation above traces to `spec.md` / `research.md` respectively;
   no task invents a requirement not already in those documents (constitution Principle XI).
 - Commit after each task or logical group, per this repo's Conventional Commits convention.
