@@ -881,3 +881,19 @@
     - bi-collaborative-modelling
     - role-ea
     - role-sa
+
+- id: view-work-package-dependencies
+  name: "Work Package Dependencies"
+  context: [platform, gh-roadmap]
+  diagram: migration/work-package-dependencies
+  # Only the WorkPackages and the Triggering edges between them, so the
+  # dependency order is the whole story -- view-implementation-migration-
+  # overview buries it among Plateaus, Gaps and Deliverables. include_types,
+  # not members, so a new WorkPackage (including GH-roadmap-imported ones)
+  # appears automatically. Triggering joins no_direction for the same
+  # reason as the overview: its default "Right" hint forces a left-to-right
+  # ribbon, whereas graphviz's own default rank direction reads
+  # top-to-bottom, earliest work package at the top.
+  viewpoint: implementation_migration
+  include_types: [WorkPackage]
+  no_direction: [Triggering]
