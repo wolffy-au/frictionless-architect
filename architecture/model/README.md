@@ -19,7 +19,7 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 |---|---|
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
+| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` (optionally narrowed by `exclude_elements`) / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
 | `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`). Same schema as `views.yaml`; ids unique across both |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` (see below) |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views. Merged by `build.py`, never hand-edited |
@@ -61,6 +61,18 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 `build.py` runs `.claude/skills/model-archimate/scripts/validate.py`, which
 holds the **whole** model to the ArchiMate 3.2 relationship matrix.
 
+- **`exclude_elements`** on a view (optional) — a list of patterns that drop
+  otherwise-selected elements (via `members` or `include_types`) before nodes
+  and connections are built. Each entry may give `type` (ArchiMate concept
+  name), `id` (a specific element id) and/or `id_prefix`; an element is
+  excluded when every key given in an entry matches (omitted keys are
+  wildcards). This lets a view use `include_types` for a type that is
+  otherwise polluted by a vendored layer sharing the same ArchiMate type —
+  e.g. `third_party/it4it` contributes 42 Capability / 35 Outcome / 28
+  ValueStream elements, all `it4it-`-prefixed, so `{id_prefix: "it4it-"}`
+  keeps those off a first-party view without reverting to an explicit
+  `members` allow-list that silently drops any new first-party element of
+  that type until someone remembers to add it (GH #117).
 - **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
   from `.claude/skills/model-archimate/reference/archi-viewpoints.xml` (run
   `scripts/viewpoints.py list`). `build.py` holds that view to the
