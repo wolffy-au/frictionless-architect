@@ -177,6 +177,25 @@ state that change belongs to, independent of any other feature in this spec (spe
 
 ---
 
+## Reconciliation: model completeness gaps found during spec review
+
+**Purpose**: T013–T016 wired `cap-conversational-governance` and the business-layer
+elements into the model, but left them structurally incomplete relative to this model's
+own conventions (every Capability realizes a Requirement; every Outcome realizes the Goal,
+is realized by a Requirement, and is influenced by an Assessment). Found during a post-hoc
+reconciliation pass against this spec, fixed by hand, then made permanent hard-error checks
+so the same gap can't recur silently.
+
+- [X] T060 [Model] Add `Requirement req-conversational-authoring-alignment` to `architecture/model/elements.yaml`, realized by `cap-conversational-governance` and realizing `outcome-intent-becomes-model-truth` (which now also realizes `goal-frictionless-architecture` directly) — closes the capability/outcome structural gaps T014–T016 left open (commit `160e606`)
+- [X] T061 [Model] Rename `outcome-architect-authored-model` to `outcome-intent-becomes-model-truth` ("Architect-Authored Model Changes" → "Architectural Intent Becomes Governed Model Truth") to name the state realized, not the authoring activity, consistent with every sibling Outcome (commit `6993cd5`)
+- [X] T062 [Model] Add `Driver driver-authoring-friction` and `Assessment assess-manual-authoring-risk`, completing the Stakeholder → Driver → Assessment → Outcome chain for `outcome-intent-becomes-model-truth` (commit `34dd643`)
+- [X] T063 [Model] Add `Influence principle-policy-as-code → req-conversational-authoring-alignment`, same basis as its existing influence on `req-control-catalog` (commit `5e96886`)
+- [X] T064 [Model] Add `Triggering vs-intent-to-model → vss-baseline` ("validated change extends the baseline"), the cross-stream hand-off `vs-intent-to-model` was missing, same pattern as `vss-reconcile → vss-specify` (commit `7a110be`)
+- [X] T065 [Model] Add `conv-altitude-motivation-no-tooling` and 11 `conv-naming-no-self-type-*` rules to `architecture/model/conventions.yaml`, formalizing conventions already true of every existing Motivation/Strategy element (commits `a683924`, `9a09184`)
+- [X] T066 Add `_check_capability_realizes_requirement`, `_check_outcome_structural_completeness` and `_check_driver_and_assessment_structural_completeness` to `model_io.py`'s `check_motivation_conventions`, making T060–T062's structural gaps permanent hard-error checks; documents (without merging) the overlap between `_check_derived_goal_edges`/the skill's `check_derived.py`, and between `conventions.yaml`'s `interposed-pattern` rules and `check_derived.py` (commit `632c0ab`)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
