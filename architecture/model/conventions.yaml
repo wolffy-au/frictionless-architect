@@ -39,3 +39,79 @@
   params:
     banned_terms: ["YAML", "render step"]
   enabled: true
+
+# Naming — every Motivation/Strategy element in this model names the thing
+# itself, never restates its own ArchiMate type (e.g. the Capability is
+# "Architecture Knowledge Management", never "Architecture Knowledge
+# Management Capability"). Verified against all 76 existing elements of
+# these 11 types with zero exceptions before adding — this is description,
+# not aspiration. Each rule bans its own type's word via a MUST-match
+# negative-lookahead regex (the schema has no banned-terms-per-type kind;
+# `altitude`'s banned_terms are global across its whole scope list, which
+# would be wrong here since each type's banned word differs).
+- id: conv-naming-no-self-type-capability
+  kind: naming
+  scope: [Capability]
+  params:
+    pattern: "(?i)^(?!.*\\bcapability\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-requirement
+  kind: naming
+  scope: [Requirement]
+  params:
+    pattern: "(?i)^(?!.*\\brequirement\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-outcome
+  kind: naming
+  scope: [Outcome]
+  params:
+    pattern: "(?i)^(?!.*\\boutcome\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-driver
+  kind: naming
+  scope: [Driver]
+  params:
+    pattern: "(?i)^(?!.*\\bdriver\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-goal
+  kind: naming
+  scope: [Goal]
+  params:
+    pattern: "(?i)^(?!.*\\bgoal\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-principle
+  kind: naming
+  scope: [Principle]
+  params:
+    pattern: "(?i)^(?!.*\\bprinciple\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-constraint
+  kind: naming
+  scope: [Constraint]
+  params:
+    pattern: "(?i)^(?!.*\\bconstraint\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-stakeholder
+  kind: naming
+  scope: [Stakeholder]
+  params:
+    pattern: "(?i)^(?!.*\\bstakeholder\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-assessment
+  kind: naming
+  scope: [Assessment]
+  params:
+    pattern: "(?i)^(?!.*\\bassessment\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-course-of-action
+  kind: naming
+  scope: [CourseOfAction]
+  params:
+    pattern: "(?i)^(?!.*\\bcourse of action\\b).+$"
+  enabled: true
+- id: conv-naming-no-self-type-value-stream
+  kind: naming
+  scope: [ValueStream]
+  params:
+    pattern: "(?i)^(?!.*\\bvalue stream\\b).+$"
+  enabled: true
