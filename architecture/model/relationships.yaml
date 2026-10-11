@@ -107,10 +107,12 @@
 - {type: Association, source: stk-architecture, target: driver-sustainability}
 - {type: Association, source: stk-delivery, target: driver-scaling}
 - {type: Association, source: stk-risk-compliance, target: driver-compliance}
+- {type: Association, source: stk-architecture, target: driver-authoring-friction}
 - {type: Influence, source: driver-agility, target: assess-time-to-market}
 - {type: Influence, source: driver-scaling, target: assess-review-bottleneck}
 - {type: Influence, source: driver-sustainability, target: assess-drift-debt}
 - {type: Influence, source: driver-compliance, target: assess-manual-compliance}
+- {type: Influence, source: driver-authoring-friction, target: assess-manual-authoring-risk}
 
 # =====================================================================
 # A. Motivation spine: driver -> assessment -> outcome -> goal;
@@ -120,6 +122,7 @@
 - {type: Influence, source: assess-review-bottleneck, target: outcome-accountable-automation}
 - {type: Influence, source: assess-drift-debt, target: outcome-drift-reconciled}
 - {type: Influence, source: assess-manual-compliance, target: outcome-compliance-before-release}
+- {type: Influence, source: assess-manual-authoring-risk, target: outcome-intent-becomes-model-truth}
 - {type: Realization, source: outcome-drift-reconciled, target: goal-frictionless-architecture}
 # Each value stream realizes exactly one outcome.
 - {type: Realization, source: vs-governed-delivery, target: outcome-change-at-ai-speed}

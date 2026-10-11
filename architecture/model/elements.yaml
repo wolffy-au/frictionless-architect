@@ -57,6 +57,15 @@
     Human architects are a finite bottleneck. As AI agents produce changes at
     machine speed, it is physically impossible to review it all with traditional
     methods.
+- type: Driver
+  id: driver-authoring-friction
+  name: Architect Authoring Friction & Governance Consistency
+  desc: >-
+    Capturing architect intent by hand-editing the canonical model directly
+    is itself a bottleneck and a governance gap: too slow to keep pace with
+    AI-speed delivery, and nothing stops a hand-edit from drifting out of
+    step with the metamodel or the enterprise's own conventions until the
+    next manual validation pass catches it.
 
 # =====================================================================
 # A. MOTIVATION — Stakeholders (who holds the drivers) and Assessments
@@ -120,6 +129,14 @@
   desc: >-
     Control mapping and evidence collection are manual, lag delivery by weeks,
     and cannot be trusted at AI-delivery cadence.
+- type: Assessment
+  id: assess-manual-authoring-risk
+  name: Hand-edited model changes are too slow and too easily ungoverned to trust
+  desc: >-
+    Every change to the canonical model today is a manual edit followed by a
+    separate manual validation pass; nothing stops a change from reaching
+    the model both unreviewed against convention and stale relative to
+    AI-speed delivery.
 
 # =====================================================================
 # A. MOTIVATION — Goal & Outcomes (the aim, and the end results that realize it)
