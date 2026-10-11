@@ -120,5 +120,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 ## Phase 9: Convergence (behave findings)
 
+T026 and T027 share one code path and are **deferred past v0.2.0** (decided 2026-10-11); v0.2.0 ships them as known limitations.
+
 - [ ] T026 Keep the schema summary accessible when the sample is missing or unreadable and Neo4j is not configured: `GET /schema-payload` returns 503 today and the warning shows only on `/schema-payload/status`; add a test and fix per FR-006 (contradicts)
 - [ ] T027 Report `sample_file_status: "invalid"` for a sample in another namespace even when nothing else supplies data: the build returns 503 and the status stays "missing"; add a test and fix per Edge 3 (partial)
