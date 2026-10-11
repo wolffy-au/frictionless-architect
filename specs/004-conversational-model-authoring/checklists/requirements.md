@@ -59,3 +59,19 @@
   (FR-002 tightened, no new FR needed); and a rejected fix for an already-rejected change is
   never auto-retried or dropped — the agent asks the architect to restate/refine (new FR-017).
   No Edge Cases items remain open.
+- `/speckit-clarify` (2026-10-11) found that the already-built backend had resolved five
+  spec-level ambiguities unilaterally during implementation, without the spec being updated
+  to record the decisions — closing each one here: override can never bypass a metamodel-
+  legality rejection, only convention/duplicate/pattern objections (FR-014 tightened, new
+  Edge Cases bullet); relationships get their own duplicate check against existing
+  relationships by shared source/target/type, not just elements (FR-005 extended, Duplicate
+  Candidate Key Entity updated); "merge" leaves the existing element/relationship's own
+  fields untouched and only redirects the new candidate's relationships onto it (FR-006
+  tightened); "accept-pattern" has the agent synthesize the required intermediary element(s)
+  itself and apply that form, rather than discarding the candidate (FR-008 tightened, Pattern
+  Suggestion Key Entity updated) — **this reverses the already-implemented behavior**, which
+  today discards and asks the architect to re-describe the intermediary form; a follow-up
+  implementation task is needed to bring the code in line; and a too-vague initial request is
+  met with a clarifying question, not a speculative guess (new clause on FR-001, new Edge
+  Cases bullet), consistent with the "ask, don't guess" posture already used for view
+  requests and rejected fixes. No Edge Cases items remain open.
