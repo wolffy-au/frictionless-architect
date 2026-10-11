@@ -101,6 +101,8 @@ New elements (`architecture/model/elements.yaml`):
 | BusinessProcess | `process-conversational-authoring` | Conversational Model Authoring |
 | DataObject | `do-convention-rules` | Enterprise Convention Rules |
 | Requirement | `req-conversational-authoring-alignment` | Strategically Aligned, Convention-Compliant Conversational Authoring |
+| Driver | `driver-authoring-friction` | Architect Authoring Friction & Governance Consistency |
+| Assessment | `assess-manual-authoring-risk` | Hand-edited model changes are too slow and too easily ungoverned to trust |
 
 New relationships (`architecture/model/relationships.yaml`):
 
@@ -115,6 +117,7 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Realization cap-conversational-governance → req-conversational-authoring-alignment` (same pattern as the other eight capabilities, each realizing at least one requirement)
 - `Realization req-conversational-authoring-alignment → outcome-intent-becomes-model-truth` (same pattern as the other requirements, each realizing exactly one outcome)
 - `Access fn-conversational-authoring → do-convention-rules` (Read)
+- `Association stk-architecture → driver-authoring-friction`, `Influence driver-authoring-friction → assess-manual-authoring-risk`, `Influence assess-manual-authoring-risk → outcome-intent-becomes-model-truth` (same Stakeholder→Driver→Assessment→Outcome pattern as the other four outcomes)
 
 Override Decision Records are **not** a model element: per R7 they're auto-drafted ADR stubs
 under `docs/adr/`, so no new DataObject, aggregation or access relationship exists for them.
