@@ -79,6 +79,11 @@ SERVING_EXCEPTIONS: dict[tuple[str, str, str], str] = {
         "Digital Twin & Knowledge Graph",
         "Schema Visualiser API",
     ): "kept for the C4 container view: if-twin-read-path (an ApplicationInterface) is dropped from the C4 projection, so this direct edge is the only one left there.",
+    (
+        "Serving",
+        "Portal",
+        "Compliance Officer / Auditor",
+    ): "kept for the C4 container view: if-portal-ui (an ApplicationInterface) is dropped from the C4 projection, so this direct edge is the only one left there.",
 }
 
 # Any Flow duplicate between two IT4IT value-stream elements (names

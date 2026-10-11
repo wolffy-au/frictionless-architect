@@ -961,6 +961,14 @@
     subsystems and not a subsystem UI (ADR-0020) — a shared package other
     subsystem packages depend on, first consumed by the Controls &
     Compliance Catalog.
+- type: ApplicationComponent
+  id: sub-portal
+  name: Portal
+  desc: >-
+    Hosts the platform packages' UIs from one app: mounts each package's
+    router and owns only page chrome, navigation and the role landing page,
+    never feature logic (ADR-0020, update 2026-10-11, GH #120). Not one of the
+    six subsystems and not a central dashboard.
 - type: ApplicationInterface
   id: if-twin-read-path
   context: digital-twin-knowledge-graph
@@ -977,6 +985,12 @@
     Human-facing interface where the Compliance Officer / Auditor uploads
     policy/standard documents, reviews prose-quality feedback before
     conversion, and tracks Catalog / Profile status.
+- type: ApplicationInterface
+  id: if-portal-ui
+  name: Portal UI
+  desc: >-
+    Human-facing entry point: a landing page listing each mounted package UI
+    by the role it serves, and the shared navigation into them.
 
 # --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
 - type: DataObject
@@ -1394,8 +1408,16 @@
     a sibling under platform/packages/ that subsystem packages take as a
     path dependency.
   props: {c4: ignore}
+- type: Artifact
+  id: art-pkg-portal
+  name: packages/portal
+  desc: >-
+    Host package (ADR-0020, update 2026-10-11), not one of the six subsystem
+    packages — path-depends on the packages whose routers it mounts.
+  props: {c4: ignore}
 
-# GH #103: of the eight art-pkg-* Artifacts above, four are aggregated by a
+# GH #103: of the eight art-pkg-* Artifacts above (art-pkg-portal, added
+# later by GH #120, has no milestone either, so it stays unaggregated too), four are aggregated by a
 # Plateau below (controls-compliance-catalog + llm-provider-config under
 # plat-policy-to-oscal-mvp-1; digital-twin-knowledge-graph under
 # plat-multi-user-collaboration-2; modelling-specification under
@@ -1615,8 +1637,9 @@
 #    this function is cross-subsystem and owned by no single one of them;
 #    it is hosted directly on the shared sw-uvicorn-fastapi/node-app-server
 #    pair, the same idiom used for techproc-oscal-golden-check's hosting on
-#    sw-pytest above). Concrete mechanism (templating layer, per-role route
-#    ownership) remains deferred to implementation (ADR-0020).
+#    sw-pytest above). Mechanism resolved 2026-10-11 (ADR-0020 update,
+#    GH #120): art-pkg-portal realises this function by mounting each
+#    package's router into one app.
 # =====================================================================
 - type: TechnologyFunction
   id: techfn-role-journey-composition
@@ -1626,5 +1649,5 @@
     independently-owned UI fragments of the subsystems that serve that
     role, server-side, pairing with that role's journey API rather than
     re-deriving composition logic in a client-side plugin host or shell
-    (ADR-0020, updated 2026-09-27). Hosted on sw-uvicorn-fastapi — not a
-    new deployable.
+    (ADR-0020, updated 2026-09-27). Hosted on sw-uvicorn-fastapi and
+    realised by the portal package (ADR-0020, updated 2026-10-11).
