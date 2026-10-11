@@ -26,3 +26,16 @@
     target_type: DataObject
     intermediary_types: [Artifact]
   enabled: true
+
+# Caught by hand once already: outcome-architect-authored-model's desc read
+# "...without a manual YAML edit or render step..." before its GH #108 rename
+# to outcome-intent-becomes-model-truth — tooling vocabulary at the wrong
+# altitude for the case-for-change layer. "agent"/"agentic" stay unbanned;
+# driver-scaling, assess-review-bottleneck and outcome-accountable-automation
+# already use them as a legitimate business concept, not a tooling leak.
+- id: conv-altitude-motivation-no-tooling
+  kind: altitude
+  scope: [Goal, Outcome, Driver, Assessment]
+  params:
+    banned_terms: ["YAML", "render step"]
+  enabled: true
