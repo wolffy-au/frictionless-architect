@@ -464,6 +464,81 @@ def test_check_motivation_conventions_keeps_a_view_only_reachable_edge() -> None
     assert any("keeping it" in w for w in warnings)
 
 
+def test_check_motivation_conventions_flags_a_capability_with_no_requirement() -> None:
+    elements = [
+        {"id": "cap1", "type": "Capability", "name": "Cap"},
+        {"id": "req1", "type": "Requirement", "name": "Req"},
+    ]
+    rels: list[dict[str, Any]] = []  # cap1 realizes nothing
+    types_by_id = {e["id"]: e["type"] for e in elements}
+    errors: list[str] = []
+    model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
+    assert any("'cap1' realizes no Requirement" in e for e in errors)
+
+
+def test_check_motivation_conventions_exempts_a_vendored_capability() -> None:
+    elements = [{"id": "it4it-cap1", "type": "Capability", "name": "IT4IT: Cap"}]
+    types_by_id = {e["id"]: e["type"] for e in elements}
+    errors: list[str] = []
+    model_io.check_motivation_conventions(elements, [], [], types_by_id, errors)
+    assert errors == []
+
+
+def test_check_motivation_conventions_flags_an_outcome_missing_its_neighbours() -> None:
+    elements = [{"id": "outcome1", "type": "Outcome", "name": "Outcome"}]
+    rels: list[dict[str, Any]] = []  # no Goal, no Requirement, no Assessment
+    types_by_id = {e["id"]: e["type"] for e in elements}
+    errors: list[str] = []
+    model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
+    assert any("'outcome1' does not realize the Goal" in e for e in errors)
+    assert any("'outcome1' is realized by no Requirement" in e for e in errors)
+    assert any("'outcome1' is influenced by no Assessment" in e for e in errors)
+
+
+def test_check_motivation_conventions_flags_a_driver_missing_its_neighbours() -> None:
+    elements = [{"id": "driver1", "type": "Driver", "name": "Driver"}]
+    rels: list[dict[str, Any]] = []  # no Stakeholder, no Assessment
+    types_by_id = {e["id"]: e["type"] for e in elements}
+    errors: list[str] = []
+    model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
+    assert any("'driver1' influences no Assessment" in e for e in errors)
+    assert any("'driver1' is held by no Stakeholder" in e for e in errors)
+
+
+def test_check_motivation_conventions_flags_an_assessment_missing_its_neighbours() -> None:
+    elements = [{"id": "assess1", "type": "Assessment", "name": "Assessment"}]
+    rels: list[dict[str, Any]] = []  # no Driver, no Outcome
+    types_by_id = {e["id"]: e["type"] for e in elements}
+    errors: list[str] = []
+    model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
+    assert any("'assess1' is influenced by no Driver" in e for e in errors)
+    assert any("'assess1' influences no Outcome" in e for e in errors)
+
+
+def test_check_motivation_conventions_passes_a_complete_stakeholder_to_outcome_chain() -> None:
+    elements = [
+        {"id": "stk1", "type": "Stakeholder", "name": "Stakeholder"},
+        {"id": "driver1", "type": "Driver", "name": "Driver"},
+        {"id": "assess1", "type": "Assessment", "name": "Assessment"},
+        {"id": "outcome1", "type": "Outcome", "name": "Outcome"},
+        {"id": "goal1", "type": "Goal", "name": "Goal"},
+        {"id": "req1", "type": "Requirement", "name": "Req"},
+        {"id": "cap1", "type": "Capability", "name": "Cap"},
+    ]
+    rels = [
+        {"type": "Association", "source": "stk1", "target": "driver1"},
+        {"type": "Influence", "source": "driver1", "target": "assess1"},
+        {"type": "Influence", "source": "assess1", "target": "outcome1"},
+        {"type": "Realization", "source": "outcome1", "target": "goal1"},
+        {"type": "Realization", "source": "req1", "target": "outcome1"},
+        {"type": "Realization", "source": "cap1", "target": "req1"},
+    ]
+    types_by_id = {e["id"]: e["type"] for e in elements}
+    errors: list[str] = []
+    model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
+    assert errors == []
+
+
 def test_validate_model_flags_an_illegal_relationship() -> None:
     model = Model("t")
     a = model.add(concept_type="BusinessActor", name="A")
