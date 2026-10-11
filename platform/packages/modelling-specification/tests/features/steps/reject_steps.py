@@ -51,6 +51,7 @@ def step_establish_pattern(context: Context) -> None:
             "relationship_type": "Serving",
             "target_type": "BusinessRole",
             "intermediary_types": ["ApplicationService"],
+            "target_relationship_type": "Triggering",
         },
         "enabled": True,
     }
