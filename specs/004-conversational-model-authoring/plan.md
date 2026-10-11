@@ -22,6 +22,15 @@ and lifecycles are in [data-model.md](data-model.md); decisions in [research.md]
 The business-layer wiring Assumption 6 defers to this plan is in "Model impact" below, filed
 as ADR-0037 before `/speckit-tasks`.
 
+**UI Phase (added 2026-10-11, after the API landed in commit `ddb2094`)**: the backend above
+is complete and merged; this phase adds the split-screen UI itself — a compact chat pane on
+top and a render pane below spanning the full width (horizontal split, R19, maximises the
+rendering surface), as one more route (`ui.py`, R15) in the same package, following
+`controls-compliance-catalog`'s playground as the one existing per-subsystem-UI precedent
+(ADR-0020). No new entities, no new persistent surface, no model impact (R16) — it is a thin
+fetch() client over the API phase's own contract. Decisions R15–R19; no new data-model
+entities; `contracts/api.md`'s new `GET /authoring/` route and `quickstart.md` step 10 cover it.
+
 ## Technical Context
 
 **Language/Version**: Python 3.12 (floor `>=3.11,<3.14`), matching `platform/pyproject.toml`
@@ -47,7 +56,13 @@ session-scoped Clarification and the single-user-local MVP (ADR-0024)
 `behave` scenarios for the three User Stories' acceptance scenarios (`acceptance-author`)
 
 **Target Platform**: Same host as the existing visualiser — Linux server / devcontainer,
-FastAPI + uvicorn; UI is a mounted fragment in the browser (ADR-0020), not a new app
+FastAPI + uvicorn; the split-screen UI (R15) is a mounted fragment served by the same
+process, not a new app or a separate frontend build
+
+**UI Phase dependencies**: none new — `fastapi.responses.HTMLResponse` (already a FastAPI
+dependency) for the page; `playwright` for its behave scenario is already a shared
+`platform/pyproject.toml` dev dependency (same one `controls-compliance-catalog`'s own UI
+behave scenarios use), not added per-package
 
 **Project Type**: Web service — new `platform/packages/modelling-specification` package
 (ADR-0002 monorepo path-dependency pattern, mirroring `controls-compliance-catalog`), **not**
@@ -77,13 +92,13 @@ scale, not a multi-tenant one
 |---|---|
 | I. Code Quality | Validation, duplicate-check, pattern-check and LLM-call are separate pure-ish functions over the in-memory model merge; no single function spans more than one concern. Pass. |
 | II. Testing | TDD order in tasks: validation-module unit tests (fixture deltas) before the FastAPI contract tests before behave. New package carries its own 90% gate via `scripts/platform_checks.sh`. Pass. |
-| III. UX Consistency | Rejections carry the specific rule and a proposed fix (FR-004); duplicate/pattern flags use the same keep/merge/reject decision shape in both cases. Pass. |
+| III. UX Consistency | Rejections carry the specific rule and a proposed fix (FR-004); duplicate/pattern flags use the same keep/merge/reject decision shape in both cases. UI Phase: the chat pane surfaces the same `validation_result`/`duplicates`/`pattern_suggestions` shapes verbatim rather than inventing a parallel presentation; the Apply control's required state `<select>` (R17) is the UI's one addition, and it's an "ask, don't guess" affordance the API's own 422 contract already models. Pass. |
 | IV. Performance | N/A — no hot path; LLM latency is inherent to the feature, not a regression to guard. Pass. |
 | V. Security | No new secret handling: the LLM call reuses `llm-provider-config`'s keyring-backed credential resolution (ADR-0034) rather than a new path. NL input is never interpolated into a shell call or raw SQL/Cypher; it only ever becomes structured delta fields validated against the metamodel. Pass. |
 | VI. State Mgmt | Candidate Delta lifecycle (proposed → validated/rejected → accepted/overridden/discarded) is a documented state machine in `data-model.md`. Pass. |
 | VII. Integrity | Every candidate is validated against the same pyArchimate checks `build.py`/`validate.py` already enforce, before, not after, it reaches `architecture/model/`. Pass. |
 | VIII. Durability | Applied changes land in the existing YAML schema (ADR-0007/0008) via the existing regeneration path; no new on-disk format for the model itself. Pass. |
-| IX. Cross-Platform | FastAPI/Python, no OS-specific paths beyond what the existing visualiser already assumes. Pass. |
+| IX. Cross-Platform | FastAPI/Python, no OS-specific paths beyond what the existing visualiser already assumes. UI Phase: inline SVG + vanilla JS, no browser-specific API; verified in the same Playwright/Chromium harness `controls-compliance-catalog`'s UI scenarios already run under. Pass. |
 | X. Decision Traceability | Model impact stated below; **ADR-0037 filed** for: package location, validation-module incorporation (shared between the skill and the app without forking, Assumption 1), Enterprise Convention Rule config surface, the Override Decision Record auto-drafted-ADR mechanism (R7), and the business-layer/ValueStream wiring (Assumption 6). |
 | XI. Concise Artefacts | Entity detail lives only in `data-model.md`; this plan links to it rather than restating fields. |
 
@@ -129,6 +144,9 @@ under `docs/adr/`, so no new DataObject, aggregation or access relationship exis
 No existing element, relationship or view is retired or renamed. `tasks.md` carries the YAML
 edits, `build.py` regeneration and `validate.py`/shared-module re-check (Principle X).
 
+**UI Phase model impact: none.** The chat/render pages add no element, relationship or view —
+R16 is explicit that they hold no state the API doesn't already own.
+
 ## Project Structure
 
 ### Documentation (this feature)
@@ -158,6 +176,7 @@ package "platform/packages/modelling-specification" {
   [authoring/\n(delta, overrides, state)] as Authoring
   [rendering.py] as Rendering
   [router.py] as Router
+  [ui.py] as Ui
   [cli.py] as Cli
 }
 [architecture/model/build.py] as Build
@@ -167,6 +186,7 @@ package "platform/packages/modelling-specification" {
 
 Router --> Authoring
 Router --> Rendering
+Ui ..> Router : fetch() (R15/R16)
 Authoring --> ModelIO
 Authoring --> Validation
 Authoring ..> LLMConfig : propose (R4)
@@ -189,10 +209,17 @@ end note
 ```
 
 Also changed: `architecture/model/conventions.yaml` (NEW, Enterprise Convention Rules);
-`elements.yaml`/`relationships.yaml` (see "Model impact"); `diagrams/strategy/`,
-`diagrams/business/` (regenerated); root `pyproject.toml` (drops `pyarchimate`/`rapidfuzz`
-entirely once the three scripts above are thin wrappers, R2); `docs/adr/0037-*.md` (filed)
-and `docs/adr/README.md` (index row, added).
+`elements.yaml`/`relationships.yaml` (see "Model impact"); affected diagrams (regenerated);
+root `pyproject.toml` (drops the now-unused `rapidfuzz` **test**-only dependency only —
+`pyarchimate` stays: `.claude/skills/diagram-archimate/scripts/model_to_puml.py`,
+`diagram-c4/scripts/model_to_c4.py` and `model-archimate/scripts/{viewpoints,check_derived}.py`
+still import it directly under the root venv, independent of the three scripts R2 ported;
+tasks.md T054 corrected in place rather than superseded by a new task); `docs/adr/0037-*.md`
+(filed) and `docs/adr/README.md` (index row, added). **UI Phase** adds `ui.py` (the page,
+mounted in `app.py` alongside `router` the same way `controls_compliance_catalog.app` mounts
+`playground.api.router`), a Playwright-driven `tests/features/conversational_authoring_ui.feature`,
+and one contract test (`tests/api/test_ui.py`) asserting the route returns `200 text/html` —
+no new dependency (Technical Context, above).
 
 **Structure Decision**: New platform package, not `src/frictionless_architect` — the model
 already designates `art-pkg-modelling-specification` as subsystem 6's home and ADR-0002's
