@@ -37,6 +37,7 @@ Strategy_ValueStream(e_idfa7e21ab28235c, "Drift to Remediation") {
   Strategy_ValueStream(e_iddd4585a6a08153, "Reconcile & Remediate")
 }
 Strategy_ValueStream(e_id12f51f6c841755, "Intent to Model")
+Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
@@ -60,7 +61,6 @@ Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
 }
 Business_Function(e_id5794c15b037251, "Architecture Strategy") {
   Business_Process(e_id395c9c2923aa56, "Target State Definition")
-  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 }
 Business_Function(e_id86f3d2dd174754, "Solution Design") {
   Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
@@ -128,7 +128,8 @@ Rel_Triggering(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
 Rel_Triggering(e_id57b0ad85b82a5e, e_id65065ee24d3c54, "resolved controls feed traceability mapping")
 Rel_Flow(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
 Rel_Triggering(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
-Rel_Triggering(e_id378927722a8d5a, e_id4991c823f6d55b, "blueprints composed into")
+Rel_Triggering(e_id378927722a8d5a, e_id5959dd7c3bbe59, "blueprints proposed as model changes")
+Rel_Triggering(e_id5959dd7c3bbe59, e_id4991c823f6d55b, "validated changes composed into")
 Rel_Triggering(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
 Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
