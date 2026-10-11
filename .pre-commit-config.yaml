@@ -14,9 +14,14 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      # tests/fixtures/golden-oscal/ is byte-exact vendored/generated content
+      # pinned by sha256 in sidecar *.provenance.yaml files (ADR-0030); the
+      # whitespace fixers below would rewrite it and break those checksums.
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]   # keep two-space markdown line breaks
+        exclude: ^tests/fixtures/golden-oscal/
       - id: end-of-file-fixer
+        exclude: ^tests/fixtures/golden-oscal/
       - id: check-yaml
       - id: check-toml
       - id: check-merge-conflict
@@ -31,6 +36,7 @@ repos:
         # of a sidecar, same rationale.
         exclude: ^(tests/fixtures/golden-oscal/|third_party/(oscal|oscal-content|fedramp-automation)/)
       - id: mixed-line-ending
+        exclude: ^tests/fixtures/golden-oscal/
 
   - repo: local
     hooks:
