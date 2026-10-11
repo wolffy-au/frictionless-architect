@@ -310,15 +310,19 @@
   #
   # RESOLVED (was an OPEN QUESTION for speckit-specify): conversational
   # authoring does have a standing business process of its own, shared by
-  # both roles -- process-conversational-authoring, deliberately flat
-  # (not Composed into bfn-architecture-strategy or any other function --
-  # plan.md's Model impact calls it a "shared standing process, not
-  # per-role ad hoc", and nesting it under either role's function would
-  # misrepresent it as owned by that role alone). It Realizes
-  # cap-conversational-governance directly and Serves both role-ea and
-  # role-sa as plain (non-containing) connectors. The component-level
-  # sub-modelling -> role-ea / sub-modelling -> role-sa Serving edges
-  # ("converses on model changes with") that used to bypass the business
+  # both roles -- process-conversational-authoring, Composed into its own
+  # bfn-conversational-authoring (not bfn-architecture-strategy or
+  # bfn-solution-design, which would misrepresent it as owned by one
+  # role alone; plan.md's Model impact calls it a "shared standing
+  # process, not per-role ad hoc"). bfn-conversational-authoring is
+  # jointly Assigned from both role-ea and role-sa -- _nest_tree renders
+  # a part only when it has exactly one containment parent on the
+  # diagram, so with both roles present the function stays flat with
+  # two visible Assignment arrows rather than nesting under either.
+  # The process also Realizes cap-conversational-governance directly.
+  # The component-level sub-modelling -> role-ea / sub-modelling ->
+  # role-sa Serving edges ("converses on model changes with") that used
+  # to bypass the business
   # layer are gone -- superseded by this process, not left standing
   # alongside it.
   members:
@@ -333,6 +337,7 @@
     - res-akg
     - bfn-architecture-strategy
     - process-target-state-definition
+    - bfn-conversational-authoring
     - process-conversational-authoring
     - role-ea
     - role-sa
@@ -446,6 +451,7 @@
     - bfn-solution-design
     - process-solution-design
     - process-blueprint-traceability
+    - bfn-conversational-authoring
     - process-conversational-authoring
     - bo-implementation-blueprint
     - bo-oscal-component
@@ -492,6 +498,7 @@
     - role-ea
     - process-pattern-traceability
     - process-blueprint-traceability
+    - bfn-conversational-authoring
     - process-conversational-authoring
     - bfn-solution-design
     - role-sa
