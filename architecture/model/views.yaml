@@ -96,24 +96,17 @@
   # the layout engine routes the feedback/approval edges between boxes
   # instead of looping them over the top. Each stream's recipients, outcome
   # and serving capabilities are in its own view (6a-6d).
-  # ValueStream is scoped via members, not include_types — the IT4IT import
-  # added 36 more ValueStream elements (7 streams + 29 stages).
-  members:
-    - vs-governed-delivery
-    - vs-obligation-to-evidence
-    - vs-exception-to-decision
-    - vs-drift-to-remediation
-    - vss-baseline
-    - vss-specify
-    - vss-build
-    - vss-release
-    - vss-control-baseline
-    - vss-prove
-    - vss-escalate
-    - vss-signoff
-    - vss-record
-    - vss-observe
-    - vss-reconcile
+  # include_types, not members — a new first-party ValueStream (e.g.
+  # vs-intent-to-model) now appears automatically instead of silently
+  # staying off the view (GH #117); exclude_elements keeps the IT4IT
+  # import's 36 vendored ValueStream elements (7 streams + 29 stages) off
+  # this platform-only view. vs-intent-to-model has no stage decomposition
+  # and no hand-off edges to the other streams yet, so it renders here as
+  # an unconnected box — accurate to the model's current state, not a
+  # rendering bug.
+  include_types: [ValueStream]
+  exclude_elements:
+    - {id_prefix: "it4it-"}
 
 - id: view-vs-governed-delivery
   name: Value Stream — Governed Architecture Delivery
