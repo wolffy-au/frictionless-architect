@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from llm_provider_config import Component, create_settings_router
 
 from modelling_specification.router import router
+from modelling_specification.ui import router as ui_router
 
 # T018 (R4): registers the component so its provider/model/credential can be set
 # per-component via the mounted settings router or the CLI, same pattern as
@@ -15,6 +16,7 @@ COMPONENT_ID = "modelling-specification.conversational-authoring"
 
 app = FastAPI(title="Modelling Specification")
 app.include_router(router)
+app.include_router(ui_router)
 app.include_router(
     create_settings_router([Component(id=COMPONENT_ID, label="Conversational model authoring (AI)")]),
 )
