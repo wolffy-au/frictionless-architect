@@ -4,13 +4,15 @@
 scale max 3800 width
 title Business Process Cooperation
 
-Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
 }
 Business_Function(e_id7d896c5e89eb58, "Release Management") {
   Business_Process(e_id9459a13c29ec5d, "Production Release")
+}
+Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
+  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 }
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
@@ -248,6 +250,8 @@ Rel_Realization_Up(e_id5447be33805351, e_id3a7a27eefeb751, "")
 Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 Rel_Realization_Up(e_idf91aecdf564a55, e_id4b5ad5a2100656, "")
 Rel_Realization_Up(e_idf90f9775c86754, e_ide1231d147af05e, "")
+Rel_Assignment(e_id2b5394f913985a, e_idd35dc0fbf5a554, "")
+Rel_Assignment(e_ide2cb7f3efa6256, e_idd35dc0fbf5a554, "")
 Rel_Access_w(e_id4991c823f6d55b, e_id4b5ad5a2100656, "composes")
 Rel_Realization_Up(e_idf6a4f65b28fc5e, e_id4991c823f6d55b, "")
 Rel_Access_w(e_id395c9c2923aa56, e_id2532acbff6cc51, "defines")

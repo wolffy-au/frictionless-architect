@@ -13,7 +13,9 @@ Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance"
 Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
   Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
 }
-Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
+Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
+  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
+}
 Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph")
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
@@ -43,6 +45,8 @@ Rel_Realization_Up(e_id945f98ac87fe5d, e_id79b6a1e545325d, "")
 Rel_Association(e_id6c60f4feb89058, e_id18ec07397a9d5f, "validates proposals against the twin (GH #108)")
 Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
 Rel_Realization_Up(e_id5959dd7c3bbe59, e_id6c60f4feb89058, "")
+Rel_Assignment(e_id2b5394f913985a, e_idd35dc0fbf5a554, "")
+Rel_Assignment(e_ide2cb7f3efa6256, e_idd35dc0fbf5a554, "")
 Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")
 Rel_Realization_Up(e_id82f04fecbdd85e, e_id6c60f4feb89058, "")
 Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "writes the digital twin plane")

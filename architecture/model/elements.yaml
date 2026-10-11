@@ -694,6 +694,16 @@
     The stable business capability of defining and maintaining the strategic
     target state architecture the estate is reconciled against.
 - type: BusinessFunction
+  id: bfn-conversational-authoring
+  name: Conversational Model Authoring
+  desc: >-
+    GH #108: the stable business capability of maintaining the architecture
+    knowledge graph through natural-language conversation rather than a
+    manual YAML edit -- jointly performed by the Enterprise and Solution
+    Architect roles, each drawing on it at a different point in the
+    lifecycle (target-state maintenance vs. solution-specific design),
+    not owned by either alone.
+- type: BusinessFunction
   id: bfn-solution-design
   name: Solution Design
   desc: >-
