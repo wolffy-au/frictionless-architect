@@ -22,6 +22,7 @@ SCOPES = {"specs", "speckit", "model", "llm-provider-config"}
         "feat(model)!: reframe plateaus\n\nBREAKING CHANGE: ids renamed",
         "chore: bump lock",
         "Merge branch 'develop' into feature/x",
+        "bump: version 0.1.1 → 0.2.0",
         "revert(model): undo reframe\n\nRefs: abc1234",
     ],
 )

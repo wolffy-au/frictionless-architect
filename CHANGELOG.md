@@ -1,3 +1,45 @@
+## v0.2.0 (2026-10-11)
+
+### Feat
+
+- **scripts**: add weekly refactor-analyst audit
+- **scripts**: run weekly audits as human-in-the-loop agent sessions
+- **model**: wire neo4j schema gap to architecture-strategy-mvp
+- **model**: rewire unreleased deliverables and flip Gap associations
+- **model**: add MVP milestones for remaining business functions
+- **model**: adopt generated roadmap Plateaus and Gaps
+- **model**: import GitHub roadmap into the migration layer
+- **model**: reframe runtime plateaus around team collaboration
+- **visualizer**: warn on duplicate sample ids and time the payload
+- **visualizer**: retry failed schema loads in the background
+- **scripts**: check commit body wrap in the message checker
+
+### Fix
+
+- **scripts**: accept cz bump commits in the message checker
+- **scripts**: avoid git log --grep calls the audit denies
+- **skills**: type wiki-librarian's verify_wiki.py under mypy strict
+- **skills**: type wiki-librarian's wiki_common.py under mypy strict
+- **skills**: type wiki-librarian's semsearch.py under mypy strict
+- **skills**: type model-archimate's viewpoints.py under mypy strict
+- **model**: record accepted exceptions for derived-relationship dupes
+- **model**: re-render migration diagrams after Gap association flip
+- **model**: name imported Work Packages GH-<n> instead of #<n>
+- **model**: return packaging-track elements to their original section
+- **visualizer**: log a failed background refresh; clarify spec numbers
+- **visualizer**: treat Neo4j driver outages as load failures
+- **scripts**: correct wiki audit tool allowlist pattern
+- **scripts**: read .snyk policy files in the weekly vuln audit
+
+### Refactor
+
+- **model**: rename artefact-* diagrams/views to dataflow-*
+- **model**: consolidate migration work packages onto GH issues
+- **scripts**: delegate derivation check to pyArchimate.derivation
+- **model**: align Gaps to speckit specs
+- **model**: call imported milestone Deliverables unreleased
+- **model**: fold packaging Plateaus into the roadmap Plateaus
+
 ## v0.1.1 (2026-10-04)
 
 ### Fix

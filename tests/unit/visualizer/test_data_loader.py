@@ -153,8 +153,9 @@ def test_neo4j_failures_become_data_loader_errors(
     monkeypatch.setattr(
         "frictionless_architect.visualizer.data_loader.GraphDatabase.driver", lambda uri, auth: FailingDriver()
     )
+    loader = DataLoader(_settings(tmp_path))
     with pytest.raises(DataLoaderError, match="Neo4j"):
-        DataLoader(_settings(tmp_path)).collect()
+        loader.collect()
 
 
 def test_connection_failure_while_opening_the_driver_becomes_data_loader_error(
@@ -164,5 +165,6 @@ def test_connection_failure_while_opening_the_driver_becomes_data_loader_error(
         raise ServiceUnavailable("Couldn't connect")
 
     monkeypatch.setattr("frictionless_architect.visualizer.data_loader.GraphDatabase.driver", refuse)
+    loader = DataLoader(_settings(tmp_path))
     with pytest.raises(DataLoaderError):
-        DataLoader(_settings(tmp_path)).collect()
+        loader.collect()

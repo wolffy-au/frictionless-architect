@@ -96,7 +96,9 @@ in the same commit that first needs it.
 - release tags are `v$version` (`tag_format = "v$version"`), PEP 440 /
   `poetry-dynamic-versioning`, semver style
 - `cz bump` reads the log since the last tag, applies the bump implied by the
-  types above, and updates the changelog (`update_changelog_on_bump = true`)
+  types above, and updates the changelog (`update_changelog_on_bump = true`);
+  its own `bump: version <A> → <B>` commit is tool-generated and exempt from
+  the type list, like `Merge ` commits
 - never hand-edit the changelog or move a `v*` tag
 
 ## Tooling
