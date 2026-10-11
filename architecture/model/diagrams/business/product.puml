@@ -75,6 +75,9 @@ Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_Component(e_id6c2233bb09755d, "Portal") {
+  Application_Interface(e_iddb64491a22875a, "Portal UI")
+}
 Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
   Application_DataObject(e_idcc681c494fb159, "OSCAL Catalog")
   Application_DataObject(e_id54f9615f925859, "OSCAL Profile")
@@ -182,6 +185,7 @@ Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
 Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
 Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
 Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Technology_Artifact(e_id16c8e0db81fa5f, "packages/portal")
 Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
 Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
 
@@ -428,6 +432,11 @@ Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library"
 Rel_Serving_Up(e_id3da203d482f955, e_idd18b3d46fade58, "serves the read path to")
 Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
 Rel_Realization_Up(e_id2b059f9c51b053, e_id305eddd7c8dc55, "")
+Rel_Serving_Up(e_iddb64491a22875a, e_id5e264d2f4bb551, "landing page & navigation")
+Rel_Serving_Up(e_id6c2233bb09755d, e_id5e264d2f4bb551, "lands on the platform's tools via")
+Rel_Serving_Up(e_ide4bef3733af65a, e_id6c2233bb09755d, "playground router mounted by")
+Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
+Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6c2233bb09755d, "")
 Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")
 Rel_Realization_Up(e_id9b247a70d9f258, e_id3da203d482f955, "")
 Rel_Realization_Up(e_id11f06faa9d2d5d, e_idd18b3d46fade58, "")

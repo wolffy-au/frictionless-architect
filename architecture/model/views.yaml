@@ -690,7 +690,9 @@
     - sub-modelling
     - sub-schema-visualizer
     - sub-llm-provider-config
+    - sub-portal
     - if-twin-read-path
+    - if-portal-ui
     - sw-uvicorn-fastapi
     - techfn-role-journey-composition
     - art-flat-src
@@ -702,6 +704,7 @@
     - art-pkg-conformance-drift-assurance
     - art-pkg-modelling-specification
     - art-pkg-llm-provider-config
+    - art-pkg-portal
 
 - id: view-technology-ci-check
   name: "Technology: OSCAL Golden-Dataset CI Check"
@@ -816,6 +819,7 @@
     - art-pkg-conformance-drift-assurance
     - art-pkg-modelling-specification
     - art-pkg-llm-provider-config
+    - art-pkg-portal
 
 - id: view-runtime-migration
   name: "Runtime Migration: Local Compose to Hosted Cluster"

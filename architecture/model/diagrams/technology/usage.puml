@@ -38,6 +38,7 @@ Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_Component(e_id6c2233bb09755d, "Portal")
 Application_Component(e_id4a7b9c4171d855, "Source Control") {
   Application_Function(e_id4726a7b252935e, "Specification & Code Versioning")
   Application_Function(e_iddc6b0701e84d59, "Change Review (Pull Request)")
@@ -73,6 +74,7 @@ Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
   Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
   Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
     Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+    Technology_Artifact(e_id16c8e0db81fa5f, "packages/portal")
   }
   Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
 }
@@ -110,6 +112,9 @@ Rel_Flow(e_id8926bd09002459, e_id1877d57ef1ec5e, "records conversion provenance 
 Rel_Serving_Up(e_id3da203d482f955, e_idd18b3d46fade58, "serves the read path to")
 Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
 Rel_Realization_Up(e_id2b059f9c51b053, e_id305eddd7c8dc55, "")
+Rel_Serving_Up(e_ide4bef3733af65a, e_id6c2233bb09755d, "playground router mounted by")
+Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
+Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6c2233bb09755d, "")
 Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")
 Rel_Realization_Up(e_id9b247a70d9f258, e_id3da203d482f955, "")
 Rel_Realization_Up(e_id11f06faa9d2d5d, e_idd18b3d46fade58, "")
@@ -127,6 +132,7 @@ Rel_Serving_Up(e_id0aed952692a556, e_id2f83bc5585b95c, "runs real profile-resolv
 Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
 Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
 Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
+Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6603be277fb85c, "mounts package routers for")
 Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
 Rel_Realization_Up(e_id3ac7123fc98d52, e_id6603be277fb85c, "ui/ fragment composed by")
 Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")
