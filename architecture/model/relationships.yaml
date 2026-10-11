@@ -172,6 +172,7 @@
 - {type: Influence, source: const-model-risk, target: req-human-signoff}
 - {type: Influence, source: const-privacy, target: req-regulatory-mapping}
 - {type: Influence, source: const-cloud-policy, target: req-authoritative-twin}
+- {type: Influence, source: principle-policy-as-code, target: req-conversational-authoring-alignment}
 
 # =====================================================================
 # A. Value streams: composition of stages, and the capabilities that serve each

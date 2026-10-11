@@ -118,6 +118,7 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Realization req-conversational-authoring-alignment → outcome-intent-becomes-model-truth` (same pattern as the other requirements, each realizing exactly one outcome)
 - `Access fn-conversational-authoring → do-convention-rules` (Read)
 - `Association stk-architecture → driver-authoring-friction`, `Influence driver-authoring-friction → assess-manual-authoring-risk`, `Influence assess-manual-authoring-risk → outcome-intent-becomes-model-truth` (same Stakeholder→Driver→Assessment→Outcome pattern as the other four outcomes)
+- `Influence principle-policy-as-code → req-conversational-authoring-alignment` (same principle already influences `req-control-catalog`; `do-convention-rules` is version-controlled, machine-executable policy, not prose, same as the regulatory mappings it already governs)
 
 Override Decision Records are **not** a model element: per R7 they're auto-drafted ADR stubs
 under `docs/adr/`, so no new DataObject, aggregation or access relationship exists for them.
