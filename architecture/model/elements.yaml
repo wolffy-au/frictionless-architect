@@ -568,7 +568,11 @@
     a validated, applied change to the architecture knowledge graph —
     proposed, checked against the metamodel and the enterprise's own
     conventions, and either applied or explained and traceably overridden.
-    A single stage, unlike the other four outcome streams (Assumption 6).
+    A single stage, unlike the other four outcome streams (Assumption 6) —
+    deliberately so, not an oversight: those streams' stages each mark a
+    real multi-day/role hand-off, while propose/validate/apply-or-override
+    here happens in one conversational turn with no comparable hand-off to
+    decompose (ADR-0037, "Alternatives considered" -> Business wiring).
 
 # =====================================================================
 # A. BUSINESS — Processes (the orchestration choreography between components)

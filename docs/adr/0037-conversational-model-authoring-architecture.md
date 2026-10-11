@@ -87,4 +87,9 @@ references, corrected alongside this ADR).
   alongside the ADR log for no gain.
 - **Business wiring** — folding conversational authoring into `vs-governed-delivery`'s
   `vss-baseline` stage: rejected, contradicts the already-settled spec decision (Assumption
-  6) that this gets its own ValueStream.
+  6) that this gets its own ValueStream. A multi-stage `vs-intent-to-model` mirroring the
+  other four streams' `vss-*` sub-stages (e.g. propose/validate/apply): considered and
+  rejected — those streams' stage boundaries each represent a real multi-day/role hand-off
+  (baseline → specify → build → release; escalate → decide → record), while propose /
+  validate / apply-or-override happens within one conversational turn performed by a single
+  process, with no comparable hand-off to decompose into stages.
