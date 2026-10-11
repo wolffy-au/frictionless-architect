@@ -21,6 +21,7 @@ Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
   Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
   Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
     Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+    Technology_Artifact(e_id16c8e0db81fa5f, "packages/portal")
   }
   Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
 }
@@ -31,6 +32,7 @@ Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
 Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
 Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
 Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
+Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6603be277fb85c, "mounts package routers for")
 Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
 Rel_Realization_Up(e_id3ac7123fc98d52, e_id6603be277fb85c, "ui/ fragment composed by")
 Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")

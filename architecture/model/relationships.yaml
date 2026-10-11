@@ -791,6 +791,24 @@
 - {type: Realization, source: art-pkg-llm-provider-config, target: sub-llm-provider-config}
 
 # =====================================================================
+# E. Portal is the composition host, not a subsystem (ADR-0020, update
+#    2026-10-11, GH #120) — same non-subsystem pattern as
+#    sub-llm-provider-config above. The component-to-component Serving
+#    edges carry the mounts into the C4 projection, which drops the
+#    ApplicationInterface (see the GH #99 note above).
+# =====================================================================
+- {type: Composition, source: sys-platform, target: sub-portal}
+- {type: Composition, source: sub-portal, target: if-portal-ui}
+- {type: Serving, source: if-portal-ui, target: role-compliance, label: landing page & navigation}
+# Derivable (Composition sub-portal -> if-portal-ui + Serving -> role), kept
+# for the C4 container view, which drops the ApplicationInterface (accepted in
+# check_derived.py, as for sub-catalog -> role-compliance).
+- {type: Serving, source: sub-portal, target: role-compliance, label: lands on the platform's tools via}
+- {type: Serving, source: sub-catalog, target: sub-portal, label: playground router mounted by, props: {c4-label: mounts the playground router of}}
+- {type: Serving, source: sub-llm-provider-config, target: sub-portal, label: settings router mounted by, props: {c4-label: mounts the settings router of}}
+- {type: Realization, source: art-pkg-portal, target: sub-portal}
+
+# =====================================================================
 # E. Packages realise their components
 # =====================================================================
 - {type: Realization, source: art-flat-src, target: sub-schema-visualizer}
@@ -861,6 +879,7 @@
 
 - {type: Assignment, source: node-app-server, target: sw-uvicorn-fastapi}
 - {type: Assignment, source: sw-uvicorn-fastapi, target: art-pkg-controls-compliance-catalog, label: hosts / serves}
+- {type: Assignment, source: sw-uvicorn-fastapi, target: art-pkg-portal, label: hosts / serves}
 
 # --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
@@ -896,6 +915,7 @@
 #    function.
 # =====================================================================
 - {type: Serving, source: sw-uvicorn-fastapi, target: techfn-role-journey-composition, label: hosts}
+- {type: Realization, source: art-pkg-portal, target: techfn-role-journey-composition, label: mounts package routers for}
 - {type: Realization, source: art-pkg-controls-compliance-catalog, target: techfn-role-journey-composition, label: ui/ fragment composed by}
 - {type: Realization, source: art-pkg-reusable-architecture-library, target: techfn-role-journey-composition, label: ui/ fragment composed by}
 - {type: Realization, source: art-pkg-digital-twin-knowledge-graph, target: techfn-role-journey-composition, label: ui/ fragment composed by}
