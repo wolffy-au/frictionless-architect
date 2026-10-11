@@ -112,3 +112,13 @@ Read the auto-render-vs-on-request toggle (FR-011).
 
 - **Body**: `{ "auto_render": true }`
 - **Response (200)**: echoes the new config. Taking effect: the next `decide` call with `action: "apply"` triggers an automatic `GET /authoring/render` server-side and includes its result inline, instead of the UI having to call render itself (FR-012).
+
+## GET /authoring/
+
+The split-screen UI itself (R15, plan.md UI Phase) -- a chat pane and a live render pane, as
+a self-contained `text/html` page with inline `<style>`/`<script>`, no build step. A plain
+fetch() client over every endpoint above; holds no state this contract doesn't already
+describe (R16). Not meant to be called by anything other than a browser -- there is no JSON
+response to document.
+
+- **Response (200)**: `text/html` -- the page.
