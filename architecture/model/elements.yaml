@@ -165,8 +165,8 @@
     deterministically validate has a named human owner, and every action it
     takes is recorded as contemporaneous, examinable evidence.
 - type: Outcome
-  id: outcome-architect-authored-model
-  name: Architect-Authored Model Changes
+  id: outcome-intent-becomes-model-truth
+  name: Architectural Intent Becomes Governed Model Truth
   desc: >-
     GH #108: an architect's natural-language intent becomes a validated model
     change without a manual YAML edit or render step — every change is

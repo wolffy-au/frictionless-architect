@@ -126,11 +126,11 @@
 - {type: Realization, source: vs-obligation-to-evidence, target: outcome-compliance-before-release}
 - {type: Realization, source: vs-exception-to-decision, target: outcome-accountable-automation}
 - {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-reconciled}
-- {type: Realization, source: vs-intent-to-model, target: outcome-architect-authored-model}
+- {type: Realization, source: vs-intent-to-model, target: outcome-intent-becomes-model-truth}
 - {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
-- {type: Realization, source: outcome-architect-authored-model, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-intent-becomes-model-truth, target: goal-frictionless-architecture}
 # Each requirement realizes exactly one outcome; none realizes the goal
 # directly — req -> outcome -> goal already derives that Realization.
 - {type: Realization, source: req-auto-spec-generation, target: outcome-change-at-ai-speed}
@@ -142,7 +142,7 @@
 - {type: Realization, source: req-pre-deploy-gate, target: outcome-compliance-before-release}
 - {type: Realization, source: req-human-signoff, target: outcome-accountable-automation}
 - {type: Realization, source: req-immutable-audit-ledger, target: outcome-accountable-automation}
-- {type: Realization, source: req-conversational-authoring-alignment, target: outcome-architect-authored-model}
+- {type: Realization, source: req-conversational-authoring-alignment, target: outcome-intent-becomes-model-truth}
 
 # =====================================================================
 # A. Assessments influence the outcome that answers them (above), never a
