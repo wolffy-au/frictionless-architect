@@ -3096,6 +3096,26 @@ dev = ["pre-commit", "tox"]
 testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
+name = "portal"
+version = "0.0.0"
+description = "Portal: hosts the platform packages' UIs under one app; owns no feature logic (ADR-0020)."
+optional = false
+python-versions = ">=3.11,<3.14"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+controls-compliance-catalog = "*"
+fastapi = ">=0.141.0,<0.142.0"
+llm-provider-config = "*"
+uvicorn = ">=0.43.0,<0.44.0"
+
+[package.source]
+type = "directory"
+url = "packages/portal"
+
+[[package]]
 name = "propcache"
 version = "0.5.4"
 description = "Accelerated property cache"
@@ -4634,4 +4654,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "f458a80267bab4b0e9247df1ec37428e63bfd2a623332de963f08c425afd12c0"
+content-hash = "447d6deefb47aa01fb48214b43dea74f4271c90bb534eee14f25212b5a0c38ee"

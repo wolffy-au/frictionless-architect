@@ -1,0 +1,25 @@
+[project]
+name = "portal"
+description = "Portal: hosts the platform packages' UIs under one app; owns no feature logic (ADR-0020)."
+# Frozen placeholder, as at the repo root — versioning moves to the monorepo
+# root with the rest of the commitizen setup (ADR-0002, Consequences).
+version = "0.0.0"
+requires-python = ">=3.11,<3.14"
+readme = "README.md"
+dependencies = [
+    "fastapi (>=0.141.0,<0.142.0)",
+    "uvicorn (>=0.43.0,<0.44.0)",
+    "controls-compliance-catalog",
+    "llm-provider-config",
+]
+
+[tool.poetry]
+packages = [{ include = "portal", from = "src" }]
+
+[tool.poetry.dependencies]
+controls-compliance-catalog = { path = "../controls-compliance-catalog", develop = true }
+llm-provider-config = { path = "../llm-provider-config", develop = true }
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
