@@ -119,6 +119,7 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Access fn-conversational-authoring → do-convention-rules` (Read)
 - `Association stk-architecture → driver-authoring-friction`, `Influence driver-authoring-friction → assess-manual-authoring-risk`, `Influence assess-manual-authoring-risk → outcome-intent-becomes-model-truth` (same Stakeholder→Driver→Assessment→Outcome pattern as the other four outcomes)
 - `Influence principle-policy-as-code → req-conversational-authoring-alignment` (same principle already influences `req-control-catalog`; `do-convention-rules` is version-controlled, machine-executable policy, not prose, same as the regulatory mappings it already governs)
+- `Triggering vs-intent-to-model → vss-baseline` (labelled "validated change extends the baseline" — an applied conversational change is what `vss-baseline`'s "blueprints and solution designs" are curated from; same cross-stream hand-off pattern as `vss-reconcile → vss-specify`, so `vs-intent-to-model` stays single-stage (ADR-0037) but is no longer disconnected from the pipeline)
 
 Override Decision Records are **not** a model element: per R7 they're auto-drafted ADR stubs
 under `docs/adr/`, so no new DataObject, aggregation or access relationship exists for them.
