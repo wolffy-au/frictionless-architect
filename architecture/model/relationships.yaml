@@ -57,6 +57,7 @@
 - {type: Assignment, source: res-ea-practice, target: cap-reusable-architecture}
 - {type: Assignment, source: res-akg, target: cap-spec-engine}
 - {type: Assignment, source: res-akg, target: cap-drift-dashboard}
+- {type: Assignment, source: res-ea-practice, target: cap-conversational-governance}
 - {type: Assignment, source: res-ea-practice, target: cap-human-approval-workflow}
 - {type: Assignment, source: res-evidence-record, target: cap-forensic-ledger}
 - {type: Realization, source: cap-spec-engine, target: coa-executable-governance}
@@ -84,10 +85,8 @@
 - {type: Serving, source: coa-living-twin, target: vs-drift-to-remediation}
 # GH #108 (ADR-0037 R12): same pattern as the other four outcome streams above.
 - {type: Serving, source: coa-executable-governance, target: vs-intent-to-model}
-# The capability also serves the stream directly (plan.md Model impact) — unlike the
-# CourseOfAction->ValueStream edges above, no Capability->ValueStream edge existed
-# elsewhere in this model before this feature.
-- {type: Serving, source: cap-conversational-governance, target: vs-intent-to-model}
+# No direct capability-to-stream edge: the capability realizes this course of action,
+# which already serves the stream, so the shortcut would be derived.
 # Each value stream's value recipients.
 - {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
 - {type: Association, source: stk-exec, target: vs-governed-delivery, label: time to market}
@@ -108,11 +107,11 @@
 - {type: Association, source: stk-delivery, target: driver-scaling}
 - {type: Association, source: stk-risk-compliance, target: driver-compliance}
 - {type: Association, source: stk-architecture, target: driver-authoring-friction}
-- {type: Influence, source: driver-agility, target: assess-time-to-market}
-- {type: Influence, source: driver-scaling, target: assess-review-bottleneck}
-- {type: Influence, source: driver-sustainability, target: assess-drift-debt}
-- {type: Influence, source: driver-compliance, target: assess-manual-compliance}
-- {type: Influence, source: driver-authoring-friction, target: assess-manual-authoring-risk}
+- {type: Association, source: driver-agility, target: assess-time-to-market}
+- {type: Association, source: driver-scaling, target: assess-review-bottleneck}
+- {type: Association, source: driver-sustainability, target: assess-drift-debt}
+- {type: Association, source: driver-compliance, target: assess-manual-compliance}
+- {type: Association, source: driver-authoring-friction, target: assess-manual-authoring-risk}
 
 # =====================================================================
 # A. Motivation spine: driver -> assessment -> outcome -> goal;
@@ -236,7 +235,7 @@
 - {type: Serving, source: cap-control-catalog, target: cap-control-plane, label: expected controls}
 - {type: Serving, source: cap-spec-engine, target: cap-control-plane, label: executable spec}
 - {type: Serving, source: cap-conversational-governance, target: cap-spec-engine, label: "validated authoring (GH #108)"}
-- {type: Association, source: cap-conversational-governance, target: cap-digital-twin, label: "validates proposals against the twin (GH #108)"}
+- {type: Serving, source: cap-digital-twin, target: cap-conversational-governance, label: "authoritative model for proposal validation (GH #108)"}
 - {type: Serving, source: cap-forensic-ledger, target: cap-human-approval-workflow, label: decision evidence}
 - {type: Serving, source: cap-control-plane, target: cap-human-approval-workflow, label: escalations}
 
@@ -463,11 +462,6 @@
 # =====================================================================
 # B. Subsystems serve the people (Serving subsystem -> role; C4 reverses it)
 # =====================================================================
-# Derivable (Composition sub-catalog -> interface + Serving interface -> role),
-# kept deliberately: the C4 projection drops the ApplicationInterface, so
-# without this edge sub-catalog would render with no relationship to
-# role-compliance at the container level (GH #99; accepted in check_derived.py).
-- {type: Serving, source: sub-catalog, target: role-compliance, label: authors control content in}
 - {type: Composition, source: sub-catalog, target: if-catalog-ui}
 - {type: Serving, source: if-catalog-ui, target: role-compliance, label: "upload, feedback & status UI"}
 - {type: Composition, source: sub-catalog, target: if-catalog-playground}
@@ -809,11 +803,6 @@
 - {type: Composition, source: sys-platform, target: sub-schema-visualizer}
 - {type: Composition, source: sub-twin, target: if-twin-read-path}
 - {type: Serving, source: if-twin-read-path, target: sub-schema-visualizer, label: path-dependency library}
-# Derivable (Composition sub-twin -> interface + Serving interface -> visualiser),
-# kept deliberately: the C4 projection drops the ApplicationInterface, so without
-# this edge the visualiser container renders with no relationships
-# (GH #99; accepted in check_derived.py).
-- {type: Serving, source: sub-twin, target: sub-schema-visualizer, label: serves the read path to, props: {c4-label: reads the knowledge graph via}}
 
 # =====================================================================
 # E. LLM provider configuration is a shared package, not a subsystem
@@ -926,8 +915,7 @@
 # --- F. Runtime-target skeleton (ADR-0018, updated 2026-09-27) ---
 - {type: Assignment, source: node-app-server, target: sw-neo4j, label: hosts (MVP)}
 - {type: Assignment, source: node-hosted-cluster, target: sw-neo4j, label: hosts (target)}
-- {type: Assignment, source: node-app-server, target: art-tech-neo4j-volume, label: hosts (MVP)}
-- {type: Assignment, source: node-hosted-cluster, target: art-tech-neo4j-volume, label: hosts (target)}
+# No direct node-to-volume assignments: each is derived through sw-neo4j.
 - {type: Assignment, source: sw-neo4j, target: art-tech-neo4j-volume, label: writes to}
 - {type: Realization, source: art-tech-neo4j-volume, target: store-akg}
 - {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}

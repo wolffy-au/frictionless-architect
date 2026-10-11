@@ -95,8 +95,8 @@ Queryable classification lookup (FR-010).
 
 ## GET /authoring/render
 
-- **Query**: `object_id` (name an element/view directly) or `description` (resolve a View Request)
-- **Response (200)**: `{ "view_id": "...", "svg": "<svg>...</svg>" }` — rendered fresh from the current `architecture/model/` state (FR-013), regardless of auto-render configuration
+- **Query**: `object_id` (name an element/view directly) or `description` (resolve a View Request); optional `format=svg` returns the SVG document directly with `image/svg+xml` content type (the default `format=json` response remains unchanged)
+- **Response (200)**: `{ "view_id": "...", "svg": "<svg>...</svg>" }` by default, or the SVG document directly with `format=svg` — rendered from the current `architecture/model/` YAML state (FR-013), rebuilding the compiled XML first when its source files have changed, regardless of auto-render configuration
 - **Response (300, Edge Case 2)**: `{ "ambiguous_candidates": ["view-a", "view-b"] }` when the description resolves to more than one plausible view
 - **Response (404)**: no view resolves at all
 

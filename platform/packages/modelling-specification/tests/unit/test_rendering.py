@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
+from typing import Any
 
 import pytest
 from modelling_specification import model_io, rendering
@@ -36,6 +37,29 @@ def test_render_single_view_missing_model_raises(monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr(rendering, "OUT", tmp_path / "absent.xml")
     with pytest.raises(rendering.ViewNotFoundError, match="missing"):
         rendering.render_single_view("view-stakeholder")
+
+
+def test_refresh_model_when_yaml_source_is_newer(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    model = tmp_path / "model.xml"
+    source_dir = tmp_path / "sources"
+    source_dir.mkdir()
+    model.write_text("<model />")
+    source = source_dir / "views.yaml"
+    source.write_text("- id: view-stakeholder\n")
+    monkeypatch.setattr(rendering, "OUT", model)
+    monkeypatch.setattr(model_io, "HERE", source_dir)
+    monkeypatch.setattr(model_io, "MODEL_LAYERS", [])
+    builds: list[bool] = []
+
+    def rebuild() -> tuple[int, list[str], list[str], dict[str, Any]]:
+        builds.append(True)
+        model.touch()
+        return 0, [], [], {"clean": True, "findings": []}
+
+    monkeypatch.setattr(model_io, "write_and_validate", rebuild)
+    rendering._refresh_model_if_sources_changed()
+
+    assert builds == [True]
 
 
 def test_find_view_falls_through_to_roadmap_and_vendored_sources(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -87,6 +111,83 @@ def test_render_writes_stale_puml_and_renders_svg(monkeypatch: pytest.MonkeyPatc
         assert not orphan_svg.exists()
     finally:
         shutil.rmtree(diagram_root, ignore_errors=True)
+
+
+def test_resolve_view_request_by_exact_view_id() -> None:
+    result = rendering.resolve_view_request(object_id="view-stakeholder", description=None)
+    assert result == {"resolved_view_id": "view-stakeholder", "ambiguous_candidates": []}
+
+
+def test_resolve_view_request_by_element_id_contained_in_exactly_one_view(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Synthetic views/elements -- deliberately decoupled from the real, evolving
+    # model so this test doesn't depend on exactly which views a given real id
+    # happens to be in scope for today.
+    monkeypatch.setattr(
+        rendering,
+        "_all_views",
+        lambda: [
+            {"id": "view-a", "name": "A", "members": ["el-1"]},
+            {"id": "view-b", "name": "B", "members": ["el-2"]},
+        ],
+    )
+    elements = [{"id": "el-1", "type": "Capability"}, {"id": "el-2", "type": "Capability"}]
+    monkeypatch.setattr(model_io, "existing_elements_and_types", lambda: (elements, {"el-1": "Capability"}))
+
+    result = rendering.resolve_view_request(object_id="el-1", description=None)
+
+    assert result == {"resolved_view_id": "view-a", "ambiguous_candidates": []}
+
+
+def test_resolve_view_request_by_element_id_in_several_views_is_ambiguous(monkeypatch: pytest.MonkeyPatch) -> None:
+    # An element included via `include_types` on more than one view is a genuine
+    # ambiguity (FR-016) -- "what's on a view" must match add_views's own
+    # members/include_types rule, not a narrower members-only one.
+    monkeypatch.setattr(
+        rendering,
+        "_all_views",
+        lambda: [
+            {"id": "view-a", "name": "A", "include_types": ["Capability"]},
+            {"id": "view-b", "name": "B", "include_types": ["Capability"]},
+        ],
+    )
+    elements = [{"id": "cap-1", "type": "Capability"}]
+    monkeypatch.setattr(model_io, "existing_elements_and_types", lambda: (elements, {"cap-1": "Capability"}))
+
+    result = rendering.resolve_view_request(object_id="cap-1", description=None)
+
+    assert result["resolved_view_id"] is None
+    assert set(result["ambiguous_candidates"]) == {"view-a", "view-b"}
+
+
+def test_resolve_view_request_by_object_id_with_no_match() -> None:
+    result = rendering.resolve_view_request(object_id="not-a-real-id", description=None)
+    assert result == {"resolved_view_id": None, "ambiguous_candidates": []}
+
+
+def test_resolve_view_request_by_description_substring_match() -> None:
+    # "stakeholder" alone is ambiguous with the vendored `view-it4it-stakeholder`
+    # ("IT4IT: Stakeholder") -- correct FR-016 behaviour, not a bug; "goal
+    # realization" is unique to the first-party view.
+    result = rendering.resolve_view_request(object_id=None, description="goal realization")
+    assert result == {"resolved_view_id": "view-goal-realization", "ambiguous_candidates": []}
+
+
+def test_resolve_view_request_by_description_ambiguous_across_several_views() -> None:
+    result = rendering.resolve_view_request(object_id=None, description="value stream")
+
+    assert result["resolved_view_id"] is None
+    assert len(result["ambiguous_candidates"]) > 1
+    assert "view-value-stream" in result["ambiguous_candidates"]
+
+
+def test_resolve_view_request_by_description_with_no_match() -> None:
+    result = rendering.resolve_view_request(object_id=None, description="definitely not a real view name")
+    assert result == {"resolved_view_id": None, "ambiguous_candidates": []}
+
+
+def test_resolve_view_request_with_neither_object_id_nor_description() -> None:
+    result = rendering.resolve_view_request(object_id=None, description=None)
+    assert result == {"resolved_view_id": None, "ambiguous_candidates": []}
 
 
 def test_jobs_warns_on_view_without_diagram_key(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:

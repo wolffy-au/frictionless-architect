@@ -39,6 +39,7 @@
   name: Strategy
   viewpoint: strategy
   diagram: vision/4-strategy
+  no_direction: [Triggering,Flow]
   # Overview: resources -> capabilities -> courses of action, each value
   # stream as a single element, and the outcome it realizes. Stage decomposition and the
   # recipient stakeholders belong to the Value Stream view; the goal linkage
@@ -53,20 +54,12 @@
   # IT4IT import added 36 more ValueStream elements (7 streams + 29 stages),
   # and this view also deliberately omits first-party stage decomposition
   # (vss-*; that's the Value Stream view's story).
-  include_types: [CourseOfAction, Resource, Capability, Outcome]
+  include_types: [CourseOfAction, Resource, Capability, Outcome, ValueStream]
   exclude_elements:
     - {id_prefix: "it4it-"}
   # GH #20: the capability-to-capability Serving mesh (control mappings,
   # expected controls, etc.) is the Capability Map view's own story, not
   # this one's — exclude it here so it doesn't repeat incidentally.
-  exclude:
-    - {type: Serving, source_type: Capability, target_type: Capability}
-  members:
-    - vs-governed-delivery
-    - vs-obligation-to-evidence
-    - vs-exception-to-decision
-    - vs-drift-to-remediation
-    - vs-intent-to-model
 
 - id: view-capability
   name: Capability Map
@@ -283,6 +276,7 @@
   name: "Feature Steel Thread: Conversational Model Authoring (GH #108)"
   viewpoint: layered
   diagram: layered/fn-conversational-authoring
+  no_direction: [Influence]
   # Traces this feature end to end through every layer it actually touches,
   # following only edges that already exist in the model (no element was
   # added or re-wired to make this thread connect, except where noted).
@@ -320,13 +314,18 @@
   members:
     - stk-architecture
     - driver-sustainability
+    - driver-authoring-friction
     - assess-drift-debt
+    - assess-manual-authoring-risk
     - outcome-drift-reconciled
+    - outcome-intent-becomes-model-truth
     - goal-frictionless-architecture
     - req-authoritative-twin
+    - req-conversational-authoring-alignment
     - cap-digital-twin
     - cap-conversational-governance
     - res-akg
+    - res-ea-practice
     - bfn-architecture-strategy
     - process-target-state-definition
     - bfn-conversational-authoring

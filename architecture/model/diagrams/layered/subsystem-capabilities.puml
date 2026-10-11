@@ -19,7 +19,6 @@ Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance")
 Application_Component(e_id492c882252a953, "Conformance & Drift Assurance")
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification")
 
-Rel_Association(e_id6c60f4feb89058, e_id18ec07397a9d5f, "validates proposals against the twin (GH #108)")
 Rel_Realization_Up(e_ide4bef3733af65a, e_id72468b5b403450, "")
 Rel_Realization_Up(e_id3b0beba52b5a5c, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")

@@ -67,3 +67,17 @@ class SessionStore:
         if session is None:
             return None
         return session.deltas.get(delta_id)
+
+    def new_delta_id(self) -> str:
+        return secrets.token_hex(4)
+
+    def pending_delta(self, session_id: str) -> CandidateDelta | None:
+        """The session's most recent non-terminal delta -- the FR-015 amend target, if
+        any. `None` once every delta in the session is `applied`/`discarded`."""
+        session = self._sessions.get(session_id)
+        if session is None:
+            return None
+        for delta in reversed(list(session.deltas.values())):
+            if delta.status not in (DeltaStatus.APPLIED, DeltaStatus.DISCARDED):
+                return delta
+        return None
