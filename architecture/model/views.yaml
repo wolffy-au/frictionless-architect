@@ -75,17 +75,14 @@
   viewpoint: capability
   diagram: vision/5-capability-map
   # The eight abilities and the Serving dependency order between them.
-  # Members, not include_types — the IT4IT import added 42 more Capability
-  # elements (see third_party/it4it/views.yaml's view-it4it-capability-map).
-  members:
-    - cap-digital-twin
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-forensic-ledger
-    - cap-drift-dashboard
-    - cap-human-approval-workflow
-    - cap-control-catalog
-    - cap-reusable-architecture
+  # include_types, not members — a new first-party Capability (e.g.
+  # cap-conversational-governance) now appears automatically instead of
+  # silently staying off the view (GH #117); exclude_elements keeps the
+  # IT4IT import's 42 vendored Capability elements off this platform-only
+  # view (see third_party/it4it/views.yaml's view-it4it-capability-map).
+  include_types: [Capability]
+  exclude_elements:
+    - {id_prefix: "it4it-"}
 
 - id: view-value-stream
   name: Value Stream Hand-offs

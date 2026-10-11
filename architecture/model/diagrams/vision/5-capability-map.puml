@@ -11,6 +11,7 @@ Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconci
 Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
 Strategy_Capability(e_id72468b5b403450, "Control & Obligation Management")
 Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
+Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance")
 
 Rel_Serving_Up(e_id18ec07397a9d5f, e_idafba1b4ab1e756, "authoritative graph")
 Rel_Serving_Up(e_id18ec07397a9d5f, e_id41aa3eb894c852, "as-designed intent")
@@ -18,6 +19,8 @@ Rel_Serving_Up(e_id752d1de3794f5f, e_idafba1b4ab1e756, "patterns & blueprints")
 Rel_Serving_Up(e_id72468b5b403450, e_id752d1de3794f5f, "control mappings")
 Rel_Serving_Up(e_id72468b5b403450, e_id4a1c34ab69d151, "expected controls")
 Rel_Serving_Up(e_idafba1b4ab1e756, e_id4a1c34ab69d151, "executable spec")
+Rel_Serving_Up(e_id6c60f4feb89058, e_idafba1b4ab1e756, "validated authoring (GH #108)")
+Rel_Association(e_id6c60f4feb89058, e_id18ec07397a9d5f, "validates proposals against the twin (GH #108)")
 Rel_Serving_Up(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_id08f340a094e552, "escalations")
 
