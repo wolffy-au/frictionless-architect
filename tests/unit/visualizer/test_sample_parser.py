@@ -178,13 +178,15 @@ def test_view_connections_keep_their_references(tmp_path: Path) -> None:
 def test_malformed_xml_raises_parse_error(tmp_path: Path) -> None:
     sample = tmp_path / "broken.xml"
     sample.write_text("<model", encoding="utf-8")
+    parser = SampleParser(sample)
     with pytest.raises(ParseError):
-        SampleParser(sample).parse()
+        parser.parse()
 
 
 def test_missing_file_raises_file_not_found(tmp_path: Path) -> None:
+    parser = SampleParser(tmp_path / "absent.xml")
     with pytest.raises(FileNotFoundError):
-        SampleParser(tmp_path / "absent.xml").parse()
+        parser.parse()
 
 
 DUPLICATE_MODEL_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>

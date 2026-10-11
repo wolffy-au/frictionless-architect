@@ -121,8 +121,9 @@ def test_main_returns_2_when_gh_fails(importer: ModuleType, tmp_path: Path, caps
 
 @pytest.mark.parametrize("bad", ["not json", '{"unexpected": 1}', "[1, 2]"])
 def test_unparseable_milestones_are_a_gh_error(importer: ModuleType, bad: str) -> None:
+    stub = make_stub(milestones=bad)
     with pytest.raises(importer.GhError, match="milestones"):
-        importer.fetch_milestones(make_stub(milestones=bad), REPO)
+        importer.fetch_milestones(stub, REPO)
 
 
 # --- fetch (happy path) ------------------------------------------------------------
@@ -185,8 +186,9 @@ def test_exactly_the_issue_cap_succeeds(importer: ModuleType) -> None:
 
 
 def test_more_issues_than_the_cap_fails(importer: ModuleType) -> None:
+    stub = make_stub(issues=pages_of(1000, True))
     with pytest.raises(importer.GhError, match="1000"):
-        importer.fetch_issues(make_stub(issues=pages_of(1000, True)), REPO)
+        importer.fetch_issues(stub, REPO)
 
 
 # --- performance and scale (GH #104, spec.md SC-007, research.md R14) -------------
@@ -267,8 +269,9 @@ def test_failed_replace_leaves_no_temp_and_no_partial_layer(
         real_replace(src, dst)
 
     monkeypatch.setattr(importer.os, "replace", flaky)
+    rendered = importer.render_layer(sample_layer())
     with pytest.raises(OSError, match="disk full"):
-        importer.write_layer(importer.render_layer(sample_layer()), layer)
+        importer.write_layer(rendered, layer)
     assert {p.name for p in layer.iterdir()} == set(old)
     assert all((layer / name).read_bytes() == data for name, data in old.items())
 
