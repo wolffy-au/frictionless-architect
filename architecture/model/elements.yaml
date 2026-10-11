@@ -322,6 +322,18 @@
     usable as contemporaneous evidence for regulatory examination.
   props:
     requirement-type: Functional
+- type: Requirement
+  id: req-conversational-authoring-alignment
+  name: Strategically Aligned, Convention-Compliant Conversational Authoring
+  desc: >-
+    GH #108: a model change authored through natural-language conversation
+    must demonstrably serve the enterprise's architecture goals and conform
+    to the conventions set centrally for the enterprise/domain — not merely
+    pass metamodel legality — so architects can extend the model at
+    conversational speed without that speed eroding strategic coherence or
+    governance consistency.
+  props:
+    requirement-type: Functional
 
 # =====================================================================
 # A. STRATEGY — Primary Capabilities
