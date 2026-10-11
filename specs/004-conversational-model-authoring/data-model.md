@@ -1,8 +1,12 @@
 # Data Model: Conversational ArchiMate Model Authoring
 
-Entity fields, ids, validation rules and lifecycles for the seven Key Entities named in
-`spec.md`. ArchiMate model ids added by this feature are listed once here and in `plan.md`'s
-"Model impact" (not duplicated elsewhere, per Principle XI).
+Entity fields, validation rules and lifecycles for the seven Key Entities named in
+`spec.md`. ArchiMate model ids added by this feature are listed once, in `plan.md`'s
+"Model impact" — not restated here (Principle XI); this file covers the Candidate-Delta-level
+entities (fields, lifecycle) instead.
+
+**UI Phase**: adds no entity. The chat/render pages hold `session_id`/`delta_id` as
+page-scoped JS state over the entities already defined below (R16, plan.md).
 
 ## Overview
 
