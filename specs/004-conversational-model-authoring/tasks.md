@@ -211,13 +211,13 @@ below updates with the affected view's SVG at full width (R19).
 
 ### Tests for UI Phase ⚠️
 
-- [ ] T067 [P] Contract test `GET /authoring/` returns `200 text/html` containing the
+- [X] T067 [P] Contract test `GET /authoring/` returns `200 text/html` containing the
   page's expected element ids (`#chat-input`, `#send`, `#state-select`, `#apply`,
   `#render-pane` — exact ids fixed by T071's implementation), mirroring
   `controls_compliance_catalog`'s `test_playground_page_is_served` pattern, in
   `platform/packages/modelling-specification/tests/api/test_ui.py` (plan.md Project
   Structure)
-- [ ] T068 Extend `platform/packages/modelling-specification/tests/features/environment.py`
+- [X] T068 Extend `platform/packages/modelling-specification/tests/features/environment.py`
   to also start a live `uvicorn` server on a free port (background thread) and a
   `playwright.sync_api` Chromium browser instance, alongside — not instead of — the
   existing `TestClient`/isolated-model-tmpdir/fake-LLM fixtures the propose/reject/state
@@ -227,53 +227,53 @@ below updates with the affected view's SVG at full width (R19).
   still reach it; `rendering.py` binds its own `OUT`/`VIEWS` at import time just as the
   existing docstring already notes, so the live server's render pane serves the real,
   read-only committed model, same as the TestClient-based scenarios)
-- [ ] T069 [P] Behave scenarios for the UI walkthrough (quickstart.md step 10) in
+- [X] T069 [P] Behave scenarios for the UI walkthrough (quickstart.md step 10) in
   `platform/packages/modelling-specification/tests/features/conversational_authoring_ui.feature`:
   open `/authoring/`, type a request, see `validation_result`/`duplicates`/
   `pattern_suggestions` render in the chat pane, pick a state, apply, confirm the render
   pane updates with the affected view's SVG at full width (`acceptance-author`)
-- [ ] T070 [P] Step definitions for T069's scenarios driving `context.page` (Playwright)
+- [X] T070 [P] Step definitions for T069's scenarios driving `context.page` (Playwright)
   against `context.base_url` (T068) in
   `platform/packages/modelling-specification/tests/features/steps/ui_steps.py`
 
 ### Implementation for UI Phase
 
-- [ ] T071 Implement `platform/packages/modelling-specification/src/modelling_specification/ui.py`:
+- [X] T071 Implement `platform/packages/modelling-specification/src/modelling_specification/ui.py`:
   `GET /authoring/` returning a self-contained `text/html` `HTMLResponse` (inline
   `<style>`/`<script>`, no build step, no Jinja2/static-asset pipeline), mirroring
   `controls_compliance_catalog.playground.api`'s `_PAGE_TEMPLATE`/`_PAGE` module-level-string
   pattern (R15) — horizontal split (R19): a compact chat pane (textarea + Send) on top, a
   render pane below it spanning the full window width
-- [ ] T072 Mount `ui.py`'s router in
+- [X] T072 Mount `ui.py`'s router in
   `platform/packages/modelling-specification/src/modelling_specification/app.py` alongside
   the existing JSON `router`, the same way `controls_compliance_catalog.app` mounts
   `playground.api.router` (plan.md Project Structure)
-- [ ] T073 [US1] Implement the chat pane's propose flow in `ui.py`'s inline `<script>`:
+- [X] T073 [US1] Implement the chat pane's propose flow in `ui.py`'s inline `<script>`:
   `POST /authoring/sessions` on page load to obtain a `session_id`; `POST
   /authoring/sessions/{id}/propose` on Send, rendering `validation_result.findings[]`
   (each with its `proposed_fix`), `duplicates[]`, and `pattern_suggestions[]` verbatim in
   the shape the API already returns rather than a parallel presentation (Constitution
   Check Principle III) — `session_id`/`delta_id` held as page-scoped JS state only (R16),
   no new server-side session concept
-- [ ] T074 [US3] Implement the apply control: a required Current/Transition/Target
+- [X] T074 [US3] Implement the apply control: a required Current/Transition/Target
   `<select>` with no pre-selected option; the Apply button stays disabled until a value is
   chosen (R17) — `onclick` posts `POST .../decide` with `{"action": "apply",
   "state_classification": "<selected>"}` rather than relying on the API's `422
   {"needs": "state_classification"}` round-trip
-- [ ] T075 [US2] Implement the duplicate/pattern/rejection decision controls in the chat
+- [X] T075 [US2] Implement the duplicate/pattern/rejection decision controls in the chat
   pane: keep-both/merge/reject buttons for a `duplicates[]` entry (FR-006), accept-pattern/
   keep-direct buttons for a `pattern_suggestions[]` entry (FR-008), and an override control
   (action `override`, with an optional free-text rationale field — FR-014 — that must not
   block submission when left blank, R11) for a rejected/flagged delta — each wired to the
   matching `decide` action
-- [ ] T076 [US1] Implement the render pane's client-side flow: call `GET
+- [X] T076 [US1] Implement the render pane's client-side flow: call `GET
   /authoring/render?...&format=svg` and inline the response body directly as the pane's
   HTML (R18) — both automatically, right after a successful `apply` when `auto_render` is
   `true`, and on an explicit "show" request naming an object or describing a view (FR-012,
   FR-013); when the response is `300 {"ambiguous_candidates": [...]}` or `404`, surface
   that in the chat pane and ask the architect to disambiguate/restate rather than guessing
   (FR-016)
-- [ ] T077 [US1] Implement an `auto_render` toggle control in the page itself, backed by
+- [X] T077 [US1] Implement an `auto_render` toggle control in the page itself, backed by
   `GET`/`PUT /authoring/config` (FR-011) — a visible UI control, not only an API-level
   setting invisible to the one caller that most needs it
 
@@ -282,10 +282,10 @@ apply/decide→render loop against the real API, for all three user stories, in 
 
 ### Polish for UI Phase
 
-- [ ] T078 Execute `quickstart.md` step 10 end to end against
+- [X] T078 Execute `quickstart.md` step 10 end to end against
   `./scripts/run-modelling_specification.sh`, confirming the horizontal split (R19) renders
   correctly in a real browser
-- [ ] T079 Run `bash scripts/pre_commit_checks.sh` and `bash scripts/platform_checks.sh`
+- [X] T079 Run `bash scripts/pre_commit_checks.sh` and `bash scripts/platform_checks.sh`
   with the UI phase's new tests included; confirm the 90% coverage gate still holds
 - [ ] T080 Post a summary comment on GH issue #108 noting the UI phase landed (pointing at
   the commit hash), closing the one narrative gap the

@@ -8,16 +8,27 @@ any `model_io.OUT`/`HERE` reassignment here -- so a resolved view always renders
 real, valid SVG, just one that won't visually include a scenario's isolated-only
 appended delta (acceptable: these scenarios test the propose/validate/apply/render
 *wiring*, not pixel-perfect diagram content).
+
+T068 (UI Phase): also runs a live `uvicorn` server (background thread, free port) and
+a Playwright Chromium browser, alongside -- not instead of -- the `TestClient` above,
+mirroring `controls_compliance_catalog`'s own `environment.py`. The server runs
+in-process in this same thread's process, so the `model_io.HERE`/`OUT`/
+`overrides.ADR_DIR` monkeypatches below still reach it; `ui_steps.py`'s scenarios
+drive `context.page` against `context.base_url` instead of `context.client`.
 """
 
 from __future__ import annotations
 
 import os
 import shutil
+import socket
 import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 
+import uvicorn
 from behave.runner import Context
 from fastapi.testclient import TestClient
 from llm_provider_config import LlmSettings, Provider, ProviderSettings, save_settings
@@ -27,10 +38,18 @@ from modelling_specification.app import app
 from modelling_specification.authoring import delta as delta_mod
 from modelling_specification.authoring import overrides
 from modelling_specification.authoring.state import SessionStore
+from playwright.sync_api import sync_playwright
 
 # behave doesn't put tests/ on sys.path the way pytest's conftest does; the shared fake lives there.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.fake_llm import FakeCompletion  # noqa: E402
+
+
+def _free_port_socket() -> socket.socket:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind(("127.0.0.1", 0))
+    sock.listen(1)
+    return sock
 
 
 def before_all(context: Context) -> None:
@@ -43,6 +62,21 @@ def before_all(context: Context) -> None:
     context.fake_llm = FakeCompletion()
     delta_mod.completion = context.fake_llm  # type: ignore[attr-defined]
     context.client = TestClient(app)
+
+    sock = _free_port_socket()
+    port = sock.getsockname()[1]
+    uvicorn_config = uvicorn.Config(app, fd=sock.fileno(), log_level="warning")
+    server = uvicorn.Server(uvicorn_config)
+    thread = threading.Thread(target=lambda: server.run(sockets=[sock]), daemon=True)
+    thread.start()
+    while not server.started:
+        time.sleep(0.05)
+    context.base_url = f"http://127.0.0.1:{port}"
+    context.uvicorn_server = server
+    context.uvicorn_thread = thread
+
+    context.playwright = sync_playwright().start()
+    context.browser = context.playwright.chromium.launch()
 
 
 def before_scenario(context: Context, _scenario: object) -> None:
@@ -65,6 +99,9 @@ def before_scenario(context: Context, _scenario: object) -> None:
     context._orig_adr_dir = overrides.ADR_DIR
     overrides.ADR_DIR = Path(context.adr_tmpdir.name)
 
+    context.browser_context = context.browser.new_context()
+    context.page = context.browser_context.new_page()
+
 
 def after_scenario(context: Context, _scenario: object) -> None:
     model_io.HERE = context._orig_model_here
@@ -73,6 +110,18 @@ def after_scenario(context: Context, _scenario: object) -> None:
     overrides.ADR_DIR = context._orig_adr_dir
     context.adr_tmpdir.cleanup()
 
+    context.page.close()
+    context.browser_context.close()
+
 
 def after_all(context: Context) -> None:
     context.llm_config_dir.cleanup()
+    # before_all may have failed partway (e.g. Playwright's browser missing), leaving
+    # later attributes unset; guard each teardown so the real failure isn't masked.
+    if hasattr(context, "browser"):
+        context.browser.close()
+    if hasattr(context, "playwright"):
+        context.playwright.stop()
+    if hasattr(context, "uvicorn_server"):
+        context.uvicorn_server.should_exit = True
+        context.uvicorn_thread.join(timeout=5)
