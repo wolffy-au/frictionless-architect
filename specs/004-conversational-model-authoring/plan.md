@@ -110,7 +110,7 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Serving coa-executable-governance → vs-intent-to-model` and `Association stk-architecture → vs-intent-to-model` (same pattern as the other four outcome streams)
 - `Realization vs-intent-to-model → outcome-intent-becomes-model-truth`
 - `Realization outcome-intent-becomes-model-truth → goal-frictionless-architecture` (same pattern as the other four outcomes)
-- `Serving cap-conversational-governance → vs-intent-to-model` (capability serves the stream)
+- No direct `Serving cap-conversational-governance → vs-intent-to-model`: it is derived via `Realization cap-conversational-governance → coa-executable-governance` and `Serving coa-executable-governance → vs-intent-to-model`.
 - `Realization process-conversational-authoring → cap-conversational-governance`
 - `Realization fn-conversational-authoring → process-conversational-authoring` (the settled app function now realizes a business process, resolving Assumption 6)
 - `Assignment role-ea → bfn-conversational-authoring` and `Assignment role-sa → bfn-conversational-authoring` (both roles jointly own the business function, not a Serving edge from the process — corrected here; the model has always wired it this way, this table just hadn't caught up); `Composition bfn-conversational-authoring → process-conversational-authoring` ("comprises")

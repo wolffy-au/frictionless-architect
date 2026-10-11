@@ -35,6 +35,7 @@ from typing import Any
 
 import yaml
 
+from modelling_specification import model_io
 from modelling_specification.model_io import OUT, REPO_ROOT
 
 # Repo-relative string, not OUT's absolute Path: model_to_puml.py/model_to_c4.py echo
@@ -218,6 +219,77 @@ def _find_view(view_id: str) -> dict[str, Any]:
     raise ViewNotFoundError(f"no view with id {view_id!r} in views.yaml")
 
 
+def _all_views() -> list[dict[str, Any]]:
+    """Every view across the first-party, gh-roadmap and vendored sources, same
+    precedence order `_find_view` uses."""
+    views: list[dict[str, Any]] = []
+    for views_file in (VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
+        if views_file.exists():
+            views += yaml.safe_load(views_file.read_text()) or []
+    return views
+
+
+def _refresh_model_if_sources_changed() -> None:
+    """Rebuild the generated model when any YAML source is newer than its XML."""
+    if not OUT.exists():
+        return
+
+    model_mtime = OUT.stat().st_mtime_ns
+    inputs = [
+        directory / filename
+        for directory in (model_io.HERE, *model_io.MODEL_LAYERS)
+        for filename in ("elements.yaml", "relationships.yaml", "views.yaml")
+    ]
+    if not any(path.is_file() and path.stat().st_mtime_ns > model_mtime for path in inputs):
+        return
+
+    code, errors, warnings, result = model_io.write_and_validate()
+    for warning in warnings:
+        sys.stderr.write(f"warning: {warning}\n")
+    if code == 0 and not errors and result is not None:
+        return
+
+    details = list(errors)
+    if result is not None:
+        details.extend(f"{finding['check']}: {finding['detail']}" for finding in result["findings"])
+    if not details:
+        details.append(f"model build exited with code {code}")
+    raise RuntimeError(f"could not rebuild the model from changed YAML sources: {'; '.join(details)}")
+
+
+def _resolution(ids: list[str]) -> dict[str, Any]:
+    if len(ids) == 1:
+        return {"resolved_view_id": ids[0], "ambiguous_candidates": []}
+    if len(ids) > 1:
+        return {"resolved_view_id": None, "ambiguous_candidates": ids}
+    return {"resolved_view_id": None, "ambiguous_candidates": []}
+
+
+def resolve_view_request(object_id: str | None, description: str | None) -> dict[str, Any]:
+    """Resolve a View Request (FR-016, data-model.md) to zero, one, or several
+    plausible `views.yaml` ids -- never guessing among several and never silently
+    picking none. `object_id` is tried first as an exact view id, then as an element
+    id -- every view it's actually in scope for, via `model_io.view_element_ids`'s
+    `members`/`include_types`/`exclude_elements` rule (the same rule `add_views` uses
+    to build the view for real, not a `members`-only subset of it); `description`
+    matches case-insensitively against each view's `name` as a substring."""
+    views = _all_views()
+    if object_id:
+        exact = [v["id"] for v in views if v.get("id") == object_id]
+        if exact:
+            return _resolution(exact)
+        elements, types_by_id = model_io.existing_elements_and_types()
+        containing = [
+            v["id"] for v in views if "id" in v and object_id in model_io.view_element_ids(v, elements, types_by_id)
+        ]
+        return _resolution(containing)
+    if description:
+        needle = description.strip().lower()
+        matching = [v["id"] for v in views if "id" in v and needle in str(v.get("name", "")).lower()]
+        return _resolution(matching)
+    return {"resolved_view_id": None, "ambiguous_candidates": []}
+
+
 def render_single_view(view_id: str) -> str:
     """Render one view's current SVG in-process, without touching any committed
     `.puml`/`.svg` file (FR-013) -- used by `GET /authoring/render`'s unambiguous-resolve
@@ -226,6 +298,7 @@ def render_single_view(view_id: str) -> str:
     FR-016 adds sits in front of this, in the router)."""
     if not OUT.exists():
         raise ViewNotFoundError("architecture/model/frictionless-architect.xml is missing — build the model first")
+    _refresh_model_if_sources_changed()
     v = _find_view(view_id)
     cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
     for rel_type in v.get("no_direction", []):
