@@ -65,8 +65,8 @@ until accepted; never silently apply, autocorrect or drop (FR-004/007); session-
 only, nothing resumes after an interruption (Clarification 2); single architect at a time
 (Assumption 5, ADR-0024)
 
-**Scale/Scope**: One architect, one conversation at a time; current model is 417 elements /
-853 relationships / 49 views (`build.py` output, 2026-10-10) — validation runs against that
+**Scale/Scope**: One architect, one conversation at a time; current model is 425 elements /
+872 relationships / 45 views (`build.py` output, 2026-10-11) — validation runs against that
 scale, not a multi-tenant one
 
 ## Constitution Check
@@ -103,6 +103,7 @@ New elements (`architecture/model/elements.yaml`):
 | Requirement | `req-conversational-authoring-alignment` | Strategically Aligned, Convention-Compliant Conversational Authoring |
 | Driver | `driver-authoring-friction` | Architect Authoring Friction & Governance Consistency |
 | Assessment | `assess-manual-authoring-risk` | Hand-edited model changes are too slow and too easily ungoverned to trust |
+| BusinessFunction | `bfn-conversational-authoring` | Conversational Model Authoring |
 
 New relationships (`architecture/model/relationships.yaml`):
 
@@ -112,7 +113,8 @@ New relationships (`architecture/model/relationships.yaml`):
 - `Serving cap-conversational-governance → vs-intent-to-model` (capability serves the stream)
 - `Realization process-conversational-authoring → cap-conversational-governance`
 - `Realization fn-conversational-authoring → process-conversational-authoring` (the settled app function now realizes a business process, resolving Assumption 6)
-- `Serving process-conversational-authoring → role-ea` and `→ role-sa` (shared standing process, not per-role ad hoc)
+- `Assignment role-ea → bfn-conversational-authoring` and `Assignment role-sa → bfn-conversational-authoring` (both roles jointly own the business function, not a Serving edge from the process — corrected here; the model has always wired it this way, this table just hadn't caught up); `Composition bfn-conversational-authoring → process-conversational-authoring` ("comprises")
+- `Triggering process-blueprint-traceability → process-conversational-authoring` ("blueprints proposed as model changes") and `Triggering process-conversational-authoring → process-solution-design` ("validated changes composed into") — wires conversational authoring into the existing blueprint/solution-design process chain
 - `Aggregation store-frameworks → do-convention-rules` (same pattern as `do-metamodel`)
 - `Realization cap-conversational-governance → req-conversational-authoring-alignment` (same pattern as the other eight capabilities, each realizing at least one requirement)
 - `Realization req-conversational-authoring-alignment → outcome-intent-becomes-model-truth` (same pattern as the other requirements, each realizing exactly one outcome)
