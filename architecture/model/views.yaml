@@ -44,9 +44,18 @@
   # recipient stakeholders belong to the Value Stream view; the goal linkage
   # (Course of Action -> Goal) is out of scope here — the strategy viewpoint
   # stops at the strategy layer — see Goal Realization for that.
-  # Capability is scoped via members, not include_types — the IT4IT import
-  # added 42 more Capability elements.
-  include_types: [CourseOfAction, Resource]
+  # Capability and Outcome are include_types, not members — a new
+  # first-party element of either type (e.g. cap-conversational-governance,
+  # outcome-architect-authored-model) now appears automatically instead of
+  # silently staying off the view (GH #117); exclude_elements keeps the
+  # IT4IT import's vendored Capability/Outcome elements off this
+  # platform-only view. ValueStream stays members, not include_types — the
+  # IT4IT import added 36 more ValueStream elements (7 streams + 29 stages),
+  # and this view also deliberately omits first-party stage decomposition
+  # (vss-*; that's the Value Stream view's story).
+  include_types: [CourseOfAction, Resource, Capability, Outcome]
+  exclude_elements:
+    - {id_prefix: "it4it-"}
   # GH #20: the capability-to-capability Serving mesh (control mappings,
   # expected controls, etc.) is the Capability Map view's own story, not
   # this one's — exclude it here so it doesn't repeat incidentally.
@@ -57,18 +66,7 @@
     - vs-obligation-to-evidence
     - vs-exception-to-decision
     - vs-drift-to-remediation
-    - outcome-change-at-ai-speed
-    - outcome-compliance-before-release
-    - outcome-accountable-automation
-    - outcome-drift-reconciled
-    - cap-digital-twin
-    - cap-spec-engine
-    - cap-control-plane
-    - cap-forensic-ledger
-    - cap-drift-dashboard
-    - cap-human-approval-workflow
-    - cap-control-catalog
-    - cap-reusable-architecture
+    - vs-intent-to-model
 
 - id: view-capability
   name: Capability Map
