@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +31,7 @@ _SYNTHETIC_PATTERN_RULE: dict[str, Any] = {
         "relationship_type": "Serving",
         "target_type": "BusinessRole",
         "intermediary_types": ["ApplicationService"],
+        "target_relationship_type": "Triggering",
     },
     "enabled": True,
 }
@@ -151,19 +153,32 @@ def test_pattern_keep_direct_applies_the_direct_relationship_as_is(
     assert "source: sub-modelling, target: role-ea" in (isolated_model / "relationships.yaml").read_text()
 
 
-def test_pattern_accept_pattern_discards_the_direct_form(
+def test_pattern_accept_pattern_synthesizes_the_intermediary_form(
     configured_fake_llm: FakeCompletion, isolated_model: Path, synthetic_pattern_rule: None
 ) -> None:
+    # 2026-10-11 clarify: accept-pattern synthesizes the intermediary element and
+    # applies the two-leg form directly, rather than discarding the candidate and
+    # asking the architect to re-describe it.
     configured_fake_llm.content = (
         '{"elements": [], "relationships": [{"type": "Serving", "source": "sub-modelling", "target": "role-ea"}]}'
     )
     session_id, body = _propose("serve role-ea directly from sub-modelling")
+    assert body["pattern_suggestions"], body
 
-    response = _decide(session_id, body["delta_id"], action="accept-pattern")
+    response = _decide(session_id, body["delta_id"], action="accept-pattern", state_classification="Transition")
 
     assert response.status_code == 200
-    assert response.json() == {"delta_id": body["delta_id"], "status": "discarded"}
-    assert "source: sub-modelling, target: role-ea" not in (isolated_model / "relationships.yaml").read_text()
+    assert response.json()["status"] == "applied"
+    elements_text = (isolated_model / "elements.yaml").read_text()
+    match = re.search(
+        r"type: ApplicationService, id: (\S+?), name: Modelling & Specification Application Service", elements_text
+    )
+    assert match, elements_text
+    synthesized_id = match.group(1)
+    rels_text = (isolated_model / "relationships.yaml").read_text()
+    assert "source: sub-modelling, target: role-ea}" not in rels_text
+    assert f"source: sub-modelling, target: {synthesized_id}" in rels_text
+    assert f"source: {synthesized_id}, target: role-ea" in rels_text
 
 
 def test_override_a_convention_rejection_applies_and_drafts_an_adr_stub(

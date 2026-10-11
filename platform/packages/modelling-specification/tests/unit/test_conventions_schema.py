@@ -39,6 +39,7 @@ def test_seeded_interposed_pattern_rule_matches_the_sw_neo4j_precedent() -> None
     assert params["relationship_type"] == "Assignment"
     assert params["target_type"] == "DataObject"
     assert params["intermediary_types"] == ["Artifact"]
+    assert params["target_relationship_type"] == "Realization"
 
 
 def test_round_trips_through_safe_load_and_safe_dump_with_no_information_loss() -> None:

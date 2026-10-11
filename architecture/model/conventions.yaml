@@ -7,7 +7,12 @@
 # - kind:    naming | altitude | allowed-subset | interposed-pattern
 # - scope:   list of ArchiMate type names, or `*`
 # - params:  kind-specific —
-#     interposed-pattern: {source_type, relationship_type, target_type, intermediary_types[]}
+#     interposed-pattern: {source_type, relationship_type, target_type, intermediary_types[],
+#                          target_relationship_type} — target_relationship_type is the type
+#                          of the intermediary -> target leg, which need not match
+#                          relationship_type (the source -> intermediary leg); see the
+#                          sw-neo4j -> art-tech-neo4j-volume (Assignment) -> store-akg
+#                          (Realization) precedent below.
 #     naming:             {pattern}        — a regex the proposed `name` MUST match
 #     altitude:           {banned_terms[]} — `name`/`desc` MUST NOT contain any of these
 #     allowed-subset:     {allowed_types[]} — the proposed type MUST be one of these
@@ -36,6 +41,7 @@
     relationship_type: Assignment
     target_type: DataObject
     intermediary_types: [Artifact]
+    target_relationship_type: Realization
   enabled: true
 
 # Caught by hand once already: outcome-architect-authored-model's desc read

@@ -40,6 +40,9 @@ Call `decide` with `action: "reject"` and confirm no write; call again with
 Propose a direct relationship matching a `conventions.yaml` `interposed-pattern` rule (e.g.
 the `sw-neo4j`-shaped pattern). Expect `pattern_suggestions` populated with the intermediary
 type(s); `decide` with `action: "keep-direct"` applies the direct form anyway (it is legal).
+`decide` with `action: "accept-pattern"` instead synthesizes the intermediary element(s) and
+applies the two-leg form directly — confirm the direct relationship is absent and the new
+intermediary element plus both legs are present in `architecture/model/` (2026-10-11 clarify).
 
 ## 5. Override traceability (US2 Scenario 4, FR-014)
 

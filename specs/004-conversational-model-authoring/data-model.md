@@ -109,7 +109,7 @@ Concept: spec.md Key Entities. **New persistent surface** — lives in
 | `id` | string | e.g. `conv-naming-camel-free` |
 | `kind` | enum | `naming \| altitude \| allowed-subset \| interposed-pattern` |
 | `scope` | list of ArchiMate types or `*` | What this rule applies to |
-| `params` | kind-specific | `interposed-pattern`: `{source_type, relationship_type, target_type, intermediary_types[]}` (R6). `naming`: `{pattern}` — a regex the proposed `name` MUST match. `altitude`: `{banned_terms[]}` — `name`/`desc` MUST NOT contain any of these. `allowed-subset`: `{allowed_types[]}` — the proposed type MUST be one of these for the rule's `scope` (R13) |
+| `params` | kind-specific | `interposed-pattern`: `{source_type, relationship_type, target_type, intermediary_types[], target_relationship_type}` (R6). `target_relationship_type` is the intermediary→target leg's type, which need not match `relationship_type` (the source→intermediary leg) — e.g. `conv-interposed-neo4j-volume` uses `Assignment` then `Realization`, per the existing `sw-neo4j → art-tech-neo4j-volume → store-akg` precedent. Required for accept-pattern synthesis (FR-008) to produce a legal second leg. `naming`: `{pattern}` — a regex the proposed `name` MUST match. `altitude`: `{banned_terms[]}` — `name`/`desc` MUST NOT contain any of these. `allowed-subset`: `{allowed_types[]}` — the proposed type MUST be one of these for the rule's `scope` (R13) |
 | `enabled` | bool | Default `true`; organisation can turn a rule off without deleting it |
 
 `conventions.py` (R6) loads this file once per validation call; a malformed entry fails the
@@ -138,8 +138,8 @@ intermediary-element pattern instead (FR-008). Not itself a duplicate.
 | Field | Type | Notes |
 |---|---|---|
 | `proposed_relationship` | `{type, source, target}` | The direct form the architect described |
-| `established_pattern` | `{intermediary_types[]}` | From the matching `interposed-pattern` convention rule (R6) |
-| `decision` | `accept-pattern \| keep-direct \| null` | `null` until the architect decides; `keep-direct` applies the originally proposed direct form (it is legal, just non-idiomatic) |
+| `established_pattern` | `{intermediary_types[], target_relationship_type}` | From the matching `interposed-pattern` convention rule (R6) |
+| `decision` | `accept-pattern \| keep-direct \| null` | `null` until the architect decides; `keep-direct` applies the originally proposed direct form (it is legal, just non-idiomatic). On `accept-pattern` the agent synthesizes the intermediary element(s) named by `intermediary_types` and applies the two-leg form (`relationship_type` source→intermediary, `target_relationship_type` intermediary→target) directly, discarding the original direct-form candidate — it never discards-and-asks (2026-10-11 clarify) |
 
 When no `interposed-pattern` rule matches the proposed shape (Edge Case 4 — no established
 pattern exists yet), no Pattern Suggestion is raised and the direct relationship is validated
