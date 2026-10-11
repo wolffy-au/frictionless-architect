@@ -43,6 +43,9 @@
 - type: Realization
   source: cap-forensic-ledger
   target: req-immutable-audit-ledger
+- type: Realization
+  source: cap-conversational-governance
+  target: req-conversational-authoring-alignment
 
 # =====================================================================
 # A. Strategy chain: resources -> capabilities -> courses of action -> goal;
@@ -127,6 +130,7 @@
 - {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
 - {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
+- {type: Realization, source: outcome-architect-authored-model, target: goal-frictionless-architecture}
 # Each requirement realizes exactly one outcome; none realizes the goal
 # directly — req -> outcome -> goal already derives that Realization.
 - {type: Realization, source: req-auto-spec-generation, target: outcome-change-at-ai-speed}
@@ -138,6 +142,7 @@
 - {type: Realization, source: req-pre-deploy-gate, target: outcome-compliance-before-release}
 - {type: Realization, source: req-human-signoff, target: outcome-accountable-automation}
 - {type: Realization, source: req-immutable-audit-ledger, target: outcome-accountable-automation}
+- {type: Realization, source: req-conversational-authoring-alignment, target: outcome-architect-authored-model}
 
 # =====================================================================
 # A. Assessments influence the outcome that answers them (above), never a

@@ -100,16 +100,20 @@ New elements (`architecture/model/elements.yaml`):
 | Outcome | `outcome-architect-authored-model` | Architect-Authored Model Changes |
 | BusinessProcess | `process-conversational-authoring` | Conversational Model Authoring |
 | DataObject | `do-convention-rules` | Enterprise Convention Rules |
+| Requirement | `req-conversational-authoring-alignment` | Strategically Aligned, Convention-Compliant Conversational Authoring |
 
 New relationships (`architecture/model/relationships.yaml`):
 
 - `Serving coa-executable-governance → vs-intent-to-model` and `Association stk-architecture → vs-intent-to-model` (same pattern as the other four outcome streams)
 - `Realization vs-intent-to-model → outcome-architect-authored-model`
+- `Realization outcome-architect-authored-model → goal-frictionless-architecture` (same pattern as the other four outcomes)
 - `Serving cap-conversational-governance → vs-intent-to-model` (capability serves the stream)
 - `Realization process-conversational-authoring → cap-conversational-governance`
 - `Realization fn-conversational-authoring → process-conversational-authoring` (the settled app function now realizes a business process, resolving Assumption 6)
 - `Serving process-conversational-authoring → role-ea` and `→ role-sa` (shared standing process, not per-role ad hoc)
 - `Aggregation store-frameworks → do-convention-rules` (same pattern as `do-metamodel`)
+- `Realization cap-conversational-governance → req-conversational-authoring-alignment` (same pattern as the other eight capabilities, each realizing at least one requirement)
+- `Realization req-conversational-authoring-alignment → outcome-architect-authored-model` (same pattern as the other requirements, each realizing exactly one outcome)
 - `Access fn-conversational-authoring → do-convention-rules` (Read)
 
 Override Decision Records are **not** a model element: per R7 they're auto-drafted ADR stubs
