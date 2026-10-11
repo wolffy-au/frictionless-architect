@@ -133,6 +133,7 @@ REL_DIRECTION = {
     "Realization": "Up",
     "Specialization": "Up",
     "Serving": "Up",
+    "Influence": "Up",
     "Triggering": "Right",
     "Flow": "Right",
 }

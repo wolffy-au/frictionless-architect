@@ -224,8 +224,11 @@ def add_relationships(m: Model, rels: list[dict[str, Any]], by_id: dict[str, Ele
             rel.prop(str(k), str(v))
 
 
-def _view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by_id: dict[str, str]) -> set[str]:
-    """Element ids in scope for a view -- same members/include_types/exclude_elements rule as `add_views`."""
+def view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by_id: dict[str, str]) -> set[str]:
+    """Element ids in scope for a view -- same members/include_types/exclude_elements
+    rule as `add_views`. Public: `rendering.py`'s `resolve_view_request` (FR-016)
+    reuses this to resolve an `object_id` named directly, rather than re-deriving
+    "what's on a view" with a narrower members-only rule."""
     want = set(v.get("members") or [])
     types = {
         _CANON.get(str(t).strip().replace("_", "").replace("-", "").lower()) for t in (v.get("include_types") or [])
@@ -321,26 +324,26 @@ def _check_driver_and_assessment_structural_completeness(
     the other half of the Stakeholder -> Driver -> Assessment -> Outcome
     chain `_check_outcome_structural_completeness` checks from the Outcome
     end."""
-    driver_targets_of_assessment_influence = {
-        r["source"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["target"]) == "Assessment"
+    driver_targets_of_assessment_association = {
+        r["source"] for r in rels if r["type"] == "Association" and types_by_id.get(r["target"]) == "Assessment"
     }
     stakeholder_held_drivers = {
         r["target"] for r in rels if r["type"] == "Association" and types_by_id.get(r["source"]) == "Stakeholder"
     }
     for driver in _first_party_ids(elements, types_by_id, "Driver"):
-        if driver not in driver_targets_of_assessment_influence:
+        if driver not in driver_targets_of_assessment_association:
             errors.append(f"driver {driver!r} influences no Assessment")
         if driver not in stakeholder_held_drivers:
             errors.append(f"driver {driver!r} is held by no Stakeholder")
 
-    assessment_influenced_by_driver = {
-        r["target"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["source"]) == "Driver"
+    assessment_associated_with_driver = {
+        r["target"] for r in rels if r["type"] == "Association" and types_by_id.get(r["source"]) == "Driver"
     }
     assessment_influences_outcome = {
         r["source"] for r in rels if r["type"] == "Influence" and types_by_id.get(r["target"]) == "Outcome"
     }
     for assessment in _first_party_ids(elements, types_by_id, "Assessment"):
-        if assessment not in assessment_influenced_by_driver:
+        if assessment not in assessment_associated_with_driver:
             errors.append(f"assessment {assessment!r} is influenced by no Driver")
         if assessment not in assessment_influences_outcome:
             errors.append(f"assessment {assessment!r} influences no Outcome")
@@ -377,7 +380,7 @@ def _check_derived_goal_edges(
     for r in rels:
         targets_of.setdefault(r["source"], set()).add(r["target"])
 
-    view_scopes = {v["id"]: _view_element_ids(v, elements, types_by_id) for v in views if "id" in v}
+    view_scopes = {v["id"]: view_element_ids(v, elements, types_by_id) for v in views if "id" in v}
     for r in rels:
         a, t = r["source"], r["target"]
         if types_by_id.get(t) != "Goal":
@@ -630,24 +633,20 @@ def add_views(
                 errors.append(f"view {v['id']} {res.algorithm_used} failed: {res.error_message}")
 
 
-def build_model() -> tuple[Model | None, list[str], list[str]]:
-    """Load every YAML layer and assemble the in-memory pyArchimate `Model`.
-
-    Returns `(model, errors, motivation_warnings)`. `model` is `None` when
-    `errors` is non-empty -- the caller never writes/validates a model built
-    from invalid YAML."""
-    m = Model("frictionless-architect")
-    errors: list[str] = []
-
-    elements = tag_contexts(load("elements.yaml", errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
+def _assemble(
+    name: str,
+    elements: list[dict[str, Any]],
+    rels: list[dict[str, Any]],
+    views: list[dict[str, Any]],
+    errors: list[str],
+) -> tuple[Model | None, list[str], list[str]]:
+    """Add `elements`/`rels`/`views` to a fresh `Model` named `name`, running the same
+    checks `build_model()` always has. `errors` already carries any YAML-load errors
+    the caller collected; this appends to it rather than starting fresh, so a load
+    error and a structural one are both reported in one pass."""
+    m = Model(name)
     by_id, types_by_id = add_elements(m, elements, errors)
-    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors)
     add_relationships(m, rels, by_id, errors)
-    views = (
-        load("views.yaml", errors, optional=True)
-        + load("views-viewpoints.yaml", errors, optional=True)
-        + load_layers("views.yaml", errors)
-    )
     seen_views: set[str] = set()
     for v in views:
         if (vid := v.get("id")) is None:
@@ -657,10 +656,99 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
         seen_views.add(vid)
     add_views(m, views, elements, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
-
     if errors:
         return None, errors, motivation_warnings
     return m, errors, motivation_warnings
+
+
+def build_model() -> tuple[Model | None, list[str], list[str]]:
+    """Load every YAML layer and assemble the in-memory pyArchimate `Model`.
+
+    Returns `(model, errors, motivation_warnings)`. `model` is `None` when
+    `errors` is non-empty -- the caller never writes/validates a model built
+    from invalid YAML."""
+    errors: list[str] = []
+    elements = tag_contexts(load("elements.yaml", errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
+    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors)
+    views = (
+        load("views.yaml", errors, optional=True)
+        + load("views-viewpoints.yaml", errors, optional=True)
+        + load_layers("views.yaml", errors)
+    )
+    return _assemble("frictionless-architect", elements, rels, views, errors)
+
+
+def existing_element_ids() -> set[str]:
+    """Every first-party + layer element id currently on disk -- used to de-duplicate
+    an id the router synthesizes for a delta element the LLM left blank (data-model.md:
+    "id absent until the LLM proposes one or validation assigns one")."""
+    errors: list[str] = []
+    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    return {e["id"] for e in elements if e.get("id")}
+
+
+def existing_elements_and_types() -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """`(elements, types_by_id)` loaded once -- `rendering.py`'s `resolve_view_request`
+    uses this with `view_element_ids` to resolve an `object_id` against every view in
+    one pass, rather than reloading `elements.yaml` per view."""
+    errors: list[str] = []
+    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    types_by_id: dict[str, str] = {}
+    for e in elements:
+        eid = e.get("id")
+        canon_type = canon(str(e.get("type", "")), [], "existing element") if eid else None
+        if eid and canon_type:
+            types_by_id[eid] = canon_type
+    return elements, types_by_id
+
+
+def existing_element_types() -> dict[str, str]:
+    """Every first-party + layer element id mapped to its canonical ArchiMate type --
+    used by `patterns.py` to type-check a proposed relationship's endpoints without
+    re-loading/parsing the YAML itself."""
+    return existing_elements_and_types()[1]
+
+
+_ELEMENT_FIELD_ORDER = ["type", "id", "name", "desc", "props"]
+_RELATIONSHIP_FIELD_ORDER = ["type", "source", "target", "label", "props"]
+
+
+def _append_yaml_flow_entries(path: Path, entries: list[dict[str, Any]], field_order: list[str]) -> None:
+    """Append `entries` to `path` as single-line flow-style YAML, under a banner
+    comment -- never a full `yaml.safe_dump` rewrite of the file, so none of its
+    existing hand-authored comments/grouping/formatting are disturbed (plan.md: an
+    applied delta is additive only, FR-001)."""
+    lines = ["\n# --- Conversational authoring: applied via POST /authoring/.../decide (GH #108) ---\n"]
+    for entry in entries:
+        ordered = {k: entry[k] for k in field_order if entry.get(k) not in (None, {})}
+        lines.append(f"- {yaml.safe_dump(ordered, default_flow_style=True, sort_keys=False, width=10**9).strip()}\n")
+    with path.open("a") as f:
+        f.writelines(lines)
+
+
+def append_delta(elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> None:
+    """Append an applied Candidate Delta's elements/relationships to `elements.yaml`/
+    `relationships.yaml` (FR-001's apply step, R9) -- additive only; no existing entry
+    is edited, retired or reordered (plan.md Model impact)."""
+    if elements:
+        _append_yaml_flow_entries(HERE / "elements.yaml", elements, _ELEMENT_FIELD_ORDER)
+    if relationships:
+        _append_yaml_flow_entries(HERE / "relationships.yaml", relationships, _RELATIONSHIP_FIELD_ORDER)
+
+
+def merge_candidate(
+    delta_elements: list[dict[str, Any]], delta_relationships: list[dict[str, Any]]
+) -> tuple[Model | None, list[str], list[str]]:
+    """Load the current YAML model from disk, merge a Candidate Delta's elements/
+    relationships on top, and assemble+check the whole resulting in-memory model
+    (FR-002, R9) -- never the delta in isolation, so a change that is valid on its
+    own but breaks referential integrity elsewhere is also caught. Nothing is written
+    to disk; the delta is additive only, same as `build_model()` otherwise."""
+    errors: list[str] = []
+    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors) + list(delta_elements)
+    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors) + list(delta_relationships)
+    views = load("views.yaml", errors, optional=True) + load_layers("views.yaml", errors)
+    return _assemble("candidate-delta", elements, rels, views, errors)
 
 
 def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
@@ -707,6 +795,12 @@ def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
                     "check": "illegal_relationship",
                     "id": rel.uuid,
                     "detail": f"{rel.type}: {src} -> {tgt} is not permitted by the ArchiMate 3.2 matrix",
+                    # Structured fields alongside `detail` -- fixes.py (R14) reads
+                    # these to compute the nearest legal relationship type without
+                    # parsing the human-readable message back apart.
+                    "rel_type": rel.type,
+                    "source_type": src,
+                    "target_type": tgt,
                 }
             )
 

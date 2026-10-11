@@ -74,7 +74,6 @@ Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
   Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 }
 
-Rel_Serving_Up(e_id6c60f4feb89058, e_id12f51f6c841755, "")
 Rel_Realization_Up(e_idcd5e1d4017725d, e_id3be36e7ab88a59, "")
 Rel_Realization_Up(e_id7ee8cdbf8ddc57, e_id4f39e9ec8e4656, "")
 Rel_Realization_Up(e_idc55b78731ffe56, e_ide8275430b0ad5e, "")
@@ -104,7 +103,6 @@ Rel_Triggering(e_idb542830057125a, e_id57940702bdfc58, "not deterministically va
 Rel_Flow(e_id2d06864964375b, e_idf362f39778065d, "approval")
 Rel_Triggering(e_idf362f39778065d, e_id12b58c7f12735c, "")
 Rel_Flow(e_iddd4585a6a08153, e_id01dab436206551, "drift remediation re-enters")
-Rel_Association(e_id6c60f4feb89058, e_id18ec07397a9d5f, "validates proposals against the twin (GH #108)")
 Rel_Realization_Up(e_id65467a0befb959, e_idafba1b4ab1e756, "")
 Rel_Realization_Up(e_id799f46ebb7e15b, e_id4a1c34ab69d151, "woven enforcement")
 Rel_Realization_Up(e_id3a7a27eefeb751, e_id41aa3eb894c852, "")

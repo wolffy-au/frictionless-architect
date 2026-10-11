@@ -527,7 +527,7 @@ def test_check_motivation_conventions_passes_a_complete_stakeholder_to_outcome_c
     ]
     rels = [
         {"type": "Association", "source": "stk1", "target": "driver1"},
-        {"type": "Influence", "source": "driver1", "target": "assess1"},
+        {"type": "Association", "source": "driver1", "target": "assess1"},
         {"type": "Influence", "source": "assess1", "target": "outcome1"},
         {"type": "Realization", "source": "outcome1", "target": "goal1"},
         {"type": "Realization", "source": "req1", "target": "outcome1"},
@@ -550,6 +550,91 @@ def test_validate_model_flags_an_illegal_relationship() -> None:
     assert result["clean"] is False
     checks = {f["check"] for f in result["findings"]}
     assert "illegal_relationship" in checks
+    (finding,) = [f for f in result["findings"] if f["check"] == "illegal_relationship"]
+    assert finding["rel_type"] == "Composition"
+    assert finding["source_type"] == "BusinessActor"
+    assert finding["target_type"] == "Goal"
+
+
+def test_merge_candidate_validates_a_clean_delta_against_the_real_model() -> None:
+    # sub-modelling is a real ApplicationComponent already in architecture/model/
+    # elements.yaml -- merge_candidate must load it from disk, not just the delta,
+    # for this Assignment to type-check (FR-002, R9).
+    model, errors, _warnings = model_io.merge_candidate(
+        [{"id": "fn-test-delta", "type": "application-function", "name": "Test Delta Fn"}],
+        [{"type": "assignment", "source": "sub-modelling", "target": "fn-test-delta"}],
+    )
+    assert errors == []
+    assert model is not None
+    result = model_io.validate_model(model)
+    assert result["clean"] is True
+
+
+def test_merge_candidate_flags_an_illegal_relationship_against_a_real_existing_element() -> None:
+    # Composition from an ApplicationComponent to an ApplicationFunction is not in the
+    # ArchiMate 3.2 matrix -- a delta that only knew about its own new element could
+    # not catch this; merge_candidate must check it against sub-modelling's *actual*
+    # type as loaded from disk (FR-002's "whole resulting model", not the delta alone).
+    model, errors, _warnings = model_io.merge_candidate(
+        [{"id": "fn-test-delta", "type": "application-function", "name": "Test Delta Fn"}],
+        [{"type": "composition", "source": "sub-modelling", "target": "fn-test-delta"}],
+    )
+    assert errors == []
+    assert model is not None
+    result = model_io.validate_model(model)
+    assert result["clean"] is False
+    assert any(f["check"] == "illegal_relationship" for f in result["findings"])
+
+
+def test_merge_candidate_catches_a_delta_id_colliding_with_a_real_existing_element() -> None:
+    # Proves the real model is loaded and merged in, not just the delta validated
+    # in isolation: an id the delta re-declares is already on disk.
+    model, errors, _warnings = model_io.merge_candidate(
+        [{"id": "sub-modelling", "type": "application-component", "name": "Duplicate"}], []
+    )
+    assert model is None
+    assert any("duplicate element id: sub-modelling" in e for e in errors)
+
+
+def test_existing_element_ids_includes_a_real_element() -> None:
+    assert "sub-modelling" in model_io.existing_element_ids()
+
+
+def test_existing_element_types_maps_a_real_element_to_its_canonical_type() -> None:
+    assert model_io.existing_element_types()["sub-modelling"] == "ApplicationComponent"
+
+
+def test_append_delta_appends_flow_style_entries_without_disturbing_existing_content(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- {type: ApplicationComponent, id: existing, name: Existing}\n")
+    rels_path = tmp_path / "relationships.yaml"
+    rels_path.write_text("- {type: Serving, source: existing, target: existing, label: self}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.append_delta(
+        [{"type": "ApplicationFunction", "id": "fn-new", "name": "New Fn"}],
+        [{"type": "Assignment", "source": "existing", "target": "fn-new"}],
+    )
+
+    elements_text = elements_path.read_text()
+    assert "{type: ApplicationComponent, id: existing, name: Existing}" in elements_text
+    assert "{type: ApplicationFunction, id: fn-new, name: New Fn}" in elements_text
+    rels_text = rels_path.read_text()
+    assert "{type: Serving, source: existing, target: existing, label: self}" in rels_text
+    assert "{type: Assignment, source: existing, target: fn-new}" in rels_text
+
+
+def test_append_delta_quotes_values_containing_yaml_special_characters(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("")
+    (tmp_path / "relationships.yaml").write_text("")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.append_delta([{"type": "ApplicationFunction", "id": "fn-new", "name": "Has: a colon"}], [])
+
+    assert "name: 'Has: a colon'" in elements_path.read_text()
 
 
 def test_write_and_validate_against_the_real_repo_model() -> None:
