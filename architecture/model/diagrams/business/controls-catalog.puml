@@ -3,6 +3,7 @@
 
 title Business — Controls & Compliance Catalog
 
+Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
 }
@@ -73,7 +74,8 @@ Rel_Access_r(e_id378927722a8d5a, e_id2df79965778556, "checks enablement against"
 Rel_Access_w(e_id378927722a8d5a, e_id41a01cbfc25b5a, "authors")
 Rel_Access_w(e_id378927722a8d5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
-Rel_Triggering_Right(e_id378927722a8d5a, e_id4991c823f6d55b, "blueprints composed into")
+Rel_Triggering_Right(e_id378927722a8d5a, e_id5959dd7c3bbe59, "blueprints proposed as model changes")
+Rel_Triggering_Right(e_id5959dd7c3bbe59, e_id4991c823f6d55b, "validated changes composed into")
 Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Specialization_Up(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
 Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
@@ -90,5 +92,7 @@ Rel_Access_w(e_id18a08f8aff8057, e_idca68dd43dc1854, "records")
 Rel_Association(e_id9f8a83bba77b50, e_idb990615e712f57, "imports (per OSCAL's required import-ap)")
 Rel_Specialization_Up(e_id8a58348ab4605a, e_id9f8a83bba77b50, "pre-release instance")
 Rel_Specialization_Up(e_idca68dd43dc1854, e_id9f8a83bba77b50, "continuous-monitoring instance")
+Rel_Serving_Up(e_id5959dd7c3bbe59, e_id2b5394f913985a, "")
+Rel_Serving_Up(e_id5959dd7c3bbe59, e_ide2cb7f3efa6256, "")
 
 @enduml
