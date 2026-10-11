@@ -74,9 +74,11 @@ dependents only pull in what they actually use.
   value itself.
 - **UI:** a settings surface for editing global and per-component
   provider/model choices and credentials. Per ADR-0020 (no central dashboard),
-  this is a mountable settings page/router the package exposes, which each
-  subsystem UI embeds (the same mounted-router pattern already used by the
-  controls-compliance-catalog playground), not a new standalone app.
+  this is a mountable settings page/router the package exposes (the same
+  mounted-router pattern already used by the controls-compliance-catalog
+  playground), not a new standalone app. The `portal` host mounts it once with
+  every package's components registered; a package may also mount it in its own
+  standalone `app.py` (ADR-0020 update 2026-10-11, GH #120).
 - **Relationship to ADR-0014/ADR-0031:** out of scope here — this ADR governs
   *which provider and credentials* an LLM call uses, not *what content* is
   sent to it. Redaction/PII-gateway behaviour is unaffected and continues to

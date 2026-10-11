@@ -1,10 +1,11 @@
 # ADR-0020: Each subsystem ships its own UI
 
 - **Status:** Accepted
-- **Date:** unknown (pre-dates this log); revised 2026-09-26 (GH #50)
+- **Date:** unknown (pre-dates this log); revised 2026-09-26 (GH #50); updated 2026-10-11 (GH #120)
 - **Sources:** `PROJECT_SPECIFICATION.md` Phase 3; `ARCHITECTURE.md` §3–4, §10; GH #50
   (maintainer decision); [GH #55](https://github.com/wolffy-au/frictionless-architect/issues/55);
-  `relationships.yaml` role↔subsystem Serving edges
+  `relationships.yaml` role↔subsystem Serving edges;
+  [GH #120](https://github.com/wolffy-au/frictionless-architect/issues/120)
 
 ## Context
 
@@ -23,7 +24,8 @@ control authoring).
 ## Decision
 
 Each subsystem package ships its own UI in a `ui/` tree beside its `api/`.
-There is no central dashboard package.
+There is no central dashboard package. The `portal` host package (update
+2026-10-11 below) is not one: it mounts the packages' UIs but owns no feature.
 
 ## Consequences
 
@@ -62,6 +64,30 @@ the platform at all, since most roles span multiple subsystems.
   implementation; no new client-side composition framework
   (module federation, single-spa, Backstage) is adopted.
 - Build tooling for the per-subsystem `ui/` trees remains open, tracked in #55.
+
+**Update (2026-10-11, GH #120): the composition host is `platform/packages/portal`.**
+
+Two package UIs (the `controls-compliance-catalog` playground and
+`modelling-specification`'s conversational authoring, #108) need one place to be
+reached, and each would otherwise mount the `llm-provider-config` settings router
+itself. This settles the mechanism the update above deferred:
+
+- **`portal` is a host, not a dashboard.** One FastAPI app that mounts each
+  package's router under its own path prefix (e.g. `/catalog`, `/modelling`) and
+  owns only shared page chrome, navigation and the per-role landing pages.
+- **Guardrail: no feature logic in `portal`.** Anything that reads or writes
+  domain data belongs to the package that owns it; `portal` only composes. A
+  feature that seems to need `portal` code is a sign it lacks a home package.
+- **Packages export routers.** Each package keeps its own `app.py` for standalone
+  development; `portal` path-depends on its siblings (ADR-0002) and combines their
+  lifespans. Page JS uses prefix-relative URLs so it works mounted or standalone.
+- **Shared routers mount once.** `llm-provider-config`'s settings router is
+  mounted once at `/settings/llm` with every package's components registered
+  (ADR-0034).
+- `portal` lives in `platform/`, not the root `src/`: the root holds no
+  application code (ADR-0001), and only `platform/`'s lock can resolve the packages
+  it composes. The visualiser joins once extracted to `schema-visualizer-api`
+  (ADR-0005).
 
 ## Alternatives considered
 
