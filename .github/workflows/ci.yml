@@ -78,6 +78,16 @@ jobs:
           restore-keys: |
             platform-venv-ubuntu-py3.12-
 
+      - name: Install PlantUML
+        # modelling-specification's rendering tests shell out to `plantuml`.
+        # Same setup as .devcontainer/post-create.sh (apt for the wrapper + Java,
+        # then a newer jar), with the jar pinned to the devcontainer's version.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y plantuml
+          sudo curl -fsSL https://github.com/plantuml/plantuml/releases/download/v1.2026.8/plantuml.jar -o /usr/share/plantuml/plantuml.jar
+          plantuml -version
+
       - name: Run platform/ package checks
         # One shared lock + venv for platform/ (ADR-0002); pyright, mypy and
         # pytest (90% gate) per package. Writes build/platform-coverage-*.xml.
