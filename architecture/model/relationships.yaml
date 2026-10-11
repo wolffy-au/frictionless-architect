@@ -337,7 +337,8 @@
 # do-blueprint), and the solution design is what the spec generator reads
 # (fn-spec-generator reads do-solution-design) — the hand-off from the
 # control-content chain into the delivery chain.
-- {type: Triggering, source: process-blueprint-traceability, target: process-solution-design, label: blueprints composed into}
+- {type: Triggering, source: process-blueprint-traceability, target: process-conversational-authoring, label: blueprints proposed as model changes}
+- {type: Triggering, source: process-conversational-authoring, target: process-solution-design, label: validated changes composed into}
 - {type: Triggering, source: process-solution-design, target: process-spec-generation, label: solution design specified}
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
 - {type: Realization, source: do-blueprint, target: bo-implementation-blueprint}
@@ -366,7 +367,6 @@
 - {type: Composition, source: bfn-drift-management, target: process-state-discovery, label: comprises}
 - {type: Composition, source: bfn-drift-management, target: process-drift-review, label: comprises}
 - {type: Composition, source: bfn-architecture-strategy, target: process-target-state-definition, label: comprises}
-- {type: Composition, source: bfn-architecture-strategy, target: process-conversational-authoring, label: comprises}
 - {type: Assignment, source: role-ea, target: bfn-architecture-strategy}
 - {type: Composition, source: bfn-solution-design, target: process-solution-design, label: comprises}
 - {type: Assignment, source: role-sa, target: bfn-solution-design}
@@ -463,8 +463,6 @@
 - {type: Serving, source: sub-assurance, target: role-ops, label: watches control effectiveness & drift in}
 - {type: Serving, source: sub-assurance, target: role-compliance, label: watches control status in}
 - {type: Serving, source: sub-modelling, target: role-dev, label: consumes specifications from}
-- {type: Serving, source: sub-modelling, target: role-ea, label: "converses on model changes with (GH #108)"}
-- {type: Serving, source: sub-modelling, target: role-sa, label: "converses on model changes with (GH #108)"}
 
 # =====================================================================
 # B. Authoring / OSCAL chain

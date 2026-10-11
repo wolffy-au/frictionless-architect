@@ -1,7 +1,6 @@
 @startuml
 !include <archimate/Archimate>
 
-scale max 3800 width
 title Delivery Choreography
 
 Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
@@ -21,19 +20,20 @@ Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
 Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
 Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 
-Rel_Triggering_Right(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
-Rel_Triggering_Right(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
-Rel_Triggering_Right(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")
-Rel_Triggering_Right(e_id9459a13c29ec5d, e_id3a7a27eefeb751, "initiates discovery for")
-Rel_Triggering_Right(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
-Rel_Triggering_Right(e_idfeca8b2013795e, e_id5bcc1abc98d154, "catalogs feed tailoring")
-Rel_Triggering_Right(e_id5bcc1abc98d154, e_id57b0ad85b82a5e, "tailored profile feeds resolution")
-Rel_Triggering_Right(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
-Rel_Triggering_Right(e_id57b0ad85b82a5e, e_id65065ee24d3c54, "resolved controls feed traceability mapping")
+Rel_Triggering(e_id65467a0befb959, e_id0ee6a752deff52, "produces specification for")
+Rel_Triggering(e_id0ee6a752deff52, e_id799f46ebb7e15b, "submits artefacts to")
+Rel_Triggering(e_id799f46ebb7e15b, e_id9459a13c29ec5d, "gates and passes to")
+Rel_Triggering(e_id9459a13c29ec5d, e_id3a7a27eefeb751, "initiates discovery for")
+Rel_Triggering(e_id3a7a27eefeb751, e_id33612ed603b85e, "surfaces findings for")
+Rel_Triggering(e_idfeca8b2013795e, e_id5bcc1abc98d154, "catalogs feed tailoring")
+Rel_Triggering(e_id5bcc1abc98d154, e_id57b0ad85b82a5e, "tailored profile feeds resolution")
+Rel_Triggering(e_id14fa9f783d5350, e_idfeca8b2013795e, "authored content feeds")
+Rel_Triggering(e_id57b0ad85b82a5e, e_id65065ee24d3c54, "resolved controls feed traceability mapping")
 Rel_Flow(e_id5bcc1abc98d154, e_id18a08f8aff8057, "tailored baseline flows to")
-Rel_Triggering_Right(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
-Rel_Triggering_Right(e_id378927722a8d5a, e_id4991c823f6d55b, "blueprints composed into")
-Rel_Triggering_Right(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
+Rel_Triggering(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
+Rel_Triggering(e_id378927722a8d5a, e_id5959dd7c3bbe59, "blueprints proposed as model changes")
+Rel_Triggering(e_id5959dd7c3bbe59, e_id4991c823f6d55b, "validated changes composed into")
+Rel_Triggering(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
 Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 
 @enduml

@@ -4,6 +4,7 @@
 scale max 3800 width
 title Service Realization
 
+Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
 Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
   Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
   Business_Process(e_id0ee6a752deff52, "Agentic Development Execution")
@@ -142,7 +143,6 @@ Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
     }
     Business_Function(e_id5794c15b037251, "Architecture Strategy") {
       Business_Process(e_id395c9c2923aa56, "Target State Definition")
-      Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
     }
     Business_Function(e_idc1376562b9a354, "Drift Management") {
       Business_Process(e_id3a7a27eefeb751, "Architecture Reconciliation")
@@ -235,7 +235,8 @@ Rel_Access_r(e_id378927722a8d5a, e_id2df79965778556, "checks enablement against"
 Rel_Access_w(e_id378927722a8d5a, e_id41a01cbfc25b5a, "authors")
 Rel_Access_w(e_id378927722a8d5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Triggering(e_id65065ee24d3c54, e_id378927722a8d5a, "mapped pattern feeds blueprint derivation")
-Rel_Triggering(e_id378927722a8d5a, e_id4991c823f6d55b, "blueprints composed into")
+Rel_Triggering(e_id378927722a8d5a, e_id5959dd7c3bbe59, "blueprints proposed as model changes")
+Rel_Triggering(e_id5959dd7c3bbe59, e_id4991c823f6d55b, "validated changes composed into")
 Rel_Triggering(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
 Rel_Realization_Up(e_ide1ad558dbdf859, e_id378927722a8d5a, "")
 Rel_Realization_Up(e_id45483f0cd05c50, e_id41a01cbfc25b5a, "")
@@ -297,8 +298,6 @@ Rel_Serving_Up(e_id492c882252a953, e_ide2cb7f3efa6256, "reviews drift in")
 Rel_Serving_Up(e_id492c882252a953, e_id2c489ee6594253, "watches control effectiveness & drift in")
 Rel_Serving_Up(e_id492c882252a953, e_id5e264d2f4bb551, "watches control status in")
 Rel_Serving_Up(e_id82f04fecbdd85e, e_id2c72565ddd6c52, "consumes specifications from")
-Rel_Serving_Up(e_id82f04fecbdd85e, e_id2b5394f913985a, "converses on model changes with (GH #108)")
-Rel_Serving_Up(e_id82f04fecbdd85e, e_ide2cb7f3efa6256, "converses on model changes with (GH #108)")
 Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
 Rel_Serving_Up(e_id0aed952692a556, e_id71815b3c9d365f, "runs `trestle validate` for")
 Rel_Serving_Up(e_id0aed952692a556, e_id959e350a39c158, "provides profile authoring for")
