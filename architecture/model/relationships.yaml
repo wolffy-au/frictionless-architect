@@ -61,6 +61,7 @@
 - {type: Realization, source: cap-control-catalog, target: coa-executable-governance}
 - {type: Realization, source: cap-human-approval-workflow, target: coa-executable-governance}
 - {type: Realization, source: cap-forensic-ledger, target: coa-executable-governance}
+- {type: Realization, source: cap-conversational-governance, target: coa-executable-governance}
 - {type: Realization, source: cap-digital-twin, target: coa-living-twin}
 - {type: Realization, source: cap-drift-dashboard, target: coa-living-twin}
 - {type: Realization, source: cap-reusable-architecture, target: coa-reuse-first}
