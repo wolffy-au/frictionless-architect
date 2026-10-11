@@ -287,7 +287,7 @@ apply/decide→render loop against the real API, for all three user stories, in 
   correctly in a real browser
 - [X] T079 Run `bash scripts/pre_commit_checks.sh` and `bash scripts/platform_checks.sh`
   with the UI phase's new tests included; confirm the 90% coverage gate still holds
-- [ ] T080 Post a summary comment on GH issue #108 noting the UI phase landed (pointing at
+- [X] T080 Post a summary comment on GH issue #108 noting the UI phase landed (pointing at
   the commit hash), closing the one narrative gap the
   [2026-10-11 handoff comment](https://github.com/wolffy-au/frictionless-architect/issues/108#issuecomment-6108567957)
   flagged, and confirm with the maintainer whether the issue should close or stay open for
