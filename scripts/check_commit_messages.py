@@ -31,7 +31,7 @@ MAX_SUBJECT = 72
 MAX_BODY_LINE = 72
 TRAILER = re.compile(r"^(BREAKING CHANGE|[A-Za-z][A-Za-z-]*): ")
 SUBJECT = re.compile(r"^(?P<type>[a-z]+)(?:\((?P<scope>[^)]*)\))?(?P<bang>!)?: (?P<desc>.+)$")
-AUTO_PREFIXES = ("Merge ", 'Revert "', "fixup! ", "squash! ")
+AUTO_PREFIXES = ("Merge ", 'Revert "', "fixup! ", "squash! ", "bump: version ")
 
 
 def area_scopes(standard: Path = STANDARD) -> set[str]:
