@@ -4,7 +4,12 @@ litellm (never a live network, plan.md Testing)."""
 from __future__ import annotations
 
 import pytest
-from modelling_specification.authoring.delta import DeltaProposalError, assign_missing_ids, propose_delta
+from modelling_specification.authoring.delta import (
+    DeltaProposalError,
+    assign_missing_ids,
+    propose_delta,
+    resolve_unknown_endpoints,
+)
 from support.fake_llm import FakeCompletion
 
 
@@ -98,3 +103,36 @@ def test_assign_missing_ids_deduplicates_against_existing_and_sibling_ids() -> N
     )
 
     assert [e["id"] for e in result] == ["applicationfunction-x-2", "applicationfunction-x-3"]
+
+
+def test_propose_delta_gives_the_llm_the_existing_element_catalogue(configured_fake_llm: FakeCompletion) -> None:
+    propose_delta("link drift to the goal", [("assess-drift-debt", "Assessment", "Architectural drift")])
+
+    system = configured_fake_llm.calls[0]["messages"][0]["content"]
+    assert "assess-drift-debt | Assessment | Architectural drift" in system
+
+
+_KNOWN = {
+    "assess-drift-debt": "Architectural drift is accumulating as unmanaged risk",
+    "goal-frictionless-architecture": "Frictionless Architecture & Governance at Machine Speed",
+    "role-ea": "Enterprise Architect",
+}
+
+
+def test_resolve_unknown_endpoints_repoints_a_misspelt_id_and_reports_it() -> None:
+    rels = [{"type": "Association", "source": "assess-drfit-debt", "target": "goal-frictionless-architecture"}]
+
+    resolved, notes = resolve_unknown_endpoints(rels, _KNOWN)
+
+    assert resolved[0]["source"] == "assess-drift-debt"
+    assert resolved[0]["target"] == "goal-frictionless-architecture"
+    assert len(notes) == 1 and "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_endpoints_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    rels = [{"type": "Association", "source": "something-unrelated", "target": "role-ea"}]
+
+    resolved, notes = resolve_unknown_endpoints(rels, _KNOWN)
+
+    assert resolved == rels
+    assert notes == []

@@ -307,11 +307,14 @@ _PAGE = """\
   }
 
   function renderProposeResponse(body) {
-    const findingsHtml = renderFindings(body);
-    const div = addMessage("agent", (findingsHtml || "Looks good -- no objections.") );
+    const notes = (body.notes || []).map((n) => '<div class="finding">Corrected: ' + escapeHtml(n) + "</div>").join("");
+    const empty = !(body.elements || []).length && !(body.relationships || []).length;
+    const findingsHtml = notes + renderFindings(body);
+    const div = addMessage("agent", findingsHtml
+      || "Looks good -- no objections. Nothing is written until you choose a state and click Apply.");
     wireDecisionButtons(div, body.delta_id);
     currentDeltaId = body.delta_id;
-    currentDeltaValidated = body.status === "validated";
+    currentDeltaValidated = body.status === "validated" && !empty;
     currentElements = body.elements || [];
     currentRelationships = body.relationships || [];
     updateApplyButton();

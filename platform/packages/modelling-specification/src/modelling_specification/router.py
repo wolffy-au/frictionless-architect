@@ -14,7 +14,12 @@ from pydantic import BaseModel
 
 from modelling_specification import model_io, rendering
 from modelling_specification.authoring import overrides
-from modelling_specification.authoring.delta import DeltaProposalError, assign_missing_ids, propose_delta
+from modelling_specification.authoring.delta import (
+    DeltaProposalError,
+    assign_missing_ids,
+    propose_delta,
+    resolve_unknown_endpoints,
+)
 from modelling_specification.authoring.state import CandidateDelta, DeltaStatus, SessionStore
 from modelling_specification.validation import conventions
 from modelling_specification.validation.duplicates import find_duplicates
@@ -85,15 +90,22 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     if _store.get_session(session_id) is None:
         raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
 
+    existing, types_by_id = model_io.existing_elements_and_types()
+    catalogue = [
+        (e["id"], types_by_id[e["id"]], str(e.get("name", ""))) for e in existing if e.get("id") in types_by_id
+    ]
     try:
-        proposed = propose_delta(body.request)
+        proposed = propose_delta(body.request, catalogue)
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     new_elements = assign_missing_ids(proposed["elements"], model_io.existing_element_ids())
-    new_relationships = proposed["relationships"]
-
     delta = _store.pending_delta(session_id)
+    in_flight = [*(delta.elements if delta else []), *new_elements]
+    known_names = {eid: name for eid, _etype, name in catalogue}
+    known_names.update({e["id"]: str(e.get("name", "")) for e in in_flight if e.get("id")})
+    new_relationships, notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
+
     if delta is None:
         delta = CandidateDelta(delta_id=_store.new_delta_id(), session_id=session_id)
         _store.add_delta(session_id, delta)
@@ -104,7 +116,15 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     delta.relationships = delta.relationships + new_relationships
 
     _validate_and_flag(delta)
-    return _delta_response(delta)
+    response = _delta_response(delta)
+    if not delta.elements and not delta.relationships:
+        notes.append(
+            "No change was proposed. This feature can only add elements and relationships; "
+            "it cannot edit, rename or remove existing ones."
+        )
+    if notes:
+        response["notes"] = notes
+    return response
 
 
 def _delta_element_types(elements: list[dict[str, Any]]) -> dict[str, str]:
