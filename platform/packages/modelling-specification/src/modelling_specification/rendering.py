@@ -229,6 +229,11 @@ def _all_views() -> list[dict[str, Any]]:
     return views
 
 
+def list_views() -> list[dict[str, str]]:
+    """`{id, name}` for every renderable view, in file order (the UI's view picker)."""
+    return [{"id": v["id"], "name": str(v.get("name", v["id"]))} for v in _all_views() if "id" in v]
+
+
 def _refresh_model_if_sources_changed() -> None:
     """Rebuild the generated model when any YAML source is newer than its XML."""
     if not OUT.exists():
