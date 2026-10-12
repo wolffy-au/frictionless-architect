@@ -122,3 +122,27 @@ def test_connection_test_success_and_failure(client: TestClient, monkeypatch: py
     body = client.post("/settings/llm/test", json={}).json()
     assert body["ok"] is False
     assert "connection refused" in body["message"]
+
+
+def test_default_connection_test_ignores_component_overrides(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client.put("/settings/llm/default", json=OLLAMA)
+    client.put("/settings/llm/components/pkg.feature", json={**OLLAMA, "model": "override-model"})
+    seen: dict[str, Any] = {}
+
+    def fake_completion(**kwargs: Any) -> object:
+        seen.update(kwargs)
+        return object()
+
+    monkeypatch.setattr(router_module, "completion", fake_completion)
+    assert client.post("/settings/llm/test", json={}).json()["message"] == "ollama_chat/gemma4:12b responded."
+    assert client.post("/settings/llm/test", json={"component": "pkg.feature"}).json()["message"] == (
+        "ollama_chat/override-model responded."
+    )
+
+
+def test_page_prefills_an_inheriting_component_from_the_default(client: TestClient) -> None:
+    page = client.get("/settings/llm").text
+    assert "const shown = current || inherited" in page
+    assert "save.disabled = true" in page
