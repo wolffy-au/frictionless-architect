@@ -454,6 +454,12 @@ _PAGE = """\
   }
 
   function renderProposeResponse(body) {
+    if (body.status === "message") {
+      // The LLM asked a question or made a suggestion instead of proposing a delta.
+      const bubble = addMessage("agent", escapeHtml(body.message));
+      bubble.style.whiteSpace = "pre-wrap";
+      return body;
+    }
     const notes = (body.notes || []).map((n) => '<div class="finding">Corrected: ' + escapeHtml(n) + "</div>").join("");
     const empty = !(body.elements || []).length && !(body.relationships || []).length;
     const findingsHtml = notes + renderFindings(body);

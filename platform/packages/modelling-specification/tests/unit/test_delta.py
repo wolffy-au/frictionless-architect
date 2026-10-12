@@ -6,6 +6,7 @@ from __future__ import annotations
 import pytest
 from modelling_specification.authoring.delta import (
     DeltaProposalError,
+    LlmMessage,
     assign_missing_ids,
     propose_delta,
     resolve_unknown_endpoints,
@@ -57,11 +58,19 @@ def test_propose_delta_rejects_an_empty_response(configured_fake_llm: FakeComple
         propose_delta("add a function")
 
 
-def test_propose_delta_rejects_unparseable_json(configured_fake_llm: FakeCompletion) -> None:
-    configured_fake_llm.content = "not json at all"
+def test_propose_delta_surfaces_a_plain_text_reply_as_a_message(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = "Which assessment do you mean?"
 
-    with pytest.raises(DeltaProposalError, match="unparseable"):
-        propose_delta("add a function")
+    with pytest.raises(LlmMessage) as caught:
+        propose_delta("suggest a goal")
+
+    assert caught.value.text == "Which assessment do you mean?"
+
+
+def test_propose_delta_tells_the_llm_it_may_ask_or_suggest_in_plain_text(configured_fake_llm: FakeCompletion) -> None:
+    propose_delta("add a function")
+
+    assert "plain-text message" in configured_fake_llm.calls[0]["messages"][0]["content"]
 
 
 def test_propose_delta_rejects_a_response_missing_elements_or_relationships(
