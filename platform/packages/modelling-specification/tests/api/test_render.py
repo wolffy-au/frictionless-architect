@@ -58,3 +58,10 @@ def test_views_lists_every_renderable_view_with_id_and_name() -> None:
 def test_render_svg_reports_which_view_it_rendered() -> None:
     response = client.get("/authoring/render", params={"object_id": "view-stakeholder", "format": "svg"})
     assert response.headers["X-View-Id"] == "view-stakeholder"
+
+
+def test_render_svg_is_served_with_hardening_headers() -> None:
+    response = client.get("/authoring/render", params={"object_id": "view-stakeholder", "format": "svg"})
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert "default-src 'none'" in response.headers["Content-Security-Policy"]
+    assert "<script" not in response.text

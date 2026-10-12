@@ -2778,6 +2778,7 @@ files = []
 develop = true
 
 [package.dependencies]
+defusedxml = ">=0.7.1,<0.8.0"
 fastapi = ">=0.141.0,<0.142.0"
 litellm = ">=1.0.0,<2.0.0"
 llm-provider-config = "*"
