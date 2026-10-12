@@ -16,6 +16,7 @@ from modelling_specification import model_io, rendering
 from modelling_specification.authoring import overrides
 from modelling_specification.authoring.delta import (
     DeltaProposalError,
+    LlmMessage,
     assign_missing_ids,
     propose_delta,
     resolve_unknown_endpoints,
@@ -96,6 +97,8 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     ]
     try:
         proposed = propose_delta(body.request, catalogue)
+    except LlmMessage as message:
+        return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 

@@ -52,6 +52,12 @@ start
 :Describe a model change\nin plain language;
 |Agent|
 :Ask the LLM for a candidate delta\n(request + catalogue of existing elements);
+if (Reply is plain text?) then (yes)
+  :Show the LLM's question or suggestion\nin the chat; nothing is proposed;
+  |Architect|
+  stop
+else (no)
+endif
 :Repoint a misspelt endpoint at its\nunique nearest element and report it;
 if (Delta empty?) then (yes)
   :Say nothing was proposed\n(add-only: no edit, rename or remove);

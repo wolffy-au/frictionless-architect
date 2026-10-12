@@ -105,3 +105,18 @@ def test_propose_reusing_an_existing_id_explains_that_edits_are_unsupported(
 
     (finding,) = body["validation_result"]["findings"]
     assert "cannot edit" in finding["proposed_fix"]
+
+
+def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = "A good goal would be 'Reconcile drift continuously'. Shall I add it?"
+    session_id = _new_session()
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "suggest a goal"})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "message"
+    assert "Reconcile drift continuously" in body["message"]
+    assert body["delta_id"] is None and body["elements"] == [] and body["relationships"] == []
