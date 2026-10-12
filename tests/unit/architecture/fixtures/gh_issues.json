@@ -29,6 +29,7 @@
             "title": "Vision: single high-level ArchiMate",
             "state": "CLOSED",
             "closedAt": "2026-09-30T10:00:00Z",
+            "stateReason": "COMPLETED",
             "url": "https://github.com/o/r/issues/7",
             "milestone": {"number": 1},
             "parent": null,
