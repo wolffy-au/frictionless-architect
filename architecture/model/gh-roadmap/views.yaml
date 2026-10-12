@@ -57,6 +57,7 @@
   - del-policy-to-oscal-mvp-1-unreleased
   - del-release-v0-1-0
   - del-release-v0-1-1
+  - del-release-v0-2-0
   - plat-policy-to-oscal-mvp-1
   - wp-add-compliance-trestle-dependency-and-gh-23
   - wp-adr-decide-the-oscal-trestle-vendoring-gh-19
