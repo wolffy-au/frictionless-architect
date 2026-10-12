@@ -400,6 +400,37 @@ def get_render(
     }
 
 
+@router.get("/sessions/{session_id}/deltas/{delta_id}/preview")
+def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> Response:
+    """Render a pending delta in a view *before* anything is written (nothing is
+    persisted). Without `view_id`, the view is resolved from an existing element the
+    delta touches; ambiguity or no match is reported like `GET /render`."""
+    delta = _store.get_delta(session_id, delta_id)
+    if delta is None or delta.status in (DeltaStatus.APPLIED, DeltaStatus.DISCARDED):
+        raise HTTPException(status_code=404, detail=f"no pending delta {delta_id!r}")
+    if not delta.elements and not delta.relationships:
+        raise HTTPException(status_code=409, detail="the delta is empty; there is nothing to preview")
+    if view_id is None:
+        existing = model_io.existing_element_ids()
+        touched = [e for r in delta.relationships for e in (r.get("source"), r.get("target")) if e in existing]
+        resolution = rendering.resolve_view_request(touched[0] if touched else None, None)
+        if resolution["ambiguous_candidates"]:
+            return JSONResponse(status_code=300, content={"ambiguous_candidates": resolution["ambiguous_candidates"]})
+        resolved = resolution["resolved_view_id"]
+        if resolved is None:
+            raise HTTPException(status_code=404, detail="no view to preview in; choose one")
+        view_id = str(resolved)
+    try:
+        svg = rendering.render_candidate_view(view_id, delta.elements, delta.relationships)
+    except rendering.ViewNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except rendering.PreviewError as exc:
+        raise HTTPException(status_code=409, detail=f"cannot preview this change: {exc}") from exc
+    return Response(
+        content=svg, media_type="image/svg+xml", headers={"Cache-Control": "no-store", "X-View-Id": view_id}
+    )
+
+
 @router.get("/sessions/{session_id}/deltas/{delta_id}/state")
 def get_state(session_id: str, delta_id: str) -> dict[str, Any]:
     """FR-010: the classification recorded at apply time, looked up over the applied
