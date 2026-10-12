@@ -24,6 +24,9 @@
   source: del-release-v0-1-1
   target: plat-policy-to-oscal-mvp-1
 - type: Realization
+  source: del-release-v0-2-0
+  target: plat-policy-to-oscal-mvp-1
+- type: Realization
   source: del-solution-design-mvp-8-unreleased
   target: plat-solution-design-mvp-8
 - type: Realization
