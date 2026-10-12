@@ -476,6 +476,10 @@
 - {type: Serving, source: sub-assurance, target: role-ops, label: watches control effectiveness & drift in}
 - {type: Serving, source: sub-assurance, target: role-compliance, label: watches control status in}
 - {type: Serving, source: sub-modelling, target: role-dev, label: consumes specifications from}
+- {type: Composition, source: sub-modelling, target: if-modelling-authoring-ui}
+- {type: Serving, source: if-modelling-authoring-ui, target: role-ea, label: "propose, review & apply model changes"}
+- {type: Serving, source: if-modelling-authoring-ui, target: role-sa, label: "propose, review & apply model changes"}
+- {type: Serving, source: fn-conversational-authoring, target: if-modelling-authoring-ui, label: exposed via}
 
 # =====================================================================
 # B. Authoring / OSCAL chain
