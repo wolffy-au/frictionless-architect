@@ -444,7 +444,7 @@ _PAGE = """\
     const empty = !(body.elements || []).length && !(body.relationships || []).length;
     const findingsHtml = notes + renderFindings(body);
     const div = addMessage("agent", findingsHtml
-      || "Looks good -- no objections. Nothing is written until you choose a state and click Apply.");
+      || "Looks good -- no objections. Nothing is written until you click Apply.");
     wireDecisionButtons(div, body.delta_id);
     currentDeltaId = body.delta_id;
     currentDeltaValidated = body.status === "validated" && !empty;
