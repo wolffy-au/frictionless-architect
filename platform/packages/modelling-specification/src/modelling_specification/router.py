@@ -371,6 +371,11 @@ def _resolve_and_render(object_id: str | None, description: str | None) -> dict[
     }
 
 
+@router.get("/views")
+def get_views() -> list[dict[str, str]]:
+    return rendering.list_views()
+
+
 @router.get("/render")
 def get_render(
     object_id: str | None = None,
@@ -384,7 +389,11 @@ def get_render(
         raise HTTPException(status_code=404, detail="no view resolves from the given object_id/description")
     svg = rendering.render_single_view(resolution["resolved_view_id"])
     if output_format == "svg":
-        return Response(content=svg, media_type="image/svg+xml", headers={"Cache-Control": "no-store"})
+        return Response(
+            content=svg,
+            media_type="image/svg+xml",
+            headers={"Cache-Control": "no-store", "X-View-Id": resolution["resolved_view_id"]},
+        )
     return {
         "view_id": resolution["resolved_view_id"],
         "svg": svg,

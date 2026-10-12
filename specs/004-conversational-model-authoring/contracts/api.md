@@ -93,6 +93,12 @@ Queryable classification lookup (FR-010).
 { "applies_to": "fn-example", "value": "Transition" }
 ```
 
+## GET /authoring/views
+
+The renderable views, for the UI's view picker.
+
+- **Response (200)**: `[{ "id": "view-stakeholder", "name": "Stakeholder" }, ...]` -- every `views.yaml` entry across the first-party, gh-roadmap and vendored sources, in file order. Pass an `id` as `GET /authoring/render?object_id=` to render it.
+
 ## GET /authoring/render
 
 - **Query**: `object_id` (name an element/view directly) or `description` (resolve a View Request); optional `format=svg` returns the SVG document directly with `image/svg+xml` content type (the default `format=json` response remains unchanged)
