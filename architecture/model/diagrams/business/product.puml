@@ -74,6 +74,7 @@ Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
   Application_Function(e_id5447be33805351, "Drift & Deviation Detection")
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Interface(e_id178b6a78b39b51, "Conversational Authoring UI")
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
   Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
@@ -314,6 +315,9 @@ Rel_Serving_Up(e_id492c882252a953, e_ide2cb7f3efa6256, "reviews drift in")
 Rel_Serving_Up(e_id492c882252a953, e_id2c489ee6594253, "watches control effectiveness & drift in")
 Rel_Serving_Up(e_id492c882252a953, e_id5e264d2f4bb551, "watches control status in")
 Rel_Serving_Up(e_id82f04fecbdd85e, e_id2c72565ddd6c52, "consumes specifications from")
+Rel_Serving_Up(e_id178b6a78b39b51, e_id2b5394f913985a, "propose, review & apply model changes")
+Rel_Serving_Up(e_id178b6a78b39b51, e_ide2cb7f3efa6256, "propose, review & apply model changes")
+Rel_Serving_Up(e_id7cc5a30769435c, e_id178b6a78b39b51, "exposed via")
 Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
 Rel_Serving_Up(e_id0aed952692a556, e_id71815b3c9d365f, "runs `trestle validate` for")
 Rel_Serving_Up(e_id0aed952692a556, e_id959e350a39c158, "provides profile authoring for")

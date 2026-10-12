@@ -14,7 +14,9 @@ Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
 }
 Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance")
 Application_Component(e_id492c882252a953, "Conformance & Drift Assurance")
-Application_Component(e_id82f04fecbdd85e, "Modelling & Specification")
+Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Interface(e_id178b6a78b39b51, "Conversational Authoring UI")
+}
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration") {
   Application_Interface(e_idcefe9c2a8ca45f, "LLM Settings UI")
