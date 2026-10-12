@@ -986,6 +986,26 @@
     policy/standard documents, reviews prose-quality feedback before
     conversion, and tracks Catalog / Profile status.
 - type: ApplicationInterface
+  id: if-catalog-playground
+  name: Control Conversion Playground
+  desc: >-
+    Dev-tool interface (GH #76) that runs one control through both
+    conversion paths — AI-candidate prose-to-Markdown and the deterministic
+    OSCAL-to-Markdown reference — for ad hoc, side-by-side comparison.
+    Distinct from if-catalog-ui's end-to-end upload/feedback/status journey;
+    not a journey-API role by design, mounted by the portal at /catalog
+    (ADR-0020, GH #120).
+- type: ApplicationInterface
+  id: if-llm-settings-ui
+  name: LLM Settings UI
+  desc: >-
+    Mountable settings page and JSON API (ADR-0034) for the global LLM
+    default, per-component overrides and API keys; mounted by the portal at
+    /settings/llm (GH #120) and by each consuming package's own standalone
+    app.py. Whichever role is configuring a package's AI features uses it,
+    not one specific BusinessRole journey, so — like if-twin-read-path — it
+    carries no Serving edge to a role.
+- type: ApplicationInterface
   id: if-portal-ui
   name: Portal UI
   desc: >-

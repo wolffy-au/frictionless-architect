@@ -41,6 +41,7 @@ Business_Object(e_id195b0ade075454, "Architecture Conformance Register") {
 }
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Interface(e_id95791e10ad1d54, "Compliance Catalog UI")
+  Application_Interface(e_id8b35221248445f, "Control Conversion Playground")
   Application_Function(e_id973425b560995f, "Upload Policy / Standard Document")
   Application_Function(e_id40061cb7ae1c53, "Policy Prose Quality Feedback")
   Application_Function(e_id7ce9f3c91f1f53, "AI-Assisted Markdown Conversion")
@@ -74,7 +75,9 @@ Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
-Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration") {
+  Application_Interface(e_idcefe9c2a8ca45f, "LLM Settings UI")
+}
 Application_Component(e_id6c2233bb09755d, "Portal") {
   Application_Interface(e_iddb64491a22875a, "Portal UI")
 }
@@ -280,6 +283,7 @@ Rel_Realization_Up(e_id54ef3a7ba52853, e_id9f8a83bba77b50, "")
 Rel_Association(e_id54ef3a7ba52853, e_id1d885b26074d5f, "imports (per OSCAL's required import-ap)")
 Rel_Serving_Up(e_ide4bef3733af65a, e_id5e264d2f4bb551, "authors control content in")
 Rel_Serving_Up(e_id95791e10ad1d54, e_id5e264d2f4bb551, "upload, feedback & status UI")
+Rel_Serving_Up(e_id8b35221248445f, e_id5e264d2f4bb551, "AI vs. reference conversion playground")
 Rel_Serving_Up(e_id3b0beba52b5a5c, e_id2b5394f913985a, "curates patterns & models future-state options in")
 Rel_Serving_Up(e_id3b0beba52b5a5c, e_ide2cb7f3efa6256, "composes blueprints & designs in")
 Rel_Serving_Up(e_id3b0beba52b5a5c, e_id10a12f8c7cac51, "runs threat models in")
