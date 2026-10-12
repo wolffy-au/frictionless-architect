@@ -147,3 +147,26 @@ def step_view_still_selected(context: Context, view_id: str) -> None:
 @then("no view question is asked")
 def step_no_view_question(context: Context) -> None:
     assert context.page.inner_text("#render-status") == ""
+
+
+@when('the architect sets state "{state}", auto-render on and the view "{view_id}"')
+def step_set_preferences(context: Context, state: str, view_id: str) -> None:
+    context.page.select_option("#state-select", state)
+    context.page.check("#auto-render-toggle")
+    context.page.locator("#view-select:not([disabled])").wait_for()
+    context.page.select_option("#view-select", view_id)
+    context.page.locator("#render-pane svg").wait_for()
+
+
+@when("the architect reloads the page")
+def step_reload(context: Context) -> None:
+    context.page.reload()
+    context.page.wait_for_selector("#chat-input")
+
+
+@then('the state is "{state}", auto-render is on and the view "{view_id}" is shown')
+def step_preferences_restored(context: Context, state: str, view_id: str) -> None:
+    context.page.locator("#render-pane svg").wait_for()
+    assert context.page.eval_on_selector("#state-select", "el => el.value") == state
+    assert context.page.is_checked("#auto-render-toggle")
+    assert context.page.eval_on_selector("#view-select", "el => el.value") == view_id

@@ -149,6 +149,13 @@ _PAGE = """\
 (function () {
   "use strict";
 
+  // Per-browser preferences, restored on load. Storage can be blocked or throw, so
+  // every access is guarded and the page works fine without it.
+  const prefs = {
+    get(key) { try { return window.localStorage.getItem("authoring." + key); } catch (e) { return null; } },
+    set(key, value) { try { window.localStorage.setItem("authoring." + key, value); } catch (e) { /* ignore */ } },
+  };
+
   function escapeHtml(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
@@ -244,7 +251,10 @@ _PAGE = """\
       return;
     }
     currentViewId = response.headers.get("X-View-Id");
-    if (currentViewId) viewSelect.value = currentViewId;
+    if (currentViewId) {
+      viewSelect.value = currentViewId;
+      prefs.set("view", currentViewId);
+    }
     renderCanvas.innerHTML = await response.text();
     loadDiagram();
   }
@@ -341,7 +351,7 @@ _PAGE = """\
     if (!result) return;
     addMessage("agent", "Applied as <b>" + escapeHtml(result.state_classification) + "</b>."
       + (result.override_decision_id ? " Recorded as override decision " + escapeHtml(result.override_decision_id) + "." : ""));
-    stateSelect.value = "Target";
+    // The chosen state is kept (and remembered) for the next change.
   }
 
   function resetPendingDelta() {
@@ -455,6 +465,14 @@ _PAGE = """\
     const body = await response.json();
     autoRenderEnabled = !!body.auto_render;
     autoRenderToggle.checked = autoRenderEnabled;
+    const savedAutoRender = prefs.get("autoRender");
+    if (savedAutoRender !== null && (savedAutoRender === "true") !== autoRenderEnabled) {
+      autoRenderEnabled = savedAutoRender === "true";
+      autoRenderToggle.checked = autoRenderEnabled;
+      await fetch("/authoring/config", {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ auto_render: autoRenderEnabled }),
+      });
+    }
     // Enabled only once loaded, so a toggle can never race the initial GET and
     // get silently reverted by it (the checkbox starts `disabled` in markup;
     // Playwright/user interaction waits for actionability, i.e. this).
@@ -514,13 +532,18 @@ _PAGE = """\
     }
   });
 
+  const savedState = prefs.get("state");
+  if (savedState && [...stateSelect.options].some((o) => o.value === savedState)) stateSelect.value = savedState;
+
   stateSelect.addEventListener("change", () => {
+    prefs.set("state", stateSelect.value);
     applyError.textContent = "";
     updateApplyButton();
   });
 
   autoRenderToggle.addEventListener("change", async () => {
     autoRenderEnabled = autoRenderToggle.checked;
+    prefs.set("autoRender", autoRenderEnabled);
     await fetch("/authoring/config", {
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ auto_render: autoRenderEnabled }),
     });
@@ -542,6 +565,11 @@ _PAGE = """\
       viewSelect.appendChild(option);
     }
     viewSelect.disabled = false;
+    const savedView = prefs.get("view");
+    if (savedView && [...viewSelect.options].some((o) => o.value === savedView)) {
+      viewSelect.value = savedView;
+      await showSelectedView();
+    }
   }
 
   (async function init() {

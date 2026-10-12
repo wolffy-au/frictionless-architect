@@ -47,3 +47,8 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     And the architect picks the state "Transition" and clicks Apply in the UI
     Then the view "view-gh108-conversational-authoring" is still selected
     And no view question is asked
+
+  Scenario: The page remembers its settings across a reload
+    When the architect sets state "Transition", auto-render on and the view "view-stakeholder"
+    And the architect reloads the page
+    Then the state is "Transition", auto-render is on and the view "view-stakeholder" is shown
