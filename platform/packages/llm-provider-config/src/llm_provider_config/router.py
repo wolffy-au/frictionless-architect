@@ -140,11 +140,17 @@ def _key_routes(router: APIRouter) -> None:
 def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
     @router.post("/test", responses={404: {"description": "Unknown component."}})
     def test_connection(body: ConnectionTestBody) -> dict[str, Any]:
-        target = body.component or next(iter(known), "")
-        if body.component is not None:
-            _require_component(known, body.component)
+        settings: LlmSettings | None = None
+        target = body.component
+        if target is None:
+            # The Global Default button names no component: test the default itself,
+            # not whichever component happens to be registered first (and overridden).
+            settings = LlmSettings(default=load_settings().default)
+            target = "global default"
+        else:
+            _require_component(known, target)
         try:
-            call = resolve_call(target)
+            call = resolve_call(target, settings)
         except (NotConfiguredError, MissingCredentialError) as exc:
             return {"ok": False, "message": str(exc)}
         try:
@@ -211,12 +217,13 @@ _PAGE = """<!doctype html>
   };
   const say = (node, text, ok) => { node.textContent = text; node.className = "msg " + (ok ? "ok" : "err"); };
 
-  function settingsForm(current, onSave, onClear, testComponent) {
+  function settingsForm(current, onSave, onClear, testComponent, inherited) {
     const prov = el("select"); providers.forEach(p => prov.append(el("option", {value:p.id, textContent:p.id})));
     const model = el("input", {placeholder:"e.g. gemma4:12b"});
     const base_ = el("input", {placeholder:"optional, e.g. http://localhost:11434"});
     const params = el("input", {placeholder:'{"temperature": 0}'});
-    if (current) { prov.value = current.provider; model.value = current.model; base_.value = current.api_base || ""; params.value = JSON.stringify(current.params || {}); }
+    const shown = current || inherited;
+    if (shown) { prov.value = shown.provider; model.value = shown.model; base_.value = shown.api_base || ""; params.value = JSON.stringify(shown.params || {}); }
     else params.value = "{}";
     const msg = el("div", {className:"msg"});
     const save = el("button", {className:"primary", textContent:"Save"});
@@ -227,6 +234,11 @@ _PAGE = """<!doctype html>
         await onSave(body); say(msg, "Saved.", true); load();
       } catch (e) { say(msg, e.message, false); }
     };
+    if (!current && inherited) {
+      // Showing the inherited default: only an actual edit creates an override.
+      save.disabled = true;
+      [prov, model, base_, params].forEach(f => { f.oninput = f.onchange = () => { save.disabled = false; }; });
+    }
     const test = el("button", {textContent:"Test connection"});
     test.onclick = async () => {
       say(msg, "Testing\\u2026", true);
@@ -270,7 +282,7 @@ _PAGE = """<!doctype html>
       comps.append(el("h2", {}, c.label, " ", el("span", {className:"pill"}, c.override ? "override" : "inherits default")));
       comps.append(el("div", {className:"pill"}, c.id));
       comps.append(settingsForm(c.override, b => api("PUT", "/components/" + c.id, b),
-        c.override ? () => api("DELETE", "/components/" + c.id) : null, c.id));
+        c.override ? () => api("DELETE", "/components/" + c.id) : null, c.id, s.default));
     });
   }
   load().catch(e => { document.querySelector(".wrap").append(el("div", {className:"msg err", textContent:e.message})); });
