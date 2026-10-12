@@ -30,6 +30,10 @@ redeclaring them. The existing elements are listed below as "id | type | name": 
 the architect names to the closest element, even when they misspell it or give only part of
 its name, and copy that id exactly. Never invent an id for an element that already exists.
 
+If the request is too vague to form a concrete delta, or asks you to suggest something,
+reply with a short plain-text message instead of JSON: one clarifying question, or your
+suggestions for the architect to restate as a concrete request.
+
 You can only ADD elements and relationships. If the request asks to rename, edit or remove
 something that already exists, return {"elements": [], "relationships": []} rather than
 re-declaring the existing element."""
@@ -40,6 +44,16 @@ _SURROUNDING_FENCE = re.compile(r"\A\s*```[A-Za-z]*\n(.*?)\n```\s*\Z", re.DOTALL
 
 class DeltaProposalError(Exception):
     """Raised when the LLM call fails or returns an unparseable delta (contracts/api.md 502)."""
+
+
+class LlmMessage(Exception):
+    """The LLM answered in plain text instead of a delta -- a clarifying question or a
+    suggestion (FR-001: ask, don't guess). Carries the text to show the architect; no
+    Candidate Delta is created."""
+
+    def __init__(self, text: str) -> None:
+        super().__init__(text)
+        self.text = text
 
 
 def _message_content(response: Any) -> str:
@@ -85,7 +99,7 @@ def propose_delta(request: str, catalogue: list[tuple[str, str, str]] | None = N
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as exc:
-        raise DeltaProposalError(f"The LLM returned unparseable JSON ({call.model}): {exc}") from exc
+        raise LlmMessage(content) from exc
 
     if (
         not isinstance(payload, dict)

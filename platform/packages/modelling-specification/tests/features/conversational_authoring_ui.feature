@@ -61,3 +61,9 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     And the model files are unchanged
     When the architect clicks Apply in the UI
     Then the preview banner is gone
+
+  Scenario: A suggestion or question from the LLM is shown in the chat, not as an error
+    Given the LLM answers with the plain-text message "Which assessment do you mean?"
+    When the architect sends that request in the UI
+    Then the chat pane shows the message "Which assessment do you mean?"
+    And Apply is still disabled

@@ -67,7 +67,8 @@ Starts a session. Returns `session_id`, used by every other call below.
     "pattern_suggestions": [{"proposed_relationship": {...}, "established_pattern": {"intermediary_types": ["Artifact"]}}]
   }
   ```
-- **Error (502)**: the LLM call failed or returned an unparseable delta — no Candidate Delta is created; the architect is told to rephrase.
+- **Response (200)** — message (FR-001: ask, don't guess): when the LLM answers in plain text instead of a delta (a clarifying question, or suggestions for the architect to restate), `{ "delta_id": null, "status": "message", "message": "...", "elements": [], "relationships": [] }`. No Candidate Delta is created and nothing is applied.
+- **Error (502)**: the LLM call failed, was empty, or returned JSON that is not a delta (missing `elements`/`relationships`) — no Candidate Delta is created; the architect is told to rephrase.
 
 ## POST /authoring/sessions/{session_id}/deltas/{delta_id}/decide
 

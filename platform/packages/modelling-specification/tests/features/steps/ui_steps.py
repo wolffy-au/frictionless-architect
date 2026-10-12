@@ -190,3 +190,18 @@ def step_banner_gone(context: Context) -> None:
     from modelling_specification import model_io
 
     assert "Preview Walkthrough" in (model_io.HERE / "elements.yaml").read_text()
+
+
+@given('the LLM answers with the plain-text message "{text}"')
+def step_llm_plain_text(context: Context, text: str) -> None:
+    context.fake_llm.content = text
+
+
+@then('the chat pane shows the message "{text}"')
+def step_chat_shows_message(context: Context, text: str) -> None:
+    context.page.locator("#messages").get_by_text(text, exact=False).wait_for()
+
+
+@then("Apply is still disabled")
+def step_apply_disabled(context: Context) -> None:
+    assert context.page.is_disabled("#apply")
