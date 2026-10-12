@@ -4,7 +4,7 @@
   viewpoint: implementation_migration
   diagram: migration/plat-agentic-delivery-mvp-3
   members:
-  - del-agentic-delivery-mvp-3-unreleased
+  - del-release-v0-1-0
   - plat-agentic-delivery-mvp-3
   - wp-model-group-the-remaining-5-ungrouped-gh-25
 - id: view-plat-architecture-strategy-mvp-7
@@ -13,6 +13,7 @@
   diagram: migration/plat-architecture-strategy-mvp-7
   members:
   - del-architecture-strategy-mvp-7-unreleased
+  - del-release-v0-1-0
   - plat-architecture-strategy-mvp-7
   - wp-add-bounded-context-tagging-and-generic-gh-105
   - wp-architecture-md-still-describes-the-old-gh-50
@@ -86,6 +87,7 @@
   viewpoint: implementation_migration
   diagram: migration/plat-solution-design-mvp-8
   members:
+  - del-release-v0-1-0
   - del-solution-design-mvp-8-unreleased
   - plat-solution-design-mvp-8
   - wp-re-home-specs-to-two-tier-scheme-adr-gh-107
