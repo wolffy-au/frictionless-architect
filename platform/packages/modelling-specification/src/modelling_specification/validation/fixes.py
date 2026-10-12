@@ -60,6 +60,8 @@ def proposed_fix_for_finding(
     """`None` when the finding's `check` is neither `illegal_relationship` nor a
     known convention rule id (e.g. a `build_error` -- there is nothing rule-based to
     suggest for a malformed delta)."""
+    if finding.get("check") == "build_error" and str(finding.get("detail", "")).startswith("duplicate element id"):
+        return "this feature only adds elements and relationships; it cannot edit or replace an existing element"
     if finding.get("check") == "illegal_relationship":
         return _metamodel_fix(finding)
     rule = (rules_by_id or {}).get(finding.get("check", ""))

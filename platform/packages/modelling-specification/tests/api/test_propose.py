@@ -68,3 +68,40 @@ def test_propose_against_an_unknown_session_returns_404(configured_fake_llm: Fak
     response = client.post("/authoring/sessions/unknown-session/propose", json={"request": "add a function"})
 
     assert response.status_code == 404
+
+
+def test_propose_repoints_a_misspelt_relationship_endpoint_and_reports_it(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [{"type": "Association", "source": "role-sa", "target": "role-eaa"}]}'
+    )
+    session_id = _new_session()
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "link"}).json()
+
+    assert body["relationships"][0]["target"] == "role-ea"
+    assert any("role-eaa" in n for n in body["notes"])
+
+
+def test_propose_an_empty_delta_says_nothing_was_proposed(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+    session_id = _new_session()
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "rename role-ea"}).json()
+
+    assert any("only add" in n for n in body["notes"])
+
+
+def test_propose_reusing_an_existing_id_explains_that_edits_are_unsupported(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [{"type": "BusinessRole", "id": "role-ea", "name": "Chief EA"}], "relationships": []}'
+    )
+    session_id = _new_session()
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "rename role-ea"}).json()
+
+    (finding,) = body["validation_result"]["findings"]
+    assert "cannot edit" in finding["proposed_fix"]
