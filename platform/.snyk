@@ -7,7 +7,8 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.103.2 is the latest). Re-review on expiry.
+          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
   SNYK-PYTHON-LITELLM-17391455:
@@ -16,7 +17,8 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.103.2 is the latest). Re-review on expiry.
+          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
   SNYK-PYTHON-LITELLM-17393717:
@@ -25,7 +27,8 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.103.2 is the latest). Re-review on expiry.
+          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
   SNYK-PYTHON-LITELLM-17393719:
@@ -34,7 +37,8 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.103.2 is the latest). Re-review on expiry.
+          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
   SNYK-PYTHON-LITELLM-20257373:
@@ -43,6 +47,17 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.103.2 is the latest). Re-review on expiry.
+          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
+  SNYK-PYTHON-LITELLM-20840174:
+    - '*':
+        reason: >-
+          Authorization bypass through user-controlled key (HIGH). litellm is
+          used only as a client library (completion calls via
+          llm-provider-config / controls-compliance-catalog); the litellm proxy
+          server and its key/authorization handling are never run. Snyk reports
+          no upgrade or patch (1.104.2 locked). Re-review on expiry.
+        expires: 2026-11-11T00:00:00.000Z
+        created: 2026-10-12T00:00:00.000Z
