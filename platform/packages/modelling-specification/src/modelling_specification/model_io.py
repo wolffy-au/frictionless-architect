@@ -751,6 +751,27 @@ def merge_candidate(
     return _assemble("candidate-delta", elements, rels, views, errors)
 
 
+def preview_model(
+    delta_elements: list[dict[str, Any]], delta_relationships: list[dict[str, Any]], view: dict[str, Any]
+) -> tuple[Model | None, list[str]]:
+    """The model with a Candidate Delta merged in, for rendering `view` as it *would*
+    look -- nothing is written. The delta's elements (marked "+") and both endpoints of
+    its relationships are added to the view's members so a members-listed view shows
+    them; `merge_candidate`'s own checks still apply."""
+    errors: list[str] = []
+    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    marked = [{**e, "name": f"+ {e.get('name', e.get('id', ''))}"} for e in delta_elements]
+    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors) + list(delta_relationships)
+    shown = [e["id"] for e in delta_elements if e.get("id")]
+    shown += [end for r in delta_relationships for end in (r.get("source"), r.get("target")) if end]
+    views = load("views.yaml", errors, optional=True) + load_layers("views.yaml", errors)
+    views = [
+        {**v, "members": [*(v.get("members") or []), *shown]} if v.get("id") == view.get("id") else v for v in views
+    ]
+    model, errors, _warnings = _assemble("candidate-preview", elements + marked, rels, views, errors)
+    return model, errors
+
+
 def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
     """Run pyArchimate's metamodel + referential-integrity checks.
 
