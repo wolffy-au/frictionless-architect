@@ -27,6 +27,11 @@
   viewpoint: application_structure
   diagram: application/structure
   include_types: [ApplicationComponent, ApplicationInterface, ApplicationCollaboration, DataObject]
+  # Flow/Triggering are not a one-way sequence in this broad structural sweep;
+  # leave them undirected so graphviz can lay the hub-and-spoke edges out
+  # instead of forcing them into a single wide row.
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-information-structure
   name: Information Structure
@@ -40,6 +45,10 @@
   viewpoint: information_structure
   diagram: business/information-structure
   include_types: [BusinessObject, Representation, DataObject, Artifact, Meaning]
+  # No Flow/Triggering here to undirect; Realization/Specialization already
+  # default Up, which is what keeps this flowing top to bottom. Just cap the
+  # width so graphviz wraps instead of stretching one wide row.
+  max_width: 3800
 
 - id: view-technology
   name: Technology
@@ -124,6 +133,11 @@
     - Artifact
     - Material
     - Value
+  # Flow/Triggering are not one-way sequences across this whole-model sweep;
+  # leave them undirected so the Up-biased Realization/Serving edges are what
+  # drive a top-to-bottom layout instead of a wide rightward spread.
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-application-usage
   name: Application Usage
@@ -154,6 +168,8 @@
     - ApplicationEvent
     - ApplicationService
     - DataObject
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-technology-usage
   name: Technology Usage
@@ -187,6 +203,8 @@
     - TechnologyService
     - TechnologyEvent
     - Artifact
+  no_direction: [Flow]
+  max_width: 3800
 
 - id: view-business-process-cooperation
   name: Business Process Cooperation
@@ -222,6 +240,8 @@
     - ApplicationEvent
     - ApplicationService
     - DataObject
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-application-cooperation
   name: Application Cooperation
@@ -245,6 +265,8 @@
     - ApplicationEvent
     - ApplicationService
     - DataObject
+  no_direction: [Flow]
+  max_width: 3800
 
 - id: view-service-realization
   name: Service Realization
@@ -279,6 +301,8 @@
     - ApplicationEvent
     - ApplicationService
     - DataObject
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-implementation-migration-overview
   name: "Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables"
@@ -327,6 +351,8 @@
     - TechnologyInteraction
     - TechnologyService
     - Artifact
+  no_direction: [Flow]
+  max_width: 3800
 
 - id: view-stakeholder
   name: Stakeholder
