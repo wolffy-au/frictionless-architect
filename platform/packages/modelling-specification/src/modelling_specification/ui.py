@@ -112,10 +112,9 @@ _PAGE = """\
     <div id="messages"></div>
     <div class="state-row">
       <select id="state-select">
-        <option value="" selected disabled>Choose a state&hellip;</option>
         <option value="Current">Current</option>
         <option value="Transition">Transition</option>
-        <option value="Target">Target</option>
+        <option value="Target" selected>Target</option>
       </select>
       <button id="apply" class="primary" disabled>Apply</button>
       <span id="apply-error" class="error"></span>
@@ -192,7 +191,7 @@ _PAGE = """\
     return stateSelect.value;
   }
 
-  // R17: Apply stays disabled until both a validated delta is pending and a state is chosen.
+  // R17 (revised): the state control defaults to Target and is always visible; Apply needs a validated delta.
   function updateApplyButton() {
     applyButton.disabled = !(currentDeltaValidated && stateSelect.value);
   }
@@ -342,7 +341,7 @@ _PAGE = """\
     if (!result) return;
     addMessage("agent", "Applied as <b>" + escapeHtml(result.state_classification) + "</b>."
       + (result.override_decision_id ? " Recorded as override decision " + escapeHtml(result.override_decision_id) + "." : ""));
-    stateSelect.value = "";
+    stateSelect.value = "Target";
   }
 
   function resetPendingDelta() {
