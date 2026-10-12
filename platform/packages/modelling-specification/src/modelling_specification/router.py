@@ -209,12 +209,11 @@ def decide(session_id: str, delta_id: str, body: DecideRequest) -> Any:
 def _finalize(
     delta: CandidateDelta, body: DecideRequest, apply_fn: Callable[[CandidateDelta, str | None], dict[str, Any]]
 ) -> Any:
-    """FR-009: every action that results in `applied` requires a Current/Transition/
-    Target classification (checked here, once the action's own pre-conditions above
-    have already passed) -- a missing/invalid one asks rather than guesses (US3
-    Scenario 2), via a 422 shaped exactly `{"needs": "state_classification"}`, not
-    FastAPI's default `{"detail": ...}` envelope (contracts/api.md)."""
-    if body.state_classification not in _VALID_STATES:
+    """The Current/Transition/Target classification is optional (2026-10-12: state is
+    not needed to author a change). When one is supplied it is still recorded, but an
+    unrecognised value is rejected with a 422 shaped `{"needs": "state_classification"}`
+    (contracts/api.md) rather than silently stored."""
+    if body.state_classification is not None and body.state_classification not in _VALID_STATES:
         return JSONResponse(status_code=422, content={"needs": "state_classification"})
     return apply_fn(delta, body.state_classification)
 

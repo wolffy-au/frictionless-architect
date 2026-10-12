@@ -10,14 +10,14 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Given an architect describes a valid, unambiguous model change "UI Walkthrough Function"
     When the architect sends that request in the UI
     Then the chat pane shows no objections
-    When the architect picks the state "Transition" and clicks Apply in the UI
+    When the architect clicks Apply in the UI
     Then the chat pane confirms the change was applied
 
   Scenario: Applying a change renders the affected view automatically (FR-012, R18, R19)
     Given an architect describes a valid, unambiguous model change that extends "role-ea"
     And the architect turns on auto-render in the UI
     When the architect sends that request in the UI
-    And the architect picks the state "Transition" and clicks Apply in the UI
+    And the architect clicks Apply in the UI
     Then the render pane displays an SVG diagram spanning the full pane width
 
   Scenario: Picking a view from the list renders it
@@ -44,11 +44,20 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     And the architect turns on auto-render in the UI
     When the architect picks the view "view-gh108-conversational-authoring" from the list
     And the architect sends that request in the UI
-    And the architect picks the state "Transition" and clicks Apply in the UI
+    And the architect clicks Apply in the UI
     Then the view "view-gh108-conversational-authoring" is still selected
     And no view question is asked
 
   Scenario: The page remembers its settings across a reload
-    When the architect sets state "Transition", auto-render on and the view "view-stakeholder"
+    When the architect sets auto-render on and the view "view-stakeholder"
     And the architect reloads the page
-    Then the state is "Transition", auto-render is on and the view "view-stakeholder" is shown
+    Then auto-render is on and the view "view-stakeholder" is shown
+
+  Scenario: A proposed change is previewed in the chosen view before anything is written
+    Given an architect describes a valid, unambiguous model change "Preview Walkthrough Function"
+    When the architect picks the view "view-gh108-conversational-authoring" from the list
+    And the architect sends that request in the UI
+    Then the render pane shows a preview that is not written yet
+    And the model files are unchanged
+    When the architect clicks Apply in the UI
+    Then the preview banner is gone

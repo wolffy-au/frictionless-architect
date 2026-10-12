@@ -32,16 +32,16 @@ def step_chat_shows_no_objections(context: Context) -> None:
     context.page.locator("#messages").get_by_text("no objections", exact=False).wait_for()
 
 
-@when('the architect picks the state "{state}" and clicks Apply in the UI')
-def step_pick_state_and_apply(context: Context, state: str) -> None:
-    context.page.select_option("#state-select", state)
+@when("the architect clicks Apply in the UI")
+def step_apply(context: Context) -> None:
+    context.page.locator("#apply:not([disabled])").wait_for()
     context.page.click("#apply")
-    context.page.locator("#messages").get_by_text("Applied as", exact=False).wait_for()
+    context.page.locator("#messages").get_by_text("Applied to the model", exact=False).wait_for()
 
 
 @then("the chat pane confirms the change was applied")
 def step_chat_confirms_applied(context: Context) -> None:
-    context.page.locator("#messages").get_by_text("Applied as", exact=False).wait_for()
+    context.page.locator("#messages").get_by_text("Applied to the model", exact=False).wait_for()
 
 
 @step("the architect turns on auto-render in the UI")
@@ -149,9 +149,8 @@ def step_no_view_question(context: Context) -> None:
     assert context.page.inner_text("#render-status") == ""
 
 
-@when('the architect sets state "{state}", auto-render on and the view "{view_id}"')
-def step_set_preferences(context: Context, state: str, view_id: str) -> None:
-    context.page.select_option("#state-select", state)
+@when('the architect sets auto-render on and the view "{view_id}"')
+def step_set_preferences(context: Context, view_id: str) -> None:
     context.page.check("#auto-render-toggle")
     context.page.locator("#view-select:not([disabled])").wait_for()
     context.page.select_option("#view-select", view_id)
@@ -164,9 +163,30 @@ def step_reload(context: Context) -> None:
     context.page.wait_for_selector("#chat-input")
 
 
-@then('the state is "{state}", auto-render is on and the view "{view_id}" is shown')
-def step_preferences_restored(context: Context, state: str, view_id: str) -> None:
+@then('auto-render is on and the view "{view_id}" is shown')
+def step_preferences_restored(context: Context, view_id: str) -> None:
     context.page.locator("#render-pane svg").wait_for()
-    assert context.page.eval_on_selector("#state-select", "el => el.value") == state
     assert context.page.is_checked("#auto-render-toggle")
     assert context.page.eval_on_selector("#view-select", "el => el.value") == view_id
+
+
+@then("the render pane shows a preview that is not written yet")
+def step_preview_shown(context: Context) -> None:
+    context.page.locator("#render-banner:not(:empty)").wait_for()
+    assert "not written yet" in context.page.inner_text("#render-banner")
+    context.page.locator("#render-pane svg").wait_for()
+
+
+@then("the model files are unchanged")
+def step_model_unchanged(context: Context) -> None:
+    from modelling_specification import model_io
+
+    assert "Preview Walkthrough" not in (model_io.HERE / "elements.yaml").read_text()
+
+
+@then("the preview banner is gone")
+def step_banner_gone(context: Context) -> None:
+    context.page.wait_for_function("document.getElementById('render-banner').textContent === ''")
+    from modelling_specification import model_io
+
+    assert "Preview Walkthrough" in (model_io.HERE / "elements.yaml").read_text()

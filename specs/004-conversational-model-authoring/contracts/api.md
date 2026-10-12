@@ -74,12 +74,12 @@ Starts a session. Returns `session_id`, used by every other call below.
 Covers every explicit decision point: applying a clean delta, keep-both/merge/reject on a
 duplicate, accept-pattern/keep-direct on a pattern suggestion, or overriding a rejection.
 
-- **Body (apply a clean delta)**: `{ "action": "apply" }`
+- **Body (apply a clean delta)**: `{ "action": "apply" }` -- `state_classification` (`Current`/`Transition`/`Target`) is optional; when given it is recorded and returned
 - **Body (duplicate decision)**: `{ "action": "merge", "duplicate_decision": "merge", "target_existing_id": "fn-..." }`
 - **Body (override, FR-014)**: `{ "action": "override", "rationale": "legacy naming predates the convention" }` — `rationale` is optional (R11)
 - **Response (200)**:
   ```json
-  { "delta_id": "d1", "status": "applied", "state_classification": "Transition", "override_decision_id": null }
+  { "delta_id": "d1", "status": "applied", "state_classification": null, "override_decision_id": null }
   ```
   `override_decision_id` is the auto-drafted ADR stub's number (R7, e.g. `"0037"`); `null` when no objection was overridden.
 - **Error (409)**: `delta_id` is not in `flagged`/`validated` status (already applied or discarded) — the UI should re-propose.

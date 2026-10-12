@@ -12,8 +12,8 @@ Feature: Track and query Current/Transition/Target state (US3, spec.md)
     When the architect applies the change as state "Target"
     Then asking the agent what state the change belongs to answers "Target"
 
-  Scenario: An ambiguous state is asked for rather than guessed (Acceptance Scenario 2)
-    Given an architect describes a valid, unambiguous model change "Ambiguous State Test Function"
+  Scenario: A change applies without a state (2026-10-12: state is optional)
+    Given an architect describes a valid, unambiguous model change "No State Test Function"
     And the agent proposes the delta
     When the architect applies the change without specifying its state
-    Then the agent asks the architect to classify it rather than guessing
+    Then the change is written to the model

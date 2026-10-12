@@ -89,6 +89,7 @@ _PAGE = """\
   #zoom-level { font-size: 12px; color: var(--text-muted); min-width: 44px; text-align: right; }
   .show-row { display: flex; gap: 8px; align-items: center; }
   .error { color: var(--err); font-size: 12.5px; }
+  #render-banner:not(:empty) { padding: 8px 14px; background: var(--accent-soft); color: var(--accent); font-size: 12.5px; font-weight: 600; border-bottom: 1px solid var(--border); }
   #render-status { padding: 0 14px; }
   #render-status:not(:empty) { padding: 8px 14px; border-bottom: 1px solid var(--border); }
   #view-select { max-width: 480px; }
@@ -111,13 +112,7 @@ _PAGE = """\
     </div>
     <div id="messages"></div>
     <div class="state-row">
-      <select id="state-select">
-        <option value="Current">Current</option>
-        <option value="Transition">Transition</option>
-        <option value="Target" selected>Target</option>
-      </select>
       <button id="apply" class="primary" disabled>Apply</button>
-      <span id="apply-error" class="error"></span>
     </div>
     <div class="composer">
       <textarea id="chat-input" placeholder="e.g. add an application function for X, served to the EA role (Enter to send, Shift+Enter for a new line)"></textarea>
@@ -132,6 +127,7 @@ _PAGE = """\
         <select id="view-select" disabled><option value="" selected disabled>Choose a view&hellip;</option></select>
       </div>
     </div>
+    <div id="render-banner"></div>
     <div id="render-status" class="error"></div>
     <div class="state-row zoom-controls">
       <button id="zoom-out" type="button" title="Zoom out">&minus;</button>
@@ -168,9 +164,8 @@ _PAGE = """\
   let autoRenderEnabled = false;
 
   const messagesEl = document.getElementById("messages");
-  const stateSelect = document.getElementById("state-select");
+  const renderBanner = document.getElementById("render-banner");
   const applyButton = document.getElementById("apply");
-  const applyError = document.getElementById("apply-error");
   const chatInput = document.getElementById("chat-input");
   const sendButton = document.getElementById("send");
   const autoRenderToggle = document.getElementById("auto-render-toggle");
@@ -189,18 +184,9 @@ _PAGE = """\
     return div;
   }
 
-  function requireState() {
-    if (!stateSelect.value) {
-      applyError.textContent = "Choose a Current/Transition/Target state first.";
-      return null;
-    }
-    applyError.textContent = "";
-    return stateSelect.value;
-  }
-
-  // R17 (revised): the state control defaults to Target and is always visible; Apply needs a validated delta.
+  // Apply needs a validated delta; nothing is written until it is clicked.
   function updateApplyButton() {
-    applyButton.disabled = !(currentDeltaValidated && stateSelect.value);
+    applyButton.disabled = !currentDeltaValidated;
   }
 
   async function decide(deltaId, body) {
@@ -250,6 +236,7 @@ _PAGE = """\
       renderStatus.textContent = "No view resolves from that.";
       return;
     }
+    renderBanner.textContent = "";
     currentViewId = response.headers.get("X-View-Id");
     if (currentViewId) {
       viewSelect.value = currentViewId;
@@ -349,9 +336,39 @@ _PAGE = """\
 
   function renderDecisionResult(result) {
     if (!result) return;
-    addMessage("agent", "Applied as <b>" + escapeHtml(result.state_classification) + "</b>."
+    addMessage("agent", "Applied to the model."
       + (result.override_decision_id ? " Recorded as override decision " + escapeHtml(result.override_decision_id) + "." : ""));
-    // The chosen state is kept (and remembered) for the next change.
+  }
+
+  // Render the delta as it would look, in memory -- nothing is written until Apply.
+  async function showPreview() {
+    if (!currentDeltaId) return;
+    renderStatus.textContent = "";
+    const params = new URLSearchParams();
+    if (viewSelect.value) params.set("view_id", viewSelect.value);
+    const response = await fetch(
+      "/authoring/sessions/" + sessionId + "/deltas/" + currentDeltaId + "/preview?" + params.toString());
+    if (response.status === 300 || response.status === 404) {
+      renderStatus.textContent = "Choose a view above to preview this change in.";
+      return;
+    }
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      renderStatus.textContent = body.detail || "This change cannot be previewed.";
+      return;
+    }
+    currentViewId = response.headers.get("X-View-Id");
+    if (currentViewId) { viewSelect.value = currentViewId; prefs.set("view", currentViewId); }
+    renderCanvas.innerHTML = await response.text();
+    renderBanner.textContent = "Preview \u2014 not written yet. New elements are marked +. Click Apply to write this to the model.";
+    loadDiagram();
+  }
+
+  // After a change is written (or discarded), show the model as it now is.
+  async function afterDecision(applied, elements, relationships) {
+    renderBanner.textContent = "";
+    if (viewSelect.value) await showRender({ object_id: viewSelect.value });
+    else if (applied) await maybeAutoRender(elements, relationships);
   }
 
   function resetPendingDelta() {
@@ -419,21 +436,18 @@ _PAGE = """\
           const rationale = window.prompt("Optional rationale for overriding this objection:", "");
           if (rationale) body.rationale = rationale;
         }
-        if (action !== "reject") {
-          const state = requireState();
-          if (!state) return;
-          body.state_classification = state;
-        }
         const result = await decide(deltaId, body);
         if (action === "reject") {
           if (result) addMessage("agent", "Discarded.");
           resetPendingDelta();
+          await afterDecision(false, [], []);
           return;
         }
         renderDecisionResult(result);
         if (result && result.status === "applied") {
-          await maybeAutoRender(currentElements, currentRelationships);
+          const [els, rels] = [currentElements, currentRelationships];
           resetPendingDelta();
+          await afterDecision(true, els, rels);
         }
       });
     });
@@ -451,6 +465,7 @@ _PAGE = """\
     currentElements = body.elements || [];
     currentRelationships = body.relationships || [];
     updateApplyButton();
+    if (!empty) showPreview();
     return body;
   }
 
@@ -521,24 +536,14 @@ _PAGE = """\
   });
 
   applyButton.addEventListener("click", async () => {
-    const state = requireState();
-    if (!state || !currentDeltaId) return;
-    const deltaId = currentDeltaId;
-    const result = await decide(deltaId, { action: "apply", state_classification: state });
+    if (!currentDeltaId) return;
+    const result = await decide(currentDeltaId, { action: "apply" });
     renderDecisionResult(result);
     if (result && result.status === "applied") {
-      await maybeAutoRender(currentElements, currentRelationships);
+      const [els, rels] = [currentElements, currentRelationships];
       resetPendingDelta();
+      await afterDecision(true, els, rels);
     }
-  });
-
-  const savedState = prefs.get("state");
-  if (savedState && [...stateSelect.options].some((o) => o.value === savedState)) stateSelect.value = savedState;
-
-  stateSelect.addEventListener("change", () => {
-    prefs.set("state", stateSelect.value);
-    applyError.textContent = "";
-    updateApplyButton();
   });
 
   autoRenderToggle.addEventListener("change", async () => {
@@ -550,7 +555,9 @@ _PAGE = """\
   });
 
   async function showSelectedView() {
-    if (viewSelect.value) await showRender({ object_id: viewSelect.value });
+    if (!viewSelect.value) return;
+    if (currentDeltaId) await showPreview();
+    else await showRender({ object_id: viewSelect.value });
   }
 
   viewSelect.addEventListener("change", showSelectedView);
