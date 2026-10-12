@@ -44,6 +44,15 @@ def step_describe_change_extending(context: Context, existing_id: str) -> None:
     context.add_cleanup(setattr, rendering, "render_single_view", original_render)
 
 
+@given(
+    'an architect describes a valid, unambiguous model change that extends "{existing_id}" without stubbing rendering'
+)
+def step_describe_change_extending_unstubbed(context: Context, existing_id: str) -> None:
+    context.fake_llm.content = json.dumps(
+        {"elements": [], "relationships": [{"type": "Association", "source": "role-sa", "target": existing_id}]}
+    )
+
+
 @given("rendering is configured to happen automatically")
 def step_auto_render_on(context: Context) -> None:
     context.client.put("/authoring/config", json={"auto_render": True})
