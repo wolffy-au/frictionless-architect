@@ -30,7 +30,9 @@ models. The files are committed, deterministic and never hand-edited.
 - **Scope:** an issue is in scope only if it carries its own milestone; scope is never
   inferred from a parent, child or label.
 - **Realization:** a Work Package realizes exactly one Deliverable, never a Plateau. A
-  closed one realizes the first release published after `closedAt`, else the unreleased one.
+  closed one realizes the first release published after `closedAt`, else the unreleased one;
+  one closed as not planned or duplicate stays on the unreleased one. A release realizes
+  every Plateau it delivered a Work Package for (spec 003 clarification, 2026-10-12).
 - **Dependencies:** `blockedBy` becomes Triggering between Work Packages, lifted to a
   de-duplicated Plateau Triggering across milestones; a parent and child both in scope
   are joined by Aggregation. Links to unimported issues are dropped.

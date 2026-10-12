@@ -156,7 +156,8 @@ def test_fetch_issues_follows_cursors(importer: ModuleType) -> None:
     assert [i.number for i in issues] == [44, 61, 7, 99]
     assert any("after=c1" in a for a in calls[1])
     closed = next(i for i in issues if i.number == 7)
-    assert (closed.state, closed.milestone) == ("closed", 1)
+    assert (closed.state, closed.milestone, closed.state_reason) == ("closed", 1, "completed")
+    assert next(i for i in issues if i.number == 44).state_reason is None
     assert next(i for i in issues if i.number == 99).parent == 44
 
 
@@ -297,7 +298,7 @@ class Kit:
         state = kw.pop("state", "open")
         return self.m.Issue(
             number, title, state, kw.pop("closed_at", None), f"https://x/issues/{number}", milestone,
-            kw.pop("parent", None), tuple(kw.pop("blocked_by", ())),
+            kw.pop("parent", None), tuple(kw.pop("blocked_by", ())), kw.pop("state_reason", None),
         )  # fmt: skip
 
     def layer(
@@ -372,11 +373,44 @@ def test_release_naming_no_imported_plateau_attaches_nothing(kit: Kit) -> None:
     layer = kit.layer(
         [kit.milestone()],
         [kit.release("v1", "2026-03-01T00:00:00Z", body="plat-ghost-9 and plat-mvp-1-extra")],
-        [kit.issue(1, state="closed", closed_at="2026-02-01T00:00:00Z")],
+        [kit.issue(1)],
     )
     assert "del-release-v1" in by_id(layer)
     assert not [r for r in links(layer, "Realization") if r[1] == "del-release-v1"]
+
+
+def test_closed_issue_realizes_a_release_whose_notes_name_no_plateau(kit: Kit) -> None:
+    layer = kit.layer(
+        [kit.milestone()],
+        [kit.release("v1", "2026-03-01T00:00:00Z", body="")],
+        [kit.issue(1, state="closed", closed_at="2026-02-01T00:00:00Z")],
+    )
+    assert ("Realization", "wp-work-gh-1", "del-release-v1") in links(layer)
+    assert ("Realization", "del-release-v1", "plat-mvp-1") in links(layer)  # derived from the delivered work
+    assert "del-mvp-1-unreleased" not in by_id(layer)
+
+
+def test_one_release_realizes_each_plateau_it_delivered_and_views_keep_their_own_work(kit: Kit) -> None:
+    milestones = [kit.milestone(), kit.milestone(2, "later")]
+    closed: dict[str, Any] = {"state": "closed", "closed_at": "2026-02-01T00:00:00Z"}
+    issues = [kit.issue(1, "one", **closed), kit.issue(2, "two", milestone=2, **closed)]
+    layer = kit.layer(milestones, [kit.release("v1", "2026-03-01T00:00:00Z", body="")], issues)
+    assert {
+        ("Realization", "del-release-v1", "plat-mvp-1"),
+        ("Realization", "del-release-v1", "plat-later-2"),
+    } <= links(layer)
+    members = {v["id"]: set(v["members"]) for v in layer["views.yaml"]}
+    assert members["view-plat-mvp-1"] == {"plat-mvp-1", "del-release-v1", "wp-one-gh-1"}
+    assert members["view-plat-later-2"] == {"plat-later-2", "del-release-v1", "wp-two-gh-2"}
+
+
+@pytest.mark.parametrize("reason", ["not_planned", "duplicate"])
+def test_issue_closed_without_delivering_stays_off_releases(kit: Kit, reason: str) -> None:
+    issue = kit.issue(1, state="closed", closed_at="2026-02-01T00:00:00Z", state_reason=reason)
+    layer = kit.layer([kit.milestone()], [kit.release("v1", "2026-03-01T00:00:00Z", body="")], [issue])
     assert ("Realization", "wp-work-gh-1", "del-mvp-1-unreleased") in links(layer)
+    assert not [r for r in links(layer, "Realization") if r[1] == "del-release-v1"]
+    assert by_id(layer)["wp-work-gh-1"]["props"]["gh-state-reason"] == reason
 
 
 def test_drafts_and_prereleases_never_make_a_deliverable(importer: ModuleType, tmp_path: Path) -> None:
