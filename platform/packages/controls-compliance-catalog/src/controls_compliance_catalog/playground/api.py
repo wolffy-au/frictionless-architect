@@ -12,8 +12,6 @@ from controls_compliance_catalog.playground.convert import (
     convert_oscal_control_to_markdown,
 )
 
-router = APIRouter(prefix="/playground", tags=["playground"])
-
 
 class OscalToMarkdownRequest(BaseModel):
     oscal: str
@@ -36,11 +34,6 @@ class PlaygroundError(BaseModel):
     message: str
 
 
-@router.post(
-    "/oscal-to-markdown",
-    response_model=OscalToMarkdownResponse,
-    responses={422: {"model": PlaygroundError}},
-)
 def oscal_to_markdown(request: OscalToMarkdownRequest) -> OscalToMarkdownResponse | JSONResponse:
     try:
         markdown = convert_oscal_control_to_markdown(request.oscal)
@@ -50,11 +43,6 @@ def oscal_to_markdown(request: OscalToMarkdownRequest) -> OscalToMarkdownRespons
     return OscalToMarkdownResponse(markdown=markdown)
 
 
-@router.post(
-    "/prose-to-markdown-candidate",
-    response_model=ProseToMarkdownCandidateResponse,
-    responses={422: {"model": PlaygroundError}},
-)
 def prose_to_markdown_candidate(
     request: ProseToMarkdownCandidateRequest,
 ) -> ProseToMarkdownCandidateResponse | JSONResponse:
@@ -873,7 +861,7 @@ _PAGE_TEMPLATE = """\
     setStatus(refStatus, "ref", "converting\\u2026");
     const oscalText = document.getElementById("oscal-input").value;
     try {
-      const response = await fetch("/playground/oscal-to-markdown", {
+      const response = await fetch("__PREFIX__/oscal-to-markdown", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oscal: oscalText }),
@@ -913,7 +901,7 @@ _PAGE_TEMPLATE = """\
     setStatus(candStatus, "ai", "converting\\u2026");
     const prose = document.getElementById("prose-input").value;
     try {
-      const response = await fetch("/playground/prose-to-markdown-candidate", {
+      const response = await fetch("__PREFIX__/prose-to-markdown-candidate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prose: prose }),
@@ -943,6 +931,22 @@ _PAGE = _PAGE_TEMPLATE.replace("__SAMPLE_CONTROL_PROSE__", _SAMPLE_CONTROL_PROSE
 )
 
 
-@router.get("", response_class=HTMLResponse)
-def playground_page() -> str:
-    return _PAGE
+def create_playground_router(prefix: str = "/catalog") -> APIRouter:
+    """Build the playground router, with its page JS pointed at `prefix` (GH #120)."""
+    router = APIRouter(prefix=prefix, tags=["playground"])
+    router.post(
+        "/oscal-to-markdown",
+        response_model=OscalToMarkdownResponse,
+        responses={422: {"model": PlaygroundError}},
+    )(oscal_to_markdown)
+    router.post(
+        "/prose-to-markdown-candidate",
+        response_model=ProseToMarkdownCandidateResponse,
+        responses={422: {"model": PlaygroundError}},
+    )(prose_to_markdown_candidate)
+
+    @router.get("", response_class=HTMLResponse)
+    def playground_page() -> str:
+        return _PAGE.replace("__PREFIX__", prefix)
+
+    return router
