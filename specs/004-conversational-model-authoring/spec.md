@@ -33,6 +33,10 @@
 - Q: When an architect picks "accept-pattern" on a flagged Pattern Suggestion, does the agent apply the intermediary-element form for them, or discard the candidate and require the architect to re-describe it? → A: The agent auto-synthesizes a reasonable intermediary element and applies the intermediary-element form directly.
 - Q: When the architect's natural-language request is too vague or underspecified to form a well-defined candidate delta, should the agent ask a clarifying question before proposing anything, or make its best guess and let validation/duplicate-checking catch problems afterward? → A: The agent asks a clarifying question before proposing a delta when the request is too vague to produce one with confidence — consistent with the "ask, don't guess" pattern already established for view requests and rejected fixes.
 
+### Session 2026-10-12
+
+- Q: Should the Current/Transition/Target classification stay a required step of applying a change? → A: No. To keep this feature simple the state is optional and superseded for now: the architect models and sees the change in memory as it happens, and Apply is the only write. Tracking *which plateau/option* a change belongs to is deferred to the solution-option work (GH #68 comment), where a Plateau id replaces the fixed three values.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### Overall flow
@@ -61,6 +65,7 @@ endif
 :Check duplicates (elements, relationships);
 :Check established interposed-element patterns;
 |Agent|
+:Preview the delta in memory in the chosen view\n(new elements marked +, nothing written);
 if (Any finding?) then (no)
   |Architect|
   :Review "no objections";
@@ -88,10 +93,10 @@ else (yes)
     endswitch
   endif
 endif
-:Choose Current / Transition / Target\nand click Apply;
+:Click Apply;
 |Agent|
 |Model|
-:Append elements and relationships to\narchitecture/model/*.yaml (additive only);
+:Append elements and relationships to\narchitecture/model/*.yaml (additive only;\nthe only write);
 :Rebuild the XML and re-validate;
 |Agent|
 if (Auto-render on?) then (yes)
@@ -184,9 +189,9 @@ UC5 .> UC4 : <<extend>>
 
 ---
 
-### User Story 3 - Track and query Current/Transition/Target state (Priority: P2)
+### User Story 3 - Track and query Current/Transition/Target state (Priority: P2) — optional since 2026-10-12
 
-Every applied change is classified Current, Transition, or Target, and that classification is queryable afterward. Mechanics are in the Acceptance Scenarios and Functional Requirements below.
+A change MAY be classified Current, Transition, or Target when it is applied, and that classification is queryable afterward; since 2026-10-12 it is not required (see Clarifications) and the UI no longer asks for it. Mechanics are in the Acceptance Scenarios and Functional Requirements below.
 
 **Why this priority**: Valuable and explicitly required by the issue, but the conversational loop (P1) delivers value even before state querying is wired up end to end.
 
@@ -237,10 +242,11 @@ Architect --> UC2
 - **FR-006**: When a likely duplicate is found, the agent MUST present the candidate duplicate(s) to the architect and require an explicit keep-both, merge, or reject decision before applying anything. On a merge decision, the agent MUST leave the existing element or relationship's own fields untouched and instead redirect the new candidate's relationships onto it, discarding the new candidate itself — never editing the existing one's content as part of the merge.
 - **FR-007**: The agent MUST NOT silently deduplicate or silently create a duplicate under any circumstance.
 - **FR-008**: Before applying a direct relationship, the agent MUST check whether the model's established authoring conventions normally interpose intermediary element(s) for that relationship shape, and if so, flag it and propose the intermediary-element alternative, requiring an explicit decision before applying the direct form. When no such established pattern exists yet for that relationship shape, the direct form is applied as-is without requiring a decision — the absence of a pattern is not itself grounds to flag. On an accept-pattern decision, the agent MUST synthesize the required intermediary element(s) implied by the matched convention rule and apply the intermediary-element form directly, rather than discarding the candidate and asking the architect to re-describe it.
-- **FR-009**: Every change the agent applies MUST be classified as Current, Transition, or Target state.
-- **FR-010**: The classification of an applied change MUST remain queryable after the fact.
+- **FR-009**: A change the agent applies MAY be classified as Current, Transition, or Target state; the classification is optional (2026-10-12) and the architect is never required to give one.
+- **FR-010**: When a classification was given, it MUST remain queryable after the fact.
 - **FR-011**: Whether a diagram renders automatically after every applied change, or only on an explicit view/object request, MUST be a configurable choice, not a hardcoded behavior.
 - **FR-012**: When configured for automatic rendering, the agent MUST render the affected element(s) as a live diagram immediately after a change is applied, without a manual render step.
+- **FR-012a**: As the architect proposes a change, the agent MUST render it in memory in the chosen view (new elements marked) without writing anything to `architecture/model/`; Apply is the only write (2026-10-12). After Apply, the displayed view is refreshed from the written model.
 - **FR-013**: The agent MUST render a diagram for an explicitly requested object or described view without a manual render step, reflecting the model's state at the time of the request, regardless of the automatic-rendering configuration.
 - **FR-014**: When an architect overrides the agent's rejection of a convention violation, a duplicate flag, or a pattern suggestion, and proceeds anyway, the agent MUST record the override as a traceable decision — what was overridden, the agent's original objection, and the architect's rationale if one was given — for later review, rather than discarding it once applied. The architect's rationale is optional; the agent MUST NOT block or re-prompt for one before recording the override. A rejection caused by an ArchiMate metamodel-legality violation (FR-002) is never overridable through this mechanism — the agent continues to ask the architect to restate or refine the request (FR-017) rather than applying a change that would leave the model in an illegal state.
 - **FR-015**: When a later request in the same conversation touches an element or relationship already part of the pending candidate delta, the agent MUST amend/extend that pending delta rather than validating the new request as an independent delta against the last-applied model state.
@@ -266,7 +272,7 @@ Of these, only **Enterprise Convention Rule** and **Override Decision Record** a
 - **SC-001**: An architect can go from describing an intent to seeing a validated, rendered diagram of the resulting change without hand-editing a model file or manually running a render command.
 - **SC-002**: 100% of proposed changes that violate the ArchiMate metamodel or a configured enterprise convention are rejected with a specific explanation; none are applied, auto-corrected, or dropped silently.
 - **SC-003**: 100% of proposed elements or relationships flagged as likely duplicates require an explicit keep-both, merge, or reject decision before being applied.
-- **SC-004**: Every change applied through this feature carries a Current, Transition, or Target classification that is retrievable afterward, for 100% of applied changes.
+- **SC-004**: Any change applied with a Current, Transition, or Target classification has it retrievable afterward, for 100% of such changes; a change applied without one is valid (2026-10-12).
 - **SC-005**: Requesting an existing object or describing a custom view renders the matching diagram without any manual render step, in 100% of requests that resolve unambiguously.
 
 ## Assumptions

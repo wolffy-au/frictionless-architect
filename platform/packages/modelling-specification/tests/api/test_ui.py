@@ -9,7 +9,7 @@ from modelling_specification.app import app
 
 client = TestClient(app)
 
-_EXPECTED_IDS = ("chat-input", "send", "state-select", "apply", "view-select", "render-status", "render-pane")
+_EXPECTED_IDS = ("chat-input", "send", "apply", "view-select", "render-banner", "render-status", "render-pane")
 
 
 def test_authoring_page_is_served() -> None:
@@ -25,5 +25,5 @@ def test_authoring_page_links_to_the_llm_settings_page() -> None:
     assert 'href="/settings/llm"' in client.get("/authoring/").text
 
 
-def test_authoring_page_defaults_the_state_to_target() -> None:
-    assert '<option value="Target" selected>Target</option>' in client.get("/authoring/").text
+def test_authoring_page_has_no_state_control() -> None:
+    assert "state-select" not in client.get("/authoring/").text

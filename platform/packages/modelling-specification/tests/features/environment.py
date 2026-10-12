@@ -104,6 +104,9 @@ def before_scenario(context: Context, _scenario: object) -> None:
 
 
 def after_scenario(context: Context, _scenario: object) -> None:
+    # A render the page fired just before the scenario ended may still be rebuilding
+    # the scratch model below; let it finish before that model is removed.
+    context.page.wait_for_load_state("networkidle")
     model_io.HERE = context._orig_model_here
     model_io.OUT = context._orig_model_out
     context.model_tmpdir.cleanup()
