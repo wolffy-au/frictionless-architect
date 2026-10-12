@@ -35,6 +35,84 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
+### Overall flow
+
+The activities of one conversational modelling session, which the three user stories below break down. Nothing is written to `architecture/model/` before Apply.
+
+```plantuml
+@startuml
+title Conversational modelling: activity flow
+skinparam shadowing false
+|Architect|
+start
+:Describe a model change\nin plain language;
+|Agent|
+:Ask the LLM for a candidate delta\n(request + catalogue of existing elements);
+:Repoint a misspelt endpoint at its\nunique nearest element and report it;
+if (Delta empty?) then (yes)
+  :Say nothing was proposed\n(add-only: no edit, rename or remove);
+  |Architect|
+  stop
+else (no)
+endif
+|Validation|
+:Check metamodel legality + referential integrity\n(whole model with the delta merged in);
+:Check enterprise conventions;
+:Check duplicates (elements, relationships);
+:Check established interposed-element patterns;
+|Agent|
+if (Any finding?) then (no)
+  |Architect|
+  :Review "no objections";
+else (yes)
+  :Show each finding with its\nspecific, actionable proposed fix;
+  |Architect|
+  if (Metamodel violation?) then (yes)
+    :Restate or refine the request\n(back to the start);
+    stop
+  else (no)
+    switch (Decision)
+    case (reject)
+      :Delta discarded;
+      stop
+    case (keep-both / merge / keep-direct)
+      :Resolve the flag\n(merge redirects onto the existing element);
+    case (accept-pattern)
+      |Agent|
+      :Synthesize the intermediary\nelement(s) and legs;
+      |Architect|
+    case (override)
+      |Agent|
+      :Record an Override Decision Record\n(ADR stub, rationale optional);
+      |Architect|
+    endswitch
+  endif
+endif
+:Choose Current / Transition / Target\nand click Apply;
+|Agent|
+|Model|
+:Append elements and relationships to\narchitecture/model/*.yaml (additive only);
+:Rebuild the XML and re-validate;
+|Agent|
+if (Auto-render on?) then (yes)
+  :Render the affected view\n(keep the view already on screen\nwhen the element is in several);
+else (no)
+  |Architect|
+  :Pick a view to render on request;
+  |Agent|
+  :Render the chosen view in-process\n(no .puml/.svg written);
+endif
+|Architect|
+:Review the render;
+if (Another change?) then (yes)
+  :Describe the next change\n(back to the start);
+  stop
+else (no)
+  stop
+endif
+@enduml
+```
+
 ### User Story 1 - Propose and see a validated change (Priority: P1)
 
 An enterprise or solution architect describes a model change in plain language (e.g. "add a new application function for X under subsystem Y, served to the EA role"). The agent proposes the model delta, validates it against the ArchiMate metamodel and the configured enterprise conventions, and — once it passes — renders the affected element(s) in a live diagram next to the conversation, without the architect hand-editing any model file or manually re-running a render step.
