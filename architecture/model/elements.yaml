@@ -1093,6 +1093,13 @@
   desc: >-
     Human-facing entry point: a landing page listing each mounted package UI
     by the role it serves, and the shared navigation into them.
+- type: ApplicationInterface
+  id: if-modelling-authoring-ui
+  name: Conversational Authoring UI
+  desc: >-
+    Human-facing split-screen interface (and its /authoring JSON API) where
+    an architect describes a model change, reviews validation, duplicate and
+    pattern findings, applies it, and sees the affected view rendered.
 
 # --- B. Shared stores (DataObject composed by the platform -> C4 ContainerDb) ---
 - type: DataObject

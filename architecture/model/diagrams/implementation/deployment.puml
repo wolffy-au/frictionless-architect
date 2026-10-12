@@ -36,6 +36,7 @@ Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
   Application_Function(e_id5447be33805351, "Drift & Deviation Detection")
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Interface(e_id178b6a78b39b51, "Conversational Authoring UI")
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
   Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
@@ -141,6 +142,7 @@ Rel_Specialization_Up(e_id3d03c0f847fc57, e_idcc681c494fb159, "resolved instance
 Rel_Association(e_id3d03c0f847fc57, e_id54f9615f925859, "fulfills the profile's control selection")
 Rel_Specialization_Up(e_id56a0c6c23c275d, e_id3d03c0f847fc57, "vendored instance (golden-dataset validation data)")
 Rel_Association(e_id54ef3a7ba52853, e_id1d885b26074d5f, "imports (per OSCAL's required import-ap)")
+Rel_Serving_Up(e_id7cc5a30769435c, e_id178b6a78b39b51, "exposed via")
 Rel_Serving_Up(e_id0aed952692a556, e_id8926bd09002459, "realizes the Trestle Markdown <-> OSCAL round-trip for")
 Rel_Serving_Up(e_id0aed952692a556, e_id71815b3c9d365f, "runs `trestle validate` for")
 Rel_Serving_Up(e_id0aed952692a556, e_id959e350a39c158, "provides profile authoring for")
