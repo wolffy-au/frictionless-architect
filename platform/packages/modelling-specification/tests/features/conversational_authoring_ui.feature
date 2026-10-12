@@ -19,3 +19,31 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     When the architect sends that request in the UI
     And the architect picks the state "Transition" and clicks Apply in the UI
     Then the render pane displays an SVG diagram spanning the full pane width
+
+  Scenario: Picking a view from the list renders it
+    When the architect picks the view "view-stakeholder" from the list
+    Then the render pane displays an SVG diagram spanning the full pane width
+
+  Scenario: Pressing Enter sends the request, and a restarted server does not break the page
+    Given an architect describes a valid, unambiguous model change "Enter Key Function"
+    And the server has forgotten the architect's session
+    When the architect sends that request by pressing Enter
+    Then the chat pane shows no objections
+
+  Scenario: The diagram can be zoomed, panned and reset
+    When the architect picks the view "view-stakeholder" from the list
+    And the architect zooms in on the diagram
+    Then the diagram is larger
+    When the architect resets the diagram size
+    Then the diagram is back to its fitted size
+    When the architect drags the diagram
+    Then the diagram has moved with the mouse
+
+  Scenario: An element in several views refreshes the view already on screen
+    Given an architect describes a valid, unambiguous model change that extends "role-ea" without stubbing rendering
+    And the architect turns on auto-render in the UI
+    When the architect picks the view "view-gh108-conversational-authoring" from the list
+    And the architect sends that request in the UI
+    And the architect picks the state "Transition" and clicks Apply in the UI
+    Then the view "view-gh108-conversational-authoring" is still selected
+    And no view question is asked

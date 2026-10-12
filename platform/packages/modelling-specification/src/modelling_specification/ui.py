@@ -62,6 +62,8 @@ _PAGE = """\
     padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2);
     font-size: 13px; font-weight: 600;
   }
+  .head-actions { display: flex; align-items: center; gap: 16px; }
+  .head-actions a { color: var(--accent); font-weight: 400; font-size: 12.5px; }
   .panel-head label { font-weight: 400; font-size: 12.5px; display: flex; align-items: center; gap: 6px; }
   #messages { padding: 12px 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .msg { font-size: 13px; line-height: 1.5; }
@@ -78,10 +80,18 @@ _PAGE = """\
   #chat-input { flex: 1; min-height: 44px; resize: vertical; }
   .state-row { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--border); }
   select { font: inherit; font-size: 13px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
-  #render-pane { padding: 14px; overflow: auto; }
-  #render-pane svg { max-width: 100%; height: auto; }
+  #render-pane { height: 70vh; min-height: 320px; overflow: hidden; position: relative; cursor: grab; touch-action: none; background: #fff; user-select: none; -webkit-user-select: none; }
+  #render-pane.panning { cursor: grabbing; }
+  #render-canvas { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+  #render-canvas svg { display: block; max-width: none; }
+  .zoom-controls { display: flex; gap: 6px; align-items: center; }
+  .zoom-controls button { padding: 4px 9px; }
+  #zoom-level { font-size: 12px; color: var(--text-muted); min-width: 44px; text-align: right; }
   .show-row { display: flex; gap: 8px; align-items: center; }
   .error { color: var(--err); font-size: 12.5px; }
+  #render-status { padding: 0 14px; }
+  #render-status:not(:empty) { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  #view-select { max-width: 480px; }
 </style>
 </head>
 <body>
@@ -94,7 +104,10 @@ _PAGE = """\
   <section class="panel">
     <div class="panel-head">
       <span>Chat</span>
-      <label><input type="checkbox" id="auto-render-toggle" disabled> Auto-render on apply</label>
+      <span class="head-actions">
+        <a href="/settings/llm" target="_blank" rel="noopener">LLM settings</a>
+        <label><input type="checkbox" id="auto-render-toggle" disabled> Auto-render on apply</label>
+      </span>
     </div>
     <div id="messages"></div>
     <div class="state-row">
@@ -108,7 +121,7 @@ _PAGE = """\
       <span id="apply-error" class="error"></span>
     </div>
     <div class="composer">
-      <textarea id="chat-input" placeholder="e.g. add an application function for X, served to the EA role"></textarea>
+      <textarea id="chat-input" placeholder="e.g. add an application function for X, served to the EA role (Enter to send, Shift+Enter for a new line)"></textarea>
       <button id="send" class="primary" type="button">Send</button>
     </div>
   </section>
@@ -117,11 +130,20 @@ _PAGE = """\
     <div class="panel-head">
       <span>Render</span>
       <div class="show-row">
-        <input type="text" id="show-input" placeholder="describe a view to show">
-        <button id="show" type="button">Show</button>
+        <select id="view-select" disabled><option value="" selected disabled>Choose a view&hellip;</option></select>
       </div>
     </div>
-    <div id="render-pane"></div>
+    <div id="render-status" class="error"></div>
+    <div class="state-row zoom-controls">
+      <button id="zoom-out" type="button" title="Zoom out">&minus;</button>
+      <button id="zoom-in" type="button" title="Zoom in">+</button>
+      <button id="zoom-fit" type="button" title="Fit the whole diagram in the pane">Fit</button>
+      <button id="zoom-fit-width" type="button" title="Fit the diagram to the pane width">Fit width</button>
+      <button id="zoom-100" type="button" title="Actual size">100%</button>
+      <span id="zoom-level"></span>
+      <span class="sub">Scroll to zoom, drag to pan, double-click to fit.</span>
+    </div>
+    <div id="render-pane"><div id="render-canvas"></div></div>
   </section>
 </div>
 <script>
@@ -146,9 +168,11 @@ _PAGE = """\
   const chatInput = document.getElementById("chat-input");
   const sendButton = document.getElementById("send");
   const autoRenderToggle = document.getElementById("auto-render-toggle");
-  const showInput = document.getElementById("show-input");
-  const showButton = document.getElementById("show");
+  const viewSelect = document.getElementById("view-select");
+  const renderStatus = document.getElementById("render-status");
   const renderPane = document.getElementById("render-pane");
+  const renderCanvas = document.getElementById("render-canvas");
+  const zoomLevel = document.getElementById("zoom-level");
 
   function addMessage(role, html) {
     const div = document.createElement("div");
@@ -199,20 +223,120 @@ _PAGE = """\
     await showRender({ object_id: objectId });
   }
 
+  // The view on screen, kept in sync from the server's X-View-Id header.
+  let currentViewId = null;
+
   async function showRender(params) {
+    renderStatus.textContent = "";
     const query = new URLSearchParams({ ...params, format: "svg" });
     const response = await fetch("/authoring/render?" + query.toString());
     if (response.status === 300) {
       const body = await response.json();
-      addMessage("agent", "Which view did you mean? " + escapeHtml((body.ambiguous_candidates || []).join(", ")));
+      const candidates = body.ambiguous_candidates || [];
+      // An element that sits in several views: keep the one already on screen.
+      if (currentViewId && candidates.includes(currentViewId)) {
+        return showRender({ object_id: currentViewId });
+      }
+      renderStatus.textContent = "Which view did you mean? Pick one above: " + candidates.join(", ");
       return;
     }
     if (!response.ok) {
-      addMessage("agent", '<span class="error">No view resolves from that -- try naming the object or describing the view differently.</span>');
+      renderStatus.textContent = "No view resolves from that.";
       return;
     }
-    renderPane.innerHTML = await response.text();
+    currentViewId = response.headers.get("X-View-Id");
+    if (currentViewId) viewSelect.value = currentViewId;
+    renderCanvas.innerHTML = await response.text();
+    loadDiagram();
   }
+
+  // Pan/zoom: one transform (translate + scale) on the canvas around the inlined <svg>.
+  const view = { scale: 1, x: 0, y: 0, w: 0, h: 0 };
+  const MIN_SCALE = 0.02, MAX_SCALE = 16;
+
+  function applyView() {
+    renderCanvas.style.transform = "translate(" + view.x + "px," + view.y + "px) scale(" + view.scale + ")";
+    zoomLevel.textContent = view.w ? Math.round(view.scale * 100) + "%" : "";
+  }
+
+  function loadDiagram() {
+    const svg = renderCanvas.querySelector("svg");
+    if (!svg) { view.w = view.h = 0; applyView(); return; }
+    renderCanvas.style.transform = "none";
+    svg.style.width = svg.style.height = "";
+    const box = svg.getBoundingClientRect();
+    view.w = box.width || 300;
+    view.h = box.height || 150;
+    svg.style.width = view.w + "px";
+    svg.style.height = view.h + "px";
+    fitDiagram(false);
+  }
+
+  function centre() {
+    view.x = (renderPane.clientWidth - view.w * view.scale) / 2;
+    view.y = (renderPane.clientHeight - view.h * view.scale) / 2;
+  }
+
+  function fitDiagram(widthOnly) {
+    if (!view.w) return;
+    const pad = 16;
+    const sw = (renderPane.clientWidth - pad) / view.w;
+    const sh = (renderPane.clientHeight - pad) / view.h;
+    view.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, widthOnly ? sw : Math.min(sw, sh)));
+    centre();
+    if (widthOnly) view.y = pad / 2;
+    applyView();
+  }
+
+  function zoomAt(factor, cx, cy) {
+    if (!view.w) return;
+    const next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, view.scale * factor));
+    const k = next / view.scale;
+    view.x = cx - (cx - view.x) * k;
+    view.y = cy - (cy - view.y) * k;
+    view.scale = next;
+    applyView();
+  }
+
+  function zoomCentre(factor) {
+    zoomAt(factor, renderPane.clientWidth / 2, renderPane.clientHeight / 2);
+  }
+
+  renderPane.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    const rect = renderPane.getBoundingClientRect();
+    zoomAt(Math.exp(-event.deltaY * 0.0015), event.clientX - rect.left, event.clientY - rect.top);
+  }, { passive: false });
+
+  let drag = null;
+  renderPane.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || !view.w) return;
+    drag = { px: event.clientX, py: event.clientY, x: view.x, y: view.y };
+    renderPane.setPointerCapture(event.pointerId);
+    renderPane.classList.add("panning");
+  });
+  renderPane.addEventListener("pointermove", (event) => {
+    if (!drag) return;
+    view.x = drag.x + event.clientX - drag.px;
+    view.y = drag.y + event.clientY - drag.py;
+    applyView();
+  });
+  const endDrag = () => { drag = null; renderPane.classList.remove("panning"); };
+  renderPane.addEventListener("pointerup", endDrag);
+  renderPane.addEventListener("pointercancel", endDrag);
+  renderPane.addEventListener("dblclick", () => fitDiagram(false));
+  window.addEventListener("resize", () => { if (view.w) fitDiagram(false); });
+
+  document.getElementById("zoom-in").addEventListener("click", () => zoomCentre(1.25));
+  document.getElementById("zoom-out").addEventListener("click", () => zoomCentre(0.8));
+  document.getElementById("zoom-fit").addEventListener("click", () => fitDiagram(false));
+  document.getElementById("zoom-fit-width").addEventListener("click", () => fitDiagram(true));
+  document.getElementById("zoom-100").addEventListener("click", () => {
+    if (!view.w) return;
+    view.scale = 1;
+    centre();
+    applyView();
+  });
 
   function renderDecisionResult(result) {
     if (!result) return;
@@ -338,16 +462,28 @@ _PAGE = """\
     autoRenderToggle.disabled = false;
   }
 
-  sendButton.addEventListener("click", async () => {
+  // The server's session store is in memory, so a restart (e.g. uvicorn --reload)
+  // forgets the page's session; start a fresh one and retry once.
+  async function postPropose(request) {
+    const send = () => fetch("/authoring/sessions/" + sessionId + "/propose", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ request: request }),
+    });
+    let response = await send();
+    if (response.status === 404) {
+      await initSession();
+      response = await send();
+    }
+    return response;
+  }
+
+  async function sendRequest() {
     const request = chatInput.value.trim();
-    if (!request) return;
+    if (!request || sendButton.disabled) return;
     addMessage("user", escapeHtml(request));
     chatInput.value = "";
     sendButton.disabled = true;
     try {
-      const response = await fetch("/authoring/sessions/" + sessionId + "/propose", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ request: request }),
-      });
+      const response = await postPropose(request);
       const body = await response.json();
       if (!response.ok) {
         addMessage("agent", '<span class="error">' + escapeHtml(body.detail || "Could not propose a change from that.") + "</span>");
@@ -356,6 +492,14 @@ _PAGE = """\
       renderProposeResponse(body);
     } finally {
       sendButton.disabled = false;
+    }
+  }
+
+  sendButton.addEventListener("click", sendRequest);
+  chatInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      sendRequest();
     }
   });
 
@@ -383,15 +527,28 @@ _PAGE = """\
     });
   });
 
-  showButton.addEventListener("click", async () => {
-    const description = showInput.value.trim();
-    if (!description) return;
-    await showRender({ description: description });
-  });
+  async function showSelectedView() {
+    if (viewSelect.value) await showRender({ object_id: viewSelect.value });
+  }
+
+  viewSelect.addEventListener("change", showSelectedView);
+
+  async function initViews() {
+    const response = await fetch("/authoring/views");
+    const views = await response.json();
+    for (const view of views) {
+      const option = document.createElement("option");
+      option.value = view.id;
+      option.textContent = view.name;
+      viewSelect.appendChild(option);
+    }
+    viewSelect.disabled = false;
+  }
 
   (async function init() {
     await initSession();
     await initConfig();
+    await initViews();
   })();
 })();
 </script>
