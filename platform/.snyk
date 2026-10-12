@@ -7,7 +7,7 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          (1.105.0, the locked version, is still affected as of 2026-10-12).
           Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
@@ -17,7 +17,7 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          (1.105.0, the locked version, is still affected as of 2026-10-12).
           Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
@@ -27,7 +27,7 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          (1.105.0, the locked version, is still affected as of 2026-10-12).
           Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
@@ -37,7 +37,7 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          (1.105.0, the locked version, is still affected as of 2026-10-12).
           Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
@@ -47,7 +47,7 @@ ignore:
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server these advisories concern is never run. No fixed release exists
-          (1.104.2, the locked version, is the latest checked 2026-10-12).
+          (1.105.0, the locked version, is still affected as of 2026-10-12).
           Re-review on expiry.
         expires: 2026-11-02T00:00:00.000Z
         created: 2026-10-03T00:00:00.000Z
@@ -58,6 +58,6 @@ ignore:
           used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
           server and its key/authorization handling are never run. Snyk reports
-          no upgrade or patch (1.104.2 locked). Re-review on expiry.
+          no upgrade or patch (1.105.0 locked, still affected). Re-review on expiry.
         expires: 2026-11-11T00:00:00.000Z
         created: 2026-10-12T00:00:00.000Z
