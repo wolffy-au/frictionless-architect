@@ -6,6 +6,7 @@ title Application Cooperation
 
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Interface(e_id95791e10ad1d54, "Compliance Catalog UI")
+  Application_Interface(e_id8b35221248445f, "Control Conversion Playground")
   Application_Function(e_id973425b560995f, "Upload Policy / Standard Document")
   Application_Function(e_id40061cb7ae1c53, "Policy Prose Quality Feedback")
   Application_Function(e_id7ce9f3c91f1f53, "AI-Assisted Markdown Conversion")
@@ -39,7 +40,9 @@ Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
-Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration") {
+  Application_Interface(e_idcefe9c2a8ca45f, "LLM Settings UI")
+}
 Application_Component(e_id6c2233bb09755d, "Portal") {
   Application_Interface(e_iddb64491a22875a, "Portal UI")
 }
