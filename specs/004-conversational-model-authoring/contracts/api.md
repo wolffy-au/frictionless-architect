@@ -83,7 +83,17 @@ duplicate, accept-pattern/keep-direct on a pattern suggestion, or overriding a r
   ```
   `override_decision_id` is the auto-drafted ADR stub's number (R7, e.g. `"0037"`); `null` when no objection was overridden.
 - **Error (409)**: `delta_id` is not in `flagged`/`validated` status (already applied or discarded) — the UI should re-propose.
-- **Error (422)**: ambiguous state classification (US3 Scenario 2) — response carries `{"needs": "state_classification"}`; resubmit with `{ "action": "apply", "state_classification": "Transition" }`.
+- **Error (422)**: a `state_classification` was given but is not `Current`/`Transition`/`Target` -- response carries `{"needs": "state_classification"}`. Omitting it is fine (optional since 2026-10-12).
+
+## GET /authoring/sessions/{session_id}/deltas/{delta_id}/preview
+
+Render a pending delta in a view **before anything is written** (FR-012a). Nothing is persisted: the candidate model is built in memory and rendered from a throwaway temp file.
+
+- **Query**: `view_id` (optional). Without it, the view is resolved from an existing element the delta touches.
+- **Response (200)**: the SVG with `image/svg+xml`, and an `X-View-Id` header. New elements are marked with a `+` prefix, and both endpoints of a new relationship are shown.
+- **Response (300)**: `{ "ambiguous_candidates": [...] }` -- the touched element is in several views; pass `view_id`.
+- **Error (404)**: unknown or already applied/discarded delta, or no view to resolve and none given.
+- **Error (409)**: the delta is empty, or cannot be assembled into a model (`detail` says why).
 
 ## GET /authoring/sessions/{session_id}/deltas/{delta_id}/state
 

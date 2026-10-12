@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -295,6 +296,19 @@ def resolve_view_request(object_id: str | None, description: str | None) -> dict
     return {"resolved_view_id": None, "ambiguous_candidates": []}
 
 
+def _render_svg(v: dict[str, Any], model_path: str) -> str:
+    cmd = [sys.executable, str(ARCHIMATE_PUML), model_path, "--view", v["name"]]
+    for rel_type in v.get("no_direction", []):
+        cmd += ["--no-direction", rel_type]
+    if v.get("max_width"):
+        cmd += ["--max-width", str(v["max_width"])]
+    puml_text = _capture(cmd)
+    result = subprocess.run(["plantuml", "-tsvg", "-pipe"], input=puml_text, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"plantuml failed rendering view {v['id']!r}: {result.stderr}")
+    return result.stdout
+
+
 def render_single_view(view_id: str) -> str:
     """Render one view's current SVG in-process, without touching any committed
     `.puml`/`.svg` file (FR-013) -- used by `GET /authoring/render`'s unambiguous-resolve
@@ -304,14 +318,21 @@ def render_single_view(view_id: str) -> str:
     if not OUT.exists():
         raise ViewNotFoundError("architecture/model/frictionless-architect.xml is missing — build the model first")
     _refresh_model_if_sources_changed()
+    return _render_svg(_find_view(view_id), MODEL_REL)
+
+
+class PreviewError(Exception):
+    """The candidate delta cannot be assembled into a model to preview."""
+
+
+def render_candidate_view(view_id: str, elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> str:
+    """Render `view_id` as it would look with the delta applied -- built in memory and
+    written only to a throwaway temp file, never to `architecture/model/`."""
     v = _find_view(view_id)
-    cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
-    for rel_type in v.get("no_direction", []):
-        cmd += ["--no-direction", rel_type]
-    if v.get("max_width"):
-        cmd += ["--max-width", str(v["max_width"])]
-    puml_text = _capture(cmd)
-    result = subprocess.run(["plantuml", "-tsvg", "-pipe"], input=puml_text, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"plantuml failed rendering view {view_id!r}: {result.stderr}")
-    return result.stdout
+    model, errors = model_io.preview_model(elements, relationships, v)
+    if model is None:
+        raise PreviewError("; ".join(errors))
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "preview.xml"
+        model.write(str(path))
+        return _render_svg(v, str(path))
