@@ -9,7 +9,7 @@ from modelling_specification.app import app
 
 client = TestClient(app)
 
-_EXPECTED_IDS = ("chat-input", "send", "state-select", "apply", "render-pane")
+_EXPECTED_IDS = ("chat-input", "send", "state-select", "apply", "view-select", "render-status", "render-pane")
 
 
 def test_authoring_page_is_served() -> None:
@@ -19,3 +19,7 @@ def test_authoring_page_is_served() -> None:
     assert response.headers["content-type"].startswith("text/html")
     for element_id in _EXPECTED_IDS:
         assert f'id="{element_id}"' in response.text, element_id
+
+
+def test_authoring_page_links_to_the_llm_settings_page() -> None:
+    assert 'href="/settings/llm"' in client.get("/authoring/").text
