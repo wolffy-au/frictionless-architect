@@ -195,6 +195,15 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
   policy and standard documents to OSCAL Catalogs and Profiles.
 - [`llm-provider-config`](platform/packages/llm-provider-config/README.md) — shared
   LLM provider, model and credential resolution.
+- [`portal`](platform/packages/portal/README.md) — the composition host (ADR-0020)
+  that serves every package UI from one app:
+
+  ```bash
+  cd platform
+  poetry run uvicorn portal.app:app --reload
+  ```
+
+  Open `http://127.0.0.1:8000/` for the role-grouped landing page.
 
 `bash scripts/platform_checks.sh` runs their quality gate.
 

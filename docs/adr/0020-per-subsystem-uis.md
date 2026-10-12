@@ -73,8 +73,10 @@ reached, and each would otherwise mount the `llm-provider-config` settings route
 itself. This settles the mechanism the update above deferred:
 
 - **`portal` is a host, not a dashboard.** One FastAPI app that mounts each
-  package's router under its own path prefix (e.g. `/catalog`, `/modelling`) and
-  owns only shared page chrome, navigation and the per-role landing pages.
+  package's router under its own path prefix, one per package rather than per
+  role (`/catalog` for `controls-compliance-catalog`, `/modelling` for
+  `modelling-specification`), and owns only shared page chrome, navigation and
+  the per-role landing pages.
 - **Guardrail: no feature logic in `portal`.** Anything that reads or writes
   domain data belongs to the package that owns it; `portal` only composes. A
   feature that seems to need `portal` code is a sign it lacks a home package.
