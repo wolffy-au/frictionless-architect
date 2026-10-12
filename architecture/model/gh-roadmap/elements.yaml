@@ -135,7 +135,7 @@
   name: GH-105 Add bounded-context tagging and generic ArchiMate viewpoint views
   props:
     gh-number: '105'
-    gh-state: open
+    gh-state: closed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/105
 - type: WorkPackage
   id: wp-add-compliance-trestle-dependency-and-gh-23
