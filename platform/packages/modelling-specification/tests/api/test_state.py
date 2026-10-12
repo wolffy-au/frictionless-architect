@@ -17,12 +17,26 @@ def _propose(request: str = "State Classification Test Function") -> tuple[str, 
     return session_id, delta_id
 
 
-def test_apply_without_state_classification_returns_422_needs_state_classification(
+def test_apply_without_state_classification_applies_with_no_state(
     configured_fake_llm: FakeCompletion, isolated_model: Path
 ) -> None:
     session_id, delta_id = _propose()
 
     response = client.post(f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide", json={"action": "apply"})
+
+    assert response.status_code == 200
+    assert response.json()["state_classification"] is None
+
+
+def test_apply_with_an_unrecognised_state_returns_422(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    session_id, delta_id = _propose()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply", "state_classification": "Someday"},
+    )
 
     assert response.status_code == 422
     assert response.json() == {"needs": "state_classification"}

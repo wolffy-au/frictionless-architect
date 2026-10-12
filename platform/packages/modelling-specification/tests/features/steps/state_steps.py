@@ -27,9 +27,3 @@ def step_query_state(context: Context, state: str) -> None:
     response = context.client.get(f"/authoring/sessions/{context.session_id}/deltas/{context.delta_id}/state")
     assert response.status_code == 200, response.text
     assert response.json()["value"] == state
-
-
-@then("the agent asks the architect to classify it rather than guessing")
-def step_asks_for_state(context: Context) -> None:
-    assert context.decide_response.status_code == 422
-    assert context.decide_response.json() == {"needs": "state_classification"}
