@@ -9,7 +9,7 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 @given("the control conversion playground is open")
 def step_open_playground(context: Context) -> None:
-    context.page.goto(f"{context.base_url}/playground")
+    context.page.goto(f"{context.base_url}/catalog")
 
 
 @when("I paste the following OSCAL control YAML:")

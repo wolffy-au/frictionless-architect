@@ -22,7 +22,7 @@ Open `http://127.0.0.1:8000/` for the landing page.
 
 | Path | UI | Package |
 |---|---|---|
-| `/playground` | Control conversion playground | `controls-compliance-catalog` |
+| `/catalog` | Control conversion playground | `controls-compliance-catalog` |
 | `/settings/llm` | LLM settings, mounted once for every package | `llm-provider-config` |
 
 To add a package UI: include its router in `src/portal/app.py` and add a
