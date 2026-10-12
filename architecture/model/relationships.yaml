@@ -438,6 +438,8 @@
 - {type: Serving, source: sub-catalog, target: role-compliance, label: authors control content in}
 - {type: Composition, source: sub-catalog, target: if-catalog-ui}
 - {type: Serving, source: if-catalog-ui, target: role-compliance, label: "upload, feedback & status UI"}
+- {type: Composition, source: sub-catalog, target: if-catalog-playground}
+- {type: Serving, source: if-catalog-playground, target: role-compliance, label: AI vs. reference conversion playground}
 - {type: Serving, source: sub-library, target: role-ea, label: curates patterns & models future-state options in}
 - {type: Serving, source: sub-library, target: role-sa, label: composes blueprints & designs in}
 - {type: Serving, source: sub-library, target: role-sec, label: runs threat models in}
@@ -789,6 +791,7 @@
 - {type: Composition, source: sys-platform, target: sub-llm-provider-config}
 - {type: Association, source: sub-llm-provider-config, target: ext-llm, label: configures provider/model & resolves credentials for calls to}
 - {type: Realization, source: art-pkg-llm-provider-config, target: sub-llm-provider-config}
+- {type: Composition, source: sub-llm-provider-config, target: if-llm-settings-ui}
 
 # =====================================================================
 # E. Portal is the composition host, not a subsystem (ADR-0020, update

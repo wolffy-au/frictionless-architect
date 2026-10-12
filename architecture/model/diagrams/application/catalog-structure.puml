@@ -5,6 +5,7 @@ title Application Structure — Controls & Compliance Catalog
 
 Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Interface(e_id95791e10ad1d54, "Compliance Catalog UI")
+  Application_Interface(e_id8b35221248445f, "Control Conversion Playground")
 }
 Application_DataObject(e_id927f60a254485e, "Policy / Standard Document")
 Application_DataObject(e_idd08116e0443f59, "Regulatory Standard Document")

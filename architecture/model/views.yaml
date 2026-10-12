@@ -614,6 +614,7 @@
   members:
     - sub-catalog
     - if-catalog-ui
+    - if-catalog-playground
     - do-policy-doc
     - do-regulatory-standard
     - do-trestle-markdown
@@ -692,6 +693,8 @@
     - sub-llm-provider-config
     - sub-portal
     - if-twin-read-path
+    - if-catalog-playground
+    - if-llm-settings-ui
     - if-portal-ui
     - sw-uvicorn-fastapi
     - techfn-role-journey-composition
