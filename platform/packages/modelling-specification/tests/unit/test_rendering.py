@@ -209,3 +209,21 @@ def test_jobs_warns_on_view_without_diagram_key(capsys: pytest.CaptureFixture[st
     # The view with no `diagram:` key contributes no job (only the fixed C4 pair do).
     assert len(jobs) == len(rendering_mod.C4_DIAGRAMS)
     assert "no `diagram:` key" in capsys.readouterr().err
+
+
+_DIRTY_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="alert(1)">'
+    "<script>alert(1)</script><foreignObject><div>x</div></foreignObject>"
+    '<a xlink:href="javascript:alert(1)"><text onclick="alert(1)">Safe Label</text></a></svg>'
+)
+
+
+def test_sanitize_svg_strips_active_content_and_keeps_the_drawing() -> None:
+    from modelling_specification.rendering import sanitize_svg
+
+    cleaned = sanitize_svg(_DIRTY_SVG)
+
+    for bad in ("script", "foreignObject", "onload", "onclick", "javascript:"):
+        assert bad not in cleaned
+    assert "Safe Label" in cleaned
+    assert cleaned.startswith("<svg")

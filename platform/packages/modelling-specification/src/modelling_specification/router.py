@@ -373,6 +373,21 @@ def _resolve_and_render(object_id: str | None, description: str | None) -> dict[
     }
 
 
+def _known_view_id(view_id: str) -> str | None:
+    """The server's own copy of `view_id` if it names a real view, else `None`, so a
+    query-string value never flows into what is rendered or served."""
+    return next((v["id"] for v in rendering.list_views() if v["id"] == view_id), None)
+
+
+def _svg_headers(view_id: str) -> dict[str, str]:
+    return {
+        "Cache-Control": "no-store",
+        "X-View-Id": view_id,
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+    }
+
+
 @router.get("/views")
 def get_views() -> list[dict[str, str]]:
     return rendering.list_views()
@@ -389,12 +404,15 @@ def get_render(
         return JSONResponse(status_code=300, content={"ambiguous_candidates": resolution["ambiguous_candidates"]})
     if resolution["resolved_view_id"] is None:
         raise HTTPException(status_code=404, detail="no view resolves from the given object_id/description")
-    svg = rendering.render_single_view(resolution["resolved_view_id"])
+    known = _known_view_id(str(resolution["resolved_view_id"]))
+    if known is None:
+        raise HTTPException(status_code=404, detail="no view resolves from the given object_id/description")
+    svg = rendering.render_single_view(known)
     if output_format == "svg":
         return Response(
             content=svg,
             media_type="image/svg+xml",
-            headers={"Cache-Control": "no-store", "X-View-Id": resolution["resolved_view_id"]},
+            headers=_svg_headers(known),
         )
     return {
         "view_id": resolution["resolved_view_id"],
@@ -422,15 +440,16 @@ def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> R
         if resolved is None:
             raise HTTPException(status_code=404, detail="no view to preview in; choose one")
         view_id = str(resolved)
+    known = _known_view_id(view_id)
+    if known is None:
+        raise HTTPException(status_code=404, detail=f"no view with id {view_id!r}")
     try:
-        svg = rendering.render_candidate_view(view_id, delta.elements, delta.relationships)
+        svg = rendering.render_candidate_view(known, delta.elements, delta.relationships)
     except rendering.ViewNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except rendering.PreviewError as exc:
         raise HTTPException(status_code=409, detail=f"cannot preview this change: {exc}") from exc
-    return Response(
-        content=svg, media_type="image/svg+xml", headers={"Cache-Control": "no-store", "X-View-Id": view_id}
-    )
+    return Response(content=svg, media_type="image/svg+xml", headers=_svg_headers(known))
 
 
 @router.get("/sessions/{session_id}/deltas/{delta_id}/state")

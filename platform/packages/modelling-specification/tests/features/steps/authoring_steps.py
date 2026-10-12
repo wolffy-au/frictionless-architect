@@ -40,6 +40,9 @@ def step_describe_change_extending(context: Context, existing_id: str) -> None:
         "ambiguous_candidates": [],
     }
     rendering.render_single_view = lambda view_id: "<svg>fake</svg>"
+    original_list = rendering.list_views
+    rendering.list_views = lambda: [{"id": "view-fake", "name": "Fake"}]
+    context.add_cleanup(setattr, rendering, "list_views", original_list)
     context.add_cleanup(setattr, rendering, "resolve_view_request", original_resolve)
     context.add_cleanup(setattr, rendering, "render_single_view", original_render)
 

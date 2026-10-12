@@ -31,10 +31,12 @@ from __future__ import annotations
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
 import yaml
+from defusedxml import ElementTree as SafeET
 
 from modelling_specification import model_io
 from modelling_specification.model_io import OUT, REPO_ROOT
@@ -296,6 +298,34 @@ def resolve_view_request(object_id: str | None, description: str | None) -> dict
     return {"resolved_view_id": None, "ambiguous_candidates": []}
 
 
+_SVG_NS = "http://www.w3.org/2000/svg"
+_XLINK_NS = "http://www.w3.org/1999/xlink"
+_ACTIVE_ELEMENTS = {"script", "foreignobject", "iframe", "object", "embed", "audio", "video"}
+
+
+def sanitize_svg(svg: str) -> str:
+    """Strip anything active from a rendered SVG before it is served or inlined into
+    the page: script-like elements, `on*` event attributes and `javascript:` links.
+    Element names in a preview come from the LLM, so the SVG is not trusted markup."""
+    ET.register_namespace("", _SVG_NS)
+    ET.register_namespace("xlink", _XLINK_NS)
+    root = SafeET.fromstring(svg)
+
+    def local(name: str) -> str:
+        return name.rsplit("}", 1)[-1].lower()
+
+    for parent in root.iter():
+        for child in list(parent):
+            if local(child.tag) in _ACTIVE_ELEMENTS:
+                parent.remove(child)
+    for element in root.iter():
+        for attr in list(element.attrib):
+            value = element.attrib[attr].strip().lower()
+            if local(attr).startswith("on") or (local(attr) == "href" and value.startswith(("javascript:", "data:"))):
+                del element.attrib[attr]
+    return ET.tostring(root, encoding="unicode")
+
+
 def _render_svg(v: dict[str, Any], model_path: str) -> str:
     cmd = [sys.executable, str(ARCHIMATE_PUML), model_path, "--view", v["name"]]
     for rel_type in v.get("no_direction", []):
@@ -306,7 +336,7 @@ def _render_svg(v: dict[str, Any], model_path: str) -> str:
     result = subprocess.run(["plantuml", "-tsvg", "-pipe"], input=puml_text, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"plantuml failed rendering view {v['id']!r}: {result.stderr}")
-    return result.stdout
+    return sanitize_svg(result.stdout)
 
 
 def render_single_view(view_id: str) -> str:
