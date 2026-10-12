@@ -18,14 +18,14 @@ SINGLE_CONTROL = {
 
 
 def test_playground_page_is_served() -> None:
-    response = client.get("/playground")
+    response = client.get("/catalog")
 
     assert response.status_code == 200
     assert "Control Conversion Playground" in response.text
 
 
 def test_convert_endpoint_returns_trestle_markdown_for_valid_control() -> None:
-    response = client.post("/playground/oscal-to-markdown", json={"oscal": json.dumps(SINGLE_CONTROL)})
+    response = client.post("/catalog/oscal-to-markdown", json={"oscal": json.dumps(SINGLE_CONTROL)})
 
     assert response.status_code == 200
     body = response.json()
@@ -33,7 +33,7 @@ def test_convert_endpoint_returns_trestle_markdown_for_valid_control() -> None:
 
 
 def test_convert_endpoint_returns_422_with_clear_message_for_invalid_yaml() -> None:
-    response = client.post("/playground/oscal-to-markdown", json={"oscal": "{ not valid"})
+    response = client.post("/catalog/oscal-to-markdown", json={"oscal": "{ not valid"})
 
     assert response.status_code == 422
     body = response.json()
@@ -42,7 +42,7 @@ def test_convert_endpoint_returns_422_with_clear_message_for_invalid_yaml() -> N
 
 def test_candidate_endpoint_returns_candidate_markdown_for_valid_prose() -> None:
     response = client.post(
-        "/playground/prose-to-markdown-candidate",
+        "/catalog/prose-to-markdown-candidate",
         json={"prose": "Account Management: the organization manages information system accounts."},
     )
 
@@ -52,7 +52,7 @@ def test_candidate_endpoint_returns_candidate_markdown_for_valid_prose() -> None
 
 
 def test_candidate_endpoint_returns_422_with_clear_message_for_empty_prose() -> None:
-    response = client.post("/playground/prose-to-markdown-candidate", json={"prose": "   "})
+    response = client.post("/catalog/prose-to-markdown-candidate", json={"prose": "   "})
 
     assert response.status_code == 422
     body = response.json()

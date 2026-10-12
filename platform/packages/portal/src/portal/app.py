@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from html import escape
 
 from controls_compliance_catalog.llm_client import COMPONENT_ID as CATALOG_COMPONENT_ID
-from controls_compliance_catalog.playground.api import router as playground_router
+from controls_compliance_catalog.playground.api import create_playground_router
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from llm_provider_config import Component, create_settings_router
@@ -21,16 +21,16 @@ class MountedUi:
     role: str
 
 
-# Packages keep their own routes for now: the playground's page JS calls
-# absolute /playground/... URLs, so it can't move under a per-package prefix
-# until it uses prefix-relative ones (GH #120).
+# Per-package prefixes (GH #120): each mounted UI's page JS is prefix-relative
+# (llm-provider-config's `__PREFIX__` substitution pattern), so the prefix below
+# is the single place that names where it is reachable.
 MOUNTED_UIS: tuple[MountedUi, ...] = (
-    MountedUi("/playground", "Control conversion playground", "Compliance Officer / Auditor"),
+    MountedUi("/catalog", "Control conversion playground", "Compliance Officer / Auditor"),
     MountedUi("/settings/llm", "LLM settings", "All roles"),
 )
 
 app = FastAPI(title="Frictionless Architect Portal")
-app.include_router(playground_router)
+app.include_router(create_playground_router(prefix="/catalog"))
 app.include_router(
     create_settings_router([Component(id=CATALOG_COMPONENT_ID, label="Control conversion (AI candidate)")]),
 )
