@@ -45,3 +45,16 @@ def test_render_no_match_returns_404() -> None:
     response = client.get("/authoring/render", params={"object_id": "not-a-real-id-or-view"})
 
     assert response.status_code == 404
+
+
+def test_views_lists_every_renderable_view_with_id_and_name() -> None:
+    response = client.get("/authoring/views")
+    assert response.status_code == 200
+    views = response.json()
+    assert {"id": "view-stakeholder", "name": "Stakeholder"} in views
+    assert all(set(v) == {"id", "name"} for v in views)
+
+
+def test_render_svg_reports_which_view_it_rendered() -> None:
+    response = client.get("/authoring/render", params={"object_id": "view-stakeholder", "format": "svg"})
+    assert response.headers["X-View-Id"] == "view-stakeholder"
