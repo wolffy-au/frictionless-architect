@@ -36,13 +36,15 @@ ISSUE_PAGE_SIZE = 100
 MAX_ISSUE_PAGES = 10  # research R8: a cap of 1000 issues
 WORK_PACKAGE_SLUG_MAX = 40
 
+NOT_DELIVERED = frozenset({"not_planned", "duplicate"})
+
 RunGh = Callable[[list[str]], str]
 Layer = dict[str, list[dict[str, Any]]]
 
 ISSUES_QUERY = (
     "query($owner:String!,$name:String!,$after:String){repository(owner:$owner,name:$name){"
     f"issues(first:{ISSUE_PAGE_SIZE},after:$after,states:[OPEN,CLOSED]){{"
-    "pageInfo{hasNextPage endCursor} nodes{number title state closedAt url "
+    "pageInfo{hasNextPage endCursor} nodes{number title state stateReason closedAt url "
     "milestone{number} parent{number} blockedBy(first:50){nodes{number}}}}}}"
 )
 
@@ -80,6 +82,12 @@ class Issue:
     milestone: int | None
     parent: int | None
     blocked_by: tuple[int, ...]
+    state_reason: str | None = None
+
+    @property
+    def delivered(self) -> bool:
+        """Closed as done; an issue closed as not planned or as a duplicate delivered nothing."""
+        return self.state == "closed" and self.state_reason not in NOT_DELIVERED
 
 
 # --- slugs and ids (data-model "Element ids") --------------------------------------
@@ -186,6 +194,7 @@ def _issue(node: dict[str, Any]) -> Issue:
         milestone=(node.get("milestone") or {}).get("number"),
         parent=(node.get("parent") or {}).get("number"),
         blocked_by=tuple(int(b["number"]) for b in node["blockedBy"]["nodes"]),
+        state_reason=(node.get("stateReason") or "").lower() or None,
     )
 
 
@@ -263,29 +272,27 @@ def _plateaus(
 
 def _releases(
     releases: list[Release], plateaus: set[str]
-) -> tuple[list[dict[str, Any]], list[dict[str, str]], dict[str, list[Release]]]:
-    """Release Deliverables, their Realization of named Plateaus, and the releases per Plateau in publish order."""
-    elements, rels = [], []
-    per_plateau: dict[str, list[Release]] = {}
-    for r in sorted(releases, key=lambda r: (_when(r.published_at), r.tag)):
+) -> tuple[list[dict[str, Any]], set[tuple[str, str]], list[Release]]:
+    """Release Deliverables, the Plateaus their notes name, and the releases in publish order."""
+    elements, named = [], set()
+    ordered = sorted(releases, key=lambda r: (_when(r.published_at), r.tag))
+    for r in ordered:
         did = release_id(r.tag)
         props = _props(gh_tag=r.tag, gh_url=r.url, gh_published=r.published_at)
         elements.append(_element("Deliverable", did, r.name or r.tag, props=props))
-        for pid in _tokens(PLATEAU_TOKEN, r.body, plateaus):
-            rels.append(_link("Realization", did, pid))
-            per_plateau.setdefault(pid, []).append(r)
-    return elements, rels, per_plateau
+        named |= {(did, pid) for pid in _tokens(PLATEAU_TOKEN, r.body, plateaus)}
+    return elements, named, ordered
 
 
 def _when(stamp: str) -> datetime:
     return datetime.fromisoformat(stamp)
 
 
-def _deliverable_for(issue: Issue, pid: str, unreleased: str, per_plateau: dict[str, list[Release]]) -> str:
-    """Open: the unreleased Deliverable. Closed: the first release published after closing, else unreleased."""
-    if issue.state == "closed" and issue.closed_at:
+def _deliverable_for(issue: Issue, unreleased: str, ordered: list[Release]) -> str:
+    """Delivered: the first release published after closing, else unreleased. Otherwise: unreleased."""
+    if issue.delivered and issue.closed_at:
         closed = _when(issue.closed_at)
-        for release in per_plateau.get(pid, []):
+        for release in ordered:
             if _when(release.published_at) > closed:
                 return release_id(release.tag)
     return unreleased
@@ -323,25 +330,33 @@ def build_layer(
 ) -> Layer:
     elements, rels = _plateaus(milestones, business_functions)
     plateau_by_number = {m.number: plateau_id(m.title, m.number) for m in milestones}
-    release_elements, release_rels, per_plateau = _releases(releases, set(plateau_by_number.values()))
-    elements, rels = elements + release_elements, rels + release_rels
+    release_elements, release_plateaus, ordered = _releases(releases, set(plateau_by_number.values()))
+    elements = elements + release_elements
 
     in_scope = {i.number: i for i in issues if i.milestone in plateau_by_number}
     unreleased_for: set[int] = set()
+    plateau_of: dict[str, str] = {}
     for issue in in_scope.values():
         assert issue.milestone is not None
         pid, wid = plateau_by_number[issue.milestone], work_package_id(issue.title, issue.number)
+        plateau_of[wid] = pid
         unreleased = unreleased_id(_title(milestones, issue.milestone), issue.milestone)
-        target = _deliverable_for(issue, pid, unreleased, per_plateau)
+        target = _deliverable_for(issue, unreleased, ordered)
         elements.append(
             _element(
                 "WorkPackage", wid, f"GH-{issue.number} {issue.title}",
-                props=_props(gh_number=str(issue.number), gh_url=issue.url, gh_state=issue.state),
+                props=_props(
+                    gh_number=str(issue.number), gh_url=issue.url, gh_state=issue.state,
+                    gh_state_reason=issue.state_reason if issue.state == "closed" else None,
+                ),
             )
         )  # fmt: skip
         rels.append(_link("Realization", wid, target))
         if target == unreleased:
             unreleased_for.add(issue.milestone)
+        else:
+            release_plateaus.add((target, pid))  # a release realizes every Plateau it delivered work for
+    rels += [_link("Realization", did, pid) for did, pid in sorted(release_plateaus)]
     rels += _dependencies(in_scope, plateau_by_number)
     for number in sorted(unreleased_for):
         title = _title(milestones, number)
@@ -354,7 +369,7 @@ def build_layer(
     return {
         "elements.yaml": elements,
         "relationships.yaml": drop_derived(rels),
-        "views.yaml": _views(milestones, elements, rels),
+        "views.yaml": _views(milestones, elements, rels, plateau_of),
     }
 
 
@@ -383,9 +398,12 @@ def _title(milestones: list[Milestone], number: int) -> str:
 
 
 def _views(
-    milestones: list[Milestone], elements: list[dict[str, Any]], rels: list[dict[str, str]]
+    milestones: list[Milestone], elements: list[dict[str, Any]], rels: list[dict[str, str]], plateau_of: dict[str, str]
 ) -> list[dict[str, Any]]:
-    """One roadmap view per milestone: its Plateau, the Deliverables realizing it and their Work Packages (R11)."""
+    """One roadmap view per milestone: its Plateau, the Deliverables realizing it and its Work Packages (R11).
+
+    A release can realize several Plateaus, so only the Work Packages of this milestone are shown.
+    """
     realizes: dict[str, set[str]] = {}
     for rel in rels:
         if rel["type"] == "Realization":
@@ -395,7 +413,7 @@ def _views(
     for m in milestones:
         pid = plateau_id(m.title, m.number)
         deliverables = {d for d in realizes.get(pid, set()) if d in ids and d.startswith("del-")}
-        packages = {w for d in deliverables for w in realizes.get(d, set()) if w.startswith("wp-")}
+        packages = {w for d in deliverables for w in realizes.get(d, set()) if plateau_of.get(w) == pid}
         views.append(
             {
                 "id": f"view-{pid}",
