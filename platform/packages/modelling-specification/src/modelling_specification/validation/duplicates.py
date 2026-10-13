@@ -18,7 +18,7 @@ _THRESHOLD = 80
 
 def _existing_elements() -> list[dict[str, Any]]:
     errors: list[str] = []
-    return model_io.load("elements.yaml", errors) + model_io.load_layers("elements.yaml", errors)
+    return model_io.load_all_elements(errors)
 
 
 def _matched_fields(proposed: dict[str, Any], candidate: dict[str, Any]) -> list[str]:
