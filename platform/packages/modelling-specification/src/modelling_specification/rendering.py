@@ -226,7 +226,7 @@ def _all_views() -> list[dict[str, Any]]:
     """Every view across the first-party, gh-roadmap and vendored sources, same
     precedence order `_find_view` uses."""
     views: list[dict[str, Any]] = []
-    for views_file in (VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
+    for views_file in (VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
         if views_file.exists():
             views += yaml.safe_load(views_file.read_text()) or []
     return views
