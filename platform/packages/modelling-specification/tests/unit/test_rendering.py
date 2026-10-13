@@ -198,13 +198,16 @@ def test_jobs_warns_on_view_without_diagram_key(capsys: pytest.CaptureFixture[st
 
     orig_views = rendering_mod.VIEWS
     orig_roadmap = rendering_mod.ROADMAP_VIEWS
+    orig_viewpoints = rendering_mod.VIEWPOINT_VIEWS
     try:
         rendering_mod.VIEWS = views_file
         rendering_mod.ROADMAP_VIEWS = tmp_path / "absent-roadmap.yaml"
+        rendering_mod.VIEWPOINT_VIEWS = tmp_path / "absent-viewpoints.yaml"
         jobs = rendering_mod._jobs(rendering_mod.DIAGRAMS)
     finally:
         rendering_mod.VIEWS = orig_views
         rendering_mod.ROADMAP_VIEWS = orig_roadmap
+        rendering_mod.VIEWPOINT_VIEWS = orig_viewpoints
 
     # The view with no `diagram:` key contributes no job (only the fixed C4 pair do).
     assert len(jobs) == len(rendering_mod.C4_DIAGRAMS)

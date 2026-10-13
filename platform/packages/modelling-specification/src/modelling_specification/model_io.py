@@ -633,6 +633,20 @@ def add_views(
                 errors.append(f"view {v['id']} {res.algorithm_used} failed: {res.error_message}")
 
 
+def load_all_elements(errors: list[str]) -> list[dict[str, Any]]:
+    """First-party `elements.yaml` plus every layer's, each tagged with its context."""
+    return tag_contexts(load("elements.yaml", errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
+
+
+def load_all_views(errors: list[str]) -> list[dict[str, Any]]:
+    """`views.yaml`, the generic `views-viewpoints.yaml`, and every layer's views."""
+    return (
+        load("views.yaml", errors, optional=True)
+        + load("views-viewpoints.yaml", errors, optional=True)
+        + load_layers("views.yaml", errors)
+    )
+
+
 def _assemble(
     name: str,
     elements: list[dict[str, Any]],
@@ -668,13 +682,9 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
     `errors` is non-empty -- the caller never writes/validates a model built
     from invalid YAML."""
     errors: list[str] = []
-    elements = tag_contexts(load("elements.yaml", errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
+    elements = load_all_elements(errors)
     rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors)
-    views = (
-        load("views.yaml", errors, optional=True)
-        + load("views-viewpoints.yaml", errors, optional=True)
-        + load_layers("views.yaml", errors)
-    )
+    views = load_all_views(errors)
     return _assemble("frictionless-architect", elements, rels, views, errors)
 
 
@@ -683,7 +693,7 @@ def existing_element_ids() -> set[str]:
     an id the router synthesizes for a delta element the LLM left blank (data-model.md:
     "id absent until the LLM proposes one or validation assigns one")."""
     errors: list[str] = []
-    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    elements = load_all_elements(errors)
     return {e["id"] for e in elements if e.get("id")}
 
 
@@ -692,7 +702,7 @@ def existing_elements_and_types() -> tuple[list[dict[str, Any]], dict[str, str]]
     uses this with `view_element_ids` to resolve an `object_id` against every view in
     one pass, rather than reloading `elements.yaml` per view."""
     errors: list[str] = []
-    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    elements = load_all_elements(errors)
     types_by_id: dict[str, str] = {}
     for e in elements:
         eid = e.get("id")
@@ -745,9 +755,9 @@ def merge_candidate(
     own but breaks referential integrity elsewhere is also caught. Nothing is written
     to disk; the delta is additive only, same as `build_model()` otherwise."""
     errors: list[str] = []
-    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors) + list(delta_elements)
+    elements = load_all_elements(errors) + list(delta_elements)
     rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors) + list(delta_relationships)
-    views = load("views.yaml", errors, optional=True) + load_layers("views.yaml", errors)
+    views = load_all_views(errors)
     return _assemble("candidate-delta", elements, rels, views, errors)
 
 
@@ -759,12 +769,12 @@ def preview_model(
     its relationships are added to the view's members so a members-listed view shows
     them; `merge_candidate`'s own checks still apply."""
     errors: list[str] = []
-    elements = load("elements.yaml", errors) + load_layers("elements.yaml", errors)
+    elements = load_all_elements(errors)
     marked = [{**e, "name": f"+ {e.get('name', e.get('id', ''))}"} for e in delta_elements]
     rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors) + list(delta_relationships)
     shown = [e["id"] for e in delta_elements if e.get("id")]
     shown += [end for r in delta_relationships for end in (r.get("source"), r.get("target")) if end]
-    views = load("views.yaml", errors, optional=True) + load_layers("views.yaml", errors)
+    views = load_all_views(errors)
     views = [
         {**v, "members": [*(v.get("members") or []), *shown]} if v.get("id") == view.get("id") else v for v in views
     ]
