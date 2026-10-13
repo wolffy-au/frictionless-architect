@@ -1576,7 +1576,7 @@
   desc: Patch the .specify scripts (ADR-0004).
 - type: Plateau
   id: plat-baseline
-  name: baseline
+  name: Current State
 - type: Gap
   id: gap-oscal-ai-conversion
   name: AI-Assisted Policy & Standard Conversion to OSCAL
