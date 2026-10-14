@@ -299,16 +299,24 @@ def _deliverable_for(issue: Issue, unreleased: str, ordered: list[Release]) -> s
 
 
 def drop_derived(rels: list[dict[str, str]]) -> list[dict[str, str]]:
-    """Drop a link that two shorter importer-emitted links already imply (FR-004, derivation rule)."""
+    """Drop a link that two shorter importer-emitted links already imply (FR-004, derivation rule).
+
+    A Work Package's own Realization of its Deliverable is never dropped: FR-003 requires exactly
+    one, even when an Aggregation to a child realizing the same Deliverable implies it.
+    """
     kept = sorted(rels, key=_sort_key)
     out: dict[str, list[dict[str, str]]] = {}
     for rel in kept:
         out.setdefault(rel["source"], []).append(rel)
     for rel in list(kept):
-        if _implied(rel, out):
+        if not _own_deliverable(rel) and _implied(rel, out):
             kept.remove(rel)
             out[rel["source"]].remove(rel)
     return kept
+
+
+def _own_deliverable(rel: dict[str, str]) -> bool:
+    return rel["type"] == "Realization" and rel["source"].startswith("wp-") and rel["target"].startswith("del-")
 
 
 def _implied(rel: dict[str, str], out: dict[str, list[dict[str, str]]]) -> bool:

@@ -497,6 +497,16 @@ def test_derivation_filter_drops_only_implied_links(importer: ModuleType) -> Non
     assert importer.drop_derived(cycle) == sorted(cycle, key=lambda r: r["source"])
 
 
+@pytest.mark.parametrize("state", [{}, {"state": "closed", "closed_at": "2026-02-01T00:00:00Z"}])
+def test_epic_keeps_its_own_deliverable_when_a_child_shares_it(kit: Kit, state: dict[str, Any]) -> None:
+    # Aggregation epic -> child plus the child's Realization chain to the same Deliverable;
+    # the derivation filter must not treat the epic's own Realization as implied (FR-003).
+    issues = [kit.issue(1, "epic", **state), kit.issue(2, "child", parent=1, **state)]
+    layer = kit.layer([kit.milestone()], [kit.release("v1", "2026-03-01T00:00:00Z")], issues)
+    deliverable = "del-release-v1" if state else "del-mvp-1-unreleased"
+    assert {("Realization", "wp-epic-gh-1", deliverable), ("Realization", "wp-child-gh-2", deliverable)} <= links(layer)
+
+
 def issues_with_milestone_7_issue() -> list[str]:
     """gh_issues.json plus one issue under milestone 7, so the importer emits
     del-architecture-strategy-mvp-7-unreleased (needed by the hand-authored
