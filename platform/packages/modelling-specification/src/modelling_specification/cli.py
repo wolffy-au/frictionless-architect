@@ -19,21 +19,20 @@ def _build(_args: argparse.Namespace) -> int:
     code, errors, warnings, result = model_io.write_and_validate()
     for msg in errors:
         sys.stderr.write(f"error: {msg}\n")
-    if errors:
-        return code
-    for msg in warnings:
-        print(msg)
-    assert result is not None
-    print(
-        f"wrote {model_io.OUT.relative_to(model_io.REPO_ROOT)}  "
-        f"({result['elements']} elements, {result['relationships']} relationships)"
-    )
-    if result["clean"]:
-        print("VALID — no metamodel or referential-integrity violations")
-    else:
-        print(f"INVALID — {len(result['findings'])} finding(s):")
-        for f in result["findings"]:
-            print(f"  [{f['check']}] {f['id']}: {f['detail']}")
+    if not errors:
+        for msg in warnings:
+            print(msg)
+        assert result is not None
+        print(
+            f"wrote {model_io.OUT.relative_to(model_io.REPO_ROOT)}  "
+            f"({result['elements']} elements, {result['relationships']} relationships)"
+        )
+        if result["clean"]:
+            print("VALID — no metamodel or referential-integrity violations")
+        else:
+            print(f"INVALID — {len(result['findings'])} finding(s):")
+            for f in result["findings"]:
+                print(f"  [{f['check']}] {f['id']}: {f['detail']}")
     return code
 
 

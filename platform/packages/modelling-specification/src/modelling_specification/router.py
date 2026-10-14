@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import JSONResponse
@@ -86,7 +86,13 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
     }
 
 
-@router.post("/sessions/{session_id}/propose")
+@router.post(
+    "/sessions/{session_id}/propose",
+    responses={
+        404: {"description": "no session with the given session_id"},
+        502: {"description": "the LLM proposal could not be turned into a usable delta"},
+    },
+)
 def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     if _store.get_session(session_id) is None:
         raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
@@ -163,7 +169,13 @@ def _validate_and_flag(delta: CandidateDelta) -> None:
         delta.status = DeltaStatus.FLAGGED
 
 
-@router.post("/sessions/{session_id}/deltas/{delta_id}/decide")
+@router.post(
+    "/sessions/{session_id}/deltas/{delta_id}/decide",
+    responses={
+        400: {"description": "the requested action is missing a required field, or is not a known action"},
+        409: {"description": "the delta is not in a state this action can be taken on"},
+    },
+)
 def decide(session_id: str, delta_id: str, body: DecideRequest) -> Any:
     delta = _store.get_delta(session_id, delta_id)
     if delta is None or delta.status in (DeltaStatus.APPLIED, DeltaStatus.DISCARDED):
@@ -393,11 +405,14 @@ def get_views() -> list[dict[str, str]]:
     return rendering.list_views()
 
 
-@router.get("/render")
+@router.get(
+    "/render",
+    responses={404: {"description": "no view resolves from the given object_id/description"}},
+)
 def get_render(
     object_id: str | None = None,
     description: str | None = None,
-    output_format: Literal["json", "svg"] = Query(default="json", alias="format"),
+    output_format: Annotated[Literal["json", "svg"], Query(alias="format")] = "json",
 ) -> Any:
     resolution = rendering.resolve_view_request(object_id, description)
     if resolution["ambiguous_candidates"]:
@@ -420,7 +435,13 @@ def get_render(
     }
 
 
-@router.get("/sessions/{session_id}/deltas/{delta_id}/preview")
+@router.get(
+    "/sessions/{session_id}/deltas/{delta_id}/preview",
+    responses={
+        404: {"description": "no such pending delta, or no view resolves/exists for it"},
+        409: {"description": "the delta is empty, or the change cannot be previewed"},
+    },
+)
 def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> Response:
     """Render a pending delta in a view *before* anything is written (nothing is
     persisted). Without `view_id`, the view is resolved from an existing element the
@@ -452,7 +473,10 @@ def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> R
     return Response(content=svg, media_type="image/svg+xml", headers=_svg_headers(known))
 
 
-@router.get("/sessions/{session_id}/deltas/{delta_id}/state")
+@router.get(
+    "/sessions/{session_id}/deltas/{delta_id}/state",
+    responses={404: {"description": "no applied delta with the given delta_id"}},
+)
 def get_state(session_id: str, delta_id: str) -> dict[str, Any]:
     """FR-010: the classification recorded at apply time, looked up over the applied
     Candidate Delta itself -- not a separate store (data-model.md)."""
