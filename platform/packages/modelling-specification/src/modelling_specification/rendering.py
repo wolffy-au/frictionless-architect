@@ -190,16 +190,16 @@ def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path
 def _normalize_rendered_svgs(changed_pumls: list[Path]) -> None:
     """PlantUML's SVG output has no trailing newline; normalise to one so
     re-renders don't churn on it."""
+    # `p` always comes from `_jobs()` via `render()`/`render_diagrams()` (CLI-only, see
+    # cli.py), whose `slug` is a `diagram:` key read out of committed views.yaml/
+    # views-viewpoints.yaml/gh-roadmap files, never from an HTTP request; the taint path
+    # Sonar reports links this to an unrelated HTTP-derived `view_id` in
+    # render_single_view/render_candidate_view, neither of which calls this function or
+    # writes to a path built from that id.
     for p in changed_pumls:
         svg_path = p.with_suffix(".svg")
         if svg_path.exists():
-            # NOSONAR python-security:S2083 -- `p` always comes from `_jobs()`, whose
-            # `slug` is a `diagram:` key read out of committed views.yaml/
-            # views-viewpoints.yaml/gh-roadmap files, never from an HTTP request; the
-            # taint path Sonar reports links this to an unrelated HTTP-derived `view_id`
-            # in render_single_view/render_candidate_view, neither of which writes to a
-            # path built from that id.
-            svg_path.write_text(svg_path.read_text().rstrip("\n") + "\n")
+            svg_path.write_text(svg_path.read_text().rstrip("\n") + "\n")  # NOSONAR python-security:S2083
 
 
 def render(diagram_roots: list[Path], svg: bool, *, write: bool) -> tuple[list[str], list[str]]:
