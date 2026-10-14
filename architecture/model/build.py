@@ -14,10 +14,20 @@ pyArchimate-based implementation.
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
 PLATFORM = Path(__file__).resolve().parents[2] / "platform"
+
+
+def platform_env() -> dict[str, str]:
+    """The environment minus VIRTUAL_ENV, so `poetry run` in platform/ picks the platform venv.
+
+    Under `poetry run` from the repo root, VIRTUAL_ENV names root's venv, and a nested `poetry run`
+    reuses it instead of platform/'s own, where `modelling_specification` lives.
+    """
+    return {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
 
 
 def main() -> int:
@@ -27,6 +37,7 @@ def main() -> int:
     result = subprocess.run(
         ["poetry", "run", "python", "-m", "modelling_specification.cli", "build"],
         cwd=PLATFORM,
+        env=platform_env(),
     )
     return result.returncode
 
