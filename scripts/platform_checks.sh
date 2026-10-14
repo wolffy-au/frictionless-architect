@@ -43,19 +43,73 @@ echo "Running pyright on platform/packages..."
 poetry run pyright packages
 
 mkdir -p "$root/build"
-for pkg in packages/*/; do
-  pkg="${pkg%/}"
-  name="$(basename "$pkg")"
+
+# Each package's mypy/pytest/behave sequence is independent of every other
+# package's, so they fan out as background jobs instead of a serial for-loop.
+# Each gets its own mypy/pytest cache dir (both default to one shared path
+# under this cwd) so concurrent runs can't race writing the same cache file.
+# `set -e` only aborts the parent shell on a *foreground* failure, so each
+# job's exit status is collected explicitly via `wait` below.
+#
+# pytest's own -n auto would pick a full core count *inside each* already-
+# concurrent package job; two packages doing that at once oversubscribes the
+# machine and, on this workspace's 9p/drvfs mount, reliably corrupted
+# pytest-cov's per-worker SQLite file (coverage.exceptions.DataError /
+# xdist "KeyError: WorkerController"). Split the core count across the
+# packages running instead, so the two layers of parallelism don't compound.
+pkg_count=$(find packages -maxdepth 1 -mindepth 1 -type d | wc -l)
+pytest_workers=$(( $(nproc) / pkg_count ))
+[[ $pytest_workers -lt 1 ]] && pytest_workers=1
+
+run_package_checks() {
+  local pkg="$1" name="$2"
   echo "── $name: mypy"
-  poetry run mypy "$pkg/src" "$pkg/tests"
+  poetry run mypy --cache-dir="$root/build/.mypy_cache_$name" "$pkg/src" "$pkg/tests"
   echo "── $name: pytest (coverage gate 90%)"
-  poetry run pytest "$pkg/tests" \
+  # pytest-cov's workers each write their own SQLite coverage DB (named by
+  # host+pid+random, so filenames never collide); on this workspace's
+  # 9p/drvfs mount, two packages' processes doing that concurrently in the
+  # *same directory* still hit sqlite3 "disk I/O error" / xdist worker
+  # KeyErrors. Giving each package its own coverage data directory (not
+  # just its own filename) avoids the shared-directory contention.
+  local cov_dir="$root/build/.coverage_data_$name"
+  mkdir -p "$cov_dir"
+  COVERAGE_FILE="$cov_dir/.coverage" poetry run pytest "$pkg/tests" -n "$pytest_workers" \
+    -o "cache_dir=$root/build/.pytest_cache_$name" \
     --cov="$pkg/src" --cov-fail-under=90 --cov-report=term-missing \
     --cov-report="xml:$root/build/platform-coverage-$name.xml"
   if [[ -d "$pkg/tests/features" ]]; then
     echo "── $name: behave"
     poetry run behave "$pkg/tests/features"
   fi
+}
+
+echo "Running per-package checks (mypy, pytest, behave) in parallel ($pytest_workers pytest worker(s) per package)..."
+pids=()
+names=()
+for pkg in packages/*/; do
+  pkg="${pkg%/}"
+  name="$(basename "$pkg")"
+  run_package_checks "$pkg" "$name" > "$root/build/platform-check-$name.log" 2>&1 &
+  pids+=("$!")
+  names+=("$name")
 done
+
+status=0
+for i in "${!pids[@]}"; do
+  name="${names[$i]}"
+  if wait "${pids[$i]}"; then
+    echo "── $name: passed"
+  else
+    echo "── $name: FAILED"
+    status=1
+  fi
+  echo "---- $name output ----"
+  cat "$root/build/platform-check-$name.log"
+done
+
+if [[ $status -ne 0 ]]; then
+  exit 1
+fi
 
 echo "✅ Platform checks passed."

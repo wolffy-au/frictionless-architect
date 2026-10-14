@@ -42,7 +42,7 @@ poetry run mypy
 
 # --- Unit Tests ---
 echo "Running pytest unit tests..."
-poetry run pytest tests/unit/
+poetry run pytest tests/unit/ -n auto
 
 # --- platform/ monorepo packages (own lock + venv) ---
 echo "Running platform/ package checks..."
