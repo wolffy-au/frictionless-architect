@@ -108,6 +108,35 @@ def test_propose_reusing_an_existing_id_explains_that_edits_are_unsupported(
     assert "cannot edit" in finding["proposed_fix"]
 
 
+def test_propose_again_amends_the_still_pending_delta_instead_of_starting_a_new_one(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    # FR-015: a later request touching the pending delta amends/extends it rather
+    # than starting an independent one.
+    session_id = _new_session()
+    first = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "Propose Amend Test One"}).json()
+    assert first["status"] == "validated"
+
+    second = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "Propose Amend Test Two"}).json()
+
+    assert second["delta_id"] == first["delta_id"]
+    names = {e["name"] for e in second["elements"]}
+    assert names == {"Propose Amend Test One", "Propose Amend Test Two"}
+
+
+def test_propose_an_element_with_an_unknown_type_is_a_build_error(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [{"type": "NotARealArchimateType", "id": "fn-bad-type-test", "name": "Bad"}],'
+        ' "relationships": []}'
+    )
+    session_id = _new_session()
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a bogus type"}).json()
+
+    assert body["status"] == "flagged"
+    assert any(f["check"] == "build_error" for f in body["validation_result"]["findings"])
+
+
 def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
     configured_fake_llm: FakeCompletion,
 ) -> None:

@@ -4,6 +4,8 @@ litellm (never a live network, plan.md Testing)."""
 from __future__ import annotations
 
 import pytest
+from llm_provider_config import MissingCredentialError, NotConfiguredError
+from modelling_specification.authoring import delta
 from modelling_specification.authoring.delta import (
     DeltaProposalError,
     LlmMessage,
@@ -42,6 +44,26 @@ def test_propose_delta_rejects_an_empty_request(configured_fake_llm: FakeComplet
         propose_delta("   ")
 
     assert configured_fake_llm.calls == []
+
+
+def test_propose_delta_wraps_a_not_configured_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    def raise_not_configured(component_id: str) -> None:
+        raise NotConfiguredError(f"no provider configured for {component_id}")
+
+    monkeypatch.setattr(delta, "resolve_call", raise_not_configured)
+
+    with pytest.raises(DeltaProposalError, match="no provider configured"):
+        propose_delta("add a function")
+
+
+def test_propose_delta_wraps_a_missing_credential_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    def raise_missing_credential(component_id: str) -> None:
+        raise MissingCredentialError("no API key for ollama")
+
+    monkeypatch.setattr(delta, "resolve_call", raise_missing_credential)
+
+    with pytest.raises(DeltaProposalError, match="no API key for ollama"):
+        propose_delta("add a function")
 
 
 def test_propose_delta_wraps_a_provider_failure(configured_fake_llm: FakeCompletion) -> None:

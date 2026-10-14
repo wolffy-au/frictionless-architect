@@ -49,6 +49,32 @@ def test_decide_against_an_unknown_delta_returns_409(configured_fake_llm: FakeCo
     assert response.status_code == 409
 
 
+def test_decide_with_an_unsupported_action_returns_400(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    session_id, delta_id = _propose_clean_delta("Unsupported Action Test Function")
+
+    response = client.post(f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide", json={"action": "teleport"})
+
+    assert response.status_code == 400
+    assert "teleport" in response.json()["detail"]
+
+
+def test_decide_override_on_a_validated_delta_returns_409(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    # Nothing is flagged on a clean delta, so there is nothing to override.
+    session_id, delta_id = _propose_clean_delta("Override Not Flagged Test Function")
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "override", "rationale": "no objection exists"},
+    )
+
+    assert response.status_code == 409
+    assert "nothing is flagged" in response.json()["detail"]
+
+
 def test_decide_apply_twice_returns_409_the_second_time(
     configured_fake_llm: FakeCompletion, isolated_model: Path
 ) -> None:
@@ -114,3 +140,43 @@ def test_decide_apply_omits_render_when_auto_render_is_off(
 
     assert response.json()["status"] == "applied"
     assert "render" not in response.json()
+
+
+def test_decide_apply_omits_render_when_auto_render_resolves_to_nothing(
+    configured_fake_llm: FakeCompletion, isolated_model: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # auto_render is on and there is an affected object, but it is not (yet) a member
+    # of any curated view -- a best-effort miss, not an apply failure (FR-012).
+    monkeypatch.setattr(
+        "modelling_specification.router.rendering.resolve_view_request",
+        lambda object_id, description: {"resolved_view_id": None, "ambiguous_candidates": []},
+    )
+    client.put("/authoring/config", json={"auto_render": True})
+    try:
+        session_id, delta_id = _propose_clean_delta("Auto Render Nothing Resolved Test Function")
+
+        response = client.post(
+            f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+            json={"action": "apply", "state_classification": "Transition"},
+        )
+
+        assert response.status_code == 200
+        assert response.json()["status"] == "applied"
+        assert "render" not in response.json()
+    finally:
+        client.put("/authoring/config", json={"auto_render": False})
+
+
+def test_decide_apply_returns_500_when_the_rebuild_leaves_the_model_invalid(
+    configured_fake_llm: FakeCompletion, isolated_model: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    session_id, delta_id = _propose_clean_delta("Apply Build Error Test Function")
+    monkeypatch.setattr(
+        "modelling_specification.router.model_io.write_and_validate",
+        lambda: (2, ["the rebuild broke"], [], None),
+    )
+
+    response = client.post(f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide", json={"action": "apply"})
+
+    assert response.status_code == 500
+    assert "invalid" in response.json()["detail"]

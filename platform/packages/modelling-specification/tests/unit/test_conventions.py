@@ -36,6 +36,24 @@ def test_load_rules_returns_empty_when_the_file_is_absent(tmp_path: Path) -> Non
     assert conventions.load_rules(tmp_path / "absent.yaml") == []
 
 
+def test_load_rules_rejects_a_file_that_is_not_a_yaml_list(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text("id: conv-bad\nkind: naming\n")  # a mapping, not a list of rules
+
+    with pytest.raises(conventions.ConventionRuleError, match="must be a YAML list"):
+        conventions.load_rules(path)
+
+
+def test_violation_returns_none_for_a_kind_it_does_not_evaluate() -> None:
+    # `check_elements` never calls `_violation` for an `interposed-pattern` rule (it
+    # skips those itself, per test_check_elements_skips_interposed_pattern_rules) --
+    # this drives `_violation` directly to cover its own fallback for an
+    # unrecognised/unevaluated kind.
+    rule = {"id": "conv-interposed-example", "kind": "interposed-pattern", "scope": ["*"], "params": {}}
+
+    assert conventions._violation(rule, {"id": "x1", "type": "DataObject", "name": "X"}) is None
+
+
 _NAMING_RULE = {
     "id": "conv-naming-no-self-type-capability",
     "kind": "naming",

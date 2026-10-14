@@ -86,6 +86,34 @@ def test_reject_then_decide_again_is_409_and_a_fresh_propose_starts_a_new_delta(
     assert restated["status"] == "validated"
 
 
+def test_merge_without_a_target_existing_id_returns_400(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [{"type": "ApplicationComponent", "id": "sub-modelling-merge-400", '
+        '"name": "Modelling & Specification"}], "relationships": []}'
+    )
+    session_id, body = _propose("propose a duplicate without saying which to merge into")
+    assert body["duplicates"], body
+
+    response = _decide(session_id, body["delta_id"], action="merge")
+
+    assert response.status_code == 400
+    assert "target_existing_id" in response.json()["detail"]
+
+
+def test_accept_pattern_with_no_pattern_suggestion_returns_409(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    session_id, body = _propose("Accept Pattern Nothing Flagged Test Function")
+    assert body["pattern_suggestions"] == []
+
+    response = _decide(session_id, body["delta_id"], action="accept-pattern")
+
+    assert response.status_code == 409
+    assert "nothing to accept-pattern" in response.json()["detail"]
+
+
 def test_duplicate_merge_drops_the_new_element_and_rewires_relationships_to_the_existing_one(
     configured_fake_llm: FakeCompletion, isolated_model: Path
 ) -> None:
@@ -228,3 +256,74 @@ def test_override_cannot_bypass_a_metamodel_violation(
 
     assert response.status_code == 409
     assert list(isolated_model.parent.glob("adr/*.md")) == []
+
+
+def test_override_a_duplicate_objection_applies_and_drafts_an_adr_stub(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    # Clean metamodel, no pattern suggestion -- the only objection is the duplicate,
+    # exercising _describe_objection's "duplicate" branch rather than "rejection".
+    configured_fake_llm.content = (
+        '{"elements": [{"type": "ApplicationComponent", "id": "sub-modelling-override-dup", '
+        '"name": "Modelling & Specification"}], "relationships": []}'
+    )
+    session_id, body = _propose("propose a duplicate, override it")
+    assert body["duplicates"], body
+    assert body["validation_result"]["clean"] is True
+    assert body["pattern_suggestions"] == []
+
+    response = _decide(session_id, body["delta_id"], action="override", rationale="dup is fine, keep it")
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["status"] == "applied"
+    assert result["override_decision_id"] is not None
+    (adr_path,) = isolated_model.parent.glob("adr/*.md")
+    text = adr_path.read_text()
+    assert "override: duplicate" in text
+    assert "dup is fine, keep it" in text
+
+
+def test_override_a_pattern_objection_applies_and_drafts_an_adr_stub(
+    configured_fake_llm: FakeCompletion, isolated_model: Path, synthetic_pattern_rule: None
+) -> None:
+    # Clean metamodel, no duplicate -- the only objection is the pattern suggestion,
+    # exercising _describe_objection's "pattern" branch rather than "rejection".
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [{"type": "Serving", "source": "sub-modelling", "target": "role-ea"}]}'
+    )
+    session_id, body = _propose("serve role-ea directly from sub-modelling, override the pattern nudge")
+    assert body["pattern_suggestions"], body
+    assert body["validation_result"]["clean"] is True
+    assert body["duplicates"] == []
+
+    response = _decide(session_id, body["delta_id"], action="override", rationale="direct edge is fine here")
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["status"] == "applied"
+    (adr_path,) = isolated_model.parent.glob("adr/*.md")
+    text = adr_path.read_text()
+    assert "override: pattern" in text
+    assert "source: sub-modelling, target: role-ea" in (isolated_model / "relationships.yaml").read_text()
+
+
+def test_override_returns_500_when_the_rebuild_leaves_the_model_invalid(
+    configured_fake_llm: FakeCompletion, isolated_model: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [{"type": "Capability", "id": "cap-override-build-error-test", "name": "Override Test Capability"}],'
+        ' "relationships": [{"type": "Realization", "source": "cap-override-build-error-test", '
+        '"target": "req-auto-spec-generation"}]}'
+    )
+    session_id, body = _propose("add a capability named after its own type")
+    assert body["status"] == "flagged"
+    monkeypatch.setattr(
+        "modelling_specification.router.model_io.write_and_validate",
+        lambda: (2, ["the rebuild broke"], [], None),
+    )
+
+    response = _decide(session_id, body["delta_id"], action="override", rationale="it's fine")
+
+    assert response.status_code == 500
+    assert "invalid" in response.json()["detail"]

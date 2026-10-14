@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from modelling_specification import model_io
-from pyArchimate import Element, Model
+from pyArchimate import ArchiType, Element, Model
 
 
 def test_canon_resolves_case_and_separator_insensitively() -> None:
@@ -293,6 +293,92 @@ def test_add_views_exclude_by_specific_source_and_target_id() -> None:
     assert rel.target.uuid == by_id["cap-c"].uuid
 
 
+def test_relationship_excluded_skips_a_pattern_whose_source_does_not_match() -> None:
+    # The pattern names a specific source ("cap-a"); a relationship from a
+    # different source must fall through that `continue` rather than match on
+    # the (unset) target alone.
+    els = [
+        {"id": "cap-a", "type": "capability", "name": "Cap A"},
+        {"id": "cap-b", "type": "capability", "name": "Cap B"},
+        {"id": "cap-c", "type": "capability", "name": "Cap C"},
+    ]
+    rels = [{"type": "serving", "source": "cap-c", "target": "cap-b"}]
+    model, _elements, by_id, types, errors = _model_with(els, rels)
+    uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
+    patterns = model_io._compile_exclude_patterns(
+        {"id": "v1", "exclude": [{"source": "cap-a", "target": "cap-b"}]}, errors
+    )
+    (rel,) = model.relationships
+
+    assert model_io._relationship_excluded(rel, patterns, uuid_to_id, types) is False
+
+
+def test_view_scope_explicit_non_default_context_does_not_pull_in_platform() -> None:
+    errors: list[str] = []
+    scope = model_io._view_scope({"id": "v1", "context": "it4it"}, {"platform", "it4it"}, errors)
+    assert scope == {"it4it"}
+    assert errors == []
+
+
+def test_add_views_reports_a_view_missing_id_or_name() -> None:
+    model = Model("t")
+    errors: list[str] = []
+    elements = [{"id": "a", "type": "application-component", "name": "A"}]
+    by_id, types = model_io.add_elements(model, elements, errors)
+
+    model_io.add_views(model, [{"name": "No Id"}], elements, by_id, types, errors)
+
+    assert any("view missing id/name" in e for e in errors)
+    assert model.views == []
+
+
+def test_add_views_reports_a_layout_failure(monkeypatch: Any) -> None:
+    from pyArchimate.view.layout.core import LayoutResult
+
+    model = Model("t")
+    errors: list[str] = []
+    elements = [{"id": "a", "type": "capability", "name": "A"}]
+    by_id, types = model_io.add_elements(model, elements, errors)
+    failure = LayoutResult(
+        success=False,
+        view_id="v1",
+        algorithm_used="grid",
+        elements_processed=0,
+        connections_processed=0,
+        layout_time_ms=0.0,
+        error_message="boom",
+    )
+    monkeypatch.setattr(model_io, "apply_layout", lambda view, cfg: failure)
+
+    model_io.add_views(model, [{"id": "v1", "name": "V1", "members": ["a"]}], elements, by_id, types, errors)
+
+    assert any("view v1 grid failed: boom" in e for e in errors)
+
+
+def test_assemble_skips_a_view_without_id_and_flags_a_duplicate_view_id() -> None:
+    errors: list[str] = []
+    model, errors, _warnings = model_io._assemble(
+        "t", [], [], [{"name": "no id"}, {"id": "v1", "name": "V1"}, {"id": "v1", "name": "V1 dup"}], errors
+    )
+    assert model is None
+    assert any("duplicate view id: v1" in e for e in errors)
+    assert any("view missing id/name" in e for e in errors)
+
+
+def test_existing_elements_and_types_skips_elements_with_no_id_or_an_unknown_type(monkeypatch: Any) -> None:
+    fake_elements = [
+        {"id": "", "type": "application-component", "name": "No Id"},
+        {"id": "bad-type", "type": "not-a-real-type", "name": "Bad"},
+        {"id": "good", "type": "application-component", "name": "Good"},
+    ]
+    monkeypatch.setattr(model_io, "load_all_elements", lambda errors: fake_elements)
+
+    elements, types_by_id = model_io.existing_elements_and_types()
+
+    assert elements == fake_elements
+    assert types_by_id == {"good": "ApplicationComponent"}
+
+
 def test_add_views_without_exclude_renders_every_in_scope_edge() -> None:
     els = [
         {"id": "cap-a", "type": "capability", "name": "Cap A"},
@@ -399,6 +485,13 @@ def test_load_path_accepts_quoted_commas(tmp_path: Any) -> None:
     errors: list[str] = []
     assert model_io.load_path(f, errors)[0]["desc"] == "first part, kept tail"
     assert errors == []
+
+
+def test_load_path_reports_a_missing_required_file(tmp_path: Any) -> None:
+    missing = tmp_path / "elements.yaml"
+    errors: list[str] = []
+    assert model_io.load_path(missing, errors) == []
+    assert errors == [f"{missing} is missing"]
 
 
 def test_validate_model_accepts_an_in_memory_model() -> None:
@@ -554,6 +647,80 @@ def test_validate_model_flags_an_illegal_relationship() -> None:
     assert finding["rel_type"] == "Composition"
     assert finding["source_type"] == "BusinessActor"
     assert finding["target_type"] == "Goal"
+
+
+def test_validate_model_flags_a_dangling_relationship_endpoint(monkeypatch: Any) -> None:
+    # A relationship whose source/target no longer resolves to a live element --
+    # unreachable via this module's own add_relationships (which refuses to create
+    # one) or via Model.read() (which refuses to load one), so only reachable by
+    # corrupting the private `_source` ref directly, the way a library bug or a
+    # hand-edited XML file could. pyArchimate's own check_invalid_relationships()
+    # does not guard against a None endpoint either (it would raise AttributeError
+    # on r.source.type), so it is stubbed out here to isolate validate_model's own
+    # dangling-relationship guard (the thing under test) from that unrelated crash.
+    model = Model("t")
+    a = model.add(concept_type="BusinessActor", name="A")
+    b = model.add(concept_type="BusinessActor", name="B")
+    rel = model.add_relationship(rel_type="Serving", source=a, target=b, name=None)
+    rel._source = "does-not-exist"  # noqa: SLF001 - simulating a corrupt reference
+    monkeypatch.setattr(model, "check_invalid_relationships", lambda: [])
+
+    result = model_io.validate_model(model)
+
+    assert result["clean"] is False
+    (finding,) = result["findings"]
+    assert finding == {"check": "dangling_relationship", "id": rel.uuid, "detail": "Serving has a missing endpoint"}
+
+
+def test_validate_model_flags_a_broken_connection() -> None:
+    model = Model("t")
+    a = model.add(concept_type="BusinessActor", name="A")
+    b = model.add(concept_type="BusinessActor", name="B")
+    rel = model.add_relationship(rel_type="Serving", source=a, target=b, name=None)
+    view: Any = model.add(ArchiType.View, name="V")
+    view.add(ref=a)
+    view.add(ref=b)
+    view.add_connection(ref=rel)
+    del model.rels_dict[rel.uuid]  # the connection now references a relationship that is gone
+
+    result = model_io.validate_model(model)
+
+    assert result["clean"] is False
+    checks = {f["check"] for f in result["findings"]}
+    assert checks == {"broken_connection"}
+
+
+def test_validate_model_flags_an_orphan_view_node() -> None:
+    model = Model("t")
+    a = model.add(concept_type="BusinessActor", name="A")
+    view: Any = model.add(ArchiType.View, name="V")
+    view.add(ref=a)
+    del model.elems_dict[a.uuid]  # the node now references an element that is gone
+
+    result = model_io.validate_model(model)
+
+    assert result["clean"] is False
+    checks = {f["check"] for f in result["findings"]}
+    assert checks == {"orphan_view_node"}
+
+
+def test_validate_model_appends_an_invalid_relationship_finding_not_already_caught(monkeypatch: Any) -> None:
+    # check_invalid_relationships() is documented as "catches anything the per-rel
+    # loop missed" -- under the current pyArchimate version the two checks always
+    # agree, so the only way to exercise the dedup-and-append branch is to stub the
+    # library call to simulate it flagging something the per-rel loop did not.
+    model = Model("t")
+    a = model.add(concept_type="BusinessActor", name="A")
+    b = model.add(concept_type="BusinessActor", name="B")
+    rel = model.add_relationship(rel_type="Serving", source=a, target=b, name=None)
+    monkeypatch.setattr(model, "check_invalid_relationships", lambda: [rel.uuid])
+
+    result = model_io.validate_model(model)
+
+    assert result["clean"] is False
+    assert result["findings"] == [
+        {"check": "invalid_relationship", "id": rel.uuid, "detail": "fails check_invalid_relationships()"}
+    ]
 
 
 def test_merge_candidate_validates_a_clean_delta_against_the_real_model() -> None:

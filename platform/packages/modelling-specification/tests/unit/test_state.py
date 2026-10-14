@@ -62,6 +62,11 @@ def test_pending_delta_returns_none_when_nothing_is_pending() -> None:
     assert store.pending_delta(session_id) is None
 
 
+def test_pending_delta_returns_none_for_an_unknown_session() -> None:
+    store = SessionStore()
+    assert store.pending_delta("no-such-session") is None
+
+
 def test_pending_delta_returns_the_most_recent_non_terminal_delta() -> None:
     store = SessionStore()
     session_id = store.create_session()
