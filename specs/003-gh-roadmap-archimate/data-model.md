@@ -180,7 +180,9 @@ object, the build fails with an unknown id, which is the intended signal.
 Derivation rule: a link is skipped when a chain already implies it, judged only against the links
 the importer emits, never hand-authored ones, so output stays a function of GitHub state. A duplicate
 against a hand-authored link is caught by `check_derived.py` over the layer's ids; remove the
-hand-authored link. There is no Work Package → Plateau link at all: the Plateau is reached through a
+hand-authored link. A Work Package's own Realization of its Deliverable is never skipped, even
+when an Aggregation to a child realizing the same Deliverable implies it, so FR-003's "exactly one"
+holds for epics. There is no Work Package → Plateau link at all: the Plateau is reached through a
 Deliverable.
 
 Dropped: any link with an out-of-scope end. A milestone not in the fetched set drops its
