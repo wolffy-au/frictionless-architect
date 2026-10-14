@@ -51,7 +51,9 @@ def test_deltas_are_scoped_per_session() -> None:
 
 def test_new_delta_id_is_distinct_each_call() -> None:
     store = SessionStore()
-    assert store.new_delta_id() != store.new_delta_id()
+    first = store.new_delta_id()
+    second = store.new_delta_id()
+    assert first != second
 
 
 def test_pending_delta_returns_none_when_nothing_is_pending() -> None:

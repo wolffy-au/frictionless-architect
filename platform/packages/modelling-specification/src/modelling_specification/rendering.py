@@ -39,7 +39,7 @@ import yaml
 from defusedxml import ElementTree as SafeET
 
 from modelling_specification import model_io
-from modelling_specification.model_io import OUT, REPO_ROOT
+from modelling_specification.model_io import ELEMENTS_FILENAME, OUT, RELATIONSHIPS_FILENAME, REPO_ROOT, VIEWS_FILENAME
 
 # Repo-relative string, not OUT's absolute Path: model_to_puml.py/model_to_c4.py echo
 # their input path verbatim into each generated file's "GENERATED from ..." header, and
@@ -48,11 +48,11 @@ from modelling_specification.model_io import OUT, REPO_ROOT
 MODEL_REL = str(OUT.relative_to(REPO_ROOT))
 
 HERE = REPO_ROOT / "architecture" / "model"
-VIEWS = HERE / "views.yaml"
+VIEWS = HERE / VIEWS_FILENAME
 # Generic one-per-standard-viewpoint views (include_types only), split out of views.yaml.
 VIEWPOINT_VIEWS = HERE / "views-viewpoints.yaml"
 # Generated gh-roadmap layer (ADR-0035): its per-milestone views render beside the hand-authored ones.
-ROADMAP_VIEWS = HERE / "gh-roadmap" / "views.yaml"
+ROADMAP_VIEWS = HERE / "gh-roadmap" / VIEWS_FILENAME
 DIAGRAMS = HERE / "diagrams"
 # Vendored models (ADR-0029) each carry their own views.yaml, rendering into
 # their own diagrams/ dir -- (views file, diagrams dir) pairs, same order as
@@ -95,45 +95,58 @@ def _run(cmd: list[str]) -> None:
         sys.stderr.write(r.stderr)
 
 
+def _view_diagram_jobs(views_file: Path, diagram_root: Path) -> list[tuple[Path, list[str]]]:
+    """Generator-command jobs for every view in `views_file` that declares a `diagram:` key."""
+    if not views_file.exists():
+        return []
+    jobs: list[tuple[Path, list[str]]] = []
+    for v in yaml.safe_load(views_file.read_text()) or []:
+        slug = v.get("diagram")
+        if not slug:
+            sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
+            continue
+        cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
+        for rel_type in v.get("no_direction", []):
+            cmd += ["--no-direction", rel_type]
+        if v.get("max_width"):
+            cmd += ["--max-width", str(v["max_width"])]
+        jobs.append((diagram_root / f"{slug}.puml", cmd))
+    return jobs
+
+
+def _c4_diagram_jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
+    """Generator-command jobs for the fixed C4 context/container/component pair."""
+    jobs: list[tuple[Path, list[str]]] = []
+    for slug, level, layout in C4_DIAGRAMS:
+        cmd = [
+            sys.executable,
+            str(C4_PUML),
+            MODEL_REL,
+            "--system",
+            SYSTEM,
+            "--level",
+            level,
+            "--layout",
+            layout,
+        ]
+        jobs.append((diagram_root / f"{slug}.puml", cmd))
+    return jobs
+
+
 def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     """(puml output path, generator command without `-o`) for every diagram,
     view-derived plus the fixed C4 pair. `diagram_root` is DIAGRAMS or a
     vendored model's diagrams dir."""
-    jobs: list[tuple[Path, list[str]]] = []
     views_files = (
         [VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS]
         if diagram_root == DIAGRAMS
         else [next(vf for vf, root in VENDORED_VIEW_SOURCES if root == diagram_root)]
     )
+    jobs: list[tuple[Path, list[str]]] = []
     for views_file in views_files:
-        if not views_file.exists():
-            continue
-        for v in yaml.safe_load(views_file.read_text()) or []:
-            slug = v.get("diagram")
-            if not slug:
-                sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
-                continue
-            cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
-            for rel_type in v.get("no_direction", []):
-                cmd += ["--no-direction", rel_type]
-            if v.get("max_width"):
-                cmd += ["--max-width", str(v["max_width"])]
-            jobs.append((diagram_root / f"{slug}.puml", cmd))
-
+        jobs += _view_diagram_jobs(views_file, diagram_root)
     if diagram_root == DIAGRAMS:
-        for slug, level, layout in C4_DIAGRAMS:
-            cmd = [
-                sys.executable,
-                str(C4_PUML),
-                MODEL_REL,
-                "--system",
-                SYSTEM,
-                "--level",
-                level,
-                "--layout",
-                layout,
-            ]
-            jobs.append((diagram_root / f"{slug}.puml", cmd))
+        jobs += _c4_diagram_jobs(diagram_root)
     return jobs
 
 
@@ -153,6 +166,42 @@ def _orphans(root: Path, wanted: set[Path], *, write: bool) -> list[str]:
     return found
 
 
+def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path], set[Path]]:
+    """Generate every job's `.puml` for `root`; returns (stale, changed, wanted) as
+    repo-relative stale paths, the changed `.puml` paths, and every path `_jobs`
+    produced (stale or not, for `_orphans` to compare against)."""
+    stale: list[str] = []
+    changed: list[Path] = []
+    wanted: set[Path] = set()
+    for puml, cmd in _jobs(root):
+        wanted.add(puml)
+        new_text = _capture(cmd)
+        current = puml.read_text() if puml.exists() else None
+        if current == new_text:
+            continue
+        stale.append(str(puml.relative_to(REPO_ROOT)))
+        changed.append(puml)
+        if write:
+            puml.parent.mkdir(parents=True, exist_ok=True)
+            puml.write_text(new_text)
+    return stale, changed, wanted
+
+
+def _normalize_rendered_svgs(changed_pumls: list[Path]) -> None:
+    """PlantUML's SVG output has no trailing newline; normalise to one so
+    re-renders don't churn on it."""
+    for p in changed_pumls:
+        svg_path = p.with_suffix(".svg")
+        if svg_path.exists():
+            # NOSONAR python-security:S2083 -- `p` always comes from `_jobs()`, whose
+            # `slug` is a `diagram:` key read out of committed views.yaml/
+            # views-viewpoints.yaml/gh-roadmap files, never from an HTTP request; the
+            # taint path Sonar reports links this to an unrelated HTTP-derived `view_id`
+            # in render_single_view/render_candidate_view, neither of which writes to a
+            # path built from that id.
+            svg_path.write_text(svg_path.read_text().rstrip("\n") + "\n")
+
+
 def render(diagram_roots: list[Path], svg: bool, *, write: bool) -> tuple[list[str], list[str]]:
     """Generate each view's `.puml` and compare it against the committed file.
 
@@ -169,28 +218,15 @@ def render(diagram_roots: list[Path], svg: bool, *, write: bool) -> tuple[list[s
     wanted: set[Path] = set()
 
     for root in diagram_roots:
-        for puml, cmd in _jobs(root):
-            wanted.add(puml)
-            new_text = _capture(cmd)
-            current = puml.read_text() if puml.exists() else None
-            if current == new_text:
-                continue
-            stale.append(str(puml.relative_to(REPO_ROOT)))
-            changed_pumls.append(puml)
-            if write:
-                puml.parent.mkdir(parents=True, exist_ok=True)
-                puml.write_text(new_text)
-
+        root_stale, root_changed, root_wanted = _render_root_pumls(root, write=write)
+        stale += root_stale
+        changed_pumls += root_changed
+        wanted |= root_wanted
         orphan += _orphans(root, wanted, write=write)
 
     if write and svg and changed_pumls:
         _run(["plantuml", "-tsvg", *(str(p) for p in changed_pumls)])
-        # PlantUML's SVG output has no trailing newline; normalise to one so
-        # re-renders don't churn on it.
-        for p in changed_pumls:
-            svg_path = p.with_suffix(".svg")
-            if svg_path.exists():
-                svg_path.write_text(svg_path.read_text().rstrip("\n") + "\n")
+        _normalize_rendered_svgs(changed_pumls)
 
     return stale, orphan
 
@@ -246,7 +282,7 @@ def _refresh_model_if_sources_changed() -> None:
     inputs = [
         directory / filename
         for directory in (model_io.HERE, *model_io.MODEL_LAYERS)
-        for filename in ("elements.yaml", "relationships.yaml", "views.yaml")
+        for filename in (ELEMENTS_FILENAME, RELATIONSHIPS_FILENAME, VIEWS_FILENAME)
     ]
     if not any(path.is_file() and path.stat().st_mtime_ns > model_mtime for path in inputs):
         return
@@ -315,11 +351,14 @@ def sanitize_svg(svg: str) -> str:
         return name.rsplit("}", 1)[-1].lower()
 
     for parent in root.iter():
-        for child in list(parent):
+        # list() snapshots the children before the loop removes from them -- iterating
+        # an Element directly while calling parent.remove() on it skips entries.
+        for child in list(parent):  # NOSONAR python:S7504 -- removal below mutates this
             if local(child.tag) in _ACTIVE_ELEMENTS:
                 parent.remove(child)
     for element in root.iter():
-        for attr in list(element.attrib):
+        # Same reason: del element.attrib[attr] below mutates the dict being iterated.
+        for attr in list(element.attrib):  # NOSONAR python:S7504 -- deletion below mutates this
             value = element.attrib[attr].strip().lower()
             if local(attr).startswith("on") or (local(attr) == "href" and value.startswith(("javascript:", "data:"))):
                 del element.attrib[attr]

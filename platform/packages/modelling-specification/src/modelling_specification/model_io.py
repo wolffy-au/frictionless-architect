@@ -57,6 +57,9 @@ THIRD_PARTY = REPO_ROOT / "third_party"
 # to the layer directory's name (`it4it`, `gh-roadmap`). An explicit `context:`
 # on an element wins. Views sweep `include_types` only within their `context:`.
 DEFAULT_CONTEXT = "platform"
+ELEMENTS_FILENAME = "elements.yaml"
+RELATIONSHIPS_FILENAME = "relationships.yaml"
+VIEWS_FILENAME = "views.yaml"
 VENDORED_MODELS = [THIRD_PARTY / "it4it"]
 # Every optional layer merged into the same pass: the vendored models plus the
 # generated GitHub roadmap (GH #95, import_gh_roadmap.py), whose ids are
@@ -106,6 +109,13 @@ def load_path(path: Path, errors: list[str], optional: bool = False) -> list[dic
     return data
 
 
+def _null_key_context(node: dict[str, Any], where: str) -> str:
+    """`where: id` (or `where: src->tgt`) for an error label, if `node` carries an id
+    or both relationship endpoints -- else just `where` unchanged."""
+    ident = node.get("id") or (f"{node['source']}->{node['target']}" if "source" in node and "target" in node else None)
+    return f"{where}: {ident}" if ident else where
+
+
 def _check_null_keys(node: Any, where: str, errors: list[str]) -> None:
     """Flag any mapping key whose value is null.
 
@@ -115,10 +125,7 @@ def _check_null_keys(node: Any, where: str, errors: list[str]) -> None:
     as that truncation and report it rather than build from the cut-short text.
     """
     if isinstance(node, dict):
-        ident = node.get("id") or (
-            f"{node['source']}->{node['target']}" if "source" in node and "target" in node else None
-        )
-        ctx = f"{where}: {ident}" if ident else where
+        ctx = _null_key_context(node, where)
         for key, value in node.items():
             if value is None:
                 errors.append(
@@ -157,7 +164,7 @@ def load_layer_elements(errors: list[str]) -> list[dict[str, Any]]:
     """`elements.yaml` from every optional layer, each tagged with its layer's context."""
     merged: list[dict[str, Any]] = []
     for model_dir in MODEL_LAYERS:
-        loaded = load_path(model_dir / "elements.yaml", errors, optional=True)
+        loaded = load_path(model_dir / ELEMENTS_FILENAME, errors, optional=True)
         merged += tag_contexts(loaded, model_dir.name)
     return merged
 
@@ -453,6 +460,20 @@ def _compile_exclude_patterns(v: dict[str, Any], errors: list[str]) -> list[dict
     return patterns
 
 
+def _pattern_matches_relationship(
+    p: dict[str, str | None], rel_type: str, stype: str | None, ttype: str | None, sid: str | None, tid: str | None
+) -> bool:
+    """Whether every key an exclude_elements pattern gives (others are wildcards)
+    matches this relationship's type, endpoint types and endpoint ids."""
+    return (
+        (not p["type"] or p["type"] == rel_type)
+        and (not p["source_type"] or p["source_type"] == stype)
+        and (not p["target_type"] or p["target_type"] == ttype)
+        and (not p["source"] or p["source"] == sid)
+        and (not p["target"] or p["target"] == tid)
+    )
+
+
 def _relationship_excluded(
     rel: Any,
     patterns: list[dict[str, str | None]],
@@ -463,19 +484,7 @@ def _relationship_excluded(
     tid = uuid_to_id.get(rel.target.uuid)
     stype = types_by_id.get(sid) if sid else None
     ttype = types_by_id.get(tid) if tid else None
-    for p in patterns:
-        if p["type"] and p["type"] != rel.type:
-            continue
-        if p["source_type"] and p["source_type"] != stype:
-            continue
-        if p["target_type"] and p["target_type"] != ttype:
-            continue
-        if p["source"] and p["source"] != sid:
-            continue
-        if p["target"] and p["target"] != tid:
-            continue
-        return True
-    return False
+    return any(_pattern_matches_relationship(p, rel.type, stype, ttype, sid, tid) for p in patterns)
 
 
 def _view_scope(v: dict[str, Any], known_contexts: set[str], errors: list[str]) -> set[str]:
@@ -596,54 +605,94 @@ def add_views(
         # block of the generated XML does not churn on every build. add() below
         # bypasses get_or_create_view() only because that wrapper has no uuid arg.
         view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
-        on_view: set[str] = set()  # element uuids with a node on this view
-        view_el_types: set[str] = set()
         scope = _view_scope(v, known_contexts, errors)
         exclude_element_patterns = _compile_exclude_element_patterns(v, errors)
-        for e in elements:
-            swept = bool(types) and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope
-            selected = (e["id"] in want or swept) and not _element_excluded(
-                e["id"], exclude_element_patterns, types_by_id
-            )
-            if selected and e["id"] in by_id:
-                el = by_id[e["id"]]
-                view.add(ref=el, uuid=det_id(v["id"], "node", el.uuid))
-                on_view.add(el.uuid)
-                view_el_types.add(types_by_id[e["id"]])
+        on_view, view_el_types = _select_view_elements(
+            view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
+        )
         exclude_patterns = _compile_exclude_patterns(v, errors)
-        view_rel_types: set[str] = set()
-        for rel in m.relationships:
-            if (
-                rel.source.uuid in on_view
-                and rel.target.uuid in on_view
-                and not _relationship_excluded(rel, exclude_patterns, uuid_to_id, types_by_id)
-            ):
-                view.add_connection(ref=rel, uuid=det_id(v["id"], "conn", rel.uuid))
-                view_rel_types.add(rel.type)
+        view_rel_types = _connect_view_relationships(
+            view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
+        )
         missing = [mid for mid in want if mid not in by_id]
         if missing:
             errors.append(f"view {v['id']} references unknown ids: {missing}")
             continue
         check_view_viewpoint(v, view_el_types, view_rel_types, errors)
-        # Grid layout is deterministic (layer-ordered row-major placement);
-        # apply_format then applies the ArchiMate per-category node sizes.
-        cfg = LayoutConfig(alignment="grid", layer_direction="vertical")
-        for res in (apply_layout(view, cfg), apply_format(view, cfg)):
-            if not res.success:
-                errors.append(f"view {v['id']} {res.algorithm_used} failed: {res.error_message}")
+        _apply_view_layout(view, v, errors)
+
+
+def _select_view_elements(
+    view: Any,
+    elements: list[dict[str, Any]],
+    by_id: dict[str, Element],
+    types_by_id: dict[str, str],
+    want: set[str],
+    types: set[str],
+    scope: set[str],
+    exclude_element_patterns: list[dict[str, Any]],
+    view_id: str,
+) -> tuple[set[str], set[str]]:
+    """Add a node to `view` for every element in scope (via `want`/`types`, less
+    `exclude_element_patterns`); returns the node uuids and ArchiMate types placed,
+    for `add_views`'s relationship/viewpoint passes."""
+    on_view: set[str] = set()  # element uuids with a node on this view
+    view_el_types: set[str] = set()
+    for e in elements:
+        swept = bool(types) and types_by_id.get(e["id"]) in types and e.get("context", DEFAULT_CONTEXT) in scope
+        selected = (e["id"] in want or swept) and not _element_excluded(e["id"], exclude_element_patterns, types_by_id)
+        if selected and e["id"] in by_id:
+            el = by_id[e["id"]]
+            view.add(ref=el, uuid=det_id(view_id, "node", el.uuid))
+            on_view.add(el.uuid)
+            view_el_types.add(types_by_id[e["id"]])
+    return on_view, view_el_types
+
+
+def _connect_view_relationships(
+    view: Any,
+    m: Model,
+    on_view: set[str],
+    exclude_patterns: list[dict[str, Any]],
+    uuid_to_id: dict[str, str],
+    types_by_id: dict[str, str],
+    view_id: str,
+) -> set[str]:
+    """Add a connection to `view` for every model relationship whose endpoints are
+    both on it (less `exclude_patterns`); returns the ArchiMate relationship types
+    connected, for `add_views`'s viewpoint check."""
+    view_rel_types: set[str] = set()
+    for rel in m.relationships:
+        if (
+            rel.source.uuid in on_view
+            and rel.target.uuid in on_view
+            and not _relationship_excluded(rel, exclude_patterns, uuid_to_id, types_by_id)
+        ):
+            view.add_connection(ref=rel, uuid=det_id(view_id, "conn", rel.uuid))
+            view_rel_types.add(rel.type)
+    return view_rel_types
+
+
+def _apply_view_layout(view: Any, v: dict[str, Any], errors: list[str]) -> None:
+    """Grid layout is deterministic (layer-ordered row-major placement);
+    apply_format then applies the ArchiMate per-category node sizes."""
+    cfg = LayoutConfig(alignment="grid", layer_direction="vertical")
+    for res in (apply_layout(view, cfg), apply_format(view, cfg)):
+        if not res.success:
+            errors.append(f"view {v['id']} {res.algorithm_used} failed: {res.error_message}")
 
 
 def load_all_elements(errors: list[str]) -> list[dict[str, Any]]:
     """First-party `elements.yaml` plus every layer's, each tagged with its context."""
-    return tag_contexts(load("elements.yaml", errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
+    return tag_contexts(load(ELEMENTS_FILENAME, errors), DEFAULT_CONTEXT) + load_layer_elements(errors)
 
 
 def load_all_views(errors: list[str]) -> list[dict[str, Any]]:
     """`views.yaml`, the generic `views-viewpoints.yaml`, and every layer's views."""
     return (
-        load("views.yaml", errors, optional=True)
+        load(VIEWS_FILENAME, errors, optional=True)
         + load("views-viewpoints.yaml", errors, optional=True)
-        + load_layers("views.yaml", errors)
+        + load_layers(VIEWS_FILENAME, errors)
     )
 
 
@@ -683,7 +732,7 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
     from invalid YAML."""
     errors: list[str] = []
     elements = load_all_elements(errors)
-    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors)
+    rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
     views = load_all_views(errors)
     return _assemble("frictionless-architect", elements, rels, views, errors)
 
@@ -741,9 +790,9 @@ def append_delta(elements: list[dict[str, Any]], relationships: list[dict[str, A
     `relationships.yaml` (FR-001's apply step, R9) -- additive only; no existing entry
     is edited, retired or reordered (plan.md Model impact)."""
     if elements:
-        _append_yaml_flow_entries(HERE / "elements.yaml", elements, _ELEMENT_FIELD_ORDER)
+        _append_yaml_flow_entries(HERE / ELEMENTS_FILENAME, elements, _ELEMENT_FIELD_ORDER)
     if relationships:
-        _append_yaml_flow_entries(HERE / "relationships.yaml", relationships, _RELATIONSHIP_FIELD_ORDER)
+        _append_yaml_flow_entries(HERE / RELATIONSHIPS_FILENAME, relationships, _RELATIONSHIP_FIELD_ORDER)
 
 
 def merge_candidate(
@@ -756,7 +805,9 @@ def merge_candidate(
     to disk; the delta is additive only, same as `build_model()` otherwise."""
     errors: list[str] = []
     elements = load_all_elements(errors) + list(delta_elements)
-    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors) + list(delta_relationships)
+    rels = (
+        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    )
     views = load_all_views(errors)
     return _assemble("candidate-delta", elements, rels, views, errors)
 
@@ -771,7 +822,9 @@ def preview_model(
     errors: list[str] = []
     elements = load_all_elements(errors)
     marked = [{**e, "name": f"+ {e.get('name', e.get('id', ''))}"} for e in delta_elements]
-    rels = load("relationships.yaml", errors) + load_layers("relationships.yaml", errors) + list(delta_relationships)
+    rels = (
+        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    )
     shown = [e["id"] for e in delta_elements if e.get("id")]
     shown += [end for r in delta_relationships for end in (r.get("source"), r.get("target")) if end]
     views = load_all_views(errors)
@@ -782,32 +835,26 @@ def preview_model(
     return model, errors
 
 
-def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
-    """Run pyArchimate's metamodel + referential-integrity checks.
-
-    Ported from `.claude/skills/model-archimate/scripts/validate.py` -- accepts
-    either a path to an Open Group Exchange Format XML file (the skill script's
-    original contract, still used by the CLI `validate` subcommand) or an
-    already-loaded `Model` (used by the in-memory validate-before-write path,
-    R9), so the same checks run identically from a live Model as from disk."""
+def _load_model_for_validation(path_or_model: str | Path | Model) -> tuple[Model, str]:
+    """The `Model` to validate plus its display label -- as-is if already loaded,
+    else read from disk (see `validate_model`'s docstring for the two contracts)."""
     if isinstance(path_or_model, Model):
-        model = path_or_model
-        path_label = "<in-memory>"
-    else:
-        model = Model("validate")
-        try:
-            # pyArchimate's Model.read() calls sys.exit(1) on an unreadable file
-            # instead of raising -- normalise that to a real exception so the
-            # CLI's `except Exception` handler can report it cleanly instead of
-            # the process crashing with an uncaught SystemExit.
-            model.read(str(path_or_model))
-        except SystemExit as exc:
-            raise OSError(f"could not read {path_or_model!s} as an ArchiMate model") from exc
-        path_label = str(path_or_model)
+        return path_or_model, "<in-memory>"
+    model = Model("validate")
+    try:
+        # pyArchimate's Model.read() calls sys.exit(1) on an unreadable file
+        # instead of raising -- normalise that to a real exception so the
+        # CLI's `except Exception` handler can report it cleanly instead of
+        # the process crashing with an uncaught SystemExit.
+        model.read(str(path_or_model))
+    except SystemExit as exc:  # NOSONAR python:S5754 -- converting it IS the point, see above
+        raise OSError(f"could not read {path_or_model!s} as an ArchiMate model") from exc
+    return model, str(path_or_model)
 
+
+def _relationship_matrix_findings(model: Model) -> list[dict[str, Any]]:
+    """Check #1: relationship-matrix legality, endpoint by endpoint."""
     findings: list[dict[str, Any]] = []
-
-    # 1. Relationship-matrix legality, endpoint by endpoint.
     for rel in model.relationships:
         src = getattr(rel.source, "type", None)
         tgt = getattr(rel.target, "type", None)
@@ -819,8 +866,7 @@ def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
                     "detail": f"{rel.type} has a missing endpoint",
                 }
             )
-            continue
-        if not check_valid_relationship(rel.type, src, tgt):
+        elif not check_valid_relationship(rel.type, src, tgt):
             findings.append(
                 {
                     "check": "illegal_relationship",
@@ -834,6 +880,19 @@ def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
                     "target_type": tgt,
                 }
             )
+    return findings
+
+
+def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
+    """Run pyArchimate's metamodel + referential-integrity checks.
+
+    Ported from `.claude/skills/model-archimate/scripts/validate.py` -- accepts
+    either a path to an Open Group Exchange Format XML file (the skill script's
+    original contract, still used by the CLI `validate` subcommand) or an
+    already-loaded `Model` (used by the in-memory validate-before-write path,
+    R9), so the same checks run identically from a live Model as from disk."""
+    model, path_label = _load_model_for_validation(path_or_model)
+    findings = _relationship_matrix_findings(model)
 
     # 2. Model-wide re-validation (catches anything the per-rel loop missed).
     for rel_uuid in model.check_invalid_relationships() or []:

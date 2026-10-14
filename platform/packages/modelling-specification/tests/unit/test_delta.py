@@ -135,7 +135,8 @@ def test_resolve_unknown_endpoints_repoints_a_misspelt_id_and_reports_it() -> No
 
     assert resolved[0]["source"] == "assess-drift-debt"
     assert resolved[0]["target"] == "goal-frictionless-architecture"
-    assert len(notes) == 1 and "assess-drfit-debt" in notes[0]
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
 
 
 def test_resolve_unknown_endpoints_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
