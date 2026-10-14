@@ -28,7 +28,8 @@ def test_propose_a_clean_delta_returns_validated_with_an_assigned_element_id(
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "validated"
-    assert isinstance(body["delta_id"], str) and body["delta_id"]
+    assert isinstance(body["delta_id"], str)
+    assert body["delta_id"]
     (element,) = body["elements"]
     assert element["type"] == "ApplicationFunction"
     assert element["id"] == "applicationfunction-propose-clean-test-function"
@@ -119,4 +120,6 @@ def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
     body = response.json()
     assert body["status"] == "message"
     assert "Reconcile drift continuously" in body["message"]
-    assert body["delta_id"] is None and body["elements"] == [] and body["relationships"] == []
+    assert body["delta_id"] is None
+    assert body["elements"] == []
+    assert body["relationships"] == []

@@ -22,7 +22,8 @@ def test_metamodel_finding_fix_names_the_nearest_legal_relationship_types() -> N
     fix = proposed_fix_for_finding(finding)
 
     assert fix is not None
-    assert "BusinessActor" in fix and "Goal" in fix
+    assert "BusinessActor" in fix
+    assert "Goal" in fix
     assert "Composition" in fix
 
 
@@ -66,7 +67,8 @@ def test_altitude_convention_finding_fix_names_the_banned_terms() -> None:
     fix = proposed_fix_for_finding(finding, rules_by_id={rule["id"]: rule})
 
     assert fix is not None
-    assert "YAML" in fix and "render step" in fix
+    assert "YAML" in fix
+    assert "render step" in fix
 
 
 def test_allowed_subset_convention_finding_fix_names_the_allowed_types() -> None:
@@ -80,7 +82,8 @@ def test_allowed_subset_convention_finding_fix_names_the_allowed_types() -> None
     fix = proposed_fix_for_finding(finding, rules_by_id={rule["id"]: rule})
 
     assert fix is not None
-    assert "ApplicationFunction" in fix and "ApplicationComponent" in fix
+    assert "ApplicationFunction" in fix
+    assert "ApplicationComponent" in fix
 
 
 def test_interposed_pattern_convention_finding_fix_names_the_intermediary_types() -> None:
