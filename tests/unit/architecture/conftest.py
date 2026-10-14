@@ -2,6 +2,7 @@
 
 import importlib.util
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
 
@@ -24,3 +25,9 @@ def load_script(name: str) -> ModuleType:
 @pytest.fixture(scope="session")
 def importer() -> ModuleType:
     return load_script("import_gh_roadmap")
+
+
+@pytest.fixture(scope="session")
+def model_script() -> Callable[[str], ModuleType]:
+    """Loader for any architecture/model script by name, e.g. the build/render wrappers."""
+    return load_script
