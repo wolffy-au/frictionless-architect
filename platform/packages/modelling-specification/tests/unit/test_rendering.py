@@ -4,11 +4,65 @@
 from __future__ import annotations
 
 import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
 import pytest
 from modelling_specification import model_io, rendering
+
+
+def test_capture_exits_and_writes_stderr_when_the_subprocess_fails(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    fake = subprocess.CompletedProcess(args=["x"], returncode=1, stdout="partial out\n", stderr="boom\n")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+
+    with pytest.raises(SystemExit) as exc_info:
+        rendering._capture(["x"])
+
+    assert exc_info.value.code == 2
+    err = capsys.readouterr().err
+    assert "partial out" in err
+    assert "boom" in err
+
+
+def test_capture_writes_unmapped_type_warnings_but_still_returns_stdout(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    fake = subprocess.CompletedProcess(args=["x"], returncode=0, stdout="@startuml\n@enduml", stderr="note: heads up\n")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+
+    out = rendering._capture(["x"])
+
+    assert out == "@startuml\n@enduml\n"
+    assert "note: heads up" in capsys.readouterr().err
+
+
+def test_run_exits_and_writes_stderr_when_the_subprocess_fails(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    fake = subprocess.CompletedProcess(args=["plantuml"], returncode=1, stdout="partial\n", stderr="plantuml died\n")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+
+    with pytest.raises(SystemExit) as exc_info:
+        rendering._run(["plantuml"])
+
+    assert exc_info.value.code == 2
+    err = capsys.readouterr().err
+    assert "partial" in err
+    assert "plantuml died" in err
+
+
+def test_run_writes_stderr_warnings_on_success(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    fake = subprocess.CompletedProcess(args=["plantuml"], returncode=0, stdout="", stderr="unmapped type: Foo\n")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+
+    rendering._run(["plantuml"])
+
+    assert "unmapped type: Foo" in capsys.readouterr().err
 
 
 def test_render_diagrams_check_against_the_real_repo_is_up_to_date() -> None:
@@ -111,6 +165,188 @@ def test_render_writes_stale_puml_and_renders_svg(monkeypatch: pytest.MonkeyPatc
         assert not orphan_svg.exists()
     finally:
         shutil.rmtree(diagram_root, ignore_errors=True)
+
+
+def test_orphans_reports_without_deleting_when_write_is_false() -> None:
+    root = model_io.REPO_ROOT / "build" / "test_orphans_write_false"
+    root.mkdir(parents=True, exist_ok=True)
+    stale_puml = root / "stale.puml"
+    stale_puml.write_text("@startuml\n@enduml\n")
+
+    try:
+        found = rendering._orphans(root, wanted=set(), write=False)
+
+        assert found == [str(stale_puml.relative_to(model_io.REPO_ROOT))]
+        assert stale_puml.exists()  # reported, but not deleted
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_orphans_on_a_missing_root_reports_nothing(tmp_path: Path) -> None:
+    assert rendering._orphans(tmp_path / "does-not-exist", wanted=set(), write=True) == []
+
+
+def test_render_reports_stale_without_writing_when_write_is_false(monkeypatch: pytest.MonkeyPatch) -> None:
+    diagram_root = model_io.REPO_ROOT / "build" / "test_render_write_false"
+    diagram_root.mkdir(parents=True, exist_ok=True)
+    wanted_puml = diagram_root / "fresh.puml"
+
+    def fake_jobs(root: Path) -> list[tuple[Path, list[str]]]:
+        return [(wanted_puml, ["true"])]
+
+    def fake_capture(cmd: list[str]) -> str:
+        return "@startuml\nAlice -> Bob: hi\n@enduml\n"
+
+    monkeypatch.setattr(rendering, "_jobs", fake_jobs)
+    monkeypatch.setattr(rendering, "_capture", fake_capture)
+
+    try:
+        stale, orphan = rendering.render([diagram_root], svg=True, write=False)
+
+        assert stale == [str(wanted_puml.relative_to(model_io.REPO_ROOT))]
+        assert orphan == []
+        assert not wanted_puml.exists()  # write=False never touches disk
+    finally:
+        shutil.rmtree(diagram_root, ignore_errors=True)
+
+
+def test_render_skips_svg_normalisation_when_the_svg_was_not_produced(monkeypatch: pytest.MonkeyPatch) -> None:
+    """write=True, svg=True, with a stale .puml -- but `_run` (plantuml) is faked as a
+    no-op, so the corresponding `.svg` never appears. Exercises the `if svg_path.exists()`
+    guard's false branch without depending on a real plantuml invocation's output."""
+    diagram_root = model_io.REPO_ROOT / "build" / "test_render_svg_not_produced"
+    diagram_root.mkdir(parents=True, exist_ok=True)
+    wanted_puml = diagram_root / "fresh.puml"
+
+    def fake_jobs(root: Path) -> list[tuple[Path, list[str]]]:
+        return [(wanted_puml, ["true"])]
+
+    def fake_capture(cmd: list[str]) -> str:
+        return "@startuml\nAlice -> Bob: hi\n@enduml\n"
+
+    monkeypatch.setattr(rendering, "_jobs", fake_jobs)
+    monkeypatch.setattr(rendering, "_capture", fake_capture)
+    monkeypatch.setattr(rendering, "_run", lambda cmd: None)
+
+    try:
+        stale, _orphan = rendering.render([diagram_root], svg=True, write=True)
+
+        assert stale == [str(wanted_puml.relative_to(model_io.REPO_ROOT))]
+        assert wanted_puml.exists()
+        assert not wanted_puml.with_suffix(".svg").exists()
+    finally:
+        shutil.rmtree(diagram_root, ignore_errors=True)
+
+
+def test_find_view_skips_a_missing_views_file_before_falling_through(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # VIEWS is checked first; "view-stakeholder" actually lives in VIEWPOINT_VIEWS --
+    # proves a missing first-choice file is skipped, not treated as a failure.
+    monkeypatch.setattr(rendering, "VIEWS", tmp_path / "absent-first-party-views.yaml")
+
+    view = rendering._find_view("view-stakeholder")
+
+    assert view["id"] == "view-stakeholder"
+
+
+def test_all_views_skips_a_views_file_that_does_not_exist(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(rendering, "ROADMAP_VIEWS", tmp_path / "absent-roadmap-views.yaml")
+
+    views = rendering._all_views()
+
+    assert any(v.get("id") == "view-stakeholder" for v in views)
+
+
+def test_refresh_model_is_a_noop_when_the_model_is_missing(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(rendering, "OUT", tmp_path / "absent.xml")
+    rendering._refresh_model_if_sources_changed()  # does not raise
+
+
+def _stale_model_and_sources(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
+    """Common setup for `_refresh_model_if_sources_changed` tests: an existing (stale)
+    model plus a newer YAML source, so the function always decides a rebuild is due."""
+    model = tmp_path / "model.xml"
+    source_dir = tmp_path / "sources"
+    source_dir.mkdir()
+    model.write_text("<model />")
+    (source_dir / "views.yaml").write_text("- id: view-stakeholder\n")
+    monkeypatch.setattr(rendering, "OUT", model)
+    monkeypatch.setattr(model_io, "HERE", source_dir)
+    monkeypatch.setattr(model_io, "MODEL_LAYERS", [])
+    return model
+
+
+def test_refresh_model_prints_warnings_from_a_successful_rebuild(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    model = _stale_model_and_sources(monkeypatch, tmp_path)
+
+    def rebuild() -> tuple[int, list[str], list[str], dict[str, Any]]:
+        model.touch()
+        return 0, [], ["heads up: something to check"], {"clean": True, "findings": []}
+
+    monkeypatch.setattr(model_io, "write_and_validate", rebuild)
+
+    rendering._refresh_model_if_sources_changed()
+
+    assert "warning: heads up: something to check" in capsys.readouterr().err
+
+
+def test_refresh_model_raises_with_errors_and_findings_when_the_rebuild_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    model = _stale_model_and_sources(monkeypatch, tmp_path)
+
+    def rebuild() -> tuple[int, list[str], list[str], dict[str, Any]]:
+        model.touch()
+        return 1, ["bad element"], [], {"clean": False, "findings": [{"check": "c1", "detail": "d1"}]}
+
+    monkeypatch.setattr(model_io, "write_and_validate", rebuild)
+
+    with pytest.raises(RuntimeError, match="bad element; c1: d1"):
+        rendering._refresh_model_if_sources_changed()
+
+
+def test_refresh_model_raises_a_fallback_message_when_the_rebuild_gives_no_detail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    model = _stale_model_and_sources(monkeypatch, tmp_path)
+
+    def rebuild() -> tuple[int, list[str], list[str], dict[str, Any] | None]:
+        model.touch()
+        return 3, [], [], None
+
+    monkeypatch.setattr(model_io, "write_and_validate", rebuild)
+
+    with pytest.raises(RuntimeError, match="model build exited with code 3"):
+        rendering._refresh_model_if_sources_changed()
+
+
+def test_render_single_view_with_max_width_and_no_direction_against_a_real_view() -> None:
+    # view-application-structure sets both `no_direction:` and `max_width:` --
+    # exercises the `--max-width` branch `_render_svg` otherwise never takes.
+    svg = rendering.render_single_view("view-application-structure")
+    assert svg.lstrip().startswith("<svg")
+    assert "</svg>" in svg
+
+
+def test_render_svg_raises_runtime_error_when_plantuml_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(rendering, "_capture", lambda cmd: "@startuml\n@enduml\n")
+    fake = subprocess.CompletedProcess(args=["plantuml"], returncode=1, stdout="", stderr="plantuml blew up")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+
+    with pytest.raises(RuntimeError, match=r"plantuml failed rendering view 'view-stakeholder': plantuml blew up"):
+        rendering._render_svg({"id": "view-stakeholder", "name": "Stakeholder"}, "model.xml")
+
+
+def test_render_candidate_view_raises_preview_error_when_the_model_cannot_be_assembled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(model_io, "preview_model", lambda elements, rels, view: (None, ["boom"]))
+
+    with pytest.raises(rendering.PreviewError, match="boom"):
+        rendering.render_candidate_view("view-stakeholder", [], [])
 
 
 def test_resolve_view_request_by_exact_view_id() -> None:

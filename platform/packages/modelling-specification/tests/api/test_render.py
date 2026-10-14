@@ -6,6 +6,7 @@ Runs against the real committed model -- `render_single_view` is read-only (see
 
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 from modelling_specification.app import app
 
@@ -43,6 +44,20 @@ def test_render_ambiguous_description_returns_300_with_candidates() -> None:
 
 def test_render_no_match_returns_404() -> None:
     response = client.get("/authoring/render", params={"object_id": "not-a-real-id-or-view"})
+
+    assert response.status_code == 404
+
+
+def test_render_resolved_to_a_view_the_server_does_not_know_returns_404(monkeypatch: pytest.MonkeyPatch) -> None:
+    # resolve_view_request resolved unambiguously, but to an id that is not (or no
+    # longer) one of the server's own known views -- never trust the resolution
+    # result blindly into what gets rendered/served.
+    monkeypatch.setattr(
+        "modelling_specification.router.rendering.resolve_view_request",
+        lambda object_id, description: {"resolved_view_id": "view-ghost", "ambiguous_candidates": []},
+    )
+
+    response = client.get("/authoring/render", params={"object_id": "whatever"})
 
     assert response.status_code == 404
 
