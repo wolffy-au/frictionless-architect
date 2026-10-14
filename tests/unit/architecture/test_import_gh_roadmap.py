@@ -528,7 +528,10 @@ def test_fixture_layer_builds_and_validates(
     stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=issues_with_milestone_7_issue())
     assert importer.main(["--repo", REPO], run_gh=stub, layer_dir=layer_dir) == 0
     monkeypatch.setattr(build_mod, "MODEL_LAYERS", [*build_mod.VENDORED_MODELS, layer_dir])
-    out = MODEL_DIR.parents[1] / "build" / "test-gh-roadmap-model.xml"  # build.py prints OUT relative to the repo
+    # build.py prints OUT relative to the repo (`OUT.relative_to(HERE.parents[1])`), so it
+    # can't live under tmp_path; tmp_path.name is still unique per test/worker, which keeps
+    # concurrent runs (e.g. under pytest-xdist) from racing on the same output file.
+    out = MODEL_DIR.parents[1] / "build" / f"test-gh-roadmap-model-{tmp_path.name}.xml"
     out.parent.mkdir(exist_ok=True)
     monkeypatch.setattr(build_mod, "OUT", out)
     try:
@@ -753,7 +756,7 @@ def test_dependency_layer_still_validates(
     stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=[json.dumps(page)])
     assert importer.main(["--repo", REPO], run_gh=stub, layer_dir=layer_dir) == 0
     monkeypatch.setattr(build_mod, "MODEL_LAYERS", [*build_mod.VENDORED_MODELS, layer_dir])
-    out = MODEL_DIR.parents[1] / "build" / "test-gh-roadmap-model.xml"
+    out = MODEL_DIR.parents[1] / "build" / f"test-gh-roadmap-model-{tmp_path.name}.xml"
     out.parent.mkdir(exist_ok=True)
     monkeypatch.setattr(build_mod, "OUT", out)
     try:
