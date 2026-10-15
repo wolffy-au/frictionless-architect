@@ -10,6 +10,21 @@
   props:
     gh-number: '5'
 - type: Deliverable
+  id: del-effectiveness-assurance-mvp-10-unreleased
+  name: effectiveness-assurance-mvp (unreleased)
+  props:
+    gh-number: '10'
+- type: Deliverable
+  id: del-general-tasks-12-unreleased
+  name: general-tasks (unreleased)
+  props:
+    gh-number: '12'
+- type: Deliverable
+  id: del-github-importer-11-unreleased
+  name: github-importer (unreleased)
+  props:
+    gh-number: '11'
+- type: Deliverable
   id: del-multi-user-collaboration-2-unreleased
   name: multi-user-collaboration (unreleased)
   props:
@@ -24,6 +39,11 @@
   name: policy-to-oscal-mvp (unreleased)
   props:
     gh-number: '1'
+- type: Deliverable
+  id: del-release-enforcement-mvp-9-unreleased
+  name: release-enforcement-mvp (unreleased)
+  props:
+    gh-number: '9'
 - type: Deliverable
   id: del-release-v0-1-0
   name: v0.1.0
@@ -83,6 +103,20 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/10
 - type: Plateau
+  id: plat-general-tasks-12
+  name: general-tasks
+  props:
+    gh-number: '12'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/12
+- type: Plateau
+  id: plat-github-importer-11
+  name: github-importer
+  props:
+    gh-number: '11'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/11
+- type: Plateau
   id: plat-multi-user-collaboration-2
   name: multi-user-collaboration
   desc: 'Collaborative / team modelling: more than one architect working on the model at once. Plateau plat-multi-user-collaboration-2 in the architecture model.'
@@ -136,6 +170,7 @@
   props:
     gh-number: '105'
     gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/105
 - type: WorkPackage
   id: wp-add-compliance-trestle-dependency-and-gh-23
@@ -146,6 +181,21 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/23
 - type: WorkPackage
+  id: wp-adr-0022-claims-xmlschema-validation-but-gh-53
+  name: GH-53 ADR-0022 claims xmlschema validation, but xmlschema is not a dependency or used
+  props:
+    gh-number: '53'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/53
+- type: WorkPackage
+  id: wp-adr-decide-the-authn-authz-approach-for-gh-84
+  name: 'GH-84 ADR: decide the authn/authz approach for multi-user access'
+  props:
+    gh-number: '84'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/84
+- type: WorkPackage
   id: wp-adr-decide-the-oscal-trestle-vendoring-gh-19
   name: 'GH-19 ADR: decide the OSCAL/trestle vendoring approach'
   props:
@@ -154,12 +204,27 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/19
 - type: WorkPackage
+  id: wp-api-contract-updates-document-auth-gh-93
+  name: 'GH-93 API contract updates: document auth requirements and extend authz tests'
+  props:
+    gh-number: '93'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/93
+- type: WorkPackage
   id: wp-application-layer-dedupe-artefact-views-gh-61
   name: 'GH-61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams'
   props:
     gh-number: '61'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/61
+- type: WorkPackage
+  id: wp-archimate-namespace-mismatch-parser-pins-gh-51
+  name: 'GH-51 ArchiMate namespace mismatch: parser pins 3.0, bundled XSDs mix 3.0/3.1'
+  props:
+    gh-number: '51'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/51
 - type: WorkPackage
   id: wp-architecture-md-still-describes-the-old-gh-50
   name: GH-50 ARCHITECTURE.md still describes the old 8-component split, not the 6-subsystem decomposition
@@ -169,6 +234,58 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/50
 - type: WorkPackage
+  id: wp-audit-logging-record-access-and-change-gh-90
+  name: 'GH-90 Audit logging: record access and change events on shared models'
+  props:
+    gh-number: '90'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/90
+- type: WorkPackage
+  id: wp-authentication-identify-users-and-issue-gh-85
+  name: 'GH-85 Authentication: identify users and issue/validate credentials'
+  props:
+    gh-number: '85'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/85
+- type: WorkPackage
+  id: wp-authorization-enforcement-wire-rbac-into-gh-86
+  name: 'GH-86 Authorization enforcement: wire RBAC into API routes and Neo4j access'
+  props:
+    gh-number: '86'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/86
+- type: WorkPackage
+  id: wp-chore-model-place-wp-7-and-art-pkg-gh-103
+  name: 'GH-103 chore(model): place WP 7 and art-pkg artifacts under a Plateau'
+  props:
+    gh-number: '103'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/103
+- type: WorkPackage
+  id: wp-chore-model-rename-the-art-id-prefix-to-gh-109
+  name: 'GH-109 chore(model): rename the art-* id prefix to stop implying the ArchiMate Artifact type'
+  props:
+    gh-number: '109'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/109
+- type: WorkPackage
+  id: wp-chore-typing-apply-mypy-strict-to-skill-gh-101
+  name: 'GH-101 chore(typing): apply mypy strict to skill/build tooling modules'
+  props:
+    gh-number: '101'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/101
+- type: WorkPackage
+  id: wp-ci-add-multi-os-test-matrix-gh-9
+  name: 'GH-9 CI: add multi-OS test matrix'
+  props:
+    gh-number: '9'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/9
+- type: WorkPackage
   id: wp-ci-checkout-git-submodules-gh-21
   name: 'GH-21 CI: checkout git submodules'
   props:
@@ -176,6 +293,42 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/21
+- type: WorkPackage
+  id: wp-collaboration-workflow-invite-manage-and-gh-89
+  name: 'GH-89 Collaboration workflow: invite, manage, and revoke model collaborators'
+  props:
+    gh-number: '89'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/89
+- type: WorkPackage
+  id: wp-concurrent-editing-conflict-detection-gh-88
+  name: 'GH-88 Concurrent editing: conflict detection/resolution for shared models'
+  props:
+    gh-number: '88'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/88
+- type: WorkPackage
+  id: wp-control-conversion-playground-ui-prose-gh-76
+  name: GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)
+  props:
+    gh-number: '76'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/76
+- type: WorkPackage
+  id: wp-create-uml-diagrams-for-the-markdown-gh-47
+  name: GH-47 Create UML diagrams for the Markdown catalogue converter
+  props:
+    gh-number: '47'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/47
+- type: WorkPackage
+  id: wp-decide-decision-capture-scope-and-the-gh-56
+  name: GH-56 Decide decision-capture scope and the PII gateway (ADR-0014 vs ADR-0031)
+  props:
+    gh-number: '56'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/56
 - type: WorkPackage
   id: wp-epic-conversational-architecture-gh-68
   name: 'GH-68 Epic: conversational architecture modelling with live ArchiMate views'
@@ -197,6 +350,58 @@
     gh-number: '83'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/83
+- type: WorkPackage
+  id: wp-feat-model-generate-gaps-from-speckit-gh-102
+  name: 'GH-102 feat(model): generate Gaps from speckit specs with a mapping file'
+  props:
+    gh-number: '102'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/102
+- type: WorkPackage
+  id: wp-feat-model-vendor-it4it-as-third-party-gh-4
+  name: 'GH-4 feat(model): vendor IT4IT as third_party/it4it submodule (ADR-0029)'
+  props:
+    gh-number: '4'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/4
+- type: WorkPackage
+  id: wp-feat-modelling-conversational-ai-agent-gh-108
+  name: 'GH-108 feat(modelling): conversational AI agent for interactive ArchiMate model authoring'
+  props:
+    gh-number: '108'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/108
+- type: WorkPackage
+  id: wp-feat-portal-add-a-portal-host-package-gh-120
+  name: 'GH-120 feat(portal): add a portal host package that composes package UIs'
+  props:
+    gh-number: '120'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/120
+- type: WorkPackage
+  id: wp-find-source-and-target-files-for-gh-48
+  name: GH-48 Find source and target files for converter testing
+  props:
+    gh-number: '48'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/48
+- type: WorkPackage
+  id: wp-import-github-milestones-issues-releases-gh-95
+  name: GH-95 Import GitHub milestones/issues/releases into ArchiMate Implementation & Migration layer
+  props:
+    gh-number: '95'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/95
+- type: WorkPackage
+  id: wp-make-section-b-roles-canonical-split-gh-69
+  name: 'GH-69 Make section-B roles canonical: split spec 001 Architect, model #45 roles as specialisations'
+  props:
+    gh-number: '69'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/69
 - type: WorkPackage
   id: wp-markdown-catalogue-converter-gh-44
   name: GH-44 Markdown catalogue converter
@@ -229,6 +434,22 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/25
 - type: WorkPackage
+  id: wp-model-it4it-flow-relationships-duplicate-gh-99
+  name: 'GH-99 Model: IT4IT Flow relationships duplicate derived relationships'
+  props:
+    gh-number: '99'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/99
+- type: WorkPackage
+  id: wp-model-the-packaging-and-migration-layers-gh-65
+  name: GH-65 Model the packaging and migration layers (Artifacts, Work Packages, Plateaus)
+  props:
+    gh-number: '65'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/65
+- type: WorkPackage
   id: wp-model-the-technology-layer-packages-as-gh-55
   name: 'GH-55 Model the technology layer: packages as Artifacts and an Implementation & Deployment view'
   props:
@@ -253,12 +474,34 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/24
 - type: WorkPackage
+  id: wp-prepare-a-golden-data-set-bulk-testing-gh-49
+  name: GH-49 Prepare a golden data set bulk testing framework
+  props:
+    gh-number: '49'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/49
+- type: WorkPackage
   id: wp-re-home-specs-to-two-tier-scheme-adr-gh-107
   name: GH-107 Re-home specs/ to two-tier scheme (ADR-0004, migration step 6)
   props:
     gh-number: '107'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/107
+- type: WorkPackage
+  id: wp-refactor-model-scope-type-wide-views-by-gh-117
+  name: 'GH-117 refactor(model): scope type-wide views by include_types + exclude_elements'
+  props:
+    gh-number: '117'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/117
+- type: WorkPackage
+  id: wp-reorganize-architecture-model-diagrams-gh-5
+  name: GH-5 Reorganize architecture/model/diagrams/ into ArchiMate-layer subfolders
+  props:
+    gh-number: '5'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/5
 - type: WorkPackage
   id: wp-resolve-migration-order-gap-schema-gh-60
   name: 'GH-60 Resolve migration-order gap: schema-visualizer-api split depends on digital-twin-knowledge-graph scaffolded later'
@@ -268,12 +511,99 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/60
 - type: WorkPackage
-  id: wp-sample-simple-implications-gh-46
-  name: 'GH-46 Sample simple implications '
+  id: wp-review-vision-and-business-diagrams-to-gh-43
+  name: GH-43 Review vision and business diagrams to resolve orphans
+  props:
+    gh-number: '43'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/43
+- type: WorkPackage
+  id: wp-role-journeys-and-ui-ux-gh-45
+  name: GH-45 Role journeys and UI/UX
+  props:
+    gh-number: '45'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/45
+- type: WorkPackage
+  id: wp-sample-simple-implementations-gh-46
+  name: GH-46 Sample simple implementations
   props:
     gh-number: '46'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/46
+- type: WorkPackage
+  id: wp-scaffold-digital-twin-knowledge-graph-gh-106
+  name: GH-106 Scaffold digital-twin-knowledge-graph package (ADR-0006, migration step 4)
+  props:
+    gh-number: '106'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/106
+- type: WorkPackage
+  id: wp-schedule-maintenance-subagents-on-a-gh-82
+  name: GH-82 Schedule maintenance subagents on a recurring cadence (start with adr-auditor weekly)
+  props:
+    gh-number: '82'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/82
+- type: WorkPackage
+  id: wp-scope-the-archimate-modelling-ide-gh-59
+  name: GH-59 Scope the ArchiMate modelling IDE features from the retired PROJECT_SPECIFICATION.md
+  props:
+    gh-number: '59'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/59
+- type: WorkPackage
+  id: wp-secrets-config-credentials-signing-keys-gh-94
+  name: 'GH-94 Secrets/config: credentials, signing keys, and IdP configuration'
+  props:
+    gh-number: '94'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/94
+- type: WorkPackage
+  id: wp-session-management-login-logout-token-gh-91
+  name: 'GH-91 Session management: login, logout, token refresh/expiry, revocation'
+  props:
+    gh-number: '91'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/91
+- type: WorkPackage
+  id: wp-technology-layer-postgres-opa-and-ui-gh-74
+  name: 'GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform'
+  props:
+    gh-number: '74'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/74
+- type: WorkPackage
+  id: wp-tenancy-data-isolation-scope-gh-87
+  name: 'GH-87 Tenancy/data isolation: scope architecture models to a workspace/org'
+  props:
+    gh-number: '87'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/87
+- type: WorkPackage
+  id: wp-test-model-set-a-performance-and-scale-gh-104
+  name: 'GH-104 test(model): set a performance and scale criterion for the GH roadmap importer'
+  props:
+    gh-number: '104'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/104
+- type: WorkPackage
+  id: wp-test-ui-establish-playwright-browser-gh-119
+  name: 'GH-119 test(ui): establish Playwright browser tests for the HTML UIs'
+  props:
+    gh-number: '119'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/119
+- type: WorkPackage
+  id: wp-ui-changes-user-role-management-and-per-gh-92
+  name: 'GH-92 UI changes: user/role management and per-model sharing in the visualiser'
+  props:
+    gh-number: '92'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/92
 - type: WorkPackage
   id: wp-vendor-nist-fedramp-oscal-content-as-gh-22
   name: GH-22 Vendor NIST/FedRAMP OSCAL content as third_party submodules

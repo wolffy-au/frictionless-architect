@@ -3,7 +3,11 @@
 
 title Roadmap: release-enforcement-mvp
 
+Implementation_Deliverable(e_idde43819bbb1952, "release-enforcement-mvp (unreleased)")
 Implementation_Plateau(e_idd283bf08a9795b, "release-enforcement-mvp")
+Implementation_WorkPackage(e_idf0376def52fa5a, "GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform")
 
+Rel_Realization_Up(e_idde43819bbb1952, e_idd283bf08a9795b, "")
+Rel_Realization_Up(e_idf0376def52fa5a, e_idde43819bbb1952, "")
 
 @enduml
