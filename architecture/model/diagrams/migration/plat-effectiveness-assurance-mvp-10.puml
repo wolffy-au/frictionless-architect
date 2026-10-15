@@ -3,7 +3,11 @@
 
 title Roadmap: effectiveness-assurance-mvp
 
+Implementation_Deliverable(e_id33a2a64820b951, "effectiveness-assurance-mvp (unreleased)")
 Implementation_Plateau(e_id4f676e80353d57, "effectiveness-assurance-mvp")
+Implementation_WorkPackage(e_ida53fb52590ba55, "GH-90 Audit logging: record access and change events on shared models")
 
+Rel_Realization_Up(e_id33a2a64820b951, e_id4f676e80353d57, "")
+Rel_Realization_Up(e_ida53fb52590ba55, e_id33a2a64820b951, "")
 
 @enduml

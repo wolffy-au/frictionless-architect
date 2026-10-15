@@ -1,0 +1,25 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: github-importer
+
+Implementation_Deliverable(e_id61cffb00cfef51, "github-importer (unreleased)")
+Implementation_Deliverable(e_id314ed2487dd05b, "v0.1.0")
+Implementation_Deliverable(e_idd0d06b4c05ff55, "v0.2.0")
+Implementation_Plateau(e_id3f6523f8eb5a5a, "github-importer")
+Implementation_WorkPackage(e_id19df20e325705a, "GH-103 chore(model): place WP 7 and art-pkg artifacts under a Plateau")
+Implementation_WorkPackage(e_id0d5fd9c46de652, "GH-102 feat(model): generate Gaps from speckit specs with a mapping file")
+Implementation_WorkPackage(e_ide9cad46822105d, "GH-95 Import GitHub milestones/issues/releases into ArchiMate Implementation & Migration layer")
+Implementation_WorkPackage(e_id3957ac79b8315e, "GH-65 Model the packaging and migration layers (Artifacts, Work Packages, Plateaus)")
+Implementation_WorkPackage(e_id86bfb9c548ad56, "GH-104 test(model): set a performance and scale criterion for the GH roadmap importer")
+
+Rel_Realization_Up(e_id61cffb00cfef51, e_id3f6523f8eb5a5a, "")
+Rel_Realization_Up(e_id314ed2487dd05b, e_id3f6523f8eb5a5a, "")
+Rel_Realization_Up(e_idd0d06b4c05ff55, e_id3f6523f8eb5a5a, "")
+Rel_Realization_Up(e_id19df20e325705a, e_idd0d06b4c05ff55, "")
+Rel_Realization_Up(e_id0d5fd9c46de652, e_id61cffb00cfef51, "")
+Rel_Realization_Up(e_ide9cad46822105d, e_idd0d06b4c05ff55, "")
+Rel_Realization_Up(e_id3957ac79b8315e, e_id314ed2487dd05b, "")
+Rel_Realization_Up(e_id86bfb9c548ad56, e_idd0d06b4c05ff55, "")
+
+@enduml
