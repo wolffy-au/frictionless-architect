@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -93,6 +94,14 @@ def test_render_single_view_missing_model_raises(monkeypatch: pytest.MonkeyPatch
         rendering.render_single_view("view-stakeholder")
 
 
+def _touch_newer_than(path: Path, reference: Path) -> None:
+    """Force `path`'s mtime strictly after `reference`'s. Some filesystems (e.g. this
+    repo's drvfs/9p devcontainer mount) resolve consecutive `write_text()` calls to the
+    same `st_mtime_ns`, so relying on wall-clock ordering alone is flaky."""
+    newer = reference.stat().st_mtime_ns + 1
+    os.utime(path, ns=(newer, newer))
+
+
 def test_refresh_model_when_yaml_source_is_newer(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     model = tmp_path / "model.xml"
     source_dir = tmp_path / "sources"
@@ -100,6 +109,7 @@ def test_refresh_model_when_yaml_source_is_newer(monkeypatch: pytest.MonkeyPatch
     model.write_text("<model />")
     source = source_dir / "views.yaml"
     source.write_text("- id: view-stakeholder\n")
+    _touch_newer_than(source, model)
     monkeypatch.setattr(rendering, "OUT", model)
     monkeypatch.setattr(model_io, "HERE", source_dir)
     monkeypatch.setattr(model_io, "MODEL_LAYERS", [])
@@ -270,7 +280,9 @@ def _stale_model_and_sources(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) ->
     source_dir = tmp_path / "sources"
     source_dir.mkdir()
     model.write_text("<model />")
-    (source_dir / "views.yaml").write_text("- id: view-stakeholder\n")
+    source = source_dir / "views.yaml"
+    source.write_text("- id: view-stakeholder\n")
+    _touch_newer_than(source, model)
     monkeypatch.setattr(rendering, "OUT", model)
     monkeypatch.setattr(model_io, "HERE", source_dir)
     monkeypatch.setattr(model_io, "MODEL_LAYERS", [])
