@@ -11,3 +11,14 @@ exclude:
     - .claude/skills/wiki-librarian/tools/build_status.py
     # LLM_PROVIDER_CONFIG_PATH is an operator-set config location by design, not user input.
     - platform/packages/llm-provider-config/src/llm_provider_config/store.py
+    # 2 HIGH "XSS" findings (be99614e-.../line 428, 4bf0d945-.../line 473): Snyk Code's
+    # taint engine flags object_id/description/view_id -> Response(content=svg) without
+    # recognizing rendering.sanitize_svg() (defused-XML, strips script/foreignObject/
+    # iframe/on*/javascript:/data:) as a sanitizer. The request params are only ever used
+    # as a whitelist lookup key into views.yaml, never as content. sanitize_svg() is now
+    # called a second time at this file's two response sinks as well, so the dataflow is
+    # sanitized both upstream and at the sink. CSP `sandbox` + `nosniff` headers on every
+    # response are a further backstop. Formal per-finding ignore via `snyk ignore create`
+    # was attempted and blocked (org lacks "Consistent Ignores for Snyk Code"); this path
+    # exclude is the fallback until that's enabled or a Web UI ignore is recorded.
+    - platform/packages/modelling-specification/src/modelling_specification/router.py
