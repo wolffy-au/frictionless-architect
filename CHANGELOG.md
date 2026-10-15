@@ -1,3 +1,82 @@
+## v0.3.0 (2026-10-15)
+
+### Feat
+
+- **modelling-specification**: preview as you go; drop the state step
+- **modelling-specification**: preview a pending change before Apply
+- **model**: add an interface for conversational authoring
+- **modelling-specification**: remember the UI settings across loads
+- **modelling-specification**: default the apply state to Target
+- **modelling-specification**: view picker, pan/zoom, chat fixes
+- **modelling-specification**: list views and report the rendered one
+- **modelling-specification**: ground proposals in the model
+- **model**: add a work-package dependencies view
+- **modelling-specification**: add split-screen authoring UI
+- **modelling-specification**: synthesize intermediary on accept-pattern
+- **modelling-specification**: add conversational model authoring
+- **modelling-specification**: check every outcome has its neighbours
+- **model**: hand intent-to-model off into the delivery baseline
+- **model**: ban self-type words in Motivation/Strategy names
+- **model**: influence the authoring requirement from policy-as-code
+- **model**: trace the authoring outcome up to its stakeholder
+- **model**: add an altitude convention banning tooling vocabulary
+- **model**: add the requirement conversational authoring was missing
+- **model**: conversational governance realizes executable governance
+- **model**: add bfn-conversational-authoring, jointly owned
+- **modelling-specification**: add exclude_elements view scoping
+- **modelling-specification**: session store + router skeleton
+- **model**: conventions.yaml + business-layer wiring, GH #108
+- **modelling-specification**: cli + thin wrappers, GH #108
+- **modelling-specification**: port build.py/render_diagrams.py, GH #108
+- **modelling-specification**: scaffold new platform package, GH #108
+- **specs**: generate tasks.md for conversational authoring, GH #108
+- **specs**: add plan, research, data model and contracts (GH #108)
+- **specs**: add use-case diagrams to authoring user stories
+- **specs**: add conversational model authoring spec (GH #108)
+- **model**: anchor conversational model authoring (GH #108)
+- **model**: add interfaces for the catalog playground and LLM settings
+- **portal**: mount the catalog playground at its own prefix
+- **model**: add the portal component, interface and package
+- **portal**: scaffold the portal host package
+- **model**: add context-level viewpoints
+
+### Fix
+
+- **modelling-specification**: re-sanitize SVG at the response sink
+- **modelling-specification**: make staleness tests mtime-safe
+- **modelling-specification**: fix NOSONAR placement for S2083
+- **modelling-specification**: resolve SonarCloud PR #125 findings
+- **modelling-specification**: load contexts and viewpoint views
+- **modelling-specification**: sanitise the SVG it serves and inlines
+- **modelling-specification**: show a plain-text LLM reply, not a 502
+- **modelling-specification**: drop stale state wording from the hint
+- **llm-provider-config**: test the global default on its own
+- **model**: read the migration overview top-to-bottom
+- **model**: drop Serving edges superseded by the new function
+- **model**: widen Subsystems & Capabilities' scope via include_types
+- **model**: widen Strategy's Capability/Outcome scope via include_types
+- **model**: scope Value Stream Hand-offs via include_types, not members
+- **model**: scope Capability Map via include_types, not members
+- **model**: wire conversational authoring into diagrams correctly
+- **model**: scope BusinessFunction via include_types, not members
+- **model**: embed Conversational Model Authoring into its view/function
+- **specs**: update stale art-* ids after do-* rename (GH #108)
+- **specs**: record overrides as ADR stubs, not ledger entries (GH #108)
+- **model**: close capability/persistence gaps for GH #108
+- **model**: link closed issues to the first release after they close
+- **model**: tune layout for dense generic viewpoint diagrams
+- **deps**: note litellm 1.105.0 still affected in snyk ignores
+- **deps**: ignore litellm SNYK-PYTHON-LITELLM-20840174 for 30d
+
+### Refactor
+
+- **model**: rename the baseline Plateau to Current State
+- **model**: rename outcome to name the state, not the activity
+
+### Perf
+
+- **scripts**: parallelize pytest and platform package checks
+
 ## v0.2.0 (2026-10-11)
 
 ### Feat
