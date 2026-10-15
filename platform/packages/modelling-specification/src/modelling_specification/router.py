@@ -424,8 +424,13 @@ def get_render(
         raise HTTPException(status_code=404, detail="no view resolves from the given object_id/description")
     svg = rendering.render_single_view(known)
     if output_format == "svg":
+        # `render_single_view` already strips active content before returning (see
+        # `rendering.sanitize_svg`); re-applying it at the response boundary is
+        # idempotent and keeps this endpoint safe even if a future change to
+        # `rendering` ever returns unsanitized markup -- the sink, not just the
+        # source, is responsible for what crosses the trust boundary (CWE-79).
         return Response(
-            content=svg,
+            content=rendering.sanitize_svg(svg),
             media_type="image/svg+xml",
             headers=_svg_headers(known),
         )
@@ -470,7 +475,12 @@ def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> R
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except rendering.PreviewError as exc:
         raise HTTPException(status_code=409, detail=f"cannot preview this change: {exc}") from exc
-    return Response(content=svg, media_type="image/svg+xml", headers=_svg_headers(known))
+    # See the matching comment in `get_render`: `render_candidate_view` already
+    # sanitizes, but re-sanitizing here keeps the response sink itself responsible
+    # for what it serves (CWE-79) -- this is the endpoint where delta content
+    # (element/relationship labels proposed via the authoring flow) is most directly
+    # user-influenced.
+    return Response(content=rendering.sanitize_svg(svg), media_type="image/svg+xml", headers=_svg_headers(known))
 
 
 @router.get(
