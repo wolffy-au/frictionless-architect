@@ -1,7 +1,7 @@
 ---
 title: LLM Provider Configuration
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-16
+generator: claude-sonnet-5
 sources:
   - platform/packages/llm-provider-config/README.md
   - platform/packages/llm-provider-config/pyproject.toml
@@ -87,8 +87,12 @@ surface (`README.md`; `platform/packages/llm-provider-config/src/llm_provider_co
 ## The settings router
 
 `create_settings_router([Component(id=..., label=...)], prefix="/settings/llm")`
-returns a FastAPI router a subsystem UI mounts, in line with ADR-0020's rule of no
-central dashboard (`platform/packages/llm-provider-config/src/llm_provider_config/router.py`; ADR-0034 §Decision). It serves an HTML page at the
+returns a FastAPI router mounted once by [Portal](portal.md) with every
+package's components registered, in line with ADR-0020's 2026-10-11 update
+(GH #120) — a package may also mount it in its own standalone `app.py` for
+independent development, as `controls-compliance-catalog` still does
+(`platform/packages/llm-provider-config/src/llm_provider_config/router.py`;
+ADR-0034 §Decision, §Implementation status). It serves an HTML page at the
 prefix and a JSON API under it (`platform/packages/llm-provider-config/src/llm_provider_config/router.py`):
 
 - `GET /state` — config path, providers (with `needs_key`), the default, and each
@@ -99,15 +103,25 @@ prefix and a JSON API under it (`platform/packages/llm-provider-config/src/llm_p
   environment-variable hint where there is no keychain, `422` for keyless providers,
   and `404` when `DELETE` finds no stored key.
 - `POST /test` — "Test connection": a one-word completion, returning `{ok, message}`;
-  `404` for an unknown component.
+  `404` for an unknown component. Testing the Global Default button (no
+  `component` in the body) now tests the default settings directly rather
+  than falling back to whichever component happens to be registered first —
+  that earlier fallback could silently test an *overridden* component's
+  settings instead of the actual global default.
 
 Each of these non-2xx outcomes is declared in the route's `responses=`, so the
 mounted app's OpenAPI document lists them (`router.py:94`, `101`, `113-117`, `131`, `141`).
 
 The page edits the global default, API keys and per-component overrides; keys are
 never returned. There is no authentication — the single-user local MVP of ADR-0024
-— so the server should bind to localhost (`README.md`). `controls-compliance-catalog`
-mounts it at `/settings/llm` and its playground links to it.
+— so the server should bind to localhost (`README.md`). [Portal](portal.md)
+mounts it at `/settings/llm`, registering every package's components;
+`controls-compliance-catalog` also mounts it at `/settings/llm` in its own
+standalone app, and its playground links to it. A component form with no
+override shows the inherited global default's values greyed out (`Save`
+disabled) until the architect actually edits a field, so merely opening a
+component's form no longer silently invites creating a redundant override
+that just repeats the default.
 
 ## The spec (`001-llm-provider-config`)
 

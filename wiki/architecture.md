@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: 2026-10-05
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - ARCHITECTURE.md
@@ -61,7 +61,11 @@ cherry-picked into `develop` before the deletion
   Backstage plugins and not a client-side shell (module federation /
   single-spa) — both alternatives explicitly rejected. Build tooling for
   each `ui/` tree itself remains open (`ARCHITECTURE.md` §3.1,
-  `docs/adr/0020-per-subsystem-uis.md`).
+  `docs/adr/0020-per-subsystem-uis.md`). The composition host is
+  `packages/portal` (`platform/packages/portal/` today): it mounts each
+  package's router under its own prefix and owns only chrome, navigation and
+  role landing pages, never feature logic (ADR-0020 update, 2026-10-11, GH
+  #120). See [Portal](portal.md).
 
 `orchestration/compose/` (docker-compose for Neo4j, plus Postgres/OPA if
 kept) is the runtime **through the MVP milestone only** (ADR-0024); target
@@ -109,9 +113,11 @@ than a catch-all `common` package
 credential for a call (a global default plus a per-component override) over
 `litellm`, covering OpenAI, Gemini, Anthropic, Ollama and GitHub Copilot, with
 keys held in the OS keychain through `keyring` rather than a repo file or
-`.env` (`ARCHITECTURE.md` §4). It exposes a mountable settings router each
-subsystem UI embeds, and its first consumer is `controls-compliance-catalog`.
-See [LLM Provider Configuration](llm-provider-config.md).
+`.env` (`ARCHITECTURE.md` §4). It exposes a mountable settings router, not a
+standalone dashboard; `packages/portal` mounts it once for every package
+(ADR-0020). Its first consumer is `controls-compliance-catalog`'s
+`llm_client.py`. See [LLM Provider Configuration](llm-provider-config.md) and
+[Portal](portal.md).
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or
 dissolved (`ARCHITECTURE.md` §4):
@@ -207,7 +213,7 @@ Plateaus other than the baseline are generated from GitHub milestones) — see t
 (`architecture/model/diagrams/migration/sequence.svg`) and the packaging view
 (`architecture/model/diagrams/implementation/packaging.svg`), which orders
 each package after the ones it consumes (`ARCHITECTURE.md` §8). See
-[Architecture Views & Diagrams](architecture-diagrams.md).
+[Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).
 
 **Status (GH #71):** steps 1–3 are done. `platform/` has its own
 `pyproject.toml` and `poetry.lock`; `packages/controls-compliance-catalog`
@@ -218,11 +224,13 @@ pre-push hook, and CI, with Sonar/Codecov picking up its coverage. The repo
 root keeps its own project and lock for the flat `src/` until step 7 empties
 it. Step 8.1's checklist now has `packages/llm-provider-config/` created (ADR-0034)
 and `llm_client.py` refactored to depend on it, with the settings router built and
-mounted at `/settings/llm` (#76); building #44 outside-in (UI with stubs → stubbed
+mounted at `/settings/llm` (#76), now also mounted once for every package by
+`packages/portal` (#120); building #44 outside-in (UI with stubs → stubbed
 API → backend) inside the package is still open, though its first piece, the
 control conversion playground, now exists (`ARCHITECTURE.md` §8.1); see
 [Controls & Compliance Catalog](controls-compliance-catalog.md) for the
-spec that package's own code will implement.
+spec that package's own code will implement, and [Portal](portal.md) for the
+host that composes it with every other package's UI.
 
 **§8.1 — first extraction, `controls-compliance-catalog`.** The visualiser
 split (the old step 2) makes `schema-visualizer-api` consume

@@ -1,11 +1,13 @@
 ---
-title: Architecture Views & Diagrams
-generated: 2026-10-10
+title: "Architecture Views & Diagrams: Vision, Business & Viewpoints"
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/application/catalog-structure.puml
   - architecture/model/diagrams/application/catalog-structure.svg
+  - architecture/model/diagrams/application/cooperation.puml
+  - architecture/model/diagrams/application/cooperation.svg
   - architecture/model/diagrams/application/dataflow-assurance-spec.puml
   - architecture/model/diagrams/application/dataflow-assurance-spec.svg
   - architecture/model/diagrams/application/dataflow-library.puml
@@ -16,14 +18,10 @@ sources:
   - architecture/model/diagrams/application/dataflow-oscal.svg
   - architecture/model/diagrams/application/dataflow-twin-governance.puml
   - architecture/model/diagrams/application/dataflow-twin-governance.svg
-  - architecture/model/diagrams/technology/landscape.puml
-  - architecture/model/diagrams/technology/landscape.svg
-  - architecture/model/diagrams/technology/oscal-golden-check.puml
-  - architecture/model/diagrams/technology/oscal-golden-check.svg
-  - architecture/model/diagrams/technology/persistence-boundary.puml
-  - architecture/model/diagrams/technology/persistence-boundary.svg
-  - architecture/model/diagrams/technology/usage-catalog.puml
-  - architecture/model/diagrams/technology/usage-catalog.svg
+  - architecture/model/diagrams/application/structure.puml
+  - architecture/model/diagrams/application/structure.svg
+  - architecture/model/diagrams/application/usage.puml
+  - architecture/model/diagrams/application/usage.svg
   - architecture/model/diagrams/business/1-policy-conversion.puml
   - architecture/model/diagrams/business/1-policy-conversion.svg
   - architecture/model/diagrams/business/2-pattern-solution-design.puml
@@ -34,6 +32,16 @@ sources:
   - architecture/model/diagrams/business/controls-catalog.svg
   - architecture/model/diagrams/business/delivery.puml
   - architecture/model/diagrams/business/delivery.svg
+  - architecture/model/diagrams/business/information-structure.puml
+  - architecture/model/diagrams/business/information-structure.svg
+  - architecture/model/diagrams/business/organization.puml
+  - architecture/model/diagrams/business/organization.svg
+  - architecture/model/diagrams/business/process-cooperation.puml
+  - architecture/model/diagrams/business/process-cooperation.svg
+  - architecture/model/diagrams/business/product.puml
+  - architecture/model/diagrams/business/product.svg
+  - architecture/model/diagrams/business/service-realization.puml
+  - architecture/model/diagrams/business/service-realization.svg
   - architecture/model/diagrams/business/strategy-drift.puml
   - architecture/model/diagrams/business/strategy-drift.svg
   - architecture/model/diagrams/c4/container.puml
@@ -42,36 +50,10 @@ sources:
   - architecture/model/diagrams/c4/context.svg
   - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
   - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
-  - architecture/model/diagrams/implementation/packaging.puml
-  - architecture/model/diagrams/implementation/packaging.svg
+  - architecture/model/diagrams/layered/fn-conversational-authoring.puml
+  - architecture/model/diagrams/layered/fn-conversational-authoring.svg
   - architecture/model/diagrams/layered/subsystem-capabilities.puml
   - architecture/model/diagrams/layered/subsystem-capabilities.svg
-  - architecture/model/diagrams/migration/overview.puml
-  - architecture/model/diagrams/migration/overview.svg
-  - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.puml
-  - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.svg
-  - architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml
-  - architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.svg
-  - architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml
-  - architecture/model/diagrams/migration/plat-drift-management-mvp-5.svg
-  - architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.puml
-  - architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.svg
-  - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.puml
-  - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.svg
-  - architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.puml
-  - architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.svg
-  - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml
-  - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg
-  - architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.puml
-  - architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.svg
-  - architecture/model/diagrams/migration/plat-release-management-mvp-4.puml
-  - architecture/model/diagrams/migration/plat-release-management-mvp-4.svg
-  - architecture/model/diagrams/migration/plat-solution-design-mvp-8.puml
-  - architecture/model/diagrams/migration/plat-solution-design-mvp-8.svg
-  - architecture/model/diagrams/migration/runtime.puml
-  - architecture/model/diagrams/migration/runtime.svg
-  - architecture/model/diagrams/migration/sequence.puml
-  - architecture/model/diagrams/migration/sequence.svg
   - architecture/model/diagrams/vision/1-stakeholder.puml
   - architecture/model/diagrams/vision/1-stakeholder.svg
   - architecture/model/diagrams/vision/2-motivation.puml
@@ -96,36 +78,50 @@ sources:
   - architecture/model/diagrams/vision/7-outcome-realization.svg
   - architecture/model/diagrams/vision/8-requirements-realization.puml
   - architecture/model/diagrams/vision/8-requirements-realization.svg
-  - architecture/model/render_diagrams.py
+  - architecture/model/views-viewpoints.yaml
   - architecture/model/views.yaml
 ---
 
 > Generated by `wiki-librarian` from the sources above. Edit `wiki/sources.yaml`
 > and rebuild rather than editing this page.
 
-This topic covers three things:
-
-- how the canonical model's views map to ArchiMate viewpoints
-- how the views are rendered into `.puml`/`.svg` diagrams
-- how to regenerate those diagrams
-
-For what the model itself *means* (its elements, relationships and content sections), see
+This topic covers how the canonical model's **vision and business** views map
+to ArchiMate viewpoints, the new GH #105 generic per-viewpoint views, and the
+`include_types`/`exclude_elements` scoping mechanism that keeps platform-only
+views free of vendored IT4IT elements. For the Implementation & Migration and
+Technology-layer views, the IT4IT reference views, and how to regenerate
+every `.puml`/`.svg` diagram, see [Architecture Views & Diagrams: Platform,
+Migration & Rendering](architecture-diagrams-platform.md). For what the model
+itself *means* (its elements, relationships and content sections), see
 [Architecture Model](architecture-model.md).
 
 ## Views and diagrams
 
-The merged model has 48 ArchiMate views:
+The merged model has 64 ArchiMate views:
 
-- 34 are declared in this repo's own `views.yaml`. They cover sections A–C,
-  the IT4IT touchpoint bridge, section E (since 2026-09-26, GH #65) — the
-  platform's own packaging and migration — and (since 2026-09-27, GH #55
-  follow-up) section F, the first Technology-layer cut.
-- 10 are generated into `architecture/model/gh-roadmap/views.yaml` by
-  `import_gh_roadmap.py`, one per GitHub milestone — see
-  [GitHub Roadmap Layer](gh-roadmap-layer.md).
+- 31 are declared in this repo's own hand-curated `views.yaml`. They cover
+  sections A–C, the IT4IT touchpoint bridge, section E (since 2026-09-26,
+  GH #65) — the platform's own packaging and migration — and (since
+  2026-09-27, GH #55 follow-up) section F, the first Technology-layer cut.
+  This count dropped from the earlier 34 because four vision views (the
+  Stakeholder, Motivation, Goal Realization and Requirements Realization
+  views) moved to `views-viewpoints.yaml` below as part of the GH #105
+  change.
+- 17 more are declared in the new `architecture/model/views-viewpoints.yaml`
+  (GH #105, 2026-10-08–2026-10-14) — one generic view per standard ArchiMate
+  3.2 §14 viewpoint, swept entirely by `include_types` rather than
+  hand-curated `members`, so a new element of a covered type appears
+  automatically. Same schema and loader as `views.yaml`; view ids are unique
+  across both files. See "Generic per-viewpoint views (GH #105)" below.
+- 12 are generated into `architecture/model/gh-roadmap/views.yaml` by
+  `import_gh_roadmap.py`, one per GitHub milestone (up from 10, now including
+  `plat-github-importer-11` and `plat-general-tasks-12`) — see
+  [GitHub Roadmap Layer](gh-roadmap-layer.md) and [Architecture Views &
+  Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
-  ([ADR-0029](decision-log.md)).
+  ([ADR-0029](decision-log.md)); see [Architecture Views & Diagrams: Platform,
+  Migration & Rendering](architecture-diagrams-platform.md).
 
 The C4 context and container diagrams are **not** views. `render_diagrams.py`
 projects them through `diagram-c4` with `--system "Frictionless Architecture
@@ -136,15 +132,16 @@ kind of view:
 
 | Folder | Contents |
 |---|---|
-| `vision/` | TOGAF Phase A views |
-| `business/` | Phase B business-layer views |
-| `layered/` | the cross-layer Subsystems & Capabilities view |
-| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036) |
+| `vision/` | TOGAF Phase A views (9 hand-curated in `views.yaml` plus 4 generic ones now in `views-viewpoints.yaml`) |
+| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `product`, `service-realization`) |
+| `layered/` | the cross-layer Subsystems & Capabilities view, plus the new Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`) |
+| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`) |
 | `c4/` | the C4 context and container diagrams |
-| `implementation/` | the Packaging view (section E) |
-| `migration/` | the Implementation & Migration views (section E): Migration Sequence, Runtime Migration, the all-layer overview and the generated per-milestone views |
-| `technology/` | the five Technology-layer views (section F) |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
+
+See [Architecture Views & Diagrams: Platform, Migration &
+Rendering](architecture-diagrams-platform.md) for the `implementation/`,
+`migration/` and `technology/` folders.
 
 The old `cross-layer/` folder is **gone** (PR #62):
 
@@ -162,20 +159,25 @@ header comment in `views.yaml` and the README schema still document
 
 Thirteen views make up the Phase A "Architecture Vision" set. Each one is held
 to its matching standard viewpoint and rendered under `diagrams/vision/`.
-Numeric prefixes make a directory listing sort in reading order
-(`architecture/model/views.yaml:26-352`):
+Numeric prefixes make a directory listing sort in reading order. Views 1, 2,
+3 and 8 moved to `architecture/model/views-viewpoints.yaml` on 2026-10-08
+(GH #105) and are now swept entirely by `include_types`, so a new
+Stakeholder/Driver/Outcome/Capability/Requirement element (including
+GH #108's fifth driver, assessment, outcome and tenth requirement) appears
+on them automatically; views 4–7 stay hand-curated in `views.yaml`
+(`architecture/model/views.yaml:26-352`, `architecture/model/views-viewpoints.yaml:365-410`):
 
-| # | View | Viewpoint | Covers |
-|---|---|---|---|
-| 1 | Stakeholder | `stakeholder` | Who holds which driver, the assessments that make each urgent, and the goal and four outcomes |
-| 2 | Motivation | `motivation` | The whole motivation model: stakeholders, assessments, drivers, goal, outcomes, principles, requirements, constraints |
-| 3 | Goal Realization | `goal_realization` | Goal → outcomes, and how principles, requirements and constraints realize them |
-| 4 | Strategy | `strategy` | Resources → capabilities → courses of action, each value stream as a single element, and the outcome it realizes |
-| 5 | Capability Map | `capability` | The eight capabilities and their `Serving` dependency order |
-| 6 | Value Stream Hand-offs | `value_stream` | All four streams with their stages nested, the `Triggering` sequence within each stream, and the `Triggering`/`Flow` hand-offs across streams |
-| 6a–6d | Value Stream — Governed Architecture Delivery / Obligation to Evidence / Exception to Decision / Drift to Remediation | `value_stream` | One stream alone: its stages in sequence, the capabilities serving each stage, its recipient stakeholders, and the outcome it realizes |
-| 7 | Outcome Realization | `outcome_realization` | Business processes (grouped by all nine business functions) → capabilities → value streams → outcomes |
-| 8 | Requirements Realization | `requirements_realization` | Which capability realizes each functional requirement |
+| # | View | Viewpoint | File | Covers |
+|---|---|---|---|---|
+| 1 | Stakeholder | `stakeholder` | `views-viewpoints.yaml` | Who holds which driver, the assessments that make each urgent, and the goal and (now five) outcomes |
+| 2 | Motivation | `motivation` | `views-viewpoints.yaml` | The whole motivation model: stakeholders, assessments, drivers, goal, outcomes, principles, requirements, constraints |
+| 3 | Goal Realization | `goal_realization` | `views-viewpoints.yaml` | Goal → outcomes, and how principles, requirements and constraints realize them |
+| 4 | Strategy | `strategy` | `views.yaml` | Resources → capabilities → courses of action, each value stream as a single element, and the outcome it realizes; `Capability`/`Outcome` are `include_types` (GH #117) with `exclude_elements` keeping IT4IT's vendored ones off |
+| 5 | Capability Map | `capability` | `views.yaml` | The nine capabilities (including `cap-conversational-governance`, GH #108) and their `Serving` dependency order; `include_types` + `exclude_elements: [{id_prefix: "it4it-"}]` |
+| 6 | Value Stream Hand-offs | `value_stream` | `views.yaml` | All five streams with their stages nested, the `Triggering` sequence within each stream, and the `Triggering`/`Flow` hand-offs across streams |
+| 6a–6d | Value Stream — Governed Architecture Delivery / Obligation to Evidence / Exception to Decision / Drift to Remediation | `value_stream` | `views.yaml` | One stream alone: its stages in sequence, the capabilities serving each stage, its recipient stakeholders, and the outcome it realizes (no `6e` for the new Intent to Model stream — see [Architecture Model: Skeleton](architecture-model-skeleton.md)) |
+| 7 | Outcome Realization | `outcome_realization` | `views.yaml` | Business processes (grouped by all ten business functions) → capabilities → value streams → outcomes; `Capability`/`ValueStream`/`Outcome`/`BusinessFunction` are `include_types` |
+| 8 | Requirements Realization | `requirements_realization` | `views-viewpoints.yaml` | Which capability realizes each functional requirement (now ten) |
 
 The first Value Stream view was renamed from "Value Stream — Governed
 Architecture Delivery" to **Value Stream Hand-offs**. Each stream's recipients,
@@ -188,6 +190,45 @@ requirement exists to the Motivation and Goal Realization views
 The vendored IT4IT views follow the same numbering convention in their own
 repo (`1-stakeholder` … `4-outcome-realization`). See
 [IT4IT Reference Model](it4it-model.md).
+
+### Generic per-viewpoint views (GH #105)
+
+`architecture/model/views-viewpoints.yaml` adds 17 views total, one per
+standard ArchiMate 3.2 §14 viewpoint not already covered by a hand-curated
+view, plus the four vision views promoted from `views.yaml` above. Every one
+is scoped by `include_types` alone — never `members` — so new elements of a
+covered type appear without anyone remembering to add them, the same GH #117
+motivation behind `view-strategy`/`view-capability`'s own `include_types`
+switch. Thirteen are brand new:
+
+| View | Diagram | Viewpoint |
+|---|---|---|
+| Organization | `business/organization` | `organization` |
+| Application Structure | `application/structure` | `application_structure` |
+| Information Structure | `business/information-structure` | `information_structure` |
+| Technology | `technology/overview` | `technology` |
+| Physical | `technology/physical` | `physical` |
+| Product | `business/product` | `product` |
+| Application Usage | `application/usage` | `application_usage` |
+| Technology Usage | `technology/usage` | `technology_usage` |
+| Business Process Cooperation | `business/process-cooperation` | `business_process_cooperation` |
+| Application Cooperation | `application/cooperation` | `application_cooperation` |
+| Service Realization | `business/service-realization` | `service_realization` |
+| Implementation & Migration overview | `migration/overview` | `implementation_migration` |
+| Implementation Deployment | `implementation/deployment` | `implementation_deployment` |
+
+(The Technology, Physical and Technology Usage rows, and the Implementation &
+Migration/Deployment rows, render under folders covered in [Architecture
+Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).)
+
+Each generic view sits in the `platform` context by default, same as the
+hand-curated ones. A hand-curated view keeps a narrower, single-subject cut
+where one exists (e.g. `view-application-structure-catalog` for one
+application alone, still in `views.yaml`); the generic view is the
+type-wide sweep across whatever context it's scoped to
+(`architecture/model/views-viewpoints.yaml`; `architecture/model/README.md`
+§"Schema"). See [Architecture Model](architecture-model.md) §"Context-level
+viewpoints" for the element-level rationale.
 
 ### The business (Phase B) set
 
@@ -235,7 +276,7 @@ because all of them are projections of the same model
 > OSCAL Profile Catalog**, which patterns and blueprints now read
 > (`architecture/model/diagrams/business/2-pattern-solution-design.puml`).
 
-### The remaining views
+### The remaining vision/business/application views
 
 - **Subsystems & Capabilities** (`layered/subsystem-capabilities`) uses the
   standard `layered` viewpoint. `ApplicationComponent → Capability`
@@ -243,6 +284,15 @@ because all of them are projections of the same model
   layers line up" is what that viewpoint is for
   (`architecture/model/views.yaml:370-396`). It previously used
   `outcome_realization` under `cross-layer/`.
+- **Feature Steel Thread: Conversational Model Authoring (GH #108)**
+  (`layered/fn-conversational-authoring`) also uses `layered`, for the same
+  reason: it traces `fn-conversational-authoring` through every layer the
+  feature touches — motivation (`req-conversational-authoring-alignment`),
+  strategy (`cap-conversational-governance`, `vs-intent-to-model`), business
+  (`process-conversational-authoring`), application and technology — using
+  only edges that already exist elsewhere in the model, rather than a new
+  cross-layer relationship. See [Conversational Model
+  Authoring](modelling-specification.md).
 - **The five `Data Flow — …` views** use `application_cooperation`.
 - **IT4IT: Capability Bridges** uses `capability`.
 
@@ -309,198 +359,30 @@ draws any relationship whose endpoints are both in scope (GH #20; see
 [Architecture Model](architecture-model.md) for the `exclude:` schema).
 Value Stream Hand-offs needs no `exclude:` because it has no capability members.
 
-### Scoping by `members` instead of `include_types`
+### Scoping platform-only views: `include_types` + `exclude_elements`, not `members`
 
-Several platform views scope a type by explicit `members` rather than
-`include_types`. The reason is that the vendored IT4IT model adds many more
-elements of the same ArchiMate type, so `include_types` would silently pull
-IT4IT elements into a platform-only view. This applies to `Outcome` (IT4IT adds
-`it4it-outcome-digital-product`), `Stakeholder` (24 more), `Capability` (42
-more) and `ValueStream` (36 more: 7 streams + 29 stages). See the notes on
-`view-stakeholder`, `view-strategy`, `view-capability`, `view-value-stream` and
-`view-outcome-realization` (`architecture/model/views.yaml:30-170`).
+Before 2026-10-08 several platform views scoped a type by explicit `members`
+rather than `include_types`, because the vendored IT4IT model adds many more
+elements of the same ArchiMate type and `include_types` would silently pull
+them into a platform-only view (`Outcome`: IT4IT adds
+`it4it-outcome-digital-product`; `Stakeholder`: 24 more; `Capability`: 42
+more; `ValueStream`: 36 more — 7 streams + 29 stages).
 
-### Implementation & Migration views (section E)
-
-Packaging and Migration Sequence, added 2026-09-26 (GH #65), render the platform's own restructure
-(see [Architecture Model](architecture-model.md) §"Packaging and migration"). Since 2026-10-05
-(ADR-0035, GH #95) the layer also carries Runtime Migration, an all-layer overview and one
-generated view per GitHub milestone, all under `migration/`:
-
-| View | Diagram | Viewpoint | Covers |
-|---|---|---|---|
-| Packaging | `implementation/packaging` | `implementation_deployment` | The six subsystem `ApplicationComponent`s, the Schema Visualiser API, the shared LLM Provider Configuration component (ADR-0034), and `if-twin-read-path`, each realized by its package `Artifact` |
-| Migration Sequence | `migration/sequence` | `implementation_migration` | The four hand-authored `WorkPackage`s (`wp-71-migration-steps-1-3`, `wp-106-scaffold-twin`, `wp-vendor-it4it`, `wp-107-rehome-specs`), the Artifacts/Plateaus they realize directly (no `Deliverable` element any more), and the `Plateau`s and `Gap`s between them (the baseline plus the roadmap-generated `plat-policy-to-oscal-mvp-1`; `gap-oscal-ai-conversion`) |
-| Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
-| Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview` | `implementation_migration` | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
-| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | Generated into `gh-roadmap/views.yaml` by the importer, one per milestone — ten currently, one per business-function MVP (`plat-policy-to-oscal-mvp-1` through `plat-effectiveness-assurance-mvp-10`) |
-
-**Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
-mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,
-one `exclude:` entry per relationship type) — that cooperation story belongs to
-the Data Flow views, not this one. No `Node`/`SystemSoftware` technology
-layer is scoped yet; the deployment half of the `implementation_deployment`
-viewpoint is left for GH #55 (`architecture/model/views.yaml` §"Implementation
-& Migration").
-
-**Migration Sequence** scopes `include_types: [WorkPackage, Deliverable,
-Plateau, Gap, Artifact]` and deliberately leaves out the `ApplicationComponent`
-members — the Packaging view above already carries the package-to-component
-story, so Migration Sequence stays focused on the step-by-step timeline. It
-**replaces** the hand-drawn `ARCHITECTURE.md` §8 diagram with a generated one
-(`architecture/model/views.yaml` §"Implementation & Migration"; see
-[Architecture Overview](architecture.md) §"Migration sequence").
-
-### Technology & application-structure views (section F)
-
-Five views, added 2026-09-27 (GH #55 follow-up, alongside the platform
-skeleton landing under GH #71), give the model its first Technology-layer
-cut, scoped to the `controls-compliance-catalog` slice (see [Architecture
-Model](architecture-model.md) §"Technology (section F)" and [Controls &
-Compliance Catalog](controls-compliance-catalog.md)):
-
-| View | Diagram | Viewpoint | Covers |
-|---|---|---|---|
-| Application Structure — Controls & Compliance Catalog | `application/catalog-structure` | `application_structure` | `sub-catalog`'s own component, its `if-catalog-ui` interface, and the artefacts it owns |
-| Technology: OSCAL Golden-Dataset CI Check | `technology/oscal-golden-check` | `custom` | The CI runner and test tool executing `techproc-oscal-golden-check` against the three golden-dataset legs (catalog, profile, resolution) |
-| Technology: Persistence Boundary | `technology/persistence-boundary` | `custom` | What `store-oscal`/`store-ledger` actually run on: local filesystem `Artifact`s on `node-app-server`, not Postgres/Neo4j |
-| Technology: Infrastructure Landscape | `technology/landscape` | `technology` | The pure infrastructure topology — both Nodes, their `SystemSoftware` (including the OS credential store, `sw-keyring`), and the package `Artifact`s they host — with no `ApplicationComponent`/`DataObject` |
-| Technology Usage: Catalog Runtime | `technology/usage-catalog` | `technology_usage` | The demand-side chain `sub-catalog` → its package `Artifact` → `sw-uvicorn-fastapi` → `node-app-server` |
-
-**Why `view-technology-ci-check` and `view-technology-persistence-boundary`
-are `viewpoint: custom`.** Both mix a `Node`/`Artifact` (Technology) with
-`ApplicationFunction`/`DataObject` (Application) members, and no standard
-viewpoint's allow-list covers that combination — the same constraint
-`view-packaging` already has for excluding `Node`
-(`architecture/model/views.yaml` comments on both views).
-
-**Why this isn't folded into `view-migration`.** `view-migration`'s
-Plateaus/Gaps are the packaging restructure (`ARCHITECTURE.md` §8); the
-runtime-target skeleton is a separate transition story for the data layer's
-deployment shape, so it gets its own view (`migration/runtime`) and its own
-Plateau/Gap pair (`plat-policy-to-oscal-mvp-1`, `plat-multi-user-collaboration-2`,
-`gap-policy-to-oscal-mvp-to-multi-user-collaboration`) rather than
-sharing `view-migration`'s `WorkPackage`s.
-
-**`view-technology-landscape` vs. `view-technology-ci-check`.** Both scope
-`node-ci-runner`/`sw-pytest`/`techproc-oscal-golden-check`, but the Landscape
-view is the pure Technology viewpoint (infrastructure only, both Nodes side
-by side); the CI Check view additionally pulls in the application-layer
-functions and artefacts the golden-dataset check actually validates
-(`architecture/model/views.yaml` comments).
-
-**Application Structure vs. Data Flow.** `view-application-structure-catalog`
-is a different cut from the existing `application/dataflow-oscal(-resolve)`
-views: those show artefacts flowing *through* `ApplicationFunction`s across
-the whole Controls & OSCAL stage; this one shows one component's internal
-structure — `sub-catalog`, its interface, and the artefacts it owns — using
-`Aggregation` edges mirrored from the existing function `Write`-access edges,
-since `ApplicationFunction` isn't legal on the `application_structure`
-viewpoint.
-
-**Changes to existing diagrams from the same pass:**
-
-- `application/dataflow-oscal` and `application/dataflow-oscal-resolve`
-  (renamed from `artefact-oscal`/`artefact-oscal-resolve` 2026-10-08, GH #109 /
-  ADR-0036) gained edges for the three new section-C functions
-  (`fn-policy-upload`, `fn-policy-quality-feedback`, `fn-oscal-validation`) —
-  see [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
-- `c4/context` and `c4/container` picked up small edge changes reflecting the
-  same additions.
-- ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
-  Configuration component and its package Artifact to the Packaging, Migration
-  Sequence and Data Flow — Controls & OSCAL diagrams, and the OS credential store
-  (`sw-keyring`) to the Technology landscape and (now `migration/runtime`) Runtime Migration diagrams
-  (`architecture/model/views.yaml`; the regenerated `.puml`/`.svg` pairs).
-- `implementation/packaging` was rewritten from a broad
-  `include_types: [Artifact]` scope to an explicit `members:` list, so the new
-  non-package Artifacts added for the persistence-boundary slice
-  (`art-tech-oscal-workspace`, `art-tech-ledger-file`) don't incidentally sweep
-  into a view meant only for deployable package artifacts.
-
-### IT4IT reference views (section D)
-
-Four views cover the IT4IT reference content. They are declared in
-`third_party/it4it/views.yaml` and rendered into that repo's own
-`diagrams/vision/`. One more touchpoint view stays in this repo:
-
-| View | Viewpoint | Covers |
-|---|---|---|
-| IT4IT: Value Streams | `value_stream` | The 7 streams and the outcome they jointly realize, with no stage decomposition |
-| IT4IT: Capability Map | `capability` | All 42 IT4IT capabilities plus the 4 canonical domain groupings that nest 34 of them. It renders as an otherwise **unconnected map**, since the source model has no other capability-to-capability relationships |
-| IT4IT: Stakeholder | `stakeholder` | The 24 named IT4IT stakeholder roles, as a catalog with no Driver/Assessment to connect them to |
-| IT4IT: Outcome Realization | `outcome_realization` | The 7 value streams (plus root) and the 36 Outcomes they realize |
-| IT4IT: Capability Bridges *(stays first-party)* | `capability` | The 9 `props.source: it4it-alignment` associations between this platform's capabilities and IT4IT capabilities (see below) |
-
-**Why the Capability Bridges diagram sits at the `diagrams/` root.** The view is a
-pure `Capability`-to-`Capability` cut across two repos, so it lives in this
-repo's `views.yaml` rather than the vendored one. Because it is a cross-*model*
-cut, its diagram stays flat at the `diagrams/` root. By contrast,
-`layered/subsystem-capabilities` is only a cross-*layer* cut within this repo's
-own model, so it gets a layer folder (`architecture/model/views.yaml:679-713`).
-
-An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
-predated the 4-view split and was dropped once the split fully superseded it. It
-conformed to `viewpoint: value_stream` only nominally: that viewpoint's
-allow-list happens to cover `Capability`/`Outcome` too, but the monolith was not
-a genuine single-purpose Value Stream diagram.
-
-## Regenerating
-
-```bash
-poetry run python architecture/model/build.py           # YAML -> XML (+ validate)
-poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .svg
-```
-
-`render_diagrams.py` reads each view's `diagram:` key, a path under `diagrams/`
-with no extension, and emits one `.puml`/`.svg` pair per view. A view with no
-`diagram:` key is skipped with a note. The two C4 diagrams are a fixed list in the
-script: `c4/context` with a legend, and `c4/container` laid out left to right
-(`architecture/model/render_diagrams.py:56-60`).
-
-Views declared in `third_party/it4it/views.yaml` render into the vendored model's
-own `third_party/it4it/diagrams/`. Every view in this repo's `views.yaml` renders
-under `architecture/model/diagrams/`.
-
-Two per-view keys pass extra options to `model_to_puml.py`
-(`architecture/model/render_diagrams.py:84-104`):
-
-- `no_direction:` lists relationship types that are passed as `--no-direction`.
-  This switches off the layout-direction hint described below for that view.
-- `max_width:` is passed as `--max-width <n>`. The diagram is then rendered with
-  PlantUML's `scale max <px> width`, so a wider layout is scaled down to fit and a
-  narrower one is left at natural size. It is meant for long chains that would
-  otherwise need horizontal scrolling (`architecture/model/README.md`
-  §"Schema").
-
-**The script is incremental.** It generates each view's `.puml` in memory and
-compares it with the committed file. Only views whose `.puml` actually changed
-are rewritten and have their `.svg` re-rendered, because the PlantUML/graphviz
-step is the expensive part. Files for views removed from `views.yaml` are
-deleted as orphans. This is how the removed `cross-layer/` diagrams cleaned up
-after themselves.
-
-Options and exit codes:
-
-- `--check` runs the same comparison without writing anything and exits 1 on
-  any stale or orphaned diagram. It is meant for CI and pre-commit.
-- `--no-svg` emits `.puml` only.
-- The script reads the generated XML and does not rebuild it, so run `build.py`
-  first. If the XML is missing, the script exits `2`
-  (`architecture/model/render_diagrams.py:1-30`, `184-188`).
-
-Changed `.puml` files are rendered in a single `plantuml -tsvg` call. Each
-resulting `.svg` gets a trailing newline, so re-renders don't churn on
-PlantUML's missing one (`architecture/model/render_diagrams.py:166-175`).
-
-**Layout direction.** `diagram-archimate` fixes the layout direction for two
-groups of relationship types:
-
-- `Realization` and `Serving` render with the PlantUML stdlib's `_Up` macro
-  variant. The realizing or serving element sits below what it realizes or
-  serves, with the arrow pointing up.
-- `Triggering` and `Flow` render `_Right`, so process sequences read left to
-  right.
-
-This is a rendering hint only (`REL_DIRECTION` in `model_to_puml.py`), not a
-change to source/target semantics. See [Agent Skills & Workflows](agent-workflows.md).
+GH #117 flipped that trade-off: a `members` list has the opposite failure
+mode — a new **first-party** element of the type (e.g.
+`cap-conversational-governance`, `vs-intent-to-model`,
+`outcome-intent-becomes-model-truth`, all added for GH #108) silently stays
+off the view until someone remembers to add it, which is exactly what
+happened to `outcome-architect-authored-model` and its siblings on first
+add. `view-strategy`, `view-capability`, `view-value-stream` and
+`view-outcome-realization` now all use `include_types` for these types, with
+a new `exclude_elements: [{id_prefix: "it4it-"}]` (or an equivalent
+`id_prefix` pattern) keeping the vendored elements off — the same
+`exclude_elements` mechanism [Architecture
+Model](architecture-model.md) §"Schema" describes. `view-stakeholder`,
+`view-motivation`, `view-goal-realization` and `view-requirements-realization`
+(now in `views-viewpoints.yaml`) go the other way deliberately: they sweep
+by `include_types` with **no** `exclude_elements`, because showing the
+IT4IT import's own Stakeholder/Outcome/Capability elements alongside the
+platform's is the point there (`architecture/model/views.yaml:30-170`,
+`architecture/model/views-viewpoints.yaml:365-410`).

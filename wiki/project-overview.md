@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-16
+generator: claude-sonnet-5
 sources:
   - README.md
   - specs/001-governance-platform/spec.md
@@ -112,12 +112,17 @@ status endpoint reports `retry_pending`
 ## Platform packages
 
 Code being extracted from the flat `src/` layout lives in the `platform/` Poetry
-monorepo (ADR-0002), with its own lock and virtualenv. The README lists two packages
-today: `controls-compliance-catalog` (policy and standard documents to OSCAL Catalogs
-and Profiles) and `llm-provider-config` (shared LLM provider, model and credential
-resolution); `bash scripts/platform_checks.sh` runs their gate (`README.md` §"Platform
-packages"). See [Controls & Compliance Catalog](controls-compliance-catalog.md) and
-[LLM Provider Configuration](llm-provider-config.md).
+monorepo (ADR-0002), with its own lock and virtualenv. The README now lists four
+packages: `controls-compliance-catalog` (policy and standard documents to OSCAL
+Catalogs and Profiles), `llm-provider-config` (shared LLM provider, model and
+credential resolution), `modelling-specification` (the conversational ArchiMate
+authoring agent, GH #108) and `portal` (the composition host that serves every
+package's UI from one app, `uvicorn portal.app:app` on `http://127.0.0.1:8000/`,
+ADR-0020); `bash scripts/platform_checks.sh` runs their gate (`README.md`
+§"Platform packages"). See [Controls & Compliance Catalog](controls-compliance-catalog.md),
+[LLM Provider Configuration](llm-provider-config.md),
+[Conversational Model Authoring](modelling-specification.md) and
+[Portal](portal.md).
 
 Not covered by these sources: the MVP scope (single-user, locally run) is
 recorded in ADR-0024 and discussed on [Architecture Overview](architecture.md).

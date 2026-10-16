@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-10-10
+generated: 2026-10-16
 generator: claude-sonnet-5
 ---
 
@@ -23,17 +23,17 @@ generator: claude-sonnet-5
   (per-subsystem UIs), the Poetry monorepo decision and the migration sequence.
 - [Architecture Decision Log](decision-log.md) — the full `docs/adr/` decision log
   (MADR index and per-decision summaries).
-- [GitHub Roadmap Layer](gh-roadmap-layer.md) — spec 003: GitHub milestones,
-  releases and issues imported as ArchiMate Plateaus, Deliverables and Work Packages.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
-  generated: files, schema, the `build.py` pipeline, the generated GitHub
-  roadmap layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
-  merged in at build time — 414 elements, 840 relationships, 48 views total).
+  generated: files, schema, the `build.py` pipeline, the generic per-viewpoint
+  `views-viewpoints.yaml` layer (GH #105), the generated GitHub roadmap
+  layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
+  merged in at build time — 477 elements, 982 relationships, 64 views total).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
-  stakeholders, drivers, assessments, goal and four outcomes, principles,
-  constraints, requirements, capabilities, strategy, four value streams, and the
-  business layer (functions, processes, business objects).
+  stakeholders, drivers, assessments, goal and five outcomes, principles,
+  constraints, requirements, capabilities, strategy, five value streams
+  (including the new Intent to Model stream, GH #108), and the business layer
+  (functions, processes, business objects).
 - [Architecture Model: Ecosystem](architecture-model-ecosystem.md) — section B:
   the six subsystems, shared stores, business roles, and external systems
   behind the C4 views.
@@ -43,9 +43,19 @@ generator: claude-sonnet-5
 - [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) —
   sections E and F: the platform's own packaging/migration restructure (Work
   Packages, Plateaus, Gaps) and its first Technology-layer cut.
-- [Architecture Views & Diagrams](architecture-diagrams.md) — how those views
-  map to ArchiMate viewpoints, the TOGAF Phase A vision-view set, the IT4IT
-  reference views, and how to regenerate every `.puml`/`.svg` diagram.
+- [GitHub Roadmap Layer](gh-roadmap-layer.md) — spec 003: GitHub milestones,
+  releases and issues imported as ArchiMate Plateaus, Deliverables and Work
+  Packages; a release now realizes every Plateau it delivered work for
+  (clarified 2026-10-12), not just ones its notes name.
+- [Architecture Views & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md) —
+  how the vision and business views map to ArchiMate viewpoints, the TOGAF
+  Phase A vision-view set, the 17 new generic per-viewpoint views (GH #105),
+  and the `include_types`/`exclude_elements` platform-only scoping mechanism.
+- [Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md) —
+  the Implementation & Migration and Technology-layer views (sections E/F),
+  the vendored IT4IT reference views, and how to regenerate every
+  `.puml`/`.svg` diagram. Split out of the page above (2026-10-16) once it
+  passed 600 lines.
 - [IT4IT Reference Model](it4it-model.md) — the vendored `third_party/it4it`
   repo itself: its schema, the 142-element value-stream/capability/
   stakeholder/outcome content, the derived Serving edges, and its own 4
@@ -66,10 +76,20 @@ generator: claude-sonnet-5
   extraction into the `platform/` monorepo, its AI-assisted policy/standard →
   OSCAL conversion pipeline (spec `001-oscal-ai-conversion`), data model, API
   surface, and golden-dataset validation.
+- [Conversational Model Authoring](modelling-specification.md) — the
+  `platform/packages/modelling-specification` package (GH #108,
+  [ADR-0037](decision-log.md)): the conversational ArchiMate authoring agent,
+  its candidate-delta propose/validate/decide/render pipeline, Enterprise
+  Convention Rules, and the ported `build`/`render`/`validate` CLI that root's
+  scripts and the `model-archimate` skill now wrap.
+- [Portal](portal.md) — the `platform/packages/portal` host package
+  ([ADR-0020](decision-log.md) update, GH #120): mounts every package's UI
+  under one app, owning only chrome, navigation and the role landing page.
 - [LLM Provider Configuration](llm-provider-config.md) — the shared
   `llm-provider-config` package (ADR-0034): global default plus per-component
   provider settings, keychain keys with an env-var fallback, keyless Ollama and
-  GitHub Copilot, and the mountable `/settings/llm` router.
+  GitHub Copilot, and the settings router now mounted once by Portal for
+  every package.
 - [Non-Functional Requirements](non-functionals.md) — performance, security,
   reliability, compliance, observability, and quality targets.
 - [Visualizer Service](visualizer-service.md) — the one implemented component:

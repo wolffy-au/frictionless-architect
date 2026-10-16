@@ -1,12 +1,13 @@
 ---
 title: Architecture Model
-generated: 2026-10-10
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
   - architecture/model/relationships.yaml
   - architecture/model/views.yaml
+  - architecture/model/views-viewpoints.yaml
   - architecture/model/build.py
 ---
 
@@ -37,17 +38,18 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 414 elements, 840 relationships and 48 views. Of
-those, 232 elements, 559 relationships and 34 views are hand-authored in this
-repo's own `elements.yaml`/`relationships.yaml`/`views.yaml` (sections A–C, E
-and F, plus the IT4IT touchpoint bridge); 40 elements, 46 relationships and 10
-views are generated into `architecture/model/gh-roadmap/` by
-`import_gh_roadmap.py` (see "GitHub roadmap layer" below); and 142 elements,
-235 relationships and 4 views are the vendored IT4IT reference model, merged
-in at build time ([ADR-0029](decision-log.md) — see "IT4IT alignment" below).
-The
-generated `frictionless-architect.xml` is committed but never hand-edited —
-same status as the `.puml` / `.svg` diagrams.
+current merged model is 477 elements, 982 relationships and 64 views. Of
+those, 249 elements, 603 relationships and 48 views are hand-authored in this
+repo's own `elements.yaml`/`relationships.yaml`/`views.yaml` plus the new
+`views-viewpoints.yaml` (sections A–C, E and F, plus the IT4IT touchpoint
+bridge, plus one generic view per standard viewpoint — see "Context-level
+viewpoints" below); 86 elements, 144 relationships and 12 views are generated
+into `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
+roadmap layer" below); and 142 elements, 235 relationships and 4 views are the
+vendored IT4IT reference model, merged in at build time
+([ADR-0029](decision-log.md) — see "IT4IT alignment" below). The generated
+`frictionless-architect.xml` is committed but never hand-edited — same status
+as the `.puml` / `.svg` diagrams.
 
 ## Files and schema
 
@@ -55,7 +57,8 @@ same status as the `.puml` / `.svg` diagrams.
 |---|---|
 | `elements.yaml` | Every element: `type` / `id` / `name` / `desc?` / `props?` (`architecture/model/README.md` §"Files") |
 | `relationships.yaml` | Every relationship: `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
+| `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`, optionally narrowed by `exclude_elements` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
+| `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`); same schema as `views.yaml`, ids unique across both (see "Context-level viewpoints" below) |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views, merged by `build.py`, never hand-edited |
 | `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
@@ -73,6 +76,33 @@ Schema rules (`architecture/model/README.md` §"Schema";
 - **`id`** — a stable kebab id, hashed to a deterministic UUID so regeneration
   never churns identifiers or diagrams. *Never renumber a live id.*
 - **`name` / `desc`** — top-level keys, not inside `props`.
+- **`context`** — optional top-level key on an element: its bounded context.
+  Defaults to `platform` for first-party files and to the layer directory's
+  name for `third_party/<name>` and `gh-roadmap/`; written to the XML as a
+  `context` property. First-party contexts are `platform` (the shared
+  kernel — motivation, strategy, business layer, infrastructure, migration,
+  external systems, shared stores) plus the eight platform packages
+  (`controls-compliance-catalog`, `reusable-architecture-library`,
+  `digital-twin-knowledge-graph`, `architecture-governance`,
+  `conformance-drift-assurance`, `modelling-specification`,
+  `schema-visualizer-api`, `llm-provider-config`), each owning its subsystem,
+  its functions, interface and the artefacts it writes. A view's `context:`
+  (default `[platform]`) limits which contexts its `include_types` sweep
+  draws from; `members` are always honoured, and `platform` in a view's
+  `context:` covers the whole first-party family
+  (`architecture/model/README.md` §"Schema").
+- **`exclude_elements`** on a view (optional) — a list of patterns that drop
+  otherwise-selected elements (via `members` or `include_types`) before nodes
+  and connections are built. Each entry may give `type` (ArchiMate concept
+  name), `id` or `id_prefix`; an element is excluded when every key given in
+  an entry matches (omitted keys are wildcards). This is the fix for
+  `include_types` picking up a vendored layer sharing the same ArchiMate
+  type as a first-party one — e.g. `third_party/it4it` contributes 42
+  Capability / 35 Outcome / 28 ValueStream elements, all `it4it-`-prefixed,
+  so `{id_prefix: "it4it-"}` keeps those off a first-party view without
+  reverting to an explicit `members` allow-list that silently drops any new
+  first-party element of that type until someone remembers to add it (GH
+  #117). This is distinct from the relationship-level `exclude` key below.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read` | `Write` | `ReadWrite`) on `Access` relationships,
   `requirement-type`, and `archimate-analogue` on a BusinessObject whose
@@ -130,6 +160,21 @@ duplicate id, dangling relationship reference, unknown view member) and reports
 them together rather than aborting on the first
 (`architecture/model/build.py:66-76`, `136-194`).
 
+## Context-level viewpoints (GH #105)
+
+`views-viewpoints.yaml` adds 17 generic views, one per standard ArchiMate
+3.2 §14 viewpoint (Organization, Application Structure, Information
+Structure, Technology, …), swept entirely by `include_types` — never
+`members` — so a new element of a covered type appears on the right view
+automatically, instead of the hand-curated `views.yaml` views, whose
+`members` lists need a manual add. Same schema and loader as `views.yaml`;
+view ids must stay unique across both files. Each generic view sits in the
+`platform` context by default, same as the hand-curated ones
+(`architecture/model/views-viewpoints.yaml`; `architecture/model/README.md`
+§"Schema"). A hand-curated view keeps a narrower, single-subject cut where
+one exists (e.g. `view-application-structure-catalog` for one application
+alone); the generic view is the type-wide sweep.
+
 ## Model contents — per-layer pages
 
 `elements.yaml` is organised into three first-party sections
@@ -137,7 +182,7 @@ them together rather than aborting on the first
 
 | Section | Page |
 |---|---|
-| A. Motivation + Strategy + Business — the load-bearing skeleton (4 outcomes, 4 value streams, 15 processes, 9 functions) | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
+| A. Motivation + Strategy + Business — the load-bearing skeleton (5 outcomes, 5 value streams, 16 processes, 10 functions) | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
 | B. Application — the six-subsystem ecosystem | [Architecture Model: Ecosystem](architecture-model-ecosystem.md) |
 | C. Application — the artefact input/output pipeline | [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md) |
 | E. Implementation & Migration — the platform's own restructure; F. Technology — the first Technology-layer cut | [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) |
@@ -156,7 +201,8 @@ Packages (`wp-<slug>-gh-<n>`), published releases become Deliverables
 (`del-release-<tag-slug>`), and per-milestone views are emitted alongside.
 A failed or incomplete read writes nothing; `--check` exits 1 if the files
 would change; run `build.py` and `render_diagrams.py` afterwards. Gaps, the
-baseline Plateau and Strategy elements stay hand-authored. The mapping and
+**Current State** Plateau (renamed from "Baseline") and Strategy elements
+stay hand-authored. The mapping and
 ownership rules are ADR-0035 (`architecture/model/README.md` §"GitHub roadmap
 layer"; `docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`).
 See [Architecture Overview](architecture.md).
@@ -273,9 +319,12 @@ sections E/F — see
 "GitHub roadmap layer" above), and 4 declared in `third_party/it4it/views.yaml`
 for the vendored IT4IT reference (see "IT4IT alignment" above), loaded the
 same way its elements/relationships are ([ADR-0029](decision-log.md)). How
-those views map to ArchiMate viewpoints, which ones cover the IT4IT reference
-content, and how they're rendered into `.puml`/`.svg` diagrams is covered in
-[Architecture Views & Diagrams](architecture-diagrams.md), not this topic.
+those views map to ArchiMate viewpoints is covered in [Architecture Views &
+Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md); which
+ones cover the IT4IT reference content and how they're rendered into
+`.puml`/`.svg` diagrams is covered in [Architecture Views & Diagrams:
+Platform, Migration & Rendering](architecture-diagrams-platform.md) — not
+this topic.
 
 ## Provenance
 
@@ -424,3 +473,14 @@ schema-visualiser-UI-home Serving edge (ADR-0005 + ADR-0020), and the
 catalog's upload/feedback functions and interface. That brings the
 platform's own model to 237 elements / 555 relationships / 33 views (379 /
 790 / 37 merged with the unchanged IT4IT reference).
+
+A later batch of passes (2026-10-08 to 2026-10-14) brought the model to its
+current 477 / 982 / 64: context-level viewpoints were added (GH #105, see
+above); the Baseline Plateau was renamed Current State; `conventions.yaml`
+wired business-layer Enterprise Convention Rules into the model; and the
+`Portal` composition host and its `Portal UI` interface were added
+(ADR-0020, GH #120) alongside `modelling-specification`'s own conversational
+model-authoring elements (GH #108, ADR-0037 — see
+[Conversational Model Authoring](modelling-specification.md)), bringing
+section E to 10 package `Artifact`s (see [Architecture Model:
+Migration](architecture-model-migration.md)).

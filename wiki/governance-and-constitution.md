@@ -1,7 +1,7 @@
 ---
 title: Governance & Constitution
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-16
+generator: claude-sonnet-5
 sources:
   - .specify/memory/constitution.md
 ---
@@ -15,7 +15,7 @@ All governance rules live in a single file, `.specify/memory/constitution.md`
 (the "SpecKit Constitution"). It describes itself as "the root of the
 documentation tree": every other document links back to it
 (`.specify/memory/constitution.md` §"Detailed References (Deeper Detail)").
-Current version **1.4.0**, ratified 2026-02-18, last amended 2026-10-04
+Current version **1.5.0**, ratified 2026-02-18, last amended 2026-10-08
 (`.specify/memory/constitution.md` §"Governance").
 
 The 1.2.0 amendment retired the former `PROJECT_CONSTITUTION.md`. That file
@@ -34,7 +34,7 @@ backlog. `specs/001-governance-platform` is now the business specification
 (`.specify/memory/constitution.md` Sync Impact Report v1.3.0, §"Requirements —
 why").
 
-The 1.4.0 amendment added Principle XI and the matching quality gate; no templates needed changes, and `AGENTS.md` carries a pointer rather than a copy (`.specify/memory/constitution.md` Sync Impact Report v1.4.0). The same report entry was then extended (no version bump) to modify Principle X and add a **Model Impact** quality gate, described below.
+The 1.4.0 amendment added Principle XI and the matching quality gate; no templates needed changes, and `AGENTS.md` carries a pointer rather than a copy (`.specify/memory/constitution.md` Sync Impact Report v1.4.0). The same report entry was then extended (no version bump) to modify Principle X and add a **Model Impact** quality gate, described below. The 1.5.0 amendment (2026-10-08) broadened Principle XI's diagram taxonomy — see "Principle XI in practice" (`.specify/memory/constitution.md` Sync Impact Report v1.5.0).
 
 ## The document tree
 
@@ -118,12 +118,32 @@ Non-Duplicative Spec Artefacts"). Its rules:
   `contracts/` and `quickstart.md` give one example plus commands and link back;
   `plan.md` summarises in a paragraph and links.
 - Diagrams are embedded PlantUML blocks, validated with `plantuml -checkonly`,
-  drawn once in the artefact that owns the subject (class and state in
-  `data-model.md`, sequence in `contracts/`, activity and deployment in
-  `plan.md`).
+  drawn once in the artefact that owns the subject.
 - When a rule changes, edit it in its one home and replace restated copies with a
   link; prefer editing artefacts to regenerating them, and commit a snapshot
   before any regeneration.
+
+The 1.5.0 amendment (2026-10-08) broadened which diagram goes where, preferring a
+graphical UML representation over an equivalent plain-text one wherever a standard
+diagram type fits (`.specify/memory/constitution.md` Sync Impact Report v1.5.0):
+
+- `spec.md` gets a **use-case diagram per User Story** (actors plus that story's
+  scenarios as use cases) *alongside*, never instead of, the given/when/then
+  prose, which stays the acceptance-criteria source of truth.
+- `data-model.md` keeps class and state diagrams; `contracts/` keeps sequence
+  diagrams.
+- `plan.md` keeps activity and deployment diagrams, and now also gets a
+  **component or package diagram in place of a plain-text directory/dependency
+  tree** in its Project Structure section.
+- Any other standard UML diagram type (object, composite structure,
+  communication, timing, interaction overview) is permitted wherever it
+  communicates a structure or interaction more clearly than prose, drawn once in
+  the artefact owning that subject.
+
+The rationale extends beyond DRY: a graphical representation reviews faster than
+prose and, unlike prose, can seed the canonical ArchiMate/C4 model directly if the
+design it shows later needs representing there
+(`.specify/memory/constitution.md` §"Rationale").
 
 ## Development workflow
 
