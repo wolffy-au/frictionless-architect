@@ -106,8 +106,8 @@ in `views.yaml`, not their order in the file (`third_party/it4it/views.yaml`):
 | 4 | `vision/4-outcome-realization` | IT4IT: Outcome Realization |
 
 This mirrors the `1-`…`7-` TOGAF Phase A numbering the consuming project
-uses for its own vision diagrams (see
-[Architecture Views & Diagrams](architecture-diagrams.md)). They share the
+uses for its own vision diagrams (see [Architecture Views & Diagrams:
+Platform, Migration & Rendering](architecture-diagrams-platform.md)). They share the
 same `vision/` bucket, and the diagrams are
 rendered by that consumer's `render_diagrams.py` (this repo carries no
 build tooling of its own; see [Architecture Model](architecture-model.md)

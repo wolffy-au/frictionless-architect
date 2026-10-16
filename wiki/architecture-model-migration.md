@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Packaging, Migration & Technology"
-generated: 2026-10-10
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -56,18 +56,18 @@ provider configuration is a shared package, not a subsystem"). It appears in
 the Artefact Flow — Controls & OSCAL and Packaging views, and its package Artifact in
 the Packaging and Migration Sequence views (`architecture/model/views.yaml`).
 
-**Artifacts (code packages, `c4: ignore`).** Nine `Artifact` elements: today's
+**Artifacts (code packages, `c4: ignore`).** Ten `Artifact` elements: today's
 flat `art-flat-src`, plus one per target package —
 `schema-visualizer-api`, `digital-twin-knowledge-graph`,
 `controls-compliance-catalog`, `reusable-architecture-library`,
 `architecture-governance`, `conformance-drift-assurance`,
-`modelling-specification`, and the shared `llm-provider-config`
+`modelling-specification`, the shared `llm-provider-config`
 (`art-pkg-llm-provider-config`, which the `plat-policy-to-oscal-mvp-1` Plateau
-aggregates). Each package-Artifact `Realization`-links to the
-`ApplicationComponent` it ships; `art-flat-src` currently realizes both
-`sub-schema-visualizer` and `sub-twin`, since neither has been extracted yet
-(`architecture/model/relationships.yaml` §"E. Packages realise their
-components").
+aggregates), and now `art-pkg-portal` (ADR-0020, GH #120). Each package-Artifact
+`Realization`-links to the `ApplicationComponent` it ships; `art-flat-src`
+currently realizes both `sub-schema-visualizer` and `sub-twin`, since neither
+has been extracted yet (`architecture/model/relationships.yaml` §"E. Packages
+realise their components").
 
 **Work Packages, Deliverables, Plateaus and Gaps.** `ARCHITECTURE.md` §8's
 migration steps are now four hand-authored `WorkPackage` elements keyed to the
@@ -81,8 +81,9 @@ dropped because they collided on name with the GitHub-roadmap importer's own
 generated Deliverables; each Work Package now `Realization`-links straight to
 the Artifact or Plateau it produces instead
 (`architecture/model/relationships.yaml` §"E. Migration sequence"). The
-hand-authored `plat-baseline` Plateau (`art-flat-src` only) is still the start
-state; every other Plateau is generated from GitHub milestones by the roadmap
+hand-authored `plat-baseline` Plateau — renamed **Current State** (from
+"Baseline"), still `art-flat-src` only — is still the start state; every
+other Plateau is generated from GitHub milestones by the roadmap
 importer (see [GitHub Roadmap Layer](gh-roadmap-layer.md)) — currently ten, one per
 business-function MVP milestone. `plat-policy-to-oscal-mvp-1`
 `Aggregation`-links `art-flat-src`, `art-pkg-controls-compliance-catalog` and
@@ -123,7 +124,7 @@ generated Plateaus, Work Packages and Deliverables. The roadmap importer also
 emits one view per generated Plateau (`diagrams/migration/<plateau id>`,
 ten currently), each showing that milestone's own Work Packages and
 Deliverables. The C4 container view also gained the Schema Visualiser API
-component. See [Architecture Views & Diagrams](architecture-diagrams.md).
+component. See [Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).
 
 ## Technology (section F)
 
@@ -177,6 +178,35 @@ text looks like it was updated ahead of the relationship/view wiring.
 Hand-authored `Triggering` edges order the three Plateaus, and
 `view-runtime-migration` (now `diagrams/migration/runtime`) shows them together
 with the two Nodes, `sw-neo4j` and `sw-keyring`.
+
+**Neo4j persistence (GH #108).** A new technology Artifact,
+`art-tech-neo4j-volume` ("Neo4j Graph Database Files") — the on-disk database
+files `sw-neo4j` reads/writes, a Docker volume under
+`orchestration/compose/` — follows the same pattern as
+`art-tech-oscal-workspace`/`art-tech-ledger-file`: `sw-neo4j` is `Assignment`-linked
+to it ("writes to"), and it `Realization`-links to `store-akg`. The
+Technology layer reaches the conversational-authoring feature thread through
+this chain (`node-app-server` → `sw-neo4j` → `art-tech-neo4j-volume` →
+`store-akg`) rather than a direct `SystemSoftware → DataObject` edge, which
+the relationship matrix doesn't permit anyway (only `Access`/`Association`)
+and which would skip the Artifact the model always interposes between a Node
+and the store it backs (`architecture/model/relationships.yaml:923-924`; see
+the "Feature Steel Thread" view below).
+
+**Feature Steel Thread (GH #108).** `view-gh108-conversational-authoring`
+("Feature Steel Thread: Conversational Model Authoring", a `layered`
+viewpoint view rendered to `diagrams/layered/fn-conversational-authoring`)
+traces the conversational-authoring feature end to end through every layer
+it touches — motivation (`driver-authoring-friction` →
+`assess-manual-authoring-risk` → `outcome-intent-becomes-model-truth`),
+strategy (`cap-conversational-governance`), business
+(`bfn-conversational-authoring` / `process-conversational-authoring`,
+jointly `Assignment`-ed from both `role-ea` and `role-sa`), application
+(`sub-modelling`, `fn-conversational-authoring`, `fn-notation-engine`,
+`do-metamodel`, `do-candidate-arch`) and technology — using only edges that
+already existed in the model, no element added or re-wired solely to make
+the thread connect (`architecture/model/views.yaml` §"view-gh108-conversational-authoring").
+See [Conversational Model Authoring](modelling-specification.md).
 
 **Model Collaboration.** `bc-model-collaboration` (a `BusinessCollaboration`)
 aggregates `role-ea` and `role-sa` and is assigned the
@@ -233,4 +263,4 @@ it excludes `Node`). A fifth, `view-application-structure-catalog`
 artefacts it owns), shown via new `sub-catalog → art-*` ownership `Access`
 edges rather than `ApplicationFunction`-mediated flow, since Application
 Structure isn't a viewpoint `ApplicationFunction` can appear on. See
-[Architecture Views & Diagrams](architecture-diagrams.md).
+[Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).

@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Ecosystem"
-generated: 2026-10-01
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -18,17 +18,30 @@ The platform `Grouping` (`sys-platform`, `props: c4=system`), its six
 subsystems (`ApplicationComponent`s → C4 containers), five shared stores
 (`DataObject`s → C4 databases), six business roles (→ C4 persons), and seven
 external systems (`ApplicationComponent`s outside the grouping → C4 external
-systems) (`architecture/model/elements.yaml:880-1056`). Two further
+systems) (`architecture/model/elements.yaml:880-1056`). Three further
 `ApplicationComponent`s sit beside them without being subsystems:
-`sub-schema-visualizer` and, since ADR-0034, `sub-llm-provider-config` ("LLM
-Provider Configuration"), a shared package that resolves provider, model and
-credential for LLM calls. It is composed into `sys-platform`, has an `Association`
-to the `ext-llm` external system, and is realised by `art-pkg-llm-provider-config`;
-there is deliberately no `Serving` edge to its consumers, since consumption is a path
-dependency, not a runtime call
+`sub-schema-visualizer`, `sub-llm-provider-config` ("LLM Provider
+Configuration", since ADR-0034), and `sub-portal` ("Portal", since the
+ADR-0020 update of 2026-10-11, GH #120). `sub-llm-provider-config` resolves
+provider, model and credential for LLM calls. It is composed into
+`sys-platform`, has an `Association` to the `ext-llm` external system, and
+is realised by `art-pkg-llm-provider-config`; there is deliberately no
+`Serving` edge to its consumers, since consumption is a path dependency, not
+a runtime call
 (`architecture/model/elements.yaml:944-952`, `architecture/model/relationships.yaml:772-786`).
 It appears in the Artefact Flow — Controls & OSCAL and Packaging views
-(`architecture/model/views.yaml`). This is the
+(`architecture/model/views.yaml`).
+
+`sub-portal` "hosts the platform packages' UIs from one app: mounts each
+package's router and owns only page chrome, navigation and the role landing
+page, never feature logic" — explicitly not one of the six subsystems and not
+a central dashboard (`architecture/model/elements.yaml` — `sub-portal` desc).
+Its interface, **Portal UI** (`if-portal-ui`), is "a landing page listing
+each mounted package UI by the role it serves, and the shared navigation
+into them". It is realised by the `art-pkg-portal` Artifact. See
+[Portal](portal.md) for the package itself.
+
+This is the
 decomposition [ADR-0011](decision-log.md) adopts in place of the old
 eight-component grouping; [Architecture Overview](architecture.md)
 §"Subsystem → package mapping" gives the package each subsystem becomes. Views: `Subsystems & Capabilities` (a
@@ -42,7 +55,7 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 | Digital Twin & Knowledge Graph (`sub-twin`) | The Architecture Knowledge Graph: intent plane + current-state twin plane | `cap-digital-twin`, `cap-forensic-ledger` |
 | Architecture Governance (`sub-governance`) | Comparative evaluation, the decision + its ADR, archival of rejected options — pure decision-making (options are modelled in the Library) | `cap-human-approval-workflow` |
 | Conformance & Drift Assurance (`sub-assurance`) | Supervises agentic development to enforce controls at build and supplies the *expected controls* that the CI/CD pipeline's inline release gate verifies; BAU effectiveness monitor; drift engine + dashboard | `cap-control-plane`, `cap-drift-dashboard` |
-| Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation | `cap-spec-engine` |
+| Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation; conversational model authoring (GH #108) | `cap-spec-engine`, `cap-conversational-governance` |
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
 view back to the skeleton (`architecture/model/relationships.yaml:419-428`).
@@ -85,6 +98,27 @@ also `Assignment`-linked to the section-A BusinessFunctions they perform. For
 example, the Compliance Officer performs Policy-to-OSCAL Conversion. That
 nesting is what the Controls & Compliance Catalog view draws; see
 [Skeleton](architecture-model-skeleton.md).
+
+**Context tagging (GH #105/#108).** Every section-B element now carries a
+`context:` property — `platform` for the shared kernel, or the owning
+package's name for a subsystem-specific element — so a view's `context:`
+scoping key (see [Architecture Model](architecture-model.md) §"Schema") can
+draw `include_types` sweeps from one package at a time. See "Context-level
+viewpoints" on that page.
+
+**New interfaces (2026-10).** Beyond `if-catalog-ui` and
+`if-twin-read-path`, three more `ApplicationInterface`s were added:
+**Control Conversion Playground** (`if-catalog-playground`) — a dev-tool
+interface that runs one control through both the AI-candidate and
+deterministic conversion paths for side-by-side comparison, mounted by the
+portal at `/catalog`; **LLM Settings UI** (`if-llm-settings-ui`) — the
+mountable settings page/API for the global LLM default and per-component
+overrides, mounted by the portal at `/settings/llm` and by each consuming
+package's own standalone app; and **Conversational Authoring UI**
+(`if-modelling-authoring-ui`) — the human-facing split-screen interface (and
+its `/authoring` JSON API) for `sub-modelling`'s conversational model
+authoring. See [Portal](portal.md) and
+[Conversational Model Authoring](modelling-specification.md).
 
 A 2026-09-27 pass (GH #55 follow-up) added `sub-catalog`'s own
 `ApplicationInterface`, **Compliance Catalog UI** (`if-catalog-ui`) — the

@@ -1,6 +1,6 @@
 ---
 title: GitHub Roadmap Layer
-generated: 2026-10-10
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - specs/003-gh-roadmap-archimate/checklists/requirements.md
@@ -39,7 +39,7 @@ writes a generated, committed YAML layer in `architecture/model/gh-roadmap/`;
 |---|---|---|
 | Milestone | Plateau | Realizes a business function (`bfn-*`) it names |
 | Issue with its own milestone | Work Package | Realizes one Deliverable; aggregates sub-issues; triggers issues it blocks |
-| Published release (not draft/pre-release) | Deliverable | Realizes the Plateau it names |
+| Published release (not draft/pre-release) | Deliverable | Realizes each Plateau it names or delivered a Work Package for |
 | Milestone with ≥1 Work Package | Unreleased Deliverable | Realizes the milestone's Plateau |
 | Cross-milestone issue dependency | none | One Plateau → Plateau Triggering |
 
@@ -49,12 +49,21 @@ Scope rules:
   from a parent, descendant or label (FR-002, `spec.md`; R5, `specs/003-gh-roadmap-archimate/research.md`).
 - Drafts and pre-releases are skipped (`specs/003-gh-roadmap-archimate/data-model.md` §Scope).
 - A Work Package realizes exactly one Deliverable and never a Plateau directly
-  (FR-003). Open ones realize the milestone's unreleased Deliverable; a closed one
-  realizes the first release, among those naming its Plateau, published after its
-  `closedAt`, else the unreleased one (`specs/003-gh-roadmap-archimate/data-model.md` §"Which Deliverable a Work
+  (FR-003). Open issues, and ones **closed as not planned or as a duplicate**
+  (`stateReason`, recorded as `gh-state-reason`), realize the milestone's unreleased
+  Deliverable — such an issue is treated as having delivered nothing. Any other
+  closed ("delivered") issue realizes the first release published after its
+  `closedAt`, else the unreleased one
+  (`specs/003-gh-roadmap-archimate/data-model.md` §"Which Deliverable a Work
   Package realizes"). GitHub has no issue-to-release link, so close time against
   publish time is the only signal (R6, `specs/003-gh-roadmap-archimate/research.md`).
-- Releases attach to a Plateau only by naming its model id in the notes.
+- A release realizes **every** Plateau it delivered a Work Package for, as well as
+  any Plateau its notes name — not just the latter, as before 2026-10-12. Release
+  notes are commitizen-generated and name no Plateau unless hand-edited, so the
+  pre-2026-10-12 notes-only rule left most closed issues on the unreleased
+  Deliverable (`specs/003-gh-roadmap-archimate/spec.md` Clarifications, session
+  2026-10-12). The per-milestone roadmap view still shows only that milestone's
+  own Work Packages, even when the same release also delivered work for others.
 
 ## Ids
 
@@ -90,7 +99,9 @@ build fails with an unknown id. Per FR-011 the same change retired
 
 (`specs/003-gh-roadmap-archimate/data-model.md` §"Emitted relationships")
 
-- Work Package → Deliverable and Deliverable → Plateau: Realization.
+- Work Package → Deliverable and Deliverable → Plateau: Realization — a Deliverable
+  can now realize several Plateaus (one release delivering work across milestones),
+  so each (Deliverable, Plateau) pair is emitted once.
 - Parent/child (both imported): Aggregation parent → child.
 - "Blocked by" between Work Packages: Triggering blocker → blocked. Across
   milestones: one de-duplicated Plateau → Plateau Triggering, no self-loops.
@@ -145,8 +156,11 @@ Behaviour:
 ## Issue lifecycle
 
 State is derived on each run, not stored (`specs/003-gh-roadmap-archimate/data-model.md` §"Issue lifecycle"):
-open ⇄ closed changes `gh-state` and possibly the Deliverable realized; a release
-published after a close moves the Work Package to that release; a milestone change
+open ⇄ closed changes `gh-state` and, only when the issue was **delivered** (not
+closed as not-planned or duplicate) and a later release exists, the Deliverable it
+realizes; closing an issue as not planned or as a duplicate leaves it on the
+unreleased Deliverable (`gh-state-reason` records why); a release published after a
+delivered close moves the Work Package to that release; a milestone change
 retargets Realization; removing the milestone or deleting the issue removes the
 element (the model is a current-state ledger, not history).
 
@@ -163,13 +177,14 @@ measurements support keeping the cap rather than raising it
 
 ## Expected output on this repo
 
-As of 2026-10-09, re-derived from `architecture/model/gh-roadmap/*.yaml`: 10
-Plateaus (`policy-to-oscal-mvp` through `effectiveness-assurance-mvp`, one per
-business-function MVP milestone), 9 Deliverables (7 unreleased, plus the two
-published releases `v0.1.0` and `v0.1.1`, whose notes name no Plateau), and 21
-Work Packages. No cross-milestone Triggering is generated yet (no issue in one
-milestone currently blocks an issue in another). Counts drift as GitHub state
-changes; re-derive with `gh` rather than trusting this snapshot.
+As of 2026-10-16, re-derived from `architecture/model/gh-roadmap/*.yaml`: 12
+Plateaus (the original business-function MVP milestones plus
+`plat-github-importer-11` and `plat-general-tasks-12`), 13 Deliverables, and 61
+Work Packages (86 elements / 144 relationships / 12 views total — grown
+substantially since the 2026-10-12 Deliverable-realization-rule change moved far
+more closed issues off the unreleased Deliverable onto the release that actually
+delivered them). Counts drift as GitHub state changes; re-derive with `gh` rather
+than trusting this snapshot.
 
 ## Invariants
 

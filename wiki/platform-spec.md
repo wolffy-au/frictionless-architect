@@ -1,7 +1,7 @@
 ---
 title: Platform Specification & API
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-16
+generator: claude-sonnet-5
 sources:
   - specs/001-governance-platform/spec.md
   - specs/001-governance-platform/contracts/api.yaml
@@ -278,5 +278,8 @@ SC-005), T023 (warn on duplicate identifiers), T024 and T025 (align `plan.md` an
 behave scenarios and still open: T026, where a missing sample with no Neo4j makes
 `GET /schema-payload` answer `503` although FR-006 keeps the schema summary
 accessible, and T027, where a sample in another namespace should report
-`sample_file_status: "invalid"` but stays `missing` when nothing else supplies data
+`sample_file_status: "invalid"` but stays `missing` when nothing else supplies data.
+Both share one code path and were decided (2026-10-11) to be **deferred past
+v0.2.0** — that release ships them as documented known limitations rather
+than blocking on the fix
 (`specs/002-neo4j-schema-ui/tasks.md` §Phases 7–9).

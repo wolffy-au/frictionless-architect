@@ -1,7 +1,7 @@
 ---
 title: Visualizer Service
-generated: 2026-10-05
-generator: claude-sonnet-5-5
+generated: 2026-10-16
+generator: claude-sonnet-5
 sources:
   - src/frictionless_architect/__init__.py
   - src/frictionless_architect/app.py

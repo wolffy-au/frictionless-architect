@@ -46,6 +46,7 @@ topics:
       - path: architecture/model/elements.yaml
       - path: architecture/model/relationships.yaml
       - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
       - path: architecture/model/build.py
 
   - name: architecture-model-skeleton
@@ -89,13 +90,32 @@ topics:
       - path: architecture/model/import_gh_roadmap.py
 
   - name: architecture-diagrams
-    title: Architecture Views & Diagrams
-    description: How the model's ArchiMate views map to viewpoints and rendered C4/PlantUML diagrams, and how to regenerate them.
+    title: "Architecture Views & Diagrams: Vision, Business & Viewpoints"
+    description: How the model's vision and business ArchiMate views map to standard viewpoints, the GH #105 generic per-viewpoint views, and the include_types/exclude_elements scoping mechanism.
     sources:
       - path: architecture/model/README.md
       - path: architecture/model/views.yaml
-      - path: architecture/model/diagrams/**
+      - path: architecture/model/views-viewpoints.yaml
+      - path: architecture/model/diagrams/vision/**
+      - path: architecture/model/diagrams/business/**
+      - path: architecture/model/diagrams/application/**
+      - path: architecture/model/diagrams/layered/**
+      - path: architecture/model/diagrams/c4/**
+      - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
+      - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+
+  - name: architecture-diagrams-platform
+    title: "Architecture Views & Diagrams: Platform, Migration & Rendering"
+    description: The Implementation & Migration and Technology-layer views, the vendored IT4IT reference views, and how to regenerate every .puml/.svg diagram.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: architecture/model/diagrams/implementation/**
+      - path: architecture/model/diagrams/migration/**
+      - path: architecture/model/diagrams/technology/**
       - path: architecture/model/render_diagrams.py
+      - path: third_party/it4it/views.yaml
 
   - name: it4it-model
     title: IT4IT Reference Model
@@ -163,7 +183,31 @@ topics:
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/*.py
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/prompts.yaml
       - path: platform/packages/controls-compliance-catalog/tests/features/*.feature
-      - path: scripts/run-playground.sh
+      - path: scripts/run-controls_compliance_catalog.sh
+
+  - name: modelling-specification
+    title: Conversational Model Authoring
+    description: The modelling-specification package (GH #108, ADR-0037) — the conversational ArchiMate authoring agent, its candidate-delta/validation pipeline, and the ported build/render CLI.
+    sources:
+      - path: platform/packages/modelling-specification/README.md
+      - path: platform/packages/modelling-specification/pyproject.toml
+      - path: platform/packages/modelling-specification/specs/README.md
+      - path: specs/004-conversational-model-authoring/**/*.md
+      - path: platform/packages/modelling-specification/src/modelling_specification/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
+      - path: docs/adr/0037-conversational-model-authoring-architecture.md
+      - path: scripts/run-modelling_specification.sh
+
+  - name: portal
+    title: Portal
+    description: The portal host package (ADR-0020) — mounts every subsystem package's UI under one app and owns only page chrome and navigation.
+    sources:
+      - path: platform/packages/portal/README.md
+      - path: platform/packages/portal/pyproject.toml
+      - path: platform/packages/portal/specs/README.md
+      - path: platform/packages/portal/src/portal/*.py
+      - path: docs/adr/0020-per-subsystem-uis.md
 
   - name: llm-provider-config
     title: LLM Provider Configuration

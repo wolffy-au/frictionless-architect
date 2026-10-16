@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Artefact Flow"
-generated: 2026-10-01
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -14,19 +14,21 @@ sources:
 Section C of `elements.yaml`: the application-layer input/output pipeline
 (`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
 
-Section C has 27 `ApplicationFunction`s (24 before a 2026-09-27 pass added
-three — see "Controls & OSCAL" below):
+Section C has 28 `ApplicationFunction`s (24 before a 2026-09-27 pass added
+three — see "Controls & OSCAL" below — plus `fn-conversational-authoring`,
+GH #108):
 
-- 20 are platform functions, each `Assignment`-linked to its subsystem.
+- 21 are platform functions, each `Assignment`-linked to its subsystem.
 - 7 are external-system functions, each assigned to its external system:
   - Source Control: versioning and change review
   - CI/CD Pipeline: build, the Controls Enforcement Gate and deploy
   - ITSM: backlog and change
 
 Each function reads input artefacts and writes output artefacts via `Access`
-relationships qualified `Read` / `Write` / `ReadWrite`. There are 35 `do-*`
+relationships qualified `Read` / `Write` / `ReadWrite`. There are 41 `do-*`
 `DataObject`s (renamed from `art-*`, GH #109 / ADR-0036 — the `art-` prefix is
-now reserved for genuine ArchiMate `Artifact`-typed elements). The shared stores `Aggregation`-link the persistent artefacts,
+now reserved for genuine ArchiMate `Artifact`-typed elements), plus
+`do-convention-rules` added for GH #108. The shared stores `Aggregation`-link the persistent artefacts,
 which ties section C back to section B
 ([Ecosystem](architecture-model-ecosystem.md))
 (`architecture/model/elements.yaml:1057-1288`,
@@ -88,6 +90,31 @@ CI/CD Pipeline, not to a platform subsystem. It verifies artefact-observable
 controls directly on the release candidate. It "verifies process controls
 from" the forensic ledger and reads the expected controls from the SSP
 (`architecture/model/relationships.yaml:564`, `648-654`).
+
+## Conversational model authoring (GH #108)
+
+`fn-conversational-authoring` ("Conversational Model Authoring"), assigned to
+`sub-modelling`, sits outside the five per-stage views above — it is one of
+the elements traced end to end by the cross-layer "Feature Steel Thread:
+Conversational Model Authoring (GH #108)" view (`view-gh108-conversational-authoring`,
+a `layered` viewpoint view; see [Architecture Views & Diagrams](architecture-diagrams.md)),
+which follows this feature through every layer it touches — motivation,
+strategy, business, application and technology — using only edges that
+already existed in the model. It reads
+`do-metamodel` ("validates proposed changes against") and `do-convention-rules`
+("validates proposed changes against") and writes `do-candidate-arch`
+("proposes model deltas as") — natural-language authoring validated against
+the bundled ArchiMate metamodel and configurable Enterprise Convention Rules
+before being proposed, with candidate duplicates surfaced for an explicit
+human decision rather than silently merged or created
+(`architecture/model/relationships.yaml:697-699`). It also `Serving`s
+`fn-notation-engine`, rendering the element(s)/view under discussion live as
+the conversation proceeds, and is exposed via `if-modelling-authoring-ui`
+(`architecture/model/relationships.yaml:482,700`). At the business layer it
+realizes `process-conversational-authoring` (see
+[Skeleton](architecture-model-skeleton.md)). See
+[Conversational Model Authoring](modelling-specification.md) for the package
+that implements it.
 
 ## Controls & OSCAL — how policy becomes OSCAL
 

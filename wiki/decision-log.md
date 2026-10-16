@@ -1,6 +1,6 @@
 ---
 title: Architecture Decision Log
-generated: 2026-10-10
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - docs/adr/0000-adr-template.md
@@ -40,6 +40,7 @@ sources:
   - docs/adr/0034-shared-packages-and-llm-provider-config.md
   - docs/adr/0035-github-roadmap-as-implementation-migration-layer.md
   - docs/adr/0036-element-id-prefix-scheme.md
+  - docs/adr/0037-conversational-model-authoring-architecture.md
   - docs/adr/README.md
 ---
 
@@ -52,8 +53,12 @@ The ADR log behind the [Architecture Overview](architecture.md): one MADR-lite f
 
 `docs/adr/` records the load-bearing decisions as one MADR-lite file each
 (`docs/adr/README.md`). Status: **A** accepted, **A\*** accepted but not yet
-reflected in the narrative docs, **P** proposed (carried from the vision docs,
-not re-ratified in a spec). No record is currently A\*.
+reflected in the narrative docs, **P** proposed. Most **P** rows (0017–0019)
+are proposed because `specs/001-governance-platform` deliberately de-specified
+them, carried from the vision docs and not yet re-ratified in a spec; 0037 is
+proposed for the ordinary reason that it has not been ratified yet
+(`docs/adr/0037-conversational-model-authoring-architecture.md` — Status:
+Proposed, Date 2026-10-10). No record is currently A\*.
 
 | ADR | Decision | Status |
 |---|---|---|
@@ -76,12 +81,12 @@ not re-ratified in a spec). No record is currently A\*.
 | 0017 | Knowledge graph built on a standard ontology (Backstage/C4) | P |
 | 0018 | Data layer: Postgres for metadata, Neo4j for the knowledge graph | P |
 | 0019 | Policy engine is OPA (Rego); bypass raises managed-drift debt | P |
-| 0020 | Each subsystem ships its own UI (`ui/` beside `api/`); no central dashboard (revised 2026-09-26 from a single Vite/Backstage dashboard) | A |
+| 0020 | Each subsystem ships its own UI (`ui/` beside `api/`); no central dashboard (revised 2026-09-26 from a single Vite/Backstage dashboard; updated 2026-10-11 with the `portal` composition host, GH #120) | A |
 | 0021 | Schema visualiser uses cytoscape.js + coordinated tables | A |
 | 0022 | Schema visualiser parses ArchiMate with `defusedxml` ElementTree, validates with `xmlschema` (corrected 2026-09-25 from `lxml` + `xmlschema`; XSD validation implemented 2026-09-26, #53) | A |
 | 0023 | Visualiser reuses Neo4j read credentials; caches payloads offline; retries a failed load in the background (SC-006) | A |
 | 0024 | MVP is single-user and locally run (scoping compromise); Neo4j is read through one service credential, per-user passthrough deferred with RBAC/ABAC | A |
-| 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model | A |
+| 0025 | Conventional Commits + commitizen; SCM-derived versions; branch model; local/CI gates (behave gating added 2026-10-05) | A |
 | 0026 | Governed-lifecycle entities are FSMs with action-based endpoints | A |
 | 0027 | Capability layer carries a value stream and an explicit motivation spine (updated 2026-09-26: four outcomes, streams per 0033, no derived edges) | A |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
@@ -93,6 +98,7 @@ not re-ratified in a spec). No record is currently A\*.
 | 0034 | Shared cross-subsystem functionality gets its own `platform/packages/` sibling package; first instance `llm-provider-config` (global + per-component LLM settings, OS-keychain secrets, never `.env`) | A |
 | 0035 | The GitHub roadmap (milestones, issues, releases) is imported into the Implementation & Migration layer by `import_gh_roadmap.py`; the generated layer is merged by `build.py` and never hand-edited | A |
 | 0036 | An element id prefix names the element's own ArchiMate type, never a loose business synonym; the 35 `DataObject` elements once prefixed `art-` move to `do-`, freeing `art-` for genuine `Artifact`-typed elements | A |
+| 0037 | Conversational model authoring (GH #108) lives in a new `platform/packages/modelling-specification` package; root's `build.py`/`render_diagrams.py` and the `model-archimate` skill's `validate.py` become thin wrappers shelling into its CLI; Enterprise Convention Rules move to `architecture/model/conventions.yaml`; an overridden objection auto-drafts a `Status: Proposed` ADR stub rather than an `store-ledger` entry; the feature gets its own `vs-intent-to-model` stream and `process-conversational-authoring` process | P |
 
 The **P** rows (0017–0019) exist because `specs/001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -104,6 +110,11 @@ there as "deferred solution decisions" to be re-decided intentionally
 the change is reflected in the [Architecture Model](architecture-model.md)
 (value stream, motivation spine, renamed capabilities) and the ADR itself is
 accepted (`docs/adr/0027-capability-value-stream-and-motivation-spine.md`).
+
+ADR-0004 gained a clarifying note that `003-gh-roadmap-archimate` (added
+2026-10-05) continues the same flat, un-migrated `NNN-` numbering as the
+other pre-migration specs rather than starting a new numbering instance
+(`docs/adr/0004-two-tier-spec-numbering.md`).
 
 ADR-0027 was **updated in place** on 2026-09-26, alongside the new
 **ADR-0033**. The goal is now realized by four outcomes rather than one:
@@ -140,8 +151,14 @@ fallback for headless environments. `.env` is still not read
 §Implementation status). The ADR's own text and `ARCHITECTURE.md` §4 now list
 GitHub Copilot among the day-one providers; the model's
 `sub-llm-provider-config` element description still names only four
-(`architecture/model/elements.yaml`, not a source of this page).
-See [LLM Provider Configuration](llm-provider-config.md).
+(`architecture/model/elements.yaml`, not a source of this page). Its UI
+bullet was reworded on 2026-10-11 alongside the ADR-0020 update (GH #120):
+rather than being embedded by each subsystem UI, the settings router is now
+mounted once by the `portal` host with every package's components
+registered, and a package may also mount it in its own standalone `app.py`
+(`docs/adr/0034-shared-packages-and-llm-provider-config.md`). See
+[LLM Provider Configuration](llm-provider-config.md) and
+[Portal](portal.md).
 
 ADR-0035 (Accepted 2026-10-05, GH #95) makes the GitHub roadmap the source of
 truth for the Implementation & Migration layer, which had drifted when
@@ -156,7 +173,10 @@ because GitHub cannot tell an epic from a task. A failed or incomplete read
 writes nothing, and `--check` reports drift. The same cut-over retired
 `plat-runtime-mvp` and `plat-runtime-target` in favour of the generated
 Plateaus (`docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`
-§Decision; `ARCHITECTURE.md` §8.3). See
+§Decision; `ARCHITECTURE.md` §8.3). The Realization rule was extended
+(spec 003 clarification, 2026-10-12): an issue closed as not-planned or a
+duplicate stays on the unreleased Deliverable rather than being realized, and
+a release realizes every Plateau it delivered a Work Package for. See
 [Architecture Model](architecture-model.md).
 
 ADR-0036 (Accepted 2026-10-08, GH #109) names the convention that was
@@ -177,6 +197,35 @@ reader expects it to mean
 (`docs/adr/0036-element-id-prefix-scheme.md` §Decision, §Alternatives
 considered). See [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 
+ADR-0037 (Proposed 2026-10-10, GH #108) is the Constitution-Check-mandated
+record for the conversational model-authoring agent's five load-bearing
+decisions: it lives in a new `platform/packages/modelling-specification`
+sibling package (the same shape as `controls-compliance-catalog`); root's
+`build.py`/`render_diagrams.py` and the `model-archimate` skill's
+`validate.py` all become thin wrappers shelling into that package's CLI
+(`poetry run --directory platform python -m modelling_specification.cli
+build|render|validate`), giving the YAML load/merge/validate and view-render
+logic one implementation instead of three while keeping ADR-0001's
+root-never-imports-a-platform-package boundary; Enterprise Convention Rules
+(interposed-element shapes, naming/altitude conventions) move to a new,
+inspectable `architecture/model/conventions.yaml`, aggregated under
+`store-frameworks` alongside `do-metamodel`, while the fixed ArchiMate 3.2
+metamodel rules stay sourced from pyArchimate; an architect overriding a
+flagged objection (convention-fail or confirmed non-duplicate) auto-drafts a
+`Status: Proposed` ADR stub rather than appending to `store-ledger`, because
+an override is an architecture-governance decision, not controls/compliance
+evidence, and `adr-auditor` already sweeps for exactly this; and the feature
+gets its own business-layer wiring — `vs-intent-to-model` ValueStream and
+`process-conversational-authoring` BusinessProcess, served by the existing
+`coa-executable-governance` course of action, realized by the already-built
+`fn-conversational-authoring` ApplicationFunction
+(`docs/adr/0037-conversational-model-authoring-architecture.md` §Decision).
+The ADR notes `plan.md` provisionally cited this decision as "ADR-0036"
+before that number was taken by the unrelated element-id-prefix-scheme ADR
+during a rebase; both `plan.md` references were corrected to ADR-0037
+alongside filing this record. See
+[Conversational Model Authoring](modelling-specification.md).
+
 ADR-0029 gained an **addendum in place** on 2026-10-08 (GH #99): the vendored
 IT4IT value-stream `Flow` edges carry the standard's own dense,
 multi-directional network verbatim, which `check_derived.py` flags as
@@ -187,6 +236,17 @@ out — a real correction belongs upstream in `frictionless-it4it`, pulled in
 on the next `fork-sync`
 (`docs/adr/0029-it4it-as-vendored-touchpoint-model.md` §Consequences). See
 [IT4IT Reference Model](it4it-model.md).
+
+ADR-0029 also now describes `context` (a bounded-context tag, DDD terms)
+added to every section-B element: first-party elements default to
+`platform`, vendored/generated layer elements (IT4IT, the GitHub roadmap)
+default to their directory name (`it4it`, `gh-roadmap`). A view's
+`include_types` sweep draws only from the contexts named in its own
+`context:` key (default `[platform]`); explicit `members` are honoured
+regardless of context; a cross-context view (e.g. a capability bridge) names
+every context it spans, or lists members explicitly
+(`docs/adr/0029-it4it-as-vendored-touchpoint-model.md`). See
+[Architecture Model](architecture-model.md) §"Schema".
 
 ADR-0010 was **revised in place** on 2026-09-26 (GH #65) to cover a second
 kind of load-bearing content: the model now also carries the platform's own
@@ -216,6 +276,47 @@ subsystem ships its own UI; cross-subsystem views (e.g. a traceability
 overview) are composed from the subsystem UIs, and composition and build
 tooling are left to #55 (`docs/adr/0020-per-subsystem-uis.md`; the file was renamed from its old
 `vite-dashboard-in-backstage` slug to match).
+
+ADR-0020 was updated again on 2026-10-11 (GH #120) once #55's composition
+question came due: a new `packages/portal` host package mounts each
+package's router and owns only page chrome, navigation and the role landing
+page. The ADR is explicit that `portal` is not the central dashboard it had
+earlier rejected: it mounts the packages' UIs but owns no feature logic of
+its own. It currently mounts `controls-compliance-catalog`'s Control
+Conversion Playground at `/catalog` and `llm-provider-config`'s settings UI
+at `/settings/llm` (`docs/adr/0020-per-subsystem-uis.md` §Decision). See
+[Portal](portal.md).
+
+ADR-0025's title and record gained a **local/CI gates** clause on
+2026-10-05 (commit `143570d`): `.pre-commit-config.yaml` and
+`scripts/pre_merge_checks.sh` run `behave` alongside the rest of the gate
+suite, and the CI workflow mirrors it. The record is explicit that gates
+tighten from advisory to blocking as soon as a given check has real coverage
+behind it, rather than being blocking from day one: `behave` runs advisory
+(`|| true`) today because `tests/features/` has no real scenarios yet, and
+becomes a **blocking** gate — in the pre-push hook, `pre_merge_checks.sh` and
+CI alike — the moment that stops being true
+(`docs/adr/0025-conventional-commits-scm-versioning.md` §Consequences). See
+[Development Workflow](development.md).
+
+ADR-0012 clarifies that the ADR log's own `Status` field lifecycle
+(`Proposed|Accepted|Superseded by ADR-NNNN|Deprecated`, per
+`docs/adr/0000-adr-template.md`) is **analogous, not identical** to the
+governed-entity FSM (`Draft→Under Review→Approved→Superseded`) ADR-0026
+gives action-based endpoints: `Proposed` covers both `Draft` and
+`Under Review`, `Accepted` is roughly `Approved`, `Superseded` maps directly,
+and `Deprecated` has no FSM equivalent at all
+(`docs/adr/0012-adr-as-attested-fsm.md`).
+
+ADR-0016 was extended on 2026-10-04 (constitution Principle X, commits
+`1a7408d`/`491d8e7`): a `speckit-plan` must now state its own **model
+impact** — the element/relationship/view ids it adds, changes or retires in
+`architecture/model/`, or "none" — with `tasks.md` carrying the matching
+edits plus `validate.py`/diagram-regeneration tasks. The traceability record
+for that model-impact statement lives in the constitution's own Sync Impact
+Report, not in a new ADR
+(`docs/adr/0016-every-change-linked-to-an-adr.md`). See
+[Governance & Constitution](governance-and-constitution.md).
 
 ADR-0028 rewrites the Neo4j schema `SchemaManager` implements: it previously
 stored every ArchiMate relationship twice — an edge and a reified

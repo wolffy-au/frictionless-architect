@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: 2026-10-10
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - specs/001-governance-platform/quickstart.md
@@ -196,6 +196,13 @@ regenerates diagrams for review, then commit the result (`scripts/pre_merge_chec
 The merge-gate coverage run measures `--cov=src --cov=architecture/model`, so the importer's
 tests count toward the 90% gate (`scripts/pre_merge_checks.sh`). `[tool.coverage.run]` omits the
 thin `architecture/model/build.py` and `render_diagrams.py` wrappers (`pyproject.toml`).
+That pytest run now also passes `-n auto` (`pytest-xdist`), parallelising the test suite across
+CPU cores (`scripts/pre_merge_checks.sh`).
+
+CI now installs PlantUML before running the `platform/` package checks (`apt-get install
+plantuml`, then a pinned newer jar fetched over `curl`, mirroring `.devcontainer/post-create.sh`),
+because `modelling-specification`'s rendering tests shell out to `plantuml` directly
+(`.github/workflows/ci.yml`).
 
 ## Conventions
 

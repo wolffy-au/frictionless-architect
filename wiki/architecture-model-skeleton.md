@@ -1,6 +1,6 @@
 ---
 title: "Architecture Model: Skeleton"
-generated: 2026-10-01
+generated: 2026-10-16
 generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
@@ -21,18 +21,23 @@ land ([ADR-0010](decision-log.md)). It is **decomposition input, not the final
 architecture**. Even so, it carries a full TOGAF ADM Phase A vision, and since
 PR #62 it also carries a Phase B business layer. In brief:
 
-- **Motivation:** stakeholders and assessments drive four outcomes, which
+- **Motivation:** stakeholders and assessments drive five outcomes, which
   realize one goal.
-- **Strategy:** capabilities, courses of action and resources, plus four
+- **Strategy:** capabilities, courses of action and resources, plus five
   value streams (one per outcome).
-- **Business:** 15 processes grouped under 9 business functions, and the business
+- **Business:** 16 processes grouped under 10 business functions, and the business
   objects they read and write.
 
-[ADR-0027](decision-log.md) and [ADR-0033](decision-log.md) record the shape.
-The README counts the section as "5 stakeholders, 4 assessments, 4 drivers,
-1 goal, 4 outcomes, 3 principles, 4 constraints, 9 functional requirements",
-"8 capabilities, 3 courses of action, 5 resources + 4 value streams … with 11
-stages" (`architecture/model/README.md` §"Model contents").
+[ADR-0027](decision-log.md) and [ADR-0033](decision-log.md) record the shape;
+[ADR-0037](decision-log.md) (GH #108) added the fifth of each. The README's
+own counts ("5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3
+principles, 4 constraints, 9 functional requirements", "8 capabilities, 3
+courses of action, 5 resources + 4 value streams … with 11 stages" —
+`architecture/model/README.md` §"Model contents") still describe the model as
+it stood before GH #108 and have not been updated for the fifth
+driver/assessment/outcome, tenth functional requirement, ninth capability or
+fifth value stream; this page follows `elements.yaml`/`relationships.yaml`
+directly rather than the README's stale summary.
 
 > **Sources disagree on the business layer's size.** The README's
 > section-A row still says "Business (6 processes)"
@@ -72,20 +77,32 @@ Each stakeholder is `Association`-linked to the driver(s) it holds
 (`architecture/model/relationships.yaml:90-103`). Each is also linked to the value
 stream(s) that deliver value to it (see "Value streams — one per outcome" below).
 
-**Drivers.** There are four, and they say why the platform exists (`architecture/model/elements.yaml:27-57`):
+**Drivers.** There are now five, and they say why the platform exists (`architecture/model/elements.yaml:27-57`,
+plus `driver-authoring-friction` added for GH #108):
 
 - Market Agility & Competitive Pressure
 - Regulatory Resiliency & Social License
 - Systemic Sustainability & Complexity Management
 - Human-to-Machine Operational Scaling
+- **Architect Authoring Friction & Governance Consistency** — capturing
+  architect intent by hand-editing the canonical model directly is itself a
+  bottleneck and a governance gap: too slow to keep pace with AI-speed
+  delivery, and nothing stops an edit from drifting from either the
+  metamodel or the enterprise's own conventions until the next review. Held
+  by the Enterprise Architecture Function (`stk-architecture`).
 
 **Assessments.** There is one per driver, each a finding that makes its driver urgent
-(`architecture/model/elements.yaml:95-120`):
+(`architecture/model/elements.yaml:95-120`, plus `assess-manual-authoring-risk`):
 
 - time-to-market falling behind AI-native competitors
 - human review unable to keep pace with AI-speed delivery
 - architectural drift accumulating as unmanaged risk
 - manual compliance evidence that is too slow and error-prone
+- **"Hand-edited model changes are too slow and too easily ungoverned to
+  trust"** — every change to the canonical model today is a manual edit
+  followed by a separate manual validation pass; nothing stops a change from
+  reaching the model both unreviewed against convention and stale relative
+  to the metamodel until that validation runs.
 
 Each Assessment's `name` is written in its stakeholder's own vocabulary, for
 example "risking market share" rather than "manual architecture governance". This
@@ -95,8 +112,9 @@ not mechanically checked (`architecture/model/elements.yaml:17-25`).
 ### Goal and outcomes — the motivation spine
 
 The goal is *Frictionless Architecture & Governance at Machine Speed*
-(`goal-frictionless-architecture`). Four outcomes realize it
-(`architecture/model/elements.yaml:122-164`):
+(`goal-frictionless-architecture`). Five outcomes now realize it
+(`architecture/model/elements.yaml:122-164`, plus
+`outcome-intent-becomes-model-truth` for GH #108):
 
 | Outcome (`id`) | Answers assessment | Realized by requirements | Realized by value stream |
 |---|---|---|---|
@@ -104,12 +122,15 @@ The goal is *Frictionless Architecture & Governance at Machine Speed*
 | Compliance Proven Before Release (`outcome-compliance-before-release`) | manual compliance | regulatory mapping, control catalog, pre-deploy gate | Obligation to Evidence |
 | Accountable, Auditable Automation (`outcome-accountable-automation`) | review bottleneck | human sign-off, immutable audit ledger | Exception to Decision |
 | Drift Detected and Reconciled Continuously (`outcome-drift-reconciled`) | drift debt | authoritative twin, continuous reconciliation | Drift to Remediation |
+| **Architectural Intent Becomes Governed Model Truth** (`outcome-intent-becomes-model-truth`) | hand-edited model changes are ungoverned | conversational-authoring alignment | Intent to Model |
 
 (`architecture/model/relationships.yaml:104-132`.) The spine is `driver
 → assessment → outcome → goal`: each driver `Influence`s its assessment,
 each assessment `Influence`s the outcome that answers it, and each outcome
 `Realization`-links to the goal. Each requirement and each value stream
-realizes **exactly one** outcome.
+realizes **exactly one** outcome. The fifth outcome's `desc` frames it
+precisely: "an architect's natural-language intent becomes a validated model
+change without a manual YAML edit or render step".
 
 `outcome-drift-reconciled` replaces the former single outcome, "Architecture
 as Executable Intelligence". That phrase now lives in the `desc` of
@@ -167,8 +188,9 @@ Three requirements (spec generation, reusable architecture and continuous
 reconciliation) carry no such influence. They are justified by the outcome they
 realize instead.
 
-**Functional requirements.** There are nine, and each is a component contract
-(`architecture/model/elements.yaml:225-313`):
+**Functional requirements.** There are now ten, and each is a component contract
+(`architecture/model/elements.yaml:225-313`, plus `req-conversational-authoring-alignment`
+added for GH #108):
 
 - automated specification generation from the graph
 - automated regulatory-obligation mapping
@@ -179,13 +201,22 @@ realize instead.
 - a curated reusable architecture library
 - an authoritative digital twin of system state
 - an immutable forensic audit ledger
+- **strategically aligned, convention-compliant conversational authoring**
+  (`req-conversational-authoring-alignment`) — a model change authored through
+  natural-language conversation must demonstrably serve the enterprise's
+  architecture goals and conform to centrally-set conventions, not merely pass
+  metamodel legality, so authoring at conversational speed doesn't erode
+  strategic coherence or governance consistency (GH #108). It is influenced by
+  Policy as Code and realizes `outcome-intent-becomes-model-truth`
+  (`architecture/model/relationships.yaml:48,147,174`).
 
 ## Strategy
 
 ### Capabilities
 
-There are eight capabilities, named as *abilities* rather than after the artefact they own
-([ADR-0027](decision-log.md); `architecture/model/elements.yaml:315-381`).
+There are now nine capabilities, named as *abilities* rather than after the artefact they own
+([ADR-0027](decision-log.md); `architecture/model/elements.yaml:315-381`,
+plus `cap-conversational-governance` added for GH #108).
 Every capability realizes at least one requirement
 (`architecture/model/relationships.yaml:15-45`), and each is `Assignment`-linked
 from the resource that equips it (`architecture/model/relationships.yaml:47-57`):
@@ -200,6 +231,18 @@ from the resource that equips it (`architecture/model/relationships.yaml:47-57`)
 | Human Oversight & Approval (`cap-human-approval-workflow`) | `req-human-signoff` | Enterprise Architecture Practice |
 | Control & Obligation Management (`cap-control-catalog`) | `req-regulatory-mapping`, `req-control-catalog` | OSCAL Control Content |
 | Reusable Architecture Curation (`cap-reusable-architecture`) | `req-reusable-architecture` | Enterprise Architecture Practice |
+| Conversational Architecture Governance (`cap-conversational-governance`) | `req-conversational-authoring-alignment` | Enterprise Architecture Practice |
+
+`cap-conversational-governance` sits between spec generation and the digital
+twin it validates proposals against: it `Serving`s `cap-spec-engine`
+("validated authoring") and is served by `cap-digital-twin` ("authoritative
+model for proposal validation"), but realizes neither — it is the authoring
+discipline, not the store or the generator
+(`architecture/model/elements.yaml` — `cap-conversational-governance` desc;
+`architecture/model/relationships.yaml:237-238`). It is realized by
+`sub-modelling` (the Modelling & Specification subsystem) and by the
+`process-conversational-authoring` business process below
+(`architecture/model/relationships.yaml:259,457`).
 
 The fifth resource, **Accumulated Evidence Record** (`res-evidence-record`), is new.
 It is "the growing, append-only body of recorded agent" actions and decisions
@@ -222,7 +265,7 @@ between capabilities (`architecture/model/relationships.yaml:205-216`):
 There are three courses of action (`architecture/model/elements.yaml:383-407`):
 
 - Shift Governance Into the Pipeline (`coa-executable-governance`), realized
-  by five capabilities
+  by six capabilities, including `cap-conversational-governance` (GH #108)
 - Operate a Living Architecture Twin (`coa-living-twin`)
 - Curate Reuse Before Build (`coa-reuse-first`)
 
@@ -232,15 +275,16 @@ ValueStream` `Realization` is not a legal ArchiMate 3.2 pair, but `Serving` is.
 The links are (`architecture/model/relationships.yaml:70-80`):
 
 - Reuse-First → Governed Delivery
-- Executable Governance → Governed Delivery, Obligation to Evidence and
-  Exception to Decision
+- Executable Governance → Governed Delivery, Obligation to Evidence,
+  Exception to Decision and (GH #108) Intent to Model
 - Living Twin → Drift to Remediation
 
 ### Value streams — one per outcome
 
 [ADR-0033](decision-log.md) replaced the single six-stage "Governed Architecture
 Delivery" stream with **four streams, one per outcome**, organised by who
-*receives* the value. That gives 15 `ValueStream` elements: 4 streams and 11
+*receives* the value. GH #108 then added a fifth, **Intent to Model**, for the
+new outcome above. That gives 16 `ValueStream` elements: 5 streams and 11
 stages (`architecture/model/elements.yaml:431-539`). Each stream realizes its
 outcome, is `Association`-linked to its value recipients with a labelled edge,
 and is a `Composition` of its stages. Each stage is `Serving`-linked from the
@@ -253,6 +297,15 @@ capability that enables it (`architecture/model/relationships.yaml:81-88`,
 | Obligation to Evidence | Risk & Compliance ("provable compliance"), Regulator ("evidence before release") | Establish Control Baseline (Control & Obligation Mgmt) → Prove Compliance (Development Supervision) |
 | Exception to Decision | Executive ("accountable automation"), Risk & Compliance ("examinable decisions") | Escalate Non-Standard Change (Development Supervision) → Decide & Sign Off (Human Oversight) → Record as Evidence (Forensic Audit Recording) |
 | Drift to Remediation | Enterprise Architecture ("sustained coherence") | Observe As-Built State (Knowledge Management) → Reconcile & Remediate (Drift Detection) |
+| Intent to Model | Enterprise Architecture ("validated authoring", GH #108) | *no stages — see below* |
+
+**Intent to Model** (`vs-intent-to-model`) is deliberately kept as its **own
+single-stage stream**, not decomposed further (ADR-0037): "an architect's
+natural-language request becomes a validated, applied change to the
+architecture knowledge graph". It `Triggering`-links to `vss-baseline`
+("validated change extends the baseline"), handing its output into the
+existing reuse-baseline stage rather than growing its own stage chain
+(`architecture/model/relationships.yaml:211-214`).
 
 Stages *move* between streams rather than being duplicated
 ([ADR-0033](decision-log.md)):
@@ -284,15 +337,18 @@ Triggering there would make Prove → Release derived through the escalation pat
 
 ### Processes and functions
 
-There are 15 `BusinessProcess`es, grouped by `Composition` under 9 `BusinessFunction`s
-(`architecture/model/elements.yaml:541-729`;
-`architecture/model/relationships.yaml:259-343`). Roles are `Assignment`-linked
-to the *function* they perform, not to individual processes:
+There are now 16 `BusinessProcess`es, grouped by `Composition` under 10
+`BusinessFunction`s (`architecture/model/elements.yaml:541-729`, plus
+`process-conversational-authoring` / `bfn-conversational-authoring` added for
+GH #108; `architecture/model/relationships.yaml:259-343`). Roles are
+`Assignment`-linked to the *function* they perform, not to individual
+processes:
 
 | Function | Processes | Assigned role |
 |---|---|---|
 | Policy-to-OSCAL Conversion | Policy & Standards Authoring, OSCAL Catalog Generation, Control Baseline Tailoring, OSCAL Profile Resolution | Compliance Officer / Auditor |
 | Pattern & Blueprint Traceability | Pattern Control Traceability Mapping, Blueprint Control Enablement Mapping | Enterprise Architect |
+| Conversational Model Authoring | Conversational Model Authoring | Enterprise Architect, Solution Architect |
 | Solution Design | Solution Design Composition | Solution Architect |
 | Architecture Strategy | Target State Definition | Enterprise Architect |
 | Agentic Delivery Execution | Deterministic Spec Generation, Agentic Development Execution | — |
@@ -304,7 +360,18 @@ to the *function* they perform, not to individual processes:
 Several processes are new or have been renamed:
 
 - **New:** Target State Definition, Solution Design Composition, Control Baseline
-  Tailoring and OSCAL Profile Resolution.
+  Tailoring, OSCAL Profile Resolution, and **Conversational Model Authoring**
+  (`process-conversational-authoring`, GH #108, ADR-0037 R12): the Enterprise
+  or Solution Architect describes a model change in natural language; the
+  agent validates it against the metamodel and Enterprise Convention Rules
+  before applying it, explaining and recording any rejection or override
+  rather than applying or discarding silently. It realizes
+  `cap-conversational-governance` above. Its function,
+  `bfn-conversational-authoring`, is explicitly **jointly performed** by both
+  roles — target-state maintenance for the Enterprise Architect,
+  solution-specific design for the Solution Architect — "not owned by either
+  alone" (`architecture/model/elements.yaml` — `bfn-conversational-authoring`
+  desc).
 - **Renamed:** Current State Discovery is now **Architecture Reconciliation**,
   and the drift gate is now **Drift Review & Triage**. In Drift Review & Triage,
   an Enterprise Architect approves architectural drift.
@@ -323,14 +390,22 @@ hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-343`)
 ```text
 Policy Authoring → OSCAL Catalog Generation → Baseline Tailoring
   → Profile Resolution → Pattern Traceability → Blueprint Traceability
-  → Solution Design Composition → Spec Generation → Agentic Development
+  → Conversational Model Authoring → Solution Design Composition
+  → Spec Generation → Agentic Development
   → CICD Gate → Production Release → Architecture Reconciliation
   → Drift Review & Triage
 Baseline Tailoring ─Flow▶ Controls Effectiveness Monitoring
 Target State Definition ─Flow "target state reconciled against"▶ Architecture Reconciliation
 ```
 
-All 15 processes `Realization`-link to a capability. Control & Obligation
+Blueprint Traceability triggers Conversational Model Authoring ("blueprints
+proposed as model changes"), which in turn triggers Solution Design
+Composition ("validated changes composed into") — the new process (GH #108)
+inserts a validated authoring step between a traced blueprint and its
+solution design, rather than skipping straight from one to the other
+(`architecture/model/relationships.yaml:355-356`).
+
+All 16 processes `Realization`-link to a capability. Control & Obligation
 Management is realized by five of them: the four Policy-to-OSCAL processes and
 Controls Effectiveness Monitoring (`architecture/model/relationships.yaml:217-234`,
 `401`).
