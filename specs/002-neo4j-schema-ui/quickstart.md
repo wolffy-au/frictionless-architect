@@ -43,8 +43,8 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
    `all` applies constraints/indexes, ingests the fixture, records the schema
    version and runs the integrity audit in one go. This script reads its own
    **unprefixed** `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` (not the
-   `FRICTIONLESS_ARCHITECT_NEO4J_*` variables above) — see the README's "Related
-   tooling" section for the subcommand reference.
+   `FRICTIONLESS_ARCHITECT_NEO4J_*` variables above) — see the README's "Operations:
+   seeding Neo4j" section for the subcommand reference.
 
 3. Run the FastAPI visualiser:
 
