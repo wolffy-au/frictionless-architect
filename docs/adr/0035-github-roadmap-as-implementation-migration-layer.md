@@ -32,7 +32,10 @@ models. The files are committed, deterministic and never hand-edited.
 - **Realization:** a Work Package realizes exactly one Deliverable, never a Plateau. A
   closed one realizes the first release published after `closedAt`, else the unreleased one;
   one closed as not planned or duplicate stays on the unreleased one. A release realizes
-  every Plateau it delivered a Work Package for (spec 003 clarification, 2026-10-12).
+  every Plateau it delivered a Work Package for (spec 003 clarification, 2026-10-12). A Work
+  Package whose Aggregation root resolves to that exact same Deliverable emits no Realization
+  edge of its own — it still realizes it, structurally via the Aggregation chain, so an epic's
+  children do not each redraw the epic's own edge (spec 003 clarification, 2026-10-17).
 - **Dependencies:** `blockedBy` becomes Triggering between Work Packages, lifted to a
   de-duplicated Plateau Triggering across milestones; a parent and child both in scope
   are joined by Aggregation. Links to unimported issues are dropped.
