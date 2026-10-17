@@ -47,7 +47,7 @@
   # stops at the strategy layer — see Goal Realization for that.
   # Capability and Outcome are include_types, not members — a new
   # first-party element of either type (e.g. cap-conversational-governance,
-  # outcome-intent-becomes-model-truth) now appears automatically instead of
+  # goal-intent-becomes-model-truth) now appears automatically instead of
   # silently staying off the view (GH #117); exclude_elements keeps the
   # IT4IT import's vendored Capability/Outcome elements off this
   # platform-only view. ValueStream stays members, not include_types — the
@@ -119,7 +119,8 @@
     - vss-release
     - stk-delivery
     - stk-exec
-    - outcome-change-at-ai-speed
+    - outcome-change-lead-time-1day
+    - outcome-zero-manual-spec-authoring
     - cap-reusable-architecture
     - cap-spec-engine
     - cap-control-plane
@@ -141,7 +142,7 @@
     - vss-prove
     - stk-risk-compliance
     - stk-regulator
-    - outcome-compliance-before-release
+    - outcome-compliance-evidence-at-gate
     - cap-control-catalog
     - cap-control-plane
 
@@ -161,9 +162,10 @@
     - vss-escalate
     - vss-signoff
     - vss-record
-    - stk-exec
+    - stk-delivery
     - stk-risk-compliance
-    - outcome-accountable-automation
+    - outcome-signoff-coverage-complete
+    - outcome-audit-trail-reconstructable
     - cap-control-plane
     - cap-human-approval-workflow
     - cap-forensic-ledger
@@ -184,7 +186,7 @@
     - vss-observe
     - vss-reconcile
     - stk-architecture
-    - outcome-drift-reconciled
+    - outcome-drift-zero-aged-backlog
     - cap-digital-twin
     - cap-drift-dashboard
 
@@ -317,8 +319,8 @@
     - driver-authoring-friction
     - assess-drift-debt
     - assess-manual-authoring-risk
-    - outcome-drift-reconciled
-    - outcome-intent-becomes-model-truth
+    - goal-drift-reconciled
+    - goal-intent-becomes-model-truth
     - goal-frictionless-architecture
     - req-authoritative-twin
     - req-conversational-authoring-alignment
