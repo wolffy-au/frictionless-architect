@@ -4,7 +4,8 @@
 # enforces. Schema (specs/004-conversational-model-authoring/data-model.md):
 #
 # - id:      string, e.g. `conv-naming-camel-free`
-# - kind:    naming | altitude | allowed-subset | interposed-pattern
+# - kind:    naming | altitude | allowed-subset | interposed-pattern |
+#            required-neighbour | no-bypass
 # - scope:   list of ArchiMate type names, or `*`
 # - params:  kind-specific —
 #     interposed-pattern: {source_type, relationship_type, target_type, intermediary_types[],
@@ -16,6 +17,13 @@
 #     naming:             {pattern}        — a regex the proposed `name` MUST match
 #     altitude:           {banned_terms[]} — `name`/`desc` MUST NOT contain any of these
 #     allowed-subset:     {allowed_types[]} — the proposed type MUST be one of these
+#     required-neighbour: {relationship_type, direction (incoming|outgoing),
+#                          neighbour_type, first_party_only?, exclude_ids[]} — every element
+#                          in scope must have a matching relationship to an
+#                          element of neighbour_type.
+#     no-bypass:          {source_type, intermediary_type, first_party_only?} —
+#                          source_type elements may only have outgoing
+#                          relationships to intermediary_type elements.
 # - enabled: bool, default true — turn a rule off without deleting it
 #
 # Aggregated under `store-frameworks` as `do-convention-rules` (plan.md Model impact),
@@ -46,9 +54,9 @@
 
 # Caught by hand once already: outcome-architect-authored-model's desc read
 # "...without a manual YAML edit or render step..." before its GH #108 rename
-# to outcome-intent-becomes-model-truth — tooling vocabulary at the wrong
+# to goal-intent-becomes-model-truth — tooling vocabulary at the wrong
 # altitude for the case-for-change layer. "agent"/"agentic" stay unbanned;
-# driver-scaling, assess-review-bottleneck and outcome-accountable-automation
+# driver-scaling, assess-review-bottleneck and goal-accountable-automation
 # already use them as a legitimate business concept, not a tooling leak.
 - id: conv-altitude-motivation-no-tooling
   kind: altitude
@@ -131,4 +139,89 @@
   scope: [ValueStream]
   params:
     pattern: "(?i)^(?!.*\\bvalue stream\\b).+$"
+  enabled: true
+
+# Whole-model motivation structure. These are organisation-specific
+# completeness policies, not ArchiMate metamodel constraints; disable or
+# change the individual rules when the intended model shape changes.
+- id: conv-driver-held-by-stakeholder
+  kind: required-neighbour
+  scope: [Driver]
+  params:
+    relationship_type: Association
+    direction: incoming
+    neighbour_type: Stakeholder
+    first_party_only: true
+  enabled: true
+- id: conv-driver-associated-with-assessment
+  kind: required-neighbour
+  scope: [Driver]
+  params:
+    relationship_type: Association
+    direction: outgoing
+    neighbour_type: Assessment
+    first_party_only: true
+  enabled: true
+- id: conv-assessment-associated-with-driver
+  kind: required-neighbour
+  scope: [Assessment]
+  params:
+    relationship_type: Association
+    direction: incoming
+    neighbour_type: Driver
+    first_party_only: true
+  enabled: true
+- id: conv-assessment-associated-with-goal
+  kind: required-neighbour
+  scope: [Assessment]
+  params:
+    relationship_type: Association
+    direction: outgoing
+    neighbour_type: Goal
+    first_party_only: true
+  enabled: true
+- id: conv-goal-associated-with-assessment
+  kind: required-neighbour
+  scope: [Goal]
+  params:
+    relationship_type: Association
+    direction: incoming
+    neighbour_type: Assessment
+    first_party_only: true
+    exclude_ids: [goal-frictionless-architecture]
+  enabled: true
+- id: conv-outcome-realizes-goal
+  kind: required-neighbour
+  scope: [Outcome]
+  params:
+    relationship_type: Realization
+    direction: outgoing
+    neighbour_type: Goal
+    first_party_only: true
+  enabled: true
+- id: conv-outcome-realized-by-requirement
+  kind: required-neighbour
+  scope: [Outcome]
+  params:
+    relationship_type: Realization
+    direction: incoming
+    neighbour_type: Requirement
+    first_party_only: true
+  enabled: true
+- id: conv-capability-realizes-requirement
+  kind: required-neighbour
+  scope: [Capability]
+  params:
+    relationship_type: Realization
+    direction: outgoing
+    neighbour_type: Requirement
+    first_party_only: true
+  enabled: true
+- id: conv-driver-routes-through-assessment
+  kind: no-bypass
+  scope: [Driver]
+  params:
+    source_type: Driver
+    intermediary_type: Assessment
+    first_party_only: true
   enabled: true

@@ -118,10 +118,10 @@ The goal is *Frictionless Architecture & Governance at Machine Speed*
 
 | Outcome (`id`) | Answers assessment | Realized by requirements | Realized by value stream |
 |---|---|---|---|
-| Approved Change Reaches Production at AI Speed (`outcome-change-at-ai-speed`) | time-to-market | auto spec generation, reusable architecture | Governed Architecture Delivery |
-| Compliance Proven Before Release (`outcome-compliance-before-release`) | manual compliance | regulatory mapping, control catalog, pre-deploy gate | Obligation to Evidence |
-| Accountable, Auditable Automation (`outcome-accountable-automation`) | review bottleneck | human sign-off, immutable audit ledger | Exception to Decision |
-| Drift Detected and Reconciled Continuously (`outcome-drift-reconciled`) | drift debt | authoritative twin, continuous reconciliation | Drift to Remediation |
+| Approved Change Reaches Production at AI Speed (`goal-change-at-ai-speed`) | time-to-market | auto spec generation, reusable architecture | Governed Architecture Delivery |
+| Compliance Proven Before Release (`goal-compliance-before-release`) | manual compliance | regulatory mapping, control catalog, pre-deploy gate | Obligation to Evidence |
+| Accountable, Auditable Automation (`goal-accountable-automation`) | review bottleneck | human sign-off, immutable audit ledger | Exception to Decision |
+| Drift Detected and Reconciled Continuously (`goal-drift-reconciled`) | drift debt | authoritative twin, continuous reconciliation | Drift to Remediation |
 | **Architectural Intent Becomes Governed Model Truth** (`outcome-intent-becomes-model-truth`) | hand-edited model changes are ungoverned | conversational-authoring alignment | Intent to Model |
 
 (`architecture/model/relationships.yaml:104-132`.) The spine is `driver
@@ -132,7 +132,7 @@ realizes **exactly one** outcome. The fifth outcome's `desc` frames it
 precisely: "an architect's natural-language intent becomes a validated model
 change without a manual YAML edit or render step".
 
-`outcome-drift-reconciled` replaces the former single outcome, "Architecture
+`goal-drift-reconciled` replaces the former single outcome, "Architecture
 as Executable Intelligence". That phrase now lives in the `desc` of
 `vs-governed-delivery` ("Architecture as executable intelligence, applied to
 delivery") (`architecture/model/elements.yaml:439-446`).

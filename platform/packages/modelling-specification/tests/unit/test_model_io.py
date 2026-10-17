@@ -517,7 +517,7 @@ def test_check_motivation_conventions_flags_a_driver_bypassing_its_assessment() 
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
-    assert any("bypassing its own Assessment" in e for e in errors)
+    assert any("bypassing Assessment" in e for e in errors)
 
 
 def test_check_motivation_conventions_warns_on_a_derived_goal_edge() -> None:
@@ -533,7 +533,7 @@ def test_check_motivation_conventions_warns_on_a_derived_goal_edge() -> None:
     ]
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
-    warnings = model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
+    warnings = model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors, rules=[])
     assert errors == []
     assert any("looks derived" in w for w in warnings)
 
@@ -552,7 +552,7 @@ def test_check_motivation_conventions_keeps_a_view_only_reachable_edge() -> None
     views = [{"id": "v1", "members": ["a", "goal1"]}]  # b not in scope on this view
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
-    warnings = model_io.check_motivation_conventions(elements, rels, views, types_by_id, errors)
+    warnings = model_io.check_motivation_conventions(elements, rels, views, types_by_id, errors, rules=[])
     assert errors == []
     assert any("keeping it" in w for w in warnings)
 
@@ -566,7 +566,7 @@ def test_check_motivation_conventions_flags_a_capability_with_no_requirement() -
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
-    assert any("'cap1' realizes no Requirement" in e for e in errors)
+    assert any("conv-capability-realizes-requirement" in e and "'cap1'" in e for e in errors)
 
 
 def test_check_motivation_conventions_exempts_a_vendored_capability() -> None:
@@ -579,13 +579,15 @@ def test_check_motivation_conventions_exempts_a_vendored_capability() -> None:
 
 def test_check_motivation_conventions_flags_an_outcome_missing_its_neighbours() -> None:
     elements = [{"id": "outcome1", "type": "Outcome", "name": "Outcome"}]
-    rels: list[dict[str, Any]] = []  # no Goal, no Requirement, no Assessment
+    rels: list[dict[str, Any]] = [
+        {"type": "Influence", "source": "assess1", "target": "outcome1"}
+    ]  # Influence does not replace Goal Association or Requirement Realization
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
-    assert any("'outcome1' does not realize the Goal" in e for e in errors)
-    assert any("'outcome1' is realized by no Requirement" in e for e in errors)
-    assert any("'outcome1' is influenced by no Assessment" in e for e in errors)
+    assert any("conv-outcome-realizes-goal" in e and "'outcome1'" in e for e in errors)
+    assert any("conv-outcome-realized-by-requirement" in e and "'outcome1'" in e for e in errors)
+    assert any("conv-outcome-associated-with-goal" in e and "'outcome1'" in e for e in errors)
 
 
 def test_check_motivation_conventions_flags_a_driver_missing_its_neighbours() -> None:
@@ -594,21 +596,23 @@ def test_check_motivation_conventions_flags_a_driver_missing_its_neighbours() ->
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
-    assert any("'driver1' influences no Assessment" in e for e in errors)
-    assert any("'driver1' is held by no Stakeholder" in e for e in errors)
+    assert any("conv-driver-associated-with-assessment" in e and "'driver1'" in e for e in errors)
+    assert any("conv-driver-held-by-stakeholder" in e and "'driver1'" in e for e in errors)
 
 
 def test_check_motivation_conventions_flags_an_assessment_missing_its_neighbours() -> None:
     elements = [{"id": "assess1", "type": "Assessment", "name": "Assessment"}]
-    rels: list[dict[str, Any]] = []  # no Driver, no Outcome
+    rels: list[dict[str, Any]] = [
+        {"type": "Influence", "source": "assess1", "target": "outcome1"}
+    ]  # Influence to an Outcome does not replace Association to a Goal
     types_by_id = {e["id"]: e["type"] for e in elements}
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
-    assert any("'assess1' is influenced by no Driver" in e for e in errors)
-    assert any("'assess1' influences no Outcome" in e for e in errors)
+    assert any("conv-assessment-associated-with-driver" in e and "'assess1'" in e for e in errors)
+    assert any("conv-assessment-associated-with-goal" in e and "'assess1'" in e for e in errors)
 
 
-def test_check_motivation_conventions_passes_a_complete_stakeholder_to_outcome_chain() -> None:
+def test_check_motivation_conventions_passes_a_complete_association_chain() -> None:
     elements = [
         {"id": "stk1", "type": "Stakeholder", "name": "Stakeholder"},
         {"id": "driver1", "type": "Driver", "name": "Driver"},
@@ -621,7 +625,8 @@ def test_check_motivation_conventions_passes_a_complete_stakeholder_to_outcome_c
     rels = [
         {"type": "Association", "source": "stk1", "target": "driver1"},
         {"type": "Association", "source": "driver1", "target": "assess1"},
-        {"type": "Influence", "source": "assess1", "target": "outcome1"},
+        {"type": "Association", "source": "assess1", "target": "goal1"},
+        {"type": "Association", "source": "goal1", "target": "outcome1"},
         {"type": "Realization", "source": "outcome1", "target": "goal1"},
         {"type": "Realization", "source": "req1", "target": "outcome1"},
         {"type": "Realization", "source": "cap1", "target": "req1"},

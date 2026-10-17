@@ -5,7 +5,7 @@ title Value Stream — Exception to Decision
 
 Motivation_Stakeholder(e_id19419ed668d556, "Executive Leadership & Board")
 Motivation_Stakeholder(e_id133bbac4b3e450, "Risk & Compliance Function")
-Motivation_Outcome(e_ide8275430b0ad5e, "Accountable, Auditable Automation")
+Motivation_Outcome(e_id872d0a441b6453, "100% of Non-Deterministic Agent Decisions Carry a Named Human Sign-off")
 Strategy_Capability(e_id4a1c34ab69d151, "Agentic Development Supervision")
 Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
 Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
@@ -17,7 +17,7 @@ Strategy_ValueStream(e_idc55b78731ffe56, "Exception to Decision") {
 
 Rel_Association(e_id19419ed668d556, e_idc55b78731ffe56, "accountable automation")
 Rel_Association(e_id133bbac4b3e450, e_idc55b78731ffe56, "examinable decisions")
-Rel_Realization_Up(e_idc55b78731ffe56, e_ide8275430b0ad5e, "")
+Rel_Realization_Up(e_idc55b78731ffe56, e_id872d0a441b6453, "")
 Rel_Serving_Up(e_id4a1c34ab69d151, e_id57940702bdfc58, "")
 Rel_Serving_Up(e_id08f340a094e552, e_id2d06864964375b, "")
 Rel_Serving_Up(e_idc29413a2099958, e_iddef15dd937ce53, "")

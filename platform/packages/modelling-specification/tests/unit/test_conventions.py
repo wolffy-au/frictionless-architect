@@ -44,6 +44,19 @@ def test_load_rules_rejects_a_file_that_is_not_a_yaml_list(tmp_path: Path) -> No
         conventions.load_rules(path)
 
 
+def test_load_rules_rejects_an_invalid_required_neighbour_direction(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-bad-direction\n"
+        "  kind: required-neighbour\n"
+        "  scope: [Driver]\n"
+        "  params: {relationship_type: Association, direction: sideways, neighbour_type: Assessment}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="conv-bad-direction"):
+        conventions.load_rules(path)
+
+
 def test_violation_returns_none_for_a_kind_it_does_not_evaluate() -> None:
     # `check_elements` never calls `_violation` for an `interposed-pattern` rule (it
     # skips those itself, per test_check_elements_skips_interposed_pattern_rules) --
@@ -157,3 +170,63 @@ def test_check_elements_skips_interposed_pattern_rules() -> None:
     findings = conventions.check_elements([{"id": "x1", "type": "DataObject", "name": "X"}], rules=[rule])
 
     assert findings == []
+
+
+def test_check_relationships_enforces_a_configured_neighbour_rule() -> None:
+    rule = {
+        "id": "conv-driver-assessment",
+        "kind": "required-neighbour",
+        "scope": ["Driver"],
+        "params": {
+            "relationship_type": "Association",
+            "direction": "outgoing",
+            "neighbour_type": "Assessment",
+        },
+        "enabled": True,
+    }
+    elements = [{"id": "driver1", "type": "Driver", "name": "Driver"}]
+
+    findings = conventions.check_relationships(elements, [], {"driver1": "Driver"}, rules=[rule])
+
+    assert len(findings) == 1
+    assert "conv-driver-assessment" in findings[0]
+    assert "'driver1'" in findings[0]
+
+
+def test_check_relationships_can_disable_a_neighbour_rule() -> None:
+    rule = {
+        "id": "conv-driver-assessment",
+        "kind": "required-neighbour",
+        "scope": ["Driver"],
+        "params": {
+            "relationship_type": "Association",
+            "direction": "outgoing",
+            "neighbour_type": "Assessment",
+        },
+        "enabled": False,
+    }
+    elements = [{"id": "driver1", "type": "Driver", "name": "Driver"}]
+
+    assert conventions.check_relationships(elements, [], {"driver1": "Driver"}, rules=[rule]) == []
+
+
+def test_check_relationships_flags_a_direct_edge_that_bypasses_an_intermediary() -> None:
+    rule = {
+        "id": "conv-driver-routes-through-assessment",
+        "kind": "no-bypass",
+        "scope": ["Driver"],
+        "params": {"source_type": "Driver", "intermediary_type": "Assessment"},
+        "enabled": True,
+    }
+    elements = [
+        {"id": "driver1", "type": "Driver", "name": "Driver"},
+        {"id": "goal1", "type": "Goal", "name": "Goal"},
+    ]
+    relationships = [{"type": "Association", "source": "driver1", "target": "goal1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"driver1": "Driver", "goal1": "Goal"}, rules=[rule]
+    )
+
+    assert len(findings) == 1
+    assert "bypassing Assessment" in findings[0]

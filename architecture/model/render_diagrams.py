@@ -14,6 +14,7 @@ Exit 0 = up to date / written, 1 = stale (`--check`), 2 = error.
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 from pathlib import Path
 
@@ -31,7 +32,14 @@ def main() -> int:
         cmd.append("--check")
     if args.no_svg:
         cmd.append("--no-svg")
-    result = subprocess.run(cmd, cwd=PLATFORM)
+    # platform/'s venv is keyed by project name/lock hash, not checkout path, so
+    # it's shared across git worktrees; whichever checkout last ran `poetry
+    # install` baked its own absolute path into the editable install. Prepending
+    # each package's own src/ makes this invocation use THIS checkout's source
+    # regardless of which one the venv was installed from (see build.py).
+    pythonpath = os.pathsep.join(str(src) for src in sorted((PLATFORM / "packages").glob("*/src")) if src.is_dir())
+    env = {**os.environ, "PYTHONPATH": pythonpath}
+    result = subprocess.run(cmd, cwd=PLATFORM, env=env)
     return result.returncode
 
 
