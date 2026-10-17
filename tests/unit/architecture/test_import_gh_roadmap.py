@@ -524,6 +524,30 @@ def test_grandchild_sharing_the_roots_deliverable_is_also_suppressed(kit: Kit) -
     assert {"wp-epic-gh-1", "wp-child-gh-2", "wp-grandchild-gh-3"} <= set(view["members"])
 
 
+def test_closed_milestones_view_drops_its_own_closed_work_packages(kit: Kit) -> None:
+    milestone = kit.milestone(state="closed")
+    issues = [kit.issue(1, "done", state="closed", closed_at="2026-02-01T00:00:00Z")]
+    layer = kit.layer([milestone], [], issues)
+    view = next(v for v in layer["views.yaml"] if v["id"] == "view-plat-mvp-1")
+    assert view["members"] == ["del-mvp-1-unreleased", "plat-mvp-1"]
+
+
+def test_open_milestones_view_keeps_its_closed_work_packages(kit: Kit) -> None:
+    issues = [kit.issue(1, "done", state="closed", closed_at="2026-02-01T00:00:00Z")]
+    layer = kit.layer([kit.milestone()], [], issues)
+    view = next(v for v in layer["views.yaml"] if v["id"] == "view-plat-mvp-1")
+    assert "wp-done-gh-1" in view["members"]
+
+
+def test_closed_milestones_view_keeps_a_still_open_straggler(kit: Kit) -> None:
+    milestone = kit.milestone(state="closed")
+    issues = [kit.issue(1, "done", state="closed", closed_at="2026-02-01T00:00:00Z"), kit.issue(2, "open")]
+    layer = kit.layer([milestone], [], issues)
+    view = next(v for v in layer["views.yaml"] if v["id"] == "view-plat-mvp-1")
+    assert "wp-done-gh-1" not in view["members"]
+    assert "wp-open-gh-2" in view["members"]
+
+
 def test_child_shipped_separately_from_its_epic_keeps_its_own_realization(kit: Kit) -> None:
     # The epic is still open (unreleased) while its child already shipped in a release: their
     # targets differ, so the child's own edge is genuine information, not a duplicate (GH-83/#108 shape).

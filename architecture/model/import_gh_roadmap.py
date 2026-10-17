@@ -434,6 +434,11 @@ def _views(
     A release can realize several Plateaus, so only the Work Packages of this milestone are shown. A child
     whose own Realization was left out of `rels` as a duplicate of its Aggregation root's (build_layer)
     is pulled back in here via that same Aggregation chain, so it still appears, nested under the root.
+
+    Once a milestone itself is closed, its own closed Work Packages drop out of its view: the data still
+    keeps them (relationships.yaml, traceability, check_derived.py are unaffected), but the diagram stops
+    accumulating a permanent wall of "done" boxes for work nobody is tracking anymore. A milestone still
+    open keeps showing all its Work Packages, open or closed, so in-flight progress stays visible.
     """
     realizes: dict[str, set[str]] = {}
     aggregates: dict[str, set[str]] = {}
@@ -443,12 +448,15 @@ def _views(
         elif rel["type"] == "Aggregation":
             aggregates.setdefault(rel["source"], set()).add(rel["target"])
     ids = {e["id"] for e in elements}
+    wp_state = {e["id"]: e.get("props", {}).get("gh-state") for e in elements if e["type"] == "WorkPackage"}
     views = []
     for m in milestones:
         pid = plateau_id(m.title, m.number)
         deliverables = {d for d in realizes.get(pid, set()) if d in ids and d.startswith("del-")}
         packages = {w for d in deliverables for w in realizes.get(d, set()) if plateau_of.get(w) == pid}
         packages |= _aggregation_descendants(packages, aggregates, plateau_of, pid)
+        if m.state == "closed":
+            packages = {w for w in packages if wp_state.get(w) != "closed"}
         views.append(
             {
                 "id": f"view-{pid}",
