@@ -31,6 +31,19 @@ def _message_content(response: Any) -> str:
 
 
 def convert_chunk(prompt: str, system: str) -> str:
+    """Convert one chunk of policy prose to Trestle Markdown with the configured LLM.
+
+    Args:
+        prompt: The prose to convert.
+        system: The system prompt that instructs the model.
+
+    Returns:
+        The model's Markdown with any surrounding code fence removed, ending in a newline.
+
+    Raises:
+        LlmConversionError: If the prose is empty, no provider or credential is
+            configured, the call fails or the response is empty.
+    """
     stripped = prompt.strip()
     if not stripped:
         raise LlmConversionError("Cannot convert empty prose to Markdown.")
