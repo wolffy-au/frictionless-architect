@@ -13,6 +13,11 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
                         └─▶ diagram-archimate ─▶ diagrams/<layer>/<view>.puml / .svg
 ```
 
+`build.py`, `render_diagrams.py` and `validate.py` are thin wrappers: the load / merge /
+validate / render logic lives in the `modelling-specification` platform package
+(`platform/packages/modelling-specification`, ADR-0037) and is reached through its CLI
+(`python -m modelling_specification.cli build|render|validate`).
+
 ## Files
 
 | File | Contents |
@@ -21,12 +26,13 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
 | `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` (optionally narrowed by `exclude_elements`) / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
 | `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`). Same schema as `views.yaml`; ids unique across both |
+| `conventions.yaml` | Enterprise Convention Rules (for example `interposed-pattern`) that the conversational authoring validation applies to proposed changes (spec 004) |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` (see below) |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views. Merged by `build.py`, never hand-edited |
-| `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
-| `render_diagrams.py` | `frictionless-architect.xml` → every `.puml` / `.svg` (view `diagram:` key + C4) |
+| `build.py` | Wrapper: YAML → `frictionless-architect.xml` via pyArchimate, then validates (logic in `modelling-specification`) |
+| `render_diagrams.py` | Wrapper: `frictionless-architect.xml` → every `.puml` / `.svg` (view `diagram:` key + C4) |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
-| `diagrams/` | **Generated** `.puml` / `.svg`. `diagrams/vision/` holds the TOGAF ADM Phase A views |
+| `diagrams/` | **Generated** `.puml` / `.svg`, one subdirectory per layer: `vision/` (TOGAF ADM Phase A views), `business/`, `application/`, `layered/`, `technology/`, `implementation/`, `migration/` and `c4/`, plus the IT4IT capability-bridges view at the top level |
 
 ## Schema
 
@@ -48,7 +54,8 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
   `reusable-architecture-library`, `digital-twin-knowledge-graph`,
   `architecture-governance`, `conformance-drift-assurance`, `modelling-specification`,
   `schema-visualizer-api`, `llm-provider-config`), which own their subsystem, its
-  functions, interface and the artefacts it writes.
+  functions, interface and the artefacts it writes. The `portal` host package is
+  modelled in section E.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read`|`Write`|`ReadWrite`) on `Access` relationships,
   `requirement-type`, and `archimate-analogue` on a BusinessObject whose
@@ -99,15 +106,16 @@ Layered sections in one model (section D, the IT4IT capability bridges, is relat
 
 | Section | What | Views |
 |---|---|---|
-| **A. Skeleton** | Motivation (5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3 principles, 4 constraints, 9 functional requirements), Strategy (8 capabilities, 3 courses of action, 5 resources + 4 value streams, one per outcome, with 11 stages), Business (6 processes) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md), [ADR-0033](../../docs/adr/0033-value-streams-per-outcome.md)) | **Vision (Phase A):** `Stakeholder`, `Motivation`, `Goal Realization`, `Strategy`, `Capability Map`, `Value Stream Hand-offs` + one `Value Stream — <name>` view per stream, `Outcome Realization`, `Requirements Realization`. **Business (Phase B):** `Delivery Choreography` |
-| **B. Ecosystem** | The platform `Grouping` (`c4=system`), its 6 subsystems, 5 shared stores, 6 roles, 7 external systems; every subsystem `Realization`-linked to a section-A capability ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities` (Layered); C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
-| **C. Artefact flow** | 15 `ApplicationFunction`s assigned to their subsystem, reading input artefacts and writing output artefacts (25 `DataObject`s) via `Access`; stores `Aggregation`-link the persistent artefacts | `Artefact Flow — Controls & OSCAL` / `— Library & Design` / `— Digital Twin & Governance` / `— Assurance & Specification` |
-| **E. Implementation & Migration** | The platform's own restructure ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), GH #65): the `Schema Visualiser API` component and the Digital Twin's `Knowledge Graph Read Path` interface ([ADR-0005](../../docs/adr/0005-visualiser-api-ui-split-first-extraction.md)); the `Portal` composition host and its `Portal UI` interface ([ADR-0020](../../docs/adr/0020-per-subsystem-uis.md), GH #120); 9 package `Artifact`s (`c4=ignore`) realising their components; the 7 `ARCHITECTURE.md` §8 steps as `WorkPackage`s, 3 `Deliverable`s, and Baseline / Transition / Target `Plateau`s with the 2 `Gap`s between them; `controls-compliance-catalog` is the first extraction (ADR-0005, GH #60). No technology layer yet (GH #55) | `Packaging` (`diagrams/implementation/`), `Migration Sequence` (`diagrams/migration/`) |
+| **A. Skeleton** | Motivation (stakeholders, drivers, assessments, a goal, outcomes, principles, constraints, functional requirements), Strategy (capabilities, courses of action, resources, and one value stream per outcome with its stages), Business (processes and business objects) — the load-bearing subset ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), [ADR-0027](../../docs/adr/0027-capability-value-stream-and-motivation-spine.md), [ADR-0033](../../docs/adr/0033-value-streams-per-outcome.md)) | **Vision (Phase A):** `Stakeholder`, `Motivation`, `Goal Realization`, `Strategy`, `Capability Map`, `Value Stream Hand-offs` + one `Value Stream — <name>` view per stream, `Outcome Realization`, `Requirements Realization`. **Business (Phase B):** `Delivery Choreography` and the per-flow views in `diagrams/business/` |
+| **B. Ecosystem** | The platform `Grouping` (`c4=system`), its six subsystems, shared stores, roles and external systems; every subsystem `Realization`-linked to a section-A capability ([ADR-0011](../../docs/adr/0011-six-subsystem-decomposition.md)) | `Subsystems & Capabilities` (Layered); C4 context + container ([ADR-0009](../../docs/adr/0009-c4-diagrams-generated-from-archimate.md)) |
+| **C. Artefact flow** | `ApplicationFunction`s assigned to their subsystem, reading input artefacts and writing output artefacts (`DataObject`s) via `Access`; stores `Aggregation`-link the persistent artefacts | `diagrams/application/`: `Artefact Flow — Controls & OSCAL` / `— Library & Design` / `— Digital Twin & Governance` / `— Assurance & Specification`, and the catalog structure view |
+| **E. Implementation & Migration** | The platform's own restructure ([ADR-0010](../../docs/adr/0010-load-bearing-skeleton-only.md), GH #65): the `Schema Visualiser API` component and the Digital Twin's `Knowledge Graph Read Path` interface ([ADR-0005](../../docs/adr/0005-visualiser-api-ui-split-first-extraction.md)); the `Portal` composition host and its `Portal UI` interface ([ADR-0020](../../docs/adr/0020-per-subsystem-uis.md), GH #120); one package `Artifact` per platform package (`c4=ignore`) realising its component; `WorkPackage`s, a Baseline `Plateau` and `Gap`s for the `ARCHITECTURE.md` §8 steps; `controls-compliance-catalog` is the first extraction (ADR-0005, GH #60). The generated `gh-roadmap/` layer adds the Plateaus, Work Packages and Deliverables imported from GitHub milestones ([ADR-0035](../../docs/adr/0035-github-roadmap-as-implementation-migration-layer.md)) | `Packaging` (`diagrams/implementation/`); `Migration Sequence`, runtime and work-package-dependency views and one roadmap view per milestone (`diagrams/migration/`) |
+| **F. Technology** | Nodes and system software (CI runner, application server, hosted cluster, Neo4j, keyring), technology artifacts (OSCAL workspace, ledger file, Neo4j volume), the OSCAL golden-check process and the server-side role-journey composition function ([ADR-0018](../../docs/adr/0018-postgres-plus-neo4j-data-layer.md), [ADR-0020](../../docs/adr/0020-per-subsystem-uis.md)) | `diagrams/technology/` (CI check, persistence boundary, landscape, usage) |
 
 Every capability is realized by one subsystem and realizes at least one
 functional requirement; capability-to-capability `Serving` edges and the
-stages' `Serving` edges record the delivery dependency order. Each of the four
-value streams realizes one outcome and is `Association`-linked to its value
+stages' `Serving` edges record the delivery dependency order. Each
+value stream realizes one outcome and is `Association`-linked to its value
 recipients; stages are `Triggering`-linked in sequence within a stream and
 hand off across streams (Build → Prove → Release, Prove → Escalate, Sign Off
 → Release as a `Flow`, Release → Observe, and a `Flow` feedback edge from
