@@ -195,6 +195,9 @@
   source: wp-feat-model-generate-gaps-from-speckit-gh-102
   target: del-github-importer-11-unreleased
 - type: Realization
+  source: wp-feat-model-split-oversized-viewpoint-gh-129
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
   source: wp-feat-model-vendor-it4it-as-third-party-gh-4
   target: del-release-v0-1-0
 - type: Realization
@@ -234,10 +237,16 @@
   source: wp-oscal-spec-alignment-review-gh-24
   target: del-release-v0-1-0
 - type: Realization
+  source: wp-perf-scripts-cut-redundant-work-in-pre-gh-126
+  target: del-general-tasks-12-unreleased
+- type: Realization
   source: wp-re-home-specs-to-two-tier-scheme-adr-gh-107
   target: del-solution-design-mvp-8-unreleased
 - type: Realization
   source: wp-refactor-model-scope-type-wide-views-by-gh-117
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
+  source: wp-refactor-model-split-goal-outcome-gh-130
   target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-reorganize-architecture-model-diagrams-gh-5
@@ -371,6 +380,9 @@
 - type: Triggering
   source: wp-re-home-specs-to-two-tier-scheme-adr-gh-107
   target: wp-feat-model-generate-gaps-from-speckit-gh-102
+- type: Triggering
+  source: wp-refactor-model-split-goal-outcome-gh-130
+  target: wp-feat-model-split-oversized-viewpoint-gh-129
 - type: Triggering
   source: wp-reorganize-architecture-model-diagrams-gh-5
   target: wp-vision-single-high-level-archimate-gh-7
