@@ -14,27 +14,66 @@ from controls_compliance_catalog.playground.convert import (
 
 
 class OscalToMarkdownRequest(BaseModel):
+    """Body of ``POST /oscal-to-markdown``.
+
+    Attributes:
+        oscal: An OSCAL control as YAML text.
+    """
+
     oscal: str
 
 
 class OscalToMarkdownResponse(BaseModel):
+    """Response of ``POST /oscal-to-markdown``.
+
+    Attributes:
+        markdown: The control as Trestle Markdown.
+    """
+
     markdown: str
 
 
 class ProseToMarkdownCandidateRequest(BaseModel):
+    """Body of ``POST /prose-to-markdown-candidate``.
+
+    Attributes:
+        prose: Control prose to convert.
+    """
+
     prose: str
 
 
 class ProseToMarkdownCandidateResponse(BaseModel):
+    """Response of ``POST /prose-to-markdown-candidate``.
+
+    Attributes:
+        markdown: The AI-produced candidate Markdown.
+    """
+
     markdown: str
 
 
 class PlaygroundError(BaseModel):
+    """Body of a 422 response.
+
+    Attributes:
+        error_code: ``invalid_oscal`` or ``invalid_prose``.
+        message: What was wrong with the input.
+    """
+
     error_code: str
     message: str
 
 
 def oscal_to_markdown(request: OscalToMarkdownRequest) -> OscalToMarkdownResponse | JSONResponse:
+    """Convert an OSCAL control to Trestle Markdown.
+
+    Args:
+        request: The OSCAL text.
+
+    Returns:
+        The Markdown, or a 422 ``PlaygroundError`` response if the OSCAL is invalid.
+    """
     try:
         markdown = convert_oscal_control_to_markdown(request.oscal)
     except PlaygroundConversionError as exc:
@@ -46,6 +85,14 @@ def oscal_to_markdown(request: OscalToMarkdownRequest) -> OscalToMarkdownRespons
 def prose_to_markdown_candidate(
     request: ProseToMarkdownCandidateRequest,
 ) -> ProseToMarkdownCandidateResponse | JSONResponse:
+    """Convert control prose to candidate Trestle Markdown using the configured LLM.
+
+    Args:
+        request: The prose.
+
+    Returns:
+        The candidate Markdown, or a 422 ``PlaygroundError`` response if the conversion fails.
+    """
     try:
         markdown = convert_control_prose_to_markdown_candidate(request.prose)
     except PlaygroundConversionError as exc:
@@ -932,7 +979,14 @@ _PAGE = _PAGE_TEMPLATE.replace("__SAMPLE_CONTROL_PROSE__", _SAMPLE_CONTROL_PROSE
 
 
 def create_playground_router(prefix: str = "/catalog") -> APIRouter:
-    """Build the playground router, with its page JS pointed at `prefix` (GH #120)."""
+    """Build the playground router, with its page JS pointed at `prefix` (GH #120).
+
+    Args:
+        prefix: URL prefix the router is mounted under; substituted into the page script.
+
+    Returns:
+        A router with the two conversion endpoints and the HTML page.
+    """
     router = APIRouter(prefix=prefix, tags=["playground"])
     router.post(
         "/oscal-to-markdown",
@@ -947,6 +1001,7 @@ def create_playground_router(prefix: str = "/catalog") -> APIRouter:
 
     @router.get("", response_class=HTMLResponse)
     def playground_page() -> str:
+        """Serve the playground page."""
         return _PAGE.replace("__PREFIX__", prefix)
 
     return router

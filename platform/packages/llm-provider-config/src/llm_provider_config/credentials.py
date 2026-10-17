@@ -36,7 +36,21 @@ def _ref(settings: ProviderSettings) -> str:
 
 
 def get_api_key(settings: ProviderSettings) -> str | None:
-    """Return the API key for `settings`, or None for providers that need none."""
+    """Return the API key for `settings`, or None for providers that need none.
+
+    The OS keychain is tried first, then the provider's environment variable (logged as
+    a plaintext warning).
+
+    Args:
+        settings: The provider settings naming the provider and optional keyring entry.
+
+    Returns:
+        The API key, or ``None`` for providers in ``KEYLESS_PROVIDERS``.
+
+    Raises:
+        MissingCredentialError: If the provider needs a key and neither the keychain
+            nor the environment has one.
+    """
     if settings.provider in KEYLESS_PROVIDERS:
         return None
     ref = _ref(settings)
@@ -62,17 +76,38 @@ def get_api_key(settings: ProviderSettings) -> str | None:
 
 
 def set_api_key(ref: str, key: str) -> None:
+    """Store an API key in the OS keychain.
+
+    Args:
+        ref: Keyring entry name (the provider name unless a ``credential_ref`` is set).
+        key: The API key to store.
+
+    Raises:
+        keyring.errors.KeyringError: If no usable keychain backend exists.
+    """
     keyring.set_password(SERVICE_NAME, ref, key)
 
 
 def delete_api_key(ref: str) -> None:
+    """Remove an API key from the OS keychain.
+
+    Args:
+        ref: Keyring entry name to delete.
+
+    Raises:
+        keyring.errors.KeyringError: If there is no such entry or no usable backend.
+    """
     keyring.delete_password(SERVICE_NAME, ref)
 
 
 def key_source(settings: ProviderSettings) -> str:
     """Where `get_api_key` would find the key, without returning it.
 
-    One of ``"not-needed"`` (Ollama, Copilot), ``"keychain"``, ``"environment"`` or ``"missing"``.
+    Args:
+        settings: The provider settings to look up.
+
+    Returns:
+        One of ``"not-needed"`` (Ollama, Copilot), ``"keychain"``, ``"environment"`` or ``"missing"``.
     """
     if settings.provider in KEYLESS_PROVIDERS:
         return "not-needed"

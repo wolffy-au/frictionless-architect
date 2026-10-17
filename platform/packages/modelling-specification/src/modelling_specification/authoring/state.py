@@ -17,6 +17,8 @@ from typing import Any
 
 
 class DeltaStatus(str, Enum):
+    """Lifecycle state of a Candidate Delta: proposed, validated or flagged, then applied or discarded."""
+
     PROPOSED = "proposed"
     VALIDATED = "validated"
     FLAGGED = "flagged"
@@ -26,7 +28,19 @@ class DeltaStatus(str, Enum):
 
 @dataclass
 class CandidateDelta:
-    """Fields per data-model.md's Candidate Delta table."""
+    """A proposed change to the model, accumulated over a conversation (data-model.md).
+
+    Attributes:
+        delta_id: Identifier, unique within its session.
+        session_id: The owning session.
+        elements: Proposed elements (model YAML shape).
+        relationships: Proposed relationships (model YAML shape).
+        status: Where the delta is in its lifecycle.
+        validation_result: ``{"clean": bool, "findings": [...]}`` once validated.
+        duplicates: Likely duplicates of existing elements.
+        pattern_suggestions: Established-pattern alternatives to direct relationships.
+        state_classification: ``Current``, ``Transition`` or ``Target`` once decided.
+    """
 
     delta_id: str
     session_id: str
@@ -41,6 +55,13 @@ class CandidateDelta:
 
 @dataclass
 class Session:
+    """One authoring conversation and its deltas, keyed by delta id.
+
+    Attributes:
+        session_id: Identifier returned to the client.
+        deltas: The session's Candidate Deltas.
+    """
+
     session_id: str
     deltas: dict[str, CandidateDelta] = field(default_factory=dict)
 
@@ -52,23 +73,55 @@ class SessionStore:
         self._sessions: dict[str, Session] = {}
 
     def create_session(self) -> str:
+        """Start a session.
+
+        Returns:
+            The new session id.
+        """
         session_id = secrets.token_hex(6)
         self._sessions[session_id] = Session(session_id=session_id)
         return session_id
 
     def get_session(self, session_id: str) -> Session | None:
+        """Look up a session.
+
+        Args:
+            session_id: The session id.
+
+        Returns:
+            The session, or ``None`` if unknown.
+        """
         return self._sessions.get(session_id)
 
     def add_delta(self, session_id: str, delta: CandidateDelta) -> None:
+        """Register a delta with a session.
+
+        Args:
+            session_id: The owning session.
+            delta: The delta to store, keyed by its ``delta_id``.
+
+        Raises:
+            KeyError: If the session does not exist.
+        """
         self._sessions[session_id].deltas[delta.delta_id] = delta
 
     def get_delta(self, session_id: str, delta_id: str) -> CandidateDelta | None:
+        """Look up a delta.
+
+        Args:
+            session_id: The owning session.
+            delta_id: The delta id.
+
+        Returns:
+            The delta, or ``None`` if the session or delta is unknown.
+        """
         session = self._sessions.get(session_id)
         if session is None:
             return None
         return session.deltas.get(delta_id)
 
     def new_delta_id(self) -> str:
+        """Return a fresh random delta id (not yet registered)."""
         return secrets.token_hex(4)
 
     def pending_delta(self, session_id: str) -> CandidateDelta | None:

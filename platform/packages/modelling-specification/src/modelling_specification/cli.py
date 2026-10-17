@@ -87,6 +87,15 @@ def _validate(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Run the ``build``, ``render`` or ``validate`` subcommand.
+
+    Args:
+        argv: Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Returns:
+        The process exit code: 0 on success, 1 when the model is invalid or diagrams
+        are stale (``render --check``), 2 on an error.
+    """
     ap = argparse.ArgumentParser(prog="modelling_specification", description=__doc__)
     sub = ap.add_subparsers(dest="command", required=True)
 

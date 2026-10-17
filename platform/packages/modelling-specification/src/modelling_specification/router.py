@@ -54,10 +54,27 @@ _config = {"auto_render": False}
 
 
 class ProposeRequest(BaseModel):
+    """Body of ``POST /sessions/{session_id}/propose``.
+
+    Attributes:
+        request: The architect's natural-language request.
+    """
+
     request: str
 
 
 class DecideRequest(BaseModel):
+    """Body of ``POST /sessions/{session_id}/deltas/{delta_id}/decide``.
+
+    Attributes:
+        action: ``apply``, ``keep-both``, ``keep-direct``, ``merge``, ``reject``,
+            ``accept-pattern`` or ``override``.
+        rationale: Why an objection is overridden (``override`` only; optional).
+        duplicate_decision: Echo of the duplicate decision taken (``merge``).
+        target_existing_id: Existing element to merge into (required for ``merge``).
+        state_classification: Optional ``Current``, ``Transition`` or ``Target``.
+    """
+
     action: str
     rationale: str | None = None
     duplicate_decision: str | None = None
@@ -66,11 +83,22 @@ class DecideRequest(BaseModel):
 
 
 class ConfigRequest(BaseModel):
+    """Body of ``PUT /config``.
+
+    Attributes:
+        auto_render: Whether applying a delta also renders the result inline.
+    """
+
     auto_render: bool
 
 
 @router.post("/sessions")
 def create_session() -> dict[str, str]:
+    """Start an authoring session.
+
+    Returns:
+        ``{"session_id": ...}``.
+    """
     return {"session_id": _store.create_session()}
 
 
@@ -94,6 +122,25 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
     },
 )
 def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
+    """Turn a natural-language request into a validated, possibly flagged, delta.
+
+    Later requests extend the session's pending delta rather than starting a new one.
+    Nothing is written to the model.
+
+    Args:
+        session_id: The session the request belongs to.
+        body: The request text.
+
+    Returns:
+        The delta (id, status, elements, relationships, validation result, duplicates
+        and pattern suggestions), plus ``notes`` when there is something to tell the
+        architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
+        ``delta_id`` is ``None``.
+
+    Raises:
+        HTTPException: 404 if the session is unknown; 502 if the LLM output cannot be
+            turned into a delta.
+    """
     if _store.get_session(session_id) is None:
         raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
 
@@ -177,6 +224,23 @@ def _validate_and_flag(delta: CandidateDelta) -> None:
     },
 )
 def decide(session_id: str, delta_id: str, body: DecideRequest) -> Any:
+    """Act on a validated or flagged delta: apply, merge, reject, accept a pattern or override.
+
+    Args:
+        session_id: The owning session.
+        delta_id: The delta to decide on.
+        body: The chosen action and its supporting fields.
+
+    Returns:
+        The outcome of the action (applied or discarded, with the classification and
+        any override decision id), or a 422 response ``{"needs": "state_classification"}``
+        when an unrecognised classification was given.
+
+    Raises:
+        HTTPException: 400 for an unknown action or a missing required field; 409 if the
+            delta is already applied or discarded, is flagged but ``apply`` was asked, the action does not fit
+            its state (nothing to override or accept, or a hard metamodel violation).
+    """
     delta = _store.get_delta(session_id, delta_id)
     if delta is None or delta.status in (DeltaStatus.APPLIED, DeltaStatus.DISCARDED):
         raise HTTPException(status_code=409, detail=f"delta {delta_id!r} is not awaiting a decision")
@@ -352,11 +416,24 @@ def _apply_with_override(
 
 @router.get("/config")
 def get_config() -> dict[str, bool]:
+    """Return the current configuration.
+
+    Returns:
+        ``{"auto_render": bool}``.
+    """
     return dict(_config)
 
 
 @router.put("/config")
 def put_config(body: ConfigRequest) -> dict[str, bool]:
+    """Set the process-wide auto-render choice (in memory only).
+
+    Args:
+        body: The new configuration.
+
+    Returns:
+        The configuration now in force.
+    """
     _config["auto_render"] = body.auto_render
     return dict(_config)
 
