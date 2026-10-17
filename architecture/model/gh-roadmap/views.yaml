@@ -22,6 +22,7 @@
   - wp-archimate-namespace-mismatch-parser-pins-gh-51
   - wp-architecture-md-still-describes-the-old-gh-50
   - wp-chore-model-rename-the-art-id-prefix-to-gh-109
+  - wp-decide-decision-capture-scope-and-the-gh-56
   - wp-epic-conversational-architecture-gh-68
   - wp-epic-multi-specification-modelling-gh-73
   - wp-feat-model-vendor-it4it-as-third-party-gh-4
@@ -60,7 +61,6 @@
   - plat-general-tasks-12
   - wp-chore-typing-apply-mypy-strict-to-skill-gh-101
   - wp-ci-add-multi-os-test-matrix-gh-9
-  - wp-decide-decision-capture-scope-and-the-gh-56
   - wp-feat-portal-add-a-portal-host-package-gh-120
   - wp-role-journeys-and-ui-ux-gh-45
   - wp-schedule-maintenance-subagents-on-a-gh-82
@@ -71,13 +71,11 @@
   diagram: migration/plat-github-importer-11
   members:
   - del-github-importer-11-unreleased
-  - del-release-v0-1-0
   - del-release-v0-2-0
   - plat-github-importer-11
   - wp-chore-model-place-wp-7-and-art-pkg-gh-103
   - wp-feat-model-generate-gaps-from-speckit-gh-102
   - wp-import-github-milestones-issues-releases-gh-95
-  - wp-model-the-packaging-and-migration-layers-gh-65
   - wp-test-model-set-a-performance-and-scale-gh-104
 - id: view-plat-multi-user-collaboration-2
   name: 'Roadmap: multi-user-collaboration'
@@ -151,5 +149,6 @@
   - del-release-v0-1-0
   - del-solution-design-mvp-8-unreleased
   - plat-solution-design-mvp-8
+  - wp-model-the-packaging-and-migration-layers-gh-65
   - wp-re-home-specs-to-two-tier-scheme-adr-gh-107
   - wp-resolve-migration-order-gap-schema-gh-60
