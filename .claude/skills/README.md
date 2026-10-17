@@ -60,8 +60,8 @@ Dependency chain: `diagram-c4` / `diagram-archimate` → `model-archimate` (vali
 
 | Skill / agent | Purpose |
 |-------|---------|
-| `wiki-librarian` | Build or refresh the wiki: scaffold `wiki/` when absent, resolve `sources.yaml`, diff sources against the build log, and regenerate the NEW/STALE topic pages. Tools under `wiki-librarian/tools/` (`resolve_sources`, `build_status`, `verify_wiki`, `semsearch`). See `wiki-librarian/SKILL.md`. |
-| `wiki-editor` | Formatting/consistency pass over the generated pages — heading hierarchy, citation-link and frontmatter hygiene, dead internal links — without changing technical meaning. See `wiki-editor/SKILL.md`. |
+| `wiki-librarian` | Build or refresh the wiki: scaffold `wiki/` when absent, resolve `sources.yaml`, diff sources against the build log, and regenerate the NEW/STALE topic pages, then a `wiki-editor` pass over them. Tools under `wiki-librarian/tools/` (`resolve_sources`, `build_status`, `verify_wiki`, `semsearch`). See `wiki-librarian/SKILL.md`. |
+| `wiki-editor` | Formatting/consistency pass over the generated pages — heading hierarchy, citation-link and frontmatter hygiene, dead internal links — without changing technical meaning. `wiki-librarian` runs it over the pages each run rebuilds. See `wiki-editor/SKILL.md`. |
 | `wiki-maintenance` (agent) | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Flags for a librarian run; never regenerates pages itself. See `.claude/agents/wiki-maintenance.md`. |
 
 ## Ephemeral skills (not tracked)
