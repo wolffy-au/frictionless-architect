@@ -53,6 +53,17 @@ class LlmSettings(BaseModel):
     components: dict[str, ProviderSettings] = Field(default_factory=dict[str, ProviderSettings])
 
     def resolve(self, component: str) -> ProviderSettings:
+        """Pick the settings for a component: its override, else the global default.
+
+        Args:
+            component: Identifier of the component.
+
+        Returns:
+            The component's override if present, otherwise the global default.
+
+        Raises:
+            NotConfiguredError: If there is neither an override nor a default.
+        """
         override = self.components.get(component)
         if override is not None:
             return override
