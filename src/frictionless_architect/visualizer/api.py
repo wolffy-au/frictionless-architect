@@ -458,11 +458,13 @@ async def schema_payload(force_reload: ForceReloadQuery = False) -> dict[str, An
     responses={
         409: {"description": "A refresh is already in progress"},
         429: {"description": "Too soon after the last successful refresh; see Retry-After"},
-        503: {"description": "Schema payload unavailable while refreshing"},
     },
 )
 async def schema_payload_refresh(request: RefreshRequestBody) -> dict[str, Any]:
     """``POST /schema-payload/refresh``: start a background refresh.
+
+    The rebuild runs after the response is sent. A failed rebuild is logged and the
+    cached payload is kept, so this route never answers 503.
 
     Args:
         request: The request body. ``request.source`` is logged alongside
