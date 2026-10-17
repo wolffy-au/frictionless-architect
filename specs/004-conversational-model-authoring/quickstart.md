@@ -10,11 +10,12 @@ ADR-0034) for component `modelling-specification.conversational-authoring`. Cont
 
 ```bash
 cd platform
-poetry run uvicorn modelling_specification.router:app --port 8100 &
-curl -s -X POST localhost:8100/authoring/sessions | jq .session_id
-curl -s -X POST localhost:8100/authoring/sessions/$SID/propose \
-  -d '{"request": "add an application function fn-example under sub-modelling"}'
-curl -s -X POST localhost:8100/authoring/sessions/$SID/deltas/$DID/decide -d '{"action":"apply"}'
+poetry run uvicorn modelling_specification.app:app --port 8100 &
+H='Content-Type: application/json'
+SID=$(curl -s -X POST localhost:8100/authoring/sessions | jq -r .session_id)
+DID=$(curl -s -X POST localhost:8100/authoring/sessions/$SID/propose -H "$H" \
+  -d '{"request": "add an application function fn-example under sub-modelling"}' | jq -r .delta_id)
+curl -s -X POST localhost:8100/authoring/sessions/$SID/deltas/$DID/decide -H "$H" -d '{"action":"apply"}'
 ```
 
 Expect: `status: "applied"`, a `state_classification`, and `architecture/model/elements.yaml`

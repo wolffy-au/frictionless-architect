@@ -35,7 +35,7 @@ Poetry only for any inspection commands.
    paths for format changes (VIII), cross-platform assumptions (IX), validation before
    release (VII).
 4. Flag spec-vs-spec contradictions you hit (e.g. `uv` in `TECHNICAL.md` vs Poetry in
-   practice; accounting-era language in `README.md`).
+   practice).
 5. Rank gaps CRITICAL / HIGH / MEDIUM / LOW (constitution violations and unbuilt
    success-criteria first).
 

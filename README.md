@@ -195,6 +195,9 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
   policy and standard documents to OSCAL Catalogs and Profiles.
 - [`llm-provider-config`](platform/packages/llm-provider-config/README.md) — shared
   LLM provider, model and credential resolution.
+- [`modelling-specification`](platform/packages/modelling-specification/README.md) —
+  conversational ArchiMate model authoring (service, split-screen UI and model
+  build/render/validate CLI); run it with `./scripts/run-modelling_specification.sh`.
 - [`portal`](platform/packages/portal/README.md) — the composition host (ADR-0020)
   that serves every package UI from one app:
 
@@ -250,7 +253,11 @@ poetry run pytest
   (`tests/unit/schema/`, `tests/unit/visualizer/`), one `test_<module>.py` per
   production module.
 - API tests live under `tests/api/` and exercise the FastAPI app in-process via
-  `httpx.AsyncClient` + `ASGITransport` — no running server required.
+  `httpx.AsyncClient` + `ASGITransport` — no running server required. See
+  [`tests/api/README.md`](tests/api/README.md) for the fixtures.
+- `tests/integration/` holds tests of the schema manager's graph audits;
+  `tests/tools/` tests the repo's tooling (architecture model, commit-message check,
+  wiki librarian).
 - BDD scenarios live under `tests/features/` (behave).
 
 Scope a run with `-k` (e.g. `poetry run pytest tests/api -k schema`) or target one

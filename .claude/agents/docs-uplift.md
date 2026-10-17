@@ -35,9 +35,8 @@ Run their scripts with `poetry run python ...`. Markdown is linted by
    that describe behaviour the code no longer has. Update comments next to changed code.
 3. **Prose docs**: reconcile `README.md`, any `specs/<feature>/quickstart.md`,
    `AGENTS.md`, and feature guides against real entry points, env vars
-   (`FRICTIONLESS_ARCHITECT_*`), routes, and commands. The current `README.md` still
-   references accounting-era endpoints and `pip install python-accounting` — correct
-   stale content to match the visualiser reality; do not invent features.
+   (`FRICTIONLESS_ARCHITECT_*`), routes, and commands. Correct stale content to match
+   the visualiser reality; do not invent features.
 4. **Feature coverage**: list every user-facing feature (from routes, CLI entry points,
    `specs/**` requirements) and confirm each has a tutorial/how-to section.
    Write the missing ones.

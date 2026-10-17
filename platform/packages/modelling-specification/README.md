@@ -12,6 +12,57 @@ Convention Rules before anything touches `architecture/model/`.
 - Modelled as `art-pkg-modelling-specification` in `architecture/model/`, realised by the
   `packages/modelling-specification` Artifact.
 
+## Run the authoring service and UI
+
+Needs an LLM provider configured for the component
+`modelling-specification.conversational-authoring` (see
+[`llm-provider-config`](../llm-provider-config/README.md); the app also mounts the
+`/settings/llm` page).
+
+```bash
+./scripts/run-modelling_specification.sh   # from the repo root
+```
+
+This runs `modelling_specification.app:app` with `uvicorn` from `platform/` on
+`http://127.0.0.1:8001`. Open `/authoring/` for the split-screen UI (chat pane above a
+live render pane); the OpenAPI docs are at `/docs`. Standalone for now: the portal
+does not mount it yet.
+
+### Endpoints
+
+All under `/authoring`; request and response shapes are in
+[`contracts/api.md`](../../../specs/004-conversational-model-authoring/contracts/api.md).
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/sessions` | Start a session, returns `session_id` |
+| `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta; validated, flagged or a clarifying message |
+| `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct or override |
+| `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta, nothing written |
+| `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
+| `GET` | `/views` | Renderable views for the picker |
+| `GET` | `/render` | Render a view by `object_id` or `description` |
+| `GET` / `PUT` | `/config` | Read or set `auto_render` |
+| `GET` | `/` | The split-screen UI |
+
+A worked end-to-end walkthrough is in
+[`quickstart.md`](../../../specs/004-conversational-model-authoring/quickstart.md).
+
+## Command line
+
+From the repo root, the same logic the root wrappers call:
+
+```bash
+poetry run --directory platform python -m modelling_specification.cli build
+poetry run --directory platform python -m modelling_specification.cli render [--check] [--no-svg]
+poetry run --directory platform python -m modelling_specification.cli validate <model.xml> [--json]
+```
+
+- `build` -- load the model YAML, write `frictionless-architect.xml` and validate it.
+- `render` -- regenerate the diagrams; `--check` fails if committed ones are stale,
+  `--no-svg` writes `.puml` only.
+- `validate` -- run the metamodel checks on a model file; exits non-zero when it is not clean.
+
 ## Development
 
 From `platform/` (one shared lock for every package -- ADR-0002):
