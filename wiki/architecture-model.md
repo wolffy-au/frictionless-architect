@@ -1,7 +1,7 @@
 ---
 title: Architecture Model
 generated: 2026-10-17
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -38,8 +38,8 @@ model to the ArchiMate 3.2 relationship matrix
 (`architecture/model/README.md` §"Schema"), plus a project-specific
 `check_motivation_conventions` pass (see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 477 elements, 982 relationships and 64 views. Of
-those, 249 elements, 603 relationships and 48 views are hand-authored in this
+current merged model is 489 elements, 1001 relationships and 64 views. Of
+those, 261 elements, 622 relationships and 48 views are hand-authored in this
 repo's own `elements.yaml`/`relationships.yaml`/`views.yaml` plus the new
 `views-viewpoints.yaml` (sections A–C, E and F, plus the IT4IT touchpoint
 bridge, plus one generic view per standard viewpoint — see "Context-level
@@ -59,12 +59,11 @@ as the `.puml` / `.svg` diagrams.
 | `relationships.yaml` | Every relationship: `type` / `source` / `target` / `label?` / `props?` |
 | `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`, optionally narrowed by `exclude_elements` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
 | `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`); same schema as `views.yaml`, ids unique across both (see "Context-level viewpoints" below) |
-| `conventions.yaml` | Enterprise Convention Rules (for example `interposed-pattern`) that conversational authoring validation applies to proposed changes (spec 004; see [Conversational Model Authoring](modelling-specification.md)) |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views, merged by `build.py`, never hand-edited |
-| `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then validates. Like `render_diagrams.py` and `validate.py`, a thin wrapper: the logic lives in the `modelling-specification` package (ADR-0037). It runs `modelling_specification.cli build` with `poetry run` from `platform/`, minus `VIRTUAL_ENV` so the nested run uses the platform venv (`architecture/model/build.py`) |
+| `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
-| `diagrams/` | **Generated** `.puml` / `.svg`, one subdirectory per layer (`vision/`, `business/`, `application/`, `layered/`, `technology/`, `implementation/`, `migration/`, `c4/`), plus the IT4IT capability-bridges view at the top level (`architecture/model/README.md` §"Files") |
+| `diagrams/` | **Generated** `.puml` / `.svg` |
 
 Schema rules (`architecture/model/README.md` §"Schema";
 `architecture/model/elements.yaml:7-10`):
@@ -183,7 +182,7 @@ alone); the generic view is the type-wide sweep.
 
 | Section | Page |
 |---|---|
-| A. Motivation + Strategy + Business — the load-bearing skeleton (5 outcomes, 5 value streams, 16 processes, 10 functions) | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
+| A. Motivation + Strategy + Business — the load-bearing skeleton (5 sub-goals under the top goal, 10 outcomes, 5 value streams, 16 processes, 10 functions) | [Architecture Model: Skeleton](architecture-model-skeleton.md) |
 | B. Application — the six-subsystem ecosystem | [Architecture Model: Ecosystem](architecture-model-ecosystem.md) |
 | C. Application — the artefact input/output pipeline | [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md) |
 | E. Implementation & Migration — the platform's own restructure; F. Technology — the first Technology-layer cut | [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) |
@@ -475,8 +474,8 @@ catalog's upload/feedback functions and interface. That brings the
 platform's own model to 237 elements / 555 relationships / 33 views (379 /
 790 / 37 merged with the unchanged IT4IT reference).
 
-A later batch of passes (2026-10-08 to 2026-10-14) brought the model to its
-current 477 / 982 / 64: context-level viewpoints were added (GH #105, see
+A later batch of passes (2026-10-08 to 2026-10-14) brought the model to
+477 / 982 / 64: context-level viewpoints were added (GH #105, see
 above); the Baseline Plateau was renamed Current State; `conventions.yaml`
 wired business-layer Enterprise Convention Rules into the model; and the
 `Portal` composition host and its `Portal UI` interface were added
@@ -485,3 +484,27 @@ model-authoring elements (GH #108, ADR-0037 — see
 [Conversational Model Authoring](modelling-specification.md)), bringing
 section E to 10 package `Artifact`s (see [Architecture Model:
 Migration](architecture-model-migration.md)).
+
+A 2026-10-17 pass split the flat Goal→Outcome motivation spine into
+Goal→Sub-Goal→Outcome: each of the five former top-level Outcomes
+(`outcome-drift-reconciled`, `outcome-change-at-ai-speed`,
+`outcome-compliance-before-release`, `outcome-accountable-automation`,
+`outcome-intent-becomes-model-truth`) became a `Goal`
+(`Aggregation`-linked under `goal-frictionless-architecture`, the ArchiMate
+pattern for goal decomposition), and each sub-goal now has two concrete,
+measurable Outcomes realizing it instead of one (see [Skeleton § Goal and
+outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)
+for the full chain and rationale). The pass also added a new Driver,
+`driver-unprovable-automation` ("Automation Outpaces Provable Control
+Assurance"), giving the Risk & Compliance stakeholder its own honest
+Driver→Assessment chain into `goal-accountable-automation` rather than
+reusing an ill-fitting existing Driver; a new Requirement,
+`req-decision-model-traceability`, realizing
+`outcome-decision-to-model-latency`; and a new generic `no-restatement`
+Enterprise Convention Rule kind (see [Conversational Model
+Authoring](modelling-specification.md)) that flags a Requirement whose
+description verbatim-restates the Outcome it realizes. Several value
+streams on `4-strategy.puml` that would otherwise have had an orphaned
+second Outcome gained a second `Realization` edge to it rather than a new
+value stream being invented or the Outcome being dropped from the view.
+That brings the model to 489 / 1001 / 64.

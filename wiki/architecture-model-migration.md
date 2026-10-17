@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Packaging, Migration & Technology"
 generated: 2026-10-17
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -198,7 +198,9 @@ the "Feature Steel Thread" view below).
 viewpoint view rendered to `diagrams/layered/fn-conversational-authoring`)
 traces the conversational-authoring feature end to end through every layer
 it touches — motivation (`driver-authoring-friction` →
-`assess-manual-authoring-risk` → `outcome-intent-becomes-model-truth`),
+`assess-manual-authoring-risk` → `goal-intent-becomes-model-truth`,
+renamed from `outcome-intent-becomes-model-truth` on 2026-10-17 when the
+motivation spine split into Goal→Sub-Goal→Outcome),
 strategy (`cap-conversational-governance`), business
 (`bfn-conversational-authoring` / `process-conversational-authoring`,
 jointly `Assignment`-ed from both `role-ea` and `role-sa`), application

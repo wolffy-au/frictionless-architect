@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Skeleton"
 generated: 2026-10-17
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -31,11 +31,21 @@ PR #62 it also carries a Phase B business layer. In brief:
 
 [ADR-0027](decision-log.md) and [ADR-0033](decision-log.md) record the shape;
 [ADR-0037](decision-log.md) (GH #108) added the fifth of each. The README's
-section-A summary no longer gives element counts, which had drifted from the model; it
-describes the section's shape and leaves the numbers to `elements.yaml`
-(`architecture/model/README.md` §"Model contents"). The counts on this page come from
-`elements.yaml`, which holds 16 `BusinessProcess`es, 10 `BusinessFunction`s and 22
-`BusinessObject`s (`architecture/model/elements.yaml:609-968`).
+own counts ("5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3
+principles, 4 constraints, 9 functional requirements", "8 capabilities, 3
+courses of action, 5 resources + 4 value streams … with 11 stages" —
+`architecture/model/README.md` §"Model contents") still describe the model as
+it stood before GH #108 and have not been updated for the fifth
+driver/assessment/outcome, tenth functional requirement, ninth capability or
+fifth value stream; this page follows `elements.yaml`/`relationships.yaml`
+directly rather than the README's stale summary.
+
+> **Sources disagree on the business layer's size.** The README's
+> section-A row still says "Business (6 processes)"
+> (`architecture/model/README.md` §"Model contents"). `elements.yaml` now
+> holds 15 `BusinessProcess`es, 9 `BusinessFunction`s and 22
+> `BusinessObject`s (`architecture/model/elements.yaml:539-875`). This page
+> follows `elements.yaml`.
 
 ## Views
 
@@ -167,7 +177,7 @@ Authoring](modelling-specification.md) for the rule's implementation.
 `goal-drift-reconciled` replaces the former single outcome, "Architecture
 as Executable Intelligence". That phrase now lives in the `desc` of
 `vs-governed-delivery` ("Architecture as executable intelligence, applied to
-delivery") (`architecture/model/elements.yaml:439-446`).
+delivery") (`architecture/model/elements.yaml:439-445`).
 
 **Edges that are deliberately absent.** The model has no Assessment → top
 Goal, Assessment → Requirement, Driver → Requirement, or Requirement/Value
@@ -224,7 +234,7 @@ carry no such influence. They are justified by the outcome they realize
 instead.
 
 **Functional requirements.** There are now eleven, and each is a component contract
-(`architecture/model/elements.yaml:337-446`):
+(`architecture/model/elements.yaml:337-445`):
 
 - automated specification generation from the graph
 - automated regulatory-obligation mapping
@@ -327,7 +337,7 @@ The links are (`architecture/model/relationships.yaml:70-80`):
 Delivery" stream with **four streams, one per sub-goal**, organised by who
 *receives* the value. GH #108 then added a fifth, **Intent to Model**, for the
 intent-becomes-model-truth sub-goal. That gives 16 `ValueStream` elements: 5
-streams and 11 stages (`architecture/model/elements.yaml:431-539`). Each
+streams and 11 stages (`architecture/model/elements.yaml:431-537`). Each
 stream `Realization`-links to **at least one** Outcome under its sub-goal —
 usually exactly one, but since the 2026-10-17 Goal→Sub-Goal→Outcome split
 gave every sub-goal a second Outcome, five streams now carry a second
@@ -386,7 +396,7 @@ Triggering there would make Prove → Release derived through the escalation pat
 ### Processes and functions
 
 There are now 16 `BusinessProcess`es, grouped by `Composition` under 10
-`BusinessFunction`s (`architecture/model/elements.yaml:541-729`, plus
+`BusinessFunction`s (`architecture/model/elements.yaml:539-727`, plus
 `process-conversational-authoring` / `bfn-conversational-authoring` added for
 GH #108; `architecture/model/relationships.yaml:259-343`). Roles are
 `Assignment`-linked to the *function* they perform, not to individual
@@ -426,11 +436,11 @@ Several processes are new or have been renamed:
 - **Narrowed:** OSCAL Catalog Generation no longer produces Profiles. Every
   Profile, "including a published baseline such as NIST SP 800-53B", is tailored
   by a human in Control Baseline Tailoring
-  (`architecture/model/elements.yaml:683-706`).
+  (`architecture/model/elements.yaml:681-704`).
 
 A header note flags that the `bfn-*` functions group processes by lifecycle.
 They "could — and arguably should — be re-cut to align with the journeys of the
-section-B roles" (`architecture/model/elements.yaml:605-611`).
+section-B roles" (`architecture/model/elements.yaml:603-609`).
 
 **The choreography.** The processes form one connected chain, with Triggering
 hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-343`):
@@ -461,7 +471,7 @@ Controls Effectiveness Monitoring (`architecture/model/relationships.yaml:217-23
 ### Business objects
 
 There are 22 `BusinessObject`s, the business-layer counterparts of section C's artefacts
-(`architecture/model/elements.yaml:731-877`). Most carry a `Realization` link
+(`architecture/model/elements.yaml:729-875`). Most carry a `Realization` link
 back to their `DataObject`; see
 [Artefact Flow](architecture-model-artefact-flow.md). They fall into two groups.
 
@@ -485,7 +495,7 @@ back to their `DataObject`; see
   Conformance Register is "the system of record for every drift finding and its
   triage status"; findings approved for remediation are raised as ITSM work
   items, but "the register itself is not a backlog"
-  (`architecture/model/elements.yaml:819-877`).
+  (`architecture/model/elements.yaml:817-875`).
 
 **The `archimate-analogue` prop.** Five of these objects carry it:
 
@@ -506,7 +516,7 @@ model's own Plateaus free to mean states of the platform itself
 the Current State against the **Transition State in effect**, "so gaps planned for later
 states are not flagged as drift". It records findings in the Conformance
 Register, and Drift Review & Triage updates their status there
-(`architecture/model/elements.yaml:574-590`;
+(`architecture/model/elements.yaml:572-588`;
 `architecture/model/relationships.yaml:338-351`).
 
 **Where the POA&M sits.** Target State Definition takes remediation milestones
@@ -520,9 +530,9 @@ control deficiencies into the POA&M
 > - `bfn-drift-management`'s `desc` says it reconciles "current state
 >   architecture against the target state architecture". The process it
 >   comprises reconciles against the Transition State in effect
->   (`architecture/model/elements.yaml:627-633` vs. `574-582`).
+>   (`architecture/model/elements.yaml:625-631` vs. `574-582`).
 > - `bfn-pattern-blueprint-traceability` still describes "mapping OSCAL
 >   Profile controls". `process-blueprint-traceability` still describes checking
 >   "against the OSCAL Profile". Their `Access` edges read the Resolved OSCAL
->   Profile Catalog (`architecture/model/elements.yaml:643-648`, `716-722`;
+>   Profile Catalog (`architecture/model/elements.yaml:641-646`, `716-722`;
 >   `architecture/model/relationships.yaml:301-303`).
