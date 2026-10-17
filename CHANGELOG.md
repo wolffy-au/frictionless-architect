@@ -1,3 +1,20 @@
+## v0.4.0 (2026-10-17)
+
+### Feat
+
+- **scripts**: let the weekly wiki audit fix the findings you choose
+
+### Fix
+
+- **model**: drop a closed milestone's done work from its view
+- **model**: collapse an epic's duplicate child Realization edges
+- **model**: run the build and render wrappers in the platform venv
+- **model**: keep an epic's own Deliverable link in the roadmap layer
+
+### Refactor
+
+- **modelling-specification**: define COMPONENT_ID once
+
 ## v0.3.0 (2026-10-15)
 
 ### Feat
