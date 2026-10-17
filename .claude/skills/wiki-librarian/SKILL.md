@@ -117,22 +117,24 @@ For each topic to build:
    `sources.yaml` order.
 2. Set/update the top of `.build-log.yaml`: `generated` (today),
    `generator` (your model id, e.g. `claude-sonnet-5`).
-3. Run `poetry run python tools/verify_wiki.py` and `poetry run python
+3. **Editor pass.** If any page was built this run, run the `wiki-editor`
+   skill over exactly those pages (plus `index.md` for its link check). Run
+   it before verification so `verify_wiki.py` checks the edited pages. Carry
+   anything the editor flagged but couldn't fix into the run report.
+4. Run `poetry run python tools/verify_wiki.py` and `poetry run python
    tools/build_status.py --check`. Act on every finding — a run is not done
    until both exit clean or every remaining finding has been explained to the
    user. Do not report a page as built on the strength of having written a log
    entry.
-4. Run `poetry run python tools/semsearch.py index --scope all` so the next run
+5. Run `poetry run python tools/semsearch.py index --scope all` so the next run
    and the `wiki-maintenance` agent search a current index. The embed step is
    CPU-bound (order minutes for a full `--scope all`); it auto-sizes its worker
    pool to available RAM so it should not OOM. If it still is, set
    `$SEMSEARCH_PARALLEL=1` or fall back to `--scope wiki`, and say so in the
    report.
-5. Report what was built/skipped/removed, any unmatched globs, any failed
-   URL fetches, and — if a page crossed ~500 lines — suggest a split (see
-   "Oversized pages"). If several pages were regenerated, suggest
-   `wiki-editor` as a follow-up polish pass rather than running it
-   automatically.
+6. Report what was built/skipped/removed, what the editor pass changed or
+   flagged, any unmatched globs, any failed URL fetches, and — if a page
+   crossed ~500 lines — suggest a split (see "Oversized pages").
 
 ## Writing sources.yaml
 
@@ -227,8 +229,8 @@ fingerprints every current source and compares to `.build-log.yaml`.
 - Nothing changed → FRESH → skip, and the run is nearly a no-op.
 
 Only rebuild what the diff flags unless the user asks for a full rebuild.
-Always finish with `verify_wiki.py`, `build_status.py --check`, and
-`semsearch index`.
+Always finish with the `wiki-editor` pass over rebuilt pages, then
+`verify_wiki.py`, `build_status.py --check`, and `semsearch index`.
 
 ## Semantic search
 
