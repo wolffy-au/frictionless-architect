@@ -25,6 +25,7 @@ Implementation & Migration elements, milestone-first and user-facing, not a dump
 - An epic's children often resolve to the exact same Deliverable as the epic itself (same milestone, same release-or-unreleased outcome), which used to draw one Realization edge per child plus the epic's own — correct per FR-003, but visually redundant since the children are already nested under the epic by Aggregation.
 - A child's own Realization is now emitted only when it is not a duplicate of its Aggregation root's: every Work Package still realizes exactly one Deliverable (FR-003 unchanged), but a child sharing its root ancestor's exact Deliverable is reachable in the diagram only via the Aggregation chain, not its own edge.
 - A child whose own Deliverable target differs from its root's — because it shipped in a different release, or (seen in practice: GH-83's child GH-90) because it carries a different milestone — always keeps its own distinct Realization edge and stays in its own milestone's view.
+- Once a milestone itself is closed, its view drops its own closed Work Packages (they stay in the data, just not drawn): a shipped milestone's diagram settles to its Plateau and Deliverable(s) rather than accumulating every issue it ever contained. An open milestone still shows all of its Work Packages, open or closed, so in-flight progress stays visible.
 
 ## Mapping
 
