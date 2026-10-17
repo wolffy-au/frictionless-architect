@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Artefact Flow"
 generated: 2026-10-17
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -31,7 +31,7 @@ now reserved for genuine ArchiMate `Artifact`-typed elements), plus
 `do-convention-rules` added for GH #108. The shared stores `Aggregation`-link the persistent artefacts,
 which ties section C back to section B
 ([Ecosystem](architecture-model-ecosystem.md))
-(`architecture/model/elements.yaml:1057-1288`,
+(`architecture/model/elements.yaml:1055-1286`,
 `architecture/model/relationships.yaml:542-700`).
 
 A dedicated Forensic Ledger Recording function (`fn-ledger-record` →
@@ -40,9 +40,10 @@ evaluation, the enforcement gate, the drift engine and build supervision. As a
 result, every governed action lands an immutable record
 (`architecture/model/relationships.yaml:626-631`, `647`).
 
-The README's section-C summary no longer gives counts, which had drifted from the model;
-the figures above come from `elements.yaml` (`architecture/model/README.md` §"Model
-contents").
+> **Sources disagree on counts.** The README's section-C summary still gives
+> the older figures of 15 functions and 25 DataObjects
+> (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 24
+> and 35.
 
 Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
 `589-679`):
@@ -55,7 +56,7 @@ Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
 | `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering |
 | `Artefact Flow — Assurance & Specification` | Spec generation; build supervision; the enforcement gate run inline in CI/CD; BAU effectiveness monitoring; drift detection against the roadmap → remediation backlog and POA&M |
 
-Notable artefacts (`architecture/model/elements.yaml:1252-1288`):
+Notable artefacts (`architecture/model/elements.yaml:1250-1286`):
 
 - **OSCAL:** Catalog, Profile, Resolved OSCAL Profile Catalog, Component,
   SSP, Assessment Plan, Assessment Results, and Plan of Action & Milestones.
@@ -252,5 +253,5 @@ Process; see [Architecture Views & Diagrams](architecture-diagrams.md).
 > **Sources disagree on the resolved artefact's name.** `sub-catalog`'s `desc`
 > still says it resolves Profiles "into Resolved Catalogs", and
 > `fn-oscal-profile-resolve`'s `desc` says "a fully resolved OSCAL Catalog"
-> (`architecture/model/elements.yaml:892-898`, `1109-1113`). The artefact
+> (`architecture/model/elements.yaml:890-896`, `1109-1113`). The artefact
 > itself is named Resolved OSCAL Profile Catalog.
