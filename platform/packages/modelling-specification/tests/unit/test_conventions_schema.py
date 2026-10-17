@@ -11,7 +11,15 @@ from modelling_specification.model_io import REPO_ROOT
 CONVENTIONS = REPO_ROOT / "architecture" / "model" / "conventions.yaml"
 
 REQUIRED_FIELDS = {"id", "kind", "scope", "params", "enabled"}
-VALID_KINDS = {"naming", "altitude", "allowed-subset", "interposed-pattern"}
+VALID_KINDS = {
+    "naming",
+    "altitude",
+    "allowed-subset",
+    "interposed-pattern",
+    "required-neighbour",
+    "no-bypass",
+    "no-restatement",
+}
 
 
 def _load() -> list[dict[str, object]]:
@@ -40,6 +48,25 @@ def test_seeded_interposed_pattern_rule_matches_the_sw_neo4j_precedent() -> None
     assert params["target_type"] == "DataObject"
     assert params["intermediary_types"] == ["Artifact"]
     assert params["target_relationship_type"] == "Realization"
+
+
+def test_motivation_relationship_policies_are_configured_as_conventions() -> None:
+    rules = _load()
+    ids = {str(rule["id"]) for rule in rules}
+    assert {
+        "conv-driver-associated-with-assessment",
+        "conv-assessment-associated-with-goal",
+        "conv-goal-associated-with-assessment",
+        "conv-outcome-realizes-goal",
+        "conv-outcome-realized-by-requirement",
+        "conv-capability-realizes-requirement",
+        "conv-driver-routes-through-assessment",
+    } <= ids
+    for rule in rules:
+        if rule["kind"] == "required-neighbour":
+            params = rule["params"]
+            assert params["relationship_type"] in {"Association", "Realization"}
+            assert params["direction"] in {"incoming", "outgoing"}
 
 
 def test_round_trips_through_safe_load_and_safe_dump_with_no_information_loss() -> None:
