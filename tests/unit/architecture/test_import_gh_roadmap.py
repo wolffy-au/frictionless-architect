@@ -498,13 +498,55 @@ def test_derivation_filter_drops_only_implied_links(importer: ModuleType) -> Non
 
 
 @pytest.mark.parametrize("state", [{}, {"state": "closed", "closed_at": "2026-02-01T00:00:00Z"}])
-def test_epic_keeps_its_own_deliverable_when_a_child_shares_it(kit: Kit, state: dict[str, Any]) -> None:
-    # Aggregation epic -> child plus the child's Realization chain to the same Deliverable;
-    # the derivation filter must not treat the epic's own Realization as implied (FR-003).
+def test_child_sharing_its_root_ancestors_deliverable_shows_only_via_aggregation(
+    kit: Kit, state: dict[str, Any]
+) -> None:
+    # Epic and child resolve to the same Deliverable: the child's own Realization would just
+    # duplicate the epic's, so only the epic's edge is emitted; the child is still reachable
+    # via its Aggregation to the epic (FR-003's "exactly one Deliverable" stays true in the data).
     issues = [kit.issue(1, "epic", **state), kit.issue(2, "child", parent=1, **state)]
     layer = kit.layer([kit.milestone()], [kit.release("v1", "2026-03-01T00:00:00Z")], issues)
     deliverable = "del-release-v1" if state else "del-mvp-1-unreleased"
-    assert {("Realization", "wp-epic-gh-1", deliverable), ("Realization", "wp-child-gh-2", deliverable)} <= links(layer)
+    assert links(layer, "Realization") & {("Realization", "wp-epic-gh-1", deliverable)}
+    assert ("Realization", "wp-child-gh-2", deliverable) not in links(layer)
+    assert ("Aggregation", "wp-epic-gh-1", "wp-child-gh-2") in links(layer)
+    view = next(v for v in layer["views.yaml"] if v["id"] == "view-plat-mvp-1")
+    assert {"wp-epic-gh-1", "wp-child-gh-2"} <= set(view["members"])
+
+
+def test_grandchild_sharing_the_roots_deliverable_is_also_suppressed(kit: Kit) -> None:
+    issues = [kit.issue(1, "epic"), kit.issue(2, "child", parent=1), kit.issue(3, "grandchild", parent=2)]
+    layer = kit.layer([kit.milestone()], [], issues)
+    deliverable = "del-mvp-1-unreleased"
+    wp_links = {t for t in links(layer, "Realization") if t[1].startswith("wp-")}
+    assert wp_links == {("Realization", "wp-epic-gh-1", deliverable)}
+    view = next(v for v in layer["views.yaml"] if v["id"] == "view-plat-mvp-1")
+    assert {"wp-epic-gh-1", "wp-child-gh-2", "wp-grandchild-gh-3"} <= set(view["members"])
+
+
+def test_child_shipped_separately_from_its_epic_keeps_its_own_realization(kit: Kit) -> None:
+    # The epic is still open (unreleased) while its child already shipped in a release: their
+    # targets differ, so the child's own edge is genuine information, not a duplicate (GH-83/#108 shape).
+    issues = [kit.issue(1, "epic"), kit.issue(2, "child", parent=1, state="closed", closed_at="2026-02-01T00:00:00Z")]
+    layer = kit.layer([kit.milestone()], [kit.release("v1", "2026-03-01T00:00:00Z")], issues)
+    wp_links = {t for t in links(layer, "Realization") if t[1].startswith("wp-")}
+    assert wp_links == {
+        ("Realization", "wp-epic-gh-1", "del-mvp-1-unreleased"),
+        ("Realization", "wp-child-gh-2", "del-release-v1"),
+    }
+
+
+def test_child_in_a_different_milestone_keeps_its_own_realization(kit: Kit) -> None:
+    # Structural parent, but a different milestone (GH-83/#90 shape): the child's own unreleased
+    # Deliverable is distinct from its root's, so it must not be swept away as a duplicate.
+    milestones = [kit.milestone(), kit.milestone(2, "later")]
+    issues = [kit.issue(1, "epic"), kit.issue(2, "child", parent=1, milestone=2)]
+    layer = kit.layer(milestones, [], issues)
+    wp_links = {t for t in links(layer, "Realization") if t[1].startswith("wp-")}
+    assert wp_links == {
+        ("Realization", "wp-epic-gh-1", "del-mvp-1-unreleased"),
+        ("Realization", "wp-child-gh-2", "del-later-2-unreleased"),
+    }
 
 
 def issues_with_milestone_7_issue() -> list[str]:
