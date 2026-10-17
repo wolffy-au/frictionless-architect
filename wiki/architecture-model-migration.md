@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Packaging, Migration & Technology"
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml

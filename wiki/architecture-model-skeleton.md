@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Skeleton"
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -30,21 +30,11 @@ PR #62 it also carries a Phase B business layer. In brief:
 
 [ADR-0027](decision-log.md) and [ADR-0033](decision-log.md) record the shape;
 [ADR-0037](decision-log.md) (GH #108) added the fifth of each. The README's
-own counts ("5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3
-principles, 4 constraints, 9 functional requirements", "8 capabilities, 3
-courses of action, 5 resources + 4 value streams … with 11 stages" —
-`architecture/model/README.md` §"Model contents") still describe the model as
-it stood before GH #108 and have not been updated for the fifth
-driver/assessment/outcome, tenth functional requirement, ninth capability or
-fifth value stream; this page follows `elements.yaml`/`relationships.yaml`
-directly rather than the README's stale summary.
-
-> **Sources disagree on the business layer's size.** The README's
-> section-A row still says "Business (6 processes)"
-> (`architecture/model/README.md` §"Model contents"). `elements.yaml` now
-> holds 15 `BusinessProcess`es, 9 `BusinessFunction`s and 22
-> `BusinessObject`s (`architecture/model/elements.yaml:541-877`). This page
-> follows `elements.yaml`.
+section-A summary no longer gives element counts, which had drifted from the model; it
+describes the section's shape and leaves the numbers to `elements.yaml`
+(`architecture/model/README.md` §"Model contents"). The counts on this page come from
+`elements.yaml`, which holds 16 `BusinessProcess`es, 10 `BusinessFunction`s and 22
+`BusinessObject`s (`architecture/model/elements.yaml:609-968`).
 
 ## Views
 

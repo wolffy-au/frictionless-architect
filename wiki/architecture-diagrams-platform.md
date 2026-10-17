@@ -1,7 +1,7 @@
 ---
 title: "Architecture Views & Diagrams: Platform, Migration & Rendering"
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/implementation/deployment.puml
@@ -103,7 +103,7 @@ under `migration/`:
 | Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `views.yaml` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
 | Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview` | `implementation_migration` | `views-viewpoints.yaml` (moved here 2026-10-08, GH #105) | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
 | Work Package Dependencies (new, GH #105) | `migration/work-package-dependencies` | `implementation_migration` | `views.yaml`, `context: [platform, gh-roadmap]` | Only the `WorkPackage`s and the `Triggering` edges between them — the dependency order on its own, not buried among Plateaus/Gaps/Deliverables the way the overview has it; `include_types: [WorkPackage]` so a new (including GH-roadmap-imported) Work Package appears automatically |
-| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now twelve, including `plat-github-importer-11` and `plat-general-tasks-12` alongside the original business-function MVPs (`plat-policy-to-oscal-mvp-1` through `plat-effectiveness-assurance-mvp-10`) |
+| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now twelve, including `plat-github-importer-11` and `plat-general-tasks-12` alongside the original business-function MVPs (`plat-policy-to-oscal-mvp-1` through `plat-effectiveness-assurance-mvp-10`). A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s); an open milestone still shows all of its Work Packages (`specs/003-gh-roadmap-archimate/spec.md`; see [GitHub Roadmap Layer](gh-roadmap-layer.md)) |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
 mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,
@@ -240,18 +240,23 @@ poetry run python architecture/model/build.py           # YAML -> XML (+ validat
 poetry run python architecture/model/render_diagrams.py # XML -> every .puml / .svg
 ```
 
-`render_diagrams.py` reads each view's `diagram:` key, a path under `diagrams/`
+`render_diagrams.py` is a thin wrapper: it runs the `modelling-specification` package's
+`cli render` with `poetry run` from `platform/`, dropping `VIRTUAL_ENV` from the
+environment so the nested `poetry run` uses the platform venv rather than the root one it
+was started from. `build.py` does the same for `cli build`
+(`architecture/model/render_diagrams.py:24-49`; `architecture/model/build.py`). The
+renderer reads each view's `diagram:` key, a path under `diagrams/`
 with no extension, and emits one `.puml`/`.svg` pair per view. A view with no
 `diagram:` key is skipped with a note. The two C4 diagrams are a fixed list in the
 script: `c4/context` with a legend, and `c4/container` laid out left to right
-(`architecture/model/render_diagrams.py:56-60`).
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:65-70`).
 
 Views declared in `third_party/it4it/views.yaml` render into the vendored model's
 own `third_party/it4it/diagrams/`. Every view in this repo's `views.yaml` renders
 under `architecture/model/diagrams/`.
 
 Two per-view keys pass extra options to `model_to_puml.py`
-(`architecture/model/render_diagrams.py:84-104`):
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:98-114`):
 
 - `no_direction:` lists relationship types that are passed as `--no-direction`.
   This switches off the layout-direction hint described below for that view.
@@ -275,11 +280,11 @@ Options and exit codes:
 - `--no-svg` emits `.puml` only.
 - The script reads the generated XML and does not rebuild it, so run `build.py`
   first. If the XML is missing, the script exits `2`
-  (`architecture/model/render_diagrams.py:1-30`, `184-188`).
+  (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:234-240`).
 
 Changed `.puml` files are rendered in a single `plantuml -tsvg` call. Each
 resulting `.svg` gets a trailing newline, so re-renders don't churn on
-PlantUML's missing one (`architecture/model/render_diagrams.py:166-175`).
+PlantUML's missing one (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:196-202`, `226-229`).
 
 **Layout direction.** `diagram-archimate` fixes the layout direction for two
 groups of relationship types:
