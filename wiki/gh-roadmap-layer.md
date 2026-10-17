@@ -1,7 +1,7 @@
 ---
 title: GitHub Roadmap Layer
 generated: 2026-10-17
-generator: claude-sonnet-5
+generator: claude-opus-5-5
 sources:
   - specs/003-gh-roadmap-archimate/checklists/requirements.md
   - specs/003-gh-roadmap-archimate/contracts/gh-roadmap-layer.md
@@ -194,9 +194,11 @@ measurements support keeping the cap rather than raising it
 ## Expected output on this repo
 
 As of 2026-10-17, re-derived from `architecture/model/gh-roadmap/*.yaml`: 12
-Plateaus, 14 Deliverables (4 published releases plus 10 unreleased), and 61
-Work Packages (87 elements / 131 relationships — 76 Realization, 38
-Triggering, 17 Aggregation — / 12 views total). Relationship counts are lower
+Plateaus, 14 Deliverables (4 published releases plus 10 unreleased), and 64
+Work Packages (90 elements / 135 relationships — 79 Realization, 39
+Triggering, 17 Aggregation — / 12 views total). The spec 003 quickstart's
+snapshot of the same date gives 61 Work Packages: it predates the import of
+GH-126, GH-129 and GH-130 (`specs/003-gh-roadmap-archimate/quickstart.md`). Relationship counts are lower
 than a simple per-issue tally would suggest: most of an epic's same-milestone
 children now emit no Realization edge of their own (see Relationships above),
 and both milestones no longer have a two-way Plateau Triggering cycle between

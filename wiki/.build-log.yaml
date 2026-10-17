@@ -933,8 +933,8 @@ topics:
           sha256: 2caeb9eddff6e7325f2b8613891297c6ba84f2a9f436846aab388e6b248f7229
           lines: 181
         specs/003-gh-roadmap-archimate/quickstart.md:
-          sha256: fbd36adcbea84a6fc30681a9554bae45613aad4da34a05166c246140f9a94686
-          lines: 102
+          sha256: 565f5f04ec72f545582d596c76fddce7b0380ef8b0d0f8f5bbbe9cf63e95c23b
+          lines: 109
         specs/003-gh-roadmap-archimate/research.md:
           sha256: b7bf5d8234742163f5bab95779cb9e5064a6c062c05bc41c5483b2aba4c1cb35
           lines: 22
