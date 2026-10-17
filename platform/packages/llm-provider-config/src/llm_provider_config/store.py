@@ -19,6 +19,12 @@ PATH_ENV_VAR = "LLM_PROVIDER_CONFIG_PATH"
 
 
 def default_config_path() -> Path:
+    """Return where the settings file lives.
+
+    Returns:
+        ``$LLM_PROVIDER_CONFIG_PATH`` if set, else
+        ``~/.config/frictionless-architect/llm.toml``.
+    """
     override = os.environ.get(PATH_ENV_VAR)
     if override:
         return Path(override)
@@ -26,6 +32,18 @@ def default_config_path() -> Path:
 
 
 def load_settings(path: Path | None = None) -> LlmSettings:
+    """Read the settings file.
+
+    Args:
+        path: File to read; defaults to ``default_config_path()``.
+
+    Returns:
+        The validated settings, or an empty ``LlmSettings`` when the file is absent.
+
+    Raises:
+        tomllib.TOMLDecodeError: If the file is not valid TOML.
+        pydantic.ValidationError: If the content does not match the settings model.
+    """
     target = path or default_config_path()
     if not target.exists():
         return LlmSettings()
@@ -34,6 +52,17 @@ def load_settings(path: Path | None = None) -> LlmSettings:
 
 
 def save_settings(settings: LlmSettings, path: Path | None = None) -> Path:
+    """Write the settings file, creating parent directories.
+
+    The file is made owner-only (``0600``) where the filesystem allows it.
+
+    Args:
+        settings: The settings to persist (they hold no secrets).
+        path: File to write; defaults to ``default_config_path()``.
+
+    Returns:
+        The path written.
+    """
     target = path or default_config_path()
     target.parent.mkdir(parents=True, exist_ok=True)
     payload = settings.model_dump(mode="json", exclude_none=True)

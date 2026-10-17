@@ -30,6 +30,11 @@ class ResolvedCall:
     params: dict[str, Any] = field(default_factory=dict[str, Any])
 
     def completion_kwargs(self) -> dict[str, Any]:
+        """Build the keyword arguments for ``litellm.completion``.
+
+        Returns:
+            ``model`` and the extra ``params``, plus ``api_key`` and ``api_base`` when set.
+        """
         kwargs: dict[str, Any] = {"model": self.model, **self.params}
         if self.api_key is not None:
             kwargs["api_key"] = self.api_key
@@ -41,7 +46,16 @@ class ResolvedCall:
 def resolve_call(component: str, settings: LlmSettings | None = None) -> ResolvedCall:
     """Resolve provider, model, params and credential for `component`.
 
-    Raises `NotConfiguredError` or `MissingCredentialError` when it cannot.
+    Args:
+        component: Identifier of the component making the call.
+        settings: Settings to resolve against; loaded from the settings file when omitted.
+
+    Returns:
+        The litellm model string, credential, API base and parameters to use.
+
+    Raises:
+        NotConfiguredError: If neither an override nor a global default applies.
+        MissingCredentialError: If the provider needs an API key and none is available.
     """
     chosen = (settings or load_settings()).resolve(component)
     api_base = chosen.api_base
