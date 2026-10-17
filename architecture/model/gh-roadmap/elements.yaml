@@ -365,6 +365,13 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/102
 - type: WorkPackage
+  id: wp-feat-model-split-oversized-viewpoint-gh-129
+  name: 'GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)'
+  props:
+    gh-number: '129'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/129
+- type: WorkPackage
   id: wp-feat-model-vendor-it4it-as-third-party-gh-4
   name: 'GH-4 feat(model): vendor IT4IT as third_party/it4it submodule (ADR-0029)'
   props:
@@ -481,6 +488,13 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/24
 - type: WorkPackage
+  id: wp-perf-scripts-cut-redundant-work-in-pre-gh-126
+  name: 'GH-126 perf(scripts): cut redundant work in pre_merge_checks.sh/platform_checks.sh'
+  props:
+    gh-number: '126'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/126
+- type: WorkPackage
   id: wp-prepare-a-golden-data-set-bulk-testing-gh-49
   name: GH-49 Prepare a golden data set bulk testing framework
   props:
@@ -499,8 +513,16 @@
   name: 'GH-117 refactor(model): scope type-wide views by include_types + exclude_elements'
   props:
     gh-number: '117'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/117
+- type: WorkPackage
+  id: wp-refactor-model-split-goal-outcome-gh-130
+  name: 'GH-130 refactor(model): split Goal/Outcome motivation chain and restore stakeholder traceability'
+  props:
+    gh-number: '130'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/130
 - type: WorkPackage
   id: wp-reorganize-architecture-model-diagrams-gh-5
   name: GH-5 Reorganize architecture/model/diagrams/ into ArchiMate-layer subfolders

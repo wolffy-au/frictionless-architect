@@ -25,12 +25,14 @@
   - wp-decide-decision-capture-scope-and-the-gh-56
   - wp-epic-conversational-architecture-gh-68
   - wp-epic-multi-specification-modelling-gh-73
+  - wp-feat-model-split-oversized-viewpoint-gh-129
   - wp-feat-model-vendor-it4it-as-third-party-gh-4
   - wp-feat-modelling-conversational-ai-agent-gh-108
   - wp-make-section-b-roles-canonical-split-gh-69
   - wp-model-it4it-flow-relationships-duplicate-gh-99
   - wp-model-the-technology-layer-packages-as-gh-55
   - wp-refactor-model-scope-type-wide-views-by-gh-117
+  - wp-refactor-model-split-goal-outcome-gh-130
   - wp-reorganize-architecture-model-diagrams-gh-5
   - wp-review-vision-and-business-diagrams-to-gh-43
   - wp-scaffold-digital-twin-knowledge-graph-gh-106
@@ -62,6 +64,7 @@
   - wp-chore-typing-apply-mypy-strict-to-skill-gh-101
   - wp-ci-add-multi-os-test-matrix-gh-9
   - wp-feat-portal-add-a-portal-host-package-gh-120
+  - wp-perf-scripts-cut-redundant-work-in-pre-gh-126
   - wp-role-journeys-and-ui-ux-gh-45
   - wp-schedule-maintenance-subagents-on-a-gh-82
   - wp-test-ui-establish-playwright-browser-gh-119
