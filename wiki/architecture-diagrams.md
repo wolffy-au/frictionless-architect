@@ -169,15 +169,15 @@ on them automatically; views 4–7 stay hand-curated in `views.yaml`
 
 | # | View | Viewpoint | File | Covers |
 |---|---|---|---|---|
-| 1 | Stakeholder | `stakeholder` | `views-viewpoints.yaml` | Who holds which driver, the assessments that make each urgent, and the goal and (now five) outcomes |
-| 2 | Motivation | `motivation` | `views-viewpoints.yaml` | The whole motivation model: stakeholders, assessments, drivers, goal, outcomes, principles, requirements, constraints |
-| 3 | Goal Realization | `goal_realization` | `views-viewpoints.yaml` | Goal → outcomes, and how principles, requirements and constraints realize them |
-| 4 | Strategy | `strategy` | `views.yaml` | Resources → capabilities → courses of action, each value stream as a single element, and the outcome it realizes; `Capability`/`Outcome` are `include_types` (GH #117) with `exclude_elements` keeping IT4IT's vendored ones off |
+| 1 | Stakeholder | `stakeholder` | `views-viewpoints.yaml` | Who holds which driver (now six), the assessments that make each urgent, and the top goal with its five sub-goals |
+| 2 | Motivation | `motivation` | `views-viewpoints.yaml` | The whole motivation model: stakeholders, assessments, drivers, goal, sub-goals, outcomes, principles, requirements, constraints |
+| 3 | Goal Realization | `goal_realization` | `views-viewpoints.yaml` | Goal → sub-goals → outcomes, and how principles, requirements and constraints realize them |
+| 4 | Strategy | `strategy` | `views.yaml` | Resources → capabilities → courses of action, each value stream as a single element, and the outcome(s) it realizes (five streams now realize two outcomes each, since the 2026-10-17 Goal→Sub-Goal→Outcome split); `Capability`/`Outcome` are `include_types` (GH #117) with `exclude_elements` keeping IT4IT's vendored ones off |
 | 5 | Capability Map | `capability` | `views.yaml` | The nine capabilities (including `cap-conversational-governance`, GH #108) and their `Serving` dependency order; `include_types` + `exclude_elements: [{id_prefix: "it4it-"}]` |
 | 6 | Value Stream Hand-offs | `value_stream` | `views.yaml` | All five streams with their stages nested, the `Triggering` sequence within each stream, and the `Triggering`/`Flow` hand-offs across streams |
-| 6a–6d | Value Stream — Governed Architecture Delivery / Obligation to Evidence / Exception to Decision / Drift to Remediation | `value_stream` | `views.yaml` | One stream alone: its stages in sequence, the capabilities serving each stage, its recipient stakeholders, and the outcome it realizes (no `6e` for the new Intent to Model stream — see [Architecture Model: Skeleton](architecture-model-skeleton.md)) |
+| 6a–6d | Value Stream — Governed Architecture Delivery / Obligation to Evidence / Exception to Decision / Drift to Remediation | `value_stream` | `views.yaml` | One stream alone: its stages in sequence, the capabilities serving each stage, its recipient stakeholders, and the outcome(s) it realizes (no `6e` for the new Intent to Model stream — see [Architecture Model: Skeleton](architecture-model-skeleton.md)) |
 | 7 | Outcome Realization | `outcome_realization` | `views.yaml` | Business processes (grouped by all ten business functions) → capabilities → value streams → outcomes; `Capability`/`ValueStream`/`Outcome`/`BusinessFunction` are `include_types` |
-| 8 | Requirements Realization | `requirements_realization` | `views-viewpoints.yaml` | Which capability realizes each functional requirement (now ten) |
+| 8 | Requirements Realization | `requirements_realization` | `views-viewpoints.yaml` | Which capability realizes each functional requirement (now eleven) |
 
 The first Value Stream view was renamed from "Value Stream — Governed
 Architecture Delivery" to **Value Stream Hand-offs**. Each stream's recipients,
@@ -371,7 +371,9 @@ more; `ValueStream`: 36 more — 7 streams + 29 stages).
 GH #117 flipped that trade-off: a `members` list has the opposite failure
 mode — a new **first-party** element of the type (e.g.
 `cap-conversational-governance`, `vs-intent-to-model`,
-`outcome-intent-becomes-model-truth`, all added for GH #108) silently stays
+`goal-intent-becomes-model-truth` — added for GH #108 as an Outcome,
+`outcome-intent-becomes-model-truth`, and renamed to a Goal on 2026-10-17
+when the motivation spine split into Goal→Sub-Goal→Outcome) silently stays
 off the view until someone remembers to add it, which is exactly what
 happened to `outcome-architect-authored-model` and its siblings on first
 add. `view-strategy`, `view-capability`, `view-value-stream` and
