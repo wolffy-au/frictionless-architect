@@ -35,5 +35,5 @@ proposed ADR stubs are deliberately incomplete — a human writes the decision a
 - Toolchain is **Poetry**, never `uv`, matching `scripts/*.sh` and the repo's
   `poetry-over-uv` decision.
 - Commit messages follow the `commit-message` skill's `references/standard.md`.
-- Working branches: `feature/**` or `bugfix/**` (matches `.github/workflows/ci.yml`).
+- Working branches: `feature/**` or `bugfix/**` (CI runs via their PRs; see `.github/workflows/ci.yml`).
   Never work directly on `main` or `develop`.

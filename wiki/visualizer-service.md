@@ -1,7 +1,7 @@
 ---
 title: Visualizer Service
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - src/frictionless_architect/__init__.py
   - src/frictionless_architect/app.py
@@ -94,7 +94,9 @@ Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`
 
 The public classes and methods in these modules now carry Google-style docstrings
 (commit `44f1b8e`), and the three routes document their `503`, `202`, `409` and `429`
-responses; the OpenAPI docs are served at `/docs` (`README.md` §"Running the
+responses. The refresh route declares only `409` and `429`: the rebuild runs after the `202`
+is sent, and a failed rebuild is logged with the cached payload kept, so it never answers
+`503` (`src/frictionless_architect/visualizer/api.py:456-468`); the OpenAPI docs are served at `/docs` (`README.md` §"Running the
 schema visualiser").
 
 ## Request flow
@@ -286,21 +288,21 @@ dirs on save; `age_seconds()` is `now - mtime` (`src/frictionless_architect/visu
 ## `SchemaManager` (`src/frictionless_architect/schema/manager.py`)
 
 Not wired into the FastAPI app — a standalone controller for Neo4j
-constraints, ingestion, migrations, and audits (`src/frictionless_architect/schema/manager.py:53-54`).
+constraints, ingestion, migrations, and audits (`src/frictionless_architect/schema/manager.py:52-53`).
 
 - **`apply_constraints()`** — creates 6 uniqueness constraints and 5 indexes
-  (`src/frictionless_architect/schema/manager.py:13-28`, applied by
+  (`src/frictionless_architect/schema/manager.py:12-27`, applied by
   `apply_constraints()`). See [Data Model](data-model.md) for the graph shape.
 - **`ingest_payload(payload)`** — MERGEs `elements`, `relationships`, `views`,
   `diagrams`. A sanitised element-type string is added as a second node label
-  (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:37-50`). Relationship ingestion
+  (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:36-49`). Relationship ingestion
   **raises `ValueError`** if either endpoint `Element` is missing
-  (`src/frictionless_architect/schema/manager.py:140-146`) and writes **only**
+  (`src/frictionless_architect/schema/manager.py:134-140`) and writes **only**
   a direct `[:ARCHIMATE_RELATIONSHIP {identifier, type, ...}]` edge — as of
   [ADR-0028](decision-log.md), a `View`/`Diagram` no longer gets a
   `(:RelationshipFact)` node; instead `_ingest_views`/`_ingest_diagrams` set
   `v.relationshipIds`/`d.connectionIds` as a plain identifier-list property
-  (`src/frictionless_architect/schema/manager.py:160-226`). This drops
+  (`src/frictionless_architect/schema/manager.py:154-220`). This drops
   relationship ingestion from three write statements (existence check, edge
   `MERGE`, node `MERGE`) to two (existence check, edge `MERGE`).
 - **`record_schema_version(name)`** — MERGEs a `(:SchemaVersion {name})` with
@@ -313,11 +315,11 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   which is a plain string list, not a graph edge, so it can silently reference
   a non-existent relationship); `_find_orphan_views` flags a `View` with zero
   `INCLUDES`-linked elements or an empty `relationshipIds` list
-  (`src/frictionless_architect/schema/manager.py:246-299`, docstring on
+  (`src/frictionless_architect/schema/manager.py:240-293`, docstring on
   `_find_missing_relationship_targets`).
 
 Cypher statements are passed through `_run_literal()` which casts to
-`LiteralString` for the driver's typed API (`src/frictionless_architect/schema/manager.py:33-34`).
+`LiteralString` for the driver's typed API (`src/frictionless_architect/schema/manager.py:32-33`).
 
 ## Known inconsistencies
 

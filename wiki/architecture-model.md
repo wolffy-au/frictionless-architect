@@ -1,7 +1,7 @@
 ---
 title: Architecture Model
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -59,11 +59,12 @@ as the `.puml` / `.svg` diagrams.
 | `relationships.yaml` | Every relationship: `type` / `source` / `target` / `label?` / `props?` |
 | `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`, optionally narrowed by `exclude_elements` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
 | `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`); same schema as `views.yaml`, ids unique across both (see "Context-level viewpoints" below) |
+| `conventions.yaml` | Enterprise Convention Rules (for example `interposed-pattern`) that conversational authoring validation applies to proposed changes (spec 004; see [Conversational Model Authoring](modelling-specification.md)) |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views, merged by `build.py`, never hand-edited |
-| `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then runs `validate.py` |
+| `build.py` | YAML → `frictionless-architect.xml` via pyArchimate, then validates. Like `render_diagrams.py` and `validate.py`, a thin wrapper: the logic lives in the `modelling-specification` package (ADR-0037). It runs `modelling_specification.cli build` with `poetry run` from `platform/`, minus `VIRTUAL_ENV` so the nested run uses the platform venv (`architecture/model/build.py`) |
 | `frictionless-architect.xml` | **Generated** (Open Group Exchange Format). Committed, never hand-edited |
-| `diagrams/` | **Generated** `.puml` / `.svg` |
+| `diagrams/` | **Generated** `.puml` / `.svg`, one subdirectory per layer (`vision/`, `business/`, `application/`, `layered/`, `technology/`, `implementation/`, `migration/`, `c4/`), plus the IT4IT capability-bridges view at the top level (`architecture/model/README.md` §"Files") |
 
 Schema rules (`architecture/model/README.md` §"Schema";
 `architecture/model/elements.yaml:7-10`):

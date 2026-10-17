@@ -92,10 +92,28 @@ def canon(raw: str, errors: list[str], ctx: str) -> str | None:
 
 
 def det_id(*parts: str) -> str:
+    """Derive a stable identifier from the given parts, so regeneration never churns ids.
+
+    Args:
+        *parts: The strings that identify the object (hashed together).
+
+    Returns:
+        ``"id-"`` followed by a deterministic UUID5 hex digest.
+    """
     return "id-" + uuid.uuid5(NS, "|".join(parts)).hex
 
 
 def load_path(path: Path, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
+    """Load a model YAML file that must hold a list.
+
+    Args:
+        path: The YAML file.
+        errors: Collects problems found; this function reports instead of raising.
+        optional: If true, a missing file yields an empty list without an error.
+
+    Returns:
+        The list of entries, or ``[]`` when the file is missing or malformed.
+    """
     if optional and not path.exists():
         return []
     if not path.exists():
@@ -139,6 +157,16 @@ def _check_null_keys(node: Any, where: str, errors: list[str]) -> None:
 
 
 def load(name: str, errors: list[str], optional: bool = False) -> list[dict[str, Any]]:
+    """Load a model YAML file from the model directory by name.
+
+    Args:
+        name: File name relative to the model directory (for example ``elements.yaml``).
+        errors: Collects problems found.
+        optional: If true, a missing file is not an error.
+
+    Returns:
+        The entries, as for ``load_path``.
+    """
     return load_path(HERE / name, errors, optional)
 
 
@@ -205,6 +233,15 @@ def add_elements(
 
 
 def add_relationships(m: Model, rels: list[dict[str, Any]], by_id: dict[str, Element], errors: list[str]) -> None:
+    """Add every valid relationship to the model.
+
+    Args:
+        m: The model being built.
+        rels: Relationship entries (``type`` / ``source`` / ``target`` / ``label?`` / ``props?``).
+        by_id: Elements already added, keyed by YAML id.
+        errors: Collects entries that are incomplete, reference unknown ids or have an
+            unrecognised type; those are skipped.
+    """
     for r in rels:
         if "type" not in r or "source" not in r or "target" not in r:
             errors.append(f"relationship missing type/source/target: {r!r}")

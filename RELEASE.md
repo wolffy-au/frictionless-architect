@@ -24,7 +24,7 @@ repo's tooling (`commitizen`, `poetry-dynamic-versioning`, `.github/workflows/ci
 
 ## Branch model
 
-- Feature work on `feature/**`, fixes on `bugfix/**` (matches `ci.yml` triggers).
+- Feature work on `feature/**`, fixes on `bugfix/**`; CI runs on their PRs (`ci.yml`).
 - Integrate to `develop`.
 - **Release via a `develop` → `main` PR.** `main` only changes via PR and a **human**
   reviews and merges it manually. Tags are created on `main`, after that merge.

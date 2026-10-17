@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Core schema management utilities for the ArchiMate graph."""
 
 from __future__ import annotations
@@ -77,12 +76,7 @@ class SchemaManager:
         self.driver = GraphDatabase.driver(uri, auth=auth)
 
     def close(self) -> None:
-        """Close the Neo4j driver.
-
-        Raises:
-            neo4j.exceptions.Neo4jError: If the underlying driver fails to
-                close its connections cleanly.
-        """
+        """Close the Neo4j driver and release its connections."""
         self.driver.close()
 
     def apply_constraints(self) -> None:

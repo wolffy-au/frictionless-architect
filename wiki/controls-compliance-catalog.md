@@ -1,7 +1,7 @@
 ---
 title: Controls & Compliance Catalog
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - platform/packages/controls-compliance-catalog/README.md
   - platform/packages/controls-compliance-catalog/pyproject.toml

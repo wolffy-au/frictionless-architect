@@ -1,7 +1,7 @@
 ---
 title: GitHub Roadmap Layer
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - specs/003-gh-roadmap-archimate/checklists/requirements.md
   - specs/003-gh-roadmap-archimate/contracts/gh-roadmap-layer.md
@@ -64,6 +64,22 @@ Scope rules:
   Deliverable (`specs/003-gh-roadmap-archimate/spec.md` Clarifications, session
   2026-10-12). The per-milestone roadmap view still shows only that milestone's
   own Work Packages, even when the same release also delivered work for others.
+- A Work Package whose Aggregation root (its top-most in-scope ancestor via
+  `parent`) resolves to the exact same Deliverable emits no Realization edge of
+  its own: it still realizes that one Deliverable, just structurally, via the
+  Aggregation chain to the root's own edge, so an epic's same-milestone children
+  stop each redrawing the epic's own edge. A child whose target genuinely
+  differs — a different release, or a different milestone (seen in practice:
+  epic GH-83's child GH-90 carries milestone `effectiveness-assurance-mvp`, not
+  `multi-user-collaboration`) — always keeps its own distinct edge and view
+  membership (`specs/003-gh-roadmap-archimate/spec.md` Clarifications, session
+  2026-10-17; `specs/003-gh-roadmap-archimate/data-model.md` §"Which Deliverable
+  a Work Package realizes").
+- Once a milestone itself is closed, its view drops its own closed Work
+  Packages — kept in the data, just not drawn — so a shipped milestone's
+  diagram settles to its Plateau and Deliverable(s) instead of accumulating
+  every issue it ever contained. An open milestone still shows all of its
+  Work Packages, open or closed.
 
 ## Ids
 
@@ -110,7 +126,7 @@ build fails with an unknown id. Per FR-011 the same change retired
 - No Work Package → Plateau link at all (R2).
 - A link implied by a chain of emitted links is dropped; the check looks only at the
   importer's own links, so output stays a function of GitHub state
-  (`architecture/model/import_gh_roadmap.py:294-316`).
+  (`architecture/model/import_gh_roadmap.py:301-330`).
 - Links with an out-of-scope end are dropped.
 
 ## Untrusted text
@@ -177,21 +193,28 @@ measurements support keeping the cap rather than raising it
 
 ## Expected output on this repo
 
-As of 2026-10-16, re-derived from `architecture/model/gh-roadmap/*.yaml`: 12
-Plateaus (the original business-function MVP milestones plus
-`plat-github-importer-11` and `plat-general-tasks-12`), 13 Deliverables, and 61
-Work Packages (86 elements / 144 relationships / 12 views total — grown
-substantially since the 2026-10-12 Deliverable-realization-rule change moved far
-more closed issues off the unreleased Deliverable onto the release that actually
-delivered them). Counts drift as GitHub state changes; re-derive with `gh` rather
-than trusting this snapshot.
+As of 2026-10-17, re-derived from `architecture/model/gh-roadmap/*.yaml`: 12
+Plateaus, 14 Deliverables (4 published releases plus 10 unreleased), and 64
+Work Packages (90 elements / 135 relationships — 79 Realization, 39
+Triggering, 17 Aggregation — / 12 views total). The spec 003 quickstart's
+snapshot of the same date gives 61 Work Packages: it predates the import of
+GH-126, GH-129 and GH-130 (`specs/003-gh-roadmap-archimate/quickstart.md`). Relationship counts are lower
+than a simple per-issue tally would suggest: most of an epic's same-milestone
+children now emit no Realization edge of their own (see Relationships above),
+and both milestones no longer have a two-way Plateau Triggering cycle between
+them (GH #56 and #65 moved to the milestone their blocking relationships
+actually belong to, and a stale closed-issue block was removed). Counts drift
+as GitHub state changes; re-derive with `gh` rather than trusting this
+snapshot.
 
 ## Invariants
 
 The spec lists ten tested invariants (`specs/003-gh-roadmap-archimate/data-model.md` §Invariants): unique
 type-prefixed ids; resolvable endpoints; no element from an issue without its own
 milestone; byte-identical output; every link legal under the ArchiMate 3.2 matrix;
-no Work Package realizes a Plateau; drafts and pre-releases never yield a
+no Work Package realizes a Plateau — each realizes exactly one Deliverable,
+whether by its own Realization edge or structurally via Aggregation to a root
+ancestor that realizes the same one; drafts and pre-releases never yield a
 Deliverable; unmatched tokens create no relationship; an unreleased Deliverable
 exists only when a Work Package realizes it.
 

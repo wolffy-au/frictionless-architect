@@ -20,6 +20,13 @@ Implementation & Migration elements, milestone-first and user-facing, not a dump
 - A release realizes every Plateau it delivered a Work Package for, as well as any Plateau its notes name.
 - An issue closed as not planned or as a duplicate delivered nothing: it stays on the unreleased Deliverable, and `gh-state-reason` records why it closed.
 
+### Session 2026-10-17
+
+- An epic's children often resolve to the exact same Deliverable as the epic itself (same milestone, same release-or-unreleased outcome), which used to draw one Realization edge per child plus the epic's own — correct per FR-003, but visually redundant since the children are already nested under the epic by Aggregation.
+- A child's own Realization is now emitted only when it is not a duplicate of its Aggregation root's: every Work Package still realizes exactly one Deliverable (FR-003 unchanged), but a child sharing its root ancestor's exact Deliverable is reachable in the diagram only via the Aggregation chain, not its own edge.
+- A child whose own Deliverable target differs from its root's — because it shipped in a different release, or (seen in practice: GH-83's child GH-90) because it carries a different milestone — always keeps its own distinct Realization edge and stays in its own milestone's view.
+- Once a milestone itself is closed, its view drops its own closed Work Packages (they stay in the data, just not drawn): a shipped milestone's diagram settles to its Plateau and Deliverable(s) rather than accumulating every issue it ever contained. An open milestone still shows all of its Work Packages, open or closed, so in-flight progress stays visible.
+
 ## Mapping
 
 | GitHub | Becomes | Relationships |
@@ -100,7 +107,7 @@ refers to the retired `plat-runtime-mvp`.
 
 - **FR-001**: Import every milestone as a Plateau, every in-scope issue as a Work Package, and every published release as a Deliverable, per the Mapping table.
 - **FR-002**: An issue is in scope only if it carries its own milestone; scope is never inferred from a parent, descendant or label.
-- **FR-003**: A Work Package MUST realize exactly one Deliverable and MUST NOT realize a Plateau directly. Open ones, and ones closed as not planned or duplicate, realize the unreleased Deliverable; other closed ones realize the first release published after they closed (see Clarifications), else the unreleased one.
+- **FR-003**: A Work Package MUST realize exactly one Deliverable and MUST NOT realize a Plateau directly. Open ones, and ones closed as not planned or duplicate, realize the unreleased Deliverable; other closed ones realize the first release published after they closed (see Clarifications), else the unreleased one. A Work Package whose Aggregation root realizes that same Deliverable emits no Realization edge of its own (see Clarifications, 2026-10-17): it is still reachable there via the Aggregation chain, and the invariant holds structurally rather than by an explicit edge.
 - **FR-004**: Never emit a relationship that an existing chain already implies, or one ArchiMate forbids between its end types. The model MUST still validate after the merge.
 - **FR-005**: Ids are prefixed by element type, never by source system, and are a pure function of the object's number and title (or tag). Source number and URL are properties.
 - **FR-006**: A `bfn-*` or `plat-*` id in a description or release notes is honoured only if it exactly matches an existing element of the right type. All other GitHub text is untrusted and ignored for relationships.

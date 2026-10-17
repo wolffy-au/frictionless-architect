@@ -24,8 +24,10 @@ Ensure you have the following installed:
 
     ```bash
     pipx install poetry # or: pip install --user poetry
-    poetry install --with dev
+    poetry install
     ```
+
+    This installs the project and every dependency group (`dev`, `tests`, `lint`, `docs`).
 
 3. **Initialize Feature Specification (if needed)**:
     If you are starting a new feature, use the `specify` CLI tool:
@@ -43,7 +45,10 @@ To run what is built today (the Neo4j schema visualiser), see `README.md`.
 
 ## Running Specifications and Planning
 
-Use the `specify` CLI commands for managing your architecture specifications:
+Use the `specify` CLI commands for managing your architecture specifications. The scripts
+under `.specify/scripts/` are Spec Kit scaffolding: they are git-ignored and written by
+`.devcontainer/post-create.sh` (`specify integration upgrade`), so they exist in the dev
+container but not in a bare clone:
 
 - **Check prerequisites**:
 

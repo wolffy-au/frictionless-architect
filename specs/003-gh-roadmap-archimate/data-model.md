@@ -145,10 +145,15 @@ A Work Package realizes exactly one Deliverable and never a Plateau directly.
    issue's `closedAt`**, whichever Plateaus its notes name. If there is none, the unreleased
    Deliverable.
 3. Releases are ordered by `published_at`; ties break on `tag_name`, so output is deterministic.
+4. If this resolves to the exact same Deliverable as the Work Package's Aggregation root (its
+   top-most in-scope ancestor via `parent`), no Realization edge is emitted for it: it still
+   realizes that one Deliverable, just structurally, via the Aggregation chain to the root's own edge.
 
 That release then realizes the Work Package's Plateau, so one release realizes every Plateau it
 delivered work for. The roadmap view of a milestone shows only that milestone's Work Packages,
-even when its release also delivered work for others.
+even when its release also delivered work for others. Once the milestone itself is closed, its
+view drops its own closed Work Packages (kept in the data, just not drawn), settling to its Plateau
+and Deliverable(s); an open milestone keeps showing all of its Work Packages, open or closed.
 
 A closed issue therefore moves to a later release once one is published after it, and a reopened
 issue moves back to the unreleased Deliverable. The unreleased Deliverable is emitted only when at
@@ -168,8 +173,8 @@ object, the build fails with an unknown id, which is the intended signal.
 
 | Condition | Relationship |
 |---|---|
-| Open Work Package, not delivered, or closed with no later release | `Realization` `wp-<slug>-gh-N → del-<slug>-M-unreleased` |
-| Delivered Work Package with a later release | `Realization` `wp-<slug>-gh-N → del-release-<tag>` (see "Which Deliverable a Work Package realizes") |
+| Open Work Package, not delivered, or closed with no later release, UNLESS its Aggregation root resolves to the same Deliverable | `Realization` `wp-<slug>-gh-N → del-<slug>-M-unreleased` |
+| Delivered Work Package with a later release, UNLESS its Aggregation root resolves to the same Deliverable | `Realization` `wp-<slug>-gh-N → del-release-<tag>` (see "Which Deliverable a Work Package realizes") |
 | Milestone has at least one Work Package | `Realization` `del-<slug>-M-unreleased → plat-<slug>-M` |
 | Release delivered a Work Package of milestone M, or its notes name an imported `plat-*` id | `Realization` `del-release-<tag> → plat-<slug>-M` (once per pair) |
 | Parent and child both imported | `Aggregation` `wp-<slug>-gh-P → wp-<slug>-gh-C` |
@@ -182,6 +187,18 @@ the importer emits, never hand-authored ones, so output stays a function of GitH
 against a hand-authored link is caught by `check_derived.py` over the layer's ids; remove the
 hand-authored link. There is no Work Package → Plateau link at all: the Plateau is reached through a
 Deliverable.
+
+A Work Package whose structural parent chain (Aggregation) leads to an in-scope root ancestor that
+realizes the exact same Deliverable emits no Realization edge of its own: the edge would only repeat
+what the root's already says, and the child is still reachable in the diagram via that Aggregation
+chain (`_views` walks it back in, so the child stays a member of its milestone's view). This is the
+opposite direction from ArchiMate's own derivation rule (which would only ever let the *root* inherit
+a *child's* Realization, never drop the child's in favour of the root's) and is therefore a deliberate,
+roadmap-layer-specific display rule, not an application of §3.5. A child keeps its own Realization
+whenever its resolved Deliverable differs from its root's — whether because it shipped in a different
+release or, as seen in practice (GH-83's child GH-90), because it carries a different milestone — so
+it still realizes exactly one Deliverable either way and FR-003 holds for every Work Package, root or
+child, epic or not.
 
 Dropped: any link with an out-of-scope end. A milestone not in the fetched set drops its
 issues (guards a race between the two fetches).
@@ -243,7 +260,9 @@ state Done : WorkPackage emitted,\ngh-state = closed,\nrealizes first release af
 5. Every emitted relationship is legal under the ArchiMate 3.2 matrix (`validate.py` exits 0).
 6. Closing or reopening an issue changes its `gh-state` prop and, only where it was delivered and a
    later release exists, the one Deliverable it realizes.
-7. No Work Package realizes a Plateau directly; each realizes exactly one Deliverable.
+7. No Work Package realizes a Plateau directly; each realizes exactly one Deliverable, whether by
+   its own Realization edge or structurally via Aggregation to a root ancestor that realizes the
+   same one.
 8. Drafts and pre-releases never produce a Deliverable.
 9. A `bfn-*` or `plat-*` token that does not exactly match an existing element of the right type
    creates no relationship.

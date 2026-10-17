@@ -39,10 +39,22 @@ class Component:
 
 
 class KeyBody(BaseModel):
+    """Body of ``PUT /keys/{provider}``.
+
+    Attributes:
+        api_key: The API key to store in the OS keychain (never echoed back).
+    """
+
     api_key: str = Field(min_length=1)
 
 
 class ConnectionTestBody(BaseModel):
+    """Body of ``POST /test``.
+
+    Attributes:
+        component: Component whose resolved settings to test; ``None`` tests the global default.
+    """
+
     component: str | None = None
 
 
@@ -63,6 +75,7 @@ def _require_component(known: dict[str, Component], component_id: str) -> None:
 def _settings_routes(router: APIRouter, components: Sequence[Component], known: dict[str, Component]) -> None:
     @router.get("/state")
     def state() -> dict[str, Any]:
+        """Return the config path, the providers, the global default and each component's override."""
         settings = load_settings()
         return {
             "config_path": str(default_config_path()),
@@ -87,12 +100,14 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
 
     @router.put("/default")
     def put_default(body: ProviderSettings) -> dict[str, str]:
+        """Save the global default provider settings."""
         settings = load_settings()
         save_settings(LlmSettings(default=body, components=settings.components))
         return {"status": "saved"}
 
     @router.put("/components/{component_id}", responses={404: {"description": "Unknown component."}})
     def put_override(component_id: str, body: ProviderSettings) -> dict[str, str]:
+        """Save a per-component override (404 for an unknown component)."""
         _require_component(known, component_id)
         settings = load_settings()
         save_settings(LlmSettings(default=settings.default, components={**settings.components, component_id: body}))
@@ -100,6 +115,7 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
 
     @router.delete("/components/{component_id}", responses={404: {"description": "Unknown component."}})
     def delete_override(component_id: str) -> dict[str, str]:
+        """Remove a per-component override so it inherits the default (404 for an unknown component)."""
         _require_component(known, component_id)
         settings = load_settings()
         remaining = {key: value for key, value in settings.components.items() if key != component_id}
@@ -116,6 +132,7 @@ def _key_routes(router: APIRouter) -> None:
         },
     )
     def put_key(provider: Provider, body: KeyBody) -> dict[str, str]:
+        """Store a provider's API key in the OS keychain (422 for keyless providers, 503 without a keychain)."""
         if provider in KEYLESS_PROVIDERS:
             raise HTTPException(status_code=422, detail=f"{provider.value} does not use an API key.")
         try:
@@ -130,6 +147,7 @@ def _key_routes(router: APIRouter) -> None:
 
     @router.delete("/keys/{provider}", responses={404: {"description": "No stored key to remove."}})
     def remove_key(provider: Provider) -> dict[str, str]:
+        """Remove a provider's stored API key (404 when there is none)."""
         try:
             delete_api_key(provider.value)
         except KeyringError as exc:
@@ -140,6 +158,12 @@ def _key_routes(router: APIRouter) -> None:
 def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
     @router.post("/test", responses={404: {"description": "Unknown component."}})
     def test_connection(body: ConnectionTestBody) -> dict[str, Any]:
+        """Make a one-word completion call with the resolved settings.
+
+        Returns:
+            ``{"ok": bool, "message": str}``; configuration and provider failures are
+            reported in the message, not as HTTP errors.
+        """
         settings: LlmSettings | None = None
         target = body.component
         if target is None:
@@ -165,7 +189,15 @@ def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
 
 
 def create_settings_router(components: Sequence[Component], prefix: str = "/settings/llm") -> APIRouter:
-    """Build the settings router for the given LLM-using components."""
+    """Build the settings router for the given LLM-using components.
+
+    Args:
+        components: The components that use an LLM and may have their own override.
+        prefix: URL prefix the router is mounted under; also substituted into the page script.
+
+    Returns:
+        A router serving the HTML page at ``prefix`` and the JSON API beneath it.
+    """
     router = APIRouter(prefix=prefix, tags=["llm-settings"])
     known = {component.id: component for component in components}
     _settings_routes(router, components, known)
@@ -174,6 +206,7 @@ def create_settings_router(components: Sequence[Component], prefix: str = "/sett
 
     @router.get("", response_class=HTMLResponse)
     def page() -> str:
+        """Serve the settings page."""
         return _PAGE.replace("__PREFIX__", prefix)
 
     return router
