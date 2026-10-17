@@ -330,6 +330,18 @@ def _implied(rel: dict[str, str], out: dict[str, list[dict[str, str]]]) -> bool:
     return False
 
 
+def _root_number(number: int, in_scope: dict[int, Issue]) -> int:
+    """The top-most in-scope ancestor reached by following `parent` (itself, if it has none)."""
+    seen = {number}
+    current = number
+    parent = in_scope[current].parent
+    while parent is not None and parent in in_scope and parent not in seen:
+        seen.add(parent)
+        current = parent
+        parent = in_scope[current].parent
+    return current
+
+
 def build_layer(
     milestones: list[Milestone],
     releases: list[Release],
@@ -342,6 +354,11 @@ def build_layer(
     elements = elements + release_elements
 
     in_scope = {i.number: i for i in issues if i.milestone in plateau_by_number}
+    target_by_number: dict[int, str] = {}
+    for number, issue in in_scope.items():
+        assert issue.milestone is not None
+        unreleased = unreleased_id(_title(milestones, issue.milestone), issue.milestone)
+        target_by_number[number] = _deliverable_for(issue, unreleased, ordered)
     unreleased_for: set[int] = set()
     plateau_of: dict[str, str] = {}
     for issue in in_scope.values():
@@ -349,7 +366,7 @@ def build_layer(
         pid, wid = plateau_by_number[issue.milestone], work_package_id(issue.title, issue.number)
         plateau_of[wid] = pid
         unreleased = unreleased_id(_title(milestones, issue.milestone), issue.milestone)
-        target = _deliverable_for(issue, unreleased, ordered)
+        target = target_by_number[issue.number]
         elements.append(
             _element(
                 "WorkPackage", wid, f"GH-{issue.number} {issue.title}",
@@ -359,7 +376,11 @@ def build_layer(
                 ),
             )
         )  # fmt: skip
-        rels.append(_link("Realization", wid, target))
+        root = _root_number(issue.number, in_scope)
+        # A child whose own Deliverable target matches its Aggregation root's is shown only via that
+        # structural nesting (R11 follow-up): its own Realization would just duplicate the root's.
+        if root == issue.number or target != target_by_number[root]:
+            rels.append(_link("Realization", wid, target))
         if target == unreleased:
             unreleased_for.add(issue.milestone)
         else:
@@ -410,18 +431,24 @@ def _views(
 ) -> list[dict[str, Any]]:
     """One roadmap view per milestone: its Plateau, the Deliverables realizing it and its Work Packages (R11).
 
-    A release can realize several Plateaus, so only the Work Packages of this milestone are shown.
+    A release can realize several Plateaus, so only the Work Packages of this milestone are shown. A child
+    whose own Realization was left out of `rels` as a duplicate of its Aggregation root's (build_layer)
+    is pulled back in here via that same Aggregation chain, so it still appears, nested under the root.
     """
     realizes: dict[str, set[str]] = {}
+    aggregates: dict[str, set[str]] = {}
     for rel in rels:
         if rel["type"] == "Realization":
             realizes.setdefault(rel["target"], set()).add(rel["source"])
+        elif rel["type"] == "Aggregation":
+            aggregates.setdefault(rel["source"], set()).add(rel["target"])
     ids = {e["id"] for e in elements}
     views = []
     for m in milestones:
         pid = plateau_id(m.title, m.number)
         deliverables = {d for d in realizes.get(pid, set()) if d in ids and d.startswith("del-")}
         packages = {w for d in deliverables for w in realizes.get(d, set()) if plateau_of.get(w) == pid}
+        packages |= _aggregation_descendants(packages, aggregates, plateau_of, pid)
         views.append(
             {
                 "id": f"view-{pid}",
@@ -432,6 +459,20 @@ def _views(
             }
         )
     return views
+
+
+def _aggregation_descendants(
+    roots: set[str], aggregates: dict[str, set[str]], plateau_of: dict[str, str], pid: str
+) -> set[str]:
+    """Work Packages reachable from `roots` via Aggregation, scoped to this view's milestone."""
+    out: set[str] = set()
+    stack = list(roots)
+    while stack:
+        for child in aggregates.get(stack.pop(), ()):
+            if child not in out and plateau_of.get(child) == pid:
+                out.add(child)
+                stack.append(child)
+    return out
 
 
 def _sort_key(item: dict[str, Any]) -> tuple[str, ...]:
