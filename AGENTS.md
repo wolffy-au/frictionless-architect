@@ -26,7 +26,8 @@ src/frictionless_architect/   # application code (visualizer/, schema/)
 platform/                     # Poetry monorepo (ADR-0002): packages/<name>/, own lock + venv
 tests/                        # mirrors src/ layout, plus api/ and features/ (behave)
 architecture/                 # canonical graph-loadable model (YAML)
-specs/                        # feature specs (001-governance-platform, 002-neo4j-schema-ui)
+specs/                        # feature specs (001-governance-platform, 002-neo4j-schema-ui,
+                              #   003-gh-roadmap-archimate, 004-conversational-model-authoring)
 docs/adr/                     # MADR decision log
 scripts/                      # gate scripts (pre_commit_checks.sh, pre_merge_checks.sh, platform_checks.sh)
 ```
