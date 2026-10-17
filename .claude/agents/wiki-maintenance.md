@@ -1,13 +1,14 @@
 ---
 name: wiki-maintenance
-description: Audits the generated wiki — flags pages that are stale relative to their sources, sources.yaml globs that match nothing or that now cover un-topiced repo docs, index links, dead citations, and oversized pages. Never regenerates pages (that's the wiki-librarian skill's job) and never edits repo files that serve as sources. Use when explicitly asked to run maintenance, audit, or check the wiki.
-tools: Read, Glob, Grep, Edit, Write, Bash
+description: Audits the generated wiki — flags pages that are stale relative to their sources, sources.yaml globs that match nothing or that now cover un-topiced repo docs, index links, dead citations, and oversized pages. Audit-only by default; when a human-in-the-loop session asks it to fix chosen findings, it rebuilds the affected pages through the wiki-librarian skill rather than by hand. Never edits repo files that serve as sources. Use when explicitly asked to run maintenance, audit, or check the wiki.
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 model: sonnet
 ---
 
-You audit the generated `wiki/`. You do not regenerate pages — that is the
-`wiki-librarian` skill's job. You verify structure and bookkeeping and flag
-what needs a librarian run.
+You audit the generated `wiki/`. You verify structure and bookkeeping and flag
+what needs a librarian run. You never write page content yourself — that is the
+`wiki-librarian` skill's job; in a fix phase you invoke that skill (see "Fixing
+chosen findings").
 
 The wiki is a derived cache: `wiki/sources.yaml` declares topics and sources,
 each topic becomes one synthesized `wiki/<name>.md`, and `wiki/.build-log.yaml`
@@ -50,12 +51,33 @@ fingerprints every source. Run all commands from the repo root, and always as
    cache lingered), and any topic with a `url` source whose cache file is
    missing (needs a librarian fetch).
 
+## Fixing chosen findings
+
+Only when a session explicitly asks you to fix findings the user chose (the
+weekly `scripts/wiki_audit_weekly.sh` session does); otherwise stay audit-only.
+
+- **Missing `index.md` link** — fix it directly.
+- **NEW / STALE / ORPHAN topic, dead citation, missing `url` cache, unreferenced
+  cache file** — run the `wiki-librarian` skill (Skill tool) scoped to the chosen
+  topics. It rebuilds the pages, `index.md`, `.build-log.yaml` and `.cache/`, and
+  runs `wiki-editor` over what it rebuilt. Then re-run `build_status.py` and
+  `verify_wiki.py` and confirm the chosen topics are FRESH and clean.
+- **`sources.yaml` decision** (new topic for a coverage gap, split of an
+  oversized page, fixed unmatched glob, merge of overlapping topics) — make the
+  edit only for a finding the user chose, as you proposed it, then rebuild the
+  affected topics through the librarian as above.
+- Commit the librarian's output per topic or per finding, in Conventional
+  Commits (`docs(wiki): …`, per the `commit-message` skill).
+
 ## Rules
 
-- Never regenerate or hand-edit the content of a `wiki/*.md` page.
-- Never edit `wiki/sources.yaml`, `wiki/.build-log.yaml`, or `wiki/.cache/*`.
+- Never hand-edit the content of a `wiki/*.md` page; pages change only through
+  the `wiki-librarian` skill.
+- Never edit `wiki/sources.yaml`, `wiki/.build-log.yaml`, or `wiki/.cache/*`
+  yourself, except a `sources.yaml` change the user chose in a fix phase (the
+  librarian owns the build log and cache).
 - Never edit, move, or delete a repo file that serves as a source.
-- Only fix mechanical bookkeeping directly (a missing `index.md` link).
-  Everything else is a flag, not a fix.
-- End with a clear summary: what was fixed, and what needs a librarian run
+- Outside a fix phase, only fix mechanical bookkeeping directly (a missing
+  `index.md` link). Everything else is a flag, not a fix.
+- End with a clear summary: what was fixed, and what still needs a librarian run
   or a `sources.yaml` decision.
