@@ -1,7 +1,7 @@
 ---
 title: Development & Quickstart
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - specs/001-governance-platform/quickstart.md
   - AGENTS.md
@@ -26,7 +26,11 @@ There are two quickstarts, both feature-scoped under `specs/`:
   quickstart (moved from the repo root). It now lists Poetry (ADR-0003) and
   Python 3.11+, and for running what exists today it defers to `README.md`
   (`specs/001-governance-platform/quickstart.md` §"Prerequisites", §"Running
-  the Platform"). Its spec-workflow section is still thin — see
+  the Platform"). Its install step is a plain `poetry install`, which brings in every
+  dependency group, and it notes that the `.specify/scripts/` helpers are git-ignored Spec
+  Kit scaffolding written by `.devcontainer/post-create.sh`, so they exist in the dev
+  container but not in a bare clone (`specs/001-governance-platform/quickstart.md`
+  §"Running Specifications and Planning"). Its spec-workflow section is still thin — see
   [Spec-driven workflow](#spec-driven-workflow-speckit) below.
 - `specs/002-neo4j-schema-ui/quickstart.md` — the accurate guide for running
   the schema visualiser. It was realigned on 2026-10-04 with the JSON-only service: it
@@ -125,7 +129,7 @@ in the background every `RETRY_INTERVAL_SECONDS` until a load succeeds, and
 `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` (or `--uri` / `--user` /
 `--password`) and bootstraps the ArchiMate schema in Neo4j — subcommands
 `constraints`, `ingest`, `version`, `audit`, `all` (`README.md`
-§"Configuration", §"Related tooling").
+§"Configuration", §"Operations: seeding Neo4j").
 
 ## Tests
 
@@ -203,6 +207,11 @@ CI now installs PlantUML before running the `platform/` package checks (`apt-get
 plantuml`, then a pinned newer jar fetched over `curl`, mirroring `.devcontainer/post-create.sh`),
 because `modelling-specification`'s rendering tests shell out to `plantuml` directly
 (`.github/workflows/ci.yml`).
+
+CI runs on pushes to `main` and `develop` and on pull requests. Working branches
+(`feature/**`, `bugfix/**`) are covered only through their PRs: listing them under `push`
+as well ran the suite twice for every PR commit (`.github/workflows/ci.yml`;
+`RELEASE.md` §"Branch model").
 
 ## Conventions
 

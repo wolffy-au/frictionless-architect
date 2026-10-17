@@ -1,7 +1,7 @@
 ---
 title: Architecture Decision Log
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - docs/adr/0000-adr-template.md
   - docs/adr/0001-root-is-governance-only.md
@@ -176,7 +176,12 @@ Plateaus (`docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`
 §Decision; `ARCHITECTURE.md` §8.3). The Realization rule was extended
 (spec 003 clarification, 2026-10-12): an issue closed as not-planned or a
 duplicate stays on the unreleased Deliverable rather than being realized, and
-a release realizes every Plateau it delivered a Work Package for. See
+a release realizes every Plateau it delivered a Work Package for. A second
+clarification (2026-10-17) stops an epic's children from each redrawing the
+epic's edge: a Work Package whose Aggregation root resolves to the same
+Deliverable emits no Realization edge of its own, and realizes it structurally
+through the Aggregation chain instead
+(`docs/adr/0035-github-roadmap-as-implementation-migration-layer.md` §Decision). See
 [Architecture Model](architecture-model.md).
 
 ADR-0036 (Accepted 2026-10-08, GH #109) names the convention that was

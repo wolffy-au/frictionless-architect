@@ -1,7 +1,7 @@
 ---
 title: Agent Skills & Workflows
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - .claude/agents/README.md
   - .claude/agents/acceptance-author.md
@@ -96,7 +96,7 @@ merge** (`.claude/agents/README.md:24-29`).
 | `refactor-analyst` | read-only | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations, no code changes. |
 | `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, the constitution. |
 | `adr-auditor` | branch + **draft** PR | Audit `docs/adr/` against the decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, constitution, `specs/**`) and recent commits; report missing / stale / misaligned / superseded records and draft `Status: Proposed` ADR stubs plus status edits. Leaves the PR **draft** — a human writes and attests the decision (`.claude/agents/README.md:30-31`). |
-| `wiki-maintenance` | flags only | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Never regenerates pages. |
+| `wiki-maintenance` | flags; fixes chosen findings in the weekly session | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Audit-only by default. In the weekly `scripts/wiki_audit_weekly.sh` session it fixes the findings the user chooses: a missing `index.md` link directly, anything else by running `wiki-librarian` on the affected topics (and a `sources.yaml` edit only when chosen), then commits as `docs(wiki): …`. It never hand-edits page content (`.claude/agents/wiki-maintenance.md` §"Fixing chosen findings"). |
 | `release-runner` | branch + tag + release | Run `RELEASE.md` end to end (§1–§10): gates, `cz bump` on `develop`, then open the `develop` → `main` PR and **stop at the human merge gate** (it never merges, and never pushes to `main`). After the human merge it tags `origin/main`, creates the release with `--verify-tag`, and merges back. Stops on any red gate; pushes the tag / creates the release only after an explicit go-ahead (`.claude/agents/release-runner.md`). |
 
 Several of these are wired into `RELEASE.md` step 5 (`docs-uplift`,
@@ -189,9 +189,9 @@ teaching models live under `sample-data/sample-0N/` — see
 
 | Skill / agent | Purpose (`.claude/skills/README.md` §"Project wiki") |
 |---|---|
-| `wiki-librarian` | Build or refresh `wiki/` — a derived cache. Scaffolds `wiki/` when absent, resolves `wiki/sources.yaml` (repo globs + external URLs), diffs sources against `wiki/.build-log.yaml`, and regenerates NEW/STALE topic pages as synthesized prose with citations. Tools under `wiki-librarian/tools/`: `resolve_sources`, `build_status`, `verify_wiki`, `semsearch` (local-only semantic index). |
-| `wiki-editor` | Formatting/consistency pass over the generated pages — heading hierarchy, citation-link and frontmatter hygiene, dead internal links — without changing technical meaning. |
-| `wiki-maintenance` (agent) | Audits the generated wiki (see the maintenance table above); flags for a librarian run, never regenerates pages itself. |
+| `wiki-librarian` | Build or refresh `wiki/` — a derived cache. Scaffolds `wiki/` when absent, resolves `wiki/sources.yaml` (repo globs + external URLs), diffs sources against `wiki/.build-log.yaml`, and regenerates NEW/STALE topic pages as synthesized prose with citations, then runs `wiki-editor` over the pages it rebuilt. Tools under `wiki-librarian/tools/`: `resolve_sources`, `build_status`, `verify_wiki`, `semsearch` (local-only semantic index). |
+| `wiki-editor` | Formatting/consistency pass over the generated pages — heading hierarchy, citation-link and frontmatter hygiene, dead internal links — without changing technical meaning. `wiki-librarian` runs it automatically over each run's rebuilt pages; run it standalone for a one-off polish (`.claude/skills/wiki-editor/SKILL.md`). |
+| `wiki-maintenance` (agent) | Audits the generated wiki (see the maintenance table above); audit-only by default, and in the weekly session fixes chosen findings through `wiki-librarian`, never by hand. |
 
 ## Decision records
 

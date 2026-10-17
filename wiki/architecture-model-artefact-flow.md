@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Artefact Flow"
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -40,10 +40,9 @@ evaluation, the enforcement gate, the drift engine and build supervision. As a
 result, every governed action lands an immutable record
 (`architecture/model/relationships.yaml:626-631`, `647`).
 
-> **Sources disagree on counts.** The README's section-C summary still gives
-> the older figures of 15 functions and 25 DataObjects
-> (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 24
-> and 35.
+The README's section-C summary no longer gives counts, which had drifted from the model;
+the figures above come from `elements.yaml` (`architecture/model/README.md` §"Model
+contents").
 
 Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
 `589-679`):

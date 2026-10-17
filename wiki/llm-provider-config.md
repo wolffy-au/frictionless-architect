@@ -1,7 +1,7 @@
 ---
 title: LLM Provider Configuration
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-17
+generator: claude-opus-5-5
 sources:
   - platform/packages/llm-provider-config/README.md
   - platform/packages/llm-provider-config/pyproject.toml
@@ -110,7 +110,7 @@ prefix and a JSON API under it (`platform/packages/llm-provider-config/src/llm_p
   settings instead of the actual global default.
 
 Each of these non-2xx outcomes is declared in the route's `responses=`, so the
-mounted app's OpenAPI document lists them (`router.py:94`, `101`, `113-117`, `131`, `141`).
+mounted app's OpenAPI document lists them (`router.py:108`, `116`, `129-133`, `148`, `159`).
 
 The page edits the global default, API keys and per-component overrides; keys are
 never returned. There is no authentication — the single-user local MVP of ADR-0024
