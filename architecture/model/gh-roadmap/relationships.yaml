@@ -85,9 +85,6 @@
   target: plat-architecture-strategy-mvp-7
 - type: Realization
   source: del-release-v0-1-0
-  target: plat-github-importer-11
-- type: Realization
-  source: del-release-v0-1-0
   target: plat-policy-to-oscal-mvp-1
 - type: Realization
   source: del-release-v0-1-0
@@ -184,7 +181,7 @@
   target: del-release-v0-1-0
 - type: Realization
   source: wp-decide-decision-capture-scope-and-the-gh-56
-  target: del-general-tasks-12-unreleased
+  target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-epic-conversational-architecture-gh-68
   target: del-architecture-strategy-mvp-7-unreleased
@@ -289,13 +286,7 @@
   target: plat-solution-design-mvp-8
 - type: Triggering
   source: plat-general-tasks-12
-  target: plat-architecture-strategy-mvp-7
-- type: Triggering
-  source: plat-general-tasks-12
   target: plat-policy-to-oscal-mvp-1
-- type: Triggering
-  source: plat-github-importer-11
-  target: plat-solution-design-mvp-8
 - type: Triggering
   source: plat-multi-user-collaboration-2
   target: plat-effectiveness-assurance-mvp-10
