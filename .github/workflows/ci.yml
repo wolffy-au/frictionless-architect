@@ -4,12 +4,12 @@ permissions:
   contents: read
 
 on:
+  # Working branches (feature/**, bugfix/**) are covered by the pull_request
+  # trigger; listing them under push too ran the suite twice per PR commit.
   push:
     branches:
       - main
       - develop
-      - "feature/**"
-      - "bugfix/**"
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
