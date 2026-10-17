@@ -12,17 +12,25 @@ poetry run python architecture/model/build.py
 ```
 
 Expect: a summary line, then `build.py` reporting a model that validates. On this repo
-today (checked 2026-10-04):
+today (checked 2026-10-17, from the committed `gh-roadmap/` layer):
 
-2 Plateaus (`policy-to-oscal-mvp`, `multi-user-collaboration`), 1 unreleased Deliverable and 3 Work
-Packages (#44, #61, #7), each realizing the unreleased Deliverable, plus the two published releases
-(`v0.1.0`, `v0.1.1`; their notes name no Plateau, so neither is attached). No Triggering, Gap or
-`plat-baseline` is generated (the blockers have no milestone).
+- 12 Plateaus (one per milestone, `plat-policy-to-oscal-mvp-1` to `plat-general-tasks-12`).
+- 61 Work Packages, each realizing exactly one Deliverable.
+- 14 Deliverables: the published releases `v0.1.0`, `v0.1.1`, `v0.2.0` and `v0.3.0`, plus one
+  `…-unreleased` Deliverable for each of the 10 milestones that still has undelivered Work Packages.
+- Each Plateau realizes its `bfn-*` business function where the milestone description names one.
+- Plateau-to-Plateau `Triggering` where Work Packages in different milestones depend on each other,
+  and Work Package `Triggering` / `Aggregation` from `blockedBy` and parent links.
+- No Gap and no `plat-baseline`: those stay hand-authored.
+
 Rules: [data-model.md](data-model.md).
+
+The diagram shows the shape for one milestone, `policy-to-oscal-mvp` (milestone 1), with
+three of its Work Packages: two still open, and one delivered in `v0.1.0`.
 
 ```plantuml
 @startuml
-title Expected output today (checked 2026-10-04)
+title Shape of the output for milestone 1 (checked 2026-10-17)
 hide empty members
 
 object "plat-policy-to-oscal-mvp-1" as P <<Plateau>> {
@@ -38,18 +46,17 @@ object "wp-application-layer-dedupe-artefact-views-gh-61" as W61 <<WorkPackage>>
 object "wp-vision-single-high-level-archimate-gh-7" as W7 <<WorkPackage>> {
   gh-state = closed
 }
-object "plat-multi-user-collaboration-2" as P2 <<Plateau>> {
-  gh-number = 2
-  gh-state = open
-}
 object "del-policy-to-oscal-mvp-1-unreleased" as D <<Deliverable>>
+object "del-release-v0-1-0" as R <<Deliverable>>
+object "bfn-policy-conversion" as B <<BusinessFunction>>
 
 W44 --> D : Realization
 W61 --> D : Realization
-W7 --> D : Realization
+W7 --> R : Realization
 D --> P : Realization
-note bottom of P2 : No Work Packages yet, so no unreleased Deliverable.
-note bottom of P : No Triggering: the blockers of #44 and #7\nhave no milestone, so they are out of scope.
+R --> P : Realization
+P --> B : Realization
+note bottom of P : Releases v0.1.1 and v0.2.0 also realize this Plateau,\nbecause they delivered other Work Packages of it.
 @enduml
 ```
 
