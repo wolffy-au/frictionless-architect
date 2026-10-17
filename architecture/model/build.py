@@ -34,10 +34,19 @@ def main() -> int:
     # platform/ has its own poetry.lock and virtualenv (ADR-0002) -- `poetry run`
     # from there, not `sys.executable`, which is root's own venv and does not
     # have `modelling_specification` installed.
+    #
+    # That venv is keyed by project name/lock hash, not by checkout path, so it
+    # is shared across git worktrees of this repo; whichever checkout last ran
+    # `poetry install` baked its own absolute path into the editable install.
+    # Prepending each package's own src/ here makes this invocation always use
+    # THIS checkout's source, regardless of which one the venv was installed
+    # from -- without touching (and so without disturbing) the shared venv.
+    pythonpath = os.pathsep.join(str(src) for src in sorted((PLATFORM / "packages").glob("*/src")) if src.is_dir())
+    env = {**platform_env(), "PYTHONPATH": pythonpath}
     result = subprocess.run(
         ["poetry", "run", "python", "-m", "modelling_specification.cli", "build"],
         cwd=PLATFORM,
-        env=platform_env(),
+        env=env,
     )
     return result.returncode
 
