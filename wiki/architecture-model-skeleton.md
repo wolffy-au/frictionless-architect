@@ -21,10 +21,11 @@ land ([ADR-0010](decision-log.md)). It is **decomposition input, not the final
 architecture**. Even so, it carries a full TOGAF ADM Phase A vision, and since
 PR #62 it also carries a Phase B business layer. In brief:
 
-- **Motivation:** stakeholders and assessments drive five outcomes, which
-  realize one goal.
+- **Motivation:** stakeholders and assessments drive five sub-goals (since
+  2026-10-17, decomposed from the top goal via `Aggregation`), each realized
+  by two outcomes (ten total), aggregating into one top goal.
 - **Strategy:** capabilities, courses of action and resources, plus five
-  value streams (one per outcome).
+  value streams (one per sub-goal, each realizing that sub-goal's outcomes).
 - **Business:** 16 processes grouped under 10 business functions, and the business
   objects they read and write.
 
@@ -67,13 +68,21 @@ Each stakeholder is `Association`-linked to the driver(s) it holds
 (`architecture/model/relationships.yaml:90-103`). Each is also linked to the value
 stream(s) that deliver value to it (see "Value streams — one per outcome" below).
 
-**Drivers.** There are now five, and they say why the platform exists (`architecture/model/elements.yaml:27-57`,
-plus `driver-authoring-friction` added for GH #108):
+**Drivers.** There are now six, and they say why the platform exists
+(`architecture/model/elements.yaml:32-76`):
 
 - Market Agility & Competitive Pressure
 - Regulatory Resiliency & Social License
 - Systemic Sustainability & Complexity Management
 - Human-to-Machine Operational Scaling
+- **Automation Outpaces Provable Control Assurance** (`driver-unprovable-automation`)
+  — second-line assurance can no longer produce provable, auditable evidence
+  over machine-speed, non-deterministic decisions; evidence reconstructed
+  after the fact no longer satisfies the control-effectiveness bar boards and
+  regulators expect. Held by the Risk & Compliance Function
+  (`stk-risk-compliance`) — added so that stakeholder has its own honest
+  Driver→Assessment chain into the accountable-automation goal (see below),
+  rather than reusing an ill-fitting existing driver.
 - **Architect Authoring Friction & Governance Consistency** — capturing
   architect intent by hand-editing the canonical model directly is itself a
   bottleneck and a governance gap: too slow to keep pace with AI-speed
@@ -81,8 +90,15 @@ plus `driver-authoring-friction` added for GH #108):
   metamodel or the enterprise's own conventions until the next review. Held
   by the Enterprise Architecture Function (`stk-architecture`).
 
-**Assessments.** There is one per driver, each a finding that makes its driver urgent
-(`architecture/model/elements.yaml:95-120`, plus `assess-manual-authoring-risk`):
+**Assessments.** There are still five — the new driver re-uses an existing
+Assessment (`assess-review-bottleneck`) rather than adding a sixth, since
+"human review cannot keep pace" and "automation outpaces provable control
+assurance" are both answered by the same underlying finding, just held by
+different stakeholders. `driver-scaling` also now associates with
+`assess-time-to-market` in addition to `assess-review-bottleneck`
+(`architecture/model/relationships.yaml` §"Motivation spine").
+Each Assessment is a finding that makes its driver(s) urgent
+(`architecture/model/elements.yaml:114-148`):
 
 - time-to-market falling behind AI-native competitors
 - human review unable to keep pace with AI-speed delivery
@@ -101,44 +117,72 @@ not mechanically checked (`architecture/model/elements.yaml:17-25`).
 
 ### Goal and outcomes — the motivation spine
 
-The goal is *Frictionless Architecture & Governance at Machine Speed*
-(`goal-frictionless-architecture`). Five outcomes now realize it
-(`architecture/model/elements.yaml:122-164`, plus
-`outcome-intent-becomes-model-truth` for GH #108):
+The top goal is *Frictionless Architecture & Governance at Machine Speed*
+(`goal-frictionless-architecture`, `architecture/model/elements.yaml:159-165`).
+A 2026-10-17 pass split what used to be a flat Goal→Outcome chain into
+**Goal → Sub-Goal → Outcome**: the five elements that used to be the top
+goal's direct Outcomes are now **Goals** in their own right,
+`Aggregation`-linked under the top goal (the ArchiMate pattern for goal
+decomposition — `goal` carries direction, `outcome` carries the concrete,
+measurable target), and each sub-goal now has **two** Outcomes realizing it
+instead of one (`architecture/model/elements.yaml:150-157` header comment;
+`166-267`):
 
-| Outcome (`id`) | Answers assessment | Realized by requirements | Realized by value stream |
-|---|---|---|---|
-| Approved Change Reaches Production at AI Speed (`outcome-change-at-ai-speed`) | time-to-market | auto spec generation, reusable architecture | Governed Architecture Delivery |
-| Compliance Proven Before Release (`outcome-compliance-before-release`) | manual compliance | regulatory mapping, control catalog, pre-deploy gate | Obligation to Evidence |
-| Accountable, Auditable Automation (`outcome-accountable-automation`) | review bottleneck | human sign-off, immutable audit ledger | Exception to Decision |
-| Drift Detected and Reconciled Continuously (`outcome-drift-reconciled`) | drift debt | authoritative twin, continuous reconciliation | Drift to Remediation |
-| **Architectural Intent Becomes Governed Model Truth** (`outcome-intent-becomes-model-truth`) | hand-edited model changes are ungoverned | conversational-authoring alignment | Intent to Model |
+| Sub-goal (`id`) | Answers assessment | Outcomes realizing it | Realized by requirements | Realized by value stream |
+|---|---|---|---|---|
+| Approved Change Reaches Production at AI Speed (`goal-change-at-ai-speed`) | time-to-market | 90% of changes reach production within one business day (`outcome-change-lead-time-1day`); zero changes require a hand-authored spec (`outcome-zero-manual-spec-authoring`) | auto spec generation, reusable architecture | Governed Architecture Delivery |
+| Compliance Proven Before Release (`goal-compliance-before-release`) | manual compliance | 100% of releases ship with machine-generated compliance evidence (`outcome-compliance-evidence-at-gate`); zero releases pass the gate with an unresolved obligation mapping (`outcome-zero-unresolved-obligation-gate`) | regulatory mapping, control catalog, pre-deploy gate | Obligation to Evidence |
+| Accountable, Auditable Automation (`goal-accountable-automation`) | review bottleneck | 100% of non-deterministic agent decisions carry a named human sign-off (`outcome-signoff-coverage-complete`); full forensic audit trail reconstructable for 100% of automated changes (`outcome-audit-trail-reconstructable`) | human sign-off, immutable audit ledger | Exception to Decision |
+| Drift Detected and Reconciled Continuously (`goal-drift-reconciled`) | drift debt | all production drift detected within 24 hours (`outcome-drift-detected-24h`); zero drift findings older than one sprint (`outcome-drift-zero-aged-backlog`) | authoritative twin, continuous reconciliation | Drift to Remediation |
+| Architectural Intent Becomes Governed Model Truth (`goal-intent-becomes-model-truth`) | hand-edited model changes are ungoverned | zero hand-edited model artifacts reach main (`outcome-zero-hand-edited-model`); architectural decisions land in the model within one sprint (`outcome-decision-to-model-latency`) | conversational-authoring alignment; **ADR-to-model change triage and traceability** (`req-decision-model-traceability`, new) | Intent to Model |
 
-(`architecture/model/relationships.yaml:104-132`.) The spine is `driver
-→ assessment → outcome → goal`: each driver `Influence`s its assessment,
-each assessment `Influence`s the outcome that answers it, and each outcome
-`Realization`-links to the goal. Each requirement and each value stream
-realizes **exactly one** outcome. The fifth outcome's `desc` frames it
-precisely: "an architect's natural-language intent becomes a validated model
-change without a manual YAML edit or render step".
+(`architecture/model/relationships.yaml` §"Motivation spine".) The spine is
+now `driver → assessment → sub-goal → (outcome realizes sub-goal) ←
+requirement/value-stream`: each driver `Association`-links to its
+assessment, each assessment now `Association`-links **directly to the
+sub-goal it answers** (replacing the old `Assessment --Influence--> Outcome`
+edge), each sub-goal `Aggregation`-links up into the top goal, and each
+Outcome `Realization`-links down to the sub-goal it measures. Each
+Requirement realizes exactly one Outcome; each value stream realizes **at
+least one** Outcome, usually exactly one — a handful of value streams now
+carry a second `Realization` edge to an Outcome that would otherwise have
+been orphaned on `4-strategy.puml` once its sub-goal gained a second
+Outcome, rather than that Outcome being dropped from the Strategy view or a
+redundant new value stream being invented for it.
 
-`outcome-drift-reconciled` replaces the former single outcome, "Architecture
+`req-decision-model-traceability` is new: "Accepted architectural decisions
+(ADRs, spec clarifications) must be triaged against the canonical model,
+explicitly linked to the element(s) each one changes, and actioned —
+whether authored conversationally or by a reviewed manual change — rather
+than left to accumulate as an unactioned backlog item." It realizes
+`outcome-decision-to-model-latency`. A new, generic Enterprise Convention
+Rule kind, `no-restatement` (`conv-requirement-no-outcome-restatement` in
+`architecture/model/conventions.yaml`), checks that a Requirement's `desc`
+does not share a 6-or-more-word verbatim run with the `desc` of the Outcome
+it realizes — added after an earlier draft of this Requirement was caught,
+once by direct review and once by the rule itself mid-build, restating its
+Outcome almost word for word. See [Conversational Model
+Authoring](modelling-specification.md) for the rule's implementation.
+
+`goal-drift-reconciled` replaces the former single outcome, "Architecture
 as Executable Intelligence". That phrase now lives in the `desc` of
 `vs-governed-delivery` ("Architecture as executable intelligence, applied to
 delivery") (`architecture/model/elements.yaml:439-446`).
 
-**Edges that are deliberately absent.** The model has no Assessment → Goal,
-Assessment → Requirement, Driver → Requirement or Requirement → Goal edge. Each one
-would make an existing edge *derived*. An Assessment → Requirement influence, for
-example, would make Assessment → Outcome derivable through the requirement. The
-Stakeholder view, whose viewpoint admits no Requirement, needs that
-Assessment → Outcome edge to show which concern each outcome answers
-(`architecture/model/relationships.yaml:117-141`; `architecture/model/README.md`
-§"Model contents").
+**Edges that are deliberately absent.** The model has no Assessment → top
+Goal, Assessment → Requirement, Driver → Requirement, or Requirement/Value
+Stream → top Goal edge. Each one would make an existing edge *derived*. An
+Assessment → Requirement influence, for example, would make Assessment →
+sub-goal derivable through the requirement → outcome → sub-goal chain. The
+Stakeholder view, whose viewpoint admits no Requirement, needs the direct
+Assessment → Goal edge to show which concern each sub-goal answers
+(`architecture/model/relationships.yaml` §"Assessments influence the
+sub-goal that answers them"; `architecture/model/README.md` §"Model
+contents").
 
 `build.py`'s `check_motivation_conventions` catches the structural mistakes
 here: "a Driver bypassing its Assessment, a derived Constraint/Requirement->Goal
-edge" (`architecture/model/elements.yaml:22-25`). The checker itself lives in
+edge" (`architecture/model/elements.yaml:22-27`). The checker itself lives in
 `build.py`, which is not a source of this topic; see
 [Architecture Model](architecture-model.md).
 
@@ -174,13 +218,13 @@ readable. They reach outcomes and the goal only through that requirement
 | Privacy Mapping Is Mandatory | `req-regulatory-mapping` |
 | Governed State Confined to Sovereignty Boundary | `req-authoritative-twin` |
 
-Three requirements (spec generation, reusable architecture and continuous
-reconciliation) carry no such influence. They are justified by the outcome they
-realize instead.
+Four requirements (spec generation, reusable architecture, continuous
+reconciliation, and the new ADR-to-model traceability requirement below)
+carry no such influence. They are justified by the outcome they realize
+instead.
 
-**Functional requirements.** There are now ten, and each is a component contract
-(`architecture/model/elements.yaml:225-313`, plus `req-conversational-authoring-alignment`
-added for GH #108):
+**Functional requirements.** There are now eleven, and each is a component contract
+(`architecture/model/elements.yaml:337-446`):
 
 - automated specification generation from the graph
 - automated regulatory-obligation mapping
@@ -197,8 +241,16 @@ added for GH #108):
   architecture goals and conform to centrally-set conventions, not merely pass
   metamodel legality, so authoring at conversational speed doesn't erode
   strategic coherence or governance consistency (GH #108). It is influenced by
-  Policy as Code and realizes `outcome-intent-becomes-model-truth`
-  (`architecture/model/relationships.yaml:48,147,174`).
+  Policy as Code and realizes `outcome-zero-hand-edited-model`
+  (`architecture/model/relationships.yaml` §"Motivation spine").
+- **ADR-to-model change triage and traceability**
+  (`req-decision-model-traceability`, new) — accepted architectural
+  decisions must be triaged against the canonical model, explicitly linked
+  to the element(s) each one changes, and actioned, rather than left to
+  accumulate as an unactioned backlog item. It carries no principle/constraint
+  influence and realizes `outcome-decision-to-model-latency` (see "Goal and
+  outcomes" above for the `no-restatement` convention rule this requirement's
+  wording was iterated against).
 
 ## Strategy
 
@@ -269,25 +321,31 @@ The links are (`architecture/model/relationships.yaml:70-80`):
   Exception to Decision and (GH #108) Intent to Model
 - Living Twin → Drift to Remediation
 
-### Value streams — one per outcome
+### Value streams — one per sub-goal, usually one outcome each
 
 [ADR-0033](decision-log.md) replaced the single six-stage "Governed Architecture
-Delivery" stream with **four streams, one per outcome**, organised by who
+Delivery" stream with **four streams, one per sub-goal**, organised by who
 *receives* the value. GH #108 then added a fifth, **Intent to Model**, for the
-new outcome above. That gives 16 `ValueStream` elements: 5 streams and 11
-stages (`architecture/model/elements.yaml:431-539`). Each stream realizes its
-outcome, is `Association`-linked to its value recipients with a labelled edge,
-and is a `Composition` of its stages. Each stage is `Serving`-linked from the
-capability that enables it (`architecture/model/relationships.yaml:81-88`,
-`159-184`):
+intent-becomes-model-truth sub-goal. That gives 16 `ValueStream` elements: 5
+streams and 11 stages (`architecture/model/elements.yaml:431-539`). Each
+stream `Realization`-links to **at least one** Outcome under its sub-goal —
+usually exactly one, but since the 2026-10-17 Goal→Sub-Goal→Outcome split
+gave every sub-goal a second Outcome, five streams now carry a second
+`Realization` edge rather than leaving that second Outcome orphaned on
+`4-strategy.puml` or spawning a new value stream for it. Each stream is also
+`Association`-linked to its value recipients with a labelled edge, and is a
+`Composition` of its stages. Each stage is `Serving`-linked from the
+capability that enables it (`architecture/model/relationships.yaml`
+§"Motivation spine" for the Realization edges, §"IT4IT TOUCHPOINTS" precedes
+the stage-serving edges):
 
-| Stream | Recipients | Stages (served by) |
-|---|---|---|
-| Governed Architecture Delivery | Delivery Organisation ("compliant releases at speed"), Executive ("time to market") | Establish Reuse Baseline (Reusable Architecture) → Specify the Change (Spec Generation) → Build Under Supervision (Development Supervision) → Release to Production (Development Supervision) |
-| Obligation to Evidence | Risk & Compliance ("provable compliance"), Regulator ("evidence before release") | Establish Control Baseline (Control & Obligation Mgmt) → Prove Compliance (Development Supervision) |
-| Exception to Decision | Executive ("accountable automation"), Risk & Compliance ("examinable decisions") | Escalate Non-Standard Change (Development Supervision) → Decide & Sign Off (Human Oversight) → Record as Evidence (Forensic Audit Recording) |
-| Drift to Remediation | Enterprise Architecture ("sustained coherence") | Observe As-Built State (Knowledge Management) → Reconcile & Remediate (Drift Detection) |
-| Intent to Model | Enterprise Architecture ("validated authoring", GH #108) | *no stages — see below* |
+| Stream | Outcomes realized | Recipients | Stages (served by) |
+|---|---|---|---|
+| Governed Architecture Delivery | 90% of changes reach production within one day; zero hand-authored specs | Delivery Organisation ("spec automation keeps pace with delivery volume"), Executive ("time to market") | Establish Reuse Baseline (Reusable Architecture) → Specify the Change (Spec Generation) → Build Under Supervision (Development Supervision) → Release to Production (Development Supervision) |
+| Obligation to Evidence | 100% of releases ship with compliance evidence; zero releases pass the gate unresolved | Risk & Compliance ("provable compliance"), Regulator ("evidence before release") | Establish Control Baseline (Control & Obligation Mgmt) → Prove Compliance (Development Supervision) |
+| Exception to Decision | 100% of agent decisions carry a named human sign-off; full forensic audit trail reconstructable | Delivery Organisation ("escalation absorbs what human review can't keep up with"), Risk & Compliance ("examinable decisions") | Escalate Non-Standard Change (Development Supervision) → Decide & Sign Off (Human Oversight) → Record as Evidence (Forensic Audit Recording) |
+| Drift to Remediation | All drift detected within 24h; zero drift findings older than one sprint | Enterprise Architecture ("sustained coherence") | Observe As-Built State (Knowledge Management) → Reconcile & Remediate (Drift Detection) |
+| Intent to Model | Zero hand-edited model artifacts reach main; decisions land in the model within one sprint | Enterprise Architecture ("validated authoring", GH #108) | *no stages — see below* |
 
 **Intent to Model** (`vs-intent-to-model`) is deliberately kept as its **own
 single-stage stream**, not decomposed further (ADR-0037): "an architect's

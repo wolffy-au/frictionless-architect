@@ -88,11 +88,11 @@
 # No direct capability-to-stream edge: the capability realizes this course of action,
 # which already serves the stream, so the shortcut would be derived.
 # Each value stream's value recipients.
-- {type: Association, source: stk-delivery, target: vs-governed-delivery, label: compliant releases at speed}
+- {type: Association, source: stk-delivery, target: vs-governed-delivery, label: spec automation keeps pace with delivery volume}
 - {type: Association, source: stk-exec, target: vs-governed-delivery, label: time to market}
 - {type: Association, source: stk-risk-compliance, target: vs-obligation-to-evidence, label: provable compliance}
 - {type: Association, source: stk-regulator, target: vs-obligation-to-evidence, label: evidence before release}
-- {type: Association, source: stk-exec, target: vs-exception-to-decision, label: accountable automation}
+- {type: Association, source: stk-delivery, target: vs-exception-to-decision, label: escalation absorbs what human review can't keep up with}
 - {type: Association, source: stk-risk-compliance, target: vs-exception-to-decision, label: examinable decisions}
 - {type: Association, source: stk-architecture, target: vs-drift-to-remediation, label: sustained coherence}
 - {type: Association, source: stk-architecture, target: vs-intent-to-model, label: "validated authoring (GH #108)"}
@@ -106,54 +106,79 @@
 - {type: Association, source: stk-architecture, target: driver-sustainability}
 - {type: Association, source: stk-delivery, target: driver-scaling}
 - {type: Association, source: stk-risk-compliance, target: driver-compliance}
+- {type: Association, source: stk-risk-compliance, target: driver-unprovable-automation}
 - {type: Association, source: stk-architecture, target: driver-authoring-friction}
 - {type: Association, source: driver-agility, target: assess-time-to-market}
+- {type: Association, source: driver-scaling, target: assess-time-to-market}
 - {type: Association, source: driver-scaling, target: assess-review-bottleneck}
+- {type: Association, source: driver-unprovable-automation, target: assess-review-bottleneck}
 - {type: Association, source: driver-sustainability, target: assess-drift-debt}
 - {type: Association, source: driver-compliance, target: assess-manual-compliance}
 - {type: Association, source: driver-authoring-friction, target: assess-manual-authoring-risk}
+- {type: Association, source: assess-time-to-market, target: goal-change-at-ai-speed}
+- {type: Association, source: assess-review-bottleneck, target: goal-accountable-automation}
+- {type: Association, source: assess-drift-debt, target: goal-drift-reconciled}
+- {type: Association, source: assess-manual-compliance, target: goal-compliance-before-release}
+- {type: Association, source: assess-manual-authoring-risk, target: goal-intent-becomes-model-truth}
 
 # =====================================================================
-# A. Motivation spine: driver -> assessment -> outcome -> goal;
-#    requirement -> outcome; value stream -> outcome.
+# A. Motivation spine: driver -> assessment -> sub-goal -> outcome uses
+#    Association throughout; outcome -> sub-goal also realizes the goal.
+#    Requirement -> outcome; value stream -> outcome.
 # =====================================================================
-- {type: Influence, source: assess-time-to-market, target: outcome-change-at-ai-speed}
-- {type: Influence, source: assess-review-bottleneck, target: outcome-accountable-automation}
-- {type: Influence, source: assess-drift-debt, target: outcome-drift-reconciled}
-- {type: Influence, source: assess-manual-compliance, target: outcome-compliance-before-release}
-- {type: Influence, source: assess-manual-authoring-risk, target: outcome-intent-becomes-model-truth}
-- {type: Realization, source: outcome-drift-reconciled, target: goal-frictionless-architecture}
-# Each value stream realizes exactly one outcome.
-- {type: Realization, source: vs-governed-delivery, target: outcome-change-at-ai-speed}
-- {type: Realization, source: vs-obligation-to-evidence, target: outcome-compliance-before-release}
-- {type: Realization, source: vs-exception-to-decision, target: outcome-accountable-automation}
-- {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-reconciled}
-- {type: Realization, source: vs-intent-to-model, target: outcome-intent-becomes-model-truth}
-- {type: Realization, source: outcome-change-at-ai-speed, target: goal-frictionless-architecture}
-- {type: Realization, source: outcome-compliance-before-release, target: goal-frictionless-architecture}
-- {type: Realization, source: outcome-accountable-automation, target: goal-frictionless-architecture}
-- {type: Realization, source: outcome-intent-becomes-model-truth, target: goal-frictionless-architecture}
-# Each requirement realizes exactly one outcome; none realizes the goal
-# directly — req -> outcome -> goal already derives that Realization.
-- {type: Realization, source: req-auto-spec-generation, target: outcome-change-at-ai-speed}
-- {type: Realization, source: req-reusable-architecture, target: outcome-change-at-ai-speed}
-- {type: Realization, source: req-authoritative-twin, target: outcome-drift-reconciled}
-- {type: Realization, source: req-continuous-reconciliation, target: outcome-drift-reconciled}
-- {type: Realization, source: req-regulatory-mapping, target: outcome-compliance-before-release}
-- {type: Realization, source: req-control-catalog, target: outcome-compliance-before-release}
-- {type: Realization, source: req-pre-deploy-gate, target: outcome-compliance-before-release}
-- {type: Realization, source: req-human-signoff, target: outcome-accountable-automation}
-- {type: Realization, source: req-immutable-audit-ledger, target: outcome-accountable-automation}
-- {type: Realization, source: req-conversational-authoring-alignment, target: outcome-intent-becomes-model-truth}
+# Each sub-goal aggregates into the top goal (goal decomposition).
+- {type: Aggregation, source: goal-frictionless-architecture, target: goal-drift-reconciled}
+- {type: Aggregation, source: goal-frictionless-architecture, target: goal-change-at-ai-speed}
+- {type: Aggregation, source: goal-frictionless-architecture, target: goal-compliance-before-release}
+- {type: Aggregation, source: goal-frictionless-architecture, target: goal-accountable-automation}
+- {type: Aggregation, source: goal-frictionless-architecture, target: goal-intent-becomes-model-truth}
+# Each outcome realizes exactly one sub-goal.
+- {type: Realization, source: outcome-drift-detected-24h, target: goal-drift-reconciled}
+- {type: Realization, source: outcome-drift-zero-aged-backlog, target: goal-drift-reconciled}
+- {type: Realization, source: outcome-change-lead-time-1day, target: goal-change-at-ai-speed}
+- {type: Realization, source: outcome-zero-manual-spec-authoring, target: goal-change-at-ai-speed}
+- {type: Realization, source: outcome-compliance-evidence-at-gate, target: goal-compliance-before-release}
+- {type: Realization, source: outcome-zero-unresolved-obligation-gate, target: goal-compliance-before-release}
+- {type: Realization, source: outcome-signoff-coverage-complete, target: goal-accountable-automation}
+- {type: Realization, source: outcome-audit-trail-reconstructable, target: goal-accountable-automation}
+- {type: Realization, source: outcome-zero-hand-edited-model, target: goal-intent-becomes-model-truth}
+- {type: Realization, source: outcome-decision-to-model-latency, target: goal-intent-becomes-model-truth}
+# Each value stream realizes at least one outcome (usually exactly one); a
+# second outcome under the same goal that has no other value-stream owner
+# is realized by the goal's existing value stream rather than left orphaned
+# on the Strategy view (4-strategy.puml) or spawning a redundant stream.
+- {type: Realization, source: vs-governed-delivery, target: outcome-change-lead-time-1day}
+- {type: Realization, source: vs-governed-delivery, target: outcome-zero-manual-spec-authoring}
+- {type: Realization, source: vs-obligation-to-evidence, target: outcome-compliance-evidence-at-gate}
+- {type: Realization, source: vs-obligation-to-evidence, target: outcome-zero-unresolved-obligation-gate}
+- {type: Realization, source: vs-exception-to-decision, target: outcome-signoff-coverage-complete}
+- {type: Realization, source: vs-exception-to-decision, target: outcome-audit-trail-reconstructable}
+- {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-zero-aged-backlog}
+- {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-detected-24h}
+- {type: Realization, source: vs-intent-to-model, target: outcome-zero-hand-edited-model}
+- {type: Realization, source: vs-intent-to-model, target: outcome-decision-to-model-latency}
+# Each requirement realizes exactly one outcome; none realizes a goal
+# directly — req -> outcome -> sub-goal -> top goal already derives that.
+- {type: Realization, source: req-auto-spec-generation, target: outcome-zero-manual-spec-authoring}
+- {type: Realization, source: req-reusable-architecture, target: outcome-change-lead-time-1day}
+- {type: Realization, source: req-authoritative-twin, target: outcome-drift-zero-aged-backlog}
+- {type: Realization, source: req-continuous-reconciliation, target: outcome-drift-detected-24h}
+- {type: Realization, source: req-regulatory-mapping, target: outcome-compliance-evidence-at-gate}
+- {type: Realization, source: req-control-catalog, target: outcome-compliance-evidence-at-gate}
+- {type: Realization, source: req-pre-deploy-gate, target: outcome-zero-unresolved-obligation-gate}
+- {type: Realization, source: req-human-signoff, target: outcome-signoff-coverage-complete}
+- {type: Realization, source: req-immutable-audit-ledger, target: outcome-audit-trail-reconstructable}
+- {type: Realization, source: req-conversational-authoring-alignment, target: outcome-zero-hand-edited-model}
+- {type: Realization, source: req-decision-model-traceability, target: outcome-decision-to-model-latency}
 
 # =====================================================================
-# A. Assessments influence the outcome that answers them (above), never a
+# A. Assessments influence the sub-goal that answers them (above), never a
 #    requirement: an Assessment -> Requirement Influence would make the
-#    Assessment -> Outcome edge derived (via requirement -> outcome), and the
-#    Stakeholder view — whose viewpoint admits no Requirement — needs
-#    Assessment -> Outcome to show which concern each outcome answers.
-#    Requirements are motivated by the principles and constraints below, and
-#    justified by the outcome they realize.
+#    Assessment -> sub-goal edge derived (via requirement -> outcome ->
+#    sub-goal), and the Stakeholder view — whose viewpoint admits no
+#    Requirement — needs Assessment -> Goal to show which concern each
+#    sub-goal answers. Requirements are motivated by the principles and
+#    constraints below, and justified by the outcome they realize.
 # =====================================================================
 
 # =====================================================================

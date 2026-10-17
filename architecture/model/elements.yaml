@@ -58,6 +58,14 @@
     machine speed, it is physically impossible to review it all with traditional
     methods.
 - type: Driver
+  id: driver-unprovable-automation
+  name: Automation Outpaces Provable Control Assurance
+  desc: >-
+    Second-line assurance can no longer provide provable, auditable evidence
+    over machine-speed, non-deterministic decisions; evidence reconstructed
+    after the fact no longer satisfies the control-effectiveness bar boards
+    and regulators expect.
+- type: Driver
   id: driver-authoring-friction
   name: Architect Authoring Friction & Governance Consistency
   desc: >-
@@ -139,11 +147,14 @@
     AI-speed delivery.
 
 # =====================================================================
-# A. MOTIVATION — Goal & Outcomes (the aim, and the end results that realize it)
-#    Each assessment influences the outcome that answers it; each outcome
-#    realizes the goal; each requirement realizes exactly one outcome. No
-#    Assessment -> Goal or Requirement -> Goal edge — both would be derived
-#    via the outcome. Each value stream realizes exactly one outcome.
+# A. MOTIVATION — Goal, Sub-Goals & Outcomes
+#    Each assessment influences the sub-goal that answers it; each sub-goal
+#    aggregates into the top goal (goal decomposition); each outcome realizes
+#    exactly one sub-goal; each requirement and each value stream realizes
+#    exactly one outcome. No Assessment -> top Goal, Requirement -> Goal, or
+#    Requirement/ValueStream -> top Goal edge — all would be derived via the
+#    sub-goal/outcome chain. Outcomes carry the concrete, measurable targets;
+#    goals carry the direction.
 # =====================================================================
 - type: Goal
   id: goal-frictionless-architecture
@@ -152,15 +163,29 @@
     Sustain architecturally-sound, provably-compliant change at the speed and
     volume of AI-driven delivery — without a human review bottleneck and
     without accumulating unmanaged architectural drift.
-- type: Outcome
-  id: outcome-drift-reconciled
+- type: Goal
+  id: goal-drift-reconciled
   name: Drift Detected and Reconciled Continuously
   desc: >-
     The as-built estate is continuously reconciled against as-designed intent:
     every deviation surfaces as a classified drift event and is remediated
     before it can accumulate as unmanaged architectural risk.
 - type: Outcome
-  id: outcome-change-at-ai-speed
+  id: outcome-drift-detected-24h
+  name: All Production Drift Detected Within 24 Hours
+  desc: >-
+    Every deviation between as-built state and as-designed intent is
+    classified as a drift event within 24 hours of occurring, not discovered
+    weeks later during audit.
+- type: Outcome
+  id: outcome-drift-zero-aged-backlog
+  name: Zero Drift Findings Older Than One Sprint
+  desc: >-
+    No classified drift finding remains unremediated past the sprint boundary
+    in which it was detected; the conformance backlog never accumulates aged,
+    unmanaged risk.
+- type: Goal
+  id: goal-change-at-ai-speed
   name: Approved Change Reaches Production at AI Speed
   desc: >-
     The lead time from an approved change to its production release matches
@@ -168,21 +193,63 @@
     designs reused, not hand-authored, so architecture no longer gates time to
     market.
 - type: Outcome
-  id: outcome-compliance-before-release
+  id: outcome-change-lead-time-1day
+  name: 90% of Approved Changes Reach Production Within One Business Day
+  desc: >-
+    The lead time from change approval to production release is measured and,
+    for at least 90% of changes, is one business day or less — architecture
+    is no longer the long pole in delivery.
+- type: Outcome
+  id: outcome-zero-manual-spec-authoring
+  name: Zero Approved Changes Require a Hand-Authored Specification
+  desc: >-
+    Every approved change's executable specification is generated from the
+    knowledge graph and reused design, with no manual specification authoring
+    on the critical path.
+- type: Goal
+  id: goal-compliance-before-release
   name: Compliance Proven Before Release
   desc: >-
     Every change reaches production already mapped to its regulatory
     obligations and evaluated against machine-readable controls — compliance
     evidence is produced at the gate, not reconstructed after the fact.
 - type: Outcome
-  id: outcome-accountable-automation
+  id: outcome-compliance-evidence-at-gate
+  name: 100% of Releases Ship With Machine-Generated Compliance Evidence
+  desc: >-
+    Every release reaching the deployment gate carries automatically generated
+    evidence mapping it to its applicable OSCAL controls — no evidence is
+    reconstructed after the fact.
+- type: Outcome
+  id: outcome-zero-unresolved-obligation-gate
+  name: Zero Releases Pass the Gate With an Unresolved Obligation Mapping
+  desc: >-
+    The deployment gate blocks 100% of changes that lack a resolved
+    regulatory obligation mapping; none reach production on a promise to
+    check compliance later.
+- type: Goal
+  id: goal-accountable-automation
   name: Accountable, Auditable Automation
   desc: >-
     Agentic delivery runs at machine speed while every decision it cannot
     deterministically validate has a named human owner, and every action it
     takes is recorded as contemporaneous, examinable evidence.
 - type: Outcome
-  id: outcome-intent-becomes-model-truth
+  id: outcome-signoff-coverage-complete
+  name: 100% of Non-Deterministic Agent Decisions Carry a Named Human Sign-off
+  desc: >-
+    Every decision the system cannot deterministically validate is escalated
+    to, and explicitly signed off by, a named human before it proceeds — none
+    resolve autonomously.
+- type: Outcome
+  id: outcome-audit-trail-reconstructable
+  name: Full Forensic Audit Trail Reconstructable for 100% of Automated Changes
+  desc: >-
+    For every automated change made in the last 12 months, the immutable
+    audit ledger can reconstruct not just what happened but why the decision
+    was made, on demand.
+- type: Goal
+  id: goal-intent-becomes-model-truth
   name: Architectural Intent Becomes Governed Model Truth
   desc: >-
     GH #108: an architect's natural-language intent becomes a validated model
@@ -190,6 +257,20 @@
     checked against the metamodel and the enterprise's own conventions
     before it reaches the knowledge graph, with rejections explained and
     overrides traceable.
+- type: Outcome
+  id: outcome-zero-hand-edited-model
+  name: Zero Hand-Edited Model Artifacts Reach Main
+  desc: >-
+    Every `.archimate`/XML/diagram file under the canonical model is
+    generated output; no PR that hand-edits a generated artifact directly is
+    merged.
+- type: Outcome
+  id: outcome-decision-to-model-latency
+  name: Architectural Decisions Land in the Model Within One Sprint
+  desc: >-
+    Every accepted ADR or spec clarification that changes architectural
+    intent is reflected in the canonical model within one sprint of
+    acceptance, with ADR-to-model-element traceability.
 
 # =====================================================================
 # A. MOTIVATION — Principles (constitution-level; cross-binding)
@@ -349,6 +430,17 @@
     pass metamodel legality — so architects can extend the model at
     conversational speed without that speed eroding strategic coherence or
     governance consistency.
+  props:
+    requirement-type: Functional
+- type: Requirement
+  id: req-decision-model-traceability
+  name: ADR-to-Model Change Triage and Traceability
+  desc: >-
+    Accepted architectural decisions (ADRs, spec clarifications) must be
+    triaged against the canonical model, explicitly linked to the element(s)
+    each one changes, and actioned — whether authored conversationally or by
+    a reviewed manual change — rather than left to accumulate as an
+    unactioned backlog item.
   props:
     requirement-type: Functional
 

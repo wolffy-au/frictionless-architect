@@ -370,7 +370,7 @@
   # The case for change: who holds which driver, the assessments that make each
   # driver urgent, and the goal + outcomes they drive toward. Swept by type, so
   # the IT4IT import's extra Stakeholder and Outcome elements appear here too.
-  include_types: [Stakeholder, Assessment, Driver, Goal, Outcome]
+  include_types: [Stakeholder, Driver, Assessment, Goal] # , Outcome
 
 - id: view-motivation
   name: Motivation
