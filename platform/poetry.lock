@@ -1124,6 +1124,27 @@ files = [
 ]
 
 [[package]]
+name = "digital-twin-knowledge-graph"
+version = "0.0.0"
+description = "Digital Twin Knowledge Graph: Neo4j read path, ArchiMate parser and schema manager (GH #106)."
+optional = false
+python-versions = ">=3.11,<3.14"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+defusedxml = ">=0.7.1,<0.8.0"
+neo4j = ">=5.0,<6.0"
+pydantic = ">=2.0,<3.0"
+pydantic-settings = ">=2.0,<3.0"
+python-dotenv = ">=1.2.2,<2.0.0"
+
+[package.source]
+type = "directory"
+url = "packages/digital-twin-knowledge-graph"
+
+[[package]]
 name = "distro"
 version = "1.9.0"
 description = "Distro - an OS platform information API"
@@ -2776,6 +2797,7 @@ develop = true
 
 [package.dependencies]
 defusedxml = ">=0.7.1,<0.8.0"
+digital-twin-knowledge-graph = "*"
 fastapi = ">=0.141.0,<0.142.0"
 litellm = ">=1.0.0,<2.0.0"
 llm-provider-config = "*"
@@ -3040,6 +3062,26 @@ files = [
     {file = "mypy_extensions-1.1.0-py3-none-any.whl", hash = "sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505"},
     {file = "mypy_extensions-1.1.0.tar.gz", hash = "sha256:52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558"},
 ]
+
+[[package]]
+name = "neo4j"
+version = "5.28.8"
+description = "Neo4j Bolt driver for Python"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "neo4j-5.28.8-py3-none-any.whl", hash = "sha256:f8ecdad94be88f0f7a766a284a9a7023db9e7bd92d1b0a4fe6d6e191feb97f91"},
+    {file = "neo4j-5.28.8.tar.gz", hash = "sha256:b2531e5fb618bd1b0f5f3d62b5f9be480a66969396f82c41caaf2f3539f7e72c"},
+]
+
+[package.dependencies]
+pytz = "*"
+
+[package.extras]
+numpy = ["numpy (>=1.7.0,<3.0.0)"]
+pandas = ["numpy (>=1.7.0,<3.0.0)", "pandas (>=1.1.0,<3.0.0)"]
+pyarrow = ["pyarrow (>=1.0.0)"]
 
 [[package]]
 name = "nodeenv"
@@ -4024,6 +4066,18 @@ pyyaml = "*"
 docs = ["sphinx"]
 test = ["mypy", "pyaml", "pytest", "toml", "types-pyyaml", "types-toml"]
 toml = ["toml"]
+
+[[package]]
+name = "pytz"
+version = "2026.5"
+description = "World timezone definitions, modern and historical"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pytz-2026.5-py2.py3-none-any.whl", hash = "sha256:e658af3757f9e26a9d25dd2aff38335acd92bc9104f890a894b2c1ba28311b03"},
+    {file = "pytz-2026.5.tar.gz", hash = "sha256:fa23724b9c486543b9ff54a327ee7569ac83ade54bb9afd0fc18676620401c86"},
+]
 
 [[package]]
 name = "pywin32"
@@ -5145,4 +5199,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "186a31f1d0f59d3832c9469e5744d760cec0c7b9a7d137326900fff00390f06c"
+content-hash = "3e31cb460b1b2426dcd27753f922af8ac26a49e07d4884d8d700fed2eef3f9bd"

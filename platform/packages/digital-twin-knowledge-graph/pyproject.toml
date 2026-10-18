@@ -1,0 +1,22 @@
+[project]
+name = "digital-twin-knowledge-graph"
+description = "Digital Twin Knowledge Graph: Neo4j read path, ArchiMate parser and schema manager (GH #106)."
+# Frozen placeholder, as at the repo root -- versioning moves to the monorepo
+# root with the rest of the commitizen setup (ADR-0002, Consequences).
+version = "0.0.0"
+requires-python = ">=3.11,<3.14"
+readme = "README.md"
+dependencies = [
+    "neo4j (>=5.0,<6.0)",
+    "defusedxml (>=0.7.1,<0.8.0)",
+    "pydantic (>=2.0,<3.0)",
+    "pydantic-settings (>=2.0,<3.0)",
+    "python-dotenv (>=1.2.2,<2.0.0)",
+]
+
+[tool.poetry]
+packages = [{ include = "digital_twin_knowledge_graph", from = "src" }]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
