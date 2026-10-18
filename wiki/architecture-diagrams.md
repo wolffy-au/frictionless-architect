@@ -1,7 +1,7 @@
 ---
 title: "Architecture Views & Diagrams: Vision, Business & Viewpoints"
-generated: 2026-10-17
-generator: claude-opus-5-5
+generated: 2026-10-18
+generator: GitHub Copilot CLI (Auto)
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/application/catalog-structure.puml

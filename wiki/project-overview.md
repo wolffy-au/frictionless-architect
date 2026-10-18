@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: 2026-10-17
-generator: claude-opus-5-5
+generated: 2026-10-18
+generator: GitHub Copilot CLI (Auto)
 sources:
   - README.md
   - specs/001-governance-platform/spec.md
@@ -104,7 +104,8 @@ Architect" (OpenAPI docs at `/docs`) and exposes `GET /schema-payload`,
 `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` (default 300) after a successful
 refresh. A failed load is retried in the background every
 `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` (default and maximum 300), and the
-status endpoint reports `retry_pending`
+status endpoint reports `retry_pending`. The service is JSON-only; the former
+server-rendered page was dropped ahead of a separate UI extraction
 (`README.md` §"Configuration", §"Running the schema visualiser"). See
 [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md) (spec 002).
