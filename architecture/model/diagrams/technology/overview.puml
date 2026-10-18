@@ -11,6 +11,7 @@ Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
 Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
 Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
 Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Technology_Artifact(e_id8b34f5f03beb50, "packages/pii-gateway")
 Technology_Node(e_ida2b7d071930453, "CI Runner") {
   Technology_SystemSoftware(e_id32ef66e0cc7a59, "pytest") {
     Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
