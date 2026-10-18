@@ -13,6 +13,7 @@ dependencies = [
     "rapidfuzz (>=3.14.3,<4.0.0)",
     "pyyaml (>=6.0,<7.0)",
     "llm-provider-config",
+    "digital-twin-knowledge-graph",
     "litellm (>=1.0.0,<2.0.0)",
     "defusedxml (>=0.7.1,<0.8.0)",
 ]
@@ -22,6 +23,7 @@ packages = [{ include = "modelling_specification", from = "src" }]
 
 [tool.poetry.dependencies]
 llm-provider-config = { path = "../llm-provider-config", develop = true }
+digital-twin-knowledge-graph = { path = "../digital-twin-knowledge-graph", develop = true }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

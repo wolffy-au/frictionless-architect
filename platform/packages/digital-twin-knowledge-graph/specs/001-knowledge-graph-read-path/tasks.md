@@ -44,7 +44,7 @@ Monorepo package (ADR-0002, plan.md Project Structure):
 **Purpose**: Stand up the package skeleton so it is installable and gated like its sibling
 `platform/packages/*` packages, before any ported code lands.
 
-- [ ] T001 Create `platform/packages/digital-twin-knowledge-graph/pyproject.toml` (package
+- [X] T001 Create `platform/packages/digital-twin-knowledge-graph/pyproject.toml` (package
       name `digital-twin-knowledge-graph`, `requires-python = ">=3.11,<3.14"`, `version =
       "0.0.0"` frozen placeholder per ADR-0002 Consequences, `[tool.poetry] packages = [{
       include = "digital_twin_knowledge_graph", from = "src" }]`, `[build-system]
@@ -53,19 +53,19 @@ Monorepo package (ADR-0002, plan.md Project Structure):
       Technical Context, quickstart.md Prerequisites) — version ranges matched against what
       `platform/poetry.lock` already resolves for `defusedxml` via
       `modelling-specification`'s existing dependency.
-- [ ] T002 Create `platform/packages/digital-twin-knowledge-graph/README.md` describing the
+- [X] T002 Create `platform/packages/digital-twin-knowledge-graph/README.md` describing the
       package's purpose (`if-twin-read-path`, GH #106), its public surface (link to
       `specs/001-knowledge-graph-read-path/contracts/read-path.md`), and the explicit
       scope-boundary note that `visualizer/api.py`/`scripts/neo4j_schema.py` are not yet
       cut over (plan.md Summary).
-- [ ] T003 Register the new package in `platform/pyproject.toml`: add
+- [X] T003 Register the new package in `platform/pyproject.toml`: add
       `"digital-twin-knowledge-graph"` to the root `[project].dependencies` list and add
       `digital-twin-knowledge-graph = { path = "packages/digital-twin-knowledge-graph",
       develop = true }` under `[tool.poetry.dependencies]`.
-- [ ] T004 Create the package's empty scaffolding: `src/digital_twin_knowledge_graph/` with
+- [X] T004 Create the package's empty scaffolding: `src/digital_twin_knowledge_graph/` with
       an empty `py.typed` marker (matching `modelling-specification`'s layout), plus empty
       `tests/unit/__init__.py` and `tests/integration/__init__.py`.
-- [ ] T005 From `platform/`, run `poetry lock` to refresh the shared `platform/poetry.lock`
+- [X] T005 From `platform/`, run `poetry lock` to refresh the shared `platform/poetry.lock`
       with the new package and its three new dependencies (`neo4j`, `defusedxml`,
       `pydantic-settings`), then `poetry install`.
 
@@ -82,14 +82,14 @@ package's public export surface. MUST complete before any user story's implement
 
 **⚠️ CRITICAL**: No user story implementation can begin until this phase is complete.
 
-- [ ] T006 Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/config.py`
+- [X] T006 Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/config.py`
       with `GraphSettings(BaseSettings)` (`pydantic-settings`): fields `neo4j_uri: str = ""`,
       `neo4j_user: str = ""`, `neo4j_password: str = ""`, reading the
       `FRICTIONLESS_ARCHITECT_NEO4J_URI` / `_NEO4J_USER` / `_NEO4J_PASSWORD` env vars
       (research.md R6, data-model.md Graph Settings) — the same prefix flat-`src/`'s
       `VisualizerSettings` already uses; empty `neo4j_uri` means "no connection configured"
       (data-model.md).
-- [ ] T007 [P] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
+- [X] T007 [P] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
       exporting `GraphSettings`, `KnowledgeGraphReadPath`, `ReadPathError`, `SampleParser`,
       `ParsedSample`, `SchemaManager` (contracts/read-path.md Public surface) — placeholder
       imports, filled in as each module lands in the phases below.
@@ -117,12 +117,12 @@ generic one.
 
 ### Tests for User Story 2
 
-- [ ] T008 [P] [US2] Port `tests/unit/visualizer/test_namespaces.py` to
+- [X] T008 [P] [US2] Port `tests/unit/visualizer/test_namespaces.py` to
       `platform/packages/digital-twin-knowledge-graph/tests/unit/test_namespaces.py`,
       re-targeted at `digital_twin_knowledge_graph.namespaces` — same assertions
       (`ARCHIMATE_NS`, `XSI_NS`, `require_archimate_namespace()` raising
       `ArchimateNamespaceError`), unmodified expectations (FR-011).
-- [ ] T009 [P] [US2] Port `tests/unit/visualizer/test_sample_parser.py` to
+- [X] T009 [P] [US2] Port `tests/unit/visualizer/test_sample_parser.py` to
       `platform/packages/digital-twin-knowledge-graph/tests/unit/test_sample_parser.py`,
       re-targeted at `digital_twin_knowledge_graph.sample_parser` — same assertions covering
       well-formed parsing, duplicate-identifier-last-wins-plus-warning (FR-005), and
@@ -130,11 +130,11 @@ generic one.
 
 ### Implementation for User Story 2
 
-- [ ] T010 [P] [US2] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/namespaces.py`,
+- [X] T010 [P] [US2] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/namespaces.py`,
       ported from `src/frictionless_architect/visualizer/namespaces.py`: `ARCHIMATE_NS =
       "http://www.opengroup.org/xsd/archimate/3.0/"`, `XSI_NS`, `ArchimateNamespaceError`,
       `require_archimate_namespace()` (behaviorally identical, FR-011).
-- [ ] T011 [US2] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/sample_parser.py`,
+- [X] T011 [US2] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/sample_parser.py`,
       ported from `src/frictionless_architect/visualizer/sample_parser.py`: `ParsedSample`
       dataclass (`model`, `elements`, `relationships`, `views`, `file_path`, `warnings` —
       data-model.md Parsed Sample) and `SampleParser.parse() -> ParsedSample`, calling
@@ -144,7 +144,7 @@ generic one.
       (FR-005). Preserves today's ArchiMate-typed element/relationship vocabulary as this
       package's working ontology, deferring ADR-0017 reconciliation to a future increment
       (FR-015).
-- [ ] T012 [US2] Update `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
+- [X] T012 [US2] Update `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
       to export the real `SampleParser`/`ParsedSample` from T011 in place of the T007
       placeholder.
 
@@ -170,7 +170,7 @@ Story 1"); with no `neo4j_uri` configured, confirm it returns empty collections,
 
 ### Tests for User Story 1
 
-- [ ] T013 [P] [US1] Port `tests/unit/visualizer/test_data_loader.py` to
+- [X] T013 [P] [US1] Port `tests/unit/visualizer/test_data_loader.py` to
       `platform/packages/digital-twin-knowledge-graph/tests/unit/test_read_path.py`,
       re-targeted at `digital_twin_knowledge_graph.read_path` (`DataLoader` →
       `KnowledgeGraphReadPath`, `DataLoaderError` → `ReadPathError`, research.md R5) — same
@@ -180,7 +180,7 @@ Story 1"); with no `neo4j_uri` configured, confirm it returns empty collections,
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/read_path.py`,
+- [X] T014 [US1] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/read_path.py`,
       ported from `src/frictionless_architect/visualizer/data_loader.py` with the rename
       (research.md R5): `KnowledgeGraphReadPath` (constructed from `GraphSettings`, depends on
       T006) and `ReadPathError`. `collect() -> dict[str, list[dict[str, Any]]]` keyed
@@ -189,7 +189,7 @@ Story 1"); with no `neo4j_uri` configured, confirm it returns empty collections,
       `ReadPathError` via `raise ... from exc`, never re-raising the raw driver exception
       (FR-002/FR-003, contracts/read-path.md Error contract). Add `close()`. Confine all
       `neo4j` imports to this module (research.md R3).
-- [ ] T015 [US1] Update `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
+- [X] T015 [US1] Update `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
       to export the real `KnowledgeGraphReadPath`/`ReadPathError` from T014 in place of the
       T007 placeholder.
 
@@ -212,14 +212,14 @@ Story 3", SC-004).
 
 ### Tests for User Story 3
 
-- [ ] T016 [P] [US3] Port `tests/unit/schema/test_manager.py` to
+- [X] T016 [P] [US3] Port `tests/unit/schema/test_manager.py` to
       `platform/packages/digital-twin-knowledge-graph/tests/unit/test_schema_manager.py`,
       re-targeted at `digital_twin_knowledge_graph.schema_manager.SchemaManager` — same
       assertions: `apply_constraints()` is idempotent (`IF NOT EXISTS`), `ingest()` merges by
       type and fails with a `ValueError` naming missing relationship endpoint(s) rather than
       creating a dangling edge (FR-007), `record_schema_version()` stamps a timestamped
       marker, unmodified expectations (FR-011).
-- [ ] T017 [P] [US3] Port `tests/integration/test_schema_manager_audit.py` to
+- [X] T017 [P] [US3] Port `tests/integration/test_schema_manager_audit.py` to
       `platform/packages/digital-twin-knowledge-graph/tests/integration/test_schema_manager_audit.py`,
       re-targeted at the new `SchemaManager` — same assertions: `run_audit_checks()` finds
       view/diagram relationship references with no matching graph edge and views with no
@@ -229,7 +229,7 @@ Story 3", SC-004).
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/schema_manager.py`,
+- [X] T018 [US3] Create `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/schema_manager.py`,
       ported from `src/frictionless_architect/schema/manager.py`: `SchemaManager(uri, user,
       password)` with `apply_constraints()` (uniqueness constraints on `Element.identifier`,
       `View.identifier`, `Diagram.identifier`, `Viewpoint.identifier`, `SchemaVersion.name`;
@@ -245,7 +245,7 @@ Story 3", SC-004).
       imports to this module alongside `read_path.py` (research.md R3). Attribute the ported
       business/motivation-layer vocabulary and batched-ingestion idea to ADR-0006 in a code
       comment (FR-010, SC-002).
-- [ ] T019 [US3] Update `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
+- [X] T019 [US3] Update `platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py`
       to export the real `SchemaManager` from T018 in place of the T007 placeholder — all four
       public names (`GraphSettings`, `KnowledgeGraphReadPath`, `ReadPathError`, `SampleParser`,
       `ParsedSample`, `SchemaManager`) now resolve to real implementations, matching
@@ -269,12 +269,12 @@ boundary (spec.md US4, FR-013).
 package and call its read interface directly, with no new router, port or wire format
 introduced.
 
-- [ ] T020 [US4] Verify no FastAPI app, router, or CLI entrypoint exists anywhere under
+- [X] T020 [US4] Verify no FastAPI app, router, or CLI entrypoint exists anywhere under
       `platform/packages/digital-twin-knowledge-graph/src/` — confirm the package's only
       public surface is the plain Python import contract (contracts/read-path.md), matching
       the Project Structure's "no FastAPI app of its own" Structure Decision (plan.md). No new
       code; this is a structural check against what Phases 2–5 already produced.
-- [ ] T021 [US4] Add `digital-twin-knowledge-graph` as a **permanent** path dependency of
+- [X] T021 [US4] Add `digital-twin-knowledge-graph` as a **permanent** path dependency of
       `modelling-specification` (`platform/packages/modelling-specification/pyproject.toml`,
       `[tool.poetry.dependencies]`: `digital-twin-knowledge-graph = { path =
       "../digital-twin-knowledge-graph", develop = true }`), then add a test inside
@@ -288,7 +288,7 @@ introduced.
       diagram are updated to document it (not left silently inaccurate). Confirm no new
       router, port, or wire format had to be introduced to make the call work, and run `poetry
       lock` from `platform/` to pick up the new cross-package edge.
-- [ ] T022 [P] [US4] Add a temporary smoke test at
+- [X] T022 [P] [US4] Add a temporary smoke test at
       `platform/packages/digital-twin-knowledge-graph/tests/unit/test_package_import.py`
       asserting `from digital_twin_knowledge_graph import GraphSettings,
       KnowledgeGraphReadPath, ReadPathError, SampleParser, ParsedSample, SchemaManager`
@@ -311,16 +311,16 @@ FR-011, SC-003).
 cases) against the new package's code; it passes with the same assertions those existing tests
 already make, with no change to flat-`src/`'s own code or tests.
 
-- [ ] T023 [US5] Run `cd platform && poetry run pytest packages/digital-twin-knowledge-graph/tests/unit -v`
+- [X] T023 [US5] Run `cd platform && poetry run pytest packages/digital-twin-knowledge-graph/tests/unit -v`
       and confirm all ported tests (T008, T009, T013, T016, T022) pass with the same
       expectations as their flat-`src/` originals (SC-003).
-- [ ] T024 [US5] Run `poetry run pytest tests/unit/visualizer/test_data_loader.py
+- [X] T024 [US5] Run `poetry run pytest tests/unit/visualizer/test_data_loader.py
       tests/unit/visualizer/test_sample_parser.py tests/unit/visualizer/test_namespaces.py
       tests/unit/schema/test_manager.py -v` from the repo root and confirm flat-`src/`'s own
       copies and tests pass exactly as before, with no change in behavior or imports (FR-011
       Acceptance Scenario 2) — this is a verification task only; it must not modify any
       flat-`src/` file.
-- [ ] T025 [US5] Run `cd platform && poetry run pytest
+- [X] T025 [US5] Run `cd platform && poetry run pytest
       packages/digital-twin-knowledge-graph/tests/integration -v` (T017) against a real Neo4j
       instance and confirm it passes with the same assertions as its flat-`src/` original.
 
@@ -334,26 +334,26 @@ satisfied with evidence (test output), not just by inspection.
 **Purpose**: Final gate compliance and documentation, once all five user stories are built and
 verified.
 
-- [ ] T026 [P] Run `cd platform && poetry run mypy packages/digital-twin-knowledge-graph/src
+- [X] T026 [P] Run `cd platform && poetry run mypy packages/digital-twin-knowledge-graph/src
       packages/digital-twin-knowledge-graph/tests` and `poetry run pyright
       packages/digital-twin-knowledge-graph` and fix any type errors — `platform/pyproject.toml`
       already runs `mypy --strict`.
-- [ ] T027 [P] Run `cd platform && poetry run pytest
+- [X] T027 [P] Run `cd platform && poetry run pytest
       --cov=packages/digital-twin-knowledge-graph/src --cov-fail-under=90
       packages/digital-twin-knowledge-graph/tests` and add coverage for any public surface
       left under 90% (FR-014).
-- [ ] T028 Run `bash scripts/platform_checks.sh` from the repo root end-to-end and confirm it
+- [X] T028 Run `bash scripts/platform_checks.sh` from the repo root end-to-end and confirm it
       no longer reports "skipped (no src/ yet)" for this package and passes its lock-check,
       pyright, mypy, and per-package 90%-coverage pytest gates.
-- [ ] T029 Run `poetry run python architecture/model/build.py` from the repo root and confirm
+- [X] T029 Run `poetry run python architecture/model/build.py` from the repo root and confirm
       `VALID — no metamodel or referential-integrity violations` — this feature adds no model
       element/relationship, so the count should be unchanged from before this phase (plan.md
       Constitution Check, Principle X: "Model impact: none").
-- [ ] T030 [P] Execute quickstart.md's "Validate User Story 1/2/3" snippets manually against a
+- [X] T030 [P] Execute quickstart.md's "Validate User Story 1/2/3" snippets manually against a
       real or local Neo4j instance and confirm the documented outputs match, updating
       quickstart.md only if a documented command or snippet no longer matches the implemented
       API shape.
-- [ ] T031 Run `bash scripts/pre_commit_checks.sh` from the repo root before committing, per
+- [X] T031 Run `bash scripts/pre_commit_checks.sh` from the repo root before committing, per
       AGENTS.md's mandatory fast gate (lock refresh, pymarkdown, ruff, pyright, mypy,
       tests/unit/).
 
