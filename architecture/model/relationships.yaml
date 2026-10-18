@@ -937,7 +937,7 @@
 - {type: Realization, source: wp-106-scaffold-twin, target: art-pkg-digital-twin-knowledge-graph}
 - {type: Realization, source: wp-vendor-it4it, target: del-architecture-strategy-mvp-7-unreleased}
 - {type: Realization, source: wp-107-rehome-specs, target: art-pkg-modelling-specification}
-- {type: Aggregation, source: plat-multi-user-collaboration-2, target: art-pkg-digital-twin-knowledge-graph}
+- {type: Aggregation, source: plat-architecture-strategy-mvp-7, target: art-pkg-digital-twin-knowledge-graph}
 - {type: Aggregation, source: plat-solution-design-mvp-8, target: art-pkg-modelling-specification}
 
 # =====================================================================
@@ -1003,6 +1003,9 @@
 - {type: Association, source: plat-multi-user-collaboration-2, target: gap-policy-to-oscal-mvp-to-multi-user-collaboration}
 - {type: Association, source: plat-architecture-strategy-mvp-7, target: gap-architecture-strategy-mvp-to-future}
 - {type: Association, source: plat-architecture-strategy-future-13, target: gap-architecture-strategy-mvp-to-future}
+- {type: Association, source: plat-architecture-strategy-mvp-7, target: gap-yaml-to-neo4j-authoritative}
+- {type: Association, source: plat-architecture-strategy-future-13, target: gap-yaml-to-neo4j-authoritative}
+- {type: Association, source: cap-digital-twin, target: gap-yaml-to-neo4j-authoritative}
 
 # --- B. Model Collaboration (joint behaviour) ---
 - {type: Aggregation, source: bc-model-collaboration, target: role-ea}
