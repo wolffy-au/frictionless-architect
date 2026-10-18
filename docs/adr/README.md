@@ -130,3 +130,6 @@ narrative docs.
   logic ported from `build.py`/`render_diagrams.py`, Enterprise Convention Rules in
   `conventions.yaml`, overrides as auto-drafted ADR stubs, new `vs-intent-to-model`
   business wiring
+- **A** — [0038](0038-section-b-roles-canonical.md) — The six section-B `BusinessRole`s are
+  canonical; GH #45's role-journey list is modelled as `Specialization`s of them; spec 001's
+  single "Architect" persona is split into Enterprise, Solution and Security Architect
