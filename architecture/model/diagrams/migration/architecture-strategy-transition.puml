@@ -1,0 +1,13 @@
+@startuml
+!include <archimate/Archimate>
+
+title Architecture Strategy: MVP to Future
+
+Implementation_Gap(e_id2732b8c8dfb058, "Gap: modelling IDE, live views & multi-spec authoring")
+Implementation_Plateau(e_id29b6db45badb5c, "architecture-strategy-future")
+Implementation_Plateau(e_id726fa9a2d0835f, "architecture-strategy-mvp")
+
+Rel_Association(e_id726fa9a2d0835f, e_id2732b8c8dfb058, "")
+Rel_Association(e_id29b6db45badb5c, e_id2732b8c8dfb058, "")
+
+@enduml

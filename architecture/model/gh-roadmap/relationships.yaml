@@ -51,8 +51,8 @@
   source: wp-markdown-catalogue-converter-gh-44
   target: wp-prepare-a-golden-data-set-bulk-testing-gh-49
 - type: Realization
-  source: del-architecture-strategy-future-unreleased-13-unreleased
-  target: plat-architecture-strategy-future-unreleased-13
+  source: del-architecture-strategy-future-13-unreleased
+  target: plat-architecture-strategy-future-13
 - type: Realization
   source: del-architecture-strategy-mvp-7-unreleased
   target: plat-architecture-strategy-mvp-7
@@ -190,10 +190,10 @@
   target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-epic-conversational-architecture-gh-68
-  target: del-architecture-strategy-future-unreleased-13-unreleased
+  target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-epic-multi-specification-modelling-gh-73
-  target: del-architecture-strategy-future-unreleased-13-unreleased
+  target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-epic-multi-user-access-to-architecture-gh-83
   target: del-multi-user-collaboration-2-unreleased
@@ -215,9 +215,6 @@
 - type: Realization
   source: wp-import-github-milestones-issues-releases-gh-95
   target: del-release-v0-2-0
-- type: Realization
-  source: wp-make-section-b-roles-canonical-split-gh-69
-  target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-markdown-catalogue-converter-gh-44
   target: del-policy-to-oscal-mvp-1-unreleased
@@ -280,7 +277,7 @@
   target: del-release-v0-2-0
 - type: Realization
   source: wp-scope-the-archimate-modelling-ide-gh-59
-  target: del-architecture-strategy-future-unreleased-13-unreleased
+  target: del-architecture-strategy-future-13-unreleased
 - type: Realization
   source: wp-technology-layer-postgres-opa-and-ui-gh-74
   target: del-release-enforcement-mvp-9-unreleased
@@ -296,9 +293,6 @@
 - type: Realization
   source: wp-vision-single-high-level-archimate-gh-7
   target: del-release-v0-1-0
-- type: Triggering
-  source: plat-architecture-strategy-mvp-7
-  target: plat-architecture-strategy-future-unreleased-13
 - type: Triggering
   source: plat-architecture-strategy-mvp-7
   target: plat-general-tasks-12
