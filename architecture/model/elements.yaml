@@ -846,6 +846,39 @@
   desc: >-
     GH #7: the stable business capability of continuously verifying that
     deployed controls remain effective in BAU.
+# GH #69 follow-on (ADR-0038 consequences): role-sec and role-dev had no
+# business-layer presence at all. These two close that gap minimally,
+# wrapping each role's one already-modelled touchpoint rather than
+# re-cutting the bfn-* set wholesale (still tracked as GH #68 epic item 0).
+- type: BusinessFunction
+  id: bfn-security-assurance
+  name: Security Assurance
+  desc: >-
+    The stable business capability of assessing patterns, blueprints and
+    solution designs for security risk before they are reused or shipped.
+    Realized at application layer by fn-threat-model.
+- type: BusinessFunction
+  id: bfn-implementation
+  name: Implementation
+  desc: >-
+    The stable business capability of a Developer building against an
+    AI-generated specification (GH #45: Implementation Contributor).
+    Distinct from bfn-agentic-delivery, which is the supervised, automated
+    build/deploy pipeline rather than the Developer's own work.
+- type: BusinessProcess
+  id: process-security-assessment
+  name: Security Assessment
+  desc: >-
+    The Security Architect / Threat Modeller runs a threat model over a
+    pattern, blueprint or solution design. Realized at application layer by
+    fn-threat-model.
+- type: BusinessProcess
+  id: process-implementation
+  name: Specification Implementation
+  desc: >-
+    The Developer implements against the generated specification produced
+    by process-spec-generation, going through source-control review before
+    the change ships.
 - type: BusinessProcess
   id: process-policy-authoring
   name: Policy & Standards Authoring
