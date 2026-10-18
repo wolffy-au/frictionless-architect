@@ -1,0 +1,339 @@
+"""Neo4j constraints, idempotent ingestion, and integrity audits, ported from flat-`src/`'s
+`frictionless_architect.schema.manager` (FR-011 — behaviorally identical).
+
+The batched (``UNWIND``-style per-type) ingestion idea and the ArchiMate
+business/motivation-layer vocabulary it carries are ported from the retired
+`prototype-neo4j` reference (ADR-0006, FR-010, SC-002) — reimplemented fresh here, never
+by restoring its archived files.
+"""
+
+from __future__ import annotations
+
+import re
+from collections.abc import Iterable, Mapping, Sequence
+from datetime import datetime, timezone
+from typing import Any, LiteralString, cast
+
+from neo4j import GraphDatabase, ManagedTransaction, basic_auth
+
+CONSTRAINTS = [
+    "CREATE CONSTRAINT element_identifier IF NOT EXISTS FOR (e:Element) REQUIRE e.identifier IS UNIQUE",
+    "CREATE CONSTRAINT view_identifier IF NOT EXISTS FOR (v:View) REQUIRE v.identifier IS UNIQUE",
+    "CREATE CONSTRAINT diagram_identifier IF NOT EXISTS FOR (d:Diagram) REQUIRE d.identifier IS UNIQUE",
+    "CREATE CONSTRAINT viewpoint_identifier IF NOT EXISTS FOR (vp:Viewpoint) REQUIRE vp.identifier IS UNIQUE",
+    "CREATE CONSTRAINT schema_version_name IF NOT EXISTS FOR (sv:SchemaVersion) REQUIRE sv.name IS UNIQUE",
+]
+
+INDEXES = [
+    "CREATE INDEX element_type_index IF NOT EXISTS FOR (e:Element) ON (e.type)",
+    "CREATE INDEX element_layer_index IF NOT EXISTS FOR (e:Element) ON (e.layer)",
+    "CREATE INDEX relationship_identifier_index IF NOT EXISTS FOR ()-[r:ARCHIMATE_RELATIONSHIP]-() ON (r.identifier)",
+    "CREATE INDEX relationship_type_index IF NOT EXISTS FOR ()-[r:ARCHIMATE_RELATIONSHIP]-() ON (r.type)",
+    "CREATE INDEX view_name_index IF NOT EXISTS FOR (v:View) ON (v.name)",
+    "CREATE INDEX diagram_name_index IF NOT EXISTS FOR (d:Diagram) ON (d.name)",
+]
+
+_LABEL_SANITIZER = re.compile(r"\W")
+
+
+def _run_literal(tx: ManagedTransaction, statement: object, **parameters: Any) -> Any:
+    return tx.run(cast(LiteralString, statement), **parameters)
+
+
+def sanitize_label(value: str | None) -> str:
+    """Sanitize a string so it can safely become a Neo4j label.
+
+    Non-word characters are replaced with ``_``; if the cleaned result still
+    doesn't start with a letter, it is prefixed with ``T_`` (Neo4j labels must
+    start with a letter).
+
+    Args:
+        value: The raw string to sanitize, or ``None``.
+
+    Returns:
+        The sanitized label, or ``""`` if ``value`` is ``None``, empty, or
+        reduces to nothing after cleaning.
+    """
+
+    if not value:
+        return ""
+
+    cleaned = _LABEL_SANITIZER.sub("_", value.strip())
+    if not cleaned:
+        return ""
+
+    if not cleaned[0].isalpha():
+        cleaned = f"T_{cleaned}"
+
+    return cleaned
+
+
+class SchemaManager:
+    """Controller for Neo4j constraints, ingestion, migrations, and audits."""
+
+    def __init__(self, uri: str, user: str, password: str) -> None:
+        """Open a Neo4j driver connection for schema management operations.
+
+        Args:
+            uri: Bolt connection URI for the Neo4j cluster (e.g. ``bolt://host:7687``).
+            user: Username for basic authentication.
+            password: Password for basic authentication.
+        """
+        auth = basic_auth(user, password)
+        self.driver = GraphDatabase.driver(uri, auth=auth)
+
+    def close(self) -> None:
+        """Close the Neo4j driver and release its connections."""
+        self.driver.close()
+
+    def apply_constraints(self) -> None:
+        """Create the uniqueness constraints and indexes (idempotent).
+
+        Returns:
+            None.
+
+        Raises:
+            neo4j.exceptions.Neo4jError: If a constraint or index statement
+                fails against the connected Neo4j cluster.
+        """
+        with self.driver.session() as session:
+            for statement in CONSTRAINTS + INDEXES:
+                session.execute_write(self._run_statement, statement)
+
+    @staticmethod
+    def _run_statement(tx: ManagedTransaction, statement: str) -> None:
+        _run_literal(tx, statement)
+
+    def ingest(self, payload: Mapping[str, Sequence[Mapping[str, Any]]]) -> None:
+        """Merge a schema payload into the graph.
+
+        Args:
+            payload: Mapping with optional ``elements``, ``relationships``, ``views``
+                and ``diagrams`` lists; missing or empty lists are skipped.
+
+        Returns:
+            None.
+
+        Raises:
+            ValueError: If a relationship references a source or target
+                element identifier that does not exist in the graph.
+        """
+        elements = payload.get("elements", [])
+        relationships = payload.get("relationships", [])
+        views = payload.get("views", [])
+        diagrams = payload.get("diagrams", [])
+
+        with self.driver.session() as session:
+            if elements:
+                session.execute_write(self._ingest_elements, elements)
+            if relationships:
+                session.execute_write(self._ingest_relationships, relationships)
+            if views:
+                session.execute_write(self._ingest_views, views)
+            if diagrams:
+                session.execute_write(self._ingest_diagrams, diagrams)
+
+    @staticmethod
+    def _ingest_elements(tx: ManagedTransaction, elements: Iterable[Mapping[str, Any]]) -> None:
+        for element in elements:
+            identifier = element["identifier"]
+            element_type = element.get("type", "Element")
+            label = sanitize_label(element_type)
+            label_clause = f":{label}" if label else ""
+            data_properties = element.get("properties", {}) or {}
+            _run_literal(
+                tx,
+                f"""
+MERGE (node:Element {{identifier:$identifier}})
+SET node.type = $type, node.layer = $layer, node.name = $name, node.documentation = $documentation
+{f"SET node{label_clause}" if label_clause else ""}
+SET node += $additional
+""",
+                identifier=identifier,
+                type=element_type,
+                layer=element.get("layer"),
+                name=element.get("name"),
+                documentation=element.get("documentation"),
+                additional=data_properties,
+            )
+
+    @staticmethod
+    def _ingest_relationships(tx: ManagedTransaction, relationships: Iterable[Mapping[str, Any]]) -> None:
+        for relationship in relationships:
+            identifier = relationship["identifier"]
+            source_id = relationship["source"]
+            target_id = relationship["target"]
+            rel_type = relationship.get("type", "ArchimateRelationship")
+            rel_properties = relationship.get("properties", {}) or {}
+
+            existence = _run_literal(
+                tx,
+                """OPTIONAL MATCH (source:Element {identifier:$source})
+OPTIONAL MATCH (target:Element {identifier:$target})
+RETURN source IS NOT NULL AS sourceExists, target IS NOT NULL AS targetExists""",
+                source=source_id,
+                target=target_id,
+            ).single()
+
+            if not existence or not (existence["sourceExists"] and existence["targetExists"]):
+                missing = []
+                if not existence or not existence["sourceExists"]:
+                    missing.append("source")
+                if not existence or not existence["targetExists"]:
+                    missing.append("target")
+                raise ValueError(f"Relationship {identifier} references missing {', '.join(missing)} node(s).")
+
+            _run_literal(
+                tx,
+                """MATCH (source:Element {identifier:$source})
+MATCH (target:Element {identifier:$target})
+MERGE (source)-[rel:ARCHIMATE_RELATIONSHIP {identifier:$identifier}]->(target)
+SET rel.type = $type, rel += $properties""",
+                source=source_id,
+                target=target_id,
+                identifier=identifier,
+                type=rel_type,
+                properties=rel_properties,
+            )
+
+    @staticmethod
+    def _ingest_views(tx: ManagedTransaction, views: Iterable[Mapping[str, Any]]) -> None:
+        for view in views:
+            identifier = view["identifier"]
+            view_props = view.get("properties", {}) or {}
+            _run_literal(
+                tx,
+                """MERGE (v:View {identifier:$identifier})
+SET v.name = $name, v.viewpoint = $viewpoint, v.viewpointRef = $viewpointRef,
+    v.relationshipIds = $relationship_ids
+SET v += $properties""",
+                identifier=identifier,
+                name=view.get("name"),
+                viewpoint=view.get("viewpoint"),
+                viewpointRef=view.get("viewpointRef"),
+                relationship_ids=list(view.get("relationships", [])),
+                properties=view_props,
+            )
+
+            for element_id in view.get("elements", []):
+                _run_literal(
+                    tx,
+                    """MATCH (v:View {identifier:$view_id})
+MATCH (element:Element {identifier:$element_id})
+MERGE (v)-[:INCLUDES]->(element)""",
+                    view_id=identifier,
+                    element_id=element_id,
+                )
+
+    @staticmethod
+    def _ingest_diagrams(tx: ManagedTransaction, diagrams: Iterable[Mapping[str, Any]]) -> None:
+        for diagram in diagrams:
+            identifier = diagram["identifier"]
+            diagram_props = diagram.get("properties", {}) or {}
+            _run_literal(
+                tx,
+                """MERGE (d:Diagram {identifier:$identifier})
+SET d.name = $name, d.viewRef = $view_ref, d.viewpoint = $viewpoint,
+    d.connectionIds = $connection_ids
+SET d += $properties""",
+                identifier=identifier,
+                name=diagram.get("name"),
+                view_ref=diagram.get("viewRef"),
+                viewpoint=diagram.get("viewpoint"),
+                connection_ids=list(diagram.get("connections", [])),
+                properties=diagram_props,
+            )
+
+            if diagram.get("viewRef"):
+                _run_literal(
+                    tx,
+                    """MATCH (d:Diagram {identifier:$diagram_id})
+MATCH (v:View {identifier:$view_id})
+MERGE (d)-[:REPRESENTS_VIEW]->(v)""",
+                    diagram_id=identifier,
+                    view_id=diagram["viewRef"],
+                )
+
+            for node_id in diagram.get("nodes", []):
+                _run_literal(
+                    tx,
+                    """MATCH (d:Diagram {identifier:$diagram_id})
+MATCH (element:Element {identifier:$node_id})
+MERGE (d)-[:HAS_NODE]->(element)""",
+                    diagram_id=identifier,
+                    node_id=node_id,
+                )
+
+    def record_schema_version(self, name: str) -> None:
+        """Upsert a ``SchemaVersion`` node stamped with the current UTC time.
+
+        Args:
+            name: Schema version name (unique key).
+        """
+        with self.driver.session() as session:
+            session.execute_write(self._ensure_schema_version, name)
+
+    @staticmethod
+    def _ensure_schema_version(tx: ManagedTransaction, name: str) -> None:
+        _run_literal(
+            tx,
+            """MERGE (sv:SchemaVersion {name:$name})
+SET sv.applied_at = datetime($timestamp)""",
+            name=name,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
+
+    def run_audit_checks(self) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+        """Run the graph integrity audits.
+
+        Returns:
+            A pair ``(missing_relations, orphan_views)``: View/Diagram relationship
+            references that match no edge, and views with no included elements or no
+            relationship references.
+        """
+        with self.driver.session() as session:
+            missing_relations = session.execute_read(self._find_missing_relationship_targets)
+            orphan_views = session.execute_read(self._find_orphan_views)
+        return missing_relations, orphan_views
+
+    @staticmethod
+    def _find_missing_relationship_targets(tx: ManagedTransaction) -> list[dict[str, Any]]:
+        """Find View/Diagram relationship references that point at no real edge.
+
+        Relationships are stored only as edges now (ADR-0028), so an edge can
+        never have a missing endpoint - Neo4j won't create one. The integrity
+        gap this design does introduce is on the other side: a View or
+        Diagram's relationshipIds/connectionIds list is a plain string list,
+        not a graph edge, so it can silently reference an identifier that
+        does not correspond to any ARCHIMATE_RELATIONSHIP edge.
+        """
+        result = _run_literal(
+            tx,
+            """MATCH (v:View) WHERE v.relationshipIds IS NOT NULL
+UNWIND v.relationshipIds AS relId
+OPTIONAL MATCH ()-[rel:ARCHIMATE_RELATIONSHIP {identifier: relId}]->()
+WITH v.identifier AS identifier, 'view' AS kind, relId, rel
+WHERE rel IS NULL
+RETURN identifier, kind, relId AS missing
+UNION ALL
+MATCH (d:Diagram) WHERE d.connectionIds IS NOT NULL
+UNWIND d.connectionIds AS relId
+OPTIONAL MATCH ()-[rel:ARCHIMATE_RELATIONSHIP {identifier: relId}]->()
+WITH d.identifier AS identifier, 'diagram' AS kind, relId, rel
+WHERE rel IS NULL
+RETURN identifier, kind, relId AS missing""",
+        )
+        return [row.data() for row in result]
+
+    @staticmethod
+    def _find_orphan_views(tx: ManagedTransaction) -> list[dict[str, Any]]:
+        result = _run_literal(
+            tx,
+            """MATCH (v:View)
+WITH v, COUNT { (v)-[:INCLUDES]->(:Element) } AS elements,
+     size(coalesce(v.relationshipIds, [])) AS relationships
+WHERE elements = 0 OR relationships = 0
+RETURN v.identifier AS identifier,
+       CASE WHEN elements = 0 THEN 'elements' ELSE 'relationships' END AS kind""",
+        )
+        return [row.data() for row in result]
