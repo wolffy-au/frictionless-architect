@@ -1,13 +1,19 @@
 @startuml
 !include <archimate/Archimate>
 
-title Architecture Strategy: MVP to Future
+title Architecture Strategy: Baseline to MVP to Future
 
+Implementation_Plateau(e_id4accde76fa5858, "Current State")
+Implementation_Gap(e_id957bea8a8f2755, "Neo4j Schema Visualiser")
 Implementation_Gap(e_id2732b8c8dfb058, "Gap: modelling IDE, live views & multi-spec authoring")
+Implementation_Deliverable(e_id891b59559d2954, "architecture-strategy-mvp (unreleased)")
 Implementation_Plateau(e_id29b6db45badb5c, "architecture-strategy-future")
 Implementation_Plateau(e_id726fa9a2d0835f, "architecture-strategy-mvp")
 
+Rel_Association(e_id4accde76fa5858, e_id957bea8a8f2755, "")
+Rel_Association(e_id726fa9a2d0835f, e_id957bea8a8f2755, "")
 Rel_Association(e_id726fa9a2d0835f, e_id2732b8c8dfb058, "")
 Rel_Association(e_id29b6db45badb5c, e_id2732b8c8dfb058, "")
+Rel_Realization_Up(e_id891b59559d2954, e_id726fa9a2d0835f, "")
 
 @enduml
