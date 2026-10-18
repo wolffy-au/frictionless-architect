@@ -30,5 +30,13 @@
     "state": "open",
     "due_on": null,
     "html_url": "https://github.com/o/r/milestone/8"
+  },
+  {
+    "number": 13,
+    "title": "architecture-strategy-future",
+    "description": "Deferred/parked architecture-strategy work, picked back up after the MVP milestone. Issues here are not committed to the current MVP scope.",
+    "state": "open",
+    "due_on": null,
+    "html_url": "https://github.com/o/r/milestone/13"
   }
 ]
