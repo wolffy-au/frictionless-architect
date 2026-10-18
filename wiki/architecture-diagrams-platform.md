@@ -1,7 +1,7 @@
 ---
 title: "Architecture Views & Diagrams: Platform, Migration & Rendering"
 generated: 2026-10-18
-generator: GitHub Copilot CLI (Auto)
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/implementation/deployment.puml
