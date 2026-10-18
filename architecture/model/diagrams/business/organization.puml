@@ -7,10 +7,22 @@ Business_Role(e_id10a12f8c7cac51, "Security Architect / Threat Modeller")
 Business_Role(e_id2c72565ddd6c52, "Developer")
 Business_Role(e_id5e264d2f4bb551, "Compliance Officer / Auditor")
 Business_Role(e_id2c489ee6594253, "Platform Operations (BAU)")
+Business_Role(e_id535be3f84f875d, "Policy Conversion Admin")
+Business_Role(e_idf70196c3f2435b, "Policy Author")
+Business_Role(e_idf864f54e651356, "Patterns Admin")
+Business_Role(e_idb5363ecec4b659, "Security Assessor")
+Business_Role(e_id1fe7917ce23f55, "Pattern Contributor")
+Business_Role(e_idc93f64f6c86854, "Implementation Contributor")
 Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
   Business_Role(e_id2b5394f913985a, "Enterprise Architect")
   Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
 }
 
+Rel_Specialization_Up(e_id535be3f84f875d, e_id5e264d2f4bb551, "GH #45: Policy conversion admin")
+Rel_Specialization_Up(e_idf70196c3f2435b, e_id5e264d2f4bb551, "GH #45: Policy author")
+Rel_Specialization_Up(e_idf864f54e651356, e_id2b5394f913985a, "GH #45: Patterns admin")
+Rel_Specialization_Up(e_idb5363ecec4b659, e_id10a12f8c7cac51, "GH #45: Security assessor")
+Rel_Specialization_Up(e_id1fe7917ce23f55, e_ide2cb7f3efa6256, "GH #45: Pattern contributor")
+Rel_Specialization_Up(e_idc93f64f6c86854, e_id2c72565ddd6c52, "GH #45: Implementation contributor")
 
 @enduml
