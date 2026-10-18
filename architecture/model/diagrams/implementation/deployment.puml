@@ -28,6 +28,7 @@ Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
   Application_Interface(e_id0c9a1a2f155254, "Knowledge Graph Read Path")
 }
 Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance") {
+  Application_Function(e_id1a6bc8a929675e, "Decision Capture Ingestion")
   Application_Function(e_id26722845c7215d, "Comparative Evaluation & Decision")
 }
 Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
@@ -45,6 +46,7 @@ Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration") {
   Application_Interface(e_idcefe9c2a8ca45f, "LLM Settings UI")
 }
+Application_Component(e_idc7fc80ba220752, "PII Anonymization Gateway")
 Application_Component(e_id6c2233bb09755d, "Portal") {
   Application_Interface(e_iddb64491a22875a, "Portal UI")
 }
@@ -102,11 +104,13 @@ Application_Component(e_idaabfebfc7b9858, "IT Service Management / Backlog") {
 Application_Component(e_id0aed952692a556, "compliance-trestle")
 Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
 Application_Component(e_idaf80425d61fd58, "RFP / Vendor Submissions")
+Application_Component(e_id90a79bc0568053, "Collaboration Tools")
 Application_DataObject(e_id927f60a254485e, "Policy / Standard Document")
 Application_DataObject(e_idd08116e0443f59, "Regulatory Standard Document")
 Application_DataObject(e_id3329e928e27e5f, "Trestle-Editable Markdown Catalog")
 Application_DataObject(e_id9da413ec6a4b5e, "Live Infrastructure State")
 Application_DataObject(e_id70f4dc177c5c5c, "Deployment Event")
+Application_DataObject(e_ide2af72ef094852, "Collaboration Transcript")
 Application_DataObject(e_id0098b14d360457, "Release Candidate")
 Application_DataObject(e_idba85a2c1b90d5c, "Gate Decision")
 Application_DataObject(e_id02b46c82d75c5e, "Remediation Backlog Item")
@@ -119,6 +123,7 @@ Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
 Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
 Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
 Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Technology_Artifact(e_id8b34f5f03beb50, "packages/pii-gateway")
 Technology_SystemSoftware(e_id32ef66e0cc7a59, "pytest") {
   Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
 }
@@ -219,6 +224,10 @@ Rel_Access_w(e_id1ca5384e28155c, e_ide732c9a4b52a59, "builds")
 Rel_Access_w(e_idaf80425d61fd58, e_ide500d303f47455, "submits")
 Rel_Access_r(e_id2ef30ba1d68054, e_idf91aecdf564a55, "draws on")
 Rel_Access_w(e_id2ef30ba1d68054, e_ide500d303f47455, "models")
+Rel_Serving_Up(e_id90a79bc0568053, e_id1a6bc8a929675e, "supplies transcripts to")
+Rel_Access_w(e_id1a6bc8a929675e, e_ide2af72ef094852, "captures")
+Rel_Flow(e_id1a6bc8a929675e, e_id26722845c7215d, "hands scrubbed transcripts to")
+Rel_Access_r(e_id26722845c7215d, e_ide2af72ef094852, "drafts ADRs from")
 Rel_Access_r(e_id26722845c7215d, e_ide500d303f47455, "evaluates")
 Rel_Access_r(e_id26722845c7215d, e_ide732c9a4b52a59, "reads for impact")
 Rel_Access_w(e_id26722845c7215d, e_ideb3e3dd87f3c5c, "produces")
@@ -274,6 +283,8 @@ Rel_Access_w(e_id40274d7630725c, e_id90ba20c8d63655, "records control deficienci
 Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
 Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
 Rel_Realization_Up(e_id2b059f9c51b053, e_id305eddd7c8dc55, "")
+Rel_Association(e_idc7fc80ba220752, e_id2610ae0cc2cc50, "scrubs PII/PHI from content before calls to")
+Rel_Realization_Up(e_id8b34f5f03beb50, e_idc7fc80ba220752, "")
 Rel_Serving_Up(e_ide4bef3733af65a, e_id6c2233bb09755d, "playground router mounted by")
 Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
 Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6c2233bb09755d, "")

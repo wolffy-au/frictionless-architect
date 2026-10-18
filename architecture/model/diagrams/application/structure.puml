@@ -21,6 +21,7 @@ Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration") {
   Application_Interface(e_idcefe9c2a8ca45f, "LLM Settings UI")
 }
+Application_Component(e_idc7fc80ba220752, "PII Anonymization Gateway")
 Application_Component(e_id6c2233bb09755d, "Portal") {
   Application_Interface(e_iddb64491a22875a, "Portal UI")
 }
@@ -68,11 +69,13 @@ Application_Component(e_idaabfebfc7b9858, "IT Service Management / Backlog")
 Application_Component(e_id0aed952692a556, "compliance-trestle")
 Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
 Application_Component(e_idaf80425d61fd58, "RFP / Vendor Submissions")
+Application_Component(e_id90a79bc0568053, "Collaboration Tools")
 Application_DataObject(e_id927f60a254485e, "Policy / Standard Document")
 Application_DataObject(e_idd08116e0443f59, "Regulatory Standard Document")
 Application_DataObject(e_id3329e928e27e5f, "Trestle-Editable Markdown Catalog")
 Application_DataObject(e_id9da413ec6a4b5e, "Live Infrastructure State")
 Application_DataObject(e_id70f4dc177c5c5c, "Deployment Event")
+Application_DataObject(e_ide2af72ef094852, "Collaboration Transcript")
 Application_DataObject(e_id0098b14d360457, "Release Candidate")
 Application_DataObject(e_idba85a2c1b90d5c, "Gate Decision")
 Application_DataObject(e_id02b46c82d75c5e, "Remediation Backlog Item")
@@ -124,6 +127,7 @@ Rel_Specialization_Up(e_idba85a2c1b90d5c, e_id54ef3a7ba52853, "pre-release insta
 Rel_Specialization_Up(e_id1cec8e0c65ff5c, e_id54ef3a7ba52853, "continuous-monitoring instance")
 Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
 Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
+Rel_Association(e_idc7fc80ba220752, e_id2610ae0cc2cc50, "scrubs PII/PHI from content before calls to")
 Rel_Serving_Up(e_ide4bef3733af65a, e_id6c2233bb09755d, "playground router mounted by")
 Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
 
