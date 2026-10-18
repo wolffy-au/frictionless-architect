@@ -40,16 +40,17 @@ them intentionally rather than inherit them.
 
 ### Priority P1 — Core governance journeys
 
-Primary users: Developers, Architects, Compliance Officers.
+Primary users: Developers, Enterprise Architects, Solution Architects, Security Architects,
+Compliance Officers.
 
 **Journeys**:
 
 - A developer runs a compliance check; the system flags an information-security control
   violation. The developer requests a "Break-Glass" exception. The system records the
   accepted risk with a justification and a bounded expiry (default 48 hours).
-- An architect reviews an AI-drafted Architecture Decision Record and applies a verifiable
-  cryptographic attestation, producing a durable audit trail that ties the decision to a
-  named, accountable person.
+- An Enterprise Architect reviews an AI-drafted Architecture Decision Record and applies a
+  verifiable cryptographic attestation, producing a durable audit trail that ties the decision
+  to a named, accountable person.
 - A compliance officer asks a natural-language question of the Regulatory Traceability
   Matrix and receives evidence of compliance (or non-compliance) within the target time.
 
@@ -62,8 +63,8 @@ automatically at the stated time.
 1. **Given** a control violation is detected, **When** a developer requests a Break-Glass
    exception with justification, **Then** the system records the risk and sets a bounded
    expiry.
-2. **Given** an AI-drafted ADR is ready for review, **When** an architect reviews and
-   attests to it, **Then** the ADR is marked attested and the attestation (identity,
+2. **Given** an AI-drafted ADR is ready for review, **When** an Enterprise Architect reviews
+   and attests to it, **Then** the ADR is marked attested and the attestation (identity,
    signature, timestamp) is stored immutably.
 3. **Given** a compliance question is asked, **When** it is resolved against the Regulatory
    Traceability Matrix, **Then** relevant compliance evidence is returned within the target
@@ -100,10 +101,10 @@ and alerts are observable.
 
 ### Edge Cases
 
-- An architect refuses to attest to an ADR: the system captures the reason and routes the
-  ADR back for re-evaluation or escalation.
-- Two ADRs conflict: the system flags the contradiction and requires a human architect to
-  resolve it before either is Approved.
+- An Enterprise Architect refuses to attest to an ADR: the system captures the reason and
+  routes the ADR back for re-evaluation or escalation.
+- Two ADRs conflict: the system flags the contradiction and requires a human Enterprise
+  Architect to resolve it before either is Approved.
 - API errors are returned in a single consistent, structured, machine-readable shape
   (specific format is a deferred solution decision).
 
@@ -121,8 +122,9 @@ and alerts are observable.
   to an external or third-party processing service.
 - **FR-005**: The platform MUST produce ADRs that capture trade-offs and link each technical
   change to its rationale.
-- **FR-006**: The platform MUST allow a human architect to apply a verifiable cryptographic
-  attestation to an AI-drafted ADR, binding it to an accountable identity for audit purposes.
+- **FR-006**: The platform MUST allow a human Enterprise Architect to apply a verifiable
+  cryptographic attestation to an AI-drafted ADR, binding it to an accountable identity for
+  audit purposes.
 - **FR-007**: The platform MUST monitor for architectural drift from the as-designed state
   and surface deviations.
 - **FR-008**: The platform MUST provide a Break-Glass protocol for intentional, temporary
