@@ -1136,6 +1136,20 @@
     subsystem packages depend on, first consumed by the Controls &
     Compliance Catalog.
 - type: ApplicationComponent
+  id: sub-pii-gateway
+  context: pii-gateway
+  name: PII Anonymization Gateway
+  desc: >-
+    Scrubs PII/PHI from content before it reaches ext-llm, for every LLM
+    ingestion path except policy/regulatory-standard documents (ADR-0031's
+    exemption) — collaboration-tool transcripts (fn-decision-capture-ingestion),
+    ADR/evaluation drafts, spec drafts, and RFP/vendor submissions (ADR-0014).
+    Not one of the six subsystems and not a subsystem UI (ADR-0020) — a
+    sibling shared package to sub-llm-provider-config (ADR-0034's general
+    pattern), not merged into it: ADR-0034 scopes content redaction out of
+    that package, and its "one package per shared concern" rule keeps them
+    separate.
+- type: ApplicationComponent
   id: sub-portal
   name: Portal
   desc: >-
@@ -1293,6 +1307,12 @@
   desc: >-
     Requests for proposal and competing vendor solution responses assessed at
     engagement time.
+- type: ApplicationComponent
+  id: ext-collab
+  name: Collaboration Tools
+  desc: >-
+    Unstructured collaboration-tool text (Slack, whiteboard transcripts)
+    captured as candidate input for AI-assisted ADR drafting (ADR-0014).
 
 # =====================================================================
 # C. APPLICATION — the artefact input/output pipeline
@@ -1415,6 +1435,14 @@
     contemporaneous evidence for regulatory examination.
 
 # --- C. Functions: Architecture Governance ---
+- type: ApplicationFunction
+  id: fn-decision-capture-ingestion
+  context: architecture-governance
+  name: Decision Capture Ingestion
+  desc: >-
+    Ingest unstructured collaboration-tool text (Slack, whiteboard transcripts)
+    as candidate input for AI-assisted ADR drafting (ADR-0014). Scrubbed by
+    sub-pii-gateway before fn-governance-eval's drafting step reaches ext-llm.
 - type: ApplicationFunction
   id: fn-governance-eval
   context: architecture-governance
@@ -1542,6 +1570,7 @@
 - {type: DataObject, id: do-candidate-arch, context: reusable-architecture-library, name: Candidate Architecture Option, desc: A proposed future-state or vendor solution under evaluation.}
 - {type: DataObject, id: do-target-architecture, name: Target State Architecture, desc: The adopted future-state architecture — the end state of the Architecture Roadmap.}
 - {type: DataObject, id: do-architecture-roadmap, context: conformance-drift-assurance, name: Architecture Roadmap, desc: The time-sequenced transition from current to target state — what should be true by when.}
+- {type: DataObject, id: do-collab-transcript, context: architecture-governance, name: Collaboration Transcript, desc: "Raw Slack/whiteboard text captured for AI-assisted ADR drafting, scrubbed of PII/PHI by sub-pii-gateway before fn-governance-eval's LLM call (ADR-0014)."}
 - {type: DataObject, id: do-adr, context: architecture-governance, name: Architecture Decision Record, desc: The chosen option with its rationale and trade-offs.}
 - {type: DataObject, id: do-impact-assessment, context: architecture-governance, name: Impact Assessment, desc: Effect of a candidate option on intent and current state.}
 - {type: DataObject, id: do-archived-option, context: architecture-governance, name: Archived Rejected Option, desc: A not-chosen option retained with the reasons it lost.}
@@ -1619,6 +1648,17 @@
     Shared package (ADR-0034), not one of the six subsystem packages above —
     a sibling under platform/packages/ that subsystem packages take as a
     path dependency.
+- type: Artifact
+  id: art-pkg-pii-gateway
+  context: pii-gateway
+  name: packages/pii-gateway
+  desc: >-
+    Shared package (ADR-0014, ADR-0034's general pattern) — a sibling to
+    llm-provider-config under platform/packages/, not merged into it:
+    ADR-0034 scopes *which provider/credentials* out of *what content* is
+    sent, and its own "one package per shared concern" rule keeps content
+    scrubbing in its own package. Subsystem packages take it as a path
+    dependency.
   props: {c4: ignore}
 - type: Artifact
   id: art-pkg-portal

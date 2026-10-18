@@ -646,6 +646,7 @@
 - {type: Assignment, source: sub-library, target: fn-options-model}
 - {type: Assignment, source: sub-twin, target: fn-twin-ingest}
 - {type: Assignment, source: sub-twin, target: fn-ledger-record}
+- {type: Assignment, source: sub-governance, target: fn-decision-capture-ingestion}
 - {type: Assignment, source: sub-governance, target: fn-governance-eval}
 - {type: Assignment, source: sub-assurance, target: fn-build-supervision}
 - {type: Assignment, source: sub-assurance, target: fn-effectiveness-monitor}
@@ -711,6 +712,10 @@
 - {type: Access, source: ext-rfp, target: do-candidate-arch, label: submits, props: {access_type: Write}}
 - {type: Access, source: fn-options-model, target: do-solution-design, label: draws on, props: {access_type: Read}}
 - {type: Access, source: fn-options-model, target: do-candidate-arch, label: models, props: {access_type: Write}}
+- {type: Serving, source: ext-collab, target: fn-decision-capture-ingestion, label: supplies transcripts to}
+- {type: Access, source: fn-decision-capture-ingestion, target: do-collab-transcript, label: captures, props: {access_type: Write}}
+- {type: Flow, source: fn-decision-capture-ingestion, target: fn-governance-eval, label: hands scrubbed transcripts to}
+- {type: Access, source: fn-governance-eval, target: do-collab-transcript, label: drafts ADRs from, props: {access_type: Read}}
 - {type: Access, source: fn-governance-eval, target: do-candidate-arch, label: evaluates, props: {access_type: Read}}
 - {type: Access, source: fn-governance-eval, target: do-twin, label: reads for impact, props: {access_type: Read}}
 - {type: Access, source: fn-governance-eval, target: do-impact-assessment, label: produces, props: {access_type: Write}}
@@ -849,6 +854,24 @@
 - {type: Association, source: sub-llm-provider-config, target: ext-llm, label: configures provider/model & resolves credentials for calls to}
 - {type: Realization, source: art-pkg-llm-provider-config, target: sub-llm-provider-config}
 - {type: Composition, source: sub-llm-provider-config, target: if-llm-settings-ui}
+
+# =====================================================================
+# E. PII anonymization gateway is a shared package, not a subsystem
+#    (ADR-0014, ADR-0034) — same non-subsystem pattern as
+#    sub-llm-provider-config above, and a sibling to it rather than a merge:
+#    ADR-0034 explicitly scopes *which provider/credentials* a call uses out
+#    of *what content* is sent, and its own "one package per shared concern"
+#    rule rejects folding unrelated cross-cutting concerns into one package.
+#    Covers every LLM ingestion path except policy/regulatory-standard
+#    documents (ADR-0031's exemption, carried by fn-ai-markdown-conversion /
+#    fn-policy-quality-feedback, which call ext-llm directly with no edge to
+#    this component). Consumption by architecture-governance and
+#    modelling-specification is a path dependency (ADR-0002), so there is
+#    deliberately no Serving edge from this component to its consumers here.
+# =====================================================================
+- {type: Composition, source: sys-platform, target: sub-pii-gateway}
+- {type: Association, source: sub-pii-gateway, target: ext-llm, label: scrubs PII/PHI from content before calls to}
+- {type: Realization, source: art-pkg-pii-gateway, target: sub-pii-gateway}
 
 # =====================================================================
 # E. Portal is the composition host, not a subsystem (ADR-0020, update
