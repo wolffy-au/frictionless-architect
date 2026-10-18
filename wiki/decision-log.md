@@ -1,7 +1,7 @@
 ---
 title: Architecture Decision Log
-generated: 2026-10-17
-generator: claude-opus-5-5
+generated: 2026-10-18
+generator: GitHub Copilot CLI (Auto)
 sources:
   - docs/adr/0000-adr-template.md
   - docs/adr/0001-root-is-governance-only.md
@@ -126,18 +126,21 @@ ADR-0027 was **updated in place** on 2026-09-26, alongside the new
 
 "Architecture as Executable Intelligence" is no longer an element. It
 survives only as a description of the means, in the Governed Architecture
-Delivery stream. The motivation spine is driver → assessment → outcome → goal,
-and requirements and value streams realize outcomes. Principles and
-constraints each `Influence` only the one requirement they most directly
-operationalise. No edge is modelled that an existing chain already derives
+Delivery stream. ADR-0027 records the original driver → assessment → outcome
+→ goal spine; a later model change decomposed those five former Outcomes into
+Sub-Goals with two measurable Outcomes each. Principles and constraints still
+`Influence` only the one requirement they most directly operationalise. No
+edge is modelled that an existing chain already derives
 (`docs/adr/0027-capability-value-stream-and-motivation-spine.md` §Decision
-3–5).
+3–5); see [Architecture Model: Skeleton](architecture-model-skeleton.md) for
+the current motivation structure.
 
-ADR-0033 (Accepted 2026-09-26) gives each outcome its own value stream. It
-organises the streams by who receives the value, not by role. Stages are
-moved between streams rather than duplicated, so the skeleton carries 4
-streams and 11 stages. Per-role streams, a single stream and duplicated stages
-were all considered and rejected
+ADR-0033 (Accepted 2026-09-26) established value-recipient-oriented streams,
+moving stages between streams rather than duplicating them. The 2026-10-17
+Goal/Sub-Goal/Outcome split kept five streams and 11 stages; streams now
+realize one or more outcomes under their sub-goal, rather than maintaining a
+strict one-stream-per-outcome count. Per-role streams, a single stream and
+duplicated stages were all considered and rejected
 (`docs/adr/0033-value-streams-per-outcome.md`). See
 [Architecture Model: Skeleton](architecture-model-skeleton.md).
 

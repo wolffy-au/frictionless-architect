@@ -1,7 +1,7 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-10-16
-generator: claude-sonnet-5
+generated: 2026-10-18
+generator: GitHub Copilot CLI (Auto)
 ---
 
 > This wiki is **generated** by the `wiki-librarian` skill from the sources
@@ -28,9 +28,10 @@ generator: claude-sonnet-5
   generated: files, schema, the `build.py` pipeline, the generic per-viewpoint
   `views-viewpoints.yaml` layer (GH #105), the generated GitHub roadmap
   layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
-  merged in at build time — 477 elements, 982 relationships, 64 views total).
+  merged in at build time — 489 elements, 1,001 relationships, 64 views total).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
-  stakeholders, drivers, assessments, goal and five outcomes, principles,
+  stakeholders, drivers, assessments, one top goal with five sub-goals and ten
+  measurable outcomes, principles,
   constraints, requirements, capabilities, strategy, five value streams
   (including the new Intent to Model stream, GH #108), and the business layer
   (functions, processes, business objects).
