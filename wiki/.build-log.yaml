@@ -59,8 +59,8 @@ topics:
           sha256: 3661cfaf38d55035e0376013327fce828d3eedb6f8865af86d5b73af6ea59fb0
           lines: 410
         architecture/model/views.yaml:
-          sha256: 025dbb194073d66a8a36e0d54ced115a646e71dbec87bedffa00239246babf3f
-          lines: 901
+          sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
+          lines: 903
         platform/packages/modelling-specification/src/modelling_specification/cli.py:
           sha256: 8b4de736fec33a7c72a1917a2ef44890d9d5aa105e6fa4b6575fbf24b610e010
           lines: 118
@@ -267,10 +267,10 @@ topics:
           sha256: 469dc4a7e8d0d25ba94eaf8ebafada6474a4822070a583521a621a6e243fa9ae
           lines: 1
         architecture/model/diagrams/layered/fn-conversational-authoring.puml:
-          sha256: a6667b0a0aeb814164ae68ab124f3453d9836207c756575b101e32ddc24a5a53
-          lines: 71
+          sha256: 6cd53405c75acd273754d9fe89cd7e10bb51bcefe9453eb05f6b6354bf09f387
+          lines: 77
         architecture/model/diagrams/layered/fn-conversational-authoring.svg:
-          sha256: deee1fd050507793f641eb9f3fb24fea85a8ce93df84a61b860ad82878477b23
+          sha256: 7f0aa96cc72c36d94aa94bc7009ee2c0dc96dd7325bbac3714fee75bd169ec5d
           lines: 1
         architecture/model/diagrams/layered/subsystem-capabilities.puml:
           sha256: 571bb9b7f2248c76238ec8ee01dad3ca6d662b40c9d7baf949a035b465fa2dee
@@ -354,8 +354,8 @@ topics:
           sha256: 3661cfaf38d55035e0376013327fce828d3eedb6f8865af86d5b73af6ea59fb0
           lines: 410
         architecture/model/views.yaml:
-          sha256: 025dbb194073d66a8a36e0d54ced115a646e71dbec87bedffa00239246babf3f
-          lines: 901
+          sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
+          lines: 903
       urls: {}
   it4it-model:
     title: IT4IT Reference Model
@@ -965,8 +965,8 @@ topics:
           sha256: b545cdcd281fc57621c6e210e5a9f8eaeee6950916f90f9a9c908d40fa9ea435
           lines: 997
         architecture/model/views.yaml:
-          sha256: 025dbb194073d66a8a36e0d54ced115a646e71dbec87bedffa00239246babf3f
-          lines: 901
+          sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
+          lines: 903
       urls: {}
   modelling-specification:
     title: Conversational Model Authoring
@@ -1255,8 +1255,8 @@ topics:
           sha256: 3661cfaf38d55035e0376013327fce828d3eedb6f8865af86d5b73af6ea59fb0
           lines: 410
         architecture/model/views.yaml:
-          sha256: 025dbb194073d66a8a36e0d54ced115a646e71dbec87bedffa00239246babf3f
-          lines: 901
+          sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
+          lines: 903
         third_party/it4it/views.yaml:
           sha256: 88f91aa5735c0de28deae6a3c248a58ec98471436315090a3de9f6e0f63c96d7
           lines: 212
