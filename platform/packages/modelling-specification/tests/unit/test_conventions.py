@@ -273,6 +273,308 @@ def test_check_relationships_accepts_a_requirement_distinct_from_its_outcome() -
     assert findings == []
 
 
+def test_load_rules_rejects_required_neighbour_exclude_ids_not_a_list(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-bad-exclude-ids\n"
+        "  kind: required-neighbour\n"
+        "  scope: [Driver]\n"
+        "  params: {relationship_type: Association, direction: outgoing, neighbour_type: Assessment, exclude_ids: nope}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="exclude_ids must be a list"):
+        conventions.load_rules(path)
+
+
+def test_load_rules_rejects_no_bypass_missing_params(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text("- id: conv-bad-no-bypass\n  kind: no-bypass\n  scope: [Driver]\n  params: {source_type: Driver}\n")
+
+    with pytest.raises(conventions.ConventionRuleError, match="no-bypass needs source_type"):
+        conventions.load_rules(path)
+
+
+def test_load_rules_rejects_no_bypass_params_that_are_not_strings(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-bad-no-bypass-types\n"
+        "  kind: no-bypass\n"
+        "  scope: [Driver]\n"
+        "  params: {source_type: Driver, intermediary_type: [Assessment]}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="must be strings"):
+        conventions.load_rules(path)
+
+
+def test_load_rules_rejects_no_restatement_min_shared_words_not_an_int(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-bad-min-shared-words\n"
+        "  kind: no-restatement\n"
+        "  scope: [Requirement]\n"
+        "  params: {relationship_type: Realization, direction: outgoing, neighbour_type: Outcome, min_shared_words: six}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="min_shared_words must be an int"):
+        conventions.load_rules(path)
+
+
+def test_load_rules_rejects_a_scoped_neighbour_rule_missing_scope_or_params(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-bad-scope\n"
+        "  kind: required-neighbour\n"
+        "  params: {relationship_type: Association, direction: outgoing, neighbour_type: Assessment}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="needs a scope list and params mapping"):
+        conventions.load_rules(path)
+
+
+def test_load_rules_rejects_a_scoped_neighbour_rule_missing_a_required_param(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-missing-neighbour-type\n"
+        "  kind: required-neighbour\n"
+        "  scope: [Driver]\n"
+        "  params: {relationship_type: Association, direction: outgoing}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="missing params"):
+        conventions.load_rules(path)
+
+
+def test_load_rules_rejects_a_scoped_neighbour_rule_with_non_string_type_params(tmp_path: Path) -> None:
+    path = tmp_path / "conventions.yaml"
+    path.write_text(
+        "- id: conv-bad-neighbour-type\n"
+        "  kind: required-neighbour\n"
+        "  scope: [Driver]\n"
+        "  params: {relationship_type: Association, direction: outgoing, neighbour_type: [Assessment]}\n"
+    )
+
+    with pytest.raises(conventions.ConventionRuleError, match="must be strings"):
+        conventions.load_rules(path)
+
+
+def test_check_elements_skips_an_element_outside_the_rule_scope() -> None:
+    findings = conventions.check_elements(
+        [
+            {"id": "cap1", "type": "Capability", "name": "Modelling Capability"},
+            {"id": "do1", "type": "DataObject", "name": "Out of scope"},
+        ],
+        rules=[_NAMING_RULE],
+    )
+
+    assert [f["id"] for f in findings] == ["cap1"]
+
+
+def test_check_relationships_skips_an_element_outside_the_rule_scope() -> None:
+    rule = {
+        "id": "conv-driver-assessment",
+        "kind": "required-neighbour",
+        "scope": ["Driver"],
+        "params": {"relationship_type": "Association", "direction": "outgoing", "neighbour_type": "Assessment"},
+        "enabled": True,
+    }
+    elements = [
+        {"id": "driver1", "type": "Driver", "name": "Driver"},
+        {"id": "goal1", "type": "Goal", "name": "Goal"},
+    ]
+
+    findings = conventions.check_relationships(elements, [], {"driver1": "Driver", "goal1": "Goal"}, rules=[rule])
+
+    assert len(findings) == 1
+    assert "'driver1'" in findings[0]
+
+
+def test_check_relationships_honours_exclude_ids_on_a_required_neighbour_rule() -> None:
+    rule = {
+        "id": "conv-driver-assessment",
+        "kind": "required-neighbour",
+        "scope": ["Driver"],
+        "params": {
+            "relationship_type": "Association",
+            "direction": "outgoing",
+            "neighbour_type": "Assessment",
+            "exclude_ids": ["driver1"],
+        },
+        "enabled": True,
+    }
+    elements = [{"id": "driver1", "type": "Driver", "name": "Driver"}]
+
+    assert conventions.check_relationships(elements, [], {"driver1": "Driver"}, rules=[rule]) == []
+
+
+def test_check_relationships_accepts_an_incoming_required_neighbour() -> None:
+    rule = {
+        "id": "conv-outcome-has-requirement",
+        "kind": "required-neighbour",
+        "scope": ["Outcome"],
+        "params": {"relationship_type": "Realization", "direction": "incoming", "neighbour_type": "Requirement"},
+        "enabled": True,
+    }
+    elements = [
+        {"id": "outcome1", "type": "Outcome", "name": "Outcome"},
+        {"id": "req1", "type": "Requirement", "name": "Req"},
+    ]
+    relationships = [{"type": "Realization", "source": "req1", "target": "outcome1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"outcome1": "Outcome", "req1": "Requirement"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
+def test_check_relationships_ignores_a_no_bypass_source_outside_its_type() -> None:
+    rule = {
+        "id": "conv-driver-routes-through-assessment",
+        "kind": "no-bypass",
+        "scope": ["Driver"],
+        "params": {"source_type": "Driver", "intermediary_type": "Assessment"},
+        "enabled": True,
+    }
+    elements = [
+        {"id": "goal1", "type": "Goal", "name": "Goal"},
+        {"id": "goal2", "type": "Goal", "name": "Other Goal"},
+    ]
+    relationships = [{"type": "Association", "source": "goal1", "target": "goal2"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"goal1": "Goal", "goal2": "Goal"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
+def test_check_relationships_excludes_first_party_only_ids_from_no_bypass() -> None:
+    rule = {
+        "id": "conv-it4it-routes-through-assessment",
+        "kind": "no-bypass",
+        "scope": ["Driver"],
+        "params": {"source_type": "Driver", "intermediary_type": "Assessment", "first_party_only": True},
+        "enabled": True,
+    }
+    elements = [
+        {"id": "it4it-driver1", "type": "Driver", "name": "Driver"},
+        {"id": "goal1", "type": "Goal", "name": "Goal"},
+    ]
+    relationships = [{"type": "Association", "source": "it4it-driver1", "target": "goal1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"it4it-driver1": "Driver", "goal1": "Goal"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
+def test_check_relationships_excludes_first_party_only_ids_from_no_restatement() -> None:
+    rule = {
+        "id": "conv-it4it-no-outcome-restatement",
+        "kind": "no-restatement",
+        "scope": ["Requirement"],
+        "params": {
+            "relationship_type": "Realization",
+            "direction": "outgoing",
+            "neighbour_type": "Outcome",
+            "min_shared_words": 2,
+            "first_party_only": True,
+        },
+        "enabled": True,
+    }
+    elements = [
+        {"id": "it4it-req1", "type": "Requirement", "name": "Req", "desc": "Exactly the same words here"},
+        {"id": "outcome1", "type": "Outcome", "name": "Outcome", "desc": "Exactly the same words here"},
+    ]
+    relationships = [{"type": "Realization", "source": "it4it-req1", "target": "outcome1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"it4it-req1": "Requirement", "outcome1": "Outcome"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
+def test_check_relationships_no_restatement_skips_an_element_with_no_desc() -> None:
+    rule = {
+        "id": "conv-requirement-no-outcome-restatement",
+        "kind": "no-restatement",
+        "scope": ["Requirement"],
+        "params": {
+            "relationship_type": "Realization",
+            "direction": "outgoing",
+            "neighbour_type": "Outcome",
+            "min_shared_words": 2,
+        },
+        "enabled": True,
+    }
+    elements = [
+        {"id": "req1", "type": "Requirement", "name": "Req"},
+        {"id": "outcome1", "type": "Outcome", "name": "Outcome", "desc": "Something"},
+    ]
+    relationships = [{"type": "Realization", "source": "req1", "target": "outcome1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"req1": "Requirement", "outcome1": "Outcome"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
+def test_check_relationships_no_restatement_skips_a_relationship_of_a_different_type() -> None:
+    rule = {
+        "id": "conv-requirement-no-outcome-restatement",
+        "kind": "no-restatement",
+        "scope": ["Requirement"],
+        "params": {
+            "relationship_type": "Realization",
+            "direction": "outgoing",
+            "neighbour_type": "Outcome",
+            "min_shared_words": 2,
+        },
+        "enabled": True,
+    }
+    elements = [
+        {"id": "req1", "type": "Requirement", "name": "Req", "desc": "Exactly the same words here"},
+        {"id": "outcome1", "type": "Outcome", "name": "Outcome", "desc": "Exactly the same words here"},
+    ]
+    relationships = [{"type": "Association", "source": "req1", "target": "outcome1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"req1": "Requirement", "outcome1": "Outcome"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
+def test_check_relationships_no_restatement_skips_a_relationship_with_no_matching_neighbour() -> None:
+    rule = {
+        "id": "conv-requirement-no-outcome-restatement",
+        "kind": "no-restatement",
+        "scope": ["Requirement"],
+        "params": {
+            "relationship_type": "Realization",
+            "direction": "outgoing",
+            "neighbour_type": "Outcome",
+            "min_shared_words": 2,
+        },
+        "enabled": True,
+    }
+    elements = [
+        {"id": "req1", "type": "Requirement", "name": "Req", "desc": "Exactly the same words here"},
+        {"id": "cap1", "type": "Capability", "name": "Cap", "desc": "Exactly the same words here"},
+    ]
+    relationships = [{"type": "Realization", "source": "req1", "target": "cap1"}]
+
+    findings = conventions.check_relationships(
+        elements, relationships, {"req1": "Requirement", "cap1": "Capability"}, rules=[rule]
+    )
+
+    assert findings == []
+
+
 def test_check_relationships_flags_a_direct_edge_that_bypasses_an_intermediary() -> None:
     rule = {
         "id": "conv-driver-routes-through-assessment",

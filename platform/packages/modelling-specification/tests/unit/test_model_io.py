@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
 from modelling_specification import model_io
 from pyArchimate import ArchiType, Element, Model
 
@@ -575,6 +576,22 @@ def test_check_motivation_conventions_exempts_a_vendored_capability() -> None:
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, [], [], types_by_id, errors)
     assert errors == []
+
+
+def test_check_motivation_conventions_surfaces_a_malformed_conventions_file(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from modelling_specification.validation import conventions
+
+    def _raise(*_args: Any, **_kwargs: Any) -> list[dict[str, Any]]:
+        raise conventions.ConventionRuleError("conv-bad: unknown kind 'nope'")
+
+    monkeypatch.setattr(conventions, "load_rules", _raise)
+    errors: list[str] = []
+
+    model_io.check_motivation_conventions([], [], [], {}, errors)
+
+    assert errors == ["conv-bad: unknown kind 'nope'"]
 
 
 def test_check_motivation_conventions_flags_an_outcome_missing_its_neighbours() -> None:
