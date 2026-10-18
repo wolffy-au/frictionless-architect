@@ -1952,6 +1952,26 @@
     live-rendered-view epic, or #73's multi-specification modelling; this
     Gap records what the MVP leaves open for #59/#68/#73 to address if and
     when they're picked back up from the future milestone.
+- type: Gap
+  id: gap-yaml-to-neo4j-authoritative
+  name: "Gap: move authoritative source from YAML to Neo4j past scale ceiling"
+  desc: >-
+    plat-architecture-strategy-mvp-7 -> plat-architecture-strategy-future-13
+    (GH milestone #13, "architecture-strategy-future"). ADR-0007 (amended
+    2026-10-18): through the MVP milestone, architecture/model/'s
+    hand-edited YAML (elements.yaml/relationships.yaml/views.yaml) stays
+    the authoritative source, with Neo4j populated only as a generated
+    projection (build.py's Exchange-XML path, plus the still-unbuilt
+    ADR-0007 "[later]" direct-YAML seed). Hand-edited YAML does not scale
+    to the tens or hundreds of thousands of elements/relationships a live
+    enterprise landscape eventually needs; past that ceiling (no numeric
+    trigger fixed yet — left open in ADR-0007), the authoritative source
+    moves to Neo4j (sw-neo4j), and architecture/model/'s YAML becomes a
+    generated export for human review instead of the hand-edited source.
+    This is also what makes the existing cap-digital-twin ->
+    cap-conversational-governance Serving relationship ("authoritative
+    model for proposal validation", GH #108) true: a target-state claim
+    this Gap gives a documented path to, not a stale edge to remove.
 
 # =====================================================================
 # F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved

@@ -48,3 +48,32 @@ architecture/model/{elements,relationships,views}.yaml   (canonical, hand-edited
   is retired (ported into section B), and `sample-data/archimate/` is **removed
   entirely**. The generic teaching models keep their own committed `.puml` under
   `sample-data/sample-01/` and `sample-data/sample-02/`.
+
+## Update 2026-10-18: hand-edited YAML has a scale ceiling; past it, Neo4j
+## becomes authoritative instead
+
+This decision holds **through the MVP milestone** (`plat-architecture-strategy-mvp-7`),
+at the model's current scale (hundreds of elements/relationships, reviewable as
+line-oriented diffs). It does not hold indefinitely: hand-edited YAML does not
+scale to the tens or hundreds of thousands of elements and relationships a live
+enterprise landscape eventually needs — at that point the file stops reviewing
+well in a PR, the exact property this ADR chose YAML for in the first place.
+
+Past that ceiling, the authoritative source moves to **Neo4j**, and
+`architecture/model/`'s YAML becomes a generated export for human review instead
+of the hand-edited source — the inverse of today's direction of generation. No
+numeric threshold or concrete trigger condition is fixed yet; this is deliberately
+left open, to be set by a follow-up ADR once a real growth trajectory exists to
+measure against.
+
+This transition is recorded in the Implementation & Migration layer as
+`gap-yaml-to-neo4j-authoritative` (`plat-architecture-strategy-mvp-7 ->
+plat-architecture-strategy-future-13`, GH milestone #13), not as a change to the
+Decision above — the diagram's `[later]` Neo4j-seed path and this migration are
+two different things. The `[later]` seed path stays a *generated projection* of
+the YAML (same direction of generation as everything else in this ADR); the
+scale-ceiling migration is the point at which that direction reverses. This Gap
+is also what makes the existing `cap-digital-twin -> cap-conversational-governance`
+Serving relationship ("authoritative model for proposal validation", GH #108) a
+true target-state claim rather than a stale edge: it names where the
+authoritative-source migration lands, once past the ceiling.

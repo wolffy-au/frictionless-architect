@@ -5,6 +5,7 @@ title Migration Sequence
 
 Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
 Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
 Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
 Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
 Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
@@ -16,9 +17,7 @@ Implementation_WorkPackage(e_idf3a2f1b37db655, "GH-4 Vendor IT4IT into third_par
 Implementation_WorkPackage(e_id1106e67dd43758, "GH-107 Re-home specs to two-tier scheme")
 Implementation_Plateau(e_id4accde76fa5858, "Current State")
 Implementation_Gap(e_idf4786be9c1c052, "AI-Assisted Policy & Standard Conversion to OSCAL")
-Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration") {
-  Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
-}
+Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration")
 Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp") {
   Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
   Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
