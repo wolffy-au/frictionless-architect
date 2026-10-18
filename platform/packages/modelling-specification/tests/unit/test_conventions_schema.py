@@ -64,7 +64,7 @@ def test_motivation_relationship_policies_are_configured_as_conventions() -> Non
     } <= ids
     for rule in rules:
         if rule["kind"] == "required-neighbour":
-            params = rule["params"]
+            params: dict[str, object] = rule["params"]  # type: ignore[assignment]
             assert params["relationship_type"] in {"Association", "Realization"}
             assert params["direction"] in {"incoming", "outgoing"}
 

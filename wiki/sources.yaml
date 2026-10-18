@@ -48,6 +48,9 @@ topics:
       - path: architecture/model/views.yaml
       - path: architecture/model/views-viewpoints.yaml
       - path: architecture/model/build.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/cli.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/rendering.py
 
   - name: architecture-model-skeleton
     title: "Architecture Model: Skeleton"

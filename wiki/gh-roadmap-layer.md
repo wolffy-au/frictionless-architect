@@ -1,7 +1,7 @@
 ---
 title: GitHub Roadmap Layer
-generated: 2026-10-17
-generator: claude-opus-5-5
+generated: 2026-10-18
+generator: GitHub Copilot CLI (Auto)
 sources:
   - specs/003-gh-roadmap-archimate/checklists/requirements.md
   - specs/003-gh-roadmap-archimate/contracts/gh-roadmap-layer.md
