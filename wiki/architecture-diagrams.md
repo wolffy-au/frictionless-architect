@@ -1,7 +1,7 @@
 ---
 title: "Architecture Views & Diagrams: Vision, Business & Viewpoints"
 generated: 2026-10-18
-generator: GitHub Copilot CLI (Auto)
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/diagrams/application/catalog-structure.puml
@@ -169,7 +169,7 @@ on them automatically; views 4–7 stay hand-curated in `views.yaml`
 
 | # | View | Viewpoint | File | Covers |
 |---|---|---|---|---|
-| 1 | Stakeholder | `stakeholder` | `views-viewpoints.yaml` | Who holds which driver (now six), the assessments that make each urgent, and the top goal with its five sub-goals |
+| 1 | Stakeholder | `stakeholder` | `views-viewpoints.yaml` | Who holds which driver (now six), the assessments that make each urgent, the top goal with its five sub-goals, and — since 2026-10-18 — the ten outcomes realizing those sub-goals |
 | 2 | Motivation | `motivation` | `views-viewpoints.yaml` | The whole motivation model: stakeholders, assessments, drivers, goal, sub-goals, outcomes, principles, requirements, constraints |
 | 3 | Goal Realization | `goal_realization` | `views-viewpoints.yaml` | Goal → sub-goals → outcomes, and how principles, requirements and constraints realize them |
 | 4 | Strategy | `strategy` | `views.yaml` | Resources → capabilities → courses of action, each value stream as a single element, and the outcome(s) it realizes (five streams now realize two outcomes each, since the 2026-10-17 Goal→Sub-Goal→Outcome split); `Capability`/`Outcome` are `include_types` (GH #117) with `exclude_elements` keeping IT4IT's vendored ones off |
@@ -387,4 +387,9 @@ Model](architecture-model.md) §"Schema" describes. `view-stakeholder`,
 by `include_types` with **no** `exclude_elements`, because showing the
 IT4IT import's own Stakeholder/Outcome/Capability elements alongside the
 platform's is the point there (`architecture/model/views.yaml:30-170`,
-`architecture/model/views-viewpoints.yaml:365-410`).
+`architecture/model/views-viewpoints.yaml:365-410`). `Outcome` had been left
+commented out of `view-stakeholder`'s `include_types` (`# , Outcome`); a
+2026-10-18 change turned it on, so the Stakeholder view now also sweeps in
+the ten outcomes and the `Realization` edges from each to its sub-goal
+(`architecture/model/views-viewpoints.yaml:373`;
+`architecture/model/diagrams/vision/1-stakeholder.puml`).

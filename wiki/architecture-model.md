@@ -1,7 +1,7 @@
 ---
 title: Architecture Model
 generated: 2026-10-18
-generator: GitHub Copilot CLI (Auto)
+generator: claude-sonnet-5
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
@@ -498,3 +498,11 @@ streams on `4-strategy.puml` that would otherwise have had an orphaned
 second Outcome gained a second `Realization` edge to it rather than a new
 value stream being invented or the Outcome being dropped from the view.
 That brings the model to 489 / 1001 / 64.
+
+A 2026-10-18 follow-on turned on the `Outcome` type that had been left
+commented out of `view-stakeholder`'s `include_types`
+(`architecture/model/views-viewpoints.yaml`), so the Stakeholder view now
+also sweeps in all ten outcomes from the Goal→Sub-Goal→Outcome split above,
+each with a `Realization` edge to the sub-goal it realizes (see
+[Architecture Views & Diagrams: Vision, Business &
+Viewpoints](architecture-diagrams.md)).
