@@ -322,6 +322,8 @@
     - goal-drift-reconciled
     - goal-intent-becomes-model-truth
     - goal-frictionless-architecture
+    - outcome-drift-zero-aged-backlog
+    - outcome-zero-hand-edited-model
     - req-authoritative-twin
     - req-conversational-authoring-alignment
     - cap-digital-twin
