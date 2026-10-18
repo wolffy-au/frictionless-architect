@@ -1,5 +1,5 @@
-generated: 2026-10-18
-generator: GitHub Copilot CLI (Auto)
+generated: '2026-10-18'
+generator: claude-sonnet-5
 topics:
   project-overview:
     title: Project Overview
@@ -56,7 +56,7 @@ topics:
           sha256: b545cdcd281fc57621c6e210e5a9f8eaeee6950916f90f9a9c908d40fa9ea435
           lines: 997
         architecture/model/views-viewpoints.yaml:
-          sha256: 3661cfaf38d55035e0376013327fce828d3eedb6f8865af86d5b73af6ea59fb0
+          sha256: 10bf825c0679b4a1e7ec4f2f1201d825533817dc0ead8137801f25af91501f6b
           lines: 410
         architecture/model/views.yaml:
           sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
@@ -279,10 +279,10 @@ topics:
           sha256: 988232a48ed8ef9c9e3d2f0e39734e88fa154d95739a9927b7e02ad0412ad4b4
           lines: 1
         architecture/model/diagrams/vision/1-stakeholder.puml:
-          sha256: ceb8d40b587fc6d1e65e1658ed822c6d1a53be46cb67001ce0dd9a972d66ee2e
-          lines: 51
+          sha256: 843f73c2975fa47043e7515d1f9ad3dc69eb94b3b8c294dd2a9facb6b5069c6b
+          lines: 71
         architecture/model/diagrams/vision/1-stakeholder.svg:
-          sha256: 0189d9f48b7201a50847239690ad6eb43bdb5e091ecc3d3913f4da76b125d58f
+          sha256: 01b959766edf242ca8bab32009cb81035624efeac23c8be375ad9816c3d15047
           lines: 1
         architecture/model/diagrams/vision/2-motivation.puml:
           sha256: 579cd403b21f2814925b9a47c62fe119b0ab153faa854c61626a4769374a04f2
@@ -351,7 +351,7 @@ topics:
           sha256: cc786ce62afde2941c01fac7726272191c36fac276930cdee75e6f99c55bc927
           lines: 1
         architecture/model/views-viewpoints.yaml:
-          sha256: 3661cfaf38d55035e0376013327fce828d3eedb6f8865af86d5b73af6ea59fb0
+          sha256: 10bf825c0679b4a1e7ec4f2f1201d825533817dc0ead8137801f25af91501f6b
           lines: 410
         architecture/model/views.yaml:
           sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
@@ -1252,7 +1252,7 @@ topics:
           sha256: dc0df223392d36986b1906d18c46405835a68247ea86956906210f96e87cf6f1
           lines: 56
         architecture/model/views-viewpoints.yaml:
-          sha256: 3661cfaf38d55035e0376013327fce828d3eedb6f8865af86d5b73af6ea59fb0
+          sha256: 10bf825c0679b4a1e7ec4f2f1201d825533817dc0ead8137801f25af91501f6b
           lines: 410
         architecture/model/views.yaml:
           sha256: 26652842d6c53aded8285dbd769e05a056df154998756a56e2a9b0ce25cfa351
