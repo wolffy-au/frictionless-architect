@@ -182,12 +182,22 @@ node "platform/ (own Poetry project/lock)" {
     [sample_parser.py] as parser
     [schema_manager.py] as manager
   }
+  package "modelling-specification" {
+    [consumer code/tests] as mod_spec_consumer
+  }
 }
 
 database "Neo4j 5 cluster" as neo4j
 
 read_path --> neo4j : Bolt (read-only Cypher)
 manager --> neo4j : Bolt (constraints, ingestion, audit)
+mod_spec_consumer --> read_path : Poetry path dependency,\nin-process call (US4, T021)
+
+note bottom of mod_spec_consumer
+  First real consumer of this package, kept
+  permanently (not a throwaway demo) — proves
+  FR-013/SC-006's path-dependency requirement.
+end note
 
 node "repo root src/ (own Poetry project/lock — unchanged this increment)" {
   package "frictionless_architect.visualizer" {
@@ -213,8 +223,11 @@ end note
 `platform/packages/digital-twin-knowledge-graph` (no flat-`src/` move this increment — see
 Summary). The package has no FastAPI app of its own; it is called as an ordinary Python
 import, matching `if-twin-read-path`'s "path-dependency library" description (ADR-0005). Its
-only dependency is Neo4j — no other `platform/packages/*` package, and no dependency in the
-other direction from the repo root.
+own dependency is Neo4j only — no other `platform/packages/*` package, and no dependency in
+the other direction from the repo root. `modelling-specification` adds this package as its own
+path dependency (US4/FR-013/SC-006's required demonstration, tasks.md T021) and is kept, not
+reverted, making it this package's first real consumer — the deployment diagram below shows
+that edge.
 
 ## Complexity Tracking
 
