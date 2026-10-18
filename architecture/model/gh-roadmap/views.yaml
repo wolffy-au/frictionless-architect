@@ -7,6 +7,16 @@
   - del-release-v0-1-0
   - plat-agentic-delivery-mvp-3
   - wp-model-group-the-remaining-5-ungrouped-gh-25
+- id: view-plat-architecture-strategy-future-unreleased-13
+  name: 'Roadmap: architecture-strategy-future (unreleased)'
+  viewpoint: implementation_migration
+  diagram: migration/plat-architecture-strategy-future-unreleased-13
+  members:
+  - del-architecture-strategy-future-unreleased-13-unreleased
+  - plat-architecture-strategy-future-unreleased-13
+  - wp-epic-conversational-architecture-gh-68
+  - wp-epic-multi-specification-modelling-gh-73
+  - wp-scope-the-archimate-modelling-ide-gh-59
 - id: view-plat-architecture-strategy-mvp-7
   name: 'Roadmap: architecture-strategy-mvp'
   viewpoint: implementation_migration
@@ -24,8 +34,6 @@
   - wp-architecture-md-still-describes-the-old-gh-50
   - wp-chore-model-rename-the-art-id-prefix-to-gh-109
   - wp-decide-decision-capture-scope-and-the-gh-56
-  - wp-epic-conversational-architecture-gh-68
-  - wp-epic-multi-specification-modelling-gh-73
   - wp-feat-model-split-oversized-viewpoint-gh-129
   - wp-feat-model-vendor-it4it-as-third-party-gh-4
   - wp-feat-modelling-conversational-ai-agent-gh-108
@@ -37,7 +45,6 @@
   - wp-reorganize-architecture-model-diagrams-gh-5
   - wp-review-vision-and-business-diagrams-to-gh-43
   - wp-scaffold-digital-twin-knowledge-graph-gh-106
-  - wp-scope-the-archimate-modelling-ide-gh-59
 - id: view-plat-drift-management-mvp-5
   name: 'Roadmap: drift-management-mvp'
   viewpoint: implementation_migration

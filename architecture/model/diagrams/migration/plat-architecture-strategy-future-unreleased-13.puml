@@ -1,0 +1,17 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: architecture-strategy-future (unreleased)
+
+Implementation_Deliverable(e_id5420ab5f127758, "architecture-strategy-future (unreleased) (unreleased)")
+Implementation_Plateau(e_id7334b8ba1e865f, "architecture-strategy-future (unreleased)")
+Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational architecture modelling with live ArchiMate views")
+Implementation_WorkPackage(e_id266c7cb7c31c56, "GH-73 Epic: multi-specification modelling (ArchiMate + UML + OSCAL types per element)")
+Implementation_WorkPackage(e_id4608a4b3ca8a52, "GH-59 Scope the ArchiMate modelling IDE features from the retired PROJECT_SPECIFICATION.md")
+
+Rel_Realization_Up(e_id5420ab5f127758, e_id7334b8ba1e865f, "")
+Rel_Realization_Up(e_ide39528d3a91552, e_id5420ab5f127758, "")
+Rel_Realization_Up(e_id266c7cb7c31c56, e_id5420ab5f127758, "")
+Rel_Realization_Up(e_id4608a4b3ca8a52, e_id5420ab5f127758, "")
+
+@enduml
