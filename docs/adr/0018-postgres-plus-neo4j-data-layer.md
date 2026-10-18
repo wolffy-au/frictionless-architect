@@ -1,6 +1,6 @@
 # ADR-0018: Data layer — Postgres for metadata, Neo4j for the knowledge graph
 
-- **Status:** Proposed
+- **Status:** Accepted (bumped 2026-10-18 — see Consequences)
 - **Date:** unknown (pre-dates this log)
 - **Sources:** `PROJECT_SPECIFICATION.md` Phase 3; `specs/002-neo4j-schema-ui/plan.md`;
   [GH #55](https://github.com/wolffy-au/frictionless-architect/issues/55)
@@ -21,9 +21,15 @@ fallback, ADR-0023).
 ## Consequences
 
 - `specs/001` explicitly lists "persistence technologies for the semantic model
-  and for platform metadata" as a **deferred solution decision** — so this record
-  is Proposed: it captures the `PROJECT_SPECIFICATION.md` intent and current
-  implementation direction, pending formal re-ratification.
+  and for platform metadata" as a **deferred solution decision** — the original
+  Proposed status captured the `PROJECT_SPECIFICATION.md` intent and current
+  implementation direction pending formal re-ratification. **Bumped to Accepted
+  2026-10-18**: enough specs now cite Neo4j as settled fact (e.g.
+  `platform/packages/digital-twin-knowledge-graph`'s spec/plan) that leaving the
+  ADR itself Proposed understated how load-bearing it already is in practice.
+  The Postgres half remains unimplemented (no `orchestration/` directory, no
+  Postgres dependency wired up — only Neo4j, per ADR-0023) — Accepted records
+  the *decision*, not that both halves are built yet.
 - Local dev is intended to provide both via `orchestration/compose/` (plus
   OPA) once scaffolded; no `orchestration/` directory or Postgres dependency
   exists yet — only Neo4j is wired up today (ADR-0023).
