@@ -73,6 +73,13 @@
     gh-tag: v0.3.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.3.0
 - type: Deliverable
+  id: del-release-v0-4-0
+  name: v0.4.0
+  props:
+    gh-published: '2026-10-18T00:57:23Z'
+    gh-tag: v0.4.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.4.0
+- type: Deliverable
   id: del-solution-design-mvp-8-unreleased
   name: solution-design-mvp (unreleased)
   props:
@@ -521,7 +528,8 @@
   name: 'GH-130 refactor(model): split Goal/Outcome motivation chain and restore stakeholder traceability'
   props:
     gh-number: '130'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/130
 - type: WorkPackage
   id: wp-reorganize-architecture-model-diagrams-gh-5
