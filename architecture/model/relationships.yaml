@@ -507,6 +507,16 @@
 - {type: Serving, source: fn-conversational-authoring, target: if-modelling-authoring-ui, label: exposed via}
 
 # =====================================================================
+# B. GH #45 role-journey entries specialise the six canonical roles (ADR-0038)
+# =====================================================================
+- {type: Specialization, source: role-policy-conversion-admin, target: role-compliance, label: "GH #45: Policy conversion admin"}
+- {type: Specialization, source: role-policy-author, target: role-compliance, label: "GH #45: Policy author"}
+- {type: Specialization, source: role-patterns-admin, target: role-ea, label: "GH #45: Patterns admin"}
+- {type: Specialization, source: role-security-assessor, target: role-sec, label: "GH #45: Security assessor"}
+- {type: Specialization, source: role-pattern-contributor, target: role-sa, label: "GH #45: Pattern contributor"}
+- {type: Specialization, source: role-implementation-contributor, target: role-dev, label: "GH #45: Implementation contributor"}
+
+# =====================================================================
 # B. Authoring / OSCAL chain
 # =====================================================================
 - {type: Serving, source: ext-trestle, target: fn-oscal-conversion, label: realizes the Trestle Markdown <-> OSCAL round-trip for}
