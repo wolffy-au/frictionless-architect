@@ -1,7 +1,7 @@
 ---
 title: "Architecture Model: Skeleton"
-generated: 2026-10-17
-generator: claude-sonnet-5
+generated: 2026-10-18
+generator: GitHub Copilot CLI (Auto)
 sources:
   - architecture/model/README.md
   - architecture/model/elements.yaml
