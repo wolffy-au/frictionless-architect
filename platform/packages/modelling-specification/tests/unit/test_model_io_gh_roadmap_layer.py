@@ -106,8 +106,9 @@ def test_fixture_layer_builds_and_validates(
     importer: ModuleType, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     # The hand-authored layer references plat-architecture-strategy-mvp-7 and
-    # plat-solution-design-mvp-8 (and their -unreleased Deliverables) directly, so the
-    # stubbed milestone set must cover those numbers too, not just 1 and 2, and at
+    # plat-solution-design-mvp-8 (and their -unreleased Deliverables) directly, plus
+    # plat-architecture-strategy-future-13 (the Gap to architecture-strategy-future), so
+    # the stubbed milestone set must cover those numbers too, not just 1 and 2, and at
     # least one in-scope issue must target milestone 7 so its Deliverable is created.
     stub = make_stub(milestones=fixture_text("gh_milestones_full.json"), issues=issues_with_milestone_7_issue())
     code, errors = _build_layer_and_check(importer, monkeypatch, tmp_path, stub)
