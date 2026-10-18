@@ -546,6 +546,415 @@
     - bo-drift-finding
     - bo-oscal-poam
 
+# --- Capability-scoped slices of the full-sweep application_usage / product /
+#     service_realization views (views-viewpoints.yaml: view-application-usage,
+#     view-product, view-business-process-cooperation's counterparts). Those
+#     three sweep the whole model by include_types and are reference diagrams
+#     by design; these four groups (the same ones the view-business-* slices
+#     above use) add the directly-connected Application-layer elements so a
+#     reader can see business + app for one capability at a time without the
+#     full-model dump. view-business-process-cooperation already has its own
+#     narrower business-only slices (view-business-policy-conversion etc.),
+#     so it is not repeated here.
+- id: view-application-usage-policy-conversion
+  name: Application Usage — 1. Policy-to-OSCAL Conversion
+  viewpoint: application_usage
+  diagram: application/1-policy-conversion
+  members:
+    - bfn-policy-conversion
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - bo-oscal-resolved-catalog
+    - sub-catalog
+    - sub-llm-provider-config
+    - if-catalog-ui
+    - fn-policy-upload
+    - fn-policy-quality-feedback
+    - fn-ai-markdown-conversion
+    - fn-oscal-conversion
+    - fn-oscal-validation
+    - fn-baseline-tailoring
+    - fn-oscal-profile-resolve
+    - ext-llm
+    - ext-trestle
+    - do-policy-doc
+    - do-regulatory-standard
+    - do-trestle-markdown
+    - do-baseline
+    - do-oscal-catalog
+    - do-oscal-profile
+    - do-baseline-profile
+    - do-oscal-resolved-catalog
+    - do-baseline-resolved-catalog
+
+- id: view-application-usage-pattern-solution-design
+  name: Application Usage — 2. Pattern, Blueprint & Solution Design
+  viewpoint: application_usage
+  diagram: application/2-pattern-solution-design
+  members:
+    - bfn-pattern-blueprint-traceability
+    - role-ea
+    - process-pattern-traceability
+    - process-blueprint-traceability
+    - bfn-conversational-authoring
+    - process-conversational-authoring
+    - bfn-solution-design
+    - role-sa
+    - process-solution-design
+    - bo-oscal-resolved-catalog
+    - bo-architecture-pattern
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-design
+    - bo-solution-component
+    - bo-oscal-ssp
+    - sub-library
+    - sub-modelling
+    - if-modelling-authoring-ui
+    - fn-pattern-authoring
+    - fn-blueprint-authoring
+    - fn-solution-compose
+    - fn-threat-model
+    - fn-conversational-authoring
+    - fn-notation-engine
+    - fn-spec-generator
+    - do-pattern
+    - do-blueprint
+    - do-threat-model
+    - do-dev-spec
+    - do-metamodel
+    - do-convention-rules
+    - store-patterns
+
+- id: view-application-usage-control-assurance
+  name: Application Usage — 3. Control Assurance
+  viewpoint: application_usage
+  diagram: application/3-control-assurance
+  members:
+    - bfn-release-enforcement
+    - process-cicd-pipeline
+    - bfn-effectiveness-assurance
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-oscal-ssp
+    - bo-oscal-assessment-plan
+    - bo-oscal-assessment-results
+    - bo-release-gate-decision
+    - bo-control-effectiveness-evidence
+    - bo-oscal-poam
+    - sub-assurance
+    - ext-cicd
+    - fn-build-supervision
+    - fn-enforcement-gate
+    - fn-effectiveness-monitor
+    - fn-cicd-build
+    - fn-cicd-deploy
+    - do-release-candidate
+    - do-gate-decision
+    - do-oscal-assessment-plan
+    - do-effectiveness-evidence
+
+- id: view-application-usage-strategy-drift
+  name: Application Usage — Architecture Strategy & Drift
+  viewpoint: application_usage
+  diagram: application/strategy-drift
+  members:
+    - role-ea
+    - bfn-architecture-strategy
+    - process-target-state-definition
+    - bfn-drift-management
+    - process-state-discovery
+    - process-drift-review
+    - bo-target-state-architecture
+    - bo-architecture-roadmap
+    - bo-transition-state-architecture
+    - bo-current-state-architecture
+    - bo-conformance-backlog
+    - bo-drift-finding
+    - bo-oscal-poam
+    - sub-assurance
+    - ext-itsm
+    - fn-drift-engine
+    - fn-itsm-backlog
+    - fn-itsm-change
+    - do-architecture-roadmap
+    - do-adr
+    - do-drift-report
+    - do-remediation-item
+
+- id: view-product-policy-conversion
+  name: Product — 1. Policy-to-OSCAL Conversion
+  viewpoint: product
+  diagram: product/1-policy-conversion
+  members:
+    - bfn-policy-conversion
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - bo-oscal-resolved-catalog
+    - sub-catalog
+    - sub-llm-provider-config
+    - if-catalog-ui
+    - fn-policy-upload
+    - fn-policy-quality-feedback
+    - fn-ai-markdown-conversion
+    - fn-oscal-conversion
+    - fn-oscal-validation
+    - fn-baseline-tailoring
+    - fn-oscal-profile-resolve
+    - ext-llm
+    - ext-trestle
+    - do-policy-doc
+    - do-regulatory-standard
+    - do-trestle-markdown
+    - do-baseline
+    - do-oscal-catalog
+    - do-oscal-profile
+    - do-baseline-profile
+    - do-oscal-resolved-catalog
+    - do-baseline-resolved-catalog
+
+- id: view-product-pattern-solution-design
+  name: Product — 2. Pattern, Blueprint & Solution Design
+  viewpoint: product
+  diagram: product/2-pattern-solution-design
+  members:
+    - bfn-pattern-blueprint-traceability
+    - role-ea
+    - process-pattern-traceability
+    - process-blueprint-traceability
+    - bfn-conversational-authoring
+    - process-conversational-authoring
+    - bfn-solution-design
+    - role-sa
+    - process-solution-design
+    - bo-oscal-resolved-catalog
+    - bo-architecture-pattern
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-design
+    - bo-solution-component
+    - bo-oscal-ssp
+    - sub-library
+    - sub-modelling
+    - if-modelling-authoring-ui
+    - fn-pattern-authoring
+    - fn-blueprint-authoring
+    - fn-solution-compose
+    - fn-threat-model
+    - fn-conversational-authoring
+    - fn-notation-engine
+    - fn-spec-generator
+    - do-pattern
+    - do-blueprint
+    - do-threat-model
+    - do-dev-spec
+    - do-metamodel
+    - do-convention-rules
+    - store-patterns
+
+- id: view-product-control-assurance
+  name: Product — 3. Control Assurance
+  viewpoint: product
+  diagram: product/3-control-assurance
+  members:
+    - bfn-release-enforcement
+    - process-cicd-pipeline
+    - bfn-effectiveness-assurance
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-oscal-ssp
+    - bo-oscal-assessment-plan
+    - bo-oscal-assessment-results
+    - bo-release-gate-decision
+    - bo-control-effectiveness-evidence
+    - bo-oscal-poam
+    - sub-assurance
+    - ext-cicd
+    - fn-build-supervision
+    - fn-enforcement-gate
+    - fn-effectiveness-monitor
+    - fn-cicd-build
+    - fn-cicd-deploy
+    - do-release-candidate
+    - do-gate-decision
+    - do-oscal-assessment-plan
+    - do-effectiveness-evidence
+
+- id: view-product-strategy-drift
+  name: Product — Architecture Strategy & Drift
+  viewpoint: product
+  diagram: product/strategy-drift
+  members:
+    - role-ea
+    - bfn-architecture-strategy
+    - process-target-state-definition
+    - bfn-drift-management
+    - process-state-discovery
+    - process-drift-review
+    - bo-target-state-architecture
+    - bo-architecture-roadmap
+    - bo-transition-state-architecture
+    - bo-current-state-architecture
+    - bo-conformance-backlog
+    - bo-drift-finding
+    - bo-oscal-poam
+    - sub-assurance
+    - ext-itsm
+    - fn-drift-engine
+    - fn-itsm-backlog
+    - fn-itsm-change
+    - do-architecture-roadmap
+    - do-adr
+    - do-drift-report
+    - do-remediation-item
+
+- id: view-service-realization-policy-conversion
+  name: Service Realization — 1. Policy-to-OSCAL Conversion
+  viewpoint: service_realization
+  diagram: service-realization/1-policy-conversion
+  members:
+    - bfn-policy-conversion
+    - role-compliance
+    - process-policy-authoring
+    - process-oscal-conversion
+    - process-baseline-tailoring
+    - process-profile-resolution
+    - bo-regulatory-standard
+    - bo-policy-doc
+    - bo-oscal-catalog
+    - bo-oscal-profile
+    - bo-oscal-resolved-catalog
+    - sub-catalog
+    - sub-llm-provider-config
+    - if-catalog-ui
+    - fn-policy-upload
+    - fn-policy-quality-feedback
+    - fn-ai-markdown-conversion
+    - fn-oscal-conversion
+    - fn-oscal-validation
+    - fn-baseline-tailoring
+    - fn-oscal-profile-resolve
+    - ext-llm
+    - ext-trestle
+    - do-policy-doc
+    - do-regulatory-standard
+    - do-trestle-markdown
+    - do-baseline
+    - do-oscal-catalog
+    - do-oscal-profile
+    - do-baseline-profile
+    - do-oscal-resolved-catalog
+    - do-baseline-resolved-catalog
+
+- id: view-service-realization-pattern-solution-design
+  name: Service Realization — 2. Pattern, Blueprint & Solution Design
+  viewpoint: service_realization
+  diagram: service-realization/2-pattern-solution-design
+  members:
+    - bfn-pattern-blueprint-traceability
+    - role-ea
+    - process-pattern-traceability
+    - process-blueprint-traceability
+    - bfn-conversational-authoring
+    - process-conversational-authoring
+    - bfn-solution-design
+    - role-sa
+    - process-solution-design
+    - bo-oscal-resolved-catalog
+    - bo-architecture-pattern
+    - bo-implementation-blueprint
+    - bo-oscal-component
+    - bo-solution-design
+    - bo-solution-component
+    - bo-oscal-ssp
+    - sub-library
+    - sub-modelling
+    - if-modelling-authoring-ui
+    - fn-pattern-authoring
+    - fn-blueprint-authoring
+    - fn-solution-compose
+    - fn-threat-model
+    - fn-conversational-authoring
+    - fn-notation-engine
+    - fn-spec-generator
+    - do-pattern
+    - do-blueprint
+    - do-threat-model
+    - do-dev-spec
+    - do-metamodel
+    - do-convention-rules
+    - store-patterns
+
+- id: view-service-realization-control-assurance
+  name: Service Realization — 3. Control Assurance
+  viewpoint: service_realization
+  diagram: service-realization/3-control-assurance
+  members:
+    - bfn-release-enforcement
+    - process-cicd-pipeline
+    - bfn-effectiveness-assurance
+    - role-ops
+    - process-effectiveness-monitoring
+    - bo-oscal-ssp
+    - bo-oscal-assessment-plan
+    - bo-oscal-assessment-results
+    - bo-release-gate-decision
+    - bo-control-effectiveness-evidence
+    - bo-oscal-poam
+    - sub-assurance
+    - ext-cicd
+    - fn-build-supervision
+    - fn-enforcement-gate
+    - fn-effectiveness-monitor
+    - fn-cicd-build
+    - fn-cicd-deploy
+    - do-release-candidate
+    - do-gate-decision
+    - do-oscal-assessment-plan
+    - do-effectiveness-evidence
+
+- id: view-service-realization-strategy-drift
+  name: Service Realization — Architecture Strategy & Drift
+  viewpoint: service_realization
+  diagram: service-realization/strategy-drift
+  members:
+    - role-ea
+    - bfn-architecture-strategy
+    - process-target-state-definition
+    - bfn-drift-management
+    - process-state-discovery
+    - process-drift-review
+    - bo-target-state-architecture
+    - bo-architecture-roadmap
+    - bo-transition-state-architecture
+    - bo-current-state-architecture
+    - bo-conformance-backlog
+    - bo-drift-finding
+    - bo-oscal-poam
+    - sub-assurance
+    - ext-itsm
+    - fn-drift-engine
+    - fn-itsm-backlog
+    - fn-itsm-change
+    - do-architecture-roadmap
+    - do-adr
+    - do-drift-report
+    - do-remediation-item
+
 - id: view-dataflow-library
   name: Data Flow — Library & Design
   viewpoint: application_cooperation

@@ -437,6 +437,15 @@
 - {type: Realization, source: do-drift-report, target: bo-drift-finding}
 - {type: Association, source: bo-conformance-backlog, target: do-remediation-item, label: approved findings raised as}
 - {type: Assignment, source: role-ops, target: bfn-effectiveness-assurance}
+# GH #69 follow-on (ADR-0038 consequences): give role-sec and role-dev a
+# business-layer presence, each wrapping their one already-modelled
+# touchpoint (fn-threat-model; process-spec-generation's do-dev-spec hand-off).
+- {type: Composition, source: bfn-security-assurance, target: process-security-assessment, label: comprises}
+- {type: Assignment, source: role-sec, target: bfn-security-assurance}
+- {type: Realization, source: fn-threat-model, target: process-security-assessment}
+- {type: Composition, source: bfn-implementation, target: process-implementation, label: comprises}
+- {type: Assignment, source: role-dev, target: bfn-implementation}
+- {type: Triggering, source: process-spec-generation, target: process-implementation, label: specification generated}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}

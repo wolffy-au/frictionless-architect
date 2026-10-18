@@ -1,0 +1,61 @@
+@startuml
+!include <archimate/Archimate>
+
+title Product — 3. Control Assurance
+
+Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
+  Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
+}
+Business_Object(e_ide1231d147af05e, "OSCAL System Security Plan")
+Business_Object(e_idb990615e712f57, "OSCAL Assessment Plan")
+Business_Object(e_id9f8a83bba77b50, "OSCAL Assessment Results")
+Business_Object(e_id8a58348ab4605a, "Release Gate Decision")
+Business_Object(e_idca68dd43dc1854, "Control Effectiveness Evidence")
+Business_Object(e_idd18d048900f05b, "OSCAL Plan of Action & Milestones")
+Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
+  Application_Function(e_id29feb234dcb55b, "Agentic Build Supervision")
+  Application_Function(e_id40274d7630725c, "Controls Effectiveness Monitoring")
+}
+Business_Role(e_id2c489ee6594253, "Platform Operations (BAU)") {
+  Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
+    Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
+  }
+}
+Application_Component(e_iddc67769c419e5d, "CI/CD Pipeline") {
+  Application_Function(e_id782a43253ca752, "Build & Test")
+  Application_Function(e_idbf7bcc015b2d5d, "Controls Enforcement Gate")
+  Application_Function(e_idd08a9177cbed58, "Release Deployment")
+}
+Application_DataObject(e_id0098b14d360457, "Release Candidate")
+Application_DataObject(e_id1d885b26074d5f, "OSCAL Assessment Plan")
+Application_DataObject(e_idba85a2c1b90d5c, "Gate Decision")
+Application_DataObject(e_id1cec8e0c65ff5c, "Control Effectiveness Evidence")
+
+Rel_Access_w(e_id799f46ebb7e15b, e_idd18d048900f05b, "records control deficiencies in")
+Rel_Access_w(e_id18a08f8aff8057, e_idd18d048900f05b, "records control deficiencies in")
+Rel_Association(e_idd18d048900f05b, e_id9f8a83bba77b50, "tracks remediation of")
+Rel_Access_r(e_id799f46ebb7e15b, e_ide1231d147af05e, "checks against")
+Rel_Access_w(e_id799f46ebb7e15b, e_idb990615e712f57, "generates")
+Rel_Access_w(e_id799f46ebb7e15b, e_id8a58348ab4605a, "issues")
+Rel_Access_r(e_id18a08f8aff8057, e_ide1231d147af05e, "reads expected controls")
+Rel_Access_w(e_id18a08f8aff8057, e_idb990615e712f57, "generates")
+Rel_Access_w(e_id18a08f8aff8057, e_idca68dd43dc1854, "records")
+Rel_Association(e_id9f8a83bba77b50, e_idb990615e712f57, "imports (per OSCAL's required import-ap)")
+Rel_Specialization_Up(e_id8a58348ab4605a, e_id9f8a83bba77b50, "pre-release instance")
+Rel_Specialization_Up(e_idca68dd43dc1854, e_id9f8a83bba77b50, "continuous-monitoring instance")
+Rel_Realization_Up(e_idbf7bcc015b2d5d, e_id799f46ebb7e15b, "")
+Rel_Realization_Up(e_id40274d7630725c, e_id18a08f8aff8057, "")
+Rel_Realization_Up(e_idba85a2c1b90d5c, e_id8a58348ab4605a, "")
+Rel_Realization_Up(e_id1cec8e0c65ff5c, e_idca68dd43dc1854, "")
+Rel_Realization_Up(e_id1d885b26074d5f, e_idb990615e712f57, "")
+Rel_Serving_Up(e_id492c882252a953, e_id2c489ee6594253, "watches control effectiveness & drift in")
+Rel_Flow_Right(e_id492c882252a953, e_iddc67769c419e5d, "expected controls")
+Rel_Access_w(e_id782a43253ca752, e_id0098b14d360457, "packages")
+Rel_Access_r(e_idbf7bcc015b2d5d, e_id0098b14d360457, "evaluates")
+Rel_Access_w(e_idbf7bcc015b2d5d, e_id1d885b26074d5f, "generates")
+Rel_Access_w(e_idbf7bcc015b2d5d, e_idba85a2c1b90d5c, "issues")
+Rel_Access_r(e_idd08a9177cbed58, e_idba85a2c1b90d5c, "acts on")
+Rel_Access_w(e_id40274d7630725c, e_id1d885b26074d5f, "generates")
+Rel_Access_w(e_id40274d7630725c, e_id1cec8e0c65ff5c, "records")
+
+@enduml
