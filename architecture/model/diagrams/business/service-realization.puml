@@ -125,8 +125,16 @@ Application_DataObject(e_ide155670d2bae58, "Framework Pack Library") {
 Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger") {
   Application_DataObject(e_idfd63e49cbb7150, "Ledger Entry")
 }
-Business_Role(e_id10a12f8c7cac51, "Security Architect / Threat Modeller")
-Business_Role(e_id2c72565ddd6c52, "Developer")
+Business_Role(e_id10a12f8c7cac51, "Security Architect / Threat Modeller") {
+  Business_Function(e_id95a4b5af103951, "Security Assurance") {
+    Business_Process(e_idbbfbc45c295253, "Security Assessment")
+  }
+}
+Business_Role(e_id2c72565ddd6c52, "Developer") {
+  Business_Function(e_id01dcf94155ac54, "Implementation") {
+    Business_Process(e_idba4ef821169f5d, "Specification Implementation")
+  }
+}
 Business_Role(e_id5e264d2f4bb551, "Compliance Officer / Auditor") {
   Business_Function(e_id108dc21cee6055, "Policy-to-OSCAL Conversion") {
     Business_Process(e_id14fa9f783d5350, "Policy & Standards Authoring")
@@ -283,6 +291,8 @@ Rel_Access_w(e_id18a08f8aff8057, e_idd18d048900f05b, "records control deficienci
 Rel_Association(e_idd18d048900f05b, e_id9f8a83bba77b50, "tracks remediation of")
 Rel_Realization_Up(e_idc0645293cd9156, e_id4819673b912051, "")
 Rel_Association(e_id195b0ade075454, e_id02b46c82d75c5e, "approved findings raised as")
+Rel_Realization_Up(e_iddc37081ec05957, e_idbbfbc45c295253, "")
+Rel_Triggering(e_id65467a0befb959, e_idba4ef821169f5d, "specification generated")
 Rel_Access_r(e_id799f46ebb7e15b, e_ide1231d147af05e, "checks against")
 Rel_Access_w(e_id799f46ebb7e15b, e_idb990615e712f57, "generates")
 Rel_Access_w(e_id799f46ebb7e15b, e_id8a58348ab4605a, "issues")
