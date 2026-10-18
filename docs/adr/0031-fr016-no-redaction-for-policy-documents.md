@@ -24,8 +24,10 @@ ingestion path.
 
 ## Consequences
 
-- `ADR-0014`'s Decision text is unchanged; this ADR narrows its scope
-  rather than amending it.
+- `ADR-0014`'s Decision text now states this broad default scope (every LLM
+  ingestion path except policy/regulatory-standard documents) directly,
+  resolved alongside GH #56; this ADR remains the single authoritative
+  record of the policy-document exemption itself.
 - If a policy/standard document is later found to routinely carry PII/PHI
   (e.g. named individuals in an internal HR policy), revisit — scope
   FR-016 further or route that document class through the gateway.
