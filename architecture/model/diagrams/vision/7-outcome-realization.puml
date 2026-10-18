@@ -78,6 +78,12 @@ Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
 Business_Function(e_id31d47ac8153e5c, "Controls Effectiveness Assurance") {
   Business_Process(e_id18a08f8aff8057, "Controls Effectiveness Monitoring")
 }
+Business_Function(e_id95a4b5af103951, "Security Assurance") {
+  Business_Process(e_idbbfbc45c295253, "Security Assessment")
+}
+Business_Function(e_id01dcf94155ac54, "Implementation") {
+  Business_Process(e_idba4ef821169f5d, "Specification Implementation")
+}
 
 Rel_Realization_Up(e_idcd5e1d4017725d, e_idd3d97949409b5a, "")
 Rel_Realization_Up(e_idcd5e1d4017725d, e_id54f1bb3695c550, "")
@@ -143,6 +149,7 @@ Rel_Triggering(e_id378927722a8d5a, e_id5959dd7c3bbe59, "blueprints proposed as m
 Rel_Triggering(e_id5959dd7c3bbe59, e_id4991c823f6d55b, "validated changes composed into")
 Rel_Triggering(e_id4991c823f6d55b, e_id65467a0befb959, "solution design specified")
 Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
+Rel_Triggering(e_id65467a0befb959, e_idba4ef821169f5d, "specification generated")
 Rel_Realization_Up(e_id18a08f8aff8057, e_id72468b5b403450, "")
 
 @enduml
