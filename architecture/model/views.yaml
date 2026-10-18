@@ -886,6 +886,21 @@
     - role-ea
     - role-sa
 
+- id: view-architecture-strategy-transition
+  name: "Architecture Strategy: MVP to Future"
+  diagram: migration/architecture-strategy-transition
+  # #59's scope decision (2026-10-18): the drag-and-drop ArchiMate IDE,
+  # #68's live-view epic and #73's multi-specification modelling are
+  # deferred past the MVP into the architecture-strategy-future
+  # (unreleased) milestone/Plateau. Hand-authored because the gh-roadmap
+  # layer's own per-milestone views are generated and never carry Gaps
+  # (see architecture/model/gh-roadmap's "Generated ... Do not edit" note).
+  viewpoint: implementation_migration
+  members:
+    - plat-architecture-strategy-mvp-7
+    - plat-architecture-strategy-future-13
+    - gap-architecture-strategy-mvp-to-future
+
 - id: view-work-package-dependencies
   name: "Work Package Dependencies"
   context: [platform, gh-roadmap]

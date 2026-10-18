@@ -1881,6 +1881,16 @@
     this Gap records the transition without committing to more than the
     deliberately underspecified node-hosted-cluster placeholder; the
     concrete runtime shape is deferred to a follow-up ADR.
+- type: Gap
+  id: gap-architecture-strategy-mvp-to-future
+  name: "Gap: modelling IDE, live views & multi-spec authoring"
+  desc: >-
+    plat-architecture-strategy-mvp-7 -> plat-architecture-strategy-future-13.
+    The MVP ships conversation-first model authoring (#108, closed) without
+    the drag-and-drop ArchiMate IDE #59 scoped out of the MVP, #68's
+    live-rendered-view epic, or #73's multi-specification modelling; this
+    Gap records what the MVP leaves open for #59/#68/#73 to address if and
+    when they're picked back up from the future milestone.
 
 # =====================================================================
 # F. TECHNOLOGY — Per-subsystem UI composition (ADR-0020, resolved
