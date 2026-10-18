@@ -226,11 +226,16 @@ def _element_lines(
     def emit(e: Any, depth: int) -> None:
         pad = "  " * depth
         macro = ELEMENT_MACRO.get(e.type)
+        label = esc(e.name) or e.type
+        if e.type == "WorkPackage" and e.prop("gh-state") == "closed":
+            # Leading space: creole strikethrough markers don't take effect when
+            # "--" opens the string at position 0.
+            label = f" --{label}--"
         if macro:
-            head = f'{pad}{macro}({alias(e.uuid)}, "{esc(e.name) or e.type}")'
+            head = f'{pad}{macro}({alias(e.uuid)}, "{label}")'
         else:
             warnings.append(f"unmapped element type {e.type!r} ({e.name!r}) -> plain rectangle")
-            head = f'{pad}rectangle "{esc(e.name) or e.type}" as {alias(e.uuid)}'
+            head = f'{pad}rectangle "{label}" as {alias(e.uuid)}'
         kids = children.get(e.uuid, [])
         if not kids:
             out.append(head)
