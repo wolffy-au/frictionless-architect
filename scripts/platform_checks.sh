@@ -90,6 +90,13 @@ names=()
 for pkg in packages/*/; do
   pkg="${pkg%/}"
   name="$(basename "$pkg")"
+  if [[ ! -d "$pkg/src" ]]; then
+    # A package directory can legitimately exist with only specs/ during the
+    # spec-driven workflow's pause between /speckit-plan and /speckit-tasks
+    # (no src/ yet) -- not a failure, just nothing to type-check or test yet.
+    echo "── $name: skipped (no $pkg/src yet)"
+    continue
+  fi
   run_package_checks "$pkg" "$name" > "$root/build/platform-check-$name.log" 2>&1 &
   pids+=("$!")
   names+=("$name")
