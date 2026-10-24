@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-04-04
-- **Sources:** `specs/002-neo4j-schema-ui/research.md`; `specs/002-neo4j-schema-ui/plan.md`
+- **Sources:** `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/research.md`; `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md`
 
 ## Context
 

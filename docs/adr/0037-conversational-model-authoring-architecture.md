@@ -2,8 +2,8 @@
 
 - **Status:** Proposed
 - **Date:** 2026-10-10
-- **Sources:** `specs/004-conversational-model-authoring/plan.md` §Constitution Check
-  (Principle X), `specs/004-conversational-model-authoring/research.md` (R1, R2, R6, R7, R12)
+- **Sources:** `specs/EPIC-003-conversational-model-authoring/plan.md` §Constitution Check
+  (Principle X), `specs/EPIC-003-conversational-model-authoring/research.md` (R1, R2, R6, R7, R12)
 
 ## Context
 

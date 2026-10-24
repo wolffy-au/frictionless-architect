@@ -31,7 +31,7 @@ does not mount it yet.
 ### Endpoints
 
 All under `/authoring`; request and response shapes are in
-[`contracts/api.md`](../../../specs/004-conversational-model-authoring/contracts/api.md).
+[`contracts/api.md`](../../../specs/EPIC-003-conversational-model-authoring/contracts/api.md).
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -46,7 +46,7 @@ All under `/authoring`; request and response shapes are in
 | `GET` | `/` | The split-screen UI |
 
 A worked end-to-end walkthrough is in
-[`quickstart.md`](../../../specs/004-conversational-model-authoring/quickstart.md).
+[`quickstart.md`](../../../specs/EPIC-003-conversational-model-authoring/quickstart.md).
 
 ## Command line
 
@@ -80,4 +80,4 @@ poetry run pytest packages/modelling-specification/tests
 - `src/modelling_specification/` -- the package.
 - `tests/` -- its tests, mirroring `src/`.
 - `specs/` -- this package's feature specs (`ARCHITECTURE.md` §6); see
-  `specs/004-conversational-model-authoring/` at the repo root for the full spec set.
+  `specs/EPIC-003-conversational-model-authoring/` at the repo root for the full spec set.

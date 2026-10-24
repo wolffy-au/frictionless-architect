@@ -1,6 +1,6 @@
 # Feature Specification: LLM Provider Configuration
 
-**Feature Branch**: `n/a` (retroactive spec for the shipped package; this package's spec number is `001`, separate from the root `specs/001-governance-platform`)
+**Feature Branch**: `n/a` (retroactive spec for the shipped package; this package's spec number is `001`, separate from the root `specs/EPIC-001-governance-platform`)
 
 **Created**: 2026-10-05
 

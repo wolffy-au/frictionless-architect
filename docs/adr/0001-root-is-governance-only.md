@@ -23,4 +23,4 @@ level below the root.
 - Root-absolute config (`[tool.pytest]` `testpaths`, `[tool.behave]`, Sonar, CI)
   must be re-homed per package.
 - This is a packaging decision only; the product vision (originally
-  `PROJECT_SPECIFICATION.md`, now `specs/001-governance-platform/spec.md`) is unchanged.
+  `PROJECT_SPECIFICATION.md`, now `specs/EPIC-001-governance-platform/spec.md`) is unchanged.

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-25
-- **Sources:** GitHub issue #51; `sample-data/schema/archimate3_*.xsd`; `specs/002-neo4j-schema-ui/spec.md` Edge Cases
+- **Sources:** GitHub issue #51; `sample-data/schema/archimate3_*.xsd`; `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md` Edge Cases
 
 ## Context
 
@@ -33,7 +33,7 @@ payload service surfaces it as a warning with `sample_file_status: "invalid"`.
 - A file authored against a non-standard 3.1 namespace fails with an
   actionable message naming the expected namespace, instead of rendering empty.
 - `sample_file_status` gains the value `"invalid"`
-  (`specs/002-neo4j-schema-ui/contracts/api.md`).
+  (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md`).
 - The bundled XSDs must not be edited locally; refresh them from the Open
   Group only.
 - Revisit if The Open Group publishes a new target namespace (e.g. with
