@@ -21,7 +21,7 @@
 - **Authorization:** Access control must be enforced based on defined policies (e.g., ABAC), integrating with authentication mechanisms.
 - **Data Encryption:** Data must be encrypted at rest and in transit.
 - **Security Assessments:** The platform's own deployment must be subject to regular automated security
-  scanning (moved from `specs/001-governance-platform/spec.md` FR-018). Threat modelling of client
+  scanning (moved from `specs/EPIC-001-governance-platform/spec.md` FR-018). Threat modelling of client
   architectures is a library output, not part of this requirement.
 - **Regulatory Compliance:** System must comply with relevant information security standards and regulations.
 

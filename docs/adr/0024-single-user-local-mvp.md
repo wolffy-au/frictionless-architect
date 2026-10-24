@@ -2,7 +2,7 @@
 
 - **Status:** Accepted (explicit scoping compromise)
 - **Date:** unknown (pre-dates this log)
-- **Sources:** `PROJECT_SPECIFICATION.md` §"MVP Target"; `specs/002-neo4j-schema-ui/plan.md`; `ARCHITECTURE.md` §1
+- **Sources:** `PROJECT_SPECIFICATION.md` §"MVP Target"; `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md`; `ARCHITECTURE.md` §1
 
 ## Context
 

@@ -5,7 +5,7 @@ actually happens in this repo: the toolchain, branch/commit conventions, the
 spec-driven workflow, and the quality gates a change has to clear. For the
 project's shape and rationale, start with [`README.md`](README.md),
 [`ARCHITECTURE.md`](ARCHITECTURE.md), and the platform's business specification,
-[`specs/001-governance-platform/spec.md`](specs/001-governance-platform/spec.md). Day-to-day development
+[`specs/EPIC-001-governance-platform/spec.md`](specs/EPIC-001-governance-platform/spec.md). Day-to-day development
 guidance for both human and AI-agent contributors lives in
 [`AGENTS.md`](AGENTS.md) — this file is the narrative front door to it.
 

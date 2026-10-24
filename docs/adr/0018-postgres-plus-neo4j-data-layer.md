@@ -2,7 +2,7 @@
 
 - **Status:** Accepted (bumped 2026-10-18 — see Consequences)
 - **Date:** unknown (pre-dates this log)
-- **Sources:** `PROJECT_SPECIFICATION.md` Phase 3; `specs/002-neo4j-schema-ui/plan.md`;
+- **Sources:** `PROJECT_SPECIFICATION.md` Phase 3; `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md`;
   [GH #55](https://github.com/wolffy-au/frictionless-architect/issues/55)
 
 ## Context

@@ -1,7 +1,7 @@
 # Implementation Plan: Neo4j Schema Visualiser
 
-**Branch**: `002-neo4j-schema-ui` | **Date**: 2026-04-04 | **Spec**: `/specs/002-neo4j-schema-ui/spec.md`
-**Input**: Feature specification from `/specs/002-neo4j-schema-ui/spec.md`
+**Branch**: `002-neo4j-schema-ui` | **Date**: 2026-04-04 | **Spec**: `/platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md`
+**Input**: Feature specification from `/platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md`
 
 ## Summary
 Deliver a single-user Neo4j schema visualiser that pairs every ArchiMate node/relationship/view definition with carefullly curated sample data (`sample-data/sample-00/Test Model Full.xml`), exposes the schema/diagram payload via FastAPI endpoints (the UI that consumes it moved to `schema-visualizer-ui`, #55), and keeps the schema summary accessible whenever sample data or Neo4j access is unavailable.
@@ -35,7 +35,7 @@ Deliver a single-user Neo4j schema visualiser that pairs every ArchiMate node/re
 ### Documentation (this feature)
 
 ```text
-specs/002-neo4j-schema-ui/
+platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/
 ├── plan.md
 ├── research.md
 ├── data-model.md

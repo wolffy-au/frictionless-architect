@@ -2,7 +2,7 @@
 
 **Branch**: `feature/gh-95-roadmap-archimate` (issue #95) | **Date**: 2026-10-04 | **Spec**: [spec.md](spec.md)
 
-**Input**: Feature specification from `specs/003-gh-roadmap-archimate/spec.md`
+**Input**: Feature specification from `specs/EPIC-002-gh-roadmap-archimate/spec.md`
 
 ## Summary
 
@@ -67,7 +67,7 @@ No violations; Complexity Tracking is empty.
 ### Documentation (this feature)
 
 ```text
-specs/003-gh-roadmap-archimate/
+specs/EPIC-002-gh-roadmap-archimate/
 ├── plan.md              # This file
 ├── research.md          # Phase 0
 ├── data-model.md        # Phase 1

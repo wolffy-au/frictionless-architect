@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Sources:** GH #95; `specs/003-gh-roadmap-archimate/` (spec, data-model, research);
+- **Sources:** GH #95; `specs/EPIC-002-gh-roadmap-archimate/` (spec, data-model, research);
   [ADR-0029](0029-it4it-as-vendored-touchpoint-model.md) (layer merge through `det_id`/`NS`);
   [ADR-0018](0018-postgres-plus-neo4j-data-layer.md) and [ADR-0024](0024-single-user-local-mvp.md)
   (the runtime Plateaus this replaces); ArchiMate 3.2 §3.5 (derivation)

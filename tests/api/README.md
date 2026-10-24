@@ -5,9 +5,9 @@ In-process tests for the schema visualiser's FastAPI app
 so no server needs to run and Neo4j is never contacted
 (`FRICTIONLESS_ARCHITECT_NEO4J_URI` is forced to empty).
 
-Specs: [`specs/002-neo4j-schema-ui/spec.md`](../../specs/002-neo4j-schema-ui/spec.md),
-[`contracts/api.md`](../../specs/002-neo4j-schema-ui/contracts/api.md) and
-[`quickstart.md`](../../specs/002-neo4j-schema-ui/quickstart.md).
+Specs: [`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md`](../../platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md),
+[`contracts/api.md`](../../platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md) and
+[`quickstart.md`](../../platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md).
 
 ## Run
 
