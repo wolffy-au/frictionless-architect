@@ -68,7 +68,7 @@ description: "Task list for the Neo4j Schema Visualiser feature"
 
 **Purpose**: Document the feature, validate quickstart steps, and highlight the new visualiser in repository docs.
 
-- [x] T017 [P] Update `specs/002-neo4j-schema-ui/quickstart.md` to capture the commands, env vars, access expectations, and warning text discovered while implementing the feature.
+- [x] T017 [P] Update `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md` to capture the commands, env vars, access expectations, and warning text discovered while implementing the feature.
 - [x] T018 [P] Run lint/tests (`ruff`, `pytest tests/api`) and ensure `README.md` or developer docs mention the schema visualiser entry point along with the “Sample data unavailable” warning text.
 
 ---

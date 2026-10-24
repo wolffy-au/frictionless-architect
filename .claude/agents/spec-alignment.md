@@ -35,7 +35,7 @@ Poetry only for any inspection commands.
 ## Steps
 
 1. Extract a requirement list: every FR / NFR / SC / user story with a stable ID
-   (`specs/001-governance-platform` is the platform's business specification). Map each
+   (`specs/EPIC-001-governance-platform` is the platform's business specification). Map each
    to its ADR-0011 subsystem (`ARCHITECTURE.md` §4); the old components 1–8 are historical.
 2. For each requirement, locate the implementing code + test. Classify:
    **Done** / **Partial** / **Missing** / **Diverged** (built differently than specified)

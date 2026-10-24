@@ -1,7 +1,7 @@
 # Enterprise Convention Rules (GH #108, ADR-0037 R6/R13) — organisation-specific
 # authoring conventions the conversational agent validates proposed deltas against,
 # alongside (not instead of) the fixed ArchiMate 3.2 metamodel rules pyArchimate
-# enforces. Schema (specs/004-conversational-model-authoring/data-model.md):
+# enforces. Schema (specs/EPIC-003-conversational-model-authoring/data-model.md):
 #
 # - id:      string, e.g. `conv-naming-camel-free`
 # - kind:    naming | altitude | allowed-subset | interposed-pattern |

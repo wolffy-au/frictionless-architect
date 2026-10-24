@@ -2,7 +2,7 @@
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-04-04
-**Feature**: specs/002-neo4j-schema-ui/spec.md
+**Feature**: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md
 
 ## Content Quality
 

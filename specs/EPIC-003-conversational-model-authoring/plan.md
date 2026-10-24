@@ -2,7 +2,7 @@
 
 **Branch**: `feature/gh-108-conversational-architecture-agent` (issue #108) | **Date**: 2026-10-08 | **Spec**: [spec.md](spec.md)
 
-**Input**: Feature specification from `specs/004-conversational-model-authoring/spec.md`
+**Input**: Feature specification from `specs/EPIC-003-conversational-model-authoring/spec.md`
 
 ## Summary
 
@@ -152,7 +152,7 @@ R16 is explicit that they hold no state the API doesn't already own.
 ### Documentation (this feature)
 
 ```text
-specs/004-conversational-model-authoring/
+specs/EPIC-003-conversational-model-authoring/
 ├── plan.md, research.md, data-model.md, quickstart.md
 ├── contracts/api.md
 ├── checklists/requirements.md

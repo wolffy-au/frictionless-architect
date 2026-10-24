@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-04-04
-- **Sources:** `specs/002-neo4j-schema-ui/research.md`; `wiki/data-model.md`;
+- **Sources:** `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/research.md`; `wiki/data-model.md`;
   `src/frictionless_architect/visualizer/sample_parser.py`;
   `src/frictionless_architect/visualizer/sample_validator.py`; `pyproject.toml`
 
