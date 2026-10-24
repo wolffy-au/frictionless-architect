@@ -15,5 +15,6 @@ Rel_Association(e_id726fa9a2d0835f, e_id957bea8a8f2755, "")
 Rel_Association(e_id726fa9a2d0835f, e_id2732b8c8dfb058, "")
 Rel_Association(e_id29b6db45badb5c, e_id2732b8c8dfb058, "")
 Rel_Realization_Up(e_id891b59559d2954, e_id726fa9a2d0835f, "")
+Rel_Triggering_Right(e_id29b6db45badb5c, e_id726fa9a2d0835f, "")
 
 @enduml
