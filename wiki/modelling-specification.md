@@ -299,8 +299,15 @@ a variant of it:
 - **Different home.** `fn-solution-modelling` is Assigned to `sub-library`
   (subsystem 2, `reusable-architecture-library`), not this package; its
   journey API, UI and agent are planned under
-  `platform/packages/reusable-architecture-library/{ui,api}`, a package that
-  does not exist yet
+  `platform/packages/reusable-architecture-library/{ui,api}`.
+  `reusable-architecture-library` itself does not exist yet as an extracted
+  package, unlike `modelling-specification` (this package, GH #108) — the
+  spec is explicit that GH #68's "blocked on the monorepo pattern being
+  proven" framing is now stale, since the pattern is already proven by four
+  other extracted packages: `modelling-specification`,
+  `controls-compliance-catalog`, `digital-twin-knowledge-graph`, and
+  `schema-visualizer-api`; the spec itself does not depend on the extraction
+  having happened, only its eventual implementation does
   (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
   §Assumptions). It shares this package's render path only: it Serves
   `fn-notation-engine` — implemented here — for live view rendering,
@@ -335,6 +342,16 @@ a variant of it:
   Design may not need the same rules unmodified
   (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
   §Assumptions).
+- **Behave scenarios deferred to implementation, not written at specify
+  time.** Following GH #108/ADR-0037's own precedent — this package's
+  behave scenarios were written during implementation against the real
+  running app, not during `/speckit-specify` — the sibling spec's
+  Acceptance Scenarios are the basis for behave scenarios to be written
+  later, package-scoped under
+  `platform/packages/reusable-architecture-library/tests/features/` once
+  that package exists
+  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
+  §Assumptions; `specs/EPIC-003-conversational-model-authoring/tasks.md`).
 
 As of this spec, the feature is still at the specification stage (`Status:
 Draft`) — no `reusable-architecture-library` package, journey API, or UI
