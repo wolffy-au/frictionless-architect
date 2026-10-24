@@ -42,7 +42,12 @@ def test_build_prints_findings_when_invalid(
     assert "[illegal_relationship] x: bad" in out
 
 
-def test_render_check_reports_up_to_date(capsys: pytest.CaptureFixture[str]) -> None:
+def test_render_check_reports_up_to_date(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    # The real check-against-the-repo-model path is exercised once, in
+    # test_rendering.py::test_render_diagrams_check_against_the_real_repo_is_up_to_date
+    # (full real re-render is expensive); this test only needs to confirm the
+    # CLI wires render_diagrams' result through to the right exit code/message.
+    monkeypatch.setattr(rendering, "render_diagrams", lambda check, svg: (0, [], []))
     assert cli.main(["render", "--check"]) == 0
     assert "diagrams up to date" in capsys.readouterr().out
 

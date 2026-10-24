@@ -45,8 +45,16 @@ echo "Running pytest unit tests..."
 poetry run pytest tests/unit/ -n auto
 
 # --- platform/ monorepo packages (own lock + venv) ---
-echo "Running platform/ package checks..."
-scripts/platform_checks.sh
+# pre_merge_checks.sh runs platform_checks.sh --update right after this script
+# returns, so skip the plain pass here when called from there — running the
+# mypy/pytest/behave fan-out across every package twice in one gate is pure
+# duplication (SKIP_PLATFORM_CHECKS is set by pre_merge_checks.sh only).
+if [ "${SKIP_PLATFORM_CHECKS:-0}" = "1" ]; then
+  echo "Skipping platform/ package checks here (pre_merge_checks.sh runs them via --update)."
+else
+  echo "Running platform/ package checks..."
+  scripts/platform_checks.sh
+fi
 
 
 echo "Pre-commit checks passed successfully."
