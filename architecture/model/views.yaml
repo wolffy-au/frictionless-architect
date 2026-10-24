@@ -296,23 +296,30 @@
   # anyway (only Access/Association) and which skipped the Artifact the
   # rest of the model always interposes between a Node and the store it backs.
   #
-  # RESOLVED (was an OPEN QUESTION for speckit-specify): conversational
-  # authoring does have a standing business process of its own, shared by
-  # both roles -- process-conversational-authoring, Composed into its own
-  # bfn-conversational-authoring (not bfn-architecture-strategy or
-  # bfn-solution-design, which would misrepresent it as owned by one
-  # role alone; plan.md's Model impact calls it a "shared standing
-  # process, not per-role ad hoc"). bfn-conversational-authoring is
-  # jointly Assigned from both role-ea and role-sa -- _nest_tree renders
-  # a part only when it has exactly one containment parent on the
-  # diagram, so with both roles present the function stays flat with
-  # two visible Assignment arrows rather than nesting under either.
+  # RESOLVED (was an OPEN QUESTION for speckit-specify, later corrected by
+  # GH #138): conversational authoring has a standing business process of
+  # its own -- process-conversational-authoring, Composed into its own
+  # bfn-conversational-authoring (not bfn-architecture-strategy, which
+  # would misrepresent it as owned by role-ea's wider remit alone). Despite
+  # the generic name, this is role-ea's capability specifically: it edits
+  # the candidate architecture graph (do-candidate-arch), which role-sa's
+  # canonical journey ("composes solution designs from implementation
+  # blueprints") never touches. plan.md's "shared standing process" framing
+  # (spec 004) assumed role-sa also used it; GH #138 found no wiring that
+  # ever bore that out and gave role-sa its own equivalent instead --
+  # process-conversational-solution-modelling, Composed into
+  # bfn-solution-design, over do-solution-design. Only bfn-conversational-
+  # authoring is Assigned from role-ea now; the sibling role-sa Assignment
+  # and this comment's former "jointly Assigned" framing are retired.
   # The process also Realizes cap-conversational-governance directly.
   # The component-level sub-modelling -> role-ea / sub-modelling ->
   # role-sa Serving edges ("converses on model changes with") that used
   # to bypass the business
   # layer are gone -- superseded by this process, not left standing
-  # alongside it.
+  # alongside it. if-modelling-authoring-ui still Serves both role-ea and
+  # role-sa (each "propose, review & apply model changes") because it is
+  # now shared infrastructure: fn-conversational-authoring exposes role-ea's
+  # path through it, fn-solution-modelling exposes role-sa's.
   members:
     - stk-architecture
     - driver-sustainability
@@ -445,6 +452,7 @@
     - role-sa
     - bfn-solution-design
     - process-solution-design
+    - process-conversational-solution-modelling
     - process-blueprint-traceability
     - bfn-conversational-authoring
     - process-conversational-authoring
@@ -498,6 +506,7 @@
     - bfn-solution-design
     - role-sa
     - process-solution-design
+    - process-conversational-solution-modelling
     - bo-oscal-resolved-catalog
     - bo-architecture-pattern
     - bo-implementation-blueprint
@@ -608,6 +617,7 @@
     - bfn-solution-design
     - role-sa
     - process-solution-design
+    - process-conversational-solution-modelling
     - bo-oscal-resolved-catalog
     - bo-architecture-pattern
     - bo-implementation-blueprint
@@ -621,6 +631,7 @@
     - fn-pattern-authoring
     - fn-blueprint-authoring
     - fn-solution-compose
+    - fn-solution-modelling
     - fn-threat-model
     - fn-conversational-authoring
     - fn-notation-engine

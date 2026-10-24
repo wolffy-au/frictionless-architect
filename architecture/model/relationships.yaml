@@ -410,11 +410,13 @@
 - {type: Assignment, source: role-ea, target: bfn-architecture-strategy}
 - {type: Composition, source: bfn-conversational-authoring, target: process-conversational-authoring, label: comprises}
 - {type: Assignment, source: role-ea, target: bfn-conversational-authoring}
-- {type: Assignment, source: role-sa, target: bfn-conversational-authoring}
 - {type: Composition, source: bfn-solution-design, target: process-solution-design, label: comprises}
+- {type: Composition, source: bfn-solution-design, target: process-conversational-solution-modelling, label: comprises}
 - {type: Assignment, source: role-sa, target: bfn-solution-design}
 - {type: Access, source: process-solution-design, target: bo-solution-design, label: composes, props: {access_type: Write}}
 - {type: Realization, source: fn-solution-compose, target: process-solution-design}
+- {type: Access, source: process-conversational-solution-modelling, target: bo-solution-design, label: proposes & applies deltas to, props: {access_type: Write}}
+- {type: Realization, source: fn-solution-modelling, target: process-conversational-solution-modelling}
 - {type: Assignment, source: role-ea, target: bfn-drift-management, label: approves architectural drift}
 - {type: Access, source: process-target-state-definition, target: bo-target-state-architecture, label: defines, props: {access_type: Write}}
 - {type: Access, source: process-state-discovery, target: bo-current-state-architecture, label: reconciles, props: {access_type: Read}}
@@ -514,6 +516,7 @@
 - {type: Serving, source: if-modelling-authoring-ui, target: role-ea, label: "propose, review & apply model changes"}
 - {type: Serving, source: if-modelling-authoring-ui, target: role-sa, label: "propose, review & apply model changes"}
 - {type: Serving, source: fn-conversational-authoring, target: if-modelling-authoring-ui, label: exposed via}
+- {type: Serving, source: fn-solution-modelling, target: if-modelling-authoring-ui, label: exposed via}
 
 # =====================================================================
 # B. GH #45 role-journey entries specialise the six canonical roles (ADR-0038)
@@ -663,6 +666,7 @@
 - {type: Assignment, source: sub-library, target: fn-solution-compose}
 - {type: Assignment, source: sub-library, target: fn-threat-model}
 - {type: Assignment, source: sub-library, target: fn-options-model}
+- {type: Assignment, source: sub-library, target: fn-solution-modelling}
 - {type: Assignment, source: sub-twin, target: fn-twin-ingest}
 - {type: Assignment, source: sub-twin, target: fn-ledger-record}
 - {type: Assignment, source: sub-governance, target: fn-decision-capture-ingestion}
@@ -714,6 +718,9 @@
 - {type: Access, source: fn-solution-compose, target: do-pattern, label: composes, props: {access_type: Read}}
 - {type: Access, source: fn-solution-compose, target: do-solution-design, label: produces, props: {access_type: Write}}
 - {type: Access, source: fn-solution-compose, target: do-oscal-ssp, label: derives & emits, props: {access_type: Write}}
+- {type: Access, source: fn-solution-modelling, target: do-metamodel, label: validates proposed changes against, props: {access_type: Read}}
+- {type: Access, source: fn-solution-modelling, target: do-solution-design, label: proposes & applies deltas to, props: {access_type: Write}}
+- {type: Serving, source: fn-solution-modelling, target: fn-notation-engine, label: renders the Solution Design view live via}
 - {type: Association, source: do-oscal-ssp, target: do-solution-design, label: derived from}
 - {type: Access, source: fn-threat-model, target: do-pattern, label: assesses, props: {access_type: Read}}
 - {type: Access, source: fn-threat-model, target: do-blueprint, label: assesses, props: {access_type: Read}}

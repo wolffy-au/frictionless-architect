@@ -66,11 +66,12 @@ Business_Function(e_id4b6cc961fa6750, "Pattern & Blueprint Traceability") {
 Business_Function(e_id5794c15b037251, "Architecture Strategy") {
   Business_Process(e_id395c9c2923aa56, "Target State Definition")
 }
-Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
-  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
+Business_Function(e_idd35dc0fbf5a554, "Conversational Candidate Architecture Authoring") {
+  Business_Process(e_id5959dd7c3bbe59, "Conversational Candidate Architecture Authoring")
 }
 Business_Function(e_id86f3d2dd174754, "Solution Design") {
   Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
+  Business_Process(e_idb15bf3bc08d15d, "Conversational Solution Modelling")
 }
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")

@@ -15,7 +15,7 @@ Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance") {
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
-  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
+  Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
 }
 Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
   Application_DataObject(e_ide732c9a4b52a59, "Current-State Digital Twin")
