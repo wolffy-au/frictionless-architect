@@ -17,7 +17,7 @@ topics:
     description: What Frictionless Architect is, who it's for, and its scope.
     sources:
       - path: README.md
-      - path: specs/001-governance-platform/spec.md
+      - path: specs/EPIC-001-governance-platform/spec.md
 
   - name: governance-and-constitution
     title: Governance & Constitution
@@ -89,7 +89,7 @@ topics:
     title: "GitHub Roadmap Layer"
     description: How GitHub milestones, issues and releases are imported into the Implementation & Migration layer (spec 003, ADR-0035).
     sources:
-      - path: specs/003-gh-roadmap-archimate/**/*.md
+      - path: specs/EPIC-002-gh-roadmap-archimate/**/*.md
       - path: architecture/model/import_gh_roadmap.py
 
   - name: architecture-diagrams
@@ -150,22 +150,22 @@ topics:
     title: Data Model
     description: Domain entities, the Neo4j schema, and the ArchiMate XSD basis.
     sources:
-      - path: specs/001-governance-platform/data-model.md
-      - path: specs/002-neo4j-schema-ui/data-model.md
+      - path: specs/EPIC-001-governance-platform/data-model.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/data-model.md
       - path: sample-data/schema/*.xsd
 
   - name: platform-spec
     title: Platform Specification & API
     description: The governance-platform and Neo4j schema-UI feature specs and API contracts.
     sources:
-      - path: specs/001-governance-platform/spec.md
-      - path: specs/001-governance-platform/contracts/**
-      - path: specs/002-neo4j-schema-ui/spec.md
-      - path: specs/002-neo4j-schema-ui/plan.md
-      - path: specs/002-neo4j-schema-ui/research.md
-      - path: specs/002-neo4j-schema-ui/contracts/api.md
-      - path: specs/002-neo4j-schema-ui/checklists/requirements.md
-      - path: specs/002-neo4j-schema-ui/tasks.md
+      - path: specs/EPIC-001-governance-platform/spec.md
+      - path: specs/EPIC-001-governance-platform/contracts/**
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/research.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/checklists/requirements.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/tasks.md
 
   - name: controls-compliance-catalog
     title: Controls & Compliance Catalog
@@ -195,7 +195,7 @@ topics:
       - path: platform/packages/modelling-specification/README.md
       - path: platform/packages/modelling-specification/pyproject.toml
       - path: platform/packages/modelling-specification/specs/README.md
-      - path: specs/004-conversational-model-authoring/**/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/**/*.md
       - path: platform/packages/modelling-specification/src/modelling_specification/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
@@ -211,6 +211,32 @@ topics:
       - path: platform/packages/portal/specs/README.md
       - path: platform/packages/portal/src/portal/*.py
       - path: docs/adr/0020-per-subsystem-uis.md
+
+  - name: digital-twin-knowledge-graph
+    title: Digital Twin Knowledge Graph
+    description: The digital-twin-knowledge-graph package (subsystem 3, GH #106) — the Neo4j-backed ArchiMate knowledge-graph read path, exchange-format parser, and idempotent schema/ingestion manager.
+    sources:
+      - path: platform/packages/digital-twin-knowledge-graph/README.md
+      - path: platform/packages/digital-twin-knowledge-graph/pyproject.toml
+      - path: platform/packages/digital-twin-knowledge-graph/specs/README.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/spec.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/plan.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/data-model.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/contracts/read-path.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/quickstart.md
+      - path: platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/*.py
+      - path: docs/adr/0017-knowledge-graph-on-standard-ontology.md
+
+  - name: schema-visualizer-api
+    title: Schema Visualizer API
+    description: The schema-visualizer-api package — today a specs-only placeholder re-homing the neo4j-schema-ui spec (ADR-0004) ahead of the migration-step-7 extraction of the FastAPI visualiser (ADR-0005).
+    sources:
+      - path: platform/packages/schema-visualizer-api/README.md
+      - path: platform/packages/schema-visualizer-api/specs/README.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/research.md
+      - path: docs/adr/0005-visualiser-api-ui-split-first-extraction.md
 
   - name: llm-provider-config
     title: LLM Provider Configuration
@@ -238,10 +264,10 @@ topics:
     title: Development & Quickstart
     description: How to set up, run, and work in this repo.
     sources:
-      - path: specs/001-governance-platform/quickstart.md
+      - path: specs/EPIC-001-governance-platform/quickstart.md
       - path: AGENTS.md
       - path: RELEASE.md
-      - path: specs/002-neo4j-schema-ui/quickstart.md
+      - path: platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md
       - path: .pre-commit-config.yaml
       - path: scripts/pre_merge_checks.sh
       - path: .github/workflows/ci.yml
