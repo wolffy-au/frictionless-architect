@@ -44,8 +44,17 @@ repo's tooling (`commitizen`, `poetry-dynamic-versioning`, `.github/workflows/ci
 ```bash
 git fetch origin
 git checkout develop && git pull --ff-only origin develop
-git merge origin/main     # carry any main-only hotfixes into develop
+git merge --ff-only origin/main
 ```
+
+This must be a fast-forward: prefer fast-forwards over merge commits, so `develop` and
+`main` share one linear history instead of a sync merge commit on every release.
+If it isn't a fast-forward — `main` picked up hotfix commits (e.g. a vulnerability fix)
+that `develop` doesn't have yet — stop here. Rebase `develop` onto `main` and
+force-push `develop` yourself *before* triggering the release agent; it does not do
+this rebase/force-push on your behalf (`develop`'s normal push rule stays
+fast-forward-only, never force — this is a deliberate, one-off exception you perform
+by hand, not standing policy).
 
 Never merge or fast-forward `main` locally.
 
