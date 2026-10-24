@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** unknown (pre-dates this log; `specs/001` clarification)
-- **Sources:** `specs/001-governance-platform/spec.md` (FR-015, FR-016, clarification Q)
+- **Sources:** `specs/EPIC-001-governance-platform/spec.md` (FR-015, FR-016, clarification Q)
 
 ## Context
 

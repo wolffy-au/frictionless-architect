@@ -3,7 +3,7 @@
 
 Reads GitHub through the `gh` CLI and writes `architecture/model/gh-roadmap/`
 {elements,relationships,views}.yaml, which `build.py` merges as an optional layer.
-The mapping, ids and rules live in specs/003-gh-roadmap-archimate/data-model.md.
+The mapping, ids and rules live in specs/EPIC-002-gh-roadmap-archimate/data-model.md.
 
     poetry run python architecture/model/import_gh_roadmap.py [--repo OWNER/NAME] [--check]
 

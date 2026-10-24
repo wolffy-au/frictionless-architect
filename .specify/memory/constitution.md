@@ -24,11 +24,11 @@
   - Version change: v1.2.0 -> v1.3.0
   - Modified sections: Detailed References → "Requirements — why".
   - Removed: PROJECT_SPECIFICATION.md is retired. Every section already had a current
-    home (specs/001-governance-platform, NONFUNCTIONALS.md, ARCHITECTURE.md, the ADR log,
+    home (specs/EPIC-001-governance-platform, NONFUNCTIONALS.md, ARCHITECTURE.md, the ADR log,
     architecture/model/) except four items, now spec 001 FR-021–FR-023 and the
     NONFUNCTIONALS.md "Resilience Testing" NFR; its modelling-tool Feature Inventory and
     UI Overview were moved verbatim to GH #59 as unscoped backlog.
-    `specs/001-governance-platform` is now the platform's business specification.
+    `specs/EPIC-001-governance-platform` is now the platform's business specification.
   - Templates requiring updates: none.
   - Follow-up TODOs: None
 
@@ -78,7 +78,7 @@ here; consult it when you need deeper detail.
 ### Requirements — why
 
 - **`specs/<feature>/`**: Executable feature specs (spec → plan → tasks).
-  `specs/001-governance-platform` is the platform's business specification — the
+  `specs/EPIC-001-governance-platform` is the platform's business specification — the
   platform-wide requirements every other spec derives from. (The former
   `PROJECT_SPECIFICATION.md` was retired in v1.3.0.)
 
