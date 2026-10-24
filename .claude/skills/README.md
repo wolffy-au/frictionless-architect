@@ -41,6 +41,7 @@ regenerated.
 |-------|---------|
 | `fork-sync` | Keep forked GitHub dependencies in sync with upstream: rebase `fix/*` + `private/*` branches, rebuild a `dist-candidate`, run tests, flag security-relevant upstream changes, escalate conflicts. See `fork-sync/SKILL.md`. |
 | `commit-message` | Write and check git commit messages against Conventional Commits + this repo's internal conventions (types, package/area scopes, `v$version` tags, commitizen config). Authoritative ruleset in `commit-message/references/standard.md`. Paired agent: `commit-auditor` (branch-wide pre-PR audit). See `commit-message/SKILL.md`. |
+| `pr-preflight` | Pre-flight checklist for a branch about to become a PR: scope the diff against `develop`, run an autofix pass, refresh docs/diagrams/wiki for what the diff touched, check specs/ADRs, audit commit messages, spot-check quality/security, then run the full gate before pushing. The mirror of `pr-wrapup` — readies a branch for a PR instead of tidying up after one lands. See `pr-preflight/SKILL.md`. |
 | `pr-wrapup` | Post-merge wrap-up for a PR and its issue: verify the merge landed in the base, delete the remote branch, close the issue with a summary comment (needed for `develop`-targeted PRs), remove the local worktree and branches (drvfs `sudo` fallbacks), prune, and report leftovers. See `pr-wrapup/SKILL.md`. |
 
 ### Diagrams & architecture models
