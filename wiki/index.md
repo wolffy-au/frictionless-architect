@@ -1,7 +1,7 @@
 ---
 title: Frictionless Architect Wiki
-generated: 2026-10-18
-generator: GitHub Copilot CLI (Auto)
+generated: '2026-10-24'
+generator: claude-sonnet-5
 ---
 
 > This wiki is **generated** by the `wiki-librarian` skill from the sources
@@ -12,8 +12,10 @@ generator: GitHub Copilot CLI (Auto)
 ## Topics
 
 - [Project Overview](project-overview.md) — what Frictionless Architect is, its
-  business specification (spec 001, which replaced `PROJECT_SPECIFICATION.md`),
-  who it's for, the headline capabilities, and which parts are actually built.
+  business specification (`specs/EPIC-001-governance-platform`, re-homed
+  2026-10-24 under ADR-0004's two-tier scheme, which replaced
+  `PROJECT_SPECIFICATION.md`), who it's for, the headline capabilities, and
+  which parts are actually built.
 - [Governance & Constitution](governance-and-constitution.md) — the single
   SpecKit Constitution at the root of the document tree (principles I–X), the
   document index and conflict-resolution rule, the six-stage workflow, and
@@ -28,7 +30,8 @@ generator: GitHub Copilot CLI (Auto)
   generated: files, schema, the `build.py` pipeline, the generic per-viewpoint
   `views-viewpoints.yaml` layer (GH #105), the generated GitHub roadmap
   layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
-  merged in at build time — 489 elements, 1,001 relationships, 64 views total).
+  merged in at build time — 515 elements, 1,029 relationships, 66 views total,
+  re-counted 2026-10-24).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
   stakeholders, drivers, assessments, one top goal with five sub-goals and ten
   measurable outcomes, principles,
@@ -44,10 +47,11 @@ generator: GitHub Copilot CLI (Auto)
 - [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) —
   sections E and F: the platform's own packaging/migration restructure (Work
   Packages, Plateaus, Gaps) and its first Technology-layer cut.
-- [GitHub Roadmap Layer](gh-roadmap-layer.md) — spec 003: GitHub milestones,
-  releases and issues imported as ArchiMate Plateaus, Deliverables and Work
-  Packages; a release now realizes every Plateau it delivered work for
-  (clarified 2026-10-12), not just ones its notes name.
+- [GitHub Roadmap Layer](gh-roadmap-layer.md) — `specs/EPIC-002-gh-roadmap-archimate`
+  (re-homed 2026-10-24, formerly spec 003): GitHub milestones, releases and
+  issues imported as ArchiMate Plateaus, Deliverables and Work Packages; a
+  release now realizes every Plateau it delivered work for (clarified
+  2026-10-12), not just ones its notes name.
 - [Architecture Views & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md) —
   how the vision and business views map to ArchiMate viewpoints, the TOGAF
   Phase A vision-view set, the 17 new generic per-viewpoint views (GH #105),
@@ -68,10 +72,11 @@ generator: GitHub Copilot CLI (Auto)
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.
-- [Platform Specification & API](platform-spec.md) — the `001-governance-platform`
-  spec (FR-001…FR-023, FR-018 now an NFR; deferred solution decisions, the
-  governance API contract)
-  and the implemented `002-neo4j-schema-ui` spec and endpoints.
+- [Platform Specification & API](platform-spec.md) — the
+  `specs/EPIC-001-governance-platform` spec (re-homed 2026-10-24; FR-001…FR-023,
+  FR-018 now an NFR; deferred solution decisions, the governance API contract)
+  and the implemented `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui`
+  spec (formerly root `specs/002-neo4j-schema-ui`) and endpoints.
 - [Controls & Compliance Catalog](controls-compliance-catalog.md) — the
   `platform/packages/controls-compliance-catalog` package: the first
   extraction into the `platform/` monorepo, its AI-assisted policy/standard →
@@ -79,10 +84,23 @@ generator: GitHub Copilot CLI (Auto)
   surface, and golden-dataset validation.
 - [Conversational Model Authoring](modelling-specification.md) — the
   `platform/packages/modelling-specification` package (GH #108,
-  [ADR-0037](decision-log.md)): the conversational ArchiMate authoring agent,
-  its candidate-delta propose/validate/decide/render pipeline, Enterprise
-  Convention Rules, and the ported `build`/`render`/`validate` CLI that root's
-  scripts and the `model-archimate` skill now wrap.
+  [ADR-0037](decision-log.md); renamed "Conversational Candidate Architecture
+  Authoring" and scoped to Enterprise Architects only per
+  [ADR-0039](decision-log.md), 2026-10-24): the conversational ArchiMate
+  authoring agent, its candidate-delta propose/validate/decide/render
+  pipeline, Enterprise Convention Rules, and the ported
+  `build`/`render`/`validate` CLI that root's scripts and the
+  `model-archimate` skill now wrap.
+- [Digital Twin Knowledge Graph](digital-twin-knowledge-graph.md) — the
+  `platform/packages/digital-twin-knowledge-graph` package (GH #106): the
+  intent-plane knowledge-graph read path over the Neo4j-backed ArchiMate
+  model, the ArchiMate exchange-format parser and idempotent schema/ingestion
+  manager, consumed as a library by Conversational Model Authoring.
+- [Schema Visualizer API](schema-visualizer-api.md) — the
+  `platform/packages/schema-visualizer-api` package: today a specs-only
+  placeholder homing the re-homed `001-neo4j-schema-ui` spec (formerly root
+  `specs/002-neo4j-schema-ui`) ahead of the visualiser API/UI split
+  (`ARCHITECTURE.md` §8, step 7).
 - [Portal](portal.md) — the `platform/packages/portal` host package
   ([ADR-0020](decision-log.md) update, GH #120): mounts every package's UI
   under one app, owning only chrome, navigation and the role landing page.
