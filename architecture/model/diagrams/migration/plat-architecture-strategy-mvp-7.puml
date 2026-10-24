@@ -14,10 +14,12 @@ Implementation_WorkPackage(e_id5073cb5e6c9355, " --GH-53 ADR-0022 claims xmlsche
 Implementation_WorkPackage(e_id5d12242ca8a553, " --GH-51 ArchiMate namespace mismatch: parser pins 3.0, bundled XSDs mix 3.0/3.1--")
 Implementation_WorkPackage(e_id0d0b53b9527a58, " --GH-50 ARCHITECTURE.md still describes the old 8-component split, not the 6-subsystem decomposition--")
 Implementation_WorkPackage(e_ida3e6c1727c645c, " --GH-109 chore(model): rename the art-* id prefix to stop implying the ArchiMate Artifact type--")
-Implementation_WorkPackage(e_id303f8eaab69a52, "GH-56 Decide decision-capture scope and the PII gateway (ADR-0014 vs ADR-0031)")
+Implementation_WorkPackage(e_id303f8eaab69a52, " --GH-56 Decide decision-capture scope and the PII gateway (ADR-0014 vs ADR-0031)--")
 Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational architecture modelling with live ArchiMate views") {
   Implementation_WorkPackage(e_id040c3046139b52, " --GH-108 feat(modelling): conversational AI agent for interactive ArchiMate model authoring--")
-  Implementation_WorkPackage(e_id41b9cdd73c3b5c, "GH-69 Make section-B roles canonical: split spec 001 Architect, model #45 roles as specialisations")
+  Implementation_WorkPackage(e_id41b9cdd73c3b5c, " --GH-69 Make section-B roles canonical: split spec 001 Architect, model #45 roles as specialisations--")
+  Implementation_WorkPackage(e_idf087fe9d7e175a, " --GH-138 Model architect role journeys; add conversational modelling function--")
+  Implementation_WorkPackage(e_id4b747e3b75815e, "GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios")
 }
 Implementation_WorkPackage(e_id266c7cb7c31c56, "GH-73 Epic: multi-specification modelling (ArchiMate + UML + OSCAL types per element)")
 Implementation_WorkPackage(e_id975839b5e2f95f, "GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)")
@@ -28,7 +30,7 @@ Implementation_WorkPackage(e_id376701595fe15e, " --GH-117 refactor(model): scope
 Implementation_WorkPackage(e_ide9791d510f1f5a, " --GH-130 refactor(model): split Goal/Outcome motivation chain and restore stakeholder traceability--")
 Implementation_WorkPackage(e_iddbd759dae8f252, " --GH-5 Reorganize architecture/model/diagrams/ into ArchiMate-layer subfolders--")
 Implementation_WorkPackage(e_idcef2d648a7715d, " --GH-43 Review vision and business diagrams to resolve orphans--")
-Implementation_WorkPackage(e_id2c5c9f25a9c15a, "GH-106 Scaffold digital-twin-knowledge-graph package (ADR-0006, migration step 4)")
+Implementation_WorkPackage(e_id2c5c9f25a9c15a, " --GH-106 Scaffold digital-twin-knowledge-graph package (ADR-0006, migration step 4)--")
 
 Rel_Realization_Up(e_id891b59559d2954, e_id726fa9a2d0835f, "")
 Rel_Realization_Up(e_id314ed2487dd05b, e_id726fa9a2d0835f, "")
@@ -56,6 +58,8 @@ Rel_Realization_Up(e_id2c5c9f25a9c15a, e_id891b59559d2954, "")
 Rel_Triggering_Right(e_idcfe43aed854d58, e_id376701595fe15e, "")
 Rel_Triggering_Right(e_id303f8eaab69a52, e_ide39528d3a91552, "")
 Rel_Triggering_Right(e_id040c3046139b52, e_idcfe43aed854d58, "")
+Rel_Triggering_Right(e_id41b9cdd73c3b5c, e_idf087fe9d7e175a, "")
+Rel_Triggering_Right(e_idf087fe9d7e175a, e_id4b747e3b75815e, "")
 Rel_Triggering_Right(e_ide9791d510f1f5a, e_id975839b5e2f95f, "")
 
 @enduml
