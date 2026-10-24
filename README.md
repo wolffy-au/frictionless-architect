@@ -13,7 +13,7 @@
 `frictionless-architect` is a platform for describing, validating, and visualising
 enterprise architecture models (ArchiMate) backed by a graph database. The full
 platform requirements live in the business specification,
-[`specs/001-governance-platform/spec.md`](specs/001-governance-platform/spec.md); the target repository
+[`specs/EPIC-001-governance-platform/spec.md`](specs/EPIC-001-governance-platform/spec.md); the target repository
 topology is described in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## What is built today

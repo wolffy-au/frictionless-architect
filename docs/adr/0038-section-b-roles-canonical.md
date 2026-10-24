@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-18
-- **Sources:** GH #69; GH #45; `specs/001-governance-platform/spec.md`; `architecture/model/elements.yaml` (`role-*`)
+- **Sources:** GH #69; GH #45; `specs/EPIC-001-governance-platform/spec.md`; `architecture/model/elements.yaml` (`role-*`)
 
 ## Context
 

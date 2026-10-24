@@ -1,7 +1,7 @@
 # Repository Architecture & Topology
 
 Canonical description of how this repository is structured and the target it is being
-restructured toward. Read alongside `specs/001-governance-platform/spec.md` (the business specification),
+restructured toward. Read alongside `specs/EPIC-001-governance-platform/spec.md` (the business specification),
 `.specify/memory/constitution.md` (the platform constitution), and `TECHNICAL.md`.
 
 **Status:** target adopted; migration in progress (see §8).
@@ -20,7 +20,7 @@ All application code lives **one level below** the repository root. The root is 
 coordination scripts, submodule pointers, and the CI that fans out to components. It holds
 **no application code**.
 
-This is a packaging decision only. The product vision in `specs/001-governance-platform/spec.md` — a
+This is a packaging decision only. The product vision in `specs/EPIC-001-governance-platform/spec.md` — a
 Frictionless Architecture & Governance Platform automating APRA CPS 230 / 234 compliance —
 is unchanged; its decomposition is the six subsystems of
 [ADR-0011](docs/adr/0011-six-subsystem-decomposition.md), modelled in `architecture/model/`. The
@@ -239,25 +239,38 @@ churn — packages keep the current setup.
 
 ## 6. Spec numbering (two-tier)
 
-Current: flat `specs/NNN-*` across the whole platform — `001-governance-platform`,
-`002-neo4j-schema-ui`, `002-arch-kg-semantics` (already a collision).
+Implemented (ADR-0004, migration step 6, GH #107). Was: flat `specs/NNN-*` across the
+whole platform — `001-governance-platform`, `002-neo4j-schema-ui`,
+`003-gh-roadmap-archimate`, `004-conversational-model-authoring` (already a `002`
+collision with the never-fleshed-out `002-arch-kg-semantics` stub, which was deleted
+before it gained any content).
 
-Target:
+Now:
 
 - **Root `specs/`** holds only **epic / cross-cutting** specs, prefixed `EPIC-`:
-  e.g. `specs/EPIC-001-platform-restructure/`, `specs/EPIC-002-cps230-234-traceability/`.
+  `specs/EPIC-001-governance-platform/` (the business specification),
+  `specs/EPIC-002-gh-roadmap-archimate/`, `specs/EPIC-003-conversational-model-authoring/`.
 - **Each `packages/<name>/specs/`** restarts its own `NNN-` sequence, scoped to that
-  component: e.g. `packages/digital-twin-knowledge-graph/specs/001-neo4j-schema-ui/`.
-- **Existing specs re-home as:**
+  component: e.g. `packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/`,
+  `packages/schema-visualizer-api/specs/001-neo4j-schema-ui/`.
+- **Existing specs re-homed:**
   - `001-governance-platform` → `EPIC-001` (it is the platform's business specification
     since `PROJECT_SPECIFICATION.md` was retired — §10 Q6).
-  - `002-neo4j-schema-ui` → `packages/schema-visualizer-api/specs/001-*`
-    (and/or `packages/digital-twin-knowledge-graph/specs/001-*`).
-  - `002-arch-kg-semantics` (stub) → `packages/digital-twin-knowledge-graph/specs/002-*`, or delete.
-- **`.specify/scripts/bash/`** (`create-new-feature.sh`, `setup-plan.sh`,
-  `check-prerequisites.sh`) assume one repo / one `specs/`.
-  Add a `--package <name>` arg that targets `packages/<name>/specs/` — one source of
-  truth, rather than per-package copies.
+  - `002-neo4j-schema-ui` → `packages/schema-visualizer-api/specs/001-*`. That package
+    itself hasn't extracted yet (§8 step 7) — the directory holds only `specs/` and a
+    `.specify` symlink (below) until then.
+  - `003-gh-roadmap-archimate`, `004-conversational-model-authoring` → `EPIC-002`,
+    `EPIC-003` respectively: both drive root-level `architecture/model/` tooling, not any
+    one package.
+- **`.specify/scripts/bash/`** is git-ignored and regenerated wholesale by
+  `specify integration upgrade` against whatever `specify-cli` release is current (see
+  `.claude/skills/README.md`) — it is never hand-patched, since any edit is both
+  uncommittable and gets overwritten on the next regeneration. Instead, each package that
+  wants its own `NNN-` sequence carries a tracked `.specify` symlink back to the root
+  install (one source of truth, not a per-package copy), and the tracked
+  `scripts/speckit-package.sh` wrapper sets `SPECIFY_INIT_DIR` — an override `common.sh`
+  already documents — to point a vendored script's repo-root resolution at that package
+  directory: `scripts/speckit-package.sh --package <name> <script> [args...]`.
 - Root keeps `.specify/memory/constitution.md` as the **platform** constitution;
   per-component constitutions are optional lighter addenda (§10).
 
@@ -296,7 +309,7 @@ between them (GH #65):
 The order puts each package after the packages it consumes — see the
 [packaging view](architecture/model/diagrams/implementation/packaging.svg) (ADR-0005, #60).
 
-**Status:** steps 1–3 done (#71). `platform/` has its own `pyproject.toml` and
+**Status:** steps 1–3 and 6 done (#71, #107). `platform/` has its own `pyproject.toml` and
 `poetry.lock`; `packages/controls-compliance-catalog` is an empty, installable package.
 `scripts/platform_checks.sh` gates every package under `platform/packages/` (lock check,
 pyright, mypy, pytest at 90% coverage). The pre-commit and pre-merge scripts, the
