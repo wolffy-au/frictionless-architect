@@ -11,9 +11,6 @@ Business_Function(e_id902e9552927656, "Agentic Delivery Execution") {
 Business_Function(e_id7d896c5e89eb58, "Release Management") {
   Business_Process(e_id9459a13c29ec5d, "Production Release")
 }
-Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
-  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
-}
 Business_Function(e_idad8299f88c0556, "Release Controls Enforcement") {
   Business_Process(e_id799f46ebb7e15b, "Automated CICD Gate Execution")
 }
@@ -59,6 +56,7 @@ Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_idf6a4f65b28fc5e, "Solution Design Composition")
   Application_Function(e_iddc37081ec05957, "Threat Modelling")
   Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")
+  Application_Function(e_id774463b70fec5c, "Conversational Solution Modelling")
 }
 Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
   Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
@@ -77,7 +75,7 @@ Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Interface(e_id178b6a78b39b51, "Conversational Authoring UI")
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
-  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
+  Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
@@ -163,6 +161,9 @@ Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
     Business_Function(e_id5794c15b037251, "Architecture Strategy") {
       Business_Process(e_id395c9c2923aa56, "Target State Definition")
     }
+    Business_Function(e_idd35dc0fbf5a554, "Conversational Candidate Architecture Authoring") {
+      Business_Process(e_id5959dd7c3bbe59, "Conversational Candidate Architecture Authoring")
+    }
     Business_Function(e_idc1376562b9a354, "Drift Management") {
       Business_Process(e_id3a7a27eefeb751, "Architecture Reconciliation")
       Business_Process(e_id33612ed603b85e, "Drift Review & Triage")
@@ -171,6 +172,7 @@ Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration") {
   Business_Role(e_ide2cb7f3efa6256, "Solution Architect") {
     Business_Function(e_id86f3d2dd174754, "Solution Design") {
       Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
+      Business_Process(e_idb15bf3bc08d15d, "Conversational Solution Modelling")
     }
   }
   Business_Interaction(e_ida5ff14a2a5eb53, "Collaborative Architecture Modelling")
@@ -269,10 +271,10 @@ Rel_Realization_Up(e_id5447be33805351, e_id3a7a27eefeb751, "")
 Rel_Flow(e_id395c9c2923aa56, e_id3a7a27eefeb751, "target state reconciled against")
 Rel_Realization_Up(e_idf91aecdf564a55, e_id4b5ad5a2100656, "")
 Rel_Realization_Up(e_idf90f9775c86754, e_ide1231d147af05e, "")
-Rel_Assignment(e_id2b5394f913985a, e_idd35dc0fbf5a554, "")
-Rel_Assignment(e_ide2cb7f3efa6256, e_idd35dc0fbf5a554, "")
 Rel_Access_w(e_id4991c823f6d55b, e_id4b5ad5a2100656, "composes")
 Rel_Realization_Up(e_idf6a4f65b28fc5e, e_id4991c823f6d55b, "")
+Rel_Access_w(e_idb15bf3bc08d15d, e_id4b5ad5a2100656, "proposes & applies deltas to")
+Rel_Realization_Up(e_id774463b70fec5c, e_idb15bf3bc08d15d, "")
 Rel_Access_w(e_id395c9c2923aa56, e_id2532acbff6cc51, "defines")
 Rel_Access_r(e_id3a7a27eefeb751, e_id66f6cfb386e056, "reconciles")
 Rel_Access_w(e_id395c9c2923aa56, e_idb23da624fbab57, "plans")
@@ -325,6 +327,7 @@ Rel_Serving_Up(e_id82f04fecbdd85e, e_id2c72565ddd6c52, "consumes specifications 
 Rel_Serving_Up(e_id178b6a78b39b51, e_id2b5394f913985a, "propose, review & apply model changes")
 Rel_Serving_Up(e_id178b6a78b39b51, e_ide2cb7f3efa6256, "propose, review & apply model changes")
 Rel_Serving_Up(e_id7cc5a30769435c, e_id178b6a78b39b51, "exposed via")
+Rel_Serving_Up(e_id774463b70fec5c, e_id178b6a78b39b51, "exposed via")
 Rel_Specialization_Up(e_id535be3f84f875d, e_id5e264d2f4bb551, "GH #45: Policy conversion admin")
 Rel_Specialization_Up(e_idf70196c3f2435b, e_id5e264d2f4bb551, "GH #45: Policy author")
 Rel_Specialization_Up(e_idf864f54e651356, e_id2b5394f913985a, "GH #45: Patterns admin")
@@ -396,6 +399,9 @@ Rel_Access_r(e_idf6a4f65b28fc5e, e_id45483f0cd05c50, "composes")
 Rel_Access_r(e_idf6a4f65b28fc5e, e_id7a69ab81170653, "composes")
 Rel_Access_w(e_idf6a4f65b28fc5e, e_idf91aecdf564a55, "produces")
 Rel_Access_w(e_idf6a4f65b28fc5e, e_idf90f9775c86754, "derives & emits")
+Rel_Access_r(e_id774463b70fec5c, e_idd52b11acc8ff53, "validates proposed changes against")
+Rel_Access_w(e_id774463b70fec5c, e_idf91aecdf564a55, "proposes & applies deltas to")
+Rel_Serving_Up(e_id774463b70fec5c, e_id3a42c87ebb235a, "renders the Solution Design view live via")
 Rel_Association(e_idf90f9775c86754, e_idf91aecdf564a55, "derived from")
 Rel_Access_r(e_iddc37081ec05957, e_id7a69ab81170653, "assesses")
 Rel_Access_r(e_iddc37081ec05957, e_id45483f0cd05c50, "assesses")
