@@ -754,13 +754,14 @@
     remediation milestones from the OSCAL POA&M as input.
 - type: BusinessProcess
   id: process-conversational-authoring
-  name: Conversational Model Authoring
+  name: Conversational Candidate Architecture Authoring
   desc: >-
-    GH #108 (ADR-0037 R12): the Enterprise/Solution Architect describes a
-    model change in natural language; the agent validates it against the
-    metamodel and Enterprise Convention Rules before applying it, explaining
-    and recording any rejection or override rather than applying or
-    discarding silently.
+    GH #108 (ADR-0037 R12): the Enterprise Architect describes a candidate
+    architecture change in natural language; the agent validates it against
+    the metamodel and Enterprise Convention Rules before applying it,
+    explaining and recording any rejection or override rather than applying
+    or discarding silently. Realized at application layer by
+    fn-conversational-authoring.
 - type: BusinessProcess
   id: process-solution-design
   name: Solution Design Composition
@@ -768,13 +769,28 @@
     The Solution Architect composes implementation blueprints into a
     solution-specific Solution Design. Realized at application layer by
     fn-solution-compose.
-# Modelling note (2026-09-26, open): the bfn-* BusinessFunctions below
-# group processes by lifecycle (GH #7, GH #25). They could — and arguably
-# should — be re-cut to align with the journeys of the section-B roles
-# (Enterprise / Solution / Security Architect, Developer, Compliance
-# Officer, Platform Ops): value streams are organised by who *receives*
-# value (one per outcome), so the role-by-role view of who *does* the work
-# belongs here, in the business layer, not in extra value streams.
+- type: BusinessProcess
+  id: process-conversational-solution-modelling
+  name: Conversational Solution Modelling
+  desc: >-
+    GH #138/#68: the Solution Architect describes a change to a Solution
+    Design in natural language; the agent validates it against the
+    metamodel and produces/updates SolutionComponents under the
+    SolutionDesign -- the conversational counterpart to
+    process-solution-design's structured blueprint composition, over the
+    same artefact (do-solution-design). Realized at application layer by
+    fn-solution-modelling.
+# Modelling note (2026-09-26, mostly resolved): the bfn-* BusinessFunctions
+# below group processes by lifecycle (GH #7, GH #25). The GH #69 follow-on
+# above (bfn-security-assurance, bfn-implementation) already gave role-sec
+# and role-dev a minimal business-layer presence by wrapping each role's one
+# already-modelled touchpoint, rather than renaming any existing id --
+# deliberately minimal churn, not the "wholesale" re-cut this note
+# originally flagged. GH #138 completes the remaining item, the
+# conversational-modelling function above, and closes this note: no further
+# bfn-* rename is needed. Value streams stay organised by who *receives*
+# value (one per outcome); the role-by-role view of who *does* the work
+# lives here, in the business layer.
 - type: BusinessFunction
   id: bfn-agentic-delivery
   name: Agentic Delivery Execution
@@ -820,14 +836,14 @@
     target state architecture the estate is reconciled against.
 - type: BusinessFunction
   id: bfn-conversational-authoring
-  name: Conversational Model Authoring
+  name: Conversational Candidate Architecture Authoring
   desc: >-
-    GH #108: the stable business capability of maintaining the architecture
-    knowledge graph through natural-language conversation rather than a
-    manual YAML edit -- jointly performed by the Enterprise and Solution
-    Architect roles, each drawing on it at a different point in the
-    lifecycle (target-state maintenance vs. solution-specific design),
-    not owned by either alone.
+    GH #108: the Enterprise Architect's stable capability of maintaining the
+    architecture knowledge graph's candidate options (do-candidate-arch)
+    through natural-language conversation rather than a manual YAML edit --
+    distinct from process-conversational-solution-modelling (GH #138), the
+    Solution Architect's equivalent capability over a Solution Design
+    (do-solution-design) instead.
 - type: BusinessFunction
   id: bfn-solution-design
   name: Solution Design
@@ -1555,14 +1571,26 @@
   desc: Render ArchiMate / C4 / UML models against the bundled metamodels.
 - type: ApplicationFunction
   id: fn-conversational-authoring
-  name: Conversational Model Authoring
+  name: Conversational Candidate Architecture Authoring
   desc: >-
-    GH #108: natural-language authoring of model changes — validated against
+    GH #108: the Enterprise Architect's natural-language authoring of
+    candidate architecture changes (do-candidate-arch) — validated against
     the bundled metamodel and configurable enterprise/domain conventions
     before being proposed, with candidate duplicates surfaced for an explicit
     human decision rather than silently merged or created. Renders the
     element(s)/view under discussion live via fn-notation-engine as the
     conversation proceeds.
+- type: ApplicationFunction
+  id: fn-solution-modelling
+  context: reusable-architecture-library
+  name: Conversational Solution Modelling
+  desc: >-
+    GH #138/#68: natural-language authoring of Solution Design changes,
+    scoped to one Solution Design (do-solution-design in store-patterns) --
+    distinct from fn-conversational-authoring (ADR-0037), which edits
+    Candidate Architecture Options in the enterprise knowledge graph
+    (do-candidate-arch in store-akg) instead. Renders the Solution Design
+    view under discussion live via fn-notation-engine.
 - type: ApplicationFunction
   id: fn-spec-generator
   context: modelling-specification
