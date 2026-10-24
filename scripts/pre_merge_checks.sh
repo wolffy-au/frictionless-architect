@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 echo "💡 Running pre-merge checks (includes pre-commit and heavier suites)..."
-scripts/pre_commit_checks.sh
+SKIP_PLATFORM_CHECKS=1 scripts/pre_commit_checks.sh
 
 echo "Checking the generated GitHub roadmap layer is current..."
 # Fails (exit 1) if GitHub has moved on; fix with scripts/refresh_gh_roadmap.sh, review and commit.
@@ -39,11 +39,43 @@ if [ -z "${SNYK_TOKEN:-}" ] && [ -f .env ]; then
   export SNYK_TOKEN
 fi
 poetry run snyk auth "${SNYK_TOKEN:?SNYK_TOKEN must be set to run the pre-merge Snyk scan}"
-poetry run snyk test --package-manager=poetry --org=wolffy-au
-poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ignores
+
+# The three scans below are independent of each other — fan them out instead
+# of running them serially (same pattern as platform_checks.sh's package
+# fan-out). snyk code test is the long pole (~3x the others), so this turns
+# ~70-90s of serial scanning into roughly the time of that one scan.
+mkdir -p build
+pids=()
+logs=()
+labels=()
+
+poetry run snyk test --package-manager=poetry --org=wolffy-au > build/snyk-test-root.log 2>&1 &
+pids+=("$!"); logs+=("build/snyk-test-root.log"); labels+=("open-source scan (root)")
+
+poetry run snyk code test --package-manager=poetry --org=wolffy-au --include-ignores > build/snyk-code-test.log 2>&1 &
+pids+=("$!"); logs+=("build/snyk-code-test.log"); labels+=("static code analysis")
+
 # platform/ has its own lock; `snyk test` scans one project per directory.
 # (Snyk Code above already walks platform/ source.)
-(cd platform && snyk test --package-manager=poetry --file=poetry.lock --org=wolffy-au)
+(cd platform && snyk test --package-manager=poetry --file=poetry.lock --org=wolffy-au) > build/snyk-test-platform.log 2>&1 &
+pids+=("$!"); logs+=("build/snyk-test-platform.log"); labels+=("open-source scan (platform/)")
+
+snyk_status=0
+for i in "${!pids[@]}"; do
+  label="${labels[$i]}"
+  if wait "${pids[$i]}"; then
+    echo "── $label: passed"
+  else
+    echo "── $label: FAILED"
+    snyk_status=1
+  fi
+  echo "---- $label output ----"
+  cat "${logs[$i]}"
+done
+
+if [[ $snyk_status -ne 0 ]]; then
+  exit 1
+fi
 
 echo "Running behave acceptance scenarios..."
 poetry run behave tests/features/
