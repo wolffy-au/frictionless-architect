@@ -71,7 +71,8 @@ end
 
 ## Consumer compatibility note
 
-Today's only real consumer (flat-`src/`'s `visualizer/api.py`) does not import this package in
-this increment (plan.md Summary) — this contract documents the shape a future consumer
-(`schema-visualizer-api`, or an earlier opt-in from the flat app) will call, built and tested
-now against that exact shape.
+Flat-`src/`'s `visualizer/api.py` does not import this package in this increment (plan.md
+Summary). `modelling-specification` is this package's first real, permanent consumer (T021),
+calling `KnowledgeGraphReadPath(GraphSettings()).collect()` as an ordinary function call —
+this contract documents that exact shape, not a hypothetical future one. A later
+`schema-visualizer-api` extraction, or an opt-in from the flat app, will call the same shape.
