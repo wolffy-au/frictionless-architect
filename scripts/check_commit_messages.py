@@ -4,8 +4,8 @@
 The scope list is read from ``.claude/skills/commit-message/references/standard.md`` (area
 scopes) and ``platform/packages/`` (package scopes), so the standard stays the single source.
 Commitizen only checks the type and subject shape; this adds scope, length, case, trailing
-period, breaking-change and body-wrap rules. Imperative mood and body quality stay with
-`commit-auditor`. Body lines over 72 columns fail at commit time (``--message-file``) but are
+period, breaking-change, body-wrap and a heuristic imperative-mood rule. Body quality and
+borderline mood calls stay with `commit-auditor`. Body lines over 72 columns fail at commit time (``--message-file``) but are
 only warned about in ``--range`` mode, since reworded history means a rebase and force-push.
 
 Usage:
@@ -33,6 +33,15 @@ TRAILER = re.compile(r"^(BREAKING CHANGE|[A-Za-z][A-Za-z-]*): ")
 SUBJECT = re.compile(r"^(?P<type>[a-z]+)(?:\((?P<scope>[^)]*)\))?(?P<bang>!)?: (?P<desc>.+)$")
 AUTO_PREFIXES = ("Merge ", 'Revert "', "fixup! ", "squash! ", "bump: version ")
 
+# Imperative-mood heuristic: the first word of the description should be a base-form verb.
+# It flags -ed / -ing / -s endings (added, adding, adds, updates) and a few known nouns that
+# are easy to mistake for verbs. It cannot parse English, so both lists are escape hatches.
+NOT_IMPERATIVE_NOUNS = {"fixture", "fixtures", "update", "updates", "change", "changes", "tweak", "tweaks"}
+IMPERATIVE_ALLOW = {
+    "embed", "seed", "need", "feed", "speed", "proceed", "succeed", "exceed", "bleed", "shred",
+    "bring", "bypass", "access", "process", "address", "focus", "canvas", "alias",
+}  # fmt: skip
+
 
 def area_scopes(standard: Path = STANDARD) -> set[str]:
     """Return the area scopes listed in the standard's "Area scopes" bullets."""
@@ -46,14 +55,22 @@ def package_scopes(packages: Path = PACKAGES) -> set[str]:
     return {p.name for p in packages.iterdir() if p.is_dir()} if packages.is_dir() else set()
 
 
-def check_message(message: str, scopes: set[str]) -> list[str]:
-    """Return the rules a commit message breaks (empty when it conforms)."""
-    subject, _, rest = message.partition("\n")
-    if subject.startswith(AUTO_PREFIXES):
-        return []
-    match = SUBJECT.match(subject)
-    if not match:
-        return [f"subject is not '<type>(<scope>)?!?: <description>': {subject!r}"]
+def imperative_mood_problem(desc: str) -> str | None:
+    """Return a problem string if ``desc`` does not look like it opens with a base-form verb."""
+    first = desc.split()[0].lower().rstrip(",:")
+    if first in IMPERATIVE_ALLOW:
+        return None
+    if (
+        first in NOT_IMPERATIVE_NOUNS
+        or first.endswith(("ed", "ing"))
+        or (first.endswith("s") and not first.endswith(("ss", "us", "is")))
+    ):
+        return f"description should start with an imperative verb, not {first!r}"
+    return None
+
+
+def subject_shape_problems(match: re.Match[str], subject: str, scopes: set[str]) -> list[str]:
+    """Return the type/scope/length/case/mood/period rules a matched subject breaks."""
     problems: list[str] = []
     if match["type"] not in TYPES:
         problems.append(f"unknown type {match['type']!r}")
@@ -63,8 +80,23 @@ def check_message(message: str, scopes: set[str]) -> list[str]:
         problems.append(f"subject is {len(subject)} characters (max {MAX_SUBJECT})")
     if not match["desc"][0].islower() and not match["desc"][0].isdigit():
         problems.append("description must start lower-case")
+    mood_problem = imperative_mood_problem(match["desc"])
+    if mood_problem:
+        problems.append(mood_problem)
     if subject.endswith("."):
         problems.append("subject must not end with a period")
+    return problems
+
+
+def check_message(message: str, scopes: set[str]) -> list[str]:
+    """Return the rules a commit message breaks (empty when it conforms)."""
+    subject, _, rest = message.partition("\n")
+    if subject.startswith(AUTO_PREFIXES):
+        return []
+    match = SUBJECT.match(subject)
+    if not match:
+        return [f"subject is not '<type>(<scope>)?!?: <description>': {subject!r}"]
+    problems = subject_shape_problems(match, subject, scopes)
     if match["bang"] and "BREAKING CHANGE:" not in rest:
         problems.append("'!' needs a 'BREAKING CHANGE:' footer")
     if match["type"] == "revert" and not re.search(r"^(Refs|Revert): ", rest, re.M):
