@@ -377,9 +377,22 @@
 # do-blueprint), and the solution design is what the spec generator reads
 # (fn-spec-generator reads do-solution-design) — the hand-off from the
 # control-content chain into the delivery chain.
-- {type: Triggering, source: process-blueprint-traceability, target: process-conversational-authoring, label: blueprints proposed as model changes}
-- {type: Triggering, source: process-conversational-authoring, target: process-solution-design, label: validated changes composed into}
+#
+# process-conversational-authoring is a freestanding entry point, not
+# solution-delivery's subordinate: do-candidate-arch is explicitly a
+# proposed option "under evaluation", prior to do-target-architecture's
+# "adopted" state, and vs-intent-to-model (which this process realizes) is
+# modelled as a freestanding root stream with no incoming trigger of its
+# own — so this process has none either. Its only outgoing edge is the
+# candidate-evaluation hand-off: an evaluated, validated candidate option is
+# what process-target-state-definition (bfn-architecture-strategy) then
+# adopts into the Target State Architecture / Roadmap.
+- {type: Triggering, source: process-blueprint-traceability, target: process-security-assessment, label: "blueprint authored, assessed for risk before reuse"}
+- {type: Triggering, source: process-blueprint-traceability, target: process-solution-design, label: blueprint available for composition}
+- {type: Triggering, source: process-blueprint-traceability, target: process-conversational-solution-modelling, label: blueprint available for composition}
+- {type: Triggering, source: process-conversational-authoring, target: process-target-state-definition, label: evaluated candidate options feed target-state decisions}
 - {type: Triggering, source: process-solution-design, target: process-spec-generation, label: solution design specified}
+- {type: Triggering, source: process-conversational-solution-modelling, target: process-spec-generation, label: solution design specified}
 - {type: Realization, source: fn-blueprint-authoring, target: process-blueprint-traceability}
 - {type: Realization, source: do-blueprint, target: bo-implementation-blueprint}
 - {type: Realization, source: do-oscal-component, target: bo-oscal-component}
@@ -448,6 +461,7 @@
 - {type: Composition, source: bfn-implementation, target: process-implementation, label: comprises}
 - {type: Assignment, source: role-dev, target: bfn-implementation}
 - {type: Triggering, source: process-spec-generation, target: process-implementation, label: specification generated}
+- {type: Triggering, source: process-implementation, target: process-cicd-pipeline, label: "reviewed change submitted to"}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-ssp, label: checks against, props: {access_type: Read}}
 - {type: Access, source: process-cicd-pipeline, target: bo-oscal-assessment-plan, label: generates, props: {access_type: Write}}
 - {type: Access, source: process-cicd-pipeline, target: bo-release-gate-decision, label: issues, props: {access_type: Write}}
