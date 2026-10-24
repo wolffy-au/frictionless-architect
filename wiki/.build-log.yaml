@@ -1082,8 +1082,8 @@ topics:
           sha256: 5191cb95109464d3ea531677f35ea4b259a56209f9c88cb3669e4f73721efbec
           lines: 35
         specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md:
-          sha256: b94347acc001e71b891407d76e785f72c0d607052d66a241e9e5d290abfc1b68
-          lines: 121
+          sha256: f5cda7b9dbbb8c39bf4817f145b4b1730fe809706224bdaa038f0abaf53d00e7
+          lines: 122
         specs/EPIC-003-conversational-model-authoring/checklists/requirements.md:
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
           lines: 77
