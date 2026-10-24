@@ -51,9 +51,13 @@ class DummySession:
 class DummyDriver:
     def __init__(self, session: DummySession) -> None:
         self._session = session
+        self.closed = False
 
     def session(self) -> DummySession:
         return self._session
+
+    def close(self) -> None:
+        self.closed = True
 
 
 @pytest.fixture
@@ -68,6 +72,14 @@ def manager() -> SchemaManager:
 def test_sanitize_label_handles_edges() -> None:
     assert sanitize_label("1 Foo-Bar") == "T_1_Foo_Bar"
     assert sanitize_label(None) == ""
+    assert sanitize_label("   ") == ""
+
+
+def test_close_closes_driver() -> None:
+    mgr = SchemaManager("bolt://example", "neo4j", "secret")
+    mgr.driver = cast(Driver, DummyDriver(DummySession(DummyTransaction())))
+    mgr.close()
+    assert cast(DummyDriver, mgr.driver).closed is True
 
 
 def test_apply_constraints_records_all_queries(manager: SchemaManager) -> None:
@@ -156,6 +168,45 @@ def test_relationship_missing_nodes_raises() -> None:
                 "diagrams": [],
             }
         )
+
+
+def test_relationship_missing_target_raises(manager: SchemaManager) -> None:
+    class MissingTargetTransaction(DummyTransaction):
+        def run(self, query: object, **kwargs: Any) -> SimpleNamespace:
+            if "OPTIONAL MATCH" in str(query):
+                return SimpleNamespace(single=lambda: {"sourceExists": True, "targetExists": False}, data=lambda: [])
+            return super().run(query, **kwargs)
+
+    manager.driver = cast(Driver, DummyDriver(DummySession(MissingTargetTransaction())))
+    with pytest.raises(ValueError, match="target"):
+        manager.ingest(
+            {
+                "elements": [{"identifier": "E1"}],
+                "relationships": [{"identifier": "R1", "source": "E1", "target": "missing"}],
+            }
+        )
+
+
+def test_ingest_each_payload_section_alone(manager: SchemaManager) -> None:
+    tx = cast(DummyDriver, manager.driver)._session.tx
+    manager.ingest({})
+    assert tx.queries == []
+
+    manager.ingest({"relationships": [{"identifier": "R1", "source": "E1", "target": "E1"}]})
+    manager.ingest({"views": [{"identifier": "V1"}]})
+    manager.ingest({"diagrams": [{"identifier": "D1"}]})
+    queries = [str(q[0]) for q in tx.queries]
+    assert any("ARCHIMATE_RELATIONSHIP" in q for q in queries)
+    assert any("MERGE (v:View" in q for q in queries)
+    assert any("MERGE (d:Diagram" in q for q in queries)
+
+
+def test_ingest_diagram_without_view_ref_skips_link(manager: SchemaManager) -> None:
+    manager.ingest({"diagrams": [{"identifier": "D1", "nodes": ["E1"]}]})
+    tx = cast(DummyDriver, manager.driver)._session.tx
+    queries = [str(q[0]) for q in tx.queries]
+    assert not any("REPRESENTS_VIEW" in q for q in queries)
+    assert any("HAS_NODE" in q for q in queries)
 
 
 def test_static_find_helpers() -> None:
