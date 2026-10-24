@@ -1,63 +1,67 @@
 ---
-title: "Architecture Views & Diagrams: Platform, Migration & Rendering"
-generated: 2026-10-18
+title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
+generated: '2026-10-24'
 generator: claude-sonnet-5
 sources:
-  - architecture/model/README.md
-  - architecture/model/diagrams/implementation/deployment.puml
-  - architecture/model/diagrams/implementation/deployment.svg
-  - architecture/model/diagrams/implementation/packaging.puml
-  - architecture/model/diagrams/implementation/packaging.svg
-  - architecture/model/diagrams/migration/overview.puml
-  - architecture/model/diagrams/migration/overview.svg
-  - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.puml
-  - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.svg
-  - architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml
-  - architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.svg
-  - architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml
-  - architecture/model/diagrams/migration/plat-drift-management-mvp-5.svg
-  - architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.puml
-  - architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.svg
-  - architecture/model/diagrams/migration/plat-general-tasks-12.puml
-  - architecture/model/diagrams/migration/plat-general-tasks-12.svg
-  - architecture/model/diagrams/migration/plat-github-importer-11.puml
-  - architecture/model/diagrams/migration/plat-github-importer-11.svg
-  - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.puml
-  - architecture/model/diagrams/migration/plat-multi-user-collaboration-2.svg
-  - architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.puml
-  - architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.svg
-  - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml
-  - architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg
-  - architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.puml
-  - architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.svg
-  - architecture/model/diagrams/migration/plat-release-management-mvp-4.puml
-  - architecture/model/diagrams/migration/plat-release-management-mvp-4.svg
-  - architecture/model/diagrams/migration/plat-solution-design-mvp-8.puml
-  - architecture/model/diagrams/migration/plat-solution-design-mvp-8.svg
-  - architecture/model/diagrams/migration/runtime.puml
-  - architecture/model/diagrams/migration/runtime.svg
-  - architecture/model/diagrams/migration/sequence.puml
-  - architecture/model/diagrams/migration/sequence.svg
-  - architecture/model/diagrams/migration/work-package-dependencies.puml
-  - architecture/model/diagrams/migration/work-package-dependencies.svg
-  - architecture/model/diagrams/technology/landscape.puml
-  - architecture/model/diagrams/technology/landscape.svg
-  - architecture/model/diagrams/technology/oscal-golden-check.puml
-  - architecture/model/diagrams/technology/oscal-golden-check.svg
-  - architecture/model/diagrams/technology/overview.puml
-  - architecture/model/diagrams/technology/overview.svg
-  - architecture/model/diagrams/technology/persistence-boundary.puml
-  - architecture/model/diagrams/technology/persistence-boundary.svg
-  - architecture/model/diagrams/technology/physical.puml
-  - architecture/model/diagrams/technology/physical.svg
-  - architecture/model/diagrams/technology/usage-catalog.puml
-  - architecture/model/diagrams/technology/usage-catalog.svg
-  - architecture/model/diagrams/technology/usage.puml
-  - architecture/model/diagrams/technology/usage.svg
-  - architecture/model/render_diagrams.py
-  - architecture/model/views-viewpoints.yaml
-  - architecture/model/views.yaml
-  - third_party/it4it/views.yaml
+- architecture/model/README.md
+- architecture/model/diagrams/implementation/deployment.puml
+- architecture/model/diagrams/implementation/deployment.svg
+- architecture/model/diagrams/implementation/packaging.puml
+- architecture/model/diagrams/implementation/packaging.svg
+- architecture/model/diagrams/migration/architecture-strategy-transition.puml
+- architecture/model/diagrams/migration/architecture-strategy-transition.svg
+- architecture/model/diagrams/migration/overview.puml
+- architecture/model/diagrams/migration/overview.svg
+- architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.puml
+- architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.svg
+- architecture/model/diagrams/migration/plat-architecture-strategy-future-13.puml
+- architecture/model/diagrams/migration/plat-architecture-strategy-future-13.svg
+- architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml
+- architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.svg
+- architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml
+- architecture/model/diagrams/migration/plat-drift-management-mvp-5.svg
+- architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.puml
+- architecture/model/diagrams/migration/plat-effectiveness-assurance-mvp-10.svg
+- architecture/model/diagrams/migration/plat-general-tasks-12.puml
+- architecture/model/diagrams/migration/plat-general-tasks-12.svg
+- architecture/model/diagrams/migration/plat-github-importer-11.puml
+- architecture/model/diagrams/migration/plat-github-importer-11.svg
+- architecture/model/diagrams/migration/plat-multi-user-collaboration-2.puml
+- architecture/model/diagrams/migration/plat-multi-user-collaboration-2.svg
+- architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.puml
+- architecture/model/diagrams/migration/plat-pattern-blueprint-traceability-mvp-6.svg
+- architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml
+- architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg
+- architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.puml
+- architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.svg
+- architecture/model/diagrams/migration/plat-release-management-mvp-4.puml
+- architecture/model/diagrams/migration/plat-release-management-mvp-4.svg
+- architecture/model/diagrams/migration/plat-solution-design-mvp-8.puml
+- architecture/model/diagrams/migration/plat-solution-design-mvp-8.svg
+- architecture/model/diagrams/migration/runtime.puml
+- architecture/model/diagrams/migration/runtime.svg
+- architecture/model/diagrams/migration/sequence.puml
+- architecture/model/diagrams/migration/sequence.svg
+- architecture/model/diagrams/migration/work-package-dependencies.puml
+- architecture/model/diagrams/migration/work-package-dependencies.svg
+- architecture/model/diagrams/technology/landscape.puml
+- architecture/model/diagrams/technology/landscape.svg
+- architecture/model/diagrams/technology/oscal-golden-check.puml
+- architecture/model/diagrams/technology/oscal-golden-check.svg
+- architecture/model/diagrams/technology/overview.puml
+- architecture/model/diagrams/technology/overview.svg
+- architecture/model/diagrams/technology/persistence-boundary.puml
+- architecture/model/diagrams/technology/persistence-boundary.svg
+- architecture/model/diagrams/technology/physical.puml
+- architecture/model/diagrams/technology/physical.svg
+- architecture/model/diagrams/technology/usage-catalog.puml
+- architecture/model/diagrams/technology/usage-catalog.svg
+- architecture/model/diagrams/technology/usage.puml
+- architecture/model/diagrams/technology/usage.svg
+- architecture/model/render_diagrams.py
+- architecture/model/views-viewpoints.yaml
+- architecture/model/views.yaml
+- third_party/it4it/views.yaml
 ---
 
 > Generated by `wiki-librarian` from the sources above. Edit `wiki/sources.yaml`
@@ -103,7 +107,8 @@ under `migration/`:
 | Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `views.yaml` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
 | Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview` | `implementation_migration` | `views-viewpoints.yaml` (moved here 2026-10-08, GH #105) | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
 | Work Package Dependencies (new, GH #105) | `migration/work-package-dependencies` | `implementation_migration` | `views.yaml`, `context: [platform, gh-roadmap]` | Only the `WorkPackage`s and the `Triggering` edges between them — the dependency order on its own, not buried among Plateaus/Gaps/Deliverables the way the overview has it; `include_types: [WorkPackage]` so a new (including GH-roadmap-imported) Work Package appears automatically |
-| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now twelve, including `plat-github-importer-11` and `plat-general-tasks-12` alongside the original business-function MVPs (`plat-policy-to-oscal-mvp-1` through `plat-effectiveness-assurance-mvp-10`). A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s); an open milestone still shows all of its Work Packages (`specs/003-gh-roadmap-archimate/spec.md`; see [GitHub Roadmap Layer](gh-roadmap-layer.md)) |
+| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now thirteen, including the new `plat-architecture-strategy-future-13` (GH #59's deferred scope: the drag-and-drop ArchiMate IDE, #68's live-view epic, #73's multi-specification modelling) alongside `plat-github-importer-11`/`plat-general-tasks-12` and the original business-function MVPs. A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s); an open milestone still shows all of its Work Packages (`specs/EPIC-002-gh-roadmap-archimate/spec.md`; see [GitHub Roadmap Layer](gh-roadmap-layer.md)) |
+| Architecture Strategy: Baseline to MVP to Future (new, hand-authored 2026-10-18) | `migration/architecture-strategy-transition` | `implementation_migration` | `views.yaml` | `plat-baseline` → `plat-architecture-strategy-mvp-7` → `plat-architecture-strategy-future-13`, their Gaps (`gap-neo4j-schema-ui`, `gap-architecture-strategy-mvp-to-future`) and the MVP's unreleased Deliverable — hand-authored because the generated per-milestone views never carry Gaps; Work Packages are deliberately left out to keep the transition readable |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
 mesh (`{source_type: ApplicationComponent, target_type: ApplicationComponent}`,

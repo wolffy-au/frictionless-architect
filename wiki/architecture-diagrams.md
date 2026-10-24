@@ -1,85 +1,93 @@
 ---
-title: "Architecture Views & Diagrams: Vision, Business & Viewpoints"
-generated: 2026-10-18
+title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
+generated: '2026-10-24'
 generator: claude-sonnet-5
 sources:
-  - architecture/model/README.md
-  - architecture/model/diagrams/application/catalog-structure.puml
-  - architecture/model/diagrams/application/catalog-structure.svg
-  - architecture/model/diagrams/application/cooperation.puml
-  - architecture/model/diagrams/application/cooperation.svg
-  - architecture/model/diagrams/application/dataflow-assurance-spec.puml
-  - architecture/model/diagrams/application/dataflow-assurance-spec.svg
-  - architecture/model/diagrams/application/dataflow-library.puml
-  - architecture/model/diagrams/application/dataflow-library.svg
-  - architecture/model/diagrams/application/dataflow-oscal-resolve.puml
-  - architecture/model/diagrams/application/dataflow-oscal-resolve.svg
-  - architecture/model/diagrams/application/dataflow-oscal.puml
-  - architecture/model/diagrams/application/dataflow-oscal.svg
-  - architecture/model/diagrams/application/dataflow-twin-governance.puml
-  - architecture/model/diagrams/application/dataflow-twin-governance.svg
-  - architecture/model/diagrams/application/structure.puml
-  - architecture/model/diagrams/application/structure.svg
-  - architecture/model/diagrams/application/usage.puml
-  - architecture/model/diagrams/application/usage.svg
-  - architecture/model/diagrams/business/1-policy-conversion.puml
-  - architecture/model/diagrams/business/1-policy-conversion.svg
-  - architecture/model/diagrams/business/2-pattern-solution-design.puml
-  - architecture/model/diagrams/business/2-pattern-solution-design.svg
-  - architecture/model/diagrams/business/3-control-assurance.puml
-  - architecture/model/diagrams/business/3-control-assurance.svg
-  - architecture/model/diagrams/business/controls-catalog.puml
-  - architecture/model/diagrams/business/controls-catalog.svg
-  - architecture/model/diagrams/business/delivery.puml
-  - architecture/model/diagrams/business/delivery.svg
-  - architecture/model/diagrams/business/information-structure.puml
-  - architecture/model/diagrams/business/information-structure.svg
-  - architecture/model/diagrams/business/organization.puml
-  - architecture/model/diagrams/business/organization.svg
-  - architecture/model/diagrams/business/process-cooperation.puml
-  - architecture/model/diagrams/business/process-cooperation.svg
-  - architecture/model/diagrams/business/product.puml
-  - architecture/model/diagrams/business/product.svg
-  - architecture/model/diagrams/business/service-realization.puml
-  - architecture/model/diagrams/business/service-realization.svg
-  - architecture/model/diagrams/business/strategy-drift.puml
-  - architecture/model/diagrams/business/strategy-drift.svg
-  - architecture/model/diagrams/c4/container.puml
-  - architecture/model/diagrams/c4/container.svg
-  - architecture/model/diagrams/c4/context.puml
-  - architecture/model/diagrams/c4/context.svg
-  - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
-  - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
-  - architecture/model/diagrams/layered/fn-conversational-authoring.puml
-  - architecture/model/diagrams/layered/fn-conversational-authoring.svg
-  - architecture/model/diagrams/layered/subsystem-capabilities.puml
-  - architecture/model/diagrams/layered/subsystem-capabilities.svg
-  - architecture/model/diagrams/vision/1-stakeholder.puml
-  - architecture/model/diagrams/vision/1-stakeholder.svg
-  - architecture/model/diagrams/vision/2-motivation.puml
-  - architecture/model/diagrams/vision/2-motivation.svg
-  - architecture/model/diagrams/vision/3-goal-realization.puml
-  - architecture/model/diagrams/vision/3-goal-realization.svg
-  - architecture/model/diagrams/vision/4-strategy.puml
-  - architecture/model/diagrams/vision/4-strategy.svg
-  - architecture/model/diagrams/vision/5-capability-map.puml
-  - architecture/model/diagrams/vision/5-capability-map.svg
-  - architecture/model/diagrams/vision/6-value-stream.puml
-  - architecture/model/diagrams/vision/6-value-stream.svg
-  - architecture/model/diagrams/vision/6a-governed-delivery.puml
-  - architecture/model/diagrams/vision/6a-governed-delivery.svg
-  - architecture/model/diagrams/vision/6b-obligation-to-evidence.puml
-  - architecture/model/diagrams/vision/6b-obligation-to-evidence.svg
-  - architecture/model/diagrams/vision/6c-exception-to-decision.puml
-  - architecture/model/diagrams/vision/6c-exception-to-decision.svg
-  - architecture/model/diagrams/vision/6d-drift-to-remediation.puml
-  - architecture/model/diagrams/vision/6d-drift-to-remediation.svg
-  - architecture/model/diagrams/vision/7-outcome-realization.puml
-  - architecture/model/diagrams/vision/7-outcome-realization.svg
-  - architecture/model/diagrams/vision/8-requirements-realization.puml
-  - architecture/model/diagrams/vision/8-requirements-realization.svg
-  - architecture/model/views-viewpoints.yaml
-  - architecture/model/views.yaml
+- architecture/model/README.md
+- architecture/model/diagrams/application/1-policy-conversion.puml
+- architecture/model/diagrams/application/1-policy-conversion.svg
+- architecture/model/diagrams/application/2-pattern-solution-design.puml
+- architecture/model/diagrams/application/2-pattern-solution-design.svg
+- architecture/model/diagrams/application/3-control-assurance.puml
+- architecture/model/diagrams/application/3-control-assurance.svg
+- architecture/model/diagrams/application/catalog-structure.puml
+- architecture/model/diagrams/application/catalog-structure.svg
+- architecture/model/diagrams/application/cooperation.puml
+- architecture/model/diagrams/application/cooperation.svg
+- architecture/model/diagrams/application/dataflow-assurance-spec.puml
+- architecture/model/diagrams/application/dataflow-assurance-spec.svg
+- architecture/model/diagrams/application/dataflow-library.puml
+- architecture/model/diagrams/application/dataflow-library.svg
+- architecture/model/diagrams/application/dataflow-oscal-resolve.puml
+- architecture/model/diagrams/application/dataflow-oscal-resolve.svg
+- architecture/model/diagrams/application/dataflow-oscal.puml
+- architecture/model/diagrams/application/dataflow-oscal.svg
+- architecture/model/diagrams/application/dataflow-twin-governance.puml
+- architecture/model/diagrams/application/dataflow-twin-governance.svg
+- architecture/model/diagrams/application/strategy-drift.puml
+- architecture/model/diagrams/application/strategy-drift.svg
+- architecture/model/diagrams/application/structure.puml
+- architecture/model/diagrams/application/structure.svg
+- architecture/model/diagrams/application/usage.puml
+- architecture/model/diagrams/application/usage.svg
+- architecture/model/diagrams/business/1-policy-conversion.puml
+- architecture/model/diagrams/business/1-policy-conversion.svg
+- architecture/model/diagrams/business/2-pattern-solution-design.puml
+- architecture/model/diagrams/business/2-pattern-solution-design.svg
+- architecture/model/diagrams/business/3-control-assurance.puml
+- architecture/model/diagrams/business/3-control-assurance.svg
+- architecture/model/diagrams/business/controls-catalog.puml
+- architecture/model/diagrams/business/controls-catalog.svg
+- architecture/model/diagrams/business/delivery.puml
+- architecture/model/diagrams/business/delivery.svg
+- architecture/model/diagrams/business/information-structure.puml
+- architecture/model/diagrams/business/information-structure.svg
+- architecture/model/diagrams/business/organization.puml
+- architecture/model/diagrams/business/organization.svg
+- architecture/model/diagrams/business/process-cooperation.puml
+- architecture/model/diagrams/business/process-cooperation.svg
+- architecture/model/diagrams/business/product.puml
+- architecture/model/diagrams/business/product.svg
+- architecture/model/diagrams/business/service-realization.puml
+- architecture/model/diagrams/business/service-realization.svg
+- architecture/model/diagrams/business/strategy-drift.puml
+- architecture/model/diagrams/business/strategy-drift.svg
+- architecture/model/diagrams/c4/container.puml
+- architecture/model/diagrams/c4/container.svg
+- architecture/model/diagrams/c4/context.puml
+- architecture/model/diagrams/c4/context.svg
+- architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
+- architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+- architecture/model/diagrams/layered/fn-conversational-authoring.puml
+- architecture/model/diagrams/layered/fn-conversational-authoring.svg
+- architecture/model/diagrams/layered/subsystem-capabilities.puml
+- architecture/model/diagrams/layered/subsystem-capabilities.svg
+- architecture/model/diagrams/vision/1-stakeholder.puml
+- architecture/model/diagrams/vision/1-stakeholder.svg
+- architecture/model/diagrams/vision/2-motivation.puml
+- architecture/model/diagrams/vision/2-motivation.svg
+- architecture/model/diagrams/vision/3-goal-realization.puml
+- architecture/model/diagrams/vision/3-goal-realization.svg
+- architecture/model/diagrams/vision/4-strategy.puml
+- architecture/model/diagrams/vision/4-strategy.svg
+- architecture/model/diagrams/vision/5-capability-map.puml
+- architecture/model/diagrams/vision/5-capability-map.svg
+- architecture/model/diagrams/vision/6-value-stream.puml
+- architecture/model/diagrams/vision/6-value-stream.svg
+- architecture/model/diagrams/vision/6a-governed-delivery.puml
+- architecture/model/diagrams/vision/6a-governed-delivery.svg
+- architecture/model/diagrams/vision/6b-obligation-to-evidence.puml
+- architecture/model/diagrams/vision/6b-obligation-to-evidence.svg
+- architecture/model/diagrams/vision/6c-exception-to-decision.puml
+- architecture/model/diagrams/vision/6c-exception-to-decision.svg
+- architecture/model/diagrams/vision/6d-drift-to-remediation.puml
+- architecture/model/diagrams/vision/6d-drift-to-remediation.svg
+- architecture/model/diagrams/vision/7-outcome-realization.puml
+- architecture/model/diagrams/vision/7-outcome-realization.svg
+- architecture/model/diagrams/vision/8-requirements-realization.puml
+- architecture/model/diagrams/vision/8-requirements-realization.svg
+- architecture/model/views-viewpoints.yaml
+- architecture/model/views.yaml
 ---
 
 > Generated by `wiki-librarian` from the sources above. Edit `wiki/sources.yaml`
@@ -275,6 +283,34 @@ because all of them are projections of the same model
 > contain the OSCAL Profile. What it shares with slice 1 is the **Resolved
 > OSCAL Profile Catalog**, which patterns and blueprints now read
 > (`architecture/model/diagrams/business/2-pattern-solution-design.puml`).
+
+### Application-usage slices (GH #105 follow-up, 2026-10-18)
+
+Four more capability-scoped diagrams render under `diagrams/application/`,
+mirroring the business-layer numbered-slice pattern above but cut from the
+`application_usage` viewpoint instead:
+
+| View | Diagram | Covers |
+|---|---|---|
+| Application — 1. Policy-to-OSCAL Conversion | `application/1-policy-conversion` | Application-layer slice 1 |
+| Application — 2. Pattern, Blueprint & Solution Design | `application/2-pattern-solution-design` | Application-layer slice 2 |
+| Application — 3. Control Assurance | `application/3-control-assurance` | Application-layer slice 3 |
+| Application — Strategy & Drift | `application/strategy-drift` | Application-layer strategy/drift slice |
+
+They were first generated as three identical variants each (also under
+`diagrams/product/` and `diagrams/service-realization/`), but the Product and
+Service Realization copies were byte-for-byte identical to the
+`application_usage` ones — only the title differed — because the model has
+no `Product`/`Contract`/`Value`/`Service` elements yet to make those
+viewpoints actually render differently. The duplicate copies were dropped,
+keeping only the `application/` slices
+(`architecture/model/diagrams/application/`; git history: "decompose usage/
+product/service-realization views" followed by "drop duplicate product/
+service-realization view slices"). The same change closed a business-layer
+gap surfaced while investigating this: `role-sec` and `role-dev` had no
+business-layer presence, closed by the new `bfn-security-assurance`/
+`process-security-assessment` and `bfn-implementation`/`process-implementation`
+— see [Architecture Model: Skeleton](architecture-model-skeleton.md).
 
 ### The remaining vision/business/application views
 
