@@ -3,9 +3,6 @@
 
 title Application Usage — 2. Pattern, Blueprint & Solution Design
 
-Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
-  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
-}
 Business_Object(e_id2df79965778556, "Resolved OSCAL Profile Catalog")
 Business_Object(e_idcd45bf9b5cfe51, "Architecture Pattern")
 Business_Object(e_id41a01cbfc25b5a, "Implementation Blueprint")
@@ -19,11 +16,12 @@ Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_ide1ad558dbdf859, "Blueprint Authoring & Component Mapping")
   Application_Function(e_idf6a4f65b28fc5e, "Solution Design Composition")
   Application_Function(e_iddc37081ec05957, "Threat Modelling")
+  Application_Function(e_id774463b70fec5c, "Conversational Solution Modelling")
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Interface(e_id178b6a78b39b51, "Conversational Authoring UI")
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
-  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
+  Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
 }
 Application_DataObject(e_idb9264b9a2b5a50, "Pattern & Blueprint Repository") {
@@ -36,10 +34,14 @@ Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
     Business_Process(e_id65065ee24d3c54, "Pattern Control Traceability Mapping")
     Business_Process(e_id378927722a8d5a, "Blueprint Control Enablement Mapping")
   }
+  Business_Function(e_idd35dc0fbf5a554, "Conversational Candidate Architecture Authoring") {
+    Business_Process(e_id5959dd7c3bbe59, "Conversational Candidate Architecture Authoring")
+  }
 }
 Business_Role(e_ide2cb7f3efa6256, "Solution Architect") {
   Business_Function(e_id86f3d2dd174754, "Solution Design") {
     Business_Process(e_id4991c823f6d55b, "Solution Design Composition")
+    Business_Process(e_idb15bf3bc08d15d, "Conversational Solution Modelling")
   }
 }
 Application_DataObject(e_id2b20e366d6f854, "Development Specification")
@@ -64,15 +66,16 @@ Rel_Realization_Up(e_id45483f0cd05c50, e_id41a01cbfc25b5a, "")
 Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
 Rel_Specialization_Up(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
 Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
-Rel_Assignment(e_id2b5394f913985a, e_idd35dc0fbf5a554, "")
-Rel_Assignment(e_ide2cb7f3efa6256, e_idd35dc0fbf5a554, "")
 Rel_Access_w(e_id4991c823f6d55b, e_id4b5ad5a2100656, "composes")
 Rel_Realization_Up(e_idf6a4f65b28fc5e, e_id4991c823f6d55b, "")
+Rel_Access_w(e_idb15bf3bc08d15d, e_id4b5ad5a2100656, "proposes & applies deltas to")
+Rel_Realization_Up(e_id774463b70fec5c, e_idb15bf3bc08d15d, "")
 Rel_Serving_Up(e_id3b0beba52b5a5c, e_id2b5394f913985a, "curates patterns & models future-state options in")
 Rel_Serving_Up(e_id3b0beba52b5a5c, e_ide2cb7f3efa6256, "composes blueprints & designs in")
 Rel_Serving_Up(e_id178b6a78b39b51, e_id2b5394f913985a, "propose, review & apply model changes")
 Rel_Serving_Up(e_id178b6a78b39b51, e_ide2cb7f3efa6256, "propose, review & apply model changes")
 Rel_Serving_Up(e_id7cc5a30769435c, e_id178b6a78b39b51, "exposed via")
+Rel_Serving_Up(e_id774463b70fec5c, e_id178b6a78b39b51, "exposed via")
 Rel_Access_w(e_id3b0beba52b5a5c, e_idb9264b9a2b5a50, "stores patterns, blueprints & designs")
 Rel_Serving_Up(e_id82f04fecbdd85e, e_id3b0beba52b5a5c, "renders candidate & solution models with")
 Rel_Access_r(e_id82f04fecbdd85e, e_idb9264b9a2b5a50, "reads patterns, blueprints & designs")
@@ -81,6 +84,8 @@ Rel_Access_r(e_ide1ad558dbdf859, e_id7a69ab81170653, "refines")
 Rel_Access_w(e_ide1ad558dbdf859, e_id45483f0cd05c50, "authors")
 Rel_Access_r(e_idf6a4f65b28fc5e, e_id45483f0cd05c50, "composes")
 Rel_Access_r(e_idf6a4f65b28fc5e, e_id7a69ab81170653, "composes")
+Rel_Access_r(e_id774463b70fec5c, e_idd52b11acc8ff53, "validates proposed changes against")
+Rel_Serving_Up(e_id774463b70fec5c, e_id3a42c87ebb235a, "renders the Solution Design view live via")
 Rel_Access_r(e_iddc37081ec05957, e_id7a69ab81170653, "assesses")
 Rel_Access_r(e_iddc37081ec05957, e_id45483f0cd05c50, "assesses")
 Rel_Access_w(e_iddc37081ec05957, e_ida8296d4757a355, "produces")

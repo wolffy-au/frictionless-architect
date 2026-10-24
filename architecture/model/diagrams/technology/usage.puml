@@ -19,6 +19,7 @@ Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_idf6a4f65b28fc5e, "Solution Design Composition")
   Application_Function(e_iddc37081ec05957, "Threat Modelling")
   Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")
+  Application_Function(e_id774463b70fec5c, "Conversational Solution Modelling")
 }
 Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
   Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
@@ -35,7 +36,7 @@ Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
-  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
+  Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
@@ -108,6 +109,7 @@ Rel_Flow(e_idd9989f19521155, e_id492c882252a953, "runtime control signals")
 Rel_Flow(e_id492c882252a953, e_idaabfebfc7b9858, "remediation backlog items")
 Rel_Serving_Up(e_id2610ae0cc2cc50, e_id82f04fecbdd85e, "requests draft specifications from")
 Rel_Flow(e_id82f04fecbdd85e, e_id4a7b9c4171d855, "specifications")
+Rel_Serving_Up(e_id774463b70fec5c, e_id3a42c87ebb235a, "renders the Solution Design view live via")
 Rel_Serving_Up(e_id90a79bc0568053, e_id1a6bc8a929675e, "supplies transcripts to")
 Rel_Flow(e_id1a6bc8a929675e, e_id26722845c7215d, "hands scrubbed transcripts to")
 Rel_Serving_Up(e_id3a42c87ebb235a, e_id2ef30ba1d68054, "renders candidate models for")

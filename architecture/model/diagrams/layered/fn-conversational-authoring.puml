@@ -22,13 +22,10 @@ Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
 Strategy_Resource(e_id55d6b63f66465b, "Enterprise Architecture Practice") {
   Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance")
 }
-Business_Function(e_idd35dc0fbf5a554, "Conversational Model Authoring") {
-  Business_Process(e_id5959dd7c3bbe59, "Conversational Model Authoring")
-}
 Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph")
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
-  Application_Function(e_id7cc5a30769435c, "Conversational Model Authoring")
+  Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
 }
 Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
   Application_DataObject(e_ide500d303f47455, "Candidate Architecture Option")
@@ -36,6 +33,9 @@ Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
 Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
   Business_Function(e_id5794c15b037251, "Architecture Strategy") {
     Business_Process(e_id395c9c2923aa56, "Target State Definition")
+  }
+  Business_Function(e_idd35dc0fbf5a554, "Conversational Candidate Architecture Authoring") {
+    Business_Process(e_id5959dd7c3bbe59, "Conversational Candidate Architecture Authoring")
   }
 }
 Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
@@ -61,8 +61,6 @@ Rel_Realization_Up(e_id71c4f5aeb1bc5b, e_id9900ce57054756, "")
 Rel_Serving_Up(e_id18ec07397a9d5f, e_id6c60f4feb89058, "authoritative model for proposal validation (GH #108)")
 Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
 Rel_Realization_Up(e_id5959dd7c3bbe59, e_id6c60f4feb89058, "")
-Rel_Assignment(e_id2b5394f913985a, e_idd35dc0fbf5a554, "")
-Rel_Assignment(e_ide2cb7f3efa6256, e_idd35dc0fbf5a554, "")
 Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")
 Rel_Realization_Up(e_id82f04fecbdd85e, e_id6c60f4feb89058, "")
 Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "writes the digital twin plane")
