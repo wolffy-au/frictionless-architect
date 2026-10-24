@@ -133,3 +133,8 @@ narrative docs.
 - **A** — [0038](0038-section-b-roles-canonical.md) — The six section-B `BusinessRole`s are
   canonical; GH #45's role-journey list is modelled as `Specialization`s of them; spec 001's
   single "Architect" persona is split into Enterprise, Solution and Security Architect
+- **P** — [0039](0039-conversational-solution-modelling-scope.md) — New
+  `fn-solution-modelling` (subsystem 2, `sub-library`) edits a Solution Design
+  (`do-solution-design`/`store-patterns`), distinct from ADR-0037's `fn-conversational-authoring`
+  (enterprise knowledge graph); its new business process Composes into the existing
+  `bfn-solution-design`, not a new `BusinessFunction`
