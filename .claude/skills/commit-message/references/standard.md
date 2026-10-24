@@ -111,8 +111,10 @@ poetry run python scripts/check_commit_messages.py --range develop..HEAD   # sco
 ```
 
 `scripts/check_commit_messages.py` reads the scope list from this file and `platform/packages/`.
-It runs in `scripts/pre_commit_checks.sh` and as a `commit-msg` hook; imperative mood and body
-quality are left to the `commit-auditor` agent. Body lines over 72 columns fail in the hook but
+It runs in `scripts/pre_commit_checks.sh` and as a `commit-msg` hook; it applies a heuristic
+imperative-mood check (first-word `-ed`/`-ing`/`-s` endings and a short noun list), and the
+`commit-auditor` agent covers body quality and the borderline mood calls the heuristic misses.
+Body lines over 72 columns fail in the hook but
 are only warned about over a range (trailers, indented code and bare URLs are exempt).
 
 commitizen is declared in the `dev` dependency group (`poetry install --with dev`).

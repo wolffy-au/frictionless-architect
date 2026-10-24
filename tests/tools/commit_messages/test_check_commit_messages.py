@@ -47,6 +47,31 @@ def test_breaking_messages_fail(message: str, fragment: str) -> None:
     assert any(fragment in p for p in mod.check_message(message, SCOPES))
 
 
+@pytest.mark.parametrize(
+    "message",
+    [
+        "docs(specs): updates the plan",
+        "docs(specs): added the plan",
+        "docs(specs): adding the plan",
+        "docs(specs): fixture for the plan",
+    ],
+)
+def test_non_imperative_descriptions_fail(message: str) -> None:
+    assert any("imperative verb" in p for p in mod.check_message(message, SCOPES))
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "docs(specs): bypass the cache",
+        "docs(specs): embed the plan",
+        "docs(specs): add the plan",
+    ],
+)
+def test_allowed_descriptions_pass_imperative_check(message: str) -> None:
+    assert not any("imperative verb" in p for p in mod.check_message(message, SCOPES))
+
+
 def test_scopes_come_from_the_standard_and_packages() -> None:
     scopes = mod.area_scopes() | mod.package_scopes()
     assert {"specs", "speckit", "model", "controls-compliance-catalog"} <= scopes
