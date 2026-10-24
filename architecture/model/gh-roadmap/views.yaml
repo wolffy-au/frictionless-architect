@@ -14,7 +14,14 @@
   members:
   - del-architecture-strategy-future-13-unreleased
   - plat-architecture-strategy-future-13
+  - wp-alignment-overlay-or-gap-report-in-the-gh-147
+  - wp-build-the-pii-gateway-package-pii-phi-gh-136
+  - wp-enterprise-domain-model-relationship-gh-149
+  - wp-link-real-identity-to-journey-roles-via-gh-148
+  - wp-many-architects-on-shared-models-locking-gh-151
+  - wp-pluggable-framework-touchpoints-it4it-gh-146
   - wp-scope-the-archimate-modelling-ide-gh-59
+  - wp-tamper-evident-audit-trail-of-prompts-gh-150
 - id: view-plat-architecture-strategy-mvp-7
   name: 'Roadmap: architecture-strategy-mvp'
   viewpoint: implementation_migration
@@ -38,6 +45,7 @@
   - wp-feat-model-vendor-it4it-as-third-party-gh-4
   - wp-feat-modelling-conversational-ai-agent-gh-108
   - wp-make-section-b-roles-canonical-split-gh-69
+  - wp-model-architect-role-journeys-add-gh-138
   - wp-model-it4it-flow-relationships-duplicate-gh-99
   - wp-model-the-technology-layer-packages-as-gh-55
   - wp-refactor-model-scope-type-wide-views-by-gh-117
@@ -45,6 +53,7 @@
   - wp-reorganize-architecture-model-diagrams-gh-5
   - wp-review-vision-and-business-diagrams-to-gh-43
   - wp-scaffold-digital-twin-knowledge-graph-gh-106
+  - wp-spec-specs-003-conversational-modelling-gh-139
 - id: view-plat-drift-management-mvp-5
   name: 'Roadmap: drift-management-mvp'
   viewpoint: implementation_migration
@@ -160,6 +169,12 @@
   - del-release-v0-1-0
   - del-solution-design-mvp-8-unreleased
   - plat-solution-design-mvp-8
+  - wp-adapt-108-s-agent-to-run-behind-the-gh-142
+  - wp-adapt-108-s-chat-live-view-ui-into-gh-140
+  - wp-changeset-api-with-metamodel-validation-gh-144
+  - wp-changeset-review-ui-against-the-stub-gh-141
   - wp-model-the-packaging-and-migration-layers-gh-65
+  - wp-move-model-archimate-scripts-into-gh-145
   - wp-re-home-specs-to-two-tier-scheme-adr-gh-107
   - wp-resolve-migration-order-gap-schema-gh-60
+  - wp-view-rendering-service-in-modelling-gh-143

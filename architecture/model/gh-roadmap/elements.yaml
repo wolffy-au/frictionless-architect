@@ -192,6 +192,20 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/milestone/8
 - type: WorkPackage
+  id: wp-adapt-108-s-agent-to-run-behind-the-gh-142
+  name: 'GH-142 Adapt #108''s agent to run behind the journey API contract, scoped to the architect''s role'
+  props:
+    gh-number: '142'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/142
+- type: WorkPackage
+  id: wp-adapt-108-s-chat-live-view-ui-into-gh-140
+  name: 'GH-140 Adapt #108''s chat/live-view UI into reusable-architecture-library/ui behind a stubbed journey API'
+  props:
+    gh-number: '140'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/140
+- type: WorkPackage
   id: wp-add-bounded-context-tagging-and-generic-gh-105
   name: GH-105 Add bounded-context tagging and generic ArchiMate viewpoint views
   props:
@@ -230,6 +244,13 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/19
+- type: WorkPackage
+  id: wp-alignment-overlay-or-gap-report-in-the-gh-147
+  name: GH-147 Alignment overlay or gap report in the views
+  props:
+    gh-number: '147'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/147
 - type: WorkPackage
   id: wp-api-contract-updates-document-auth-gh-93
   name: 'GH-93 API contract updates: document auth requirements and extend authz tests'
@@ -281,6 +302,27 @@
     gh-number: '86'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/86
+- type: WorkPackage
+  id: wp-build-the-pii-gateway-package-pii-phi-gh-136
+  name: 'GH-136 Build the pii-gateway package: PII/PHI scrubbing before every non-exempt LLM call'
+  props:
+    gh-number: '136'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/136
+- type: WorkPackage
+  id: wp-changeset-api-with-metamodel-validation-gh-144
+  name: GH-144 Changeset API with metamodel validation
+  props:
+    gh-number: '144'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/144
+- type: WorkPackage
+  id: wp-changeset-review-ui-against-the-stub-gh-141
+  name: GH-141 Changeset review UI against the stub
+  props:
+    gh-number: '141'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/141
 - type: WorkPackage
   id: wp-chore-model-place-wp-7-and-art-pkg-gh-103
   name: 'GH-103 chore(model): place WP 7 and art-pkg artifacts under a Plateau'
@@ -354,8 +396,16 @@
   name: GH-56 Decide decision-capture scope and the PII gateway (ADR-0014 vs ADR-0031)
   props:
     gh-number: '56'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/56
+- type: WorkPackage
+  id: wp-enterprise-domain-model-relationship-gh-149
+  name: GH-149 Enterprise/domain model relationship, promotion and conflicts
+  props:
+    gh-number: '149'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/149
 - type: WorkPackage
   id: wp-epic-conversational-architecture-gh-68
   name: 'GH-68 Epic: conversational architecture modelling with live ArchiMate views'
@@ -430,12 +480,27 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/95
 - type: WorkPackage
+  id: wp-link-real-identity-to-journey-roles-via-gh-148
+  name: GH-148 Link real identity to journey roles via the policy engine
+  props:
+    gh-number: '148'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/148
+- type: WorkPackage
   id: wp-make-section-b-roles-canonical-split-gh-69
   name: 'GH-69 Make section-B roles canonical: split spec 001 Architect, model #45 roles as specialisations'
   props:
     gh-number: '69'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/69
+- type: WorkPackage
+  id: wp-many-architects-on-shared-models-locking-gh-151
+  name: 'GH-151 Many architects on shared models: locking vs merging, load targets'
+  props:
+    gh-number: '151'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/151
 - type: WorkPackage
   id: wp-markdown-catalogue-converter-gh-44
   name: GH-44 Markdown catalogue converter
@@ -451,6 +516,14 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/71
+- type: WorkPackage
+  id: wp-model-architect-role-journeys-add-gh-138
+  name: GH-138 Model architect role journeys; add conversational modelling function
+  props:
+    gh-number: '138'
+    gh-state: closed
+    gh-state-reason: completed
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/138
 - type: WorkPackage
   id: wp-model-doc-consistency-cleanup-stale-gh-63
   name: 'GH-63 Model/doc consistency cleanup: stale counts, Profile-vs-resolved-catalog naming, drift-management target-vs-transition state'
@@ -500,6 +573,13 @@
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/20
 - type: WorkPackage
+  id: wp-move-model-archimate-scripts-into-gh-145
+  name: GH-145 Move model-archimate scripts into modelling-specification
+  props:
+    gh-number: '145'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/145
+- type: WorkPackage
   id: wp-oscal-spec-alignment-review-gh-24
   name: GH-24 OSCAL spec-alignment review
   props:
@@ -515,6 +595,13 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/126
 - type: WorkPackage
+  id: wp-pluggable-framework-touchpoints-it4it-gh-146
+  name: GH-146 Pluggable framework touchpoints (IT4IT first)
+  props:
+    gh-number: '146'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/146
+- type: WorkPackage
   id: wp-prepare-a-golden-data-set-bulk-testing-gh-49
   name: GH-49 Prepare a golden data set bulk testing framework
   props:
@@ -526,7 +613,8 @@
   name: GH-107 Re-home specs/ to two-tier scheme (ADR-0004, migration step 6)
   props:
     gh-number: '107'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/107
 - type: WorkPackage
   id: wp-refactor-model-scope-type-wide-views-by-gh-117
@@ -587,7 +675,8 @@
   name: GH-106 Scaffold digital-twin-knowledge-graph package (ADR-0006, migration step 4)
   props:
     gh-number: '106'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/106
 - type: WorkPackage
   id: wp-schedule-maintenance-subagents-on-a-gh-82
@@ -602,7 +691,8 @@
   name: GH-59 Scope the ArchiMate modelling IDE features from the retired PROJECT_SPECIFICATION.md
   props:
     gh-number: '59'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/59
 - type: WorkPackage
   id: wp-secrets-config-credentials-signing-keys-gh-94
@@ -618,6 +708,20 @@
     gh-number: '91'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/91
+- type: WorkPackage
+  id: wp-spec-specs-003-conversational-modelling-gh-139
+  name: GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios
+  props:
+    gh-number: '139'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/139
+- type: WorkPackage
+  id: wp-tamper-evident-audit-trail-of-prompts-gh-150
+  name: GH-150 Tamper-evident audit trail of prompts, changesets and approvals
+  props:
+    gh-number: '150'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/150
 - type: WorkPackage
   id: wp-technology-layer-postgres-opa-and-ui-gh-74
   name: 'GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform'
@@ -662,6 +766,13 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/22
+- type: WorkPackage
+  id: wp-view-rendering-service-in-modelling-gh-143
+  name: GH-143 View rendering service in modelling-specification
+  props:
+    gh-number: '143'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/143
 - type: WorkPackage
   id: wp-vision-single-high-level-archimate-gh-7
   name: 'GH-7 Vision: single high-level ArchiMate diagram for the policy-to-runtime controls lifecycle'
