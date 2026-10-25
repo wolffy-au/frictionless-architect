@@ -459,6 +459,64 @@ def check_context_coverage() -> list[str]:
     return warnings
 
 
+def _context_display_name(context: str, elements: list[dict[str, Any]]) -> str:
+    """The context's subsystem `ApplicationComponent`'s own `name` (every current
+    context has exactly one `sub-*` element carrying it) -- falls back to a
+    title-cased slug for a context with no such component."""
+    for element in elements:
+        if element.get("context") == context and str(element.get("id", "")).startswith("sub-"):
+            name = element.get("name")
+            if name:
+                return str(name)
+    return context.replace("-", " ").title()
+
+
+def generate_context_groupings(
+    elements: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Derive one ArchiMate `Grouping` per bounded context (`grp-ctx-<context>`,
+    GH #129 step 2) plus an Aggregation relationship from it to each of its members.
+    Not hand-authored: `context:` tags (already on disk, GH #129 step 1) are the only
+    input. `elements` must not already carry generated Groupings -- call this once on
+    the raw, pre-generation element list, never on its own output.
+
+    `DEFAULT_CONTEXT` ("platform", the shared-kernel fallback) and `LAYER_CONTEXTS`
+    (vendored layers, keyed by directory not by package) get no Grouping, matching
+    `_view_scope`'s existing treatment of `platform` as the whole-model default scope
+    rather than a real bounded context. A generated Grouping itself carries no
+    `context` -- it is a cross-cutting device describing a boundary, not a member
+    inside one, and leaving it unset also keeps this function idempotent-safe: were
+    its output ever fed back in, an untagged element defaults to `platform` and is
+    skipped rather than re-aggregating the Grouping under itself."""
+    members_by_context: dict[str, list[str]] = {}
+    for element in elements:
+        element_id = element.get("id")
+        context = element.get("context", DEFAULT_CONTEXT)
+        if not element_id or context == DEFAULT_CONTEXT or context in LAYER_CONTEXTS:
+            continue
+        members_by_context.setdefault(context, []).append(element_id)
+
+    groupings: list[dict[str, Any]] = []
+    aggregations: list[dict[str, Any]] = []
+    for context, member_ids in sorted(members_by_context.items()):
+        grouping_id = f"grp-ctx-{context}"
+        groupings.append(
+            {
+                "type": "Grouping",
+                "id": grouping_id,
+                "name": _context_display_name(context, elements),
+                "desc": (
+                    f"Generated bounded-context boundary for every element tagged "
+                    f"`context: {context}` (GH #129) -- not hand-authored."
+                ),
+                "props": {"generated": "true"},
+            }
+        )
+        for member_id in member_ids:
+            aggregations.append({"type": "Aggregation", "source": grouping_id, "target": member_id})
+    return groupings, aggregations
+
+
 def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[str], errors: list[str]) -> None:
     """Hold a view that declares `viewpoint:` to that standard viewpoint's allow lists."""
     slug = v.get("viewpoint")
@@ -735,10 +793,18 @@ def _assemble(
     """Add `elements`/`rels`/`views` to a fresh `Model` named `name`, running the same
     checks `build_model()` always has. `errors` already carries any YAML-load errors
     the caller collected; this appends to it rather than starting fresh, so a load
-    error and a structural one are both reported in one pass."""
+    error and a structural one are both reported in one pass.
+
+    Also generates and adds the GH #129 step 2 context Groupings + Aggregations
+    (`generate_context_groupings`) -- `elements`/`rels` as passed in must not already
+    carry them, since that would double-add. The generated pair is added only to the
+    `Model`, not to what `check_motivation_conventions` below sees: those conventions
+    are about first-party content, and a generated Grouping/Aggregation has no `desc`
+    worth altitude-checking and no motivation-chain role."""
+    groupings, aggregations = generate_context_groupings(elements)
     m = Model(name)
-    by_id, types_by_id = add_elements(m, elements, errors)
-    add_relationships(m, rels, by_id, errors)
+    by_id, types_by_id = add_elements(m, elements + groupings, errors)
+    add_relationships(m, rels + aggregations, by_id, errors)
     seen_views: set[str] = set()
     for v in views:
         if (vid := v.get("id")) is None:
