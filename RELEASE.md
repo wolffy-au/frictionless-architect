@@ -29,6 +29,28 @@ repo's tooling (`commitizen`, `poetry-dynamic-versioning`, `.github/workflows/ci
 - **Release via a `develop` → `main` PR.** `main` only changes via PR and a **human**
   reviews and merges it manually. Tags are created on `main`, after that merge.
 
+## Keeping releases fast
+
+Release day should only **verify** a clean state, never **produce** one. The agents in
+§3–§5 (`quality-uplift`, `vulnerability-remediator`, `docs-uplift`, `spec-alignment`,
+`adr-auditor`) do real remediation work when they find drift, and running that
+serially at release time — scan, fix, re-gate, scan, fix, re-gate — is what makes a
+release take hours instead of minutes.
+
+- **Run these agents continuously on `develop`, not at release time.** Schedule them
+  (cron / `/loop` / a CI job triggered on merge to `develop`) so SonarCloud/Snyk findings
+  and doc/spec/ADR drift get fixed as they appear, days before anyone cuts a release.
+  §3–§5 below should then be a quick read of already-green status, not a remediation
+  pass.
+- **If §3–§5 do find something at release time** (continuous maintenance lapsed, or
+  new findings landed since the last scheduled run), dispatch the independent agents
+  **in parallel** (one message, multiple `Agent` calls) rather than one after another:
+  `quality-uplift` + `vulnerability-remediator` are independent of each other and of
+  `docs-uplift` + `spec-alignment` + `adr-auditor`. Only re-run `pre_merge_checks.sh`
+  once, after all of them land, not after each one.
+- **Treat a release that required remediation as a signal to fix the schedule**, not as
+  the new normal — the next release should go back to a verify-only pass.
+
 ## Preconditions
 
 - Working tree clean, no untracked files that belong in the release.
@@ -79,7 +101,10 @@ curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictio
 # or: poetry run pysonar --sonar-token=<token-from-.secrets>
 ```
 
-Resolve anything open (`quality-uplift` agent) before continuing.
+This should normally come back empty — `quality-uplift` is expected to be running on
+a schedule against `develop` (see "Keeping releases fast"), not invoked here for the
+first time. If it does find something, dispatch `quality-uplift` and continue to step
+4 rather than waiting on it in isolation; run both in parallel.
 
 ### 4. Security — no unresolved high/critical vulnerabilities
 
@@ -88,20 +113,29 @@ poetry run snyk test --package-manager=poetry
 gh api repos/wolffy-au/frictionless-architect/dependabot/alerts --jq '[.[] | select(.state=="open")]'
 ```
 
-Clear findings with the `vulnerability-remediator` agent.
+As with step 3, this should come back clean if `vulnerability-remediator` has been
+running continuously. If not, dispatch it alongside `quality-uplift` (parallel `Agent`
+calls, not sequential) rather than blocking step 3 on it first.
 
 ### 5. Refresh documentation and specs against the code
 
 ```bash
 # docstrings, README/quickstart, feature guides, diagrams, and the agent-orientation
 # doc (AGENTS.md — what a coding agent needs to know on first contact with this repo):
-#   run the  docs-uplift  agent
-# spec-vs-code gap check:
-#   run the  spec-alignment  agent   (report only — action its findings if material)
-# decision-log check:
-#   run the  adr-auditor  agent   (opens a draft PR with proposed ADR stubs +
-#   stale-status edits — review, flesh out, and merge before tagging if material)
+#   docs-uplift
+# spec-vs-code gap check (report only — action its findings if material):
+#   spec-alignment
+# decision-log check (opens a draft PR with proposed ADR stubs + stale-status edits —
+#   review, flesh out, and merge before tagging if material):
+#   adr-auditor
 ```
+
+These three are independent of each other and of §3–§4 — dispatch all five agents
+(`quality-uplift`, `vulnerability-remediator`, `docs-uplift`, `spec-alignment`,
+`adr-auditor`) that turn out to have work in a single batch of parallel `Agent` calls,
+not one after another, and run `pre_merge_checks.sh` (step 2) once more only after they
+all land. As with §3–§4, a clean run of these should be the common case because they
+run on a schedule against `develop`, not something release day discovers.
 
 Commit any regenerated artefacts:
 
