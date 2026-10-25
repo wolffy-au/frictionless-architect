@@ -4,6 +4,7 @@
 title Roadmap: architecture-strategy-future
 
 Implementation_Deliverable(e_idfa88da4631d754, "architecture-strategy-future (unreleased)")
+Implementation_Deliverable(e_iddbc122391d5f56, "v0.5.0")
 Implementation_Plateau(e_id29b6db45badb5c, "architecture-strategy-future")
 Implementation_WorkPackage(e_idba39f660790450, "GH-147 Alignment overlay or gap report in the views")
 Implementation_WorkPackage(e_idc21d5f17bfc154, "GH-136 Build the pii-gateway package: PII/PHI scrubbing before every non-exempt LLM call")
@@ -15,13 +16,14 @@ Implementation_WorkPackage(e_id4608a4b3ca8a52, " --GH-59 Scope the ArchiMate mod
 Implementation_WorkPackage(e_id61a4cee8eed751, "GH-150 Tamper-evident audit trail of prompts, changesets and approvals")
 
 Rel_Realization_Up(e_idfa88da4631d754, e_id29b6db45badb5c, "")
+Rel_Realization_Up(e_iddbc122391d5f56, e_id29b6db45badb5c, "")
 Rel_Realization_Up(e_idba39f660790450, e_idfa88da4631d754, "")
 Rel_Realization_Up(e_idc21d5f17bfc154, e_idfa88da4631d754, "")
 Rel_Realization_Up(e_id475f7d8d81625e, e_idfa88da4631d754, "")
 Rel_Realization_Up(e_id1fe641b3e9025f, e_idfa88da4631d754, "")
 Rel_Realization_Up(e_idbf7ff6872c5d57, e_idfa88da4631d754, "")
 Rel_Realization_Up(e_id81038a1635065b, e_idfa88da4631d754, "")
-Rel_Realization_Up(e_id4608a4b3ca8a52, e_idfa88da4631d754, "")
+Rel_Realization_Up(e_id4608a4b3ca8a52, e_iddbc122391d5f56, "")
 Rel_Realization_Up(e_id61a4cee8eed751, e_idfa88da4631d754, "")
 Rel_Triggering_Right(e_id475f7d8d81625e, e_idbf7ff6872c5d57, "")
 Rel_Triggering_Right(e_id1fe641b3e9025f, e_id475f7d8d81625e, "")

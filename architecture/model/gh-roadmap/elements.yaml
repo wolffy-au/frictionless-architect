@@ -85,6 +85,13 @@
     gh-tag: v0.4.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.4.0
 - type: Deliverable
+  id: del-release-v0-5-0
+  name: v0.5.0
+  props:
+    gh-published: '2026-10-25T04:47:45Z'
+    gh-tag: v0.5.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.5.0
+- type: Deliverable
   id: del-solution-design-mvp-8-unreleased
   name: solution-design-mvp (unreleased)
   props:
@@ -678,6 +685,20 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/106
+- type: WorkPackage
+  id: wp-scaffold-platform-packages-conformance-gh-163
+  name: GH-163 Scaffold platform/packages/conformance-drift-assurance (sub-assurance; no spec, no package)
+  props:
+    gh-number: '163'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/163
+- type: WorkPackage
+  id: wp-scaffold-platform-packages-reusable-gh-162
+  name: GH-162 Scaffold platform/packages/reusable-architecture-library (ADR-0004 two-tier numbering; relocate 002-solution-design-modelling spec)
+  props:
+    gh-number: '162'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/162
 - type: WorkPackage
   id: wp-schedule-maintenance-subagents-on-a-gh-82
   name: GH-82 Schedule maintenance subagents on a recurring cadence (start with adr-auditor weekly)

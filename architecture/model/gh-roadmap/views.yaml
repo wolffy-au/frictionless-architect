@@ -13,6 +13,7 @@
   diagram: migration/plat-architecture-strategy-future-13
   members:
   - del-architecture-strategy-future-13-unreleased
+  - del-release-v0-5-0
   - plat-architecture-strategy-future-13
   - wp-alignment-overlay-or-gap-report-in-the-gh-147
   - wp-build-the-pii-gateway-package-pii-phi-gh-136
@@ -32,6 +33,7 @@
   - del-release-v0-2-0
   - del-release-v0-3-0
   - del-release-v0-4-0
+  - del-release-v0-5-0
   - plat-architecture-strategy-mvp-7
   - wp-add-bounded-context-tagging-and-generic-gh-105
   - wp-adr-0022-claims-xmlschema-validation-but-gh-53
@@ -62,6 +64,7 @@
   - del-drift-management-mvp-5-unreleased
   - plat-drift-management-mvp-5
   - wp-model-doc-consistency-cleanup-stale-gh-63
+  - wp-scaffold-platform-packages-conformance-gh-163
 - id: view-plat-effectiveness-assurance-mvp-10
   name: 'Roadmap: effectiveness-assurance-mvp'
   viewpoint: implementation_migration
@@ -167,6 +170,7 @@
   diagram: migration/plat-solution-design-mvp-8
   members:
   - del-release-v0-1-0
+  - del-release-v0-5-0
   - del-solution-design-mvp-8-unreleased
   - plat-solution-design-mvp-8
   - wp-adapt-108-s-agent-to-run-behind-the-gh-142
@@ -177,4 +181,5 @@
   - wp-move-model-archimate-scripts-into-gh-145
   - wp-re-home-specs-to-two-tier-scheme-adr-gh-107
   - wp-resolve-migration-order-gap-schema-gh-60
+  - wp-scaffold-platform-packages-reusable-gh-162
   - wp-view-rendering-service-in-modelling-gh-143

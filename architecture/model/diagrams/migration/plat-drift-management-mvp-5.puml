@@ -6,8 +6,10 @@ title Roadmap: drift-management-mvp
 Implementation_Deliverable(e_id0ddaa4bf9fcd56, "drift-management-mvp (unreleased)")
 Implementation_Plateau(e_id5e6e2234873251, "drift-management-mvp")
 Implementation_WorkPackage(e_idcc4eb66ae9285f, " --GH-63 Model/doc consistency cleanup: stale counts, Profile-vs-resolved-catalog naming, drift-management target-vs-transition state--")
+Implementation_WorkPackage(e_id4eb86cc3b03c53, "GH-163 Scaffold platform/packages/conformance-drift-assurance (sub-assurance; no spec, no package)")
 
 Rel_Realization_Up(e_id0ddaa4bf9fcd56, e_id5e6e2234873251, "")
 Rel_Realization_Up(e_idcc4eb66ae9285f, e_id0ddaa4bf9fcd56, "")
+Rel_Realization_Up(e_id4eb86cc3b03c53, e_id0ddaa4bf9fcd56, "")
 
 @enduml
