@@ -675,6 +675,17 @@ def add_views(
     that silently drops any new first-party element of that type until
     someone remembers to add it.
 
+    A view may also declare `include_neighbours: true` -- add a node for every
+    element exactly one relationship hop from an element already on the view
+    (via `members`/`include_types`), regardless of that neighbour's own
+    `context`. Without this, a view scoped to one context never shows a
+    cross-context edge at all (the far endpoint is simply never placed, so
+    `_connect_view_relationships`'s both-endpoints-on-view rule drops it too)
+    -- GH #129 step 3, so a per-context split view (step 4) can still show
+    what a context actually talks to, with the neighbour visually distinct
+    from (not inside) that context's own generated Grouping boundary once the
+    diagram-archimate skill renders it.
+
     The richer view schema (auto-membership rules) is still deferred."""
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
     known_contexts = {e.get("context", DEFAULT_CONTEXT) for e in elements}
@@ -697,6 +708,10 @@ def add_views(
         on_view, view_el_types = _select_view_elements(
             view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
         )
+        if v.get("include_neighbours"):
+            view_el_types |= _add_neighbour_elements(
+                view, m, on_view, uuid_to_id, types_by_id, exclude_element_patterns, v["id"]
+            )
         exclude_patterns = _compile_exclude_patterns(v, errors)
         view_rel_types = _connect_view_relationships(
             view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
@@ -734,6 +749,37 @@ def _select_view_elements(
             on_view.add(el.uuid)
             view_el_types.add(types_by_id[e["id"]])
     return on_view, view_el_types
+
+
+def _add_neighbour_elements(
+    view: Any,
+    m: Model,
+    on_view: set[str],
+    uuid_to_id: dict[str, str],
+    types_by_id: dict[str, str],
+    exclude_element_patterns: list[dict[str, str | None]],
+    view_id: str,
+) -> set[str]:
+    """`include_neighbours: true` (GH #129 step 3): add a node for every element
+    exactly one relationship hop from an element already in `on_view`, whatever
+    its `context`. Mutates `on_view` in place so `_connect_view_relationships`
+    (run after this) also draws the connecting edge; returns the ArchiMate
+    types added, for `add_views`'s viewpoint check. Walks from the view's
+    original membership only (`base`), never the set as it grows, so a
+    neighbour's own neighbours are not pulled in -- exactly one hop."""
+    base = frozenset(on_view)
+    added_types: set[str] = set()
+    for rel in m.relationships:
+        for near, far in ((rel.source, rel.target), (rel.target, rel.source)):
+            if near.uuid not in base or far.uuid in on_view:
+                continue
+            far_id = uuid_to_id.get(far.uuid)
+            if far_id is None or _element_excluded(far_id, exclude_element_patterns, types_by_id):
+                continue
+            view.add(ref=far, uuid=det_id(view_id, "node", far.uuid))
+            on_view.add(far.uuid)
+            added_types.add(types_by_id[far_id])
+    return added_types
 
 
 def _connect_view_relationships(

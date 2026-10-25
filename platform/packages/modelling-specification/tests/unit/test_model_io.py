@@ -135,6 +135,106 @@ def test_add_views_scopes_by_include_type_and_adds_in_scope_connections() -> Non
     assert len(view.conns) == 1  # the a->b serving edge, both ends on the view
 
 
+def test_add_views_include_neighbours_pulls_in_a_cross_context_edge() -> None:
+    model = Model("t")
+    errors: list[str] = []
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "b", "type": "application-component", "context": "ctx-y", "name": "B"},
+        {"id": "c", "type": "application-component", "context": "ctx-y", "name": "C"},
+    ]
+    by_id, types = model_io.add_elements(model, elements, errors)
+    model_io.add_relationships(
+        model,
+        [
+            {"type": "serving", "source": "a", "target": "b"},
+            {"type": "serving", "source": "b", "target": "c"},
+        ],
+        by_id,
+        errors,
+    )
+
+    model_io.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "context": "ctx-x",
+                "include_types": ["application-component"],
+                "include_neighbours": True,
+            }
+        ],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    assert len(view.nodes) == 2  # a (in scope) + b (one hop away), not c (two hops)
+    assert len(view.conns) == 1  # the a->b edge only; b->c has an endpoint off the view
+
+
+def test_add_views_without_include_neighbours_drops_the_cross_context_edge() -> None:
+    model = Model("t")
+    errors: list[str] = []
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "b", "type": "application-component", "context": "ctx-y", "name": "B"},
+    ]
+    by_id, types = model_io.add_elements(model, elements, errors)
+    model_io.add_relationships(model, [{"type": "serving", "source": "a", "target": "b"}], by_id, errors)
+
+    model_io.add_views(
+        model,
+        [{"id": "v1", "name": "V1", "context": "ctx-x", "include_types": ["application-component"]}],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    assert len(view.nodes) == 1  # a only -- b is a different context and not pulled in
+    assert len(view.conns) == 0
+
+
+def test_add_views_include_neighbours_respects_exclude_elements() -> None:
+    model = Model("t")
+    errors: list[str] = []
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "ext-b", "type": "application-component", "context": "ctx-y", "name": "B"},
+    ]
+    by_id, types = model_io.add_elements(model, elements, errors)
+    model_io.add_relationships(model, [{"type": "serving", "source": "a", "target": "ext-b"}], by_id, errors)
+
+    model_io.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "context": "ctx-x",
+                "include_types": ["application-component"],
+                "include_neighbours": True,
+                "exclude_elements": [{"id_prefix": "ext-"}],
+            }
+        ],
+        elements,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    assert len(view.nodes) == 1  # a only -- ext-b is excluded even though it is a neighbour
+
+
 def test_add_views_reports_unknown_member_id() -> None:
     model = Model("t")
     errors: list[str] = []
