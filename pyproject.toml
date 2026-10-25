@@ -37,7 +37,7 @@ dev = [
     "snakeviz>=2.2.2,<3.0.0",
     "locust (>=2.43.3,<3.0.0)",
     "pymarkdownlnt>=0.9.35",
-    "pyarchimate (>=1.12.3,<2.0.0)",
+    "pyarchimate (>=2.0.0,<3.0.0)",
     "pyyaml (>=6.0,<7.0)",
     "pip-audit (>=2.10.1,<3.0.0)",
 ]
