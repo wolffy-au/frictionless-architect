@@ -35,7 +35,7 @@ Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational archi
   Implementation_WorkPackage(e_idf087fe9d7e175a, " --GH-138 Model architect role journeys; add conversational modelling function--")
   Implementation_WorkPackage(e_id311dfd50533955, "GH-145 Move model-archimate scripts into modelling-specification")
   Implementation_WorkPackage(e_id81038a1635065b, "GH-146 Pluggable framework touchpoints (IT4IT first)")
-  Implementation_WorkPackage(e_id4b747e3b75815e, "GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios")
+  Implementation_WorkPackage(e_id4b747e3b75815e, " --GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios--")
   Implementation_WorkPackage(e_id61a4cee8eed751, "GH-150 Tamper-evident audit trail of prompts, changesets and approvals")
   Implementation_WorkPackage(e_idaab1c82c5fbc50, "GH-143 View rendering service in modelling-specification")
 }

@@ -19,7 +19,7 @@ Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational archi
   Implementation_WorkPackage(e_id040c3046139b52, " --GH-108 feat(modelling): conversational AI agent for interactive ArchiMate model authoring--")
   Implementation_WorkPackage(e_id41b9cdd73c3b5c, " --GH-69 Make section-B roles canonical: split spec 001 Architect, model #45 roles as specialisations--")
   Implementation_WorkPackage(e_idf087fe9d7e175a, " --GH-138 Model architect role journeys; add conversational modelling function--")
-  Implementation_WorkPackage(e_id4b747e3b75815e, "GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios")
+  Implementation_WorkPackage(e_id4b747e3b75815e, " --GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios--")
 }
 Implementation_WorkPackage(e_id266c7cb7c31c56, "GH-73 Epic: multi-specification modelling (ArchiMate + UML + OSCAL types per element)")
 Implementation_WorkPackage(e_id975839b5e2f95f, "GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)")
