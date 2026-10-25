@@ -713,7 +713,8 @@
   name: GH-139 Spec specs/003-conversational-modelling with behave acceptance scenarios
   props:
     gh-number: '139'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/139
 - type: WorkPackage
   id: wp-tamper-evident-audit-trail-of-prompts-gh-150
