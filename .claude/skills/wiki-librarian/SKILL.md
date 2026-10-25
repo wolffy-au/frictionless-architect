@@ -31,14 +31,23 @@ listed in `wiki/sources.yaml`), never the wiki.
 Scripts ship under `tools/` (shared `wiki_common.py`). They operate on `wiki/`
 **relative to the current directory** — run them from the repo root (the
 directory holding `wiki/`). **Always invoke them with `poetry run python`** —
-this repo's deps (`pyyaml` for all tools; `numpy` + `fastembed` for
-`semsearch.py`) live in the Poetry venv, not the system interpreter, so bare
-`python` fails with `ModuleNotFoundError` (`AGENTS.md` — "run everything through
-`poetry run`"). `semsearch.py`'s model cache lands outside the repo — override
-with `$SEMSEARCH_CACHE`. It sizes its embedding worker pool to free RAM and
-core count automatically; `$SEMSEARCH_PARALLEL` overrides it (`1` = force
-single in-process, `0` = all cores), `$SEMSEARCH_EMBED_BATCH` sets the batch /
-commit granularity (default 32).
+`pyyaml`, used by all of them, lives in the Poetry venv, not the system
+interpreter, so bare `python` fails with `ModuleNotFoundError` (`AGENTS.md` —
+"run everything through `poetry run`").
+
+**Semantic search deps:** `numpy` + `fastembed` (for `semsearch.py` only) are
+deliberately *not* Poetry dependencies — every released `fastembed` caps
+`pillow` at `<13.0`, which would conflict with `pyarchimate`'s `pillow>=13.0`
+floor in the same unified Poetry graph. `semsearch.py` instead manages its
+own private copy of just those two packages under `tools/.venv` (gitignored),
+`pip install --target`-ed in on first use and added to `sys.path` — no action
+needed, but the first `index`/`search` after a fresh checkout takes longer
+while it bootstraps.
+`semsearch.py`'s model cache lands outside the repo — override with
+`$SEMSEARCH_CACHE`. It sizes its embedding worker pool to free RAM and core
+count automatically; `$SEMSEARCH_PARALLEL` overrides it (`1` = force single
+in-process, `0` = all cores), `$SEMSEARCH_EMBED_BATCH` sets the batch / commit
+granularity (default 32).
 
 ```bash
 poetry run python tools/resolve_sources.py         # sources.yaml -> resolved files/URLs per topic, unmatched globs
