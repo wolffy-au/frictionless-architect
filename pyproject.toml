@@ -120,6 +120,12 @@ plugins = [
 module = ["pyArchimate.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# fastembed/numpy are semsearch.py's own pip-managed deps (tools/.venv, gitignored),
+# deliberately dropped from the Poetry graph (38f4274) — no stubs here by design.
+module = ["fastembed", "fastembed.*", "numpy", "numpy.*"]
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 120
 target-version = "py312"
