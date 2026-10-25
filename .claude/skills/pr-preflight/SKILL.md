@@ -1,6 +1,6 @@
 ---
 name: pr-preflight
-description: 'Pre-flight checklist for a branch about to become a PR — refresh docs/wiki/diagrams against the real diff, run an autofix pass, and confirm the quality/security/commit gates, so the PR opens clean instead of collecting review comments for drift the branch itself caused. Use for "get this ready for a PR", "preflight this branch", "/pr-preflight".'
+description: 'Pre-flight checklist for a branch about to become a PR — refresh docs/wiki/diagrams against the real diff, run an autofix pass, confirm the quality/security/commit gates, open the PR as a draft, then watch CI and fix failures before marking it ready for human review. Use for "get this ready for a PR", "preflight this branch", "/pr-preflight".'
 ---
 
 # pr-preflight
@@ -119,16 +119,47 @@ If this surfaces something non-trivial to fix (a real Sonar-style smell, an open
 advisory), don't fix it inline here — hand it to `quality-uplift` / `vulnerability-remediator`
 and note the follow-up in the PR description rather than scope-creeping the branch.
 
-## 7. Final gate and push
+## 7. Final gate, push, and open the PR as a draft
 
 ```bash
 bash scripts/pre_merge_checks.sh
 git push origin HEAD
-gh pr create --base develop --fill   # or update the existing PR
+gh pr create --base develop --fill --draft   # or update the existing PR
 ```
 
-If `pre_merge_checks.sh` fails, fix and re-run — don't push a red branch. Once pushed,
-this skill's job is done; `pr-wrapup` picks up after the PR merges.
+If `pre_merge_checks.sh` fails, fix and re-run — don't push a red branch. Open as a
+**draft**: the PR exists so CI runs against it, but it isn't yet asking anyone for
+review — that only happens once §8 is clean.
+
+## 8. Watch CI and fix before requesting review
+
+```bash
+gh pr checks --watch
+```
+
+CI (`.github/workflows/ci.yml`) re-runs ruff/pyright/mypy/behave/pytest+coverage plus
+SonarQube and Snyk/CodeQL — gates §§2 and 6 only spot-checked locally. For any failing
+check:
+
+```bash
+gh run view --log-failed
+```
+
+Fix the cause on this branch, commit (small, focused — same Conventional Commits
+discipline as everywhere else in this skill), push, and re-watch. Repeat until green.
+
+Stop and hand back instead of looping forever if a failure is genuinely outside this
+skill's remit (unrelated flake, missing secret, a fix that would need a major/breaking
+dependency bump) — report it in the PR description rather than forcing a fix.
+
+Once every check is green, mark the PR ready for human review:
+
+```bash
+gh pr ready
+```
+
+This is the point the branch is actually asking someone to look at it. Before this,
+nothing here requests review.
 
 ## Guardrails
 
@@ -140,4 +171,7 @@ this skill's job is done; `pr-wrapup` picks up after the PR merges.
 - If a step surfaces something bigger than this branch's scope (a repo-wide doc gap, a
   structural refactor idea, a vulnerability in an unrelated dependency), note it as a
   follow-up rather than pulling it into this PR.
-- Don't open or push the PR (§7) until §§2-6 are clean.
+- Don't push and open the PR (§7) until §§2-6 are clean.
+- The PR opens as a **draft** and only gets marked ready (§8) once CI is green — never
+  call `gh pr ready` while a check is still red or hasn't run yet.
+- Never merge; `pr-preflight`'s job ends at `gh pr ready` — the merge decision stays human.
