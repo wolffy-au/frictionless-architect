@@ -137,6 +137,77 @@ def test_propose_an_element_with_an_unknown_type_is_a_build_error(configured_fak
     assert any(f["check"] == "build_error" for f in body["validation_result"]["findings"])
 
 
+def test_propose_a_suggestion_request_returns_options_with_rationale_and_validation(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"options": ['
+        '{"rationale": "fits an existing capability", "convention_refs": [],'
+        ' "elements": [{"type": "ApplicationFunction", "name": "Suggested Option One"}], "relationships": []},'
+        '{"rationale": "an alternative shape", "convention_refs": [],'
+        ' "elements": [{"type": "ApplicationFunction", "name": "Suggested Option Two"}], "relationships": []}'
+        "]}"
+    )
+    session_id = _new_session()
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "what should I do about X?"})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "options"
+    assert body["delta_id"] is None
+    assert len(body["options"]) == 2
+    first = body["options"][0]
+    assert first["rationale"] == "fits an existing capability"
+    assert first["elements"][0]["name"] == "Suggested Option One"
+    assert first["elements"][0]["id"]
+    assert first["validation_result"]["clean"] is True
+
+
+def test_propose_select_turns_the_chosen_option_into_a_pending_delta(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"options": ['
+        '{"rationale": "A", "convention_refs": [], "elements": [{"type": "ApplicationFunction", "name": "Select Test"}],'
+        ' "relationships": []},'
+        '{"rationale": "B", "convention_refs": [], "elements": [], "relationships": []}'
+        "]}"
+    )
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "what should I do about X?"})
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/select", json={"option_index": 0})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    assert isinstance(body["delta_id"], str) and body["delta_id"]
+    assert body["elements"][0]["name"] == "Select Test"
+
+
+def test_propose_select_out_of_range_index_returns_409(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"options": [{"elements": [], "relationships": []}]}'
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "what should I do about X?"})
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/select", json={"option_index": 5})
+
+    assert response.status_code == 409
+
+
+def test_propose_select_without_a_pending_proposal_returns_409(configured_fake_llm: FakeCompletion) -> None:
+    session_id = _new_session()
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/select", json={"option_index": 0})
+
+    assert response.status_code == 409
+
+
+def test_propose_select_against_an_unknown_session_returns_404(configured_fake_llm: FakeCompletion) -> None:
+    response = client.post("/authoring/sessions/unknown-session/propose/select", json={"option_index": 0})
+
+    assert response.status_code == 404
+
+
 def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
     configured_fake_llm: FakeCompletion,
 ) -> None:
