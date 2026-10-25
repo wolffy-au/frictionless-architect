@@ -1,3 +1,45 @@
+## v0.5.0 (2026-10-25)
+
+### Feat
+
+- **skills**: add pr-preflight checklist skill
+- **specs**: add conversational Solution Design modelling spec
+- **model**: add conversational solution modelling function
+- **scripts**: flag non-imperative commit subjects in the message check
+- **specs**: re-home specs to two-tier EPIC-*/package scheme (ADR-0004)
+- **digital-twin-knowledge-graph**: implement read path and parser
+- **digital-twin-knowledge-graph**: generate tasks.md, add consumer task
+- **digital-twin-knowledge-graph**: draft read-path spec, align model
+- **model**: decompose usage/product/service-realization views
+- **model**: make section-B roles canonical, specialise GH #45 roles
+- **model**: extend transition view back to the current-state baseline
+- **model**: model the gap from architecture-strategy-mvp to future
+- **model**: add collaboration-tool input and the PII gateway
+
+### Fix
+
+- **deps**: bump pyarchimate to 2.0.0, pulling pillow 13.0.0
+- **skills**: isolate semsearch's fastembed/numpy from the Poetry graph
+- ignore false-positive insecure XML parser finding in platform tests
+- **model**: wire delivery choreography's Triggering gaps
+- **deps**: bump pyarchimate to 2.0.0, pulling pillow 13.0.0
+- **deps**: pin filelock >=4.0 in controls-compliance-catalog
+- **scripts**: skip platform packages with no src/ yet
+- **model**: drop duplicate product/service-realization view slices
+- **skills**: strikethrough closed GitHub work packages in diagrams
+- **model**: include Outcome on the Stakeholder view
+- **model**: close fn-conversational-authoring view's Outcome gap
+- **model**: keep build/render on this worktree's platform source
+
+### Refactor
+
+- **model**: split Goal/Outcome motivation chain and close gaps
+- **modelling-specification**: make motivation checks configurable
+
+### Perf
+
+- **scripts**: dedupe platform checks and parallelize Snyk in pre-merge
+
 ## v0.4.0 (2026-10-17)
 
 ### Feat
