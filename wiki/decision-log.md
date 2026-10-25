@@ -1,6 +1,6 @@
 ---
 title: Architecture Decision Log
-generated: '2026-10-24'
+generated: '2026-10-25'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0000-adr-template.md
@@ -54,13 +54,17 @@ The ADR log behind the [Architecture Overview](architecture.md): one MADR-lite f
 ## Decision log
 
 `docs/adr/` records the load-bearing decisions as one MADR-lite file each
-(`docs/adr/README.md`). Status: **A** accepted, **A\*** accepted but not yet
-reflected in the narrative docs, **P** proposed. Most **P** rows (0017–0019)
-are proposed because `specs/EPIC-001-governance-platform` deliberately de-specified
-them, carried from the vision docs and not yet re-ratified in a spec; 0037 is
-proposed for the ordinary reason that it has not been ratified yet
+(`docs/adr/README.md`). Status: **A** accepted, **P** proposed. Most **P**
+rows (0017–0019) are proposed because `specs/EPIC-001-governance-platform`
+deliberately de-specified them, carried from the vision docs and not yet
+re-ratified in a spec; 0037 and 0039 are proposed for the ordinary reason
+that they have not been ratified yet
 (`docs/adr/0037-conversational-model-authoring-architecture.md` — Status:
-Proposed, Date 2026-10-10). No record is currently A\*.
+Proposed, Date 2026-10-10). The index previously carried an **A\*** status
+("accepted but not yet reflected in the narrative docs"); that key and its
+two rows (0004, 0018) were dropped on 2026-10-25 once both records were
+confirmed fully reflected elsewhere, leaving only **A**/**P**
+(`docs/adr/README.md` §Index).
 
 | ADR | Decision | Status |
 |---|---|---|
