@@ -17,7 +17,7 @@ SPEC="${2:-}"
 
 AGENT=spec-alignment
 OUT_NAME=spec-alignment
-TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*)"
+TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*),Bash(git tag:*),Bash(gh api:*)"
 TASK="Follow your Steps 1-5 and Output sections. Do not run poetry commands. Put the ranked gap findings under '## Findings'."
 TASK="$TASK $AGENT_BASH_RULE"
 
