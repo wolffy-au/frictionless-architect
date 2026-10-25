@@ -451,6 +451,7 @@
 # =====================================================================
 - type: Capability
   id: cap-digital-twin
+  context: digital-twin-knowledge-graph
   name: Architecture Knowledge Management
   desc: >-
     Maintain a live, queryable graph of the enterprise technology landscape —
@@ -459,6 +460,7 @@
     architectural truth.
 - type: Capability
   id: cap-spec-engine
+  context: modelling-specification
   name: Executable Specification Generation
   desc: >-
     Deterministically produce machine-consumable architectural specifications
@@ -466,6 +468,7 @@
     guardrails rather than human-readable documents.
 - type: Capability
   id: cap-control-plane
+  context: conformance-drift-assurance
   name: Agentic Development Supervision
   desc: >-
     Constrain, monitor, and intervene in the behaviour of autonomous development
@@ -473,6 +476,7 @@
     before code reaches any environment.
 - type: Capability
   id: cap-forensic-ledger
+  context: digital-twin-knowledge-graph
   name: Forensic Audit Recording
   desc: >-
     Record every agent action, gate decision, and specification evaluation into
@@ -480,6 +484,7 @@
     regulatory examination.
 - type: Capability
   id: cap-drift-dashboard
+  context: conformance-drift-assurance
   name: Architectural Drift Detection & Reconciliation
   desc: >-
     Continuously compare observed system telemetry against the as-designed
@@ -495,6 +500,7 @@
     deterministic human accountability.
 - type: Capability
   id: cap-control-catalog
+  context: controls-compliance-catalog
   name: Control & Obligation Management
   desc: >-
     Maintain the authoritative, version-controlled library of control and
@@ -504,6 +510,7 @@
     and map every governed change to its applicable obligations.
 - type: Capability
   id: cap-reusable-architecture
+  context: reusable-architecture-library
   name: Reusable Architecture Curation
   desc: >-
     Curate technology-agnostic architecture patterns, implementation blueprints
@@ -513,6 +520,7 @@
     governance decisions.
 - type: Capability
   id: cap-conversational-governance
+  context: modelling-specification
   name: Conversational Architecture Governance
   desc: >-
     GH #108: let an architect author model changes in natural language,
@@ -700,6 +708,7 @@
 # =====================================================================
 - type: BusinessProcess
   id: process-spec-generation
+  context: modelling-specification
   name: Deterministic Spec Generation
   desc: >-
     Scripted, template-driven generation of executable architectural
@@ -707,6 +716,7 @@
     sign-off. Output is the deterministic intent consumed by the agentic crew.
 - type: BusinessProcess
   id: process-agentic-crew
+  context: conformance-drift-assurance
   name: Agentic Development Execution
   desc: >-
     Supervised execution of AI-driven development within supervisory control
@@ -715,6 +725,7 @@
     test suites, and deployment manifests.
 - type: BusinessProcess
   id: process-cicd-pipeline
+  context: conformance-drift-assurance
   name: Automated CICD Gate Execution
   desc: >-
     The CI/CD pipeline with the agentic control plane woven in. Evaluates every
@@ -729,6 +740,7 @@
     all gates have cleared. Automatically auditable end-to-end.
 - type: BusinessProcess
   id: process-state-discovery
+  context: conformance-drift-assurance
   name: Architecture Reconciliation
   desc: >-
     Continuous, automated reconciliation of the Current State Architecture
@@ -738,6 +750,7 @@
     for human review.
 - type: BusinessProcess
   id: process-drift-review
+  context: conformance-drift-assurance
   name: Drift Review & Triage
   desc: >-
     Ongoing human review and triage of drift findings as they are surfaced by
@@ -754,6 +767,7 @@
     remediation milestones from the OSCAL POA&M as input.
 - type: BusinessProcess
   id: process-conversational-authoring
+  context: modelling-specification
   name: Conversational Candidate Architecture Authoring
   desc: >-
     GH #108 (ADR-0037 R12): the Enterprise Architect describes a candidate
@@ -764,6 +778,7 @@
     fn-conversational-authoring.
 - type: BusinessProcess
   id: process-solution-design
+  context: reusable-architecture-library
   name: Solution Design Composition
   desc: >-
     The Solution Architect composes implementation blueprints into a
@@ -771,6 +786,7 @@
     fn-solution-compose.
 - type: BusinessProcess
   id: process-conversational-solution-modelling
+  context: reusable-architecture-library
   name: Conversational Solution Modelling
   desc: >-
     GH #138/#68: the Solution Architect describes a change to a Solution
@@ -793,6 +809,7 @@
 # lives here, in the business layer.
 - type: BusinessFunction
   id: bfn-agentic-delivery
+  context: conformance-drift-assurance
   name: Agentic Delivery Execution
   desc: >-
     GH #25: the stable business capability of turning a deterministic
@@ -807,6 +824,7 @@
     bfn-release-enforcement, which gates the release rather than performing it.
 - type: BusinessFunction
   id: bfn-drift-management
+  context: conformance-drift-assurance
   name: Drift Management
   desc: >-
     GH #25: the stable business capability of continuously reconciling the
@@ -815,6 +833,7 @@
     finding's status in the Architecture Conformance Register.
 - type: BusinessFunction
   id: bfn-policy-conversion
+  context: controls-compliance-catalog
   name: Policy-to-OSCAL Conversion
   desc: >-
     GH #7: the stable business capability of turning authored policy and
@@ -823,6 +842,7 @@
     independent of the specific authoring/conversion process steps.
 - type: BusinessFunction
   id: bfn-pattern-blueprint-traceability
+  context: reusable-architecture-library
   name: Pattern & Blueprint Traceability
   desc: >-
     GH #7: the stable business capability of mapping OSCAL Profile controls
@@ -836,6 +856,7 @@
     target state architecture the estate is reconciled against.
 - type: BusinessFunction
   id: bfn-conversational-authoring
+  context: modelling-specification
   name: Conversational Candidate Architecture Authoring
   desc: >-
     GH #108: the Enterprise Architect's stable capability of maintaining the
@@ -846,18 +867,21 @@
     (do-solution-design) instead.
 - type: BusinessFunction
   id: bfn-solution-design
+  context: reusable-architecture-library
   name: Solution Design
   desc: >-
     The stable business capability of composing reusable implementation
     blueprints into solution-specific designs.
 - type: BusinessFunction
   id: bfn-release-enforcement
+  context: conformance-drift-assurance
   name: Release Controls Enforcement
   desc: >-
     GH #7: the stable business capability of gating a release against its
     expected controls before it is permitted to ship.
 - type: BusinessFunction
   id: bfn-effectiveness-assurance
+  context: conformance-drift-assurance
   name: Controls Effectiveness Assurance
   desc: >-
     GH #7: the stable business capability of continuously verifying that
@@ -868,6 +892,7 @@
 # re-cutting the bfn-* set wholesale (still tracked as GH #68 epic item 0).
 - type: BusinessFunction
   id: bfn-security-assurance
+  context: reusable-architecture-library
   name: Security Assurance
   desc: >-
     The stable business capability of assessing patterns, blueprints and
@@ -883,6 +908,7 @@
     build/deploy pipeline rather than the Developer's own work.
 - type: BusinessProcess
   id: process-security-assessment
+  context: reusable-architecture-library
   name: Security Assessment
   desc: >-
     The Security Architect / Threat Modeller runs a threat model over a
@@ -897,6 +923,7 @@
     the change ships.
 - type: BusinessProcess
   id: process-policy-authoring
+  context: controls-compliance-catalog
   name: Policy & Standards Authoring
   desc: >-
     The Compliance Officer / Auditor authors a verbatim custom policy or
@@ -906,6 +933,7 @@
     conversion ingests the resulting document.
 - type: BusinessProcess
   id: process-oscal-conversion
+  context: controls-compliance-catalog
   name: OSCAL Catalog Generation
   desc: >-
     Converts authored policy content and upstream regulatory standard text
@@ -916,6 +944,7 @@
     Markdown) followed by fn-oscal-conversion's Trestle round-trip.
 - type: BusinessProcess
   id: process-baseline-tailoring
+  context: controls-compliance-catalog
   name: Control Baseline Tailoring
   desc: >-
     The Compliance Officer / Auditor tailors an OSCAL Profile from one or
@@ -924,6 +953,7 @@
     and risk appetite. Human judgement; no application-layer realization yet.
 - type: BusinessProcess
   id: process-profile-resolution
+  context: controls-compliance-catalog
   name: OSCAL Profile Resolution
   desc: >-
     Automatically resolves a tailored OSCAL Profile against its source
@@ -931,6 +961,7 @@
     by fn-oscal-profile-resolve.
 - type: BusinessProcess
   id: process-pattern-traceability
+  context: reusable-architecture-library
   name: Pattern Control Traceability Mapping
   desc: >-
     The Enterprise Architect maps the resolved controls of the tailored
@@ -939,6 +970,7 @@
     fn-pattern-authoring.
 - type: BusinessProcess
   id: process-blueprint-traceability
+  context: reusable-architecture-library
   name: Blueprint Control Enablement Mapping
   desc: >-
     The Enterprise Architect derives technology-specific implementation
@@ -947,6 +979,7 @@
     application layer by fn-blueprint-authoring.
 - type: BusinessProcess
   id: process-effectiveness-monitoring
+  context: conformance-drift-assurance
   name: Controls Effectiveness Monitoring
   desc: >-
     Platform Operations watches whether deployed controls remain effective in
@@ -959,6 +992,7 @@
 # =====================================================================
 - type: BusinessObject
   id: bo-regulatory-standard
+  context: controls-compliance-catalog
   name: Regulatory Standard
   desc: >-
     Verbatim upstream regulatory standard text consumed by the platform (e.g.
@@ -966,18 +1000,22 @@
     OSCAL.
 - type: BusinessObject
   id: bo-policy-doc
+  context: controls-compliance-catalog
   name: Policy / Standard Document
   desc: Custom policy or standard authored by the Compliance Officer / Auditor.
 - type: BusinessObject
   id: bo-oscal-catalog
+  context: controls-compliance-catalog
   name: OSCAL Catalog
   desc: Machine-readable control catalog.
 - type: BusinessObject
   id: bo-oscal-profile
+  context: controls-compliance-catalog
   name: OSCAL Profile
   desc: Tailored control selection / baseline.
 - type: BusinessObject
   id: bo-oscal-resolved-catalog
+  context: controls-compliance-catalog
   name: Resolved OSCAL Profile Catalog
   desc: >-
     The flattened set of controls a tailored Profile actually selects,
@@ -985,32 +1023,38 @@
     operative control baseline for downstream use.
 - type: BusinessObject
   id: bo-architecture-pattern
+  context: reusable-architecture-library
   name: Architecture Pattern
   desc: Technology-agnostic, reusable design with mapped controls.
 - type: BusinessObject
   id: bo-implementation-blueprint
+  context: reusable-architecture-library
   name: Implementation Blueprint
   desc: >-
     Technology-specific realisation of an architecture pattern, capturing
     control enablement status and gaps.
 - type: BusinessObject
   id: bo-oscal-component
+  context: reusable-architecture-library
   name: OSCAL Component Definition
   desc: Control implementation claims for a reusable blueprint.
 - type: BusinessObject
   id: bo-solution-component
+  context: reusable-architecture-library
   name: Solution Component
   desc: >-
     A deployed instance of an Implementation Blueprint, specialized for one
     technology and bound into a specific Solution Design.
 - type: BusinessObject
   id: bo-solution-design
+  context: reusable-architecture-library
   name: Solution Design
   desc: >-
     Solution-specific composition of Solution Components, unique to one
     system, closely related to its discovered configuration items.
 - type: BusinessObject
   id: bo-oscal-ssp
+  context: reusable-architecture-library
   name: OSCAL System Security Plan
   desc: >-
     Control implementation for the specific Solution Design it is derived
@@ -1018,6 +1062,7 @@
     existing state-discovery mechanism, not a separate one.
 - type: BusinessObject
   id: bo-oscal-assessment-plan
+  context: conformance-drift-assurance
   name: OSCAL Assessment Plan
   desc: >-
     Scope and method for assessing the SSP's declared control implementations
@@ -1027,6 +1072,7 @@
     instance to reference the plan it assessed against).
 - type: BusinessObject
   id: bo-oscal-assessment-results
+  context: conformance-drift-assurance
   name: OSCAL Assessment Results
   desc: >-
     Findings on whether the SSP's declared control implementations are
@@ -1038,10 +1084,12 @@
   desc: Pass / block outcome with the controls evaluated at release time.
 - type: BusinessObject
   id: bo-control-effectiveness-evidence
+  context: conformance-drift-assurance
   name: Control Effectiveness Evidence
   desc: BAU evidence that a deployed control is (or is not) working.
 - type: BusinessObject
   id: bo-current-state-architecture
+  context: digital-twin-knowledge-graph
   name: Current State Architecture
   desc: >-
     The discovered, as-built architecture of the estate — the "where we are"
@@ -1059,6 +1107,7 @@
     archimate-analogue: Target Plateau
 - type: BusinessObject
   id: bo-architecture-roadmap
+  context: conformance-drift-assurance
   name: Architecture Roadmap
   desc: >-
     The time-sequenced transition from the Current State Architecture to the
@@ -1079,6 +1128,7 @@
     archimate-analogue: Transition Plateau
 - type: BusinessObject
   id: bo-oscal-poam
+  context: conformance-drift-assurance
   name: OSCAL Plan of Action & Milestones
   desc: >-
     Open control deficiencies found by assessment — at the release gate and
@@ -1086,6 +1136,7 @@
     target milestones, in OSCAL form for external compliance reporting.
 - type: BusinessObject
   id: bo-drift-finding
+  context: conformance-drift-assurance
   name: Drift Finding
   desc: >-
     A classified deviation of the Current State Architecture from the
@@ -1094,6 +1145,7 @@
     archimate-analogue: Gap
 - type: BusinessObject
   id: bo-conformance-backlog
+  context: conformance-drift-assurance
   name: Architecture Conformance Register
   desc: >-
     The system of record for every drift finding and its triage status —
@@ -1224,6 +1276,7 @@
     conversion, and tracks Catalog / Profile status.
 - type: ApplicationInterface
   id: if-catalog-playground
+  context: controls-compliance-catalog
   name: Control Conversion Playground
   desc: >-
     Dev-tool interface (GH #76) that runs one control through both
@@ -1234,6 +1287,7 @@
     (ADR-0020, GH #120).
 - type: ApplicationInterface
   id: if-llm-settings-ui
+  context: llm-provider-config
   name: LLM Settings UI
   desc: >-
     Mountable settings page and JSON API (ADR-0034) for the global LLM
@@ -1250,6 +1304,7 @@
     by the role it serves, and the shared navigation into them.
 - type: ApplicationInterface
   id: if-modelling-authoring-ui
+  context: modelling-specification
   name: Conversational Authoring UI
   desc: >-
     Human-facing split-screen interface (and its /authoring JSON API) where
@@ -1338,6 +1393,7 @@
 # --- B. Collaboration (joint behaviour across more than one role) ---
 - type: BusinessCollaboration
   id: bc-model-collaboration
+  context: modelling-specification
   name: "Model Collaboration"
   desc: >-
     Two or more roles working on the same architecture model concurrently
@@ -1345,6 +1401,7 @@
     concept for joint behaviour).
 - type: BusinessInteraction
   id: bi-collaborative-modelling
+  context: modelling-specification
   name: "Collaborative Architecture Modelling"
   desc: Joint authoring/review of the model performed by Model Collaboration.
 
@@ -1541,6 +1598,7 @@
     artefact.
 - type: ApplicationFunction
   id: fn-enforcement-gate
+  context: conformance-drift-assurance
   name: Controls Enforcement Gate
   desc: >-
     Release-time control enforcement, run inline in the CI/CD pipeline: verify
@@ -1571,6 +1629,7 @@
   desc: Render ArchiMate / C4 / UML models against the bundled metamodels.
 - type: ApplicationFunction
   id: fn-conversational-authoring
+  context: modelling-specification
   name: Conversational Candidate Architecture Authoring
   desc: >-
     GH #108: the Enterprise Architect's natural-language authoring of
@@ -1785,6 +1844,7 @@
 # --- E. Work Packages (ARCHITECTURE.md §8, one per step) ---
 - type: WorkPackage
   id: wp-71-migration-steps-1-3
+  context: controls-compliance-catalog
   name: "GH-71 Migration steps 1–3"
   desc: >-
     platform/ Poetry monorepo skeleton (empty, CI green); first extraction
@@ -1792,6 +1852,7 @@
     (GH #44); root CI fan-out proven, workspace lock resolves, tests pass.
 - type: WorkPackage
   id: wp-106-scaffold-twin
+  context: digital-twin-knowledge-graph
   name: GH-106 Scaffold digital-twin-knowledge-graph
   desc: Port prototype-neo4j ideas (ADR-0006, ARCHITECTURE.md §7).
 - type: WorkPackage
@@ -1876,6 +1937,7 @@
   props: {c4: ignore}
 - type: TechnologyProcess
   id: techproc-oscal-golden-check
+  context: controls-compliance-catalog
   name: OSCAL Golden-Dataset Regression Check
   desc: >-
     Automated CI check with three legs, each comparing a generated pipeline
@@ -1892,6 +1954,7 @@
   props: {c4: ignore}
 - type: Artifact
   id: art-tech-oscal-workspace
+  context: controls-compliance-catalog
   name: Trestle Workspace Directory
   desc: >-
     Local filesystem directory tree under `<data_dir>/workspaces/<slug>/`
@@ -1902,6 +1965,7 @@
   props: {c4: ignore}
 - type: Artifact
   id: art-tech-ledger-file
+  context: digital-twin-knowledge-graph
   name: Forensic Ledger File (JSONL)
   desc: >-
     Append-only JSONL file at `<data_dir>/forensic-ledger.jsonl` (default
@@ -1912,6 +1976,7 @@
   props: {c4: ignore}
 - type: Artifact
   id: art-tech-neo4j-volume
+  context: digital-twin-knowledge-graph
   name: Neo4j Graph Database Files
   desc: >-
     GH #108: the on-disk database files sw-neo4j reads/writes (ADR-0018) —
@@ -1941,6 +2006,7 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-neo4j
+  context: digital-twin-knowledge-graph
   name: Neo4j 5.x
   desc: >-
     The architecture knowledge-graph database (ADR-0018). Runs inside
@@ -1950,6 +2016,7 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-keyring
+  context: llm-provider-config
   name: OS Credential Store (keyring)
   desc: >-
     OS-native credential store — macOS Keychain, Windows Credential Manager,
