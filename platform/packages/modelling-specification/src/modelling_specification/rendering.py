@@ -32,6 +32,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -170,12 +171,21 @@ def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path
     """Generate every job's `.puml` for `root`; returns (stale, changed, wanted) as
     repo-relative stale paths, the changed `.puml` paths, and every path `_jobs`
     produced (stale or not, for `_orphans` to compare against)."""
+    jobs = _jobs(root)
+    # Each _capture() is a separate `python model_to_puml.py`/`model_to_c4.py` process
+    # that reparses the whole model XML -- dozens of these in sequence is the slow part
+    # (observed ~65s for this repo's ~70 views), not CPU work in this process. They're
+    # independent (no shared state, each writes to its own puml path below), so running
+    # them concurrently is safe; a thread pool is enough since each thread just blocks on
+    # subprocess I/O. map() preserves job order, so stale/changed stay deterministic.
+    with ThreadPoolExecutor(max_workers=min(len(jobs), 8) or 1) as pool:
+        rendered = list(pool.map(lambda job: _capture(job[1]), jobs))
+
     stale: list[str] = []
     changed: list[Path] = []
     wanted: set[Path] = set()
-    for puml, cmd in _jobs(root):
+    for (puml, _cmd), new_text in zip(jobs, rendered, strict=True):
         wanted.add(puml)
-        new_text = _capture(cmd)
         current = puml.read_text() if puml.exists() else None
         if current == new_text:
             continue
