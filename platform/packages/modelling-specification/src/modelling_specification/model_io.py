@@ -552,6 +552,38 @@ def generate_context_groupings(
     return groupings, aggregations
 
 
+def generate_context_map_relationships(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Derive one Serving relationship between two bounded-context Groupings for every
+    ordered pair of real contexts (GH #129 step 5's context map) that has at least one
+    element-level relationship crossing between them. Not hand-authored: only this
+    model's own `rels` decide which context serves which; direction follows the
+    underlying relationship's own source -> target. Collapsed to one edge per ordered
+    (source-context, target-context) pair regardless of how many element-level
+    relationships cross it, and regardless of each one's own ArchiMate type -- the
+    context map's own story is *that* two contexts are coupled and which way, not the
+    relationship kind that happens to carry it.
+
+    `DEFAULT_CONTEXT` ("platform") and `LAYER_CONTEXTS` (vendored layers) are excluded
+    on either end, same as `generate_context_groupings` -- an edge touching the shared
+    kernel or a vendored import is not a bounded-context coupling. Call on the raw,
+    pre-generation `elements`/`rels`, same convention as `generate_context_groupings`."""
+    context_by_id = {e["id"]: e.get("context", DEFAULT_CONTEXT) for e in elements if e.get("id")}
+    pairs: set[tuple[str, str]] = set()
+    for r in rels:
+        source_ctx = context_by_id.get(r.get("source"))
+        target_ctx = context_by_id.get(r.get("target"))
+        if source_ctx is None or target_ctx is None or source_ctx == target_ctx:
+            continue
+        if DEFAULT_CONTEXT in (source_ctx, target_ctx):
+            continue
+        if source_ctx in LAYER_CONTEXTS or target_ctx in LAYER_CONTEXTS:
+            continue
+        pairs.add((source_ctx, target_ctx))
+    return [{"type": "Serving", "source": f"grp-ctx-{a}", "target": f"grp-ctx-{b}"} for a, b in sorted(pairs)]
+
+
 def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[str], errors: list[str]) -> None:
     """Hold a view that declares `viewpoint:` to that standard viewpoint's allow lists."""
     slug = v.get("viewpoint")
@@ -883,15 +915,20 @@ def _assemble(
     error and a structural one are both reported in one pass.
 
     Also generates and adds the GH #129 step 2 context Groupings + Aggregations
-    (`generate_context_groupings`) -- `elements`/`rels` as passed in must not already
-    carry them, since that would double-add. The generated pair is added only to the
-    `Model`, not to what `check_motivation_conventions` below sees: those conventions
-    are about first-party content, and a generated Grouping/Aggregation has no `desc`
-    worth altitude-checking and no motivation-chain role."""
+    (`generate_context_groupings`) and the step 5 context-map Serving edges between
+    them (`generate_context_map_relationships`) -- `elements`/`rels` as passed in
+    must not already carry them, since that would double-add. The generated content
+    is added to the `Model` and made selectable by a view's own `include_types`
+    (`add_views` gets `elements + groupings`, so a view like view-context-map can
+    sweep `[Grouping]`), but not to what `check_motivation_conventions` below sees:
+    those conventions are about first-party content, and a generated
+    Grouping/Aggregation/Serving edge has no `desc` worth altitude-checking and no
+    motivation-chain role."""
     groupings, aggregations = generate_context_groupings(elements)
+    context_map_rels = generate_context_map_relationships(elements, rels)
     m = Model(name)
     by_id, types_by_id = add_elements(m, elements + groupings, errors)
-    add_relationships(m, rels + aggregations, by_id, errors)
+    add_relationships(m, rels + aggregations + context_map_rels, by_id, errors)
     seen_views: set[str] = set()
     for v in views:
         if (vid := v.get("id")) is None:
@@ -899,7 +936,7 @@ def _assemble(
         if vid in seen_views:
             errors.append(f"duplicate view id: {vid}")
         seen_views.add(vid)
-    add_views(m, views, elements, by_id, types_by_id, errors)
+    add_views(m, views, elements + groupings, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
     if errors:
         return None, errors, motivation_warnings

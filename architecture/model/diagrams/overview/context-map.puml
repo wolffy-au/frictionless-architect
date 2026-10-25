@@ -1,0 +1,35 @@
+@startuml
+!include <archimate/Archimate>
+
+title Context Map
+
+Grouping(e_iddff3ddea065c5e, "Architecture Governance")
+Grouping(e_ide64d526f663e5b, "Conformance & Drift Assurance")
+Grouping(e_id2b3d5a23698555, "Controls & Compliance Catalog")
+Grouping(e_id2fe39f74e00e5c, "Digital Twin & Knowledge Graph")
+Grouping(e_id9820051a523257, "LLM Provider Configuration")
+Grouping(e_idf7f65c60eaea5c, "Modelling & Specification")
+Grouping(e_id0305c87937d55f, "PII Anonymization Gateway")
+Grouping(e_id5ddfe1da5aa35f, "Reusable Architecture Library")
+Grouping(e_idfebc823b192757, "Schema Visualiser API")
+
+Rel_Serving_Up(e_iddff3ddea065c5e, e_id2fe39f74e00e5c, "")
+Rel_Serving_Up(e_iddff3ddea065c5e, e_id5ddfe1da5aa35f, "")
+Rel_Serving_Up(e_ide64d526f663e5b, e_iddff3ddea065c5e, "")
+Rel_Serving_Up(e_ide64d526f663e5b, e_id2b3d5a23698555, "")
+Rel_Serving_Up(e_ide64d526f663e5b, e_id2fe39f74e00e5c, "")
+Rel_Serving_Up(e_ide64d526f663e5b, e_idf7f65c60eaea5c, "")
+Rel_Serving_Up(e_ide64d526f663e5b, e_id5ddfe1da5aa35f, "")
+Rel_Serving_Up(e_id2b3d5a23698555, e_ide64d526f663e5b, "")
+Rel_Serving_Up(e_id2b3d5a23698555, e_id2fe39f74e00e5c, "")
+Rel_Serving_Up(e_id2b3d5a23698555, e_id5ddfe1da5aa35f, "")
+Rel_Serving_Up(e_id2fe39f74e00e5c, e_ide64d526f663e5b, "")
+Rel_Serving_Up(e_id2fe39f74e00e5c, e_idf7f65c60eaea5c, "")
+Rel_Serving_Up(e_id2fe39f74e00e5c, e_idfebc823b192757, "")
+Rel_Serving_Up(e_idf7f65c60eaea5c, e_ide64d526f663e5b, "")
+Rel_Serving_Up(e_idf7f65c60eaea5c, e_id2fe39f74e00e5c, "")
+Rel_Serving_Up(e_idf7f65c60eaea5c, e_id5ddfe1da5aa35f, "")
+Rel_Serving_Up(e_id5ddfe1da5aa35f, e_id2b3d5a23698555, "")
+Rel_Serving_Up(e_id5ddfe1da5aa35f, e_idf7f65c60eaea5c, "")
+
+@enduml
