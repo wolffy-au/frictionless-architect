@@ -38,15 +38,14 @@ step 5) or any time you suspect the log has fallen behind.
 ## Index
 
 Status key: **A** = Accepted · **P** = Proposed (captured from the vision docs,
-not yet re-ratified in a spec) · **A\*** = Accepted but not yet reflected in the
-narrative docs.
+not yet re-ratified in a spec).
 
 - **A** — [0001](0001-root-is-governance-only.md) — Root is governance-only;
   app code lives one level below
 - **A** — [0002](0002-poetry-monorepo-forks-as-submodules.md) — One Poetry
   monorepo for first-party code; forks as `third_party/` submodules
 - **A** — [0003](0003-poetry-not-uv.md) — Poetry is the package manager, not `uv`
-- **A\*** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
+- **A** — [0004](0004-two-tier-spec-numbering.md) — Two-tier spec numbering
   (`EPIC-` at root, `NNN-` per package)
 - **A** — [0005](0005-visualiser-api-ui-split-first-extraction.md) — Controls
   catalog is the first extraction; visualiser API/UI split follows the knowledge graph
@@ -74,7 +73,7 @@ narrative docs.
   links to an ADR ("why over what")
 - **P** — [0017](0017-knowledge-graph-on-standard-ontology.md) — Knowledge graph
   built on a standard ontology (Backstage/C4)
-- **P** — [0018](0018-postgres-plus-neo4j-data-layer.md) — Data layer: Postgres
+- **A** — [0018](0018-postgres-plus-neo4j-data-layer.md) — Data layer: Postgres
   for metadata, Neo4j for the knowledge graph
 - **P** — [0019](0019-opa-rego-policy-engine.md) — Policy engine is OPA (Rego);
   bypass raises managed-drift debt
