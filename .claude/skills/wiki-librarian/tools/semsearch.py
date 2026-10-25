@@ -458,7 +458,7 @@ def digest_of(path: Path) -> str:
 
 def load_model():
     _ensure_isolated_deps()
-    from fastembed import TextEmbedding  # type: ignore[import-not-found]  # isolated venv, see _ensure_isolated_deps
+    from fastembed import TextEmbedding  # isolated venv, see _ensure_isolated_deps
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     return TextEmbedding(model_name=MODEL, cache_dir=str(CACHE_DIR))
@@ -471,7 +471,7 @@ def load_model():
 
 def cmd_index(args: argparse.Namespace) -> int:
     _ensure_isolated_deps()
-    import numpy as np  # type: ignore[import-not-found]  # isolated venv, see _ensure_isolated_deps
+    import numpy as np  # isolated venv, see _ensure_isolated_deps
 
     paths = collect(args.scope)
     if not paths:
