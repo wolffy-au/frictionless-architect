@@ -1,6 +1,6 @@
 ---
 title: "Portal"
-generated: 2026-10-16
+generated: '2026-10-25'
 generator: claude-sonnet-5
 sources:
   - platform/packages/portal/README.md

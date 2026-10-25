@@ -1,6 +1,6 @@
 ---
 title: LLM Provider Configuration
-generated: '2026-10-24'
+generated: '2026-10-25'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0034-shared-packages-and-llm-provider-config.md
