@@ -11,6 +11,11 @@ dependencies = [
     "uvicorn (>=0.43.0,<0.44.0)",
     "controls-compliance-catalog",
     "llm-provider-config",
+    # Transitive floors for GHSA-6q48-6c7w-9gw2 (certifi), GHSA-v4x8-3wr5-3wq8 et al. (filelock)
+    # — already satisfied by the lock, pinned here so Dependabot's per-manifest graph agrees
+    # with it.
+    "certifi (>=2026.10.19)",
+    "filelock (>=4.2.1)",
 ]
 
 [tool.poetry]

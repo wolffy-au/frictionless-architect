@@ -2482,7 +2482,10 @@ files = []
 develop = true
 
 [package.dependencies]
+aiohttp = ">=3.14.4"
+certifi = ">=2026.10.19"
 fastapi = ">=0.141.0,<0.142.0"
+filelock = ">=4.2.1"
 keyring = ">=25.0.0,<26.0.0"
 litellm = ">=1.0.0,<2.0.0"
 pydantic = ">=2.0.0,<3.0.0"
@@ -2859,6 +2862,7 @@ develop = true
 defusedxml = ">=0.7.1,<0.8.0"
 digital-twin-knowledge-graph = "*"
 fastapi = ">=0.141.0,<0.142.0"
+filelock = ">=4.2.1"
 litellm = ">=1.0.0,<2.0.0"
 llm-provider-config = "*"
 pyarchimate = ">=2.0.0,<3.0.0"
@@ -3528,8 +3532,10 @@ files = []
 develop = true
 
 [package.dependencies]
+certifi = ">=2026.10.19"
 controls-compliance-catalog = "*"
 fastapi = ">=0.141.0,<0.142.0"
+filelock = ">=4.2.1"
 llm-provider-config = "*"
 uvicorn = ">=0.43.0,<0.44.0"
 
