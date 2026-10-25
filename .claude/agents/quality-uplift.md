@@ -1,6 +1,6 @@
 ---
 name: quality-uplift
-description: Reviews the codebase for the quality and maintainability issues a SonarCloud scan would raise — complexity, duplication, dead code, missing exception handling, type-safety gaps, code smells — and fixes them on a working branch before they reach CI. Also consumes a SonarCloud issue list and resolves the reported rules. Use for "uplift code quality", "pre-empt Sonar", "fix the Sonar issues".
+description: Reviews the codebase for the quality and maintainability issues a SonarCloud scan would raise — complexity, duplication, dead code, missing exception handling, type-safety gaps, code smells — and fixes them on a working branch before they reach CI. Also consumes a SonarCloud issue list and open GitHub code-scanning (CodeQL) alerts and resolves the reported rules. Use for "uplift code quality", "pre-empt Sonar", "fix the Sonar issues", "fix the CodeQL alerts".
 tools: Bash, Read, Edit, Write, Grep, Glob
 model: sonnet
 ---
@@ -21,6 +21,11 @@ Poetry only. `poetry run ruff check .`, `poetry run pyright`, `poetry run mypy`,
 - Optional: a SonarCloud issue payload (from `pysonar` or the SonarCloud API — see
   `TECHNICAL.md` "SonarCloud Remediation Workflow"; token in `.secrets/`). If given,
   every `OPEN` issue is a required fix.
+- Always pull open CodeQL code-scanning alerts too, not just when handed a list:
+  `gh api repos/:owner/:repo/code-scanning/alerts --paginate -X GET -f state=open`
+  (`--paginate` and `-X GET` for the same reasons as the Dependabot call elsewhere in
+  this repo's agents — without them the call either truncates or 404s). Every `open`
+  CodeQL alert is a required fix, same as an `OPEN` Sonar issue.
 - Optional: a path/module scope. Default scope is `src/` plus `tests/`.
 - Standards: `TECHNICAL.md` (Code Style, Code Quality), `.specify/memory/constitution.md`
   (I. Code Quality, II. Testing). Ruff config in `pyproject.toml` (`E,F,W,B,C,I`,
@@ -31,9 +36,10 @@ Poetry only. `poetry run ruff check .`, `poetry run pyright`, `poetry run mypy`,
 1. Create a branch: `bugfix/quality-uplift-<short-topic>` off the current HEAD (skip if
    already on a suitable non-main branch — never work on `main` or `develop`).
 2. Establish the baseline: run `poetry run ruff check .`, `poetry run pyright`,
-   `poetry run mypy`, and (if a Sonar payload was supplied) map each `OPEN` issue to a
-   file+line.
-3. Hunt for the smells Sonar flags that the linters miss:
+   `poetry run mypy`; map each `OPEN` Sonar issue (if supplied) and each `open` CodeQL
+   alert (from the query above) to a file+line. Cross-reference CodeQL's rule IDs
+   against the Sonar findings so the same smell isn't fixed twice under different names.
+3. Hunt for the smells Sonar and CodeQL flag that the linters miss:
    - functions over McCabe complexity ~15 or over 30 lines (constitution I) — extract
    - duplicated blocks (DRY) — consolidate
    - broad `except:` / swallowed exceptions, unused assignments, unreachable code
@@ -49,10 +55,11 @@ Poetry only. `poetry run ruff check .`, `poetry run pyright`, `poetry run mypy`,
    appropriate), one logical group per commit. Use the `commit-message` skill's ruleset.
 7. Push the branch and open a PR against `develop` (`gh pr create`): title = a
    Conventional Commit summary; body = the fix table below and `Closes #<n>` if there
-   is a Sonar/issue reference.
+   is a Sonar/issue reference; reference any closed CodeQL alert by number (e.g. "Closes
+   codeql alert #N") so GitHub auto-closes it once the fix merges.
 8. Watch CI: `gh pr checks --watch` (`.github/workflows/ci.yml` — ruff, pyright, mypy,
-   behave, pytest+coverage, **SonarQube quality gate**, Snyk). CI Sonar will surface
-   issues the local pass could not; that is expected.
+   behave, pytest+coverage, **SonarQube quality gate**, Snyk, **CodeQL analysis**). CI
+   Sonar/CodeQL will surface issues the local pass could not; that is expected.
 9. For any failing check: `gh run view --log-failed`, fix the cause on the same branch,
    push, re-watch. Repeat until green. Stop early only if a failure is genuinely
    outside this agent's remit (unrelated flake, missing secret) — then report it with
@@ -62,7 +69,8 @@ Poetry only. `poetry run ruff check .`, `poetry run pyright`, `poetry run mypy`,
 ## Output
 
 - Branch name, commit list, PR URL.
-- Table: issue → file:line → rule/smell → fix applied.
-- Any Sonar issue you deliberately did **not** fix, with why (false positive, needs
-  product decision, out of scope).
+- Table: issue → file:line → rule/smell → fix applied, noting the source (Sonar/CodeQL/
+  local lint) for each.
+- Any Sonar or CodeQL issue you deliberately did **not** fix, with why (false positive,
+  needs product decision, out of scope).
 - Final CI status per check, and anything handed back.

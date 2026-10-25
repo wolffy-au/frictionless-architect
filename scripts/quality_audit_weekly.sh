@@ -1,8 +1,8 @@
 #!/bin/bash
 # Weekly run of the quality-uplift agent (.claude/agents/quality-uplift.md).
 # By default: an interactive session in worktree ../<repo>-quality-audit on bugfix/quality-uplift-<date> (opened in
-# Herdr when run inside it), with its own Poetry venv. The agent reports the Sonar-style smells, asks which to fix,
-# then fixes those, runs the local gate and commits.
+# Herdr when run inside it), with its own Poetry venv. The agent reports the Sonar-style smells plus open CodeQL
+# code-scanning alerts, asks which to fix, then fixes those, runs the local gate and commits.
 # --report-only: the unattended smell report in .cache/quality-audit/<date>.md; fixes nothing and opens no PR. It runs
 # in the CURRENT checkout, not a temp worktree: ruff/pyright/mypy need the Poetry venv.
 #
@@ -22,7 +22,7 @@ MODE=root
 BRANCH="bugfix/quality-uplift-$(date +%F)"
 SETUP="venv submodules secrets"
 FIX_TASK="Follow your Steps 4-6 (fix, run the local gate, commit) for the chosen findings."
-TOOLS="Read,Grep,Glob,Bash(poetry run ruff check:*),Bash(poetry run pyright:*),Bash(poetry run mypy:*),Bash(git log:*),Bash(git diff:*)"
+TOOLS="Read,Grep,Glob,Bash(poetry run ruff check:*),Bash(poetry run pyright:*),Bash(poetry run mypy:*),Bash(git log:*),Bash(git diff:*),Bash(gh api repos/*/code-scanning/alerts*)"
 
 # Fetch the open SonarCloud issues for the agent. The project is public, so this is an unauthenticated GET and no token
 # is needed. If it fails, the audit runs without Sonar.
@@ -39,8 +39,20 @@ else
   SONAR_TASK="No SonarCloud payload is available this run; say so in the report."
 fi
 
+# Fetch the open CodeQL code-scanning alerts. This needs gh auth (unlike the public Sonar API above); if it fails,
+# the audit runs without CodeQL.
+CODEQL_JSON=".cache/$OUT_NAME/codeql-alerts.json"
+agent_cleanup_on_exit "$CODEQL_JSON"
+if gh api repos/:owner/:repo/code-scanning/alerts --paginate -X GET -f state=open > "$CODEQL_JSON" 2>/dev/null; then
+  CODEQL_TASK="A GitHub code-scanning (CodeQL) payload of the open alerts is at $CODEQL_JSON (read it with Read): map each open alert to a finding."
+else
+  rm -f "$CODEQL_JSON"
+  echo "WARNING: could not fetch CodeQL alerts; running without them." >&2
+  CODEQL_TASK="No CodeQL payload is available this run; say so in the report."
+fi
+
 TASK="Follow your Steps 2-3 only: skip Steps 1 and 4-10. Run ruff, pyright and mypy for the baseline (do not use --fix), \
-then hunt for the smells in Step 3. $SONAR_TASK Do not fetch Sonar yourself or read .secrets/. Instead of fixing, \
+then hunt for the smells in Step 3. $SONAR_TASK $CODEQL_TASK Do not fetch Sonar yourself or read .secrets/. Instead of fixing, \
 list each issue as file:line | rule/smell | suggested fix, ranked by severity, under '## Findings'. $AGENT_BASH_RULE"
 if [ -n "$SCOPE" ]; then
   TASK="$TASK Scope: $SCOPE only."
