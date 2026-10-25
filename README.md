@@ -20,9 +20,10 @@ topology is described in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 One slice is implemented and runnable: the **Neo4j schema visualiser** — a FastAPI
 service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
-bundled sample model, then renders it as a diagram, a table, and a schema summary.
-When Neo4j is unreachable it falls back to the sample data under `sample-data/`, so
-the service is useful with no infrastructure at all.
+bundled sample model and serves it as JSON (elements, relationships, views,
+warnings). It is JSON-only for now — there is no browser UI; see "Running the
+schema visualiser" below. When Neo4j is unreachable it falls back to the sample
+data under `sample-data/`, so the service is useful with no infrastructure at all.
 
 ## Prerequisites
 
@@ -83,7 +84,7 @@ poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 ```
 
 The service is JSON-only for now — fetch `http://127.0.0.1:8100/schema-payload`
-for the diagram, table, and schema data. The server-rendered HTML page
+for the aggregated schema data. The server-rendered HTML page
 (`/schema-visualizer`) described in ADR-0005 has been dropped ahead of the
 planned `schema-visualizer-ui` extraction; there is no browser UI until that
 package exists.
@@ -154,16 +155,33 @@ and serves what it can. The shapes to expect:
 - **XSD schema-validation issues** (ADR-0022) — every build validates the sample
   against the bundled ArchiMate XSDs
   (`sample-data/schema/archimate3_Diagram.xsd` and its includes):
+  - `Types not defined in schema: <types>` — one or more `xsi:type` values the
+    XSD doesn't declare; checked first because `xmlschema` would otherwise raise
+    instead of reporting, so no other XSD issues are listed for that build.
   - `XSD: <reason> (at <path>)` — a schema-validation error, with the offending
     element path. More than `MAX_XSD_ISSUES` (50) of these truncates the list
     with a final `XSD: further XSD issues suppressed after the first 50`.
-  - `Relationship … references missing …` / `View … references missing …` — a
-    hand-written check (not from the XSD) that names a dangling relationship or
-    view reference by identifier, which raw XSD key/keyref errors don't do.
-- **Sample load failures** — if the sample file is missing or unparseable, the
-  configured `FRICTIONLESS_ARCHITECT_WARNING_TEXT` (default `Sample data
-  unavailable`) is used instead; `sample_file_status` reports `missing` or
-  `invalid` (see above).
+  - `XSD validation aborted: <reason>` — the XSD validator itself raised
+    (e.g. a malformed schema include) before it could iterate errors.
+  - `Relationship <id> source <id> is missing` / `Relationship <id> target <id>
+    is missing` / `View node references missing element <id>` / `View
+    connection references missing relationship <id>` — hand-written checks (not
+    from the XSD) that name a dangling relationship or view reference by
+    identifier, which raw XSD key/keyref errors don't do.
+- **Sample load failures** — these replace the usual warning shapes above with
+  a single entry and set `sample_file_status`:
+  - Missing or unparseable sample XML (`FileNotFoundError` / `ParseError`) —
+    the configured `FRICTIONLESS_ARCHITECT_WARNING_TEXT` (default `Sample data
+    unavailable`) is used instead; `sample_file_status` reports `missing`.
+  - Sample file present but not a valid ArchiMate exchange-format `<model>`
+    (`ArchimateNamespaceError`, ADR-0032) — the namespace-mismatch message
+    itself is used, not `WARNING_TEXT`; `sample_file_status` reports `invalid`.
+  - Two further structural cases appear as a plain warning instead, with
+    `sample_file_status` still `loaded`: `Sample XML <path> has no root
+    element` (empty file) and `Schema XSD <path> could not be loaded:
+    <reason>` / `Schema XSD missing at <path>` (the bundled XSD itself is
+    broken or absent). Both come from the XSD-validation pass, which only
+    runs once the sample XML has already parsed successfully.
 
 ### Sample-only mode (no Neo4j)
 
