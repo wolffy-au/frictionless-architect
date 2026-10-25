@@ -366,6 +366,17 @@ def test_assemble_skips_a_view_without_id_and_flags_a_duplicate_view_id() -> Non
     assert any("view missing id/name" in e for e in errors)
 
 
+def test_assemble_adds_a_generated_grouping_and_aggregation_for_a_tagged_context() -> None:
+    elements = [{"type": "ApplicationComponent", "id": "sub-widget", "context": "widget-forge", "name": "Widget"}]
+    model, errors, _warnings = model_io._assemble("t", elements, [], [], [])
+    assert errors == []
+    assert model is not None
+    groupings = [e for e in model.elements if e.type == "Grouping"]
+    assert [g.name for g in groupings] == ["Widget"]
+    aggregations = [r for r in model.relationships if r.type == "Aggregation"]
+    assert len(aggregations) == 1
+
+
 def test_existing_elements_and_types_skips_elements_with_no_id_or_an_unknown_type(monkeypatch: Any) -> None:
     fake_elements = [
         {"id": "", "type": "application-component", "name": "No Id"},
@@ -606,6 +617,45 @@ def test_check_context_coverage_ignores_a_type_outside_its_scope(monkeypatch: An
     monkeypatch.setattr(model_io, "HERE", tmp_path)
     (tmp_path / "elements.yaml").write_text("- {type: Driver, id: driver-untriaged, name: Untriaged}\n")
     assert model_io.check_context_coverage() == []
+
+
+def test_generate_context_groupings_derives_one_grouping_per_real_context() -> None:
+    elements = [
+        {"type": "ApplicationComponent", "id": "sub-widget", "context": "widget-forge", "name": "Widget Forge"},
+        {"type": "ApplicationFunction", "id": "fn-widget-build", "context": "widget-forge"},
+        {"type": "ApplicationComponent", "id": "sys-platform", "context": "platform"},
+        {"type": "ApplicationComponent", "id": "it4it-cap", "context": "it4it"},
+    ]
+    groupings, aggregations = model_io.generate_context_groupings(elements)
+    assert groupings == [
+        {
+            "type": "Grouping",
+            "id": "grp-ctx-widget-forge",
+            "name": "Widget Forge",
+            "desc": (
+                "Generated bounded-context boundary for every element tagged "
+                "`context: widget-forge` (GH #129) -- not hand-authored."
+            ),
+            "props": {"generated": "true"},
+        }
+    ]
+    assert aggregations == [
+        {"type": "Aggregation", "source": "grp-ctx-widget-forge", "target": "sub-widget"},
+        {"type": "Aggregation", "source": "grp-ctx-widget-forge", "target": "fn-widget-build"},
+    ]
+
+
+def test_generate_context_groupings_falls_back_to_a_title_cased_name_with_no_subsystem() -> None:
+    elements = [{"type": "ApplicationFunction", "id": "fn-orphan", "context": "orphan-context"}]
+    groupings, _aggregations = model_io.generate_context_groupings(elements)
+    assert groupings[0]["name"] == "Orphan Context"
+
+
+def test_generate_context_groupings_skips_elements_with_no_id() -> None:
+    elements = [{"type": "ApplicationFunction", "context": "widget-forge"}]
+    groupings, aggregations = model_io.generate_context_groupings(elements)
+    assert groupings == []
+    assert aggregations == []
 
 
 def test_check_motivation_conventions_surfaces_a_malformed_conventions_file(
