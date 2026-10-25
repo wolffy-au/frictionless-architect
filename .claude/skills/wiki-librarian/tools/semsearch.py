@@ -26,7 +26,9 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import shutil
 import sqlite3
+import subprocess
 import sys
 from pathlib import Path
 from typing import cast
@@ -35,6 +37,87 @@ import wiki_common as wc
 
 MODEL = "BAAI/bge-small-en-v1.5"
 DIM = 384
+
+# fastembed + numpy are deliberately NOT Poetry dependencies: fastembed has
+# never shipped a release whose pillow requirement reaches 13.0 (every
+# version through 0.9.1 caps it at <13.0), which conflicts with pyarchimate
+# >=2.0.0's pillow>=13.0.0 floor (needed to clear the Pillow CVEs tracked in
+# fix(security) commits around 2026-10-25) once both sit in the same unified
+# Poetry dependency graph. Rather than block that security fix on fastembed
+# publishing a compatible release, this tool manages a private package
+# directory of its own for just these two packages, built lazily on first
+# use via `pip install --target` (no separate venv/interpreter -- avoids
+# needing `ensurepip`, which fails under this workspace's drvfs mount; see
+# AGENTS.md "Known environment quirks"). See wiki-librarian/SKILL.md
+# "Semantic search deps".
+_TOOLS_DIR = Path(__file__).resolve().parent
+_ISOLATED_DEPS_DIR = _TOOLS_DIR / ".venv" / f"py{sys.version_info.major}{sys.version_info.minor}-site-packages"
+_ISOLATED_PACKAGES = ("fastembed>=0.7,<0.9", "numpy>=1.24")
+
+
+def _ensure_isolated_deps() -> None:
+    """Make `fastembed`/`numpy` importable, pip-installing them into a
+    private directory under `tools/.venv` (gitignored, matches the repo's
+    `.venv` pattern) the first time this runs, keyed to the running
+    interpreter's version so it's always binary-compatible, then extending
+    `sys.path` with it.
+
+    Installs into a fresh staging directory and swaps it into place with a
+    single `rename` only once pip exits 0, then drops a marker inside the
+    final directory -- a run that's killed mid-install (Ctrl-C, a CI
+    timeout) leaves the staging dir behind as debris, never a half-installed
+    final dir that a later run's `pip install --target` (which does not
+    overwrite existing files) would silently leave mismatched.
+    """
+    marker = _ISOLATED_DEPS_DIR / ".deps-installed"
+    if not marker.exists():
+        print("semsearch: installing fastembed/numpy into tools/.venv (first run only)...", file=sys.stderr)
+        venv_root = _ISOLATED_DEPS_DIR.parent
+        venv_root.mkdir(parents=True, exist_ok=True)
+        staging = venv_root / f"{_ISOLATED_DEPS_DIR.name}.staging"
+        shutil.rmtree(staging, ignore_errors=True)
+        staging.mkdir(parents=True)
+        # pip builds packages under $TMPDIR, then renames into --target. On a
+        # drvfs/9p workspace mount the default /tmp is a different device, so
+        # that rename fails with "Invalid cross-device link" (AGENTS.md
+        # "Known environment quirks"). Staging under the target's own tree
+        # keeps both on the same filesystem.
+        pip_tmp = venv_root / "tmp"
+        pip_tmp.mkdir(parents=True, exist_ok=True)
+        env = dict(os.environ, TMPDIR=str(pip_tmp))
+        pip_cmd = [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--quiet",
+            "--target",
+            str(staging),
+            *_ISOLATED_PACKAGES,
+        ]
+        try:
+            try:
+                subprocess.run(pip_cmd, check=True, env=env)
+            except subprocess.CalledProcessError:
+                # Some sandboxed/drvfs workspace mounts report every path as
+                # 0777 owned by the invoking user but still reject the
+                # chmod/rename pip's atomic installed-file writes do
+                # (AGENTS.md "Known environment quirks"); retry under sudo,
+                # which sidesteps that UID-mapping check. No-op elsewhere --
+                # if `sudo` isn't available or passwordless, this just raises
+                # the original-shaped error again.
+                if shutil.which("sudo") is None:
+                    raise
+                subprocess.run(["sudo", "-E", *pip_cmd], check=True, env=env)
+            (staging / ".deps-installed").write_text("ok\n", encoding="utf-8")
+            shutil.rmtree(_ISOLATED_DEPS_DIR, ignore_errors=True)
+            staging.rename(_ISOLATED_DEPS_DIR)
+        finally:
+            shutil.rmtree(pip_tmp, ignore_errors=True)
+            shutil.rmtree(staging, ignore_errors=True)
+    if str(_ISOLATED_DEPS_DIR) not in sys.path:
+        sys.path.insert(0, str(_ISOLATED_DEPS_DIR))
+
 
 # bge-small on CPU embeds real-length chunks at only ~1.5/s per process on a
 # typical dev box, so `index --scope all` (~750 chunks) is an ~8-minute job
@@ -374,7 +457,8 @@ def digest_of(path: Path) -> str:
 
 
 def load_model():
-    from fastembed import TextEmbedding
+    _ensure_isolated_deps()
+    from fastembed import TextEmbedding  # type: ignore[import-not-found]  # isolated venv, see _ensure_isolated_deps
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     return TextEmbedding(model_name=MODEL, cache_dir=str(CACHE_DIR))
@@ -386,7 +470,8 @@ def load_model():
 
 
 def cmd_index(args: argparse.Namespace) -> int:
-    import numpy as np
+    _ensure_isolated_deps()
+    import numpy as np  # type: ignore[import-not-found]  # isolated venv, see _ensure_isolated_deps
 
     paths = collect(args.scope)
     if not paths:
@@ -466,7 +551,8 @@ def cmd_index(args: argparse.Namespace) -> int:
 
 
 def cmd_search(args: argparse.Namespace) -> int:
-    import numpy as np
+    _ensure_isolated_deps()
+    import numpy as np  # isolated venv, see _ensure_isolated_deps (mypy already covered this module above)
 
     if not DB_PATH.exists():
         print("no index yet -- run: python tools/semsearch.py index", file=sys.stderr)
