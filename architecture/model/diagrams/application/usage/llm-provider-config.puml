@@ -1,0 +1,26 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Application Usage — llm-provider-config
+
+Grouping(e_id54dd4701dbf151, "Frictionless Architecture Platform")
+Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
+Application_Component(e_id6c2233bb09755d, "Portal")
+Application_Interface(e_idcefe9c2a8ca45f, "LLM Settings UI")
+Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
+Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
+Grouping(e_id9820051a523257, "LLM Provider Configuration")
+
+Rel_Composition(e_id54dd4701dbf151, e_id305eddd7c8dc55, "")
+Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/model & resolves credentials for calls to")
+Rel_Realization_Up(e_id2b059f9c51b053, e_id305eddd7c8dc55, "")
+Rel_Composition(e_id305eddd7c8dc55, e_idcefe9c2a8ca45f, "")
+Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
+Rel_Aggregation(e_idb94c55ad2a0756, e_id2b059f9c51b053, "")
+Rel_Aggregation(e_id9820051a523257, e_id305eddd7c8dc55, "")
+Rel_Aggregation(e_id9820051a523257, e_idcefe9c2a8ca45f, "")
+Rel_Aggregation(e_id9820051a523257, e_id2b059f9c51b053, "")
+
+@enduml

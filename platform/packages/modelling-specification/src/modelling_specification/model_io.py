@@ -290,6 +290,19 @@ def view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by
     }
 
 
+def view_split_contexts(v: dict[str, Any], elements: list[dict[str, Any]], types_by_id: dict[str, str]) -> list[str]:
+    """The real package contexts actually present among `v`'s own membership
+    (via `view_element_ids`), sorted -- `platform` and vendored-layer contexts
+    excluded, same convention `generate_context_groupings` uses for which
+    contexts are "real" ones. Used by `rendering.py` to fan a `split_by:
+    context` view (GH #129 step 4) out into one `.puml` per context, skipping
+    any context this particular view has nothing in."""
+    by_id = {e["id"]: e for e in elements}
+    ids = view_element_ids(v, elements, types_by_id)
+    contexts = {by_id[eid].get("context", DEFAULT_CONTEXT) for eid in ids if eid in by_id}
+    return sorted(contexts - {DEFAULT_CONTEXT} - LAYER_CONTEXTS)
+
+
 def _check_derived_goal_edges(
     elements: list[dict[str, Any]],
     rels: list[dict[str, Any]],
@@ -362,7 +375,29 @@ def check_motivation_conventions(
             errors.append(str(exc))
             rules = []
     errors.extend(conventions.check_relationships(elements, rels, types_by_id, rules))
-    return _check_derived_goal_edges(elements, rels, views, types_by_id) + check_context_coverage()
+    return (
+        _check_derived_goal_edges(elements, rels, views, types_by_id)
+        + check_context_coverage()
+        + check_view_coverage(elements, views, types_by_id)
+    )
+
+
+def check_view_coverage(
+    elements: list[dict[str, Any]], views: list[dict[str, Any]], types_by_id: dict[str, str]
+) -> list[str]:
+    """Warn about a first-party element that `view_element_ids` places on no view at
+    all (GH #129 step 7) -- it was authored but never swept into any `members`/
+    `include_types` scope, so nothing ever shows it. A vendored layer (`it4it-*`,
+    `gh-roadmap`) is excluded: those are bulk imports with their own coverage story,
+    not a first-party authoring gap. Generated Groupings/Aggregations are never in
+    `elements` here (`_assemble` keeps them out of what this function sees), so they
+    need no exemption."""
+    shown = {eid for v in views if "id" in v for eid in view_element_ids(v, elements, types_by_id)}
+    return [
+        f"warning: {element['type']} {element['id']!r} is on no view"
+        for element in elements
+        if element.get("context", DEFAULT_CONTEXT) not in LAYER_CONTEXTS and element["id"] not in shown
+    ]
 
 
 # GH #129 tag-coverage check, scope. Motivation/Strategy layers (Driver,
@@ -709,9 +744,13 @@ def add_views(
             view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
         )
         if v.get("include_neighbours"):
-            view_el_types |= _add_neighbour_elements(
-                view, m, on_view, uuid_to_id, types_by_id, exclude_element_patterns, v["id"]
-            )
+            # Neighbours are incidental boundary-crossing context, not part of
+            # what the view's own `viewpoint:` is declared to be about -- they
+            # are deliberately NOT folded into view_el_types, so a neighbour of
+            # a type the viewpoint doesn't allow (e.g. a Capability one hop
+            # from an Application Usage view) doesn't fail check_view_viewpoint
+            # below (GH #129 step 4 fallout).
+            _add_neighbour_elements(view, m, on_view, uuid_to_id, types_by_id, exclude_element_patterns, v["id"])
         exclude_patterns = _compile_exclude_patterns(v, errors)
         view_rel_types = _connect_view_relationships(
             view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
@@ -764,7 +803,9 @@ def _add_neighbour_elements(
     exactly one relationship hop from an element already in `on_view`, whatever
     its `context`. Mutates `on_view` in place so `_connect_view_relationships`
     (run after this) also draws the connecting edge; returns the ArchiMate
-    types added, for `add_views`'s viewpoint check. Walks from the view's
+    types added (informational only -- the caller does not feed this into
+    `check_view_viewpoint`, since a neighbour is incidental boundary context,
+    not part of what the view's viewpoint is about). Walks from the view's
     original membership only (`base`), never the set as it grows, so a
     neighbour's own neighbours are not pulled in -- exactly one hop."""
     base = frozenset(on_view)
