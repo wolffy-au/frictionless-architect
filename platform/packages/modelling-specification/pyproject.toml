@@ -16,6 +16,9 @@ dependencies = [
     "digital-twin-knowledge-graph",
     "litellm (>=1.0.0,<2.0.0)",
     "defusedxml (>=0.7.1,<0.8.0)",
+    # Transitive floor for GHSA-v4x8-3wr5-3wq8 et al. (filelock) — already satisfied by the
+    # lock, pinned here so Dependabot's per-manifest graph agrees with it.
+    "filelock (>=4.2.1)",
 ]
 
 [tool.poetry]
