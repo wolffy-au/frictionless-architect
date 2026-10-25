@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: '2026-10-24'
+generated: '2026-10-25'
 generator: claude-sonnet-5
 sources:
 - .claude/agents/README.md
@@ -115,6 +115,15 @@ package or top-level area (`agents`, `skills`, `wiki`, `devcontainer`, `specs`,
 `ci`, `architecture`, …). The authoritative ruleset is
 `.claude/skills/commit-message/references/standard.md`. `commit-auditor` is the read-only
 branch-wide pre-PR audit; it never amends, rebases, or pushes.
+
+## `pr-preflight`
+
+Pre-flight checklist for a branch about to become a PR: scopes the diff
+against `develop`, runs an autofix pass, refreshes docs/diagrams/wiki for
+whatever the diff touched, checks specs/ADRs, audits commit messages,
+spot-checks quality/security, then runs the full gate before pushing
+(`.claude/skills/README.md:44`). It is the mirror of `pr-wrapup` below —
+readying a branch for a PR instead of tidying up after one has landed.
 
 ## `fork-sync`
 
