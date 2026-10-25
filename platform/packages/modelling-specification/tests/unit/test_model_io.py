@@ -578,6 +578,36 @@ def test_check_motivation_conventions_exempts_a_vendored_capability() -> None:
     assert errors == []
 
 
+def test_check_context_coverage_flags_an_untagged_application_component(monkeypatch: Any, tmp_path: Any) -> None:
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+    (tmp_path / "elements.yaml").write_text("- {type: ApplicationComponent, id: sub-untriaged, name: Untriaged}\n")
+    warnings = model_io.check_context_coverage()
+    assert warnings == [
+        "warning: ApplicationComponent 'sub-untriaged' has no explicit context and no "
+        "recorded shared-context exemption — defaults to 'platform'"
+    ]
+
+
+def test_check_context_coverage_accepts_an_explicit_context(monkeypatch: Any, tmp_path: Any) -> None:
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+    (tmp_path / "elements.yaml").write_text(
+        "- {type: ApplicationComponent, id: sub-tagged, context: some-package, name: Tagged}\n"
+    )
+    assert model_io.check_context_coverage() == []
+
+
+def test_check_context_coverage_accepts_a_recorded_exemption(monkeypatch: Any, tmp_path: Any) -> None:
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+    (tmp_path / "elements.yaml").write_text("- {type: ApplicationComponent, id: ext-llm, name: LLM Provider}\n")
+    assert model_io.check_context_coverage() == []
+
+
+def test_check_context_coverage_ignores_a_type_outside_its_scope(monkeypatch: Any, tmp_path: Any) -> None:
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+    (tmp_path / "elements.yaml").write_text("- {type: Driver, id: driver-untriaged, name: Untriaged}\n")
+    assert model_io.check_context_coverage() == []
+
+
 def test_check_motivation_conventions_surfaces_a_malformed_conventions_file(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

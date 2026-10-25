@@ -351,7 +351,8 @@ def check_motivation_conventions(
     errors: list[str],
     rules: list[dict[str, Any]] | None = None,
 ) -> list[str]:
-    """Apply configured whole-model relationship conventions and the derived-edge note."""
+    """Apply configured whole-model relationship conventions, the derived-edge note,
+    and the GH #129 tag-coverage warning -- despite the name, not motivation-only."""
     from modelling_specification.validation import conventions
 
     if rules is None:
@@ -361,7 +362,101 @@ def check_motivation_conventions(
             errors.append(str(exc))
             rules = []
     errors.extend(conventions.check_relationships(elements, rels, types_by_id, rules))
-    return _check_derived_goal_edges(elements, rels, views, types_by_id)
+    return _check_derived_goal_edges(elements, rels, views, types_by_id) + check_context_coverage()
+
+
+# GH #129 tag-coverage check, scope. Motivation/Strategy layers (Driver,
+# Stakeholder, Goal, Outcome, Requirement, Capability's shared cases, etc.),
+# BusinessRole and ValueStream are cross-cutting by design and excluded from
+# this check entirely -- only the layers #129 calls out (Application,
+# Technology, BusinessObject) are checked, since those are where an element
+# usually belongs to exactly one package.
+_CONTEXT_COVERAGE_TYPES = {
+    "ApplicationComponent",
+    "ApplicationFunction",
+    "ApplicationInterface",
+    "DataObject",
+    "BusinessObject",
+    "Grouping",
+    "Node",
+    "SystemSoftware",
+    "TechnologyProcess",
+    "TechnologyFunction",
+    "Artifact",
+}
+# Elements of the types above that are genuinely shared across every package
+# (a shared kernel, host/portal, or something entirely outside the platform
+# Grouping) rather than owned by one -- reviewed and accepted here, the same
+# "never silently" posture as `check_derived.py`'s SERVING_EXCEPTIONS: an
+# addition to this set is a conscious decision, not a default.
+_SHARED_CONTEXT_EXEMPTIONS = {
+    "sys-platform",  # the platform Grouping itself
+    "sub-portal",  # host package, not one of the six subsystems (ADR-0020)
+    "if-portal-ui",  # the portal's own shared entry point
+    "art-flat-src",  # legacy pre-migration flat src/, not one package
+    "art-pkg-portal",  # host package Artifact, not one of the six subsystems
+    # Shared stores -- the "shared kernel" DataObjects multiple subsystems read/write.
+    "store-oscal",
+    "store-patterns",
+    "store-akg",
+    "store-frameworks",
+    "store-ledger",
+    # External systems -- outside the platform Grouping entirely.
+    "ext-scm",
+    "ext-cicd",
+    "ext-cloud",
+    "ext-itsm",
+    "ext-trestle",
+    "ext-llm",
+    "ext-rfp",
+    "ext-collab",
+    "fn-scm-versioning",
+    "fn-scm-change-review",
+    "fn-cicd-build",
+    "fn-cicd-deploy",
+    "fn-itsm-backlog",
+    "fn-itsm-change",
+    # Cross-cutting pipeline artefacts with no single owning subsystem.
+    "do-target-architecture",
+    "do-release-candidate",
+    "do-gate-decision",
+    "bo-release-gate-decision",
+    "bo-target-state-architecture",
+    "bo-transition-state-architecture",
+    # Shared infra -- the common deployment target/runtime/CI, not one package's.
+    "node-ci-runner",
+    "node-app-server",
+    "node-hosted-cluster",
+    "sw-pytest",
+    "sw-uvicorn-fastapi",
+    # Cross-subsystem composition, owned by no single subsystem (ADR-0020).
+    "techfn-role-journey-composition",
+}
+
+
+def check_context_coverage() -> list[str]:
+    """Warn about a first-party Application/Technology/BusinessObject element with
+    no explicit `context:` and no recorded exemption (GH #129 tag-coverage check).
+
+    Re-reads `elements.yaml` directly rather than taking `load_all_elements()`'s
+    result: that result has already run through `tag_contexts()`, whose
+    `setdefault` fills in `context` for every element in place -- by then an
+    originally-untagged element is indistinguishable from one explicitly tagged
+    `platform`. Only first-party `elements.yaml` is in scope; a vendored layer
+    (`it4it-*`, `gh-roadmap`) already carries its own layer-name context from its
+    own `tag_contexts()` pass, not a first-party package decision."""
+    warnings: list[str] = []
+    for element in load(ELEMENTS_FILENAME, []):
+        element_id = str(element.get("id", ""))
+        if element.get("type") not in _CONTEXT_COVERAGE_TYPES:
+            continue
+        if "context" in element or element_id in _SHARED_CONTEXT_EXEMPTIONS:
+            continue
+        warnings.append(
+            f"warning: {element['type']} {element_id!r} has no explicit context and no "
+            f"recorded shared-context exemption — defaults to {DEFAULT_CONTEXT!r}"
+        )
+    return warnings
 
 
 def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[str], errors: list[str]) -> None:
