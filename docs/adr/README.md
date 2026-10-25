@@ -137,6 +137,11 @@ not yet re-ratified in a spec).
   (`do-solution-design`/`store-patterns`), distinct from ADR-0037's `fn-conversational-authoring`
   (enterprise knowledge graph); its new business process Composes into the existing
   `bfn-solution-design`, not a new `BusinessFunction`
-- **P** — [0040](0040-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
+- **A** — [0040](0040-bounded-contexts-as-generated-groupings.md) — Bounded contexts
+  are generated `Grouping`s + Aggregations from `context:` tags; oversized views
+  split per-context with `include_neighbours` to keep cross-context edges; a
+  generated context map derives Serving edges between contexts from element-level
+  crossings
+- **P** — [0041](0041-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
   generated wiki as repo-governance tooling; transitive security floors pinned in each package
   manifest (draft stub, decision unconfirmed)
