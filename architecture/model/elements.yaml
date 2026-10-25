@@ -1761,14 +1761,15 @@
 # later by GH #120, has no milestone either, so it stays unaggregated too), four are aggregated by a
 # Plateau below (controls-compliance-catalog + llm-provider-config under
 # plat-policy-to-oscal-mvp-1; digital-twin-knowledge-graph under
-# plat-multi-user-collaboration-2; modelling-specification under
-# plat-solution-design-mvp-8) because each has a WorkPackage that actually
-# performs its extraction (wp-71 / wp-106 / wp-107 below). The other four —
-# art-pkg-schema-visualizer-api, art-pkg-reusable-architecture-library,
-# art-pkg-architecture-governance, art-pkg-conformance-drift-assurance — have
-# no GH issue extracting them yet, so per that same pattern there is no
-# Plateau to honestly aggregate them under; they stay unaggregated until one
-# of them gets its own milestone-scoped WorkPackage. Also per GH #103:
+# plat-multi-user-collaboration-2; modelling-specification, reusable-
+# architecture-library under plat-solution-design-mvp-8; conformance-drift-
+# assurance under plat-drift-management-mvp-5) because each has a
+# WorkPackage that actually performs its extraction (wp-71 / wp-106 /
+# wp-107 / wp-162 / wp-163 below). The other two — art-pkg-schema-
+# visualizer-api (GH #161, no milestone set) and art-pkg-architecture-
+# governance (no GH issue yet) — have no milestone-scoped WorkPackage, so
+# per that same pattern there is no Plateau to honestly aggregate them
+# under; they stay unaggregated until one gets its own. Also per GH #103:
 # wp-7-extract-remaining (the former step-7 catch-all for "whatever's left")
 # was already dropped in a prior commit because it carried no GH issue and
 # realized nothing (consistent with ADR-0035's "an issue is in scope only if
@@ -1795,6 +1796,16 @@
   id: wp-107-rehome-specs
   name: GH-107 Re-home specs to two-tier scheme
   desc: Patch the .specify scripts (ADR-0004).
+- type: WorkPackage
+  id: wp-162-scaffold-library
+  name: GH-162 Scaffold reusable-architecture-library
+  desc: >-
+    Relocate specs/EPIC-003-conversational-model-authoring/
+    002-solution-design-modelling into the package's own specs/ (ADR-0004).
+- type: WorkPackage
+  id: wp-163-scaffold-assurance
+  name: GH-163 Scaffold conformance-drift-assurance
+  desc: Write the subsystem's first spec; no spec or package existed before GH #163.
 - type: Plateau
   id: plat-baseline
   name: Current State

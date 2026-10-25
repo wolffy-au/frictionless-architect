@@ -156,6 +156,15 @@
   source: del-release-v0-4-0
   target: plat-architecture-strategy-mvp-7
 - type: Realization
+  source: del-release-v0-5-0
+  target: plat-architecture-strategy-future-13
+- type: Realization
+  source: del-release-v0-5-0
+  target: plat-architecture-strategy-mvp-7
+- type: Realization
+  source: del-release-v0-5-0
+  target: plat-solution-design-mvp-8
+- type: Realization
   source: del-solution-design-mvp-8-unreleased
   target: plat-solution-design-mvp-8
 - type: Realization
@@ -247,7 +256,7 @@
   target: del-release-v0-1-0
 - type: Realization
   source: wp-decide-decision-capture-scope-and-the-gh-56
-  target: del-architecture-strategy-mvp-7-unreleased
+  target: del-release-v0-5-0
 - type: Realization
   source: wp-enterprise-domain-model-relationship-gh-149
   target: del-architecture-strategy-future-13-unreleased
@@ -282,6 +291,9 @@
   source: wp-link-real-identity-to-journey-roles-via-gh-148
   target: del-architecture-strategy-future-13-unreleased
 - type: Realization
+  source: wp-make-section-b-roles-canonical-split-gh-69
+  target: del-release-v0-5-0
+- type: Realization
   source: wp-many-architects-on-shared-models-locking-gh-151
   target: del-architecture-strategy-future-13-unreleased
 - type: Realization
@@ -290,6 +302,9 @@
 - type: Realization
   source: wp-migration-steps-1-3-platform-monorepo-gh-71
   target: del-release-v0-1-0
+- type: Realization
+  source: wp-model-architect-role-journeys-add-gh-138
+  target: del-release-v0-5-0
 - type: Realization
   source: wp-model-doc-consistency-cleanup-stale-gh-63
   target: del-drift-management-mvp-5-unreleased
@@ -322,13 +337,13 @@
   target: del-architecture-strategy-future-13-unreleased
 - type: Realization
   source: wp-re-home-specs-to-two-tier-scheme-adr-gh-107
-  target: del-solution-design-mvp-8-unreleased
+  target: del-release-v0-5-0
 - type: Realization
   source: wp-refactor-model-scope-type-wide-views-by-gh-117
   target: del-release-v0-4-0
 - type: Realization
   source: wp-refactor-model-split-goal-outcome-gh-130
-  target: del-architecture-strategy-mvp-7-unreleased
+  target: del-release-v0-5-0
 - type: Realization
   source: wp-reorganize-architecture-model-diagrams-gh-5
   target: del-release-v0-1-0
@@ -346,13 +361,22 @@
   target: del-pattern-blueprint-traceability-mvp-6-unreleased
 - type: Realization
   source: wp-scaffold-digital-twin-knowledge-graph-gh-106
-  target: del-architecture-strategy-mvp-7-unreleased
+  target: del-release-v0-5-0
+- type: Realization
+  source: wp-scaffold-platform-packages-conformance-gh-163
+  target: del-drift-management-mvp-5-unreleased
+- type: Realization
+  source: wp-scaffold-platform-packages-reusable-gh-162
+  target: del-solution-design-mvp-8-unreleased
 - type: Realization
   source: wp-schedule-maintenance-subagents-on-a-gh-82
   target: del-release-v0-2-0
 - type: Realization
   source: wp-scope-the-archimate-modelling-ide-gh-59
-  target: del-architecture-strategy-future-13-unreleased
+  target: del-release-v0-5-0
+- type: Realization
+  source: wp-spec-specs-003-conversational-modelling-gh-139
+  target: del-release-v0-5-0
 - type: Realization
   source: wp-tamper-evident-audit-trail-of-prompts-gh-150
   target: del-architecture-strategy-future-13-unreleased
