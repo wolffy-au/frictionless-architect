@@ -6,6 +6,9 @@ exclude:
   code:
     # Insecure-XML-parser warning only applies to Python < 3.11; we run >=3.11. Test fixtures.
     - tests/unit/visualizer/test_namespaces.py
+    # Same class as above: platform/'s port of the same test file (2026-10-25), same
+    # hardcoded test-fixture strings via ET.fromstring, same >=3.11 floor (platform/pyproject.toml).
+    - platform/packages/digital-twin-knowledge-graph/tests/unit/test_namespaces.py
     # Dev tooling, not shipped: --root comes from the developer's own command line
     # (same class as the other wiki-librarian tool findings ignored as "By design").
     - .claude/skills/wiki-librarian/tools/build_status.py
