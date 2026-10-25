@@ -782,6 +782,84 @@ def test_generate_context_groupings_skips_elements_with_no_id() -> None:
     assert aggregations == []
 
 
+def test_generate_context_map_relationships_derives_one_serving_edge_per_crossing() -> None:
+    elements = [
+        {"type": "ApplicationComponent", "id": "sub-a", "context": "widget-forge"},
+        {"type": "ApplicationComponent", "id": "sub-b", "context": "gadget-works"},
+        {"type": "ApplicationFunction", "id": "fn-a2", "context": "widget-forge"},
+    ]
+    rels = [
+        {"type": "Serving", "source": "sub-a", "target": "sub-b"},
+        {"type": "Flow", "source": "fn-a2", "target": "sub-b"},  # same pair, different rel type -- collapses
+    ]
+    context_map_rels = model_io.generate_context_map_relationships(elements, rels)
+    assert context_map_rels == [{"type": "Serving", "source": "grp-ctx-widget-forge", "target": "grp-ctx-gadget-works"}]
+
+
+def test_generate_context_map_relationships_excludes_platform_and_layer_contexts() -> None:
+    elements = [
+        {"type": "ApplicationComponent", "id": "sub-a", "context": "widget-forge"},
+        {"type": "ApplicationComponent", "id": "sys-platform", "context": "platform"},
+        {"type": "ApplicationComponent", "id": "it4it-cap", "context": "it4it"},
+    ]
+    rels = [
+        {"type": "Serving", "source": "sub-a", "target": "sys-platform"},
+        {"type": "Serving", "source": "sub-a", "target": "it4it-cap"},
+    ]
+    assert model_io.generate_context_map_relationships(elements, rels) == []
+
+
+def test_generate_context_map_relationships_keeps_direction_and_skips_same_context() -> None:
+    elements = [
+        {"type": "ApplicationComponent", "id": "sub-a", "context": "widget-forge"},
+        {"type": "ApplicationComponent", "id": "sub-a2", "context": "widget-forge"},
+        {"type": "ApplicationComponent", "id": "sub-b", "context": "gadget-works"},
+    ]
+    rels = [
+        {"type": "Serving", "source": "sub-a", "target": "sub-a2"},  # same context -- not a crossing
+        {"type": "Serving", "source": "sub-b", "target": "sub-a"},  # gadget-works -> widget-forge, not reversed
+    ]
+    assert model_io.generate_context_map_relationships(elements, rels) == [
+        {"type": "Serving", "source": "grp-ctx-gadget-works", "target": "grp-ctx-widget-forge"}
+    ]
+
+
+def test_add_views_can_sweep_generated_context_groupings_excluding_sys_prefix() -> None:
+    """GH #129 step 5's view-context-map pattern: pass `elements + groupings` into
+    `add_views` so `include_types: [Grouping]` sweeps the generated grp-ctx-* ones,
+    while `exclude_elements: [{id_prefix: "sys-"}]` keeps the hand-authored
+    sys-platform (C4 whole-system box) Grouping off it."""
+    model = Model("t")
+    errors: list[str] = []
+    elements = [
+        {"id": "sub-widget", "type": "ApplicationComponent", "context": "widget-forge", "name": "Widget"},
+        {"id": "sys-platform", "type": "Grouping", "name": "Platform"},
+    ]
+    groupings, aggregations = model_io.generate_context_groupings(elements)
+    by_id, types = model_io.add_elements(model, elements + groupings, errors)
+    model_io.add_relationships(model, aggregations, by_id, errors)
+
+    model_io.add_views(
+        model,
+        [
+            {
+                "id": "v1",
+                "name": "V1",
+                "include_types": ["Grouping"],
+                "exclude_elements": [{"id_prefix": "sys-"}],
+            }
+        ],
+        elements + groupings,
+        by_id,
+        types,
+        errors,
+    )
+
+    assert errors == []
+    view = model.views[0]
+    assert {n.ref for n in view.nodes} == {by_id["grp-ctx-widget-forge"].uuid}
+
+
 def test_check_motivation_conventions_surfaces_a_malformed_conventions_file(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -858,6 +936,26 @@ def test_check_motivation_conventions_passes_a_complete_association_chain() -> N
     errors: list[str] = []
     model_io.check_motivation_conventions(elements, rels, [], types_by_id, errors)
     assert errors == []
+
+
+def test_check_view_coverage_flags_a_first_party_element_on_no_view() -> None:
+    elements = [{"id": "fn-orphan", "type": "ApplicationFunction", "name": "Orphan"}]
+    types_by_id = {"fn-orphan": "ApplicationFunction"}
+    warnings = model_io.check_view_coverage(elements, [], types_by_id)
+    assert warnings == ["warning: ApplicationFunction 'fn-orphan' is on no view"]
+
+
+def test_check_view_coverage_accepts_an_element_swept_by_a_view() -> None:
+    elements = [{"id": "fn-covered", "type": "ApplicationFunction", "name": "Covered"}]
+    types_by_id = {"fn-covered": "ApplicationFunction"}
+    views = [{"id": "v1", "name": "V1", "include_types": ["ApplicationFunction"]}]
+    assert model_io.check_view_coverage(elements, views, types_by_id) == []
+
+
+def test_check_view_coverage_ignores_vendored_layer_elements() -> None:
+    elements = [{"id": "it4it-cap-x", "type": "Capability", "context": "it4it"}]
+    types_by_id = {"it4it-cap-x": "Capability"}
+    assert model_io.check_view_coverage(elements, [], types_by_id) == []
 
 
 def test_validate_model_flags_an_illegal_relationship() -> None:

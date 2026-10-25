@@ -35,6 +35,24 @@
 # TOGAF ADM Phase A — Architecture Vision
 # =====================================================================
 
+- id: view-context-map
+  name: Context Map
+  viewpoint: custom
+  diagram: overview/context-map
+  # GH #129 step 5: the generated bounded-context Groupings
+  # (generate_context_groupings, step 2) plus a derived Serving edge between
+  # any two contexts that have at least one element-level relationship
+  # crossing between them (generate_context_map_relationships) -- direction
+  # follows the underlying relationship's own source -> target. Entirely
+  # generated: nothing here is hand-authored, so a new context appears on
+  # this view automatically the moment an element is tagged with it.
+  # include_types sweeps every Grouping in scope; sys-platform (the C4
+  # whole-system box, unrelated to bounded contexts) is the only
+  # hand-authored Grouping that exists, so it is the only one excluded.
+  include_types: [Grouping]
+  exclude_elements:
+    - {id_prefix: "sys-"}
+
 - id: view-strategy
   name: Strategy
   viewpoint: strategy
