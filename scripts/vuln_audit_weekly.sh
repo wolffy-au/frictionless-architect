@@ -35,7 +35,9 @@ TASK="Follow your Steps 2-3 only: skip Steps 1 and 4-9. Gather advisories from e
 if one is unavailable, say so in the report rather than failing. Cover BOTH dependency sets: the root (pyproject.toml, \
 poetry.lock) and platform/ (platform/pyproject.toml, platform/poetry.lock). \
 $AGENT_BASH_RULE \
-Run these, one call each: 'gh api repos/{owner}/{repo}/dependabot/alerts'; 'poetry run pip-audit -r $ROOT_REQS --no-deps --disable-pip' (root); \
+Run these, one call each: 'gh api repos/{owner}/{repo}/dependabot/alerts --paginate -X GET -f state=open' (without --paginate \
+it silently truncates to the first page of 30, mixing open and fixed alerts; without -X GET, passing -f switches gh api to POST \
+and 404s); 'poetry run pip-audit -r $ROOT_REQS --no-deps --disable-pip' (root); \
 'poetry run pip-audit -r $PLATFORM_REQS --no-deps --disable-pip' (platform/); 'poetry run snyk --version'; then, if snyk is \
 present, 'poetry run snyk test --include-ignores' (root), 'poetry run snyk test --file=platform/poetry.lock --package-manager=poetry \
 --include-ignores' (platform/) and 'poetry run snyk code test --include-ignores' (first-party code). Open findings are \
