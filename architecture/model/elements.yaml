@@ -1769,7 +1769,13 @@
 # visualizer-api (GH #161, no milestone set) and art-pkg-architecture-
 # governance (no GH issue yet) — have no milestone-scoped WorkPackage, so
 # per that same pattern there is no Plateau to honestly aggregate them
-# under; they stay unaggregated until one gets its own. Also per GH #103:
+# under; they stay unaggregated until one gets its own. GH #162/#163 are
+# still open (2026-10-25 spec-alignment audit), so their Aggregation edges
+# describe a planned, not yet built, state — expected, not drift. Before
+# closing either issue, confirm its package directory actually exists
+# under platform/packages/; closing without it would make the Aggregation
+# dishonest and the next audit should flag it as Diverged, not Partial.
+# Also per GH #103:
 # wp-7-extract-remaining (the former step-7 catch-all for "whatever's left")
 # was already dropped in a prior commit because it carried no GH issue and
 # realized nothing (consistent with ADR-0035's "an issue is in scope only if
