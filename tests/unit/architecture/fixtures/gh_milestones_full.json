@@ -16,6 +16,14 @@
     "html_url": "https://github.com/o/r/milestone/2"
   },
   {
+    "number": 5,
+    "title": "drift-management-mvp",
+    "description": "MVP for the drift management business function (bfn-drift-management).",
+    "state": "open",
+    "due_on": null,
+    "html_url": "https://github.com/o/r/milestone/5"
+  },
+  {
     "number": 7,
     "title": "architecture-strategy-mvp",
     "description": "",
