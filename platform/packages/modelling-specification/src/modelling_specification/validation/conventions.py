@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import difflib
 import re
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -54,23 +55,34 @@ def load_rules(path: Path | None = None) -> list[dict[str, Any]]:
 def _validate_relationship_rule(rule: dict[str, Any]) -> None:
     if rule["kind"] == "required-neighbour":
         _validate_scoped_neighbour_rule(rule, "required-neighbour")
-        params = rule["params"]
-        if "exclude_ids" in params and (
-            not isinstance(params["exclude_ids"], list)
-            or not all(isinstance(item, str) for item in params["exclude_ids"])
-        ):
-            raise ConventionRuleError(f"{rule['id']}: exclude_ids must be a list of strings")
+        _validate_exclude_ids(rule)
     elif rule["kind"] == "no-bypass":
-        params = rule.get("params")
-        if not isinstance(params, dict) or not {"source_type", "intermediary_type"} <= params.keys():
-            raise ConventionRuleError(f"{rule['id']}: no-bypass needs source_type and intermediary_type params")
-        if not isinstance(params["source_type"], str) or not isinstance(params["intermediary_type"], str):
-            raise ConventionRuleError(f"{rule['id']}: source_type and intermediary_type must be strings")
+        _validate_no_bypass_params(rule)
     elif rule["kind"] == "no-restatement":
         _validate_scoped_neighbour_rule(rule, "no-restatement")
-        params = rule["params"]
-        if "min_shared_words" in params and not isinstance(params["min_shared_words"], int):
-            raise ConventionRuleError(f"{rule['id']}: min_shared_words must be an int")
+        _validate_min_shared_words(rule)
+
+
+def _validate_exclude_ids(rule: dict[str, Any]) -> None:
+    params = rule["params"]
+    if "exclude_ids" in params and (
+        not isinstance(params["exclude_ids"], list) or not all(isinstance(item, str) for item in params["exclude_ids"])
+    ):
+        raise ConventionRuleError(f"{rule['id']}: exclude_ids must be a list of strings")
+
+
+def _validate_no_bypass_params(rule: dict[str, Any]) -> None:
+    params = rule.get("params")
+    if not isinstance(params, dict) or not {"source_type", "intermediary_type"} <= params.keys():
+        raise ConventionRuleError(f"{rule['id']}: no-bypass needs source_type and intermediary_type params")
+    if not isinstance(params["source_type"], str) or not isinstance(params["intermediary_type"], str):
+        raise ConventionRuleError(f"{rule['id']}: source_type and intermediary_type must be strings")
+
+
+def _validate_min_shared_words(rule: dict[str, Any]) -> None:
+    params = rule["params"]
+    if "min_shared_words" in params and not isinstance(params["min_shared_words"], int):
+        raise ConventionRuleError(f"{rule['id']}: min_shared_words must be an int")
 
 
 def _validate_scoped_neighbour_rule(rule: dict[str, Any], kind: str) -> None:
@@ -92,7 +104,7 @@ def _validate_scoped_neighbour_rule(rule: dict[str, Any], kind: str) -> None:
         raise ConventionRuleError(f"{rule['id']}: relationship_type and neighbour_type must be strings")
 
 
-def _in_scope(rule: dict[str, Any], element_type: str) -> bool:
+def _in_scope(rule: dict[str, Any], element_type: str | None) -> bool:
     scope = rule.get("scope") or []
     return "*" in scope or element_type in scope
 
@@ -172,7 +184,7 @@ def _check_required_neighbour(
     for element in elements:
         element_id = element["id"]
         element_type = types_by_id.get(element_id)
-        if element_type not in rule.get("scope", []) and "*" not in rule.get("scope", []):
+        if not _in_scope(rule, element_type):
             continue
         if element_id in excluded_ids or _is_excluded_first_party(rule, element_id):
             continue
@@ -230,6 +242,41 @@ def _longest_shared_run(a: list[str], b: list[str]) -> list[str]:
     return a[match.a : match.a + match.size]
 
 
+def _matching_neighbour_ids(
+    relationships: list[dict[str, Any]],
+    element_id: str,
+    direction: str,
+    relationship_type: str,
+    neighbour_type: str,
+    types_by_id: dict[str, str],
+) -> Iterator[str]:
+    """Ids of neighbours related to `element_id` by a `relationship_type` relationship
+    matching `direction`/`neighbour_type` (the generator form of `_has_neighbour`)."""
+    for rel in relationships:
+        if rel["type"] == relationship_type and _has_neighbour(rel, element_id, direction, neighbour_type, types_by_id):
+            yield rel["target"] if direction == "outgoing" else rel["source"]
+
+
+def _neighbour_restatement(
+    rule: dict[str, Any],
+    element_id: str,
+    element_type: str | None,
+    element_words: list[str],
+    neighbour: dict[str, Any],
+    neighbour_id: str,
+    min_shared_words: int,
+) -> str | None:
+    """A finding string if `neighbour`'s `desc` shares `min_shared_words`+ verbatim
+    words with `element_words`, else `None`."""
+    shared = _longest_shared_run(element_words, _tokenize(str(neighbour.get("desc", ""))))
+    if len(shared) < min_shared_words:
+        return None
+    return (
+        f"{rule['id']}: {element_type} {element_id!r} restates {min_shared_words}+ words verbatim "
+        f"from {rule['params']['neighbour_type']} {neighbour_id!r}: {' '.join(shared)!r}"
+    )
+
+
 def _check_no_restatement(
     rule: dict[str, Any],
     elements: list[dict[str, Any]],
@@ -247,27 +294,25 @@ def _check_no_restatement(
     for element in elements:
         element_id = element["id"]
         element_type = types_by_id.get(element_id)
-        if element_type not in rule.get("scope", []) and "*" not in rule.get("scope", []):
-            continue
-        if _is_excluded_first_party(rule, element_id):
+        if not _in_scope(rule, element_type) or _is_excluded_first_party(rule, element_id):
             continue
         element_words = _tokenize(str(element.get("desc", "")))
         if not element_words:
             continue
-        for rel in relationships:
-            if rel["type"] != params["relationship_type"]:
-                continue
-            if not _has_neighbour(rel, element_id, direction, params["neighbour_type"], types_by_id):
-                continue
-            neighbour_id = rel["target"] if direction == "outgoing" else rel["source"]
-            neighbour = by_id.get(neighbour_id, {})
-            neighbour_words = _tokenize(str(neighbour.get("desc", "")))
-            shared = _longest_shared_run(element_words, neighbour_words)
-            if len(shared) >= min_shared_words:
-                findings.append(
-                    f"{rule['id']}: {element_type} {element_id!r} restates {min_shared_words}+ words verbatim "
-                    f"from {params['neighbour_type']} {neighbour_id!r}: {' '.join(shared)!r}"
-                )
+        for neighbour_id in _matching_neighbour_ids(
+            relationships, element_id, direction, params["relationship_type"], params["neighbour_type"], types_by_id
+        ):
+            finding = _neighbour_restatement(
+                rule,
+                element_id,
+                element_type,
+                element_words,
+                by_id.get(neighbour_id, {}),
+                neighbour_id,
+                min_shared_words,
+            )
+            if finding:
+                findings.append(finding)
     return findings
 
 
