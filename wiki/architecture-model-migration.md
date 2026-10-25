@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Packaging, Migration & Technology'
-generated: '2026-10-24'
+generated: '2026-10-25'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -70,11 +70,16 @@ has been extracted yet (`architecture/model/relationships.yaml` §"E. Packages
 realise their components").
 
 **Work Packages, Deliverables, Plateaus and Gaps.** `ARCHITECTURE.md` §8's
-migration steps are now four hand-authored `WorkPackage` elements keyed to the
+migration steps are now six hand-authored `WorkPackage` elements keyed to the
 GitHub issue that actually does the work, not a generic 1–7 step sequence:
 `wp-71-migration-steps-1-3` (steps 1–3: monorepo skeleton + first extraction),
-`wp-106-scaffold-twin`, `wp-vendor-it4it` and `wp-107-rehome-specs`, chained by
-`Triggering` in that order. There is no more hand-authored `Deliverable`
+`wp-106-scaffold-twin`, `wp-vendor-it4it`, `wp-107-rehome-specs`,
+`wp-162-scaffold-library` and `wp-163-scaffold-assurance`, chained by
+`Triggering` — the last two both trigger off `wp-107-rehome-specs` rather than
+one another, since scaffolding the library package (GH #162, relocating the
+002-solution-design-modelling spec per ADR-0004) and scaffolding the
+assurance package (GH #163, writing its first spec from scratch) don't depend
+on each other. There is no more hand-authored `Deliverable`
 element — the three that used to sit between a Work Package and its Artifact
 (`del-monorepo-skeleton`, `del-catalog-pkg`, `del-twin-pkg-scaffold`) were
 dropped because they collided on name with the GitHub-roadmap importer's own
@@ -91,10 +96,15 @@ business-function MVP milestone. `plat-policy-to-oscal-mvp-1`
 package Artifacts are aggregated under which generated Plateau — only an
 Artifact with a Work Package that actually performs its extraction gets
 aggregated (`art-pkg-digital-twin-knowledge-graph` under
-`plat-multi-user-collaboration-2`, `art-pkg-modelling-specification` under
-`plat-solution-design-mvp-8`); the rest stay unaggregated until a milestoned
-issue extracts them (`architecture/model/elements.yaml` §"E. Work Packages",
-GH #103 comment). The Gap convention is one `Gap` per feature,
+`plat-multi-user-collaboration-2`; `art-pkg-modelling-specification` and, as
+of GH #162, `art-pkg-reusable-architecture-library` under
+`plat-solution-design-mvp-8`; `art-pkg-conformance-drift-assurance` under
+`plat-drift-management-mvp-5` as of GH #163). Only two package Artifacts now
+stay unaggregated: `art-pkg-schema-visualizer-api` (GH #161, no milestone set)
+and `art-pkg-architecture-governance` (no GH issue yet) — both wait on a
+milestoned issue that performs their extraction
+(`architecture/model/elements.yaml` §"E. Work Packages", GH #103 comment).
+The Gap convention is one `Gap` per feature,
 `Association`-linked to the Plateau either side (the Plateau is always the
 `source` and the Gap the `target`, flipped from the original source/target
 order on 2026-10-08, GH #99), with the feature's spec path in its

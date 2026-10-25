@@ -123,7 +123,11 @@ Critical/High/Medium findings in the transitively-pinned `pillow` 12.3.0;
 `pyarchimate` 2.0.0's only breaking changes (dropping Python 3.10, an enum
 formatting change) don't affect this codebase's usage. See
 [Controls & Compliance Catalog](controls-compliance-catalog.md) for a related
-dependency-security fix the same day.
+dependency-security fix the same day. An explicit `filelock (>=4.2.1)` floor
+was added on 2026-10-25 for GHSA-v4x8-3wr5-3wq8 and related advisories — the
+lock already resolved a patched version transitively, but Dependabot's
+per-manifest dependency graph only agrees once the manifest states the floor
+itself.
 
 ## Package layout
 
