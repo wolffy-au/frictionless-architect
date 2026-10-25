@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: '2026-10-24'
+generated: '2026-10-25'
 generator: claude-sonnet-5
 sources:
 - .github/workflows/ci.yml
@@ -249,8 +249,14 @@ step by step). `main` only changes via PR, so the merge into `main` is a **human
 gate**: the agent opens the PR, waits for green checks, and stops. Summary
 (`RELEASE.md` §"Steps"):
 
-1. Sync `develop` with `main` (`git merge origin/main`); never merge or
-   fast-forward `main` locally.
+1. Sync `develop` with `main` with `git merge --ff-only origin/main` —
+   prefer a fast-forward over a sync merge commit, so `develop` and `main`
+   share one linear history each release. If it isn't a fast-forward (`main`
+   picked up a hotfix `develop` lacks), stop: rebase `develop` onto `main`
+   and force-push it by hand before the release agent runs — this is a
+   deliberate one-off exception; `develop`'s standing push rule stays
+   fast-forward-only, never force. Never merge or fast-forward `main` locally
+   (`RELEASE.md` §1).
 2. Full quality gate — `bash scripts/pre_merge_checks.sh` must pass clean.
 3. SonarCloud — nothing `OPEN` (resolve with `quality-uplift`).
 4. Security — no open Snyk findings **at any severity** (the release gate drops
