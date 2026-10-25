@@ -244,7 +244,8 @@ def test_check_relationships_flags_a_requirement_that_restates_its_outcome() -> 
     )
 
     assert len(findings) == 1
-    assert "req1" in findings[0] and "outcome1" in findings[0]
+    assert "req1" in findings[0]
+    assert "outcome1" in findings[0]
 
 
 def test_check_relationships_accepts_a_requirement_distinct_from_its_outcome() -> None:
