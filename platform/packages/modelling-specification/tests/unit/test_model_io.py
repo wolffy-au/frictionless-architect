@@ -421,6 +421,30 @@ def test_view_scope_explicit_non_default_context_does_not_pull_in_platform() -> 
     assert errors == []
 
 
+def test_view_split_contexts_excludes_platform_and_layer_contexts() -> None:
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "b", "type": "application-component", "context": "ctx-y", "name": "B"},
+        {"id": "sys-platform", "type": "application-component", "context": "platform", "name": "Platform"},
+        {"id": "it4it-cap", "type": "application-component", "context": "it4it", "name": "IT4IT"},
+    ]
+    types_by_id = {e["id"]: "ApplicationComponent" for e in elements}
+    v = {"id": "v1", "include_types": ["application-component"]}
+
+    assert model_io.view_split_contexts(v, elements, types_by_id) == ["ctx-x", "ctx-y"]
+
+
+def test_view_split_contexts_only_counts_contexts_actually_on_this_view() -> None:
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "b", "type": "application-function", "context": "ctx-y", "name": "B"},
+    ]
+    types_by_id = {"a": "ApplicationComponent", "b": "ApplicationFunction"}
+    v = {"id": "v1", "include_types": ["application-component"]}
+
+    assert model_io.view_split_contexts(v, elements, types_by_id) == ["ctx-x"]
+
+
 def test_add_views_reports_a_view_missing_id_or_name() -> None:
     model = Model("t")
     errors: list[str] = []

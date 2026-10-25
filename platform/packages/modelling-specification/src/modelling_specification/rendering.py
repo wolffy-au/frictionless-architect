@@ -15,6 +15,10 @@ relationships) render into that model's own ``diagrams/`` dir instead of
 ``views.yaml``, including the cross-model capability-bridges touchpoint view,
 stays under ``architecture/model/diagrams/``.
 
+A view may add ``split_by: context`` (GH #129 step 4): instead of one
+``<diagram-slug>.puml``, it renders one ``<diagram-slug>/<context>.puml`` per
+context actually present on it (see ``_view_diagram_jobs``).
+
 Batch regeneration reads the already-built XML (run `model_io.write_and_validate()`
 first); `render_single_view` reads it too, and raises if it's missing.
 
@@ -96,8 +100,16 @@ def _run(cmd: list[str]) -> None:
         sys.stderr.write(r.stderr)
 
 
-def _view_diagram_jobs(views_file: Path, diagram_root: Path) -> list[tuple[Path, list[str]]]:
-    """Generator-command jobs for every view in `views_file` that declares a `diagram:` key."""
+def _view_diagram_jobs(
+    views_file: Path, diagram_root: Path, elements: list[dict[str, Any]], types_by_id: dict[str, str]
+) -> list[tuple[Path, list[str]]]:
+    """Generator-command jobs for every view in `views_file` that declares a `diagram:` key.
+
+    A view with `split_by: context` (GH #129 step 4) fans out into one job per
+    context actually present on it (`model_io.view_split_contexts`), writing
+    `<diagram-slug>/<context>.puml` instead of a single `<diagram-slug>.puml` --
+    this is how the six oversized views stay readable without hand-splitting
+    their `views.yaml` entries."""
     if not views_file.exists():
         return []
     jobs: list[tuple[Path, list[str]]] = []
@@ -106,12 +118,16 @@ def _view_diagram_jobs(views_file: Path, diagram_root: Path) -> list[tuple[Path,
         if not slug:
             sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
             continue
-        cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
+        base_cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
         for rel_type in v.get("no_direction", []):
-            cmd += ["--no-direction", rel_type]
+            base_cmd += ["--no-direction", rel_type]
         if v.get("max_width"):
-            cmd += ["--max-width", str(v["max_width"])]
-        jobs.append((diagram_root / f"{slug}.puml", cmd))
+            base_cmd += ["--max-width", str(v["max_width"])]
+        if v.get("split_by") == "context":
+            for context in model_io.view_split_contexts(v, elements, types_by_id):
+                jobs.append((diagram_root / slug / f"{context}.puml", [*base_cmd, "--context", context]))
+        else:
+            jobs.append((diagram_root / f"{slug}.puml", base_cmd))
     return jobs
 
 
@@ -143,9 +159,10 @@ def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
         if diagram_root == DIAGRAMS
         else [next(vf for vf, root in VENDORED_VIEW_SOURCES if root == diagram_root)]
     )
+    elements, types_by_id = model_io.existing_elements_and_types()
     jobs: list[tuple[Path, list[str]]] = []
     for views_file in views_files:
-        jobs += _view_diagram_jobs(views_file, diagram_root)
+        jobs += _view_diagram_jobs(views_file, diagram_root, elements, types_by_id)
     if diagram_root == DIAGRAMS:
         jobs += _c4_diagram_jobs(diagram_root)
     return jobs

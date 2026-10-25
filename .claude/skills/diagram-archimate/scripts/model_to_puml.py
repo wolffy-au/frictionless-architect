@@ -17,6 +17,11 @@ elements (a hub-and-spoke or mesh, not a one-way sequence), which forces
 graphviz to silently drop half the constraints as back-edges and produces a
 tangled layout regardless of the underlying data.
 
+--context CTX (requires --view) further restricts the view to one context's
+neighbourhood: elements tagged `context: CTX`, plus any other element on the
+view connected to one of them by a relationship also on the view -- GH #129
+step 4's `split_by: context`, one invocation per context.
+
 Exit 0 = wrote output, 2 = load/lookup error.
 """
 
@@ -173,6 +178,28 @@ def _view_concepts(view: Any) -> set[str]:
     return wanted
 
 
+def _context_filtered(elements: list[Any], relationships: list[Any], context: str) -> tuple[list[Any], list[Any]]:
+    """Restrict a view's already-selected `elements`/`relationships` to one
+    context's neighbourhood (GH #129 step 4, `split_by: context`): every element
+    tagged `context` itself, plus any other element on the view connected to one
+    by a relationship that is also on the view -- so a cross-context edge
+    `include_neighbours` (step 3) placed on the full view still renders here,
+    from whichever context side is being split out. A relationship is kept when
+    at least one endpoint belongs to `context`; both its endpoints are then in
+    the returned element list by construction."""
+    own = {e.uuid for e in elements if e.prop("context") == context}
+    neighbours: set[str] = set()
+    kept_rels: list[Any] = []
+    for r in relationships:
+        source_in, target_in = r.source.uuid in own, r.target.uuid in own
+        if not (source_in or target_in):
+            continue
+        kept_rels.append(r)
+        neighbours.add(r.target.uuid if source_in else r.source.uuid)
+    wanted = own | neighbours
+    return [e for e in elements if e.uuid in wanted], kept_rels
+
+
 def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str, list[str]], set[str], set[int]]:
     """Fold containment relationships into nesting.
 
@@ -251,27 +278,42 @@ def _element_lines(
     return out
 
 
+def _view_scoped(model: Any, view_name: str, context: str | None) -> tuple[list[Any], list[Any], str]:
+    """(elements, relationships, title) for `--view view_name`, optionally
+    further restricted to `--context`'s neighbourhood."""
+    views = [v for v in model.views if v.name == view_name]
+    if not views:
+        raise KeyError(f"no view named {view_name!r}; have: {[v.name for v in model.views]}")
+    view = views[0]
+    wanted = _view_concepts(view)
+    elements = [e for e in model.elements if e.uuid in wanted]
+    # Render exactly the connections the view itself declares, not every model
+    # relationship whose endpoints happen to both be in scope — a view may
+    # deliberately omit an in-scope relationship (build.py's per-view
+    # `exclude:` patterns), and that suppression must survive into the
+    # diagram rather than being silently recomputed away here.
+    relationships = [model.rels_dict[c.ref] for c in view.conns if c.ref in model.rels_dict]
+    if context:
+        elements, relationships = _context_filtered(elements, relationships, context)
+        return elements, relationships, f"{view_name} — {context}"
+    return elements, relationships, view_name
+
+
 def generate(
-    path: str, view_name: str | None, no_direction: set[str] | None = None, max_width: int | None = None
+    path: str,
+    view_name: str | None,
+    no_direction: set[str] | None = None,
+    max_width: int | None = None,
+    context: str | None = None,
 ) -> tuple[str, list[str]]:
+    if context and not view_name:
+        raise ValueError("--context requires --view")
     model = Model("diagram")
     model.read(path)
     warnings: list[str] = []
 
     if view_name:
-        views = [v for v in model.views if v.name == view_name]
-        if not views:
-            raise KeyError(f"no view named {view_name!r}; have: {[v.name for v in model.views]}")
-        view = views[0]
-        wanted = _view_concepts(view)
-        elements = [e for e in model.elements if e.uuid in wanted]
-        # Render exactly the connections the view itself declares, not every
-        # model relationship whose endpoints happen to both be in scope — a
-        # view may deliberately omit an in-scope relationship (build.py's
-        # per-view `exclude:` patterns), and that suppression must survive
-        # into the diagram rather than being silently recomputed away here.
-        relationships = [model.rels_dict[c.ref] for c in view.conns if c.ref in model.rels_dict]
-        title = view_name
+        elements, relationships, title = _view_scoped(model, view_name, context)
     else:
         elements = list(model.elements)
         relationships = list(model.relationships)
@@ -314,6 +356,10 @@ def main() -> int:
     ap.add_argument("model")
     ap.add_argument("--view", help="restrict to the contents of this ArchiMate view")
     ap.add_argument(
+        "--context",
+        help="with --view, restrict further to one context's neighbourhood (GH #129 step 4, split_by: context)",
+    )
+    ap.add_argument(
         "--no-direction",
         action="append",
         default=[],
@@ -330,7 +376,7 @@ def main() -> int:
     args = ap.parse_args()
 
     try:
-        puml, warnings = generate(args.model, args.view, set(args.no_direction), args.max_width)
+        puml, warnings = generate(args.model, args.view, set(args.no_direction), args.max_width, args.context)
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"error: {exc}\n")
         return 2

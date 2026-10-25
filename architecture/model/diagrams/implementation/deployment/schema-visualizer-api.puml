@@ -1,0 +1,23 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Implementation and Deployment — schema-visualizer-api
+
+Grouping(e_id54dd4701dbf151, "Frictionless Architecture Platform")
+Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
+Application_Interface(e_id0c9a1a2f155254, "Knowledge Graph Read Path")
+Business_Role(e_id2b5394f913985a, "Enterprise Architect")
+Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
+Grouping(e_idfebc823b192757, "Schema Visualiser API") {
+  Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+}
+
+Rel_Composition(e_id54dd4701dbf151, e_idd18b3d46fade58, "")
+Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
+Rel_Realization_Up(e_id9b247a70d9f258, e_idd18b3d46fade58, "")
+Rel_Realization_Up(e_id11f06faa9d2d5d, e_idd18b3d46fade58, "")
+Rel_Serving_Up(e_idd18b3d46fade58, e_id2b5394f913985a, "visualises the Architecture Knowledge Graph schema for")
+Rel_Aggregation(e_idfebc823b192757, e_idd18b3d46fade58, "")
+
+@enduml
