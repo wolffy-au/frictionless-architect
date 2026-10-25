@@ -246,8 +246,22 @@ as well ran the suite twice for every PR commit (`.github/workflows/ci.yml`;
 
 `RELEASE.md` is the end-to-end procedure (the `release-runner` agent executes it
 step by step). `main` only changes via PR, so the merge into `main` is a **human
-gate**: the agent opens the PR, waits for green checks, and stops. Summary
-(`RELEASE.md` §"Steps"):
+gate**: the agent opens the PR, waits for green checks, and stops.
+
+**Keeping releases fast.** Release day should only *verify* a clean state, never
+*produce* one. §3–§5 of the steps below (`quality-uplift`, `vulnerability-remediator`,
+`docs-uplift`, `spec-alignment`, `adr-auditor`) do real remediation work when they find
+drift, and running that serially at release time is what makes a release take hours
+instead of minutes — so these agents are expected to run continuously against `develop`
+(cron / `/loop` / a CI job on merge), not for the first time at release. If §3–§5 do
+find something at release time anyway, dispatch the independent agents **in parallel**
+(one message, multiple `Agent` calls) — `quality-uplift` + `vulnerability-remediator`
+are independent of each other and of `docs-uplift` + `spec-alignment` + `adr-auditor` —
+and re-run `pre_merge_checks.sh` only once, after they all land, not after each one. A
+release that needed remediation is a signal to fix the schedule, not the new normal
+(`RELEASE.md` §"Keeping releases fast").
+
+Summary (`RELEASE.md` §"Steps"):
 
 1. Sync `develop` with `main` with `git merge --ff-only origin/main` —
    prefer a fast-forward over a sync merge commit, so `develop` and `main`

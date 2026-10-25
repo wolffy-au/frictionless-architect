@@ -202,6 +202,16 @@ teaching models live under `sample-data/sample-0N/` — see
 | `wiki-editor` | Formatting/consistency pass over the generated pages — heading hierarchy, citation-link and frontmatter hygiene, dead internal links — without changing technical meaning. `wiki-librarian` runs it automatically over each run's rebuilt pages; run it standalone for a one-off polish (`.claude/skills/wiki-editor/SKILL.md`). |
 | `wiki-maintenance` (agent) | Audits the generated wiki (see the maintenance table above); audit-only by default, and in the weekly session fixes chosen findings through `wiki-librarian`, never by hand. |
 
+**`semsearch.py`'s own dependency isolation.** `numpy` and `fastembed` (needed only by
+this one tool, for the local semantic index) are deliberately *not* declared as Poetry
+dependencies: every released `fastembed` caps `pillow` at `<13.0`, which would conflict
+with `pyarchimate`'s `pillow>=13.0` floor in the same unified Poetry graph. Instead
+`semsearch.py` manages its own private copy of just those two packages under
+`tools/.venv` (gitignored), `pip install --target`-ed in on first use and added to
+`sys.path` — no action needed, but the first `index`/`search` after a fresh checkout
+takes longer while it bootstraps (`.claude/skills/wiki-librarian/SKILL.md`
+§"The tools").
+
 ## Decision records
 
 Architecture decisions are recorded as MADR files under `docs/adr/`
