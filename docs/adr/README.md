@@ -142,6 +142,10 @@ not yet re-ratified in a spec).
   split per-context with `include_neighbours` to keep cross-context edges; a
   generated context map derives Serving edges between contexts from element-level
   crossings
-- **P** — [0041](0041-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
+- **P** — [0041](0041-structured-suggestion-options-in-delta-py.md) — `delta.py` gains
+  structured, validated suggestion options ("ways forward") built against today's
+  ADR-0037 agent, a deliberate documented deviation from GH #68's filed #140-#151
+  breakdown rather than waiting for #142's journey-API rework
+- **P** — [0042](0042-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
   generated wiki as repo-governance tooling; transitive security floors pinned in each package
   manifest (draft stub, decision unconfirmed)
