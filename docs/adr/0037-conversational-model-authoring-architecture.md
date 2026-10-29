@@ -8,7 +8,7 @@
 <!-- adr-auditor 2026-10-29: was Proposed; implemented (platform/packages/modelling-specification,
      architecture/model/conventions.yaml, root build.py/render_diagrams.py shell into its CLI) and cited
      as settled by EPIC-003 plan/tasks and ADR-0039. Human attestation required (ADR-0012).
-     Open: Consequences says root drops pyarchimate, but root pyproject.toml and .claude/skills scripts still use it. -->
+     The pyarchimate-in-root Consequences claim was corrected in this ADR (F3, human decision). -->
 
 ## Context
 
@@ -59,9 +59,12 @@ references, corrected alongside this ADR).
 
 ## Consequences
 
-- Root's `pyproject.toml` drops `pyarchimate`/`rapidfuzz` once the three wrapper scripts no
-  longer hold their own logic; the new platform package carries them as runtime
-  dependencies instead (`research.md` R3).
+- Root's `pyproject.toml` drops `rapidfuzz` once the three wrapper scripts no longer hold
+  their own logic; the new platform package carries it, and `pyarchimate`, as runtime
+  dependencies (`research.md` R3). Root keeps `pyarchimate` because the `.claude/skills`
+  diagram and validation scripts (`check_derived.py`, `viewpoints.py`, `model_to_puml.py`,
+  `model_to_c4.py`, `validate.py`) still import it directly. Corrected 2026-10-29: this
+  record originally said root would drop both.
 - CI and the vendored/generated YAML layers (ADR-0029, ADR-0035) keep running the same
   deterministic, non-conversational pipeline — now with one home instead of three — so this
   decision does not introduce a second code path for model build/render/validate.
