@@ -124,7 +124,7 @@ not yet re-ratified in a spec).
 - **A** — [0036](0036-element-id-prefix-scheme.md) — An element id prefix names
   the element's own ArchiMate type; `art-*` is reserved for genuine `Artifact`
   elements, `DataObject` elements use `do-*`
-- **P** — [0037](0037-conversational-model-authoring-architecture.md) — Conversational
+- **A** — [0037](0037-conversational-model-authoring-architecture.md) — Conversational
   model authoring: new `platform/packages/modelling-specification` package, validation
   logic ported from `build.py`/`render_diagrams.py`, Enterprise Convention Rules in
   `conventions.yaml`, overrides as auto-drafted ADR stubs, new `vs-intent-to-model`
@@ -132,8 +132,11 @@ not yet re-ratified in a spec).
 - **A** — [0038](0038-section-b-roles-canonical.md) — The six section-B `BusinessRole`s are
   canonical; GH #45's role-journey list is modelled as `Specialization`s of them; spec 001's
   single "Architect" persona is split into Enterprise, Solution and Security Architect
-- **P** — [0039](0039-conversational-solution-modelling-scope.md) — New
+- **A** — [0039](0039-conversational-solution-modelling-scope.md) — New
   `fn-solution-modelling` (subsystem 2, `sub-library`) edits a Solution Design
   (`do-solution-design`/`store-patterns`), distinct from ADR-0037's `fn-conversational-authoring`
   (enterprise knowledge graph); its new business process Composes into the existing
   `bfn-solution-design`, not a new `BusinessFunction`
+- **P** — [0040](0040-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
+  generated wiki as repo-governance tooling; transitive security floors pinned in each package
+  manifest (draft stub, decision unconfirmed)
