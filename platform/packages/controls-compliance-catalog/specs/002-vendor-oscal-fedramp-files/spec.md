@@ -151,7 +151,7 @@ actor Reviewer
 rectangle "Documentation Alignment" {
   usecase "Update ADR-0030" as UC1
   usecase "Update third_party/README.md" as UC2
-  usecase "Update golden-fixture\nprovenance.yaml source_repo" as UC3
+  usecase "Verify golden-fixture provenance.yaml\nagainst vendored PROVENANCE.md" as UC3
   usecase "Update controls-compliance-catalog\n001-oscal-ai-conversion specs" as UC4
   usecase "Regenerate affected wiki pages\n(via wiki-librarian)" as UC5
   usecase "Confirm no stale submodule\nreferences remain" as UC6
@@ -193,8 +193,9 @@ confirming the affected pages reflect the new approach.
    `wiki/controls-compliance-catalog.md`, and `wiki/index.md` cite the old ADR-0030 decision,
    **When** the wiki is next regenerated, **Then** those pages reflect the updated decision.
 3. **Given** `tests/fixtures/golden-oscal/**/*.provenance.yaml` files currently set
-   `source_repo` to the submodule paths, **When** this change is applied, **Then** those
-   `source_repo` fields point at the new vendored paths.
+   `source_repo`/`source_commit` to the submodule's path and pinned commit, **When** this
+   change is applied, **Then** those fields are verified against the matching vendored
+   set's `PROVENANCE.md` and corrected if either no longer matches.
 4. **Given** `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/{plan,data-model,quickstart,research}.md`
    currently instruct readers to run `git submodule update --init third_party/oscal-content
    third_party/fedramp-automation`, **When** this change is applied, **Then** those
@@ -245,8 +246,10 @@ confirming the affected pages reflect the new approach.
   for the three dropped repositories and describe the vendored paths and their provenance in
   their place.
 - **FR-008**: The golden-fixture provenance files
-  (`tests/fixtures/golden-oscal/**/*.provenance.yaml`) MUST have their `source_repo` fields
-  updated to point at the new vendored paths.
+  (`tests/fixtures/golden-oscal/**/*.provenance.yaml`) MUST have their `source_repo` and
+  `source_commit` fields verified against the matching vendored set's own `PROVENANCE.md`
+  (FR-005) — the commit SHA each one records is the one authoritative source — and
+  corrected if any no longer matches.
 - **FR-009**: The `controls-compliance-catalog` package's `001-oscal-ai-conversion` spec
   artefacts (`plan.md`, `data-model.md`, `quickstart.md`, `research.md`) MUST no longer
   instruct readers to run `git submodule update --init` for `oscal-content` or
