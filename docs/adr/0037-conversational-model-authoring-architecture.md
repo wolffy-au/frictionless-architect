@@ -1,13 +1,13 @@
 # ADR-0037: Conversational model authoring — package, validation, conventions, overrides, business wiring
 
-- **Status:** Accepted
+- **Status:** Proposed
 - **Date:** 2026-10-10
 - **Sources:** `specs/EPIC-003-conversational-model-authoring/plan.md` §Constitution Check
   (Principle X), `specs/EPIC-003-conversational-model-authoring/research.md` (R1, R2, R6, R7, R12)
 
-<!-- adr-auditor 2026-10-29: was Proposed; implemented (platform/packages/modelling-specification,
+<!-- adr-auditor 2026-10-29: evidence supports Accepted: implemented (platform/packages/modelling-specification,
      architecture/model/conventions.yaml, root build.py/render_diagrams.py shell into its CLI) and cited
-     as settled by EPIC-003 plan/tasks and ADR-0039. Human attestation required (ADR-0012).
+     as settled by EPIC-003 plan/tasks and ADR-0039. Held at Proposed until a human attests it (ADR-0012).
      The pyarchimate-in-root Consequences claim was corrected in this ADR (F3, human decision). -->
 
 ## Context
