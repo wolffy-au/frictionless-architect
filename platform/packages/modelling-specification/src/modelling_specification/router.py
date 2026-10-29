@@ -172,7 +172,9 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     if "options" in proposed:
-        session.pending_options = [_prepare_option(o) for o in proposed["options"]]
+        pending = _store.pending_delta(session_id)
+        in_flight = pending.elements if pending else []
+        session.pending_options = [_prepare_option(o, in_flight) for o in proposed["options"]]
         return {"delta_id": None, "status": "options", "options": session.pending_options}
     session.pending_options = []
 
@@ -293,12 +295,20 @@ def _validate_and_flag(delta: CandidateDelta) -> None:
     delta.status = DeltaStatus.VALIDATED if outcome["clean"] else DeltaStatus.FLAGGED
 
 
-def _prepare_option(option: dict[str, Any]) -> dict[str, Any]:
+def _prepare_option(option: dict[str, Any], in_flight: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     """Assign ids, repoint misspelt endpoints, and validate one suggested option
     (FR-001 "ways forward") so the architect sees its rationale and standing before
-    picking it -- mirrors the concrete-delta path but kept independent per option."""
-    elements = assign_missing_ids(option["elements"], model_io.existing_element_ids())
-    relationships, notes = resolve_unknown_endpoints(option["relationships"], _option_known_names(elements))
+    picking it -- mirrors the concrete-delta path but kept independent per option.
+
+    `in_flight` is the session's already-pending `CandidateDelta.elements`, if any --
+    not yet written to disk, so `model_io.existing_element_ids()` alone can't see them.
+    Without folding them in too, assigning an id or resolving an endpoint here could
+    collide with or misresolve against an element the architect already has pending
+    (same reason `propose()`'s concrete-delta path builds its own `in_flight` list)."""
+    in_flight = in_flight or []
+    known_ids = model_io.existing_element_ids() | {e["id"] for e in in_flight if e.get("id")}
+    elements = assign_missing_ids(option["elements"], known_ids)
+    relationships, notes = resolve_unknown_endpoints(option["relationships"], _option_known_names(elements, in_flight))
     outcome = _validate(elements, relationships)
     return {
         "rationale": option["rationale"],
@@ -312,9 +322,12 @@ def _prepare_option(option: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _option_known_names(new_elements: list[dict[str, Any]]) -> dict[str, str]:
+def _option_known_names(
+    new_elements: list[dict[str, Any]], in_flight: list[dict[str, Any]] | None = None
+) -> dict[str, str]:
     existing, _types = model_io.existing_elements_and_types()
     known_names = {e["id"]: str(e.get("name", "")) for e in existing if e.get("id")}
+    known_names.update({e["id"]: str(e.get("name", "")) for e in (in_flight or []) if e.get("id")})
     known_names.update({e["id"]: str(e.get("name", "")) for e in new_elements if e.get("id")})
     return known_names
 
