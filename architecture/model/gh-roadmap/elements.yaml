@@ -92,6 +92,13 @@
     gh-tag: v0.5.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.5.0
 - type: Deliverable
+  id: del-release-v0-6-0
+  name: v0.6.0
+  props:
+    gh-published: '2026-10-29T09:49:30Z'
+    gh-tag: v0.6.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.6.0
+- type: Deliverable
   id: del-solution-design-mvp-8-unreleased
   name: solution-design-mvp (unreleased)
   props:
