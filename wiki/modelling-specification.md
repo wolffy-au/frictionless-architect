@@ -1,9 +1,10 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-10-24'
+generated: '2026-10-29'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
+- docs/adr/0041-structured-suggestion-options-in-delta-py.md
 - platform/packages/modelling-specification/README.md
 - platform/packages/modelling-specification/pyproject.toml
 - platform/packages/modelling-specification/specs/README.md
@@ -173,7 +174,8 @@ All endpoints are under `/authoring`; shapes are in
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/sessions` | Start a session, returns `session_id` |
-| `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta |
+| `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta, a clarifying message, or (ADR-0041) 2-3 structured suggestion options |
+| `POST` | `/sessions/{session_id}/propose/select` | Turn one of the last `propose` call's options into the session's pending candidate delta (ADR-0041) |
 | `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct, or override |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta, nothing written |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
@@ -207,6 +209,19 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    JSON. A second proposal in the same conversation amends the still-pending
    delta rather than validating fresh against the last-applied state
    (`specs/EPIC-003-conversational-model-authoring/spec.md` Clarifications, 2026-10-08).
+   When the architect asks for a way forward instead ("what should I do
+   about X") rather than describing one change, the LLM instead returns
+   `{"options": [...]}` — 2-3 independently applicable candidate deltas,
+   each with a `rationale` grounded in existing element ids and/or
+   `conventions.yaml` rule ids. `router.py` validates every option through
+   the same metamodel/duplicate/pattern pipeline below *before* the
+   architect sees it, and `POST .../propose/select` turns the chosen one
+   into the session's pending Candidate Delta. This is a deliberate
+   deviation from the plan GH #68's filed sub-issues (#140-#151) describe —
+   built directly against today's architecture rather than waiting for #142's
+   future journey-API rework, for demo priority
+   (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
+   [Architecture Decision Log](decision-log.md).
 2. **Validate** (`validation/metamodel.py`, `platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py`,
    `validation/duplicates.py`, `validation/patterns.py`). The candidate is
    merged into the whole model (`model_io.merge_candidate`) and checked —

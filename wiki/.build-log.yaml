@@ -1,4 +1,4 @@
-generated: '2026-10-25'
+generated: '2026-10-29'
 generator: claude-sonnet-5
 topics:
   project-overview:
@@ -40,7 +40,7 @@ topics:
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-10-25'
+    built: '2026-10-29'
     sources:
       files:
         architecture/model/README.md:
@@ -50,27 +50,26 @@ topics:
           sha256: 695e42e0f4ef2c22e22b9d5d691122d64e239be0624e699fa3cc943196c5a5e0
           lines: 55
         architecture/model/elements.yaml:
-          sha256: 78d0a616173d55b53dada5c8c4a14d5dc5a2ac1b7ae4d65978f48f943ab9d40d
-          lines: 2045
+          sha256: 01845d251c49644bbb2506e34af8a447e6100d688182cf58a4c0df302c542d70
+          lines: 2118
         architecture/model/relationships.yaml:
           sha256: 6f455c9a46fd55be5e54b36d69a6cf10a41ce084467bace2e3f52f5ae62fc39c
           lines: 1071
         architecture/model/views-viewpoints.yaml:
-          sha256: afcc1bee40803d17a7f12d5e65b07800ac3cf33e8f08f5c5b49320dcd4743061
-          lines: 410
+          sha256: 8e97a366b8543f45859d1bca3636d4b0a5e2587badca785735ed6085ffb7056c
+          lines: 404
         architecture/model/views.yaml:
-          sha256: 17cdc5616b13615c23c02f74bb5aa0c1bae00f2bc80e3a48876880777c21d770
-          lines: 1077
+          sha256: dca787417dd71f8abbf34ba36ad5b639e2f66ae4d2b49a41c72ceea7f205680f
+          lines: 1097
         platform/packages/modelling-specification/src/modelling_specification/cli.py:
           sha256: 8b4de736fec33a7c72a1917a2ef44890d9d5aa105e6fa4b6575fbf24b610e010
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: ccb1012de74d2e91b594b9ba54226fb96a3690dcea68228d88ef94d9a28c948f
-          lines: 868
+          sha256: 8d49f628d02b4ba86eedb187aab88d53110d9cb9fcd0f84d218b5444688d225b
+          lines: 1153
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          sha256: 1359b33d5a7dc9de72b7d01af631e91d13495187912a9094db5b03a91278568e
-          lines: 407
-      urls: {}
+          sha256: e3e8a876ebb540c900f7067d5012823efee2ee3a9a5776063c37f67002f24371
+          lines: 434
   architecture-model-skeleton:
     title: 'Architecture Model: Skeleton'
     page: wiki/architecture-model-skeleton.md
@@ -823,7 +822,7 @@ topics:
   decision-log:
     title: Architecture Decision Log
     page: wiki/decision-log.md
-    built: '2026-10-25'
+    built: '2026-10-29'
     sources:
       files:
         docs/adr/0000-adr-template.md:
@@ -946,10 +945,15 @@ topics:
         docs/adr/0039-conversational-solution-modelling-scope.md:
           sha256: e0bd0e7d298b0090b2a6a81b2282213f358bd3ca9566e9e7c80dbc85a0579f33
           lines: 78
+        docs/adr/0040-bounded-contexts-as-generated-groupings.md:
+          sha256: 68b834f1226d6fcd2bed8318be44030679848bdb44d301dfb7c1a58ddd5eff14
+          lines: 121
+        docs/adr/0041-structured-suggestion-options-in-delta-py.md:
+          sha256: f5ef74faafd34cf856397e23bcd8dce5b43d6fd76d1d082c4f72e346b40b4ccc
+          lines: 68
         docs/adr/README.md:
-          sha256: 36126a2b310673734384ae61ad5e7cb6a9a844b564384c2138b836402e863445
-          lines: 139
-      urls: {}
+          sha256: e02b16eba20827e25722310eda6ea91c77cddf9577b65ef51bbbbe6cc5de2ca2
+          lines: 148
   gh-roadmap-layer:
     title: GitHub Roadmap Layer
     page: wiki/gh-roadmap-layer.md
@@ -1009,15 +1013,18 @@ topics:
   modelling-specification:
     title: Conversational Model Authoring
     page: wiki/modelling-specification.md
-    built: '2026-10-25'
+    built: '2026-10-29'
     sources:
       files:
         docs/adr/0037-conversational-model-authoring-architecture.md:
           sha256: 205cc6e12a51ec5d4d6b50b4eee54e24e970dc5d57ac98a6b6c965ec69c9e7b0
           lines: 95
+        docs/adr/0041-structured-suggestion-options-in-delta-py.md:
+          sha256: f5ef74faafd34cf856397e23bcd8dce5b43d6fd76d1d082c4f72e346b40b4ccc
+          lines: 68
         platform/packages/modelling-specification/README.md:
-          sha256: 7e87c6a94b0901b2906a853502ffbb9b79bf319b763f0264c203701e1514b64e
-          lines: 83
+          sha256: 7e4668e8839558c9e14a5931f6337dbe81cd583a841e288e9945bddca71fe2ee
+          lines: 84
         platform/packages/modelling-specification/pyproject.toml:
           sha256: df5e9df1c8d0a0be641a56627ea72d15778f8ba2e2cf13cc21eeb7c216725385
           lines: 33
@@ -1034,26 +1041,26 @@ topics:
           sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
           lines: 0
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: 8b2629fd29b398cd72d092c4f027c5cf511bc95042ee6e06714f4c1f9edc4a8f
-          lines: 185
+          sha256: 207f9bea6aadaea310e65e8981bcfefdef607a643009f44dadb64e601e6a6f75
+          lines: 241
         platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py:
           sha256: e56e9ec15c28545e484d5f2611daedef5b542f16fd07f3b70d376c58d5618a9f
           lines: 60
         platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
-          sha256: d3242137b3005d5eeb09ab5a64c66f2ed6bd874af8ba2aae66ce94bbae0be78e
-          lines: 136
+          sha256: da89d4afe96e157dcbf074a98dd5d41b59fe3217843d170a54914b71d75c1205
+          lines: 141
         platform/packages/modelling-specification/src/modelling_specification/cli.py:
           sha256: 8b4de736fec33a7c72a1917a2ef44890d9d5aa105e6fa4b6575fbf24b610e010
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: ccb1012de74d2e91b594b9ba54226fb96a3690dcea68228d88ef94d9a28c948f
-          lines: 868
+          sha256: 8d49f628d02b4ba86eedb187aab88d53110d9cb9fcd0f84d218b5444688d225b
+          lines: 1153
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          sha256: 1359b33d5a7dc9de72b7d01af631e91d13495187912a9094db5b03a91278568e
-          lines: 407
+          sha256: e3e8a876ebb540c900f7067d5012823efee2ee3a9a5776063c37f67002f24371
+          lines: 434
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: be5235fab3ab2b681bb69dc35ea6bff8abd0e72ffa31f9412b4e0e8e57850d95
-          lines: 573
+          sha256: cf06b8be29d2ee616663bab9cf8009b7047f28b1c3f555ebbf70ca8642204434
+          lines: 689
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
           sha256: 7f4e57336622e76c5566e7c37d5b72ac90f59496e7fbc0f8880ce20ae0e670cf
           lines: 602
@@ -1061,8 +1068,8 @@ topics:
           sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
           lines: 0
         platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py:
-          sha256: 834d72395485e9e26e4fdc53b45f23ea2f34227497c50a2f3fba55512c06f780
-          lines: 275
+          sha256: 5e96eef15f9dad37fb96c388d89ce4c89ab86b68b362c311d2cdafc564c66983
+          lines: 320
         platform/packages/modelling-specification/src/modelling_specification/validation/duplicates.py:
           sha256: a8017d6645824d5d98470c2fa40a85fe269b52c7de0c5f5eaf2dd67da20e8c1c
           lines: 51
@@ -1088,8 +1095,8 @@ topics:
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
           lines: 77
         specs/EPIC-003-conversational-model-authoring/contracts/api.md:
-          sha256: 06ee46e4bbcd3f75d2d92c413777c0efd4af3cb9d4991e10ed9847d30b0273e6
-          lines: 141
+          sha256: c91e575d46dd054ffaa6976a62f6235d6f8fb02ae87f25d10970c70a20d25363
+          lines: 152
         specs/EPIC-003-conversational-model-authoring/data-model.md:
           sha256: 7c38c8c0c1bc6f6e742285e5cf2f2a046c8b0faf75e090e4a3e171a38363a7aa
           lines: 194
@@ -1108,7 +1115,6 @@ topics:
         specs/EPIC-003-conversational-model-authoring/tasks.md:
           sha256: b4d317992178fcc27c0abceac9f99a542e538bb3be038fb4b91e1498e9f77b18
           lines: 447
-      urls: {}
   portal:
     title: Portal
     page: wiki/portal.md

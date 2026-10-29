@@ -1,6 +1,6 @@
 ---
 title: Architecture Decision Log
-generated: '2026-10-25'
+generated: '2026-10-29'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0000-adr-template.md
@@ -43,6 +43,8 @@ sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
 - docs/adr/0038-section-b-roles-canonical.md
 - docs/adr/0039-conversational-solution-modelling-scope.md
+- docs/adr/0040-bounded-contexts-as-generated-groupings.md
+- docs/adr/0041-structured-suggestion-options-in-delta-py.md
 - docs/adr/README.md
 ---
 
@@ -107,6 +109,8 @@ confirmed fully reflected elsewhere, leaving only **A**/**P**
 | 0037 | Conversational model authoring (GH #108) lives in a new `platform/packages/modelling-specification` package; root's `build.py`/`render_diagrams.py` and the `model-archimate` skill's `validate.py` become thin wrappers shelling into its CLI; Enterprise Convention Rules move to `architecture/model/conventions.yaml`; an overridden objection auto-drafts a `Status: Proposed` ADR stub rather than an `store-ledger` entry; the feature gets its own `vs-intent-to-model` stream and `process-conversational-authoring` process | P |
 | 0038 | Section B's six `BusinessRole`s are canonical; spec 001's single "Architect" persona and GH #45's role-journey list are `Specialization`s of them, not a parallel role set | A |
 | 0039 | Conversational solution modelling (GH #68/#138) gets its own `fn-solution-modelling` function, distinct from ADR-0037's `fn-conversational-authoring`; assigned to `sub-library`, composed into the existing `bfn-solution-design` alongside structured composition | P |
+| 0040 | Bounded contexts (GH #129) are generated `Grouping`s + Aggregations from each element's `context:` tag; oversized views split per-context with `include_neighbours` to keep cross-context edges visible; a generated context map derives Serving edges between contexts from element-level crossings | A |
+| 0041 | `delta.py` gains structured, pre-validated suggestion options ("ways forward") built against today's ADR-0037 agent — a deliberate, documented deviation from GH #68's filed #140-#151 breakdown rather than waiting for #142's journey-API rework | P |
 
 The **P** rows (0017–0019) exist because `specs/EPIC-001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -464,6 +468,66 @@ business capability, two authoring modes. The agent edits one
 open: the chat/live-view UI shell (GH #140) and whether the agent reads
 `do-convention-rules` the way ADR-0037's does — revisit once #140 or #142
 needs an answer. See [Conversational Model Authoring](modelling-specification.md).
+
+ADR-0040 (Accepted 2026-10-25, GH #129) fixes six whole-platform viewpoint
+sweeps that had grown past readable (90–160 elements each) by giving the
+model an explicit, first-class notion of bounded context. Every element
+carries a `context:` tag (defaulting to the `platform` shared kernel when
+absent; a vendored layer gets its own context named after its directory);
+`check_context_coverage` warns on a first-party element that should carry
+one but doesn't. One ArchiMate `Grouping` is generated per real context
+(`generate_context_groupings`, `grp-ctx-<context>`) with a generated
+`Aggregation` to each member — never hand-authored, so a context's
+boundary can't drift out of sync with its membership. A view can declare
+`split_by: context` + `include_neighbours: true` to render one diagram per
+context instead of one monolith, with any element one hop away pulled in
+(but deliberately excluded from the view's own viewpoint-conformance
+check) so a cross-context edge keeps both endpoints visible. Applied to
+five of the six oversized views; the sixth, `view-product`, is dropped —
+the model has no Product/Contract/Value/Material/`*Service` element to
+give that viewpoint its own shape. A generated context map
+(`generate_context_map_relationships`, `view-context-map`) derives one
+directed `Serving` edge per ordered context pair with at least one
+crossing element-level relationship, becoming the new top-level overview
+in place of the oversized full-platform views. Interfaces as the formal
+boundary contract between contexts (Grouping → Interface → owning
+Role/Component, Interface → consuming context) are deferred as a GH #129
+follow-up rather than blocking this ADR, since the context map already
+gives a coarse-grained version of the same dependency story. Left as an
+open consequence: several per-context splits still exceed the ~60-element
+target — the context owns a lot, or (`conformance-drift-assurance`) is by
+design connected to almost every other context, being the compliance
+cross-cutting concern
+(`docs/adr/0040-bounded-contexts-as-generated-groupings.md` §Decision,
+§Consequences). See [Architecture Model](architecture-model.md).
+
+ADR-0041 (Proposed 2026-10-29, GH #68/#108/#142) records a deliberate
+deviation from GH #68's filed plan rather than a retroactive rewrite of
+it. GH #68's epic, as currently filed (#140-#151), re-platforms the
+conversational agent onto a journey-API/Solution-Design architecture in
+`reusable-architecture-library`; #142 frames adapting ADR-0037's agent for
+that future shape as superseding its current form, not extending it in
+place. No GH issue is filed for "give today's `delta.py` the ability to
+return multiple structured, convention-grounded options" against the
+architecture ADR-0037 actually shipped, and EPIC-003's own `spec.md`
+(FR-001) only requires one clarifying question for a vague request, not
+several ranked options. Given a demo-priority need now rather than waiting
+on #142's unscheduled start, `delta.py`'s `propose_delta` was extended to
+recognise a "way forward" request and return `{"options": [...]}` — 2-3
+independently applicable candidate deltas, each with a `rationale` grounded
+in existing element ids and/or Enterprise Convention Rule ids
+(`architecture/model/conventions.yaml`). Each option is validated through the same
+duplicate/pattern/metamodel pipeline the single-delta path already used
+(`router.py`'s `Session.pending_options` and a new `POST
+.../propose/select`) before the architect picks one. `spec.md`'s FR-001
+text is deliberately left unrewritten, so a reader comparing spec to code
+sees the gap and this ADR explaining it. Left open: whether the
+options/`propose/select` shape migrates into #142's journey-API agent
+as-is, gets redesigned, or is dropped as superseded, once that rework
+starts; and that an option's `rationale` prose is never mechanically
+checked against the ids it cites, only its `elements`/`relationships`
+(`docs/adr/0041-structured-suggestion-options-in-delta-py.md` §Decision,
+§Consequences). See [Conversational Model Authoring](modelling-specification.md).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).

@@ -200,6 +200,7 @@ topics:
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
       - path: docs/adr/0037-conversational-model-authoring-architecture.md
+      - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
       - path: scripts/run-modelling_specification.sh
 
   - name: portal
