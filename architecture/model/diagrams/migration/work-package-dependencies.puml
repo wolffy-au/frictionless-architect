@@ -64,7 +64,10 @@ Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue convert
   Implementation_WorkPackage(e_id3b113120236658, "GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)")
   Implementation_WorkPackage(e_id5d51f859e99754, " --GH-47 Create UML diagrams for the Markdown catalogue converter--")
   Implementation_WorkPackage(e_idd0542e6c93e658, "GH-48 Find source and target files for converter testing")
+  Implementation_WorkPackage(e_id77d970dbed965a, "GH-166 OSCAL conversion backend: endpoints, approval gate, Trestle assemble/resolve, forensic ledger")
   Implementation_WorkPackage(e_id95068ecc4fb85d, "GH-49 Prepare a golden data set bulk testing framework")
+  Implementation_WorkPackage(e_ida4e1cf750ab05d, "GH-165 Stubbed OSCAL conversion API, validated against the UI")
+  Implementation_WorkPackage(e_idfa67ddb39e825f, "GH-164 Stubbed OSCAL conversion UI, validated against stub data")
 }
 Implementation_WorkPackage(e_id2f170da038185c, " --GH-71 Migration steps 1–3: platform/ monorepo skeleton, controls-compliance-catalog package, gate fan-out--")
 Implementation_WorkPackage(e_idcc4eb66ae9285f, " --GH-63 Model/doc consistency cleanup: stale counts, Profile-vs-resolved-catalog naming, drift-management target-vs-transition state--")
