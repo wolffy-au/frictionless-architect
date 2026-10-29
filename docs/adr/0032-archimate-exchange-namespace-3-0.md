@@ -2,7 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-25
-- **Sources:** GitHub issue #51; `sample-data/schema/archimate3_*.xsd`; `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md` Edge Cases
+- **Sources:** GitHub issue #51; `sample-data/schema/archimate3_*.xsd`;
+  `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md` Edge Cases
 
 ## Context
 

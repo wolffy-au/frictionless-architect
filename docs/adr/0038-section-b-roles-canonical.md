@@ -2,7 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-18
-- **Sources:** GH #69; GH #45; `specs/EPIC-001-governance-platform/spec.md`; `architecture/model/elements.yaml` (`role-*`)
+- **Sources:** GH #69; GH #45; `specs/EPIC-001-governance-platform/spec.md`;
+  `architecture/model/elements.yaml` (`role-*`)
 
 ## Context
 
@@ -23,6 +24,7 @@ The six `BusinessRole`s already in `architecture/model/elements.yaml` section B 
 platform's canonical roles. GH #45's role-journey entries are modelled as `Specialization`s
 of them, not as a parallel role set:
 
+<!-- pyml disable-num-lines 8 md013-->
 | GH #45 entry | Specialises | Basis |
 |---|---|---|
 | Policy conversion admin | Compliance Officer / Auditor (`role-compliance`) | assigned to `bfn-policy-conversion` |

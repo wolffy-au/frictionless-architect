@@ -2,7 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** unknown (pre-dates this log)
-- **Sources:** `PROJECT_SPECIFICATION.md` Phase 1; `specs/EPIC-001-governance-platform` FR-019; `NONFUNCTIONALS.md` §"Usability & Efficiency"; `specs/EPIC-001-governance-platform/data-model.md`
+- **Sources:** `PROJECT_SPECIFICATION.md` Phase 1; `specs/EPIC-001-governance-platform` FR-019;
+  `NONFUNCTIONALS.md` §"Usability & Efficiency"; `specs/EPIC-001-governance-platform/data-model.md`
 
 ## Context
 

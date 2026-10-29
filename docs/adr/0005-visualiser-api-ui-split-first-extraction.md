@@ -1,7 +1,9 @@
 # ADR-0005: Controls catalog is the first extraction; visualiser API/UI split follows the knowledge graph
 
 - **Status:** Accepted
-- **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §8); revised 2026-09-05; revised 2026-09-24; revised 2026-09-26 (GH #60: first extraction changed to `controls-compliance-catalog`); revised 2026-09-28 (spec 003 re-targeted)
+- **Date:** unknown (pre-dates this log; recorded in `ARCHITECTURE.md` §8); revised 2026-09-05;
+  revised 2026-09-24; revised 2026-09-26 (GH #60: first extraction changed to
+  `controls-compliance-catalog`); revised 2026-09-28 (spec 003 re-targeted)
 - **Sources:** `ARCHITECTURE.md` §3.2, §8, §8.1, §8.2, §10, §11; `refactor-analyst` assessment (2026-08-30);
   GH #44, #60; `architecture/model/` section E (Migration Sequence view)
 
