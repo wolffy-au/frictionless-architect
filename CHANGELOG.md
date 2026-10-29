@@ -1,3 +1,25 @@
+## v0.6.0 (2026-10-29)
+
+### Feat
+
+- **skills**: have pr-preflight open draft PR, watch CI
+- **agents**: have quality-uplift pull CodeQL alerts
+
+### Fix
+
+- **sample-data**: cover milestone 5 in the gh-roadmap layer test fixture
+- **scripts**: paginate the Dependabot alerts query in the vuln audit
+- **scripts**: widen spec-alignment weekly tool allowlist
+
+### Refactor
+
+- **modelling-specification**: cut complexity in conventions.py
+
+### Perf
+
+- **scripts**: scope platform-checks to the pushed packages
+- **modelling-specification**: parallelize diagram puml rendering
+
 ## v0.5.0 (2026-10-25)
 
 ### Feat
