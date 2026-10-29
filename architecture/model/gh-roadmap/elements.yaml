@@ -587,6 +587,13 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/145
 - type: WorkPackage
+  id: wp-oscal-conversion-backend-endpoints-gh-166
+  name: 'GH-166 OSCAL conversion backend: endpoints, approval gate, Trestle assemble/resolve, forensic ledger'
+  props:
+    gh-number: '166'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/166
+- type: WorkPackage
   id: wp-oscal-spec-alignment-review-gh-24
   name: GH-24 OSCAL spec-alignment review
   props:
@@ -737,6 +744,20 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/139
+- type: WorkPackage
+  id: wp-stubbed-oscal-conversion-api-validated-gh-165
+  name: GH-165 Stubbed OSCAL conversion API, validated against the UI
+  props:
+    gh-number: '165'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/165
+- type: WorkPackage
+  id: wp-stubbed-oscal-conversion-ui-validated-gh-164
+  name: GH-164 Stubbed OSCAL conversion UI, validated against stub data
+  props:
+    gh-number: '164'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/164
 - type: WorkPackage
   id: wp-tamper-evident-audit-trail-of-prompts-gh-150
   name: GH-150 Tamper-evident audit trail of prompts, changesets and approvals

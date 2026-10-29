@@ -91,7 +91,16 @@
   target: wp-find-source-and-target-files-for-gh-48
 - type: Aggregation
   source: wp-markdown-catalogue-converter-gh-44
+  target: wp-oscal-conversion-backend-endpoints-gh-166
+- type: Aggregation
+  source: wp-markdown-catalogue-converter-gh-44
   target: wp-prepare-a-golden-data-set-bulk-testing-gh-49
+- type: Aggregation
+  source: wp-markdown-catalogue-converter-gh-44
+  target: wp-stubbed-oscal-conversion-api-validated-gh-165
+- type: Aggregation
+  source: wp-markdown-catalogue-converter-gh-44
+  target: wp-stubbed-oscal-conversion-ui-validated-gh-164
 - type: Realization
   source: del-architecture-strategy-future-13-unreleased
   target: plat-architecture-strategy-future-13
