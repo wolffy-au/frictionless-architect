@@ -58,6 +58,7 @@ models. The files are committed, deterministic and never hand-edited.
 The table above covers what the importer emits. Every other type in the two layers, with
 the ArchiMate 3.2 meaning that decides its source:
 
+<!-- pyml disable-num-lines 9 md013-->
 | ArchiMate type | Source | Why |
 |---|---|---|
 | Plateau | GitHub milestone (`plat-<slug>-<n>`) | A named state; generated (baseline is hand-authored) |

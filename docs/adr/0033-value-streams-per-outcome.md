@@ -2,7 +2,9 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-26
-- **Sources:** this session; `architecture/model/elements.yaml` §A (Goal & Outcomes, Value streams), `architecture/model/relationships.yaml` §A; amends [ADR-0027](0027-capability-value-stream-and-motivation-spine.md) decisions 3–5
+- **Sources:** this session; `architecture/model/elements.yaml` §A (Goal & Outcomes, Value streams),
+  `architecture/model/relationships.yaml` §A;
+  amends [ADR-0027](0027-capability-value-stream-and-motivation-spine.md) decisions 3–5
 
 ## Context
 
@@ -29,6 +31,7 @@ were considered and rejected — see Alternatives.
    exactly one outcome and `Association`-links to the stakeholders who receive
    that value:
 
+<!-- pyml disable-num-lines 6 md013-->
    | Value stream | Realizes | Value recipients | Stages |
    |---|---|---|---|
    | Governed Architecture Delivery | Change at AI Speed | Delivery Organisation, Executive Leadership & Board | Establish Reuse Baseline → Specify → Build Under Supervision → Release to Production |

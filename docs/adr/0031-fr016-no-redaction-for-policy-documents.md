@@ -2,13 +2,15 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-24
-- **Sources:** `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md` FR-016; `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/plan.md` Constitution Check (V. Security)
+- **Sources:** `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md` FR-016;
+  `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/plan.md` Constitution Check (V. Security)
 
 ## Context
 
 `ADR-0014` requires PII/PHI anonymization before any content reaches an
 LLM, written for decision capture's ingestion of unstructured
-collaboration-tool text (Slack, whiteboard transcripts). `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion`
+collaboration-tool text (Slack, whiteboard transcripts).
+`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion`
 sends verbatim policy/regulatory-standard document text to an LLM with no
 redaction step (FR-016) — a different ingestion path than the one
 `ADR-0014` was written for.
