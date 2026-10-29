@@ -67,8 +67,19 @@ Starts a session. Returns `session_id`, used by every other call below.
     "pattern_suggestions": [{"proposed_relationship": {...}, "established_pattern": {"intermediary_types": ["Artifact"]}}]
   }
   ```
-- **Response (200)** — message (FR-001: ask, don't guess): when the LLM answers in plain text instead of a delta (a clarifying question, or suggestions for the architect to restate), `{ "delta_id": null, "status": "message", "message": "...", "elements": [], "relationships": [] }`. No Candidate Delta is created and nothing is applied.
-- **Error (502)**: the LLM call failed, was empty, or returned JSON that is not a delta (missing `elements`/`relationships`) — no Candidate Delta is created; the architect is told to rephrase.
+- **Response (200)** — message (FR-001: ask, don't guess): when the request is too vague to form even one concrete delta and the LLM answers with a clarifying question in plain text, `{ "delta_id": null, "status": "message", "message": "...", "elements": [], "relationships": [] }`. No Candidate Delta is created and nothing is applied.
+- **Response (200)** — options (ADR-0041, a deviation from this spec's filed FR-001 text — see the ADR): when the architect asks for a way forward rather than describing one change (e.g. "what should I do about X"), `{ "delta_id": null, "status": "options", "options": [{"rationale": "...", "convention_refs": [...], "elements": [...], "relationships": [...], "notes": [...], "validation_result": {...}, "duplicates": [...], "pattern_suggestions": [...]}, ...] }` — 2-3 independently applicable candidates, each pre-validated. No Candidate Delta is created yet; pick one via `POST .../propose/select`.
+- **Error (502)**: the LLM call failed, was empty, or returned JSON that is not a delta or an options list — no Candidate Delta is created; the architect is told to rephrase.
+
+## POST /authoring/sessions/{session_id}/propose/select
+
+ADR-0041: turn one of the most recent `propose` response's `options` into the session's
+pending Candidate Delta, same as a concrete `propose` request would.
+
+- **Body**: `{ "option_index": 0 }`
+- **Response (200)**: the resulting delta, same shape as `propose`'s clean/flagged responses.
+- **Error (404)**: unknown session.
+- **Error (409)**: no options are pending for this session, or `option_index` is out of range.
 
 ## POST /authoring/sessions/{session_id}/deltas/{delta_id}/decide
 
