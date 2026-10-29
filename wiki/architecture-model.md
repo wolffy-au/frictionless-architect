@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: '2026-10-25'
+generated: '2026-10-29'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -102,7 +102,11 @@ Schema rules (`architecture/model/README.md` §"Schema";
   (default `[platform]`) limits which contexts its `include_types` sweep
   draws from; `members` are always honoured, and `platform` in a view's
   `context:` covers the whole first-party family
-  (`architecture/model/README.md` §"Schema").
+  (`architecture/model/README.md` §"Schema"). `check_context_coverage`
+  (GH #129) warns at build time on a first-party Application/Technology/
+  BusinessObject element with no explicit `context:` and no recorded
+  exemption, so a package can't silently fall back to the shared `platform`
+  context by omission.
 - **`exclude_elements`** on a view (optional) — a list of patterns that drop
   otherwise-selected elements (via `members` or `include_types`) before nodes
   and connections are built. Each entry may give `type` (ArchiMate concept
@@ -185,6 +189,50 @@ view ids must stay unique across both files. Each generic view sits in the
 §"Schema"). A hand-curated view keeps a narrower, single-subject cut where
 one exists (e.g. `view-application-structure-catalog` for one application
 alone); the generic view is the type-wide sweep.
+
+## Bounded contexts: generated Groupings, split views, context map (GH #129, ADR-0040)
+
+Six whole-platform viewpoint sweeps had grown past readable (90–160
+elements each) by the time the model reached nine first-party packages.
+ADR-0040 fixes this on top of the `context:` tag above, without any
+hand-authored Grouping or boundary view:
+
+- **Generated Groupings.** `generate_context_groupings` derives one
+  ArchiMate `Grouping` per real context (`grp-ctx-<context>`), with a
+  generated `Aggregation` to each of its members — the only input is the
+  `context:` tag already on each element, so the boundary can never drift
+  out of sync with membership. `platform` and the vendored layers get no
+  Grouping: they are the shared kernel and bulk imports, not bounded
+  contexts in the DDD sense.
+- **Per-context split views.** A view may add `split_by: context` +
+  `include_neighbours: true` to render one `.puml`/`.svg` per context
+  actually on it instead of one monolithic sweep, with any element one
+  relationship hop away pulled in too (so a cross-context edge keeps both
+  endpoints visible) — but deliberately left out of the view's own
+  `viewpoint:` conformance check, since a neighbour's type is often outside
+  that viewpoint's allow-set by construction. Applied to five of the six
+  oversized views; the sixth, `view-product`, is dropped — the model has
+  no Product/Contract/Value/Material/`*Service` element to give that
+  viewpoint its own shape, so it duplicated the usage/service-realization
+  views.
+- **A generated context map** (`generate_context_map_relationships`,
+  `view-context-map`) derives one directed `Serving` edge per ordered
+  context pair with at least one element-level relationship crossing
+  between them, becoming the new top-level dependency overview in place of
+  the oversized full-platform views.
+- **`check_view_coverage`** warns at build time on a first-party element
+  that lands on no view at all — independent of the splitting work, added
+  alongside it under the same GH #129 acceptance item.
+
+Left open past this ADR: several per-context splits still exceed the
+~60-element target (the context owns a lot, or —
+`conformance-drift-assurance` — is by design connected to almost every
+other context, being the compliance cross-cutting concern); and formal
+Interfaces as the boundary contract between contexts (deferred as a GH #129
+follow-up, since the context map already gives a coarse-grained version of
+the same dependency story)
+(`docs/adr/0040-bounded-contexts-as-generated-groupings.md` §Decision,
+§Consequences). See [Architecture Decision Log](decision-log.md).
 
 ## Model contents — per-layer pages
 
