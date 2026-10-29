@@ -1,9 +1,13 @@
 # ADR-0039: Conversational solution modelling — scope, subsystem split, and relation to ADR-0037
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-24
 - **Sources:** GH #68 (epic, decision 8); GH #138; `architecture/model/elements.yaml`
   (`fn-solution-modelling`, `process-conversational-solution-modelling`)
+
+<!-- adr-auditor 2026-10-29: was Proposed; fn-solution-modelling, process-conversational-solution-modelling
+     and their edges are in architecture/model/, and EPIC-003/002 spec cites this as decided placement.
+     Human attestation required (ADR-0012). The do-convention-rules question stays open (see Consequences). -->
 
 ## Context
 
