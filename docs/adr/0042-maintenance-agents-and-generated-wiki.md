@@ -1,4 +1,4 @@
-# ADR-0040: Maintenance subagents and a generated wiki as repo-governance tooling
+# ADR-0042: Maintenance subagents and a generated wiki as repo-governance tooling
 
 - **Status:** Proposed
 - **Date:** 2026-10-29
