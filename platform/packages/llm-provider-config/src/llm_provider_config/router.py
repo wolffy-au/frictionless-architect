@@ -8,6 +8,7 @@ Single-user local MVP (ADR-0024): there is no authentication, so bind to localho
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -28,6 +29,8 @@ from llm_provider_config.credentials import (
 from llm_provider_config.resolve import resolve_call
 from llm_provider_config.settings import KEYLESS_PROVIDERS, LlmSettings, NotConfiguredError, Provider, ProviderSettings
 from llm_provider_config.store import default_config_path, load_settings, save_settings
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -175,16 +178,27 @@ def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
             _require_component(known, target)
         try:
             call = resolve_call(target, settings)
-        except (NotConfiguredError, MissingCredentialError) as exc:
-            return {"ok": False, "message": str(exc)}
+        except NotConfiguredError:
+            return {
+                "ok": False,
+                "message": f"No LLM provider is configured for {target!r} and there is no global default.",
+            }
+        except MissingCredentialError:
+            return {
+                "ok": False,
+                "message": "No API key is available for the selected provider: store one in the "
+                "keychain or set its environment variable.",
+            }
         try:
             completion(
                 messages=[{"role": "user", "content": "Reply with the single word: OK"}],
                 max_tokens=16,
                 **call.completion_kwargs(),
             )
-        except Exception as exc:  # litellm raises many provider-specific error types
-            return {"ok": False, "message": f"The call to {call.model} failed: {exc}"}
+        except Exception:  # litellm raises many provider-specific error types
+            # Details stay in the server log; provider errors can carry internals (CWE-209).
+            logger.warning("LLM connection test to %s failed", call.model, exc_info=True)
+            return {"ok": False, "message": f"The call to {call.model} failed; see the server log for details."}
         return {"ok": True, "message": f"{call.model} responded."}
 
 
