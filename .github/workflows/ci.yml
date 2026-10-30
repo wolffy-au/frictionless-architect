@@ -114,21 +114,27 @@ jobs:
         id: cache-plantuml-jar
         uses: actions/cache@v6
         with:
-          path: /usr/share/plantuml/plantuml.jar
+          path: build/plantuml.jar
           key: plantuml-jar-v1.2026.8
 
       - name: Install PlantUML
         # modelling-specification's rendering tests shell out to `plantuml`.
         # Same setup as .devcontainer/post-create.sh (apt for the wrapper + Java,
         # then a newer jar), with the jar pinned to the devcontainer's version.
-        # The jar itself is cached above; apt still needs to run every time to
-        # provide the wrapper script and Java the cached jar depends on.
+        # apt's own plantuml package ships its own (much older) jar at
+        # /usr/share/plantuml/plantuml.jar, so the pinned jar is cached at a
+        # separate path and always copied into place *after* apt installs —
+        # caching straight to /usr/share/plantuml/plantuml.jar let apt's
+        # install silently clobber it back to the ancient distro jar (missing
+        # the <archimate/Archimate> stdlib) on every cache hit.
         run: |
           sudo apt-get update
           sudo apt-get install -y plantuml
+          mkdir -p build
           if [ "${{ steps.cache-plantuml-jar.outputs.cache-hit }}" != "true" ]; then
-            sudo curl -fsSL https://github.com/plantuml/plantuml/releases/download/v1.2026.8/plantuml.jar -o /usr/share/plantuml/plantuml.jar
+            curl -fsSL https://github.com/plantuml/plantuml/releases/download/v1.2026.8/plantuml.jar -o build/plantuml.jar
           fi
+          sudo cp build/plantuml.jar /usr/share/plantuml/plantuml.jar
           plantuml -version
 
       - name: Run platform/ package checks
