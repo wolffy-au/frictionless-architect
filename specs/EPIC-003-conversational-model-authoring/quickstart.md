@@ -10,12 +10,12 @@ ADR-0034) for component `modelling-specification.conversational-authoring`. Cont
 
 ```bash
 cd platform
-poetry run uvicorn modelling_specification.app:app --port 8100 &
+poetry run uvicorn modelling_specification.app:app --port 8001 &
 H='Content-Type: application/json'
-SID=$(curl -s -X POST localhost:8100/authoring/sessions | jq -r .session_id)
-DID=$(curl -s -X POST localhost:8100/authoring/sessions/$SID/propose -H "$H" \
+SID=$(curl -s -X POST localhost:8001/authoring/sessions | jq -r .session_id)
+DID=$(curl -s -X POST localhost:8001/authoring/sessions/$SID/propose -H "$H" \
   -d '{"request": "add an application function fn-example under sub-modelling"}' | jq -r .delta_id)
-curl -s -X POST localhost:8100/authoring/sessions/$SID/deltas/$DID/decide -H "$H" -d '{"action":"apply"}'
+curl -s -X POST localhost:8001/authoring/sessions/$SID/deltas/$DID/decide -H "$H" -d '{"action":"apply"}'
 ```
 
 Expect: `status: "applied"`, a `state_classification`, and `architecture/model/elements.yaml`
@@ -54,16 +54,16 @@ Repeat step 2 or 3, then call `decide` with `action: "override"` and a `rational
 ## 6. Render, auto and on-request (US1 Scenarios 2–3, SC-005)
 
 ```bash
-curl -s -X PUT localhost:8100/authoring/config -d '{"auto_render": true}'
+curl -s -X PUT localhost:8001/authoring/config -d '{"auto_render": true}'
 # re-run step 1's apply call: response now includes an inline "render" field
-curl -s -X PUT localhost:8100/authoring/config -d '{"auto_render": false}'
-curl -s "localhost:8100/authoring/render?object_id=fn-example" | jq .view_id
+curl -s -X PUT localhost:8001/authoring/config -d '{"auto_render": false}'
+curl -s "localhost:8001/authoring/render?object_id=fn-example" | jq .view_id
 ```
 
 ## 7. State query (US3, SC-004)
 
 ```bash
-curl -s localhost:8100/authoring/sessions/$SID/deltas/$DID/state
+curl -s localhost:8001/authoring/sessions/$SID/deltas/$DID/state
 ```
 
 Expect the classification recorded at apply time in step 1, unchanged.
