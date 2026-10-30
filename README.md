@@ -210,7 +210,11 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
 `platform/`. Today it holds:
 
 - [`controls-compliance-catalog`](platform/packages/controls-compliance-catalog/README.md) —
-  policy and standard documents to OSCAL Catalogs and Profiles.
+  policy and standard documents to OSCAL Catalogs and Profiles; run its conversion
+  playground on its own with `./scripts/run-controls_compliance_catalog.sh` (port 8001).
+- [`digital-twin-knowledge-graph`](platform/packages/digital-twin-knowledge-graph/README.md) —
+  a library (no service) for the knowledge-graph read path (GH #106); the visualiser does
+  not consume it yet.
 - [`llm-provider-config`](platform/packages/llm-provider-config/README.md) — shared
   LLM provider, model and credential resolution.
 - [`modelling-specification`](platform/packages/modelling-specification/README.md) —
@@ -225,6 +229,8 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
   ```
 
   Open `http://127.0.0.1:8000/` for the role-grouped landing page.
+- [`schema-visualizer-api`](platform/packages/schema-visualizer-api/README.md) — a
+  specs-only placeholder; the visualiser in `src/` has not been extracted into it yet.
 
 `bash scripts/platform_checks.sh` runs their quality gate.
 
