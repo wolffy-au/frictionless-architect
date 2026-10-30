@@ -34,51 +34,73 @@ constraint on the topology.
 
 ```plantuml
 @startuml
-title Current state — one flat repo, one narrow slice built
+title Current state — a flat JSON-only visualiser plus the extracted platform packages
 skinparam componentStyle rectangle
 
 package "frictionless-architect (repo root)" {
-  [Governance docs\nCONSTITUTION / ARCHITECTURE\nNONFUNCTIONALS / TECHNICAL] as docs
-  [.specify/ SpecKit machinery\n(constitution, templates, bash scripts)] as speckit
-  [specs/002-neo4j-schema-ui] as spec002
+  [Governance docs\nARCHITECTURE / TECHNICAL\nNONFUNCTIONALS / RELEASE] as docs
+  [.specify/ Spec Kit machinery\n(constitution, templates)] as speckit
+  [architecture/model/\ncanonical YAML model] as model
+  [scripts/neo4j_schema.py\nseeding CLI] as seedcli
 
   package "src/frictionless_architect/" {
-    [visualizer/api.py\nFastAPI app] as api
-    [visualizer/static + templates\n(embedded UI)] as ui
-    [visualizer/cache / config / data_loader] as vsupport
-    [visualizer/sample_parser.py\nArchiMate XML -> graph] as parser
-    [schema/manager.py\nNeo4j schema reader] as schema
+    [app.py\nFastAPI entry point] as app
+    [visualizer/api.py\nJSON router + payload service] as api
+    [visualizer/cache.py / config.py] as vsupport
+    [visualizer/data_loader.py\nNeo4j read] as loader
+    [visualizer/sample_parser.py\nsample_validator.py / namespaces.py\nArchiMate XML -> payload] as parser
+    [schema/manager.py\nconstraints, ingest, audits] as schema
   }
 
-  [sample-data/\nOSCAL catalogs + ArchiMate model] as sampledata
+  [sample-data/\nArchiMate sample + XSDs + OSCAL] as sampledata
   [tests/ (unit / api / features)] as tests
 }
 
+package "platform/packages/ (own lock + venv)" {
+  [controls-compliance-catalog\nOSCAL conversion + playground] as ccc
+  [modelling-specification\nconversational authoring + model CLI] as ms
+  [llm-provider-config] as llm
+  [portal\ncomposition host] as portal
+  [digital-twin-knowledge-graph\nlibrary, not yet consumed] as dtkg
+  [schema-visualizer-api\nspecs-only placeholder] as svapi
+}
+
 [Neo4j] as neo4j
-api --> ui : serves HTML+JS
+
+app --> api : mounts router
 api --> vsupport
-api --> schema
-schema --> neo4j
+api --> loader
 api --> parser
+loader --> neo4j
 parser --> sampledata
+seedcli --> schema
+schema --> neo4j
+portal --> ccc : mounts
+portal --> llm : mounts
+ms ..> model : builds / validates
+svapi ..> api : will extract
+svapi ..> dtkg : will consume
 
 note bottom of docs
   Vision = six-subsystem platform (ADR-0011).
-  Built  = this one box (spec 002).
+  Built  = the visualiser, plus the platform packages listed below.
 end note
 @enduml
 ```
 
-**Branch → state matrix:**
+**What is built today:**
 
-| Branch | Spec | Impl | Notes |
-|---|---|---|---|
-| `main` | 002 only | visualiser only | baseline |
-| `develop` | 002 only | visualiser only | ≈ main + 2 commits (dotenv override, debug logging) |
-| `001-governance-platform` | full spec + `contracts/api.yaml` | **none** | |
-| `002-arch-kg-semantics` | SpecKit template stub | none | never fleshed out |
-| `prototype-neo4j` | — | KG model, DB seeding, ArchiMate layers, forensic ledger | not merged, exploratory |
-| `feat/oscal-sample-data` | — | sample data only | current branch |
+| Component | Location | State |
+|---|---|---|
+| Schema visualiser (JSON only) | `src/frictionless_architect/visualizer/`, `app.py` | Runnable: `/schema-payload`, `/refresh`, `/status`. Extracts to `schema-visualizer-api` in §8 step 7 |
+| Neo4j schema manager and seeding CLI | `src/frictionless_architect/schema/`, `scripts/neo4j_schema.py` | Runnable operator tooling |
+| `controls-compliance-catalog` | `platform/packages/controls-compliance-catalog/` | Policy-to-OSCAL conversion pipeline and playground UI |
+| `modelling-specification` | `platform/packages/modelling-specification/` | Conversational authoring service, split-screen UI and model build/render/validate CLI |
+| `llm-provider-config` | `platform/packages/llm-provider-config/` | Shared provider/model/credential resolution |
+| `portal` | `platform/packages/portal/` | Composition host mounting the package UIs |
+| `digital-twin-knowledge-graph` | `platform/packages/digital-twin-knowledge-graph/` | Library with the read path; the visualiser has not cut over to it yet |
+| `schema-visualizer-api` | `platform/packages/schema-visualizer-api/` | Specs-only placeholder |
+| Architecture model | `architecture/model/` | Canonical YAML plus generated XML and diagrams |
 
 ---
 
@@ -341,10 +363,8 @@ Checklist:
 ### 8.2 Visualiser API/UI split (step 7)
 
 Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
-from the shared FastAPI app in `frictionless_architect/app.py`. The server-rendered HTML
-route was dropped on 2026-09-13, leaving `visualizer/static/` and `templates/` orphaned
-(ADR-0005 → Implementation status); those orphaned files were deleted outright on
-2026-10-10 rather than kept as a Vite-app starting point.
+from the shared FastAPI app in `frictionless_architect/app.py`. It has no HTML route,
+static files or templates (ADR-0005 → Implementation status).
 
 ```plantuml
 @startuml
@@ -380,8 +400,6 @@ Checklist:
   **not** part of this step — they move to `packages/digital-twin-knowledge-graph`, which
   `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
   §4).
-- ~~Drop the HTML route + Jinja/static mounts; keep `/schema-payload*`.~~ Done 2026-09-13.
-- ~~Delete the orphaned `visualizer/static/` and `templates/`.~~ Done 2026-10-10.
 - Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy.
 - Add CORS config to the API (same-origin today, so none).
 - `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the
