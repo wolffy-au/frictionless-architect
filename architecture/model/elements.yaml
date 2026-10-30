@@ -1368,27 +1368,27 @@
 - type: BusinessRole
   id: role-policy-conversion-admin
   name: Policy Conversion Admin
-  desc: Administers the policy-to-OSCAL conversion pipeline (GH #45).
+  desc: "Administers the policy-to-OSCAL conversion pipeline (GH #45)."
 - type: BusinessRole
   id: role-policy-author
   name: Policy Author
-  desc: Authors policy and standards content ahead of conversion (GH #45).
+  desc: "Authors policy and standards content ahead of conversion (GH #45)."
 - type: BusinessRole
   id: role-patterns-admin
   name: Patterns Admin
-  desc: Administers the architecture pattern & blueprint library (GH #45).
+  desc: "Administers the architecture pattern & blueprint library (GH #45)."
 - type: BusinessRole
   id: role-security-assessor
   name: Security Assessor
-  desc: Runs security assessments over patterns, blueprints and designs (GH #45).
+  desc: "Runs security assessments over patterns, blueprints and designs (GH #45)."
 - type: BusinessRole
   id: role-pattern-contributor
   name: Pattern Contributor
-  desc: Proposes candidate patterns for a Solution Architect to curate (GH #45).
+  desc: "Proposes candidate patterns for a Solution Architect to curate (GH #45)."
 - type: BusinessRole
   id: role-implementation-contributor
   name: Implementation Contributor
-  desc: Contributes implementation work consuming generated specifications (GH #45).
+  desc: "Contributes implementation work consuming generated specifications (GH #45)."
 
 # --- B. Collaboration (joint behaviour across more than one role) ---
 - type: BusinessCollaboration
@@ -1872,7 +1872,7 @@
 - type: WorkPackage
   id: wp-163-scaffold-assurance
   name: GH-163 Scaffold conformance-drift-assurance
-  desc: Write the subsystem's first spec; no spec or package existed before GH #163.
+  desc: "Write the subsystem's first spec; no spec or package existed before GH #163."
 - type: Plateau
   id: plat-baseline
   name: Current State
