@@ -79,10 +79,14 @@ Python 3.12 (per `pyproject.toml`): follow standard conventions; enforced by
 ```bash
 poetry install                       # project + all dependency groups
 poetry run pytest                    # full test suite
-bash scripts/pre_commit_checks.sh    # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
-bash scripts/pre_merge_checks.sh     # + behave, coverage-gated pytest, frontend UI harness
+bash scripts/pre_commit_checks.sh    # fast gate: commit messages, pymarkdown, ruff, pyright, mypy, tests/unit/, platform checks
+bash scripts/pre_merge_checks.sh     # + roadmap-layer check, lock refresh, Snyk, behave, coverage-gated pytest, UI harness
 bash scripts/platform_checks.sh      # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
 ```
+
+**Snyk runs locally only.** CI no longer runs Snyk, but `pre_merge_checks.sh` still does: an
+open-source scan of the root and `platform/` locks plus Snyk Code. It needs a `SNYK_TOKEN`,
+read from the environment or the gitignored `.env`, and the script fails without one.
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on commit,
 type/test suite on push, Conventional Commits check on the message.
