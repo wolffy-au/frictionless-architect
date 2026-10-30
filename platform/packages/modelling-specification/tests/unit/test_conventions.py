@@ -81,7 +81,8 @@ def test_check_elements_naming_rejects_a_non_matching_name() -> None:
         [{"id": "cap1", "type": "Capability", "name": "Modelling Capability"}], rules=[_NAMING_RULE]
     )
 
-    assert any(f["check"] == "conv-naming-no-self-type-capability" and f["id"] == "cap1" for f in findings)
+    matching = [f for f in findings if f["check"] == "conv-naming-no-self-type-capability"]
+    assert [f["id"] for f in matching] == ["cap1"]
 
 
 def test_check_elements_naming_accepts_a_matching_name() -> None:
