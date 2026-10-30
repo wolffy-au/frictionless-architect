@@ -42,7 +42,10 @@ validate / render logic lives in the `modelling-specification` platform package
   canonicalises against `pyArchimate.ArchiType` and hard-errors on a typo.
 - **`id`** — stable kebab id. Hashed to a deterministic UUID, so regeneration
   never churns identifiers (or diagrams). **Never renumber a live id.**
-- **`name` / `desc`** — top-level keys, not inside `props`.
+- **`name` / `desc`** — top-level keys, not inside `props`. Double-quote any value
+  containing a `#` that follows a space (for example `desc: "… (GH #45)."`): in an
+  unquoted YAML scalar that `#` starts a comment, so the text is silently cut off
+  and the truncation shows up in every generated diagram.
 - **`context`** — optional top-level key: the element's bounded context. Defaults
   to `platform` for first-party files and to the layer directory's name for
   `third_party/<name>` and `gh-roadmap/`. Written to the XML as a `context`
