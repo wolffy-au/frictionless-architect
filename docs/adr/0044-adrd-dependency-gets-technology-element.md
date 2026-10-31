@@ -1,6 +1,6 @@
 # ADR-0044: A runtime dependency decided by its own ADR gets a Technology-layer element
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-31
 - **Sources:** GH #136 (`pii-gateway`, ADR-0043), `architecture/model/elements.yaml` §F
   comment (2026-09-27, GH #55 item 3 — the prior modelling threshold this narrows)
