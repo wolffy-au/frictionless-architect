@@ -1,17 +1,35 @@
 ---
 title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
-- architecture/model/diagrams/implementation/deployment.puml
-- architecture/model/diagrams/implementation/deployment.svg
+- architecture/model/diagrams/implementation/deployment/architecture-governance.puml
+- architecture/model/diagrams/implementation/deployment/architecture-governance.svg
+- architecture/model/diagrams/implementation/deployment/conformance-drift-assurance.puml
+- architecture/model/diagrams/implementation/deployment/conformance-drift-assurance.svg
+- architecture/model/diagrams/implementation/deployment/controls-compliance-catalog.puml
+- architecture/model/diagrams/implementation/deployment/controls-compliance-catalog.svg
+- architecture/model/diagrams/implementation/deployment/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/implementation/deployment/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/implementation/deployment/llm-provider-config.puml
+- architecture/model/diagrams/implementation/deployment/llm-provider-config.svg
+- architecture/model/diagrams/implementation/deployment/modelling-specification.puml
+- architecture/model/diagrams/implementation/deployment/modelling-specification.svg
+- architecture/model/diagrams/implementation/deployment/pii-gateway.puml
+- architecture/model/diagrams/implementation/deployment/pii-gateway.svg
+- architecture/model/diagrams/implementation/deployment/reusable-architecture-library.puml
+- architecture/model/diagrams/implementation/deployment/reusable-architecture-library.svg
+- architecture/model/diagrams/implementation/deployment/schema-visualizer-api.puml
+- architecture/model/diagrams/implementation/deployment/schema-visualizer-api.svg
 - architecture/model/diagrams/implementation/packaging.puml
 - architecture/model/diagrams/implementation/packaging.svg
 - architecture/model/diagrams/migration/architecture-strategy-transition.puml
 - architecture/model/diagrams/migration/architecture-strategy-transition.svg
-- architecture/model/diagrams/migration/overview.puml
-- architecture/model/diagrams/migration/overview.svg
+- architecture/model/diagrams/migration/overview/controls-compliance-catalog.puml
+- architecture/model/diagrams/migration/overview/controls-compliance-catalog.svg
+- architecture/model/diagrams/migration/overview/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/migration/overview/digital-twin-knowledge-graph.svg
 - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.puml
 - architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.svg
 - architecture/model/diagrams/migration/plat-architecture-strategy-future-13.puml
@@ -81,8 +99,8 @@ Rendered files land under these subfolders of `architecture/model/diagrams/`:
 
 | Folder | Contents |
 |---|---|
-| `implementation/` | the Packaging view (section E), plus the generic Implementation Deployment view (GH #105) |
-| `migration/` | the Implementation & Migration views (section E): Migration Sequence, Runtime Migration, the all-layer overview (now in `views-viewpoints.yaml`), Work Package Dependencies (new), and the generated per-milestone views (now 12, including `plat-github-importer-11`/`plat-general-tasks-12`) |
+| `implementation/` | the Packaging view (section E), plus the generic Implementation Deployment view (GH #105), which now renders as `deployment/<context>.puml`, one file per bounded context (GH #129) |
+| `migration/` | the Implementation & Migration views (section E): Migration Sequence, Runtime Migration, the all-layer overview (now in `views-viewpoints.yaml`, rendered as `overview/<context>.puml` for `controls-compliance-catalog` and `digital-twin-knowledge-graph`), Work Package Dependencies (new), and the generated per-milestone views (now 12, including `plat-github-importer-11`/`plat-general-tasks-12`) |
 | `technology/` | the five Technology-layer views (section F), plus three generic technology-layer views added for GH #105 (`overview`, `physical`, `usage`) |
 
 See [Architecture Views & Diagrams: Vision, Business &
@@ -90,6 +108,8 @@ Viewpoints](architecture-diagrams.md) for the `vision/`, `business/`,
 `layered/`, `application/` and `c4/` folders, and for the overall 64-view
 breakdown across `views.yaml`, `views-viewpoints.yaml`, the generated
 GitHub-roadmap views and the vendored IT4IT views.
+
+## Views by section
 
 ### Implementation & Migration views (section E)
 
@@ -105,9 +125,9 @@ under `migration/`:
 | Packaging | `implementation/packaging` | `implementation_deployment` | `views.yaml` | All nine subsystem/host `ApplicationComponent`s (now including `sub-portal`), the shared LLM Provider Configuration component (ADR-0034), and `if-twin-read-path`/`if-catalog-playground`/`if-llm-settings-ui`/`if-portal-ui`, each realized by its package `Artifact` (ten package `Artifact`s total — see [Architecture Model: Migration](architecture-model-migration.md)) |
 | Migration Sequence | `migration/sequence` | `implementation_migration` | `views.yaml` | The four hand-authored `WorkPackage`s (`wp-71-migration-steps-1-3`, `wp-106-scaffold-twin`, `wp-vendor-it4it`, `wp-107-rehome-specs`), the Artifacts/Plateaus they realize directly (no `Deliverable` element any more), and the `Plateau`s and `Gap`s between them (the baseline plus the roadmap-generated `plat-policy-to-oscal-mvp-1`; `gap-oscal-ai-conversion`) |
 | Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `views.yaml` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
-| Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview` | `implementation_migration` | `views-viewpoints.yaml` (moved here 2026-10-08, GH #105) | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
+| Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview/<context>` | `implementation_migration` | `views-viewpoints.yaml` (moved here 2026-10-08, GH #105; split per context, GH #129) | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
 | Work Package Dependencies (new, GH #105) | `migration/work-package-dependencies` | `implementation_migration` | `views.yaml`, `context: [platform, gh-roadmap]` | Only the `WorkPackage`s and the `Triggering` edges between them — the dependency order on its own, not buried among Plateaus/Gaps/Deliverables the way the overview has it; `include_types: [WorkPackage]` so a new (including GH-roadmap-imported) Work Package appears automatically |
-| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now thirteen, including the new `plat-architecture-strategy-future-13` (GH #59's deferred scope: the drag-and-drop ArchiMate IDE, #68's live-view epic, #73's multi-specification modelling) alongside `plat-github-importer-11`/`plat-general-tasks-12` and the original business-function MVPs. A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s). An open milestone shows all of its Work Packages, open or closed, but only for its two *live* Deliverables — the unreleased one plus whichever release most recently shipped something for this Plateau — so a long-lived open milestone's diagram does not keep accumulating one "done" cluster per past release; earlier releases stay in the data, just undrawn. `migration/overview` is unaffected and still sweeps everything regardless of state or release (`specs/EPIC-002-gh-roadmap-archimate/spec.md` Clarifications, sessions 2026-10-17 and 2026-10-31; see [GitHub Roadmap Layer](gh-roadmap-layer.md)) |
+| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now thirteen, including the new `plat-architecture-strategy-future-13` (GH #59's deferred scope: the drag-and-drop ArchiMate IDE, #68's live-view epic, #73's multi-specification modelling) alongside `plat-github-importer-11`/`plat-general-tasks-12` and the original business-function MVPs. A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s). An open milestone shows all of its Work Packages, open or closed, but only for its two *live* Deliverables — the unreleased one plus whichever release most recently shipped something for this Plateau — so a long-lived open milestone's diagram does not keep accumulating one "done" cluster per past release; earlier releases stay in the data, just undrawn. `migration/overview` is unaffected by that rule and still sweeps everything regardless of state or release (`specs/EPIC-002-gh-roadmap-archimate/spec.md` Clarifications, sessions 2026-10-17 and 2026-10-31; see [GitHub Roadmap Layer](gh-roadmap-layer.md)) |
 | Architecture Strategy: Baseline to MVP to Future (new, hand-authored 2026-10-18) | `migration/architecture-strategy-transition` | `implementation_migration` | `views.yaml` | `plat-baseline` → `plat-architecture-strategy-mvp-7` → `plat-architecture-strategy-future-13`, their Gaps (`gap-neo4j-schema-ui`, `gap-architecture-strategy-mvp-to-future`) and the MVP's unreleased Deliverable — hand-authored because the generated per-milestone views never carry Gaps; Work Packages are deliberately left out to keep the transition readable |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
@@ -195,6 +215,12 @@ viewpoint.
   see [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 - `c4/context` and `c4/container` picked up small edge changes reflecting the
   same additions.
+- GH #129 split the Implementation Deployment and Implementation & Migration
+  overview sweeps into per-context files (`implementation/deployment/<context>`,
+  `migration/overview/<context>`) with directly-connected neighbours pulled in
+  so cross-context edges stay visible. See [Architecture Views & Diagrams:
+  Vision, Business & Viewpoints](architecture-diagrams.md) §"Bounded-context
+  views".
 - ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
   Configuration component and its package Artifact to the Packaging, Migration
   Sequence and Data Flow — Controls & OSCAL diagrams, and the OS credential store
