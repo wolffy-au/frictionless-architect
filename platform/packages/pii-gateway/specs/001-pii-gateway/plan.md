@@ -10,10 +10,12 @@ Build `platform/packages/pii-gateway`, a shared non-subsystem package (ADR-0014,
 ADR-0034's general pattern) exposing a `scrub(text, *, context) -> ScrubResult` contract
 backed by Presidio (ADR-0043). Every caller gets auto-redact-and-proceed on a detected
 match except the `conversational-authoring` context, which gets flag-for-review
-(ADR-0014 amendment). `architecture-governance` and `modelling-specification` are wired
-through with integration tests proving a planted PII string never reaches a stubbed LLM
-call; `fn-ai-markdown-conversion`/`fn-policy-quality-feedback` are confirmed to keep
-bypassing the gateway (ADR-0031). A mountable settings router (ADR-0034/ADR-0020 pattern)
+(ADR-0014 amendment). `modelling-specification` is wired through with an integration test
+proving a planted PII string never reaches a stubbed LLM call — `architecture-governance`
+is registered as a context but not wired, since that package doesn't exist yet
+(deferred to its own build-out, like GH #68); `fn-ai-markdown-conversion`/
+`fn-policy-quality-feedback` are confirmed to keep bypassing the gateway (ADR-0031). A
+mountable settings router (ADR-0034/ADR-0020 pattern)
 lets an operator toggle detector categories and per-context failure-mode actions without a
 code change. See [research.md](research.md) for the technical decisions and
 [data-model.md](data-model.md) for entity/state detail.
@@ -36,10 +38,10 @@ pattern) — no database. The metadata-only audit log (FR-011) is appended to a 
 log file; no PII/PHI-bearing storage of any kind is introduced.
 
 **Testing**: `pytest` (unit tests for `scrub()`, detector-category config, audit
-logging) plus `tests/api/`-style integration tests proving a planted PII string never
-reaches a stubbed `litellm.completion` call from `architecture-governance` and
-`modelling-specification`'s drafting paths, consistent with
-`scripts/pre_merge_checks.sh`'s existing suite.
+logging) plus a `tests/api/`-style integration test proving a planted PII string never
+reaches a stubbed `litellm.completion` call from `modelling-specification`'s
+`authoring/delta.py` drafting path (the only buildable consumer today — see Scale/Scope),
+consistent with `scripts/pre_merge_checks.sh`'s existing suite.
 
 **Target Platform**: Linux server / local dev (same as every other `platform/packages/*`
 package) — single-user local MVP (ADR-0024).
@@ -56,10 +58,13 @@ silent pass-through — spec Assumptions); no PII/PHI value ever written to the 
 (FR-011); flag-for-review state is turn-scoped only, never persisted (User Story 2
 Scenario 3).
 
-**Scale/Scope**: Three known callers at this feature's scope —
-`architecture-governance` (`fn-governance-eval`), `modelling-specification`
-(`fn-spec-generator`), and the `conversational-authoring` context declared for GH #68's
-future use (not built here). Single-user local MVP volumes (ADR-0024) — no concurrency or
+**Scale/Scope**: Three known contexts registered at this feature's scope, but only one
+wired to real code today: `modelling-specification` (`fn-spec-generator`,
+`authoring/delta.py`) is the sole buildable consumer. `governance-eval`
+(`architecture-governance`/`fn-governance-eval`) and `conversational-authoring` (GH #68)
+are both registered contexts with no caller to wire yet — `architecture-governance`
+doesn't exist in the codebase (`ARCHITECTURE.md` §4: status **build**), deferred the same
+way GH #68 already was. Single-user local MVP volumes (ADR-0024) — no concurrency or
 multi-tenant design needed.
 
 ## Constitution Check
@@ -125,11 +130,8 @@ package "platform/packages/pii-gateway" {
   [README.md]
 }
 
-package "platform/packages/architecture-governance" as gov {
-  [fn-governance-eval]
-}
 package "platform/packages/modelling-specification" as mdl {
-  [fn-spec-generator]
+  [authoring/delta.py\n(fn-spec-generator)] as delta
 }
 
 scrub ..> detectors : uses
@@ -137,16 +139,23 @@ scrub ..> config : reads active categories / failure-mode
 scrub ..> audit : records metadata-only entry
 router ..> config : edits via mountable settings page
 
-gov --> scrub : scrub(text, context="governance-eval")
-mdl --> scrub : scrub(text, context="spec-generator")
+delta --> scrub : scrub(text, context="spec-generator")
+note right of delta
+  architecture-governance's fn-governance-eval
+  would call scrub(text, context="governance-eval")
+  the same way, once that package is built
+  (deferred, like GH #68 - see plan.md Scale/Scope)
+end note
 @enduml
 ```
 
 **Structure Decision**: Mirrors `platform/packages/llm-provider-config`'s layout exactly
 (own `pyproject.toml`, `src/pii_gateway/`, `tests/{unit,integration}/`, `README.md`,
-`specs/001-pii-gateway/`), per ADR-0034's shared-package pattern. `architecture-governance`
-and `modelling-specification` take it as a path dependency (ADR-0002) and call `scrub()`
-from their existing drafting call sites — no new packages or directories on their side.
+`specs/001-pii-gateway/`), per ADR-0034's shared-package pattern. `modelling-specification`
+takes it as a path dependency (ADR-0002) and calls `scrub()` from its existing
+`authoring/delta.py` drafting call site — no new packages or directories on its side.
+`architecture-governance` will do the same once it exists; no directory for it to change
+today.
 
 ## Complexity Tracking
 

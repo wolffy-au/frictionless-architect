@@ -52,7 +52,9 @@ ScrubResult ..> AuditEntry : one entry recorded per call
 ### `ScrubResult`
 
 `text` is byte-for-byte identical to input when no match occurs (FR-004).
-`pending_confirmation` is set only when `action == flagged_for_review`.
+`pending_confirmation` is set only when `action == flagged_for_review`. `ScrubAction`'s
+three values are `spec.md`'s "redacted-and-proceeded" / "flagged-for-review" /
+"passed-through-unchanged" in snake_case — same outcomes, no fourth state anywhere.
 
 ### `Match`
 

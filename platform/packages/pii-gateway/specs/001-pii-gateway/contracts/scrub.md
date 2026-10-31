@@ -67,7 +67,7 @@ end
 
 ## Settings router contract
 
-`create_settings_router(contexts: Sequence[Context], prefix: str = "/settings/pii-gateway") -> APIRouter`
+`create_settings_router(contexts: Sequence[str], prefix: str = "/settings/pii-gateway") -> APIRouter`
 — same shape as `llm_provider_config.router.create_settings_router` (ADR-0034). Exposes:
 
 - `GET {prefix}/state` — active categories and failure-mode per registered context.
