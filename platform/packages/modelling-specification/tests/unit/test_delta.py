@@ -191,6 +191,17 @@ def test_propose_delta_gives_the_llm_the_existing_element_catalogue(configured_f
     assert "assess-drift-debt | Assessment | Architectural drift" in system
 
 
+def test_propose_delta_gives_the_llm_the_existing_relationship_graph(configured_fake_llm: FakeCompletion) -> None:
+    propose_delta(
+        "what connects to role-sa?",
+        relationships=[("Realization", "fn-solution-modelling", "cap-reusable-architecture", "")],
+    )
+
+    system = configured_fake_llm.calls[0]["messages"][0]["content"]
+    assert "Existing relationships:" in system
+    assert "Realization | fn-solution-modelling | cap-reusable-architecture | " in system
+
+
 _KNOWN = {
     "assess-drift-debt": "Architectural drift is accumulating as unmanaged risk",
     "goal-frictionless-architecture": "Frictionless Architecture & Governance at Machine Speed",

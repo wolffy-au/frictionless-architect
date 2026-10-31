@@ -145,16 +145,21 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
     }
 
 
-def _catalogue_and_rules() -> (
-    tuple[list[tuple[str, str, str]], list[dict[str, Any]], list[str], list[tuple[str, str, str]]]
-):
+def _catalogue_and_rules() -> tuple[
+    list[tuple[str, str, str]],
+    list[dict[str, Any]],
+    list[str],
+    list[tuple[str, str, str]],
+    list[tuple[str, str, str, str]],
+]:
     existing, types_by_id = model_io.existing_elements_and_types()
     catalogue = [
         (e["id"], types_by_id[e["id"]], str(e.get("name", ""))) for e in existing if e.get("id") in types_by_id
     ]
     contexts = sorted({str(e.get("context", model_io.DEFAULT_CONTEXT)) for e in existing})
     views = rendering.view_catalogue()
-    return catalogue, conventions.load_rules(), contexts, views
+    relationships = model_io.existing_relationships()
+    return catalogue, conventions.load_rules(), contexts, views, relationships
 
 
 def _pii_match_payload(review: PiiReviewRequired) -> list[dict[str, Any]]:
@@ -255,12 +260,12 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     if session is None:
         raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
 
-    catalogue, rules, contexts, views = _catalogue_and_rules()
+    catalogue, rules, contexts, views, relationships = _catalogue_and_rules()
     # A fresh `propose` call supersedes any PII review left pending from an earlier
     # one in this session (the architect moved on without resolving it).
     session.pending_pii_confirmation = None
     try:
-        proposed = propose_delta(body.request, catalogue, rules, contexts, views)
+        proposed = propose_delta(body.request, catalogue, rules, contexts, views, relationships)
     except PiiReviewRequired as review:
         session.pending_pii_confirmation = review.pending_confirmation
         session.pending_options = []
@@ -329,7 +334,7 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
         resolved_text = pending.resolve(body.resolution)
     session.pending_pii_confirmation = None
 
-    catalogue, rules, _contexts, _views = _catalogue_and_rules()
+    catalogue, rules, _contexts, _views, _relationships = _catalogue_and_rules()
     try:
         proposed = resume_proposal(resolved_text, catalogue, rules)
     except LlmMessage as message:

@@ -1115,6 +1115,19 @@ def existing_element_types() -> dict[str, str]:
     return existing_elements_and_types()[1]
 
 
+def existing_relationships() -> list[tuple[str, str, str, str]]:
+    """Every first-party + layer relationship as ``(type, source, target, label)`` --
+    grounds a factual question that needs the connection graph itself (what connects
+    to an element, what it realizes, a motivation chain up to a stakeholder), not just
+    the element catalogue `propose_delta` was already given."""
+    errors: list[str] = []
+    rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
+    return [
+        (str(r.get("type", "")), str(r.get("source", "")), str(r.get("target", "")), str(r.get("label") or ""))
+        for r in rels
+    ]
+
+
 _ELEMENT_FIELD_ORDER = ["type", "id", "name", "desc", "props"]
 _RELATIONSHIP_FIELD_ORDER = ["type", "source", "target", "label", "props"]
 
