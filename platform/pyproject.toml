@@ -10,7 +10,7 @@ name = "frictionless-architect-platform"
 description = "Poetry monorepo root for the Frictionless Architecture Platform packages."
 requires-python = ">=3.11,<3.14"
 # Each package is listed here and sourced from its path below.
-dependencies = ["controls-compliance-catalog", "digital-twin-knowledge-graph", "llm-provider-config", "modelling-specification", "portal"]
+dependencies = ["controls-compliance-catalog", "digital-twin-knowledge-graph", "llm-provider-config", "modelling-specification", "pii-gateway", "portal"]
 
 [tool.poetry]
 package-mode = false
@@ -20,6 +20,7 @@ controls-compliance-catalog = { path = "packages/controls-compliance-catalog", d
 digital-twin-knowledge-graph = { path = "packages/digital-twin-knowledge-graph", develop = true }
 llm-provider-config = { path = "packages/llm-provider-config", develop = true }
 modelling-specification = { path = "packages/modelling-specification", develop = true }
+pii-gateway = { path = "packages/pii-gateway", develop = true }
 portal = { path = "packages/portal", develop = true }
 
 [dependency-groups]
@@ -63,6 +64,15 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "pyArchimate.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# presidio-analyzer/presidio-anonymizer ship no inline types or stub package;
+# `follow_imports = "skip"` (not just ignore_missing_imports) is needed because
+# mypy still finds and analyzes their installed source, which would otherwise
+# trip strict mode's disallow_untyped_calls on their unannotated functions.
+module = ["presidio_analyzer.*", "presidio_anonymizer.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
 
 [[tool.mypy.overrides]]
 # behave's @given/@when/@then/@step decorators have no stubs, so strict mode's
