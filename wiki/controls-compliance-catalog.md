@@ -1,6 +1,6 @@
 ---
 title: Controls & Compliance Catalog
-generated: '2026-10-24'
+generated: '2026-10-29'
 generator: claude-sonnet-5
 sources:
 - platform/packages/controls-compliance-catalog/README.md
@@ -334,9 +334,10 @@ package-local ledger until that package exists to take it over.
 From `platform/`: `poetry install`, then `poetry run uvicorn
 controls_compliance_catalog.app:app --reload` serves `/oscal/*`
 (`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md`).
-The golden-dataset submodules
-(`third_party/oscal-content`, `third_party/fedramp-automation`) must be
-checked out first. For the playground, run `scripts/run-controls_compliance_catalog.sh` and open `/catalog`. `scripts/platform_checks.sh` gates the package (lock
+`third_party/oscal-content` and `third_party/fedramp-automation` are plain
+vendored files already present in the checkout — no submodule init needed
+(GH #167; see [OSCAL Compliance Content](oscal-compliance.md)). For the
+playground, run `scripts/run-controls_compliance_catalog.sh` and open `/catalog`. `scripts/platform_checks.sh` gates the package (lock
 check, pyright, per-package mypy, pytest at 90% coverage) and is folded
 into `scripts/pre_commit_checks.sh` — see [Development & Quickstart](development.md).
 

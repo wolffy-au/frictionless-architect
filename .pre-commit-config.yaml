@@ -25,7 +25,11 @@ repos:
         # FedRAMP source files (full catalog JSON, publication PDFs, resolved
         # FedRAMP baseline XML) per ADR-0030 — each carries its own sha256 in
         # a sidecar *.provenance.yaml, so size is expected, not a mistake.
-        exclude: ^tests/fixtures/golden-oscal/
+        # third_party/{oscal,oscal-content,fedramp-automation}/ vendor the
+        # same upstream files as plain tracked files (GH #167, replacing the
+        # former git submodules) — each set carries a PROVENANCE.md instead
+        # of a sidecar, same rationale.
+        exclude: ^(tests/fixtures/golden-oscal/|third_party/(oscal|oscal-content|fedramp-automation)/)
       - id: mixed-line-ending
 
   - repo: local

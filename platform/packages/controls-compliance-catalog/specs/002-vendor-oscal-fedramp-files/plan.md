@@ -50,7 +50,7 @@ raises) by vendoring only the named files, not the whole `GoComply/fedramp` tree
 **Scale/Scope**: Three vendored file sets, each a handful of files (OSCAL schemas; one
 catalog + four baseline profiles; three resolved baseline catalogs), plus their
 `PROVENANCE.md`/`LICENSE` files; one ADR amendment; four wiki pages (regenerated, not
-hand-edited); one README; up to 13 golden-fixture provenance sidecars (verified, not
+hand-edited); one README; up to 17 golden-fixture provenance sidecars (verified, not
 necessarily edited — research R3); four spec artefacts in `001-oscal-ai-conversion`.
 
 ## Constitution Check
