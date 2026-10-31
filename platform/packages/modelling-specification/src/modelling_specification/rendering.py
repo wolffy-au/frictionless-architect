@@ -300,6 +300,15 @@ def list_views() -> list[dict[str, str]]:
     return [{"id": v["id"], "name": str(v.get("name", v["id"]))} for v in _all_views() if "id" in v]
 
 
+def view_catalogue() -> list[tuple[str, str, str]]:
+    """`(id, name, viewpoint)` for every renderable view, in file order -- the data a
+    conversational-authoring request like "what views/viewpoints are available" is
+    answered from (delta.py's `_views_text`). `viewpoint` is `""` for a hand-curated
+    `views.yaml` view that has none (the tag is only checked, never required, by
+    `build.py`)."""
+    return [(v["id"], str(v.get("name", v["id"])), str(v.get("viewpoint", ""))) for v in _all_views() if "id" in v]
+
+
 def _refresh_model_if_sources_changed() -> None:
     """Rebuild the generated model when any YAML source is newer than its XML."""
     if not OUT.exists():

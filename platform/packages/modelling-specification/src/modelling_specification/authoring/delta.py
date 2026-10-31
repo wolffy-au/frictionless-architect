@@ -50,10 +50,11 @@ ids rather than describing them vaguely. Never invent a rule id that isn't liste
 
 If the request is a factual question about the model itself or its own vocabulary --
 for example "what are my choices for context", "what contexts exist", "what tags/props
-can I put on an element", "what element types are allowed" -- answer it directly in
-plain text from the "Existing contexts" and "Existing elements" data given below (and
-the ArchiMate 3.2 concept names for element/relationship types). This is not a
-clarifying question: answer from the data you were given rather than asking the
+can I put on an element", "what element types are allowed", "what views/viewpoints are
+available", "what standard ArchiMate views do I have" -- answer it directly in plain
+text from the "Existing contexts", "Existing elements" and "Existing views" data given
+below (and the ArchiMate 3.2 concept names for element/relationship types). This is not
+a clarifying question: answer from the data you were given rather than asking the
 architect to clarify a question that data already answers.
 
 If the request is too vague to form even one concrete option -- missing the subject,
@@ -114,6 +115,10 @@ def _contexts_text(contexts: list[str]) -> str:
     return "\n".join(sorted(contexts))
 
 
+def _views_text(views: list[tuple[str, str, str]]) -> str:
+    return "\n".join(f"{vid} | {name} | viewpoint={viewpoint or 'custom'}" for vid, name, viewpoint in views)
+
+
 def _is_single_delta(payload: Any) -> bool:
     return isinstance(payload.get("elements"), list) and isinstance(payload.get("relationships"), list)
 
@@ -142,6 +147,7 @@ def propose_delta(
     catalogue: list[tuple[str, str, str]] | None = None,
     rules: list[dict[str, Any]] | None = None,
     contexts: list[str] | None = None,
+    views: list[tuple[str, str, str]] | None = None,
 ) -> dict[str, Any]:
     """Call the configured LLM and return a candidate delta, in one of two shapes:
     a single concrete change, `{"elements": [...], "relationships": [...]}`; or, when
@@ -151,8 +157,9 @@ def propose_delta(
     complete candidate delta (FR-001, "suggests ways forward" per GH #68).
 
     A factual question about the model's own vocabulary (e.g. "what are my choices
-    for context") is answered in plain text from `catalogue`/`contexts`/`rules` via
-    the `LlmMessage` path below, same as a clarifying question.
+    for context", "what views/viewpoints are available") is answered in plain text
+    from `catalogue`/`contexts`/`rules`/`views` via the `LlmMessage` path below, same
+    as a clarifying question.
 
     Raises `DeltaProposalError` for every way this can fail short of one of those
     shapes: no provider configured, no credential, the call itself failing, an empty
@@ -210,6 +217,8 @@ def resume_proposal(
         system += f"\n\nExisting elements:\n{_catalogue_text(catalogue)}"
     if contexts:
         system += f"\n\nExisting contexts:\n{_contexts_text(contexts)}"
+    if views:
+        system += f"\n\nExisting views:\n{_views_text(views)}"
     if rules:
         system += f"\n\nEnterprise convention rules:\n{_rules_text(rules)}"
     messages = [{"role": "system", "content": system}, {"role": "user", "content": resolved_text}]
