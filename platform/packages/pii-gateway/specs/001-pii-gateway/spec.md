@@ -43,25 +43,26 @@ Decision record: [ADR-0014](../../../../../docs/adr/0014-pii-anonymization-gatew
 
 ### User Story 1 - Automated drafting never sends unscrubbed PII/PHI to an LLM (Priority: P1)
 
-`architecture-governance`'s AI-assisted ADR/evaluation drafting and
-`modelling-specification`'s spec drafting both send architect-authored content to an LLM
-provider with no human reviewing the outgoing text first. Before either call happens, the
+`modelling-specification`'s spec drafting sends architect-authored content to an LLM
+provider with no human reviewing the outgoing text first. Before the call happens, the
 content is scrubbed of PII/PHI and, if nothing is found, passed through unchanged.
+`architecture-governance`'s AI-assisted ADR/evaluation drafting is in scope for this same
+guarantee (ADR-0014), but that package doesn't exist yet (`ARCHITECTURE.md` §4 lists it
+**build**, not built) — there is no drafting call site to wire today. Wiring it is
+deferred to that package's own build-out, the same deferral already used for GH #68's
+conversational-authoring agent (2026-10-31 decision, GH #136 comment thread).
 
 **Why this priority**: This is ADR-0014's mandatory requirement and the reason GH #136
-exists — without it, FR-004 is unenforced in code on the only two consumers this package
-builds for directly.
+exists — without it, FR-004 is unenforced in code on this feature's only buildable
+consumer today.
 
 ```plantuml
 @startuml
 left to right direction
-actor "architecture-governance\n(fn-governance-eval)" as gov
 actor "modelling-specification\n(fn-spec-generator)" as mdl
 usecase "Scrub PII/PHI before LLM call" as UC1
 usecase "Pass ordinary prose through unchanged" as UC2
-gov --> UC1
 mdl --> UC1
-gov --> UC2
 mdl --> UC2
 @enduml
 ```
@@ -80,11 +81,9 @@ unchanged.
    it is scrubbed, **Then** the matched span is redacted and the call proceeds.
 3. **Given** text containing no PII/PHI, **When** it is scrubbed, **Then** the returned
    text is byte-for-byte identical to the input.
-4. **Given** `architecture-governance`'s ADR/evaluation drafting path, **When** it sends
-   content to the LLM provider, **Then** a planted PII string in a test fixture never
-   reaches the (stubbed) LLM call.
-5. **Given** `modelling-specification`'s spec-drafting path, **When** it sends content to
-   the LLM provider, **Then** the same guarantee holds.
+4. **Given** `modelling-specification`'s spec-drafting path, **When** it sends content to
+   the LLM provider, **Then** a planted PII string in a test fixture never reaches the
+   (stubbed) LLM call.
 
 ---
 
@@ -195,7 +194,9 @@ assert the new behavior applies immediately.
   detected match for every caller context, except the conversational-authoring context,
   which MUST default to flag-for-review (ADR-0014).
 - **FR-006**: `architecture-governance`'s ADR/evaluation drafting path MUST call this
-  package's scrub contract before any content reaches the LLM provider.
+  package's scrub contract before any content reaches the LLM provider, once that
+  package is built — tracked as `architecture-governance`'s own acceptance obligation
+  (2026-10-31 decision), not a task of this feature, since the package doesn't exist yet.
 - **FR-007**: `modelling-specification`'s spec-drafting path MUST call this package's
   scrub contract before any content reaches the LLM provider.
 - **FR-008**: Policy/regulatory-standard document conversion
@@ -214,23 +215,23 @@ assert the new behavior applies immediately.
 
 ### Key Entities
 
-- **ScrubResult**: the outcome of one `scrub()` call — the (possibly redacted) text, the
-  list of detected matches (category, location, confidence), and the action taken
-  (redacted-and-proceeded, flagged-for-review, or passed-through-unchanged). A
-  flagged-for-review result is scoped to the current call/turn only — it is never
-  persisted or resumed across calls (2026-10-31 clarification).
-- **Audit Entry**: a metadata-only record of one `scrub()` call — timestamp, caller
-  context, matched categories, and action taken. Never contains the matched text or
-  surrounding content (2026-10-31 clarification).
-- **Detector Category Configuration**: which PII/PHI categories are active and which
-  failure-mode action applies, keyed by caller context.
+Field-level shape, relationships and lifecycle live in `data-model.md`'s class diagram
+(Principle XI) — summarized here only in business terms:
+
+- **ScrubResult**: what one `scrub()` call hands back to its caller — the content to
+  proceed with and what was done to get there.
+- **Audit Entry**: the metadata-only record that a `scrub()` call happened, kept separate
+  from `ScrubResult` so no PII/PHI value is ever written to the audit trail.
+- **Detector Category Configuration**: the operator-editable setting (FR-009) that
+  decides which categories are checked and what happens on a match, per caller.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: Zero planted PII/PHI test strings reach a stubbed LLM call across both
-  wired-through consumer integration tests.
+- **SC-001**: Zero planted PII/PHI test strings reach a stubbed LLM call across
+  `modelling-specification`'s wired-through integration test (this feature's only
+  buildable consumer today — see User Story 1, `architecture-governance` deferral).
 - **SC-002**: A representative sample of ordinary technical prose (this platform's typical
   content) passes through unaltered — zero false-positive redactions across the sample
   set used in unit tests.
@@ -256,5 +257,9 @@ assert the new behavior applies immediately.
 - GH #68's conversational-modelling agent is not built here; this package only commits to
   the `scrub()` contract and flag-for-review behavior that agent will depend on once built
   (tracked as its own acceptance obligation, per the 2026-10-31 GH #68 comment).
+- `architecture-governance` is not built here either (`ARCHITECTURE.md` §4: status
+  **build**, not yet built) — the same deferral pattern applies: this package exposes
+  the `scrub()` contract FR-006 requires, and wiring it in is that package's own
+  acceptance obligation once it exists, not a task of this feature.
 - Single-user local MVP scope (ADR-0024) applies — no multi-tenant configuration or
   credential concerns beyond what `llm-provider-config` already established.

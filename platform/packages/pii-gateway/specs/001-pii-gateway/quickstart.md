@@ -54,8 +54,18 @@ the thing to verify.
 ## User Story 3 — operator changes behavior without a code change
 
 ```bash
-# Start the settings router standalone, or mounted by the portal (ADR-0020):
-poetry run uvicorn pii_gateway.router:demo_app --port 8001 &
+# Start the settings router standalone, or mounted by the portal (ADR-0020). A minimal
+# standalone app wraps create_settings_router(...) (contracts/scrub.md's settings-router
+# contract) the same way llm_provider_config does for its own settings page:
+poetry run python - <<'PY' &
+from fastapi import FastAPI
+from pii_gateway.router import create_settings_router
+
+app = FastAPI()
+app.include_router(create_settings_router(["governance-eval", "spec-generator", "conversational-authoring"]))
+import uvicorn
+uvicorn.run(app, port=8001)
+PY
 
 curl -s http://localhost:8001/settings/pii-gateway/state | head -c 400
 curl -s -X PUT http://localhost:8001/settings/pii-gateway/contexts/governance-eval \
@@ -70,14 +80,15 @@ failure-mode immediately (SC-003), with no redeploy.
 
 ```bash
 cd platform
-poetry run pytest packages/architecture-governance/tests/integration/test_pii_scrubbing.py
 poetry run pytest packages/modelling-specification/tests/integration/test_pii_scrubbing.py
 poetry run pytest packages/controls-compliance-catalog/tests/ -k "markdown_conversion or quality_feedback"
 ```
 
-Expected: the first two prove a planted PII string never reaches the stubbed LLM call
-(FR-006/FR-007); the third confirms `fn-ai-markdown-conversion`/
-`fn-policy-quality-feedback` still bypass the gateway entirely (FR-008, ADR-0031).
+Expected: the first proves a planted PII string never reaches the stubbed LLM call
+(FR-007); the second confirms `fn-ai-markdown-conversion`/`fn-policy-quality-feedback`
+still bypass the gateway entirely (FR-008, ADR-0031). `architecture-governance` has no
+equivalent check yet — FR-006's wiring is deferred to that package's own build-out
+(spec.md Assumptions).
 
 ## Gate check
 
