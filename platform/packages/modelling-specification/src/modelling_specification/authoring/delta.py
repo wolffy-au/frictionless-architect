@@ -2,7 +2,8 @@
 (FR-001), via `llm-provider-config`/`litellm` (ADR-0034, R4), component
 `modelling-specification.conversational-authoring`. Mirrors
 `controls-compliance-catalog.llm_client`'s own seam (same pattern, no new credential
-path, plan.md Security).
+path, plan.md Security). The request is scrubbed of PII/PHI before the LLM call
+(ADR-0014, pii-gateway FR-007).
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from typing import Any
 
 from litellm import completion
 from llm_provider_config import MissingCredentialError, NotConfiguredError, resolve_call
+from pii_gateway import scrub
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +132,8 @@ def propose_delta(
     if not stripped:
         raise DeltaProposalError("Cannot propose a delta from an empty request.")
 
+    scrubbed = scrub(stripped, context="spec-generator").text
+
     try:
         call = resolve_call(COMPONENT_ID)
     except (NotConfiguredError, MissingCredentialError) as exc:
@@ -140,7 +144,7 @@ def propose_delta(
         system += f"\n\nExisting elements:\n{_catalogue_text(catalogue)}"
     if rules:
         system += f"\n\nEnterprise convention rules:\n{_rules_text(rules)}"
-    messages = [{"role": "system", "content": system}, {"role": "user", "content": stripped}]
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": scrubbed}]
     try:
         response = completion(messages=messages, **call.completion_kwargs())
     except Exception as exc:  # noqa: BLE001 - litellm raises a wide family of provider/network errors
