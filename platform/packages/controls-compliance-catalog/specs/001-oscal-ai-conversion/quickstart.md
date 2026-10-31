@@ -5,8 +5,9 @@
 - From `platform/`: `poetry install` (adds `compliance-trestle`, `litellm`, `pypdf`,
   `python-docx` and `openpyxl` once declared in
   `packages/controls-compliance-catalog/pyproject.toml`; one shared lock, ADR-0002).
-- Vendored golden-dataset submodules checked out for the golden-dataset tests:
-  `git submodule update --init third_party/oscal-content third_party/fedramp-automation`.
+- `third_party/oscal-content` and `third_party/fedramp-automation` are plain
+  vendored files already present in the checkout (no submodule init needed) —
+  see each directory's `PROVENANCE.md`.
 - An LLM provider credential available to `litellm` (env var per provider, e.g.
   `ANTHROPIC_API_KEY`) — same trust boundary as other platform LLM uses (FR-016).
 

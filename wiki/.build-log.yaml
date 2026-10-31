@@ -401,12 +401,12 @@ topics:
   oscal-compliance:
     title: OSCAL Compliance Content
     page: wiki/oscal-compliance.md
-    built: '2026-10-25'
+    built: '2026-10-29'
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
-          sha256: 7e6f14ec368e2ea3bdc4c6c15d8f4faf2f9a6d9b6628930d2367aa4b3dc1f839
-          lines: 193
+          sha256: 810ed61e60218c36a3b848fc24184feac94543fe3f47d14cb25e9e8f6a137a43
+          lines: 234
         pyproject.toml:
           sha256: 581da46c6a864b0cdf3444af78d7ea68e0c175f77eb6510e0c4319291c02b269
           lines: 228
@@ -429,23 +429,32 @@ topics:
           sha256: 7b1019290fb05690fb547a0ab276fa12be2c5649643319eecc0bb9feffada131
           lines: 29
         third_party/README.md:
-          sha256: 6731594fe88744191f988b45b8aa4131fab9460db44f83f49a8a32f67e8c29ad
-          lines: 73
+          sha256: 49dd2269aa0a61c3113b621f05cf26d0bfb7dd7fdd69f44e71cc0ceb0cc4676c
+          lines: 89
         third_party/fedramp-automation/LICENSE.md:
           sha256: 48a7cf796e3cafbf06a91d35f014d13c25f5cc61fbe64a153e71d49d58a286e8
           lines: 122
+        third_party/fedramp-automation/PROVENANCE.md:
+          sha256: e808e96aa66117cb6baf036c2c8d70f790912819bc504f67157ea6155c467662
+          lines: 27
         third_party/fedramp-automation/README.md:
           sha256: 04089695d077b7748cf4ea78a2e75ef4ce88472b41e5587df540adab02bc5c6f
           lines: 60
         third_party/oscal-content/LICENSE.md:
           sha256: 9f0ddd1ed71f691bb483965a7c46e1315ab6cc28dac0426d4c3d27108aafde13
           lines: 27
+        third_party/oscal-content/PROVENANCE.md:
+          sha256: 7662443b396a8fc48ae1f401fc95a7f20aa79f3e784a68bd5def6bbec033e518
+          lines: 18
         third_party/oscal-content/README.md:
           sha256: 48bf0b343139848935dde670c3ab4e29267e2bcfb4df7b3e499396ae030f88a8
           lines: 15
         third_party/oscal/LICENSE.md:
           sha256: 63407ac41abc46911bc9759fc0c19fd0ba7f66c59bb6746e51d85e2f2f3244b1
           lines: 34
+        third_party/oscal/PROVENANCE.md:
+          sha256: 00ef35a837d2cfab15a4dfdad42ba710a1ffd72319f5b8353577c8b4b5162ef7
+          lines: 22
         third_party/oscal/README.md:
           sha256: dc076e93c8d9f080eab5d9b3cfcac44d440513828c1649a523b1ecfcad3cf7ff
           lines: 60
@@ -506,14 +515,14 @@ topics:
   controls-compliance-catalog:
     title: Controls & Compliance Catalog
     page: wiki/controls-compliance-catalog.md
-    built: '2026-10-24'
+    built: '2026-10-29'
     sources:
       files:
         platform/packages/controls-compliance-catalog/README.md:
           sha256: 0a77a8215c3e5d24157467fba3b78ef41f9aaaac5ada76be0dc49e45dad71dfb
           lines: 31
         platform/packages/controls-compliance-catalog/pyproject.toml:
-          sha256: d70c9310f0bf9551c2880ae8a604acb132f81417e5f726d97c307ff68628626d
+          sha256: bdf017774c369283510d5706dec2103bf1255bb21e84d8900f1b01655906eb3e
           lines: 27
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md:
           sha256: 815f4438b5359e108a78f236496f197e5af7ee12cb4da46b122e11792170dea4
@@ -528,8 +537,8 @@ topics:
           sha256: 23671b75793a1d7910f8db74046665fed4451f573085f66d4a92509523f26292
           lines: 174
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md:
-          sha256: 349eafa43a4739f46f429f4b07557797368fb1392c9b66cbaa7a9835ad18fdc3
-          lines: 82
+          sha256: 06a64f23a68621c557d0aa9257e68e04c50ba9a312ed425974033bf0617f710e
+          lines: 83
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/research.md:
           sha256: 9c07282b1548d7904ae5568aaf6f0bc25af3021a180deaef78f7a6bd5ffa7ff5
           lines: 198
@@ -916,8 +925,8 @@ topics:
           sha256: 71839e834d40064c3df1210d66765568acb5499e5e753f7a6202ec709c8dcdbd
           lines: 93
         docs/adr/0030-vendor-oscal-reference-content.md:
-          sha256: 7e6f14ec368e2ea3bdc4c6c15d8f4faf2f9a6d9b6628930d2367aa4b3dc1f839
-          lines: 193
+          sha256: 810ed61e60218c36a3b848fc24184feac94543fe3f47d14cb25e9e8f6a137a43
+          lines: 234
         docs/adr/0031-fr016-no-redaction-for-policy-documents.md:
           sha256: b1dde0949c3bad75f626865fc95099bdec526754bc621ce2978a12ad19916980
           lines: 46

@@ -99,7 +99,7 @@ confirmed fully reflected elsewhere, leaving only **A**/**P**
 | 0027 | Capability layer carries a value stream and an explicit motivation spine (updated 2026-09-26: four outcomes, streams per 0033, no derived edges) | A |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
 | 0029 | IT4IT vendored as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS` | A |
-| 0030 | OSCAL/FedRAMP content vendored as plain `third_party/` submodules; `compliance-trestle` consumed as an ordinary dependency; `oscal-document-workbench` scripts ported as native Python | A |
+| 0030 | OSCAL/FedRAMP content vendored under `third_party/` — selectively as plain tracked files with `PROVENANCE.md` since 2026-10-29, originally as git submodules; `compliance-trestle` consumed as an ordinary dependency; `oscal-document-workbench` scripts ported as native Python | A |
 | 0031 | Policy/standard document conversion bypasses the PII anonymization gateway, scoped to that one ingestion path | A |
 | 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
 | 0033 | One value stream per outcome, organised by value recipient (not by role); streams take stages over rather than duplicate them | A |

@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: '2026-10-24'
+generated: '2026-10-29'
 generator: claude-sonnet-5
 ---
 
@@ -67,8 +67,9 @@ generator: claude-sonnet-5
   standard-viewpoint views.
 - [OSCAL Compliance Content](oscal-compliance.md) — the vendored OSCAL/FedRAMP
   reference content (`third_party/oscal`, `oscal-content`,
-  `fedramp-automation`), the `compliance-trestle` runtime dependency, and how
-  ADR-0030 splits the vendoring approach between the two.
+  `fedramp-automation` — plain tracked files with `PROVENANCE.md` since
+  GH #167, not submodules), the `compliance-trestle` runtime dependency, and
+  how ADR-0030 splits the vendoring approach between the two.
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.

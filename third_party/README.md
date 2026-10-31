@@ -1,9 +1,13 @@
 # Vendored third-party content
 
-Each subdirectory here is a git submodule pinned to an upstream commit — read-only
-reference/example content, not modified in this repo. See
+`it4it` is a git submodule pinned to an upstream commit. `oscal`, `oscal-content`,
+and `fedramp-automation` are plain vendored copies of only the files this repo's
+tooling actually reads, each with its own `PROVENANCE.md` (upstream repo, commit
+SHA, retrieval date) and a retained copy of the upstream `LICENSE.md` — not git
+submodules, since none of the three is forked or patched (GH #167). All four are
+read-only reference/example content, not modified in this repo. See
 [ADR-0002](../docs/adr/0002-poetry-monorepo-forks-as-submodules.md) for the
-general vendoring pattern and the ADRs linked below for each vendor's own
+submodule vendoring pattern and the ADRs linked below for each vendor's own
 decision record.
 
 ## `it4it`
@@ -21,11 +25,16 @@ distinguished by the `it4it-` id prefix. See
 Upstream: [`usnistgov/OSCAL`](https://github.com/usnistgov/OSCAL)
 
 The Open Security Controls Assessment Language (OSCAL) — NIST's model and
-schemas (XML/JSON/YAML) for machine-readable security control catalogs,
-control baselines, system security plans, component definitions, and
-assessment artefacts.
+schemas for machine-readable security control catalogs, control baselines,
+system security plans, component definitions, and assessment artefacts.
+Vendored here: only the Catalog and Profile schema modules
+(`oscal_catalog_schema.{json,xsd}`, `oscal_profile_schema.{json,xsd}`),
+retrieved from a GitHub Release rather than the git tree — OSCAL publishes its
+built schemas only as release assets. See `PROVENANCE.md` for the pinned
+commit/tag and retrieval date.
 
-**License:** public domain (US government work) / CC0 1.0 Universal.
+**License:** public domain (US government work) / CC0 1.0 Universal
+(`LICENSE.md`, retained alongside the vendored files).
 
 Vendored as reference/example input, not modified here. It is the ground
 truth for the schema-alignment review in
@@ -39,10 +48,13 @@ Profile Generation") a real schema to check against. Not consumed by
 Upstream: [`usnistgov/oscal-content`](https://github.com/usnistgov/oscal-content)
 
 The real NIST SP 800-53 rev5 control catalog, and the LOW / MODERATE / HIGH /
-PRIVACY baseline profiles, expressed as OSCAL JSON/XML — published by NIST
-alongside the `oscal` schemas themselves.
+PRIVACY baseline profiles, expressed as OSCAL JSON — published by NIST
+alongside the `oscal` schemas themselves. Vendored here at their existing
+upstream-relative subpaths under `nist.gov/SP800-53/rev5/json/`. See
+`PROVENANCE.md` for the pinned commit and retrieval date.
 
-**License:** public domain (US government work) / CC0 1.0 Universal.
+**License:** public domain (US government work) / CC0 1.0 Universal
+(`LICENSE.md`, retained alongside the vendored files).
 
 Vendored as reference/example input, not modified here. It gives
 `process-policy-authoring`/`fn-policy-authoring` ("Policy & Standards
@@ -64,10 +76,14 @@ rather than a git-hosted source, so it isn't a submodule-able replacement.
 `GoComply/fedramp` is used instead: an active open-source CLI for processing
 OSCAL-based FedRAMP SSPs, which bundles resolved FedRAMP baseline catalogs at
 `bundled/catalogs/` — `FedRAMP_LOW-baseline-resolved-profile_catalog.xml`,
-`..._MODERATE...`, and `..._HIGH...`. Unlike `oscal`/`oscal-content`, it is a
-processing tool (not a pure content mirror): it has no PRIVACY baseline, and
-its own source is CC0-licensed but the repo also vendors Go dependencies
-under their own (non-CC0) licenses — see its `LICENSE.md`.
+`..._MODERATE...`, and `..._HIGH...`, the only three files vendored here (no
+PRIVACY baseline exists upstream). Unlike `oscal`/`oscal-content`, it is a
+processing tool (not a pure content mirror): its own source is CC0-licensed,
+but vendoring only the resolved baseline catalogs (not the whole repo) avoids
+pulling in the Go dependency tree it bundles under non-CC0 licenses — see its
+`LICENSE.md`, retained alongside the vendored files. See `PROVENANCE.md` for
+the pinned commit and retrieval date, and
+[ADR-0030](../docs/adr/0030-vendor-oscal-reference-content.md)'s 2026-09-28
+"Known issue" note on this content's rev4/rev5 mismatch.
 
-Vendored as reference/example input, not modified here. ADR-0030 needs a
-follow-up amendment to record this substitution.
+Vendored as reference/example input, not modified here.
