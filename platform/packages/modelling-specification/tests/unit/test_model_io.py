@@ -1089,6 +1089,36 @@ def test_merge_candidate_catches_a_delta_id_colliding_with_a_real_existing_eleme
     assert any("duplicate element id: sub-modelling" in e for e in errors)
 
 
+def test_merge_candidate_validates_a_clean_proposed_view_against_the_real_model() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        [{"id": "view-test-merge-candidate", "name": "Test View", "context": ["platform"], "include_types": []}],
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_a_proposed_view_with_an_unknown_context() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        [{"id": "view-test-bad-context", "name": "Test View", "context": ["no-such-context"]}],
+    )
+    assert model is None
+    assert any("unknown context" in e for e in errors)
+
+
+def test_merge_candidate_catches_a_proposed_view_id_colliding_with_a_real_existing_view() -> None:
+    model, errors, _warnings = model_io.merge_candidate([], [], [{"id": "view-context-map", "name": "Duplicate"}])
+    assert model is None
+    assert any("duplicate view id: view-context-map" in e for e in errors)
+
+
+def test_existing_view_ids_includes_a_real_view() -> None:
+    assert "view-context-map" in model_io.existing_view_ids()
+
+
 def test_existing_element_ids_includes_a_real_element() -> None:
     assert "sub-modelling" in model_io.existing_element_ids()
 
@@ -1117,6 +1147,27 @@ def test_append_delta_appends_flow_style_entries_without_disturbing_existing_con
     rels_text = rels_path.read_text()
     assert "{type: Serving, source: existing, target: existing, label: self}" in rels_text
     assert "{type: Assignment, source: existing, target: fn-new}" in rels_text
+
+
+def test_append_delta_appends_a_proposed_view_without_disturbing_existing_content(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    (tmp_path / "elements.yaml").write_text("")
+    (tmp_path / "relationships.yaml").write_text("")
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- {id: view-existing, name: Existing View}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.append_delta(
+        [],
+        [],
+        [{"id": "view-new", "name": "New View", "context": ["platform"], "include_types": ["ApplicationFunction"]}],
+    )
+
+    views_text = views_path.read_text()
+    assert "{id: view-existing, name: Existing View}" in views_text
+    assert "id: view-new, name: New View" in views_text
+    assert "context: [platform]" in views_text
 
 
 def test_append_delta_quotes_values_containing_yaml_special_characters(tmp_path: Any, monkeypatch: Any) -> None:

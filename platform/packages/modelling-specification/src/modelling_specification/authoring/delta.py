@@ -26,14 +26,24 @@ SYSTEM_PROMPT = """You turn an enterprise/solution architect's natural-language 
 candidate ArchiMate model delta. Respond with JSON only, no prose, shaped exactly as:
 
 {"elements": [{"type": "<ArchiMate 3.2 concept, e.g. ApplicationFunction>", "id": "<optional stable id>", "name": "<name>", "desc": "<optional description>"}],
- "relationships": [{"type": "<ArchiMate 3.2 relationship, e.g. Serving>", "source": "<element id>", "target": "<element id>", "label": "<optional>"}]}
+ "relationships": [{"type": "<ArchiMate 3.2 relationship, e.g. Serving>", "source": "<element id>", "target": "<element id>", "label": "<optional>"}],
+ "views": [{"id": "<optional stable id>", "name": "<name>", "context": ["<context value, from \\"Existing contexts\\" below>", ...], "include_types": ["<ArchiMate 3.2 concept>", ...], "members": ["<existing element id>", ...], "viewpoint": "<standard viewpoint slug, or \\"custom\\">"}]}
 
-Both "elements" and "relationships" are required keys, each a (possibly empty) list.
-Only describe the new or changed elements/relationships the request asks for; refer to
-elements already in the model by their existing id in "source"/"target" rather than
-redeclaring them. The existing elements are listed below as "id | type | name": match what
-the architect names to the closest element, even when they misspell it or give only part of
-its name, and copy that id exactly. Never invent an id for an element that already exists.
+"elements", "relationships" and "views" are all required keys, each a (possibly empty)
+list. Only describe the new or changed elements/relationships/views the request asks
+for; refer to elements already in the model by their existing id in "source"/"target"/
+"members" rather than redeclaring them. The existing elements are listed below as
+"id | type | name": match what the architect names to the closest element, even when
+they misspell it or give only part of its name, and copy that id exactly. Never invent
+an id for an element that already exists.
+
+A view scoped to one or more contexts (e.g. "a view of everything tagged context X")
+needs "context" and broad "include_types" (every element in those contexts of those
+types is swept in automatically, now and for anything added to that context later) --
+not an exhaustive "members" list naming each one by hand. Use "members" only for a view
+built from specific named elements regardless of context. "viewpoint" is optional;
+omit it, or use "custom", for a cross-cutting view that doesn't match one of the
+standard ArchiMate viewpoints.
 
 If the architect instead asks for a way forward -- "what should I do about X", "suggest
 options for Y", "how should I evolve Z" -- rather than describing one concrete change,
@@ -44,7 +54,8 @@ reply with JSON shaped exactly as:
               "elements": [...], "relationships": [...]}]}
 
 Give 2-3 distinct options, each a complete, independently applicable candidate delta in the
-same "elements"/"relationships" shape as above. Ground each rationale in the existing
+same "elements"/"relationships" shape as above (an option never proposes a view -- "views"
+is only ever part of the one-concrete-change shape). Ground each rationale in the existing
 elements and, where relevant, the enterprise convention rules listed below -- cite their
 ids rather than describing them vaguely. Never invent a rule id that isn't listed.
 
@@ -71,9 +82,10 @@ If the request is too vague to form even one concrete option -- missing the subj
 scope, or enough detail to propose anything concrete -- reply with a short
 plain-text message instead of JSON: one clarifying question for the architect to answer.
 
-You can only ADD elements and relationships. If the request asks to rename, edit or remove
-something that already exists, return {"elements": [], "relationships": []} rather than
-re-declaring the existing element."""
+You can only ADD elements, relationships and views. If the request asks to rename, edit or
+remove something that already exists -- including a view's own scope or membership --
+return {"elements": [], "relationships": [], "views": []} rather than re-declaring the
+existing element or view."""
 
 # Models often wrap JSON output in a single ```json fence despite being told not to.
 _SURROUNDING_FENCE = re.compile(r"\A\s*```[A-Za-z]*\n(.*?)\n```\s*\Z", re.DOTALL)
@@ -159,7 +171,11 @@ def _grounded_system_prompt(
 
 
 def _is_single_delta(payload: Any) -> bool:
-    return isinstance(payload.get("elements"), list) and isinstance(payload.get("relationships"), list)
+    return (
+        isinstance(payload.get("elements"), list)
+        and isinstance(payload.get("relationships"), list)
+        and isinstance(payload.get("views", []), list)
+    )
 
 
 def _normalize_option(option: Any, model: str) -> dict[str, Any]:
@@ -190,8 +206,9 @@ def propose_delta(
     relationships: list[tuple[str, str, str, str]] | None = None,
 ) -> dict[str, Any]:
     """Call the configured LLM and return a candidate delta, in one of two shapes:
-    a single concrete change, `{"elements": [...], "relationships": [...]}`; or, when
-    the architect asked for a way forward rather than describing one change,
+    a single concrete change, `{"elements": [...], "relationships": [...], "views":
+    [...]}`; or, when the architect asked for a way forward rather than describing
+    one change,
     `{"options": [{"rationale": ..., "convention_refs": [...], "elements": [...],
     "relationships": [...]}, ...]}` -- 2-3 alternatives, each independently a
     complete candidate delta (FR-001, "suggests ways forward" per GH #68).
@@ -284,7 +301,11 @@ def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:
     """`payload` must be a single delta or an "options" list (see `propose_delta`);
     anything else is a `DeltaProposalError` naming the model that returned it."""
     if isinstance(payload, dict) and _is_single_delta(payload):
-        return {"elements": payload["elements"], "relationships": payload["relationships"]}
+        return {
+            "elements": payload["elements"],
+            "relationships": payload["relationships"],
+            "views": payload.get("views") or [],
+        }
 
     if isinstance(payload, dict) and isinstance(payload.get("options"), list) and payload["options"]:
         return {"options": [_normalize_option(o, model) for o in payload["options"]]}
@@ -362,3 +383,26 @@ def assign_missing_ids(elements: list[dict[str, Any]], existing_ids: set[str]) -
         used.add(candidate)
         assigned.append({**e, "id": candidate})
     return assigned
+
+
+def assign_missing_view_ids(views: list[dict[str, Any]], existing_ids: set[str]) -> list[dict[str, Any]]:
+    """Same as `assign_missing_ids`, but for proposed views -- `view-<slugified name>`,
+    de-duplicated against `existing_ids` (view ids already on disk) and ids already
+    assigned earlier in this same call. A view missing `diagram:` gets one derived
+    from its id (`<id without the "view-" prefix>`) so it actually renders -- a view
+    with no `diagram:` key is silently skipped by `render_diagrams.py`."""
+    used = set(existing_ids)
+    assigned: list[dict[str, Any]] = []
+    for v in views:
+        if v.get("id"):
+            used.add(v["id"])
+            assigned.append(v)
+            continue
+        base = f"view-{_slugify(str(v.get('name', '')))}"
+        candidate, n = base, 2
+        while candidate in used:
+            candidate = f"{base}-{n}"
+            n += 1
+        used.add(candidate)
+        assigned.append({**v, "id": candidate})
+    return [v if v.get("diagram") else {**v, "diagram": v["id"].removeprefix("view-")} for v in assigned]

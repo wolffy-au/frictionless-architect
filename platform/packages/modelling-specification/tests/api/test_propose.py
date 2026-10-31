@@ -226,3 +226,29 @@ def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
     assert body["delta_id"] is None
     assert body["elements"] == []
     assert body["relationships"] == []
+
+
+def test_propose_a_context_scoped_view_returns_validated_with_an_assigned_id(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "views": [{"name": "Context Sweep Propose Test", "context": ["modelling-specification"],'
+        ' "include_types": ["ApplicationFunction"]}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add a view scoped to context modelling-specification"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (view,) = body["views"]
+    assert view["id"] == "view-context-sweep-propose-test"
+    assert view["diagram"] == "context-sweep-propose-test"
+    assert view["context"] == ["modelling-specification"]
+    assert body["elements"] == []
+    assert body["relationships"] == []
