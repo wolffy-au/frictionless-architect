@@ -49,6 +49,10 @@ All under `/authoring`; request and response shapes are in
 A worked end-to-end walkthrough is in
 [`quickstart.md`](../../../specs/EPIC-003-conversational-model-authoring/quickstart.md).
 
+`propose`'s request text is scrubbed of PII/PHI by
+[`pii-gateway`](../pii-gateway/README.md) (context `"spec-generator"`) before it
+reaches the LLM provider (ADR-0014).
+
 ## Command line
 
 From the repo root, the same logic the root wrappers call:
