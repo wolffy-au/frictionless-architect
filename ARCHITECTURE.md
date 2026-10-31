@@ -63,6 +63,7 @@ package "platform/packages/ (own lock + venv)" {
   [portal\ncomposition host] as portal
   [digital-twin-knowledge-graph\nlibrary, not yet consumed] as dtkg
   [schema-visualizer-api\nspecs-only placeholder] as svapi
+  [pii-gateway\nPII/PHI scrubbing, Presidio-backed] as pii
 }
 
 [Neo4j] as neo4j
@@ -77,7 +78,9 @@ seedcli --> schema
 schema --> neo4j
 portal --> ccc : mounts
 portal --> llm : mounts
+portal --> pii : mounts
 ms ..> model : builds / validates
+ms ..> pii : scrubs PII/PHI before every LLM call
 svapi ..> api : will extract
 svapi ..> dtkg : will consume
 
@@ -97,6 +100,7 @@ end note
 | `controls-compliance-catalog` | `platform/packages/controls-compliance-catalog/` | Policy-to-OSCAL conversion pipeline and playground UI |
 | `modelling-specification` | `platform/packages/modelling-specification/` | Conversational authoring service, split-screen UI and model build/render/validate CLI |
 | `llm-provider-config` | `platform/packages/llm-provider-config/` | Shared provider/model/credential resolution |
+| `pii-gateway` | `platform/packages/pii-gateway/` | Shared PII/PHI scrubbing gateway (Presidio-backed, ADR-0014/ADR-0043); called from `modelling-specification` today |
 | `portal` | `platform/packages/portal/` | Composition host mounting the package UIs |
 | `digital-twin-knowledge-graph` | `platform/packages/digital-twin-knowledge-graph/` | Library with the read path; the visualiser has not cut over to it yet |
 | `schema-visualizer-api` | `platform/packages/schema-visualizer-api/` | Specs-only placeholder |
@@ -150,6 +154,7 @@ frictionless-architect/                 # ROOT — governance & orchestration
         ├── modelling-specification/         # subsystem 6
         ├── schema-visualizer-api/           # from today's src/, after step 4 (§8)
         ├── llm-provider-config/             # shared, not a subsystem (ADR-0034)
+        ├── pii-gateway/                     # shared, not a subsystem (ADR-0034/0043)
         └── portal/                          # composition host, no feature logic (ADR-0020, #120)
 ```
 
@@ -158,7 +163,8 @@ and `specs/` (per-package feature specs — see §6). Not every package is one o
 subsystems: a capability needed by more than one of them gets its own sibling package
 instead of being duplicated per subsystem or dumped in a catch-all `common`
 ([ADR-0034](docs/adr/0034-shared-packages-and-llm-provider-config.md)); the first
-instance is `llm-provider-config` (§4).
+instance is `llm-provider-config` (§4), the second is `pii-gateway`
+([ADR-0043](docs/adr/0043-pii-gateway-detector-library-presidio.md)).
 
 ### 3.3 Target diagram
 
