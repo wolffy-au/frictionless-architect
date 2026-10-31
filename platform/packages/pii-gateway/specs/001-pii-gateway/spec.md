@@ -52,6 +52,20 @@ content is scrubbed of PII/PHI and, if nothing is found, passed through unchange
 exists — without it, FR-004 is unenforced in code on the only two consumers this package
 builds for directly.
 
+```plantuml
+@startuml
+left to right direction
+actor "architecture-governance\n(fn-governance-eval)" as gov
+actor "modelling-specification\n(fn-spec-generator)" as mdl
+usecase "Scrub PII/PHI before LLM call" as UC1
+usecase "Pass ordinary prose through unchanged" as UC2
+gov --> UC1
+mdl --> UC1
+gov --> UC2
+mdl --> UC2
+@enduml
+```
+
 **Independent Test**: Call the scrub contract directly with a text sample containing a
 planted PII/PHI string; assert the string never appears in what would be sent onward. Call
 it again with ordinary technical prose containing no PII/PHI; assert the text is returned
@@ -85,6 +99,22 @@ confirmation instead of being silently redacted.
 the 2026-10-31 failure-mode decision (ADR-0014) — this package must expose the
 flag-for-review behavior GH #68 will depend on, even though it doesn't call it yet.
 
+```plantuml
+@startuml
+left to right direction
+actor "Conversational-modelling agent\n(fn-conversational-authoring, GH #68)" as agent
+actor "Architect" as architect
+usecase "Flag detected match for review" as UC1
+usecase "Confirm / edit / allow flagged match" as UC2
+usecase "Abandon turn (match discarded)" as UC3
+agent --> UC1
+architect --> UC2
+architect --> UC3
+UC1 ..> UC2 : <<extend>>
+UC1 ..> UC3 : <<extend>>
+@enduml
+```
+
 **Independent Test**: Call the scrub contract with `context` set to the
 conversational-authoring caller identity and a planted PII string; assert the result is a
 pending confirmation, not a silently redacted pass-through, and that nothing reaches an
@@ -109,6 +139,17 @@ match for a given caller, without a code change or redeploy.
 
 **Why this priority**: GH #136 requires a config surface; lowest priority because the
 hard-coded defaults from ADR-0014 already make the package usable without it.
+
+```plantuml
+@startuml
+left to right direction
+actor "Operator" as op
+usecase "Toggle a detector category on/off" as UC1
+usecase "Change a context's failure-mode action" as UC2
+op --> UC1
+op --> UC2
+@enduml
+```
 
 **Independent Test**: Change a detector category's active state or a context's
 failure-mode action through the settings surface, then call the scrub contract again;
