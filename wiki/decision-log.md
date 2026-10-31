@@ -1,6 +1,6 @@
 ---
 title: Architecture Decision Log
-generated: '2026-10-29'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0000-adr-template.md
@@ -45,6 +45,7 @@ sources:
 - docs/adr/0039-conversational-solution-modelling-scope.md
 - docs/adr/0040-bounded-contexts-as-generated-groupings.md
 - docs/adr/0041-structured-suggestion-options-in-delta-py.md
+- docs/adr/0042-maintenance-agents-and-generated-wiki.md
 - docs/adr/README.md
 ---
 
@@ -99,7 +100,7 @@ confirmed fully reflected elsewhere, leaving only **A**/**P**
 | 0027 | Capability layer carries a value stream and an explicit motivation spine (updated 2026-09-26: four outcomes, streams per 0033, no derived edges) | A |
 | 0028 | Relationships are edges only; views/diagrams reference them by identifier list, not a `RelationshipFact` node | A |
 | 0029 | IT4IT vendored as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS` | A |
-| 0030 | OSCAL/FedRAMP content vendored under `third_party/` — selectively as plain tracked files with `PROVENANCE.md` since 2026-10-29, originally as git submodules; `compliance-trestle` consumed as an ordinary dependency; `oscal-document-workbench` scripts ported as native Python | A |
+| 0030 | OSCAL/FedRAMP content vendored under `third_party/` as selective plain tracked files with `PROVENANCE.md` (originally git submodules; switched 2026-10-29, GH #167, and the ADR's title now says so); `compliance-trestle` consumed as an ordinary dependency; `oscal-document-workbench` scripts ported as native Python | A |
 | 0031 | Policy/standard document conversion bypasses the PII anonymization gateway, scoped to that one ingestion path | A |
 | 0032 | ArchiMate exchange files use the `archimate/3.0/` namespace (schema version 3.1); any other namespace is rejected loudly | A |
 | 0033 | One value stream per outcome, organised by value recipient (not by role); streams take stages over rather than duplicate them | A |
@@ -111,6 +112,7 @@ confirmed fully reflected elsewhere, leaving only **A**/**P**
 | 0039 | Conversational solution modelling (GH #68/#138) gets its own `fn-solution-modelling` function, distinct from ADR-0037's `fn-conversational-authoring`; assigned to `sub-library`, composed into the existing `bfn-solution-design` alongside structured composition | P |
 | 0040 | Bounded contexts (GH #129) are generated `Grouping`s + Aggregations from each element's `context:` tag; oversized views split per-context with `include_neighbours` to keep cross-context edges visible; a generated context map derives Serving edges between contexts from element-level crossings | A |
 | 0041 | `delta.py` gains structured, pre-validated suggestion options ("ways forward") built against today's ADR-0037 agent — a deliberate, documented deviation from GH #68's filed #140-#151 breakdown rather than waiting for #142's journey-API rework | P |
+| 0042 | Repo upkeep is done by tracked single-purpose subagents (read-only ones report, write-capable ones open PRs and never merge); the wiki is derived output with `wiki/sources.yaml` as its only hand-edited input; platform package manifests pin lower bounds for transitive dependencies that have security advisories | P |
 
 The **P** rows (0017–0019) exist because `specs/EPIC-001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,
@@ -528,6 +530,20 @@ starts; and that an option's `rationale` prose is never mechanically
 checked against the ids it cites, only its `elements`/`relationships`
 (`docs/adr/0041-structured-suggestion-options-in-delta-py.md` §Decision,
 §Consequences). See [Conversational Model Authoring](modelling-specification.md).
+
+ADR-0042 (Proposed 2026-10-29) records the maintenance tooling this wiki
+itself depends on. Upkeep is delegated to single-purpose subagents under
+`.claude/agents/`: read-only ones report, write-capable ones push a branch
+and open a PR, none merges, and `adr-auditor` leaves its PR as a draft. The
+wiki is derived output, with `wiki/sources.yaml` the only hand-edited input.
+Each platform package manifest pins explicit lower bounds for transitive
+dependencies with security advisories, because Dependabot scores each
+`pyproject.toml` independently of the shared `platform/poetry.lock` and kept
+raising alerts for versions the lock had already fixed. The Decision and
+Consequences sections are still marked "DRAFT — confirm", and the
+"Alternatives considered" section is empty pending a human
+(`docs/adr/0042-maintenance-agents-and-generated-wiki.md` §Decision,
+§Consequences). See [Agent Skills & Workflows](agent-workflows.md).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).
