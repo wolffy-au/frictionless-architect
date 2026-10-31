@@ -63,6 +63,8 @@ def test_propose_returns_502_when_the_llm_call_fails(configured_fake_llm: FakeCo
     response = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a function"})
 
     assert response.status_code == 502
+    assert "connection refused" not in response.text
+    assert "server log" in response.json()["detail"]
 
 
 def test_propose_against_an_unknown_session_returns_404(configured_fake_llm: FakeCompletion) -> None:

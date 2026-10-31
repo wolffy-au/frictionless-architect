@@ -69,8 +69,9 @@ def test_propose_delta_wraps_a_missing_credential_error(monkeypatch: pytest.Monk
 def test_propose_delta_wraps_a_provider_failure(configured_fake_llm: FakeCompletion) -> None:
     configured_fake_llm.error = ConnectionError("connection refused")
 
-    with pytest.raises(DeltaProposalError, match=r"ollama_chat/test-model.*connection refused"):
+    with pytest.raises(DeltaProposalError, match=r"ollama_chat/test-model.*server log") as excinfo:
         propose_delta("add a function")
+    assert "connection refused" not in str(excinfo.value)
 
 
 def test_propose_delta_rejects_an_empty_response(configured_fake_llm: FakeCompletion) -> None:

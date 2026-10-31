@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import difflib
 import json
+import logging
 import re
 from typing import Any
 
 from litellm import completion
 from llm_provider_config import MissingCredentialError, NotConfiguredError, resolve_call
+
+logger = logging.getLogger(__name__)
 
 COMPONENT_ID = "modelling-specification.conversational-authoring"
 
@@ -141,7 +144,10 @@ def propose_delta(
     try:
         response = completion(messages=messages, **call.completion_kwargs())
     except Exception as exc:  # noqa: BLE001 - litellm raises a wide family of provider/network errors
-        raise DeltaProposalError(f"The LLM call failed ({call.model}): {exc}") from exc
+        # The router returns this message in the 502 body, so keep provider detail in
+        # the server log only (CWE-209).
+        logger.warning("LLM call to %s failed", call.model, exc_info=True)
+        raise DeltaProposalError(f"The LLM call failed ({call.model}); see the server log for details.") from exc
 
     content = _message_content(response).strip()
     if not content:
