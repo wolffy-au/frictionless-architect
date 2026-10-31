@@ -12,7 +12,7 @@ sources:
 > and rebuild rather than editing this page.
 
 Section C of `elements.yaml`: the application-layer input/output pipeline
-(`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
+(`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema and content sections.
 
 Section C has 28 `ApplicationFunction`s (24 before a 2026-09-27 pass added
 three — see "Controls & OSCAL" below — plus `fn-conversational-authoring`,

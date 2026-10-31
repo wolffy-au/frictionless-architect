@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: '2026-10-29'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 ---
 
@@ -27,17 +27,25 @@ generator: claude-sonnet-5
   (MADR index and per-decision summaries).
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
-  generated: files, schema, the `build.py` pipeline, the generic per-viewpoint
-  `views-viewpoints.yaml` layer (GH #105), the generated GitHub roadmap
-  layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
-  merged in at build time — 515 elements, 1,029 relationships, 66 views total,
-  re-counted 2026-10-24).
+  generated: files, schema, the content sections and the generated GitHub
+  roadmap layer. Contexts and viewpoints, and the build pipeline with the
+  IT4IT merge, have their own pages below.
+- [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) —
+  the generic per-viewpoint views and the `context:` tag that scopes them:
+  generated bounded-context Groupings, split views and the context map
+  (GH #105, GH #129, ADR-0040).
+- [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md) —
+  how the YAML model is built into the exchange file, and how the vendored
+  IT4IT 3.0 reference model (`third_party/it4it`) is merged in at build time
+  (ADR-0029).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
   stakeholders, drivers, assessments, one top goal with five sub-goals and ten
   measurable outcomes, principles,
-  constraints, requirements, capabilities, strategy, five value streams
-  (including the new Intent to Model stream, GH #108), and the business layer
-  (functions, processes, business objects).
+  constraints, requirements, and the business layer (functions, processes,
+  business objects). Strategy has its own page below.
+- [Architecture Model: Strategy](architecture-model-strategy.md) — section A's
+  strategy layer: capabilities, courses of action and the five value streams
+  (including the Intent to Model stream, GH #108).
 - [Architecture Model: Ecosystem](architecture-model-ecosystem.md) — section B:
   the six subsystems, shared stores, business roles, and external systems
   behind the C4 views.

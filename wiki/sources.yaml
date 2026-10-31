@@ -52,9 +52,44 @@ topics:
       - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
       - path: platform/packages/modelling-specification/src/modelling_specification/rendering.py
 
+  - name: architecture-model-contexts
+    title: "Architecture Model: Context-Level Viewpoints & Bounded Contexts"
+    description: The generic per-viewpoint views and the context tag that scopes them — generated bounded-context Groupings, split views and the context map (GH #105, GH #129, ADR-0040).
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: docs/adr/0040-bounded-contexts-as-generated-groupings.md
+
+  - name: architecture-model-build-it4it
+    title: "Architecture Model: Build Pipeline & IT4IT Merge"
+    description: How the YAML model is built into the exchange file, and how the vendored IT4IT model is merged in at build time (ADR-0029).
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/build.py
+      - path: architecture/model/render_diagrams.py
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+      - path: docs/adr/0029-it4it-as-vendored-touchpoint-model.md
+      - path: platform/packages/modelling-specification/src/modelling_specification/cli.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
+      - path: third_party/it4it/elements.yaml
+      - path: third_party/it4it/relationships.yaml
+
   - name: architecture-model-skeleton
     title: "Architecture Model: Skeleton"
     description: Section A of the model — the Motivation, Strategy and Business elements that carry the load-bearing skeleton.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+
+  - name: architecture-model-strategy
+    title: "Architecture Model: Strategy"
+    description: Section A's Strategy layer — capabilities, courses of action and value streams.
     sources:
       - path: architecture/model/README.md
       - path: architecture/model/elements.yaml
@@ -281,6 +316,7 @@ topics:
       - path: CONTRIBUTING.md
       - path: CODE_OF_CONDUCT.md
       - path: SECURITY.md
+      - path: tests/api/README.md
 
   - name: sample-data
     title: Sample Data

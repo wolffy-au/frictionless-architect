@@ -12,7 +12,7 @@ sources:
 > and rebuild rather than editing this page.
 
 Section B of `elements.yaml`: the application-layer ecosystem
-(`architecture/model/elements.yaml:14`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
+(`architecture/model/elements.yaml:14`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema and content sections.
 
 The platform `Grouping` (`sys-platform`, `props: c4=system`), its six
 subsystems (`ApplicationComponent`s → C4 containers), five shared stores
@@ -103,8 +103,8 @@ nesting is what the Controls & Compliance Catalog view draws; see
 `context:` property — `platform` for the shared kernel, or the owning
 package's name for a subsystem-specific element — so a view's `context:`
 scoping key (see [Architecture Model](architecture-model.md) §"Schema") can
-draw `include_types` sweeps from one package at a time. See "Context-level
-viewpoints" on that page. The tags are now explicit on the interfaces and
+draw `include_types` sweeps from one package at a time. See
+[Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md). The tags are now explicit on the interfaces and
 collaboration elements too: `if-catalog-playground` is
 `controls-compliance-catalog`, `if-llm-settings-ui` `llm-provider-config`,
 `if-modelling-authoring-ui`, `bc-model-collaboration` and

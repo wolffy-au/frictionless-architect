@@ -52,12 +52,12 @@ with no metamodel or referential-integrity violations). Of those, 280
 elements and 658 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
-view per standard viewpoint — see "Context-level viewpoints" below); 93
+view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 93
 elements and 136 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
 roadmap layer" below); and 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
-([ADR-0029](decision-log.md) — see "IT4IT alignment" below). The generated
+([ADR-0029](decision-log.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The generated
 `frictionless-architect.xml` is committed but never hand-edited — same status
 as the `.puml` / `.svg` diagrams.
 
@@ -192,65 +192,6 @@ The model loader accumulates invalid model entries and reports collected
 build errors before writing or validating the exchange-format model
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:106-126,633-670,854-872`).
 
-## Context-level viewpoints (GH #105)
-
-`views-viewpoints.yaml` adds 17 generic views, one per standard ArchiMate
-3.2 §14 viewpoint (Organization, Application Structure, Information
-Structure, Technology, …), swept entirely by `include_types` — never
-`members` — so a new element of a covered type appears on the right view
-automatically, instead of the hand-curated `views.yaml` views, whose
-`members` lists need a manual add. Same schema and loader as `views.yaml`;
-view ids must stay unique across both files. Each generic view sits in the
-`platform` context by default, same as the hand-curated ones
-(`architecture/model/views-viewpoints.yaml`; `architecture/model/README.md`
-§"Schema"). A hand-curated view keeps a narrower, single-subject cut where
-one exists (e.g. `view-application-structure-catalog` for one application
-alone); the generic view is the type-wide sweep.
-
-## Bounded contexts: generated Groupings, split views, context map (GH #129, ADR-0040)
-
-Six whole-platform viewpoint sweeps had grown past readable (90–160
-elements each) by the time the model reached nine first-party packages.
-ADR-0040 fixes this on top of the `context:` tag above, without any
-hand-authored Grouping or boundary view:
-
-- **Generated Groupings.** `generate_context_groupings` derives one
-  ArchiMate `Grouping` per real context (`grp-ctx-<context>`), with a
-  generated `Aggregation` to each of its members — the only input is the
-  `context:` tag already on each element, so the boundary can never drift
-  out of sync with membership. `platform` and the vendored layers get no
-  Grouping: they are the shared kernel and bulk imports, not bounded
-  contexts in the DDD sense.
-- **Per-context split views.** A view may add `split_by: context` +
-  `include_neighbours: true` to render one `.puml`/`.svg` per context
-  actually on it instead of one monolithic sweep, with any element one
-  relationship hop away pulled in too (so a cross-context edge keeps both
-  endpoints visible) — but deliberately left out of the view's own
-  `viewpoint:` conformance check, since a neighbour's type is often outside
-  that viewpoint's allow-set by construction. Applied to five of the six
-  oversized views; the sixth, `view-product`, is dropped — the model has
-  no Product/Contract/Value/Material/`*Service` element to give that
-  viewpoint its own shape, so it duplicated the usage/service-realization
-  views.
-- **A generated context map** (`generate_context_map_relationships`,
-  `view-context-map`) derives one directed `Serving` edge per ordered
-  context pair with at least one element-level relationship crossing
-  between them, becoming the new top-level dependency overview in place of
-  the oversized full-platform views.
-- **`check_view_coverage`** warns at build time on a first-party element
-  that lands on no view at all — independent of the splitting work, added
-  alongside it under the same GH #129 acceptance item.
-
-Left open past this ADR: several per-context splits still exceed the
-~60-element target (the context owns a lot, or —
-`conformance-drift-assurance` — is by design connected to almost every
-other context, being the compliance cross-cutting concern); and formal
-Interfaces as the boundary contract between contexts (deferred as a GH #129
-follow-up, since the context map already gives a coarse-grained version of
-the same dependency story)
-(`docs/adr/0040-bounded-contexts-as-generated-groupings.md` §Decision,
-§Consequences). See [Architecture Decision Log](decision-log.md).
-
 ## Model contents — per-layer pages
 
 `elements.yaml` is organised into three first-party sections
@@ -265,7 +206,8 @@ the same dependency story)
 
 Section D (the IT4IT capability bridges) is relationships-only and has no
 element row of its own. A further block, the IT4IT alignment itself, is
-vendored rather than first-party and is covered below, in "IT4IT alignment".
+vendored rather than first-party and is covered in
+[Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md).
 
 ## GitHub roadmap layer
 
@@ -283,25 +225,14 @@ ownership rules are ADR-0035 (`architecture/model/README.md` §"GitHub roadmap
 layer"; `docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`).
 See [Architecture Overview](architecture.md).
 
-## Build pipeline
+## Contexts, build pipeline and IT4IT merge
 
-The root `build.py` dispatches to the package CLI, which owns the YAML-to-XML
-build path (`architecture/model/README.md` §"Architecture model";
-`architecture/model/build.py:1-56`;
-`platform/packages/modelling-specification/src/modelling_specification/cli.py:18-36`):
+Three topics moved to their own pages once this one passed ~500 lines:
 
-1. The CLI loads and merges first-party YAML with optional vendored and
-   generated layers, then assembles and validates the model
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:159-205,633-670,854-872`).
-2. Stable identifiers are derived from element ids and relationship fields, so
-   repeated builds do not churn the exchange model
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:94-105,200-270`).
-3. Motivation and viewpoint conventions are checked during model assembly
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:346-379,466-610`).
-
-The loader rejects null YAML values rather than allowing truncated flow-style
-entries through, and writes the XML only after successful assembly
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:106-157,661-670,854-872`).
+- [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) — the generic
+  per-viewpoint views, generated context Groupings, split views and the context map (GH #105, GH #129, ADR-0040).
+- [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md) — `build.py`, the
+  package CLI's YAML-to-XML path, and how the vendored IT4IT model is merged in (ADR-0029).
 
 ## Packaging, migration and technology (sections E, F)
 
@@ -310,71 +241,16 @@ section F (Technology — the first Technology-layer cut) moved to their own
 page once this one passed ~500 lines: see
 [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md).
 
-## IT4IT alignment — vendored as its own repo, imported at build time
-
-The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
-`elements.yaml`/`relationships.yaml`, tagged `props: {source: it4it}` so it
-could be filtered from the platform's own model. [ADR-0029](decision-log.md)
-moved it out: it now lives in `third_party/it4it`, a **git submodule**
-pointing at `wolffy-au/frictionless-it4it` on GitHub, in the same
-`elements.yaml` / `relationships.yaml` / `views.yaml` schema this repo uses.
-The model loader loads it alongside the first-party YAML and merges both into the
-**same** `det_id()` / `NS` hashing pass — there is no separate build step, no
-separate `.xml`, and no ID-reconciliation machinery. Every IT4IT element and
-relationship keeps the `it4it-` id prefix it always had, and that prefix
-alone is what keeps the merged id space collision-free
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:45-68,173-205`).
-
-This is a decision about *packaging*, not content — nothing about the IT4IT
-data itself changed:
-
-- **Value-stream skeleton** (`third_party/it4it/elements.yaml`) — a root
-  wrapper `ValueStream` (`it4it-vs-root`, "IT4IT: Value Streams")
-  `Composition`-linking its 7 IT4IT value streams (Explore, Evaluate,
-  Integrate, Deploy, Release, Operate, Consume) and `Realization`-linking to
-  one `Outcome` ("IT4IT: Digital Product"); each stream in turn
-  `Composition`-links its stages (28 total). The streams form a **`Flow`
-  network, not a linear pipeline** — several stream pairs flow both ways in
-  the source model, preserved as-is (`third_party/it4it/relationships.yaml`).
-- **42 IT4IT capabilities** — 24 reachable from a stage via the source
-  model's own `DataObject → Resource → Capability` chain, collapsed into a
-  single **derived** `Capability --Serving--> Stage` edge per reachable pair
-  (tagged `props: {derived: "true"}`, labelled `<<derived>>`), plus 18 more
-  capabilities the derivation chain doesn't reach, carried for completeness.
-- **Bridge to the platform's own capabilities** — 9 `Association` edges,
-  tagged `props: {source: it4it-alignment}`, are the one piece of IT4IT-
-  referencing content that **stays first-party**, in this repo's own
-  `relationships.yaml` "D. IT4IT TOUCHPOINTS" section — their source
-  endpoint is always one of this platform's own `cap-*` capabilities, e.g.
-  `cap-digital-twin` ↔ IT4IT Configuration Management / Architecture
-  Management, `cap-control-plane` ↔ IT4IT Product Development,
-  `cap-forensic-ledger` ↔ IT4IT Compliance Management
-  (`architecture/model/relationships.yaml` §"D. IT4IT TOUCHPOINTS").
-
-`third_party/it4it` also carries its own `views.yaml` and `diagrams/vision/`
-(the same 4 pure-IT4IT views described below, rendered by this repo's
-`render_diagrams.py` into that vendored diagrams directory) — a view whose
-content is 100% `it4it-*` elements is vendored alongside the data it draws
-on, the same reasoning that vendored the elements/relationships. The one
-exception is the capability-bridges touchpoint view, which stays here since
-it spans both models. Deliberately **excluded from every other view** in the
-model, so IT4IT elements never pollute a platform-only diagram.
-
-If IT4IT is ever consumed via its own independently-generated `.xml` (its own
-`build.py` / `NS`) instead of raw YAML, this merged-hashing approach no
-longer holds — that would need its own ADR ([ADR-0029](decision-log.md)
-§"Consequences").
-
 ## Views and diagrams
 
-48 ArchiMate views cover the merged model (see "What this is" above for the
-element/relationship/view breakdown by layer): 34 declared in this repo's own
-`views.yaml` (25 for sections A–C plus the IT4IT touchpoint bridge, 9 for
-sections E/F — see
-[Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md)),
-10 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
+70 ArchiMate views cover the merged model: 37 declared in this repo's own
+`views.yaml` (sections A–C, the IT4IT touchpoint bridge, sections E/F — see
+[Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) —
+and the generated Context Map), 16 generic views in `views-viewpoints.yaml`
+(see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)),
+13 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
 "GitHub roadmap layer" above), and 4 declared in `third_party/it4it/views.yaml`
-for the vendored IT4IT reference (see "IT4IT alignment" above), loaded the
+for the vendored IT4IT reference (see [Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)), loaded the
 same way its elements/relationships are ([ADR-0029](decision-log.md)). How
 those views map to ArchiMate viewpoints is covered in [Architecture Views &
 Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md); which

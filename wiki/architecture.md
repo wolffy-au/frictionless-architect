@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
@@ -145,8 +145,8 @@ OSCAL is now **resolved** — [ADR-0030](#decision-log) answers `ARCHITECTURE.md
 ordinary Poetry runtime dependency (not a fork/submodule), and NIST/FedRAMP
 reference content (`third_party/oscal`, `third_party/oscal-content`,
 `third_party/fedramp-automation`) — consumed by `controls-compliance-catalog`
-once it's built — is vendored as plain read-only
-`third_party/` submodules with no `fork-sync` entry and no `build.py`
+once it's built — is vendored as plain tracked files under `third_party/`
+(not submodules, GH #167), with no `fork-sync` entry and no `build.py`
 merge step — unlike the IT4IT case below, it isn't ArchiMate model data.
 A 2026-09-24 revision adds a third path. The scripts of
 `oscal-document-workbench`, a Claude Code plugin with no installable
@@ -164,7 +164,7 @@ first-party/vendored split
 low-touch external reference. Its `elements.yaml`/`relationships.yaml`
 merge into the canonical model's own `det_id()`/`NS` hashing pass rather
 than getting a separate build step — see
-[Architecture Model](architecture-model.md) §"IT4IT alignment".
+[Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md).
 
 ## Monorepo tooling
 
