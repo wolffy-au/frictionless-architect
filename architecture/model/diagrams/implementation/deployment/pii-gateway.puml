@@ -7,6 +7,7 @@ title Implementation and Deployment — pii-gateway
 Grouping(e_id54dd4701dbf151, "Frictionless Architecture Platform")
 Application_Component(e_idc7fc80ba220752, "PII Anonymization Gateway")
 Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
+Technology_SystemSoftware(e_idd46328fd3f165d, "Presidio (presidio-analyzer / presidio-anonymizer)")
 Grouping(e_id0305c87937d55f, "PII Anonymization Gateway") {
   Technology_Artifact(e_id8b34f5f03beb50, "packages/pii-gateway")
 }
@@ -14,6 +15,7 @@ Grouping(e_id0305c87937d55f, "PII Anonymization Gateway") {
 Rel_Composition(e_id54dd4701dbf151, e_idc7fc80ba220752, "")
 Rel_Association(e_idc7fc80ba220752, e_id2610ae0cc2cc50, "scrubs PII/PHI from content before calls to")
 Rel_Realization_Up(e_id8b34f5f03beb50, e_idc7fc80ba220752, "")
+Rel_Serving_Up(e_idd46328fd3f165d, e_idc7fc80ba220752, "detects and anonymizes PII/PHI for")
 Rel_Aggregation(e_id0305c87937d55f, e_idc7fc80ba220752, "")
 
 @enduml
