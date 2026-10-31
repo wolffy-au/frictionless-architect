@@ -48,6 +48,14 @@ same "elements"/"relationships" shape as above. Ground each rationale in the exi
 elements and, where relevant, the enterprise convention rules listed below -- cite their
 ids rather than describing them vaguely. Never invent a rule id that isn't listed.
 
+If the request is a factual question about the model itself or its own vocabulary --
+for example "what are my choices for context", "what contexts exist", "what tags/props
+can I put on an element", "what element types are allowed" -- answer it directly in
+plain text from the "Existing contexts" and "Existing elements" data given below (and
+the ArchiMate 3.2 concept names for element/relationship types). This is not a
+clarifying question: answer from the data you were given rather than asking the
+architect to clarify a question that data already answers.
+
 If the request is too vague to form even one concrete option -- missing the subject,
 scope, or enough detail to propose anything concrete -- reply with a short
 plain-text message instead of JSON: one clarifying question for the architect to answer.
@@ -102,6 +110,10 @@ def _rules_text(rules: list[dict[str, Any]]) -> str:
     return "\n".join(f"{r['id']} | {r['kind']} | scope={r.get('scope', [])}" for r in rules)
 
 
+def _contexts_text(contexts: list[str]) -> str:
+    return "\n".join(sorted(contexts))
+
+
 def _is_single_delta(payload: Any) -> bool:
     return isinstance(payload.get("elements"), list) and isinstance(payload.get("relationships"), list)
 
@@ -129,6 +141,7 @@ def propose_delta(
     request: str,
     catalogue: list[tuple[str, str, str]] | None = None,
     rules: list[dict[str, Any]] | None = None,
+    contexts: list[str] | None = None,
 ) -> dict[str, Any]:
     """Call the configured LLM and return a candidate delta, in one of two shapes:
     a single concrete change, `{"elements": [...], "relationships": [...]}`; or, when
@@ -136,6 +149,10 @@ def propose_delta(
     `{"options": [{"rationale": ..., "convention_refs": [...], "elements": [...],
     "relationships": [...]}, ...]}` -- 2-3 alternatives, each independently a
     complete candidate delta (FR-001, "suggests ways forward" per GH #68).
+
+    A factual question about the model's own vocabulary (e.g. "what are my choices
+    for context") is answered in plain text from `catalogue`/`contexts`/`rules` via
+    the `LlmMessage` path below, same as a clarifying question.
 
     Raises `DeltaProposalError` for every way this can fail short of one of those
     shapes: no provider configured, no credential, the call itself failing, an empty
@@ -150,7 +167,7 @@ def propose_delta(
     if not stripped:
         raise DeltaProposalError("Cannot propose a delta from an empty request.")
 
-    return resume_proposal(scrub_or_require_review(stripped), catalogue, rules)
+    return resume_proposal(scrub_or_require_review(stripped), catalogue, rules, contexts)
 
 
 def scrub_or_require_review(text: str) -> str:
@@ -176,6 +193,7 @@ def resume_proposal(
     resolved_text: str,
     catalogue: list[tuple[str, str, str]] | None = None,
     rules: list[dict[str, Any]] | None = None,
+    contexts: list[str] | None = None,
 ) -> dict[str, Any]:
     """Make the LLM call with text that has already been scrubbed or explicitly
     resolved by the architect (a `PiiReviewRequired` match the caller resolved via
@@ -190,6 +208,8 @@ def resume_proposal(
     system = SYSTEM_PROMPT
     if catalogue:
         system += f"\n\nExisting elements:\n{_catalogue_text(catalogue)}"
+    if contexts:
+        system += f"\n\nExisting contexts:\n{_contexts_text(contexts)}"
     if rules:
         system += f"\n\nEnterprise convention rules:\n{_rules_text(rules)}"
     messages = [{"role": "system", "content": system}, {"role": "user", "content": resolved_text}]
