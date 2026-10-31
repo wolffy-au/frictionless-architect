@@ -193,10 +193,13 @@ assert the new behavior applies immediately.
 - **FR-005**: The package MUST apply auto-redact-and-proceed as the default action on a
   detected match for every caller context, except the conversational-authoring context,
   which MUST default to flag-for-review (ADR-0014).
-- **FR-006**: `architecture-governance`'s ADR/evaluation drafting path MUST call this
-  package's scrub contract before any content reaches the LLM provider, once that
-  package is built — tracked as `architecture-governance`'s own acceptance obligation
-  (2026-10-31 decision), not a task of this feature, since the package doesn't exist yet.
+> **Deferred (not a numbered FR, no task in this feature)**: `architecture-governance`'s
+> ADR/evaluation drafting path will need to call this package's scrub contract before
+> any content reaches the LLM provider, once that package is built — tracked as
+> `architecture-governance`'s own future acceptance obligation (2026-10-31 decision),
+> the same deferral pattern already used for GH #68. FR-006 is intentionally skipped in
+> the numbering below rather than assigned to a requirement with no coverage task.
+
 - **FR-007**: `modelling-specification`'s spec-drafting path MUST call this package's
   scrub contract before any content reaches the LLM provider.
 - **FR-008**: Policy/regulatory-standard document conversion
@@ -259,7 +262,8 @@ Field-level shape, relationships and lifecycle live in `data-model.md`'s class d
   (tracked as its own acceptance obligation, per the 2026-10-31 GH #68 comment).
 - `architecture-governance` is not built here either (`ARCHITECTURE.md` §4: status
   **build**, not yet built) — the same deferral pattern applies: this package exposes
-  the `scrub()` contract FR-006 requires, and wiring it in is that package's own
-  acceptance obligation once it exists, not a task of this feature.
+  the `scrub()` contract the Deferred callout above (formerly FR-006) requires, and
+  wiring it in is that package's own acceptance obligation once it exists, not a task
+  of this feature.
 - Single-user local MVP scope (ADR-0024) applies — no multi-tenant configuration or
   credential concerns beyond what `llm-provider-config` already established.

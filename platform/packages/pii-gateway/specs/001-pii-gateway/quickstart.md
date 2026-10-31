@@ -87,8 +87,8 @@ poetry run pytest packages/controls-compliance-catalog/tests/ -k "markdown_conve
 Expected: the first proves a planted PII string never reaches the stubbed LLM call
 (FR-007); the second confirms `fn-ai-markdown-conversion`/`fn-policy-quality-feedback`
 still bypass the gateway entirely (FR-008, ADR-0031). `architecture-governance` has no
-equivalent check yet — FR-006's wiring is deferred to that package's own build-out
-(spec.md Assumptions).
+equivalent check yet — the Deferred callout's wiring (formerly FR-006) is deferred to
+that package's own build-out (spec.md Assumptions).
 
 ## Gate check
 

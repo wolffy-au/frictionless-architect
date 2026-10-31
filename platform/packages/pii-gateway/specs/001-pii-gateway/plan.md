@@ -72,10 +72,17 @@ multi-tenant design needed.
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - **Principle II (Testing Standards)** — satisfied by plan: unit tests for `scrub()`/
-  config/audit logging plus integration tests on both wired consumers, aiming at the
-  90% coverage gate like every other package.
-- **Principle IV (Performance)** — SC-005's 2-second ceiling is the stated budget;
-  Presidio's NER recognizers are the dominant cost and are addressed in research.md R1.
+  config/audit logging plus an integration test on `modelling-specification`, this
+  feature's only wired consumer, aiming at the 90% coverage gate like every other
+  package.
+- **Principle IV (Performance)** — `scrub()` is synchronous and its 2-second ceiling
+  (SC-005) exceeds the 200ms threshold that otherwise requires an operation to be
+  asynchronous or justified. Justification: every call site is itself synchronous today
+  (`authoring/delta.py`'s `propose_delta()`, and the future `fn-governance-eval`) —
+  making `scrub()` async would ripple into those callers for a cost that is still small
+  relative to the LLM call it precedes and gates. Presidio's NER recognizers are the
+  dominant cost, addressed by loading the model once at import rather than per call
+  (research.md R1); the 2s ceiling is measured and tested (tasks.md), not open-ended.
 - **Principle V (Security)** — this package's entire purpose is a security control; the
   audit log's metadata-only constraint (FR-011) and fail-closed default are designed in
   from the start, not bolted on.
