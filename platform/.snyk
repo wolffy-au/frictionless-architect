@@ -1,46 +1,41 @@
 # Snyk policy for platform/ (scanned via `snyk test --file=poetry.lock`).
+#
+# The four permanent ignores below (no `expires`) share one basis: the researcher reports
+# Snyk cites (gists published 2026-03-21) and the matching GitHub advisories state the
+# flaw affects litellm <= 1.82.2 ("latest at time of discovery"). Snyk records the range
+# as [0,] with no fix, so it flags the locked 1.103.x anyway. Also, the flaws are in the
+# litellm proxy server (litellm/proxy/...), which this repo never runs (client library
+# only: llm-provider-config / controls-compliance-catalog). Decided 2026-10-31.
 version: v1.25.0
 ignore:
   SNYK-PYTHON-LITELLM-17391451:
     - '*':
         reason: >-
-          litellm is used only as a client library (completion calls via
-          llm-provider-config / controls-compliance-catalog); the litellm proxy
-          server these advisories concern is never run. No fixed release exists
-          (1.105.0, the locked version, is still affected as of 2026-10-12).
-          Re-review on expiry.
-        expires: 2026-11-02T00:00:00.000Z
-        created: 2026-10-03T00:00:00.000Z
+          Permanent. Researcher report and GitHub advisory (GHSA-mf52-j94g-746m) give
+          the affected range as litellm <= 1.82.2; Snyk's [0,] range is overbroad.
+          Flaw is in the proxy server (proxy/auth/login_utils.py), never run here.
+        created: 2026-10-31T00:00:00.000Z
   SNYK-PYTHON-LITELLM-17391455:
     - '*':
         reason: >-
-          litellm is used only as a client library (completion calls via
-          llm-provider-config / controls-compliance-catalog); the litellm proxy
-          server these advisories concern is never run. No fixed release exists
-          (1.105.0, the locked version, is still affected as of 2026-10-12).
-          Re-review on expiry.
-        expires: 2026-11-02T00:00:00.000Z
-        created: 2026-10-03T00:00:00.000Z
+          Permanent. Researcher report and GitHub advisory (GHSA-qmf3-4767-5fg3) give
+          the affected range as litellm <= 1.82.2; Snyk's [0,] range is overbroad.
+          Flaw is in the proxy server (M2M JWT handler), never run here.
+        created: 2026-10-31T00:00:00.000Z
   SNYK-PYTHON-LITELLM-17393717:
     - '*':
         reason: >-
-          litellm is used only as a client library (completion calls via
-          llm-provider-config / controls-compliance-catalog); the litellm proxy
-          server these advisories concern is never run. No fixed release exists
-          (1.105.0, the locked version, is still affected as of 2026-10-12).
-          Re-review on expiry.
-        expires: 2026-11-02T00:00:00.000Z
-        created: 2026-10-03T00:00:00.000Z
+          Permanent. Researcher report and GitHub advisory (GHSA-j37q-q7p9-vpwm) give
+          the affected range as litellm <= 1.82.2; Snyk's [0,] range is overbroad.
+          Flaw is in the proxy server (SSO debug endpoints), never run here.
+        created: 2026-10-31T00:00:00.000Z
   SNYK-PYTHON-LITELLM-17393719:
     - '*':
         reason: >-
-          litellm is used only as a client library (completion calls via
-          llm-provider-config / controls-compliance-catalog); the litellm proxy
-          server these advisories concern is never run. No fixed release exists
-          (1.105.0, the locked version, is still affected as of 2026-10-12).
-          Re-review on expiry.
-        expires: 2026-11-02T00:00:00.000Z
-        created: 2026-10-03T00:00:00.000Z
+          Permanent. Researcher report and GitHub advisory (GHSA-w2mh-qq9q-453x) give
+          the affected range as litellm <= 1.82.2; Snyk's [0,] range is overbroad.
+          Flaw is in the proxy server (SSO login session tokens), never run here.
+        created: 2026-10-31T00:00:00.000Z
   SNYK-PYTHON-LITELLM-20257373:
     - '*':
         reason: >-
@@ -49,15 +44,16 @@ ignore:
           server these advisories concern is never run. No fixed release exists
           (1.105.0, the locked version, is still affected as of 2026-10-12).
           Re-review on expiry.
-        expires: 2026-11-02T00:00:00.000Z
-        created: 2026-10-03T00:00:00.000Z
+        expires: 2026-11-30T00:00:00.000Z
+        created: 2026-10-31T00:00:00.000Z
   SNYK-PYTHON-LITELLM-20840174:
     - '*':
         reason: >-
-          Authorization bypass through user-controlled key (HIGH). litellm is
-          used only as a client library (completion calls via
-          llm-provider-config / controls-compliance-catalog); the litellm proxy
-          server and its key/authorization handling are never run. Snyk reports
-          no upgrade or patch (1.105.0 locked, still affected). Re-review on expiry.
-        expires: 2026-11-11T00:00:00.000Z
-        created: 2026-10-12T00:00:00.000Z
+          CVE-2026-108575 (Red Hat Bugzilla 2549217): improper authorization via
+          the api_key argument to litellm's get_secret (os.environ/NAME references),
+          reported up to 1.94.0, no vendor fix known. This is SDK code, not proxy-only.
+          Mitigated in first-party code: llm-provider-config refuses os.environ/...
+          values as API keys on store and on use (credentials.py), so no user input
+          can reach get_secret as an api_key reference. Re-review on expiry.
+        expires: 2026-11-30T00:00:00.000Z
+        created: 2026-10-31T00:00:00.000Z

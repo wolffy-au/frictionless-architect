@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 
 from llm_provider_config.credentials import (
     ENV_VARS,
+    InvalidCredentialError,
     MissingCredentialError,
     delete_api_key,
     key_source,
@@ -130,16 +131,21 @@ def _key_routes(router: APIRouter) -> None:
     @router.put(
         "/keys/{provider}",
         responses={
-            422: {"description": "Provider uses no API key."},
+            422: {"description": "Provider uses no API key, or the value is a secret reference."},
             503: {"description": "No usable OS keychain."},
         },
     )
     def put_key(provider: Provider, body: KeyBody) -> dict[str, str]:
-        """Store a provider's API key in the OS keychain (422 for keyless providers, 503 without a keychain)."""
+        """Store a provider's API key in the OS keychain.
+
+        Returns 422 for keyless providers or an ``os.environ/...`` reference, 503 without a keychain.
+        """
         if provider in KEYLESS_PROVIDERS:
             raise HTTPException(status_code=422, detail=f"{provider.value} does not use an API key.")
         try:
             set_api_key(provider.value, body.api_key)
+        except InvalidCredentialError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
         except KeyringError as exc:
             env_var = ENV_VARS[provider]
             raise HTTPException(

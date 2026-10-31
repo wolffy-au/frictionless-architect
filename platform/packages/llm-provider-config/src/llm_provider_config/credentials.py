@@ -31,6 +31,29 @@ class MissingCredentialError(Exception):
     """Raised when a provider needs an API key and neither source has one."""
 
 
+class InvalidCredentialError(MissingCredentialError):
+    """Raised when a key is a secret *reference* (``os.environ/NAME``), not a literal key.
+
+    litellm resolves ``os.environ/NAME`` values passed as ``api_key`` to that environment
+    variable (CVE-2026-108575, ``get_secret``). A user-supplied key must never be able to
+    make the library read an arbitrary environment variable, so such values are refused on
+    store and on use. Subclasses `MissingCredentialError` so existing callers that treat
+    "no usable key" as not-configured handle it unchanged.
+    """
+
+
+_SECRET_REFERENCE_PREFIX = "os.environ/"
+
+
+def _reject_secret_reference(key: str, origin: str) -> str:
+    if key.strip().lower().startswith(_SECRET_REFERENCE_PREFIX):
+        raise InvalidCredentialError(
+            f"The API key from {origin} looks like a secret reference ({_SECRET_REFERENCE_PREFIX}...), "
+            "not a literal key; refusing to use it."
+        )
+    return key
+
+
 def _ref(settings: ProviderSettings) -> str:
     return settings.credential_ref or settings.provider.value
 
@@ -60,7 +83,7 @@ def get_api_key(settings: ProviderSettings) -> str | None:
         _logger.debug("No usable keyring backend (%s); trying the environment.", exc)
         key = None
     if key:
-        return key
+        return _reject_secret_reference(key, f"keyring entry {ref!r}")
     env_var = ENV_VARS[settings.provider]
     env_key = os.environ.get(env_var)
     if env_key:
@@ -69,7 +92,7 @@ def get_api_key(settings: ProviderSettings) -> str | None:
             env_var,
             ref,
         )
-        return env_key
+        return _reject_secret_reference(env_key, env_var)
     raise MissingCredentialError(
         f"No API key for {settings.provider.value}: store one under keyring entry {ref!r} or set {env_var}."
     )
@@ -83,9 +106,10 @@ def set_api_key(ref: str, key: str) -> None:
         key: The API key to store.
 
     Raises:
+        InvalidCredentialError: If `key` is a secret reference such as ``os.environ/NAME``.
         keyring.errors.KeyringError: If no usable keychain backend exists.
     """
-    keyring.set_password(SERVICE_NAME, ref, key)
+    keyring.set_password(SERVICE_NAME, ref, _reject_secret_reference(key, "the request"))
 
 
 def delete_api_key(ref: str) -> None:

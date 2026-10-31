@@ -2,9 +2,11 @@
 
 import logging
 
+import keyring
 import pytest
 from conftest import InMemoryKeyring
 from llm_provider_config import (
+    InvalidCredentialError,
     MissingCredentialError,
     Provider,
     ProviderSettings,
@@ -12,6 +14,7 @@ from llm_provider_config import (
     get_api_key,
     set_api_key,
 )
+from llm_provider_config.credentials import SERVICE_NAME
 
 _OPENAI = ProviderSettings(provider=Provider.OPENAI, model="gpt-4o")
 
@@ -76,6 +79,40 @@ def test_ollama_needs_no_key_and_never_touches_the_keychain() -> None:
 
 def test_copilot_needs_no_key() -> None:
     assert get_api_key(ProviderSettings(provider=Provider.GITHUB_COPILOT, model="gpt-4o")) is None
+
+
+@pytest.mark.parametrize("reference", ["os.environ/AWS_SECRET_ACCESS_KEY", "  OS.Environ/HOME"])
+def test_set_refuses_a_secret_reference(fake_keyring: InMemoryKeyring, reference: str) -> None:
+    """CVE-2026-108575: litellm resolves `os.environ/NAME` api_key values to that env var."""
+    with pytest.raises(InvalidCredentialError, match="secret reference"):
+        set_api_key("openai", reference)
+
+    assert keyring.get_password(SERVICE_NAME, "openai") is None
+
+
+def test_get_refuses_a_secret_reference_already_in_the_keychain(fake_keyring: InMemoryKeyring) -> None:
+    keyring.set_password(SERVICE_NAME, "openai", "os.environ/AWS_SECRET_ACCESS_KEY")
+
+    with pytest.raises(InvalidCredentialError) as excinfo:
+        get_api_key(_OPENAI)
+
+    assert "AWS_SECRET_ACCESS_KEY" not in str(excinfo.value)
+
+
+def test_get_refuses_a_secret_reference_in_the_environment(
+    fake_keyring: InMemoryKeyring, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "os.environ/HOME")
+
+    with pytest.raises(InvalidCredentialError, match="OPENAI_API_KEY"):
+        get_api_key(_OPENAI)
+
+
+def test_a_refused_reference_is_still_a_missing_credential(fake_keyring: InMemoryKeyring) -> None:
+    keyring.set_password(SERVICE_NAME, "openai", "os.environ/HOME")
+
+    with pytest.raises(MissingCredentialError):
+        get_api_key(_OPENAI)
 
 
 def test_delete_removes_the_keychain_entry(fake_keyring: InMemoryKeyring) -> None:
