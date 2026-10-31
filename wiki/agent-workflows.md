@@ -1,6 +1,6 @@
 ---
 title: Agent Skills & Workflows
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - .claude/agents/README.md
@@ -88,11 +88,11 @@ merge** (`.claude/agents/README.md:24-29`).
 | Agent | Writes? | Purpose |
 |---|---|---|
 | `commit-auditor` | read-only | Audit a branch's commits against Conventional Commits + repo conventions; per-commit report with corrected messages. Paired skill: `commit-message`. |
-| `quality-uplift` | branch + PR | Fix SonarCloud-class quality issues (complexity, duplication, dead code, type gaps) locally before CI. Can consume a SonarCloud issue list. |
+| `quality-uplift` | branch + PR | Fix SonarCloud-class quality issues (complexity, duplication, dead code, type gaps) locally before CI. Can consume a SonarCloud issue list, and always pulls the open GitHub code-scanning (CodeQL) alerts too (`gh api repos/:owner/:repo/code-scanning/alerts --paginate -X GET -f state=open`); every open CodeQL alert is a required fix, cross-referenced against Sonar rule IDs so one smell isn't fixed twice. The PR body references closed alerts by number, and the CI watch now includes the CodeQL analysis check (`.claude/agents/quality-uplift.md` §Inputs, §Steps). |
 | `coverage-uplift` | branch + PR | Incrementally raise `pytest` coverage toward the 90% gate with real positive/negative tests. Owns `tests/unit/`, `tests/api/`. |
 | `acceptance-author` | branch + PR | Transcribe a story/ticket/spec's acceptance criteria into `behave` scenarios kept close to verbatim, wire the steps, keep a criterion→scenario map. Owns `tests/features/`. |
 | `docs-uplift` | branch + PR | Resync docstrings, README / quickstart / feature guides, and the PlantUML/C4/ArchiMate diagrams with the code. |
-| `vulnerability-remediator` | branch + PR | Resolve Dependabot / Snyk / SonarCloud security findings; bump or pin fixed versions, patch vulnerable code, verify gates. |
+| `vulnerability-remediator` | branch + PR | Resolve Dependabot / Snyk / SonarCloud security findings; bump or pin fixed versions, patch vulnerable code, verify gates. Always pulls open Dependabot alerts, even when handed a list, via `gh api repos/:owner/:repo/dependabot/alerts --paginate -X GET -f state=open` — without `--paginate` the endpoint silently truncates to its first page, `-X GET` is needed once `-f` is passed (else `gh api` POSTs and 404s), and `state=open` drops already-fixed history. Dependabot GHSA/CVE IDs are cross-referenced against Snyk and Sonar findings to avoid triaging one advisory twice, and the PR references alert numbers so GitHub auto-closes them on merge (`.claude/agents/vulnerability-remediator.md` §Inputs, §Steps). |
 | `refactor-analyst` | read-only | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations, no code changes. |
 | `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, the constitution. |
 | `adr-auditor` | branch + **draft** PR | Audit `docs/adr/` against the decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, constitution, `specs/**`) and recent commits; report missing / stale / misaligned / superseded records and draft `Status: Proposed` ADR stubs plus status edits. Leaves the PR **draft** — a human writes and attests the decision (`.claude/agents/README.md:30-31`). |
