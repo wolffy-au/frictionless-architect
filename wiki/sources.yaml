@@ -228,6 +228,9 @@ topics:
       - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/data-model.md
       - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/contracts/read-path.md
       - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/quickstart.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/research.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/tasks.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/checklists/requirements.md
       - path: platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/*.py
       - path: docs/adr/0017-knowledge-graph-on-standard-ontology.md
 
