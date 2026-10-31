@@ -57,7 +57,7 @@ elements and 136 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
 roadmap layer" below); and 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
-([ADR-0029](decision-log.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The generated
+([ADR-0029](decision-log-ui-visualiser-model.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The generated
 `frictionless-architect.xml` is committed but never hand-edited — same status
 as the `.puml` / `.svg` diagrams.
 
@@ -251,7 +251,7 @@ and the generated Context Map), 16 generic views in `views-viewpoints.yaml`
 13 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
 "GitHub roadmap layer" above), and 4 declared in `third_party/it4it/views.yaml`
 for the vendored IT4IT reference (see [Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)), loaded the
-same way its elements/relationships are ([ADR-0029](decision-log.md)). How
+same way its elements/relationships are ([ADR-0029](decision-log-ui-visualiser-model.md)). How
 those views map to ArchiMate viewpoints is covered in [Architecture Views &
 Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md); which
 ones cover the IT4IT reference content and how they're rendered into
@@ -264,7 +264,7 @@ this topic.
 Section A was extracted from `prototype/nodes.yaml` at `prototype-neo4j`
 (`d0c30b4`); section B was ported from the retired
 `sample-data/archimate/build_frictionless_architect.py`; section C was authored
-2026-08-30. A 2026-08-30 pass ([ADR-0027](decision-log.md)) renamed the
+2026-08-30. A 2026-08-30 pass ([ADR-0027](decision-log-ui-visualiser-model.md)) renamed the
 capabilities as abilities, added `req-authoritative-twin` /
 `req-immutable-audit-ledger` so every capability has a contract, moved
 `req-regulatory-mapping` to `cap-control-catalog`, added the `Governed
@@ -295,7 +295,7 @@ the same window. Full history is in the ADR log — see
 for the exact commit sequence, which `README.md`'s own Provenance section does
 not yet narrate).
 
-A later pass ([ADR-0029](decision-log.md), 2026-09-13) vendored the IT4IT
+A later pass ([ADR-0029](decision-log-ui-visualiser-model.md), 2026-09-13) vendored the IT4IT
 content out of this repo entirely: `third_party/it4it` (a git submodule)
 now holds its `elements.yaml`/`relationships.yaml`/`views.yaml`/
 `diagrams/vision/`, the package CLI wrappers merge it in at build
@@ -306,7 +306,7 @@ capability-bridge touchpoint relationships and view stayed first-party.
 A 2026-09-20 pass (GH #20, #23) landed the per-view `exclude:` mechanism and
 used it to suppress the incidental capability-mesh leak on seven views,
 closed the `view-strategy` value-stream orphan with `coa-*` → value-stream
-`Serving` edges, and — per [ADR-0030](decision-log.md) — added `ext-trestle`
+`Serving` edges, and — per [ADR-0030](decision-log-0030-onward.md) — added `ext-trestle`
 to the OSCAL conversion chain, bringing the model to 290 elements / 578
 relationships / 21 views. A 2026-09-20 GH #24 spec-alignment review then added
 OSCAL Assessment Plan (wired into both the pre-release gate and continuous-BAU
@@ -349,7 +349,7 @@ A 2026-09-26 pass (PR #62) reworked the business layer and the vision set:
 - **Outcomes and value streams.** The goal is now realized by four outcomes,
   and each outcome has its own value stream, organised by who receives its
   value. Stages were moved between streams rather than duplicated
-  ([ADR-0033](decision-log.md)). The vision set grew from seven to thirteen
+  ([ADR-0033](decision-log-0030-onward.md)). The vision set grew from seven to thirteen
   views: a Value Stream Hand-offs view, one view per stream (`6a`–`6d`), and a
   new Requirements Realization view.
 - **Business layer.** It now has 15 business processes grouped under 9
@@ -461,7 +461,7 @@ Viewpoints](architecture-diagrams.md)). The two-tier spec re-homing
 `process-conversational-solution-modelling` (GH #68/#138, 2026-10-24) followed,
 the latter renaming `fn-conversational-authoring` and its process to
 "Conversational Candidate Architecture Authoring" (see
-[Architecture Decision Log](decision-log.md) and
+[Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
 [Architecture Model: Skeleton](architecture-model-skeleton.md)). A hand-authored
 Architecture Strategy transition view and a new, generated
 `plat-architecture-strategy-future-13` milestone Plateau were also added (see

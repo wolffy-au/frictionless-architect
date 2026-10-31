@@ -249,7 +249,7 @@ enables it, and the multi-user Gap is associated with the interaction
 `architecture/model/relationships.yaml` §"B. Model Collaboration").
 
 **Per-subsystem UI composition.** A new `TechnologyFunction`,
-`techfn-role-journey-composition`, records [ADR-0020](decision-log.md)'s
+`techfn-role-journey-composition`, records [ADR-0020](decision-log-ui-visualiser-model.md)'s
 2026-09-27 resolution: each subsystem's `ui/` stays its own independently
 owned fragment, composed for a user server-side, per role journey, hosted
 directly on the shared `sw-uvicorn-fastapi`/`node-app-server` pair rather

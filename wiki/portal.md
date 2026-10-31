@@ -14,13 +14,13 @@ sources:
 
 `platform/packages/portal`: the composition host that serves the platform
 packages' UIs from one FastAPI app. It is not one of the six subsystems, and
-it is explicitly not the central dashboard [ADR-0020](decision-log.md)
+it is explicitly not the central dashboard [ADR-0020](decision-log-ui-visualiser-model.md)
 rejected earlier — it mounts each package's router and owns only page
 chrome, navigation and the role landing page, never feature logic.
 
 ## Decision
 
-[ADR-0020](decision-log.md) was updated in place on 2026-10-11
+[ADR-0020](decision-log-ui-visualiser-model.md) was updated in place on 2026-10-11
 ([GH #120](https://github.com/wolffy-au/frictionless-architect/issues/120))
 to answer the composition question its 2026-09-26 revision had left open:
 each subsystem ships its own UI, but something still has to compose them for

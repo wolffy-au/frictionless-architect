@@ -50,7 +50,7 @@ this content now grounds.
 
 ## Split vendoring approach
 
-[ADR-0029](decision-log.md)'s IT4IT pattern — a `third_party/` submodule of
+[ADR-0029](decision-log-ui-visualiser-model.md)'s IT4IT pattern — a `third_party/` submodule of
 ArchiMate-schema YAML, merged into the model by `build.py`'s shared
 `det_id()`/`NS` pass — doesn't transfer to OSCAL: NIST/FedRAMP content is
 real OSCAL JSON/XML in OSCAL's own schema, and `compliance-trestle` is a

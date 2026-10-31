@@ -174,7 +174,7 @@ The merged model has 70 ArchiMate views:
   Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
   reference. They are loaded the same way as its elements and relationships
-  ([ADR-0029](decision-log.md)); see [Architecture Views & Diagrams: Platform,
+  ([ADR-0029](decision-log-ui-visualiser-model.md)); see [Architecture Views & Diagrams: Platform,
   Migration & Rendering](architecture-diagrams-platform.md).
 
 The C4 context and container diagrams are **not** views. `render_diagrams.py`
@@ -236,7 +236,7 @@ on them automatically; views 4–7 stay hand-curated in `views.yaml`
 The first Value Stream view was renamed from "Value Stream — Governed
 Architecture Delivery" to **Value Stream Hand-offs**. Each stream's recipients,
 outcome and serving capabilities moved to its own `6a`–`6d` view
-([ADR-0033](decision-log.md); `architecture/model/views.yaml:141-259`).
+([ADR-0033](decision-log-0030-onward.md); `architecture/model/views.yaml:141-259`).
 `8-requirements-realization` is new. It leaves the question of *why* each
 requirement exists to the Motivation and Goal Realization views
 (`architecture/model/views.yaml:327-352`).

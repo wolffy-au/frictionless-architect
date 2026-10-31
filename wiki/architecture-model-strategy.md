@@ -20,7 +20,7 @@ Section A's Strategy layer: capabilities, courses of action and value streams. P
 ### Capabilities
 
 There are now nine capabilities, named as *abilities* rather than after the artefact they own
-([ADR-0027](decision-log.md); `architecture/model/elements.yaml:315-381`,
+([ADR-0027](decision-log-ui-visualiser-model.md); `architecture/model/elements.yaml:315-381`,
 plus `cap-conversational-governance` added for GH #108).
 Every capability realizes at least one requirement
 (`architecture/model/relationships.yaml:15-45`), and each is `Assignment`-linked
@@ -86,7 +86,7 @@ The links are (`architecture/model/relationships.yaml:70-80`):
 
 ### Value streams — one per sub-goal, usually one outcome each
 
-[ADR-0033](decision-log.md) replaced the single six-stage "Governed Architecture
+[ADR-0033](decision-log-0030-onward.md) replaced the single six-stage "Governed Architecture
 Delivery" stream with **four streams, one per sub-goal**, organised by who
 *receives* the value. GH #108 then added a fifth, **Intent to Model**, for the
 intent-becomes-model-truth sub-goal. That gives 16 `ValueStream` elements: 5
@@ -119,7 +119,7 @@ existing reuse-baseline stage rather than growing its own stage chain
 (`architecture/model/relationships.yaml:211-214`).
 
 Stages *move* between streams rather than being duplicated
-([ADR-0033](decision-log.md)):
+([ADR-0033](decision-log-0030-onward.md)):
 
 - "Prove Compliance" now belongs to Obligation to Evidence, and "Reconcile &
   Remediate" to Drift to Remediation.

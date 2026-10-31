@@ -47,7 +47,7 @@ Enterprise Architect into a validated candidate-architecture delta,
 live-rendered on accept. The package also now holds the deterministic model
 build/render/validate logic that root's scripts and the `model-archimate`
 skill used to carry themselves. See [Architecture Model](architecture-model.md)
-for the model elements this feature adds, and [Decision Log](decision-log.md)
+for the model elements this feature adds, and [Decision Log](decision-log-0030-onward.md)
 for ADR-0037, the record of its five load-bearing design decisions.
 
 **Renamed, and a sibling distinguished (ADR-0039, GH #68/#138, 2026-10-24).**
@@ -60,12 +60,12 @@ editing `do-candidate-arch` in the enterprise knowledge graph. The unused
 Solution Architect `Assignment` is dropped in favour of a new, distinct
 sibling function, `fn-solution-modelling`, which edits a `do-solution-design`
 instead — the Solution Architect's own conversational authoring mode, not a
-variant of this one. See [Architecture Decision Log](decision-log.md) and
+variant of this one. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for both.
 
 ## Why the code lives here
 
-[ADR-0037](decision-log.md) (Proposed 2026-10-10) decided the package's
+[ADR-0037](decision-log-0030-onward.md) (Proposed 2026-10-10) decided the package's
 shape and three related questions `plan.md`'s Constitution Check flagged as
 load-bearing:
 
@@ -221,7 +221,7 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    built directly against today's architecture rather than waiting for #142's
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
-   [Architecture Decision Log](decision-log.md). If the LLM call itself
+   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). If the LLM call itself
    fails, `propose_delta` logs the provider detail server-side only and
    raises `DeltaProposalError` with a generic "The LLM call failed
    (<model>); see the server log for details." message, because the router
@@ -383,7 +383,7 @@ Draft`) — no `reusable-architecture-library` package, journey API, or UI
 exists yet. See
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for
 `process-conversational-solution-modelling` and `bfn-solution-design`, and
-[Decision Log](decision-log.md) for ADR-0039 in full.
+[Decision Log](decision-log-0030-onward.md) for ADR-0039 in full.
 
 Not covered by current sources: rollout/feature-flag status, since
 ADR-0037 is still **Proposed**, not **Accepted**.
@@ -393,5 +393,5 @@ data-model.md, tasks.md) for the full requirements, data model and task
 breakdown behind this package, and
 `specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/`
 (spec.md, checklists/requirements.md) for the sibling Solution Design
-Modelling feature above, and [Decision Log](decision-log.md) for ADR-0037
+Modelling feature above, and [Decision Log](decision-log-0030-onward.md) for ADR-0037
 and ADR-0039 in full.

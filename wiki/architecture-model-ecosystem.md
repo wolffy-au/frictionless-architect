@@ -68,7 +68,7 @@ systems (`architecture/model/elements.yaml:1018-1054`) are Source Control, CI/CD
 (which now "runs the controls enforcement gate inline"),
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, LLM
 Provider, RFP / Vendor Submissions, and `ext-trestle`
-("compliance-trestle"), added per [ADR-0030](decision-log.md). Trestle's
+("compliance-trestle"), added per [ADR-0030](decision-log-0030-onward.md). Trestle's
 `desc` calls it a "third-party Python library/CLI dependency, not vendored
 source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
 fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data
@@ -91,7 +91,7 @@ reference content the golden datasets come from.
 
 The subsystem `includes` free-text property was removed — the same
 decomposition is carried by the section-C `ApplicationFunction`s ([Artefact Flow](architecture-model-artefact-flow.md)) and their
-`Assignment` edges ([ADR-0027](decision-log.md) §"Consequences").
+`Assignment` edges ([ADR-0027](decision-log-ui-visualiser-model.md) §"Consequences").
 
 The six business roles (`architecture/model/elements.yaml:992-1016`) are now
 also `Assignment`-linked to the section-A BusinessFunctions they perform. For
@@ -145,7 +145,7 @@ resolved where the schema-visualiser UI itself lives: `sub-schema-visualizer`
 gets a direct `Serving` edge to `role-ea`, composing into that role's
 existing journey alongside `sub-library`/`sub-governance`/`sub-assurance`
 rather than becoming a seventh subsystem or a standalone dashboard
-(ADR-0005 + [ADR-0020](decision-log.md)). Both are recorded in
+(ADR-0005 + [ADR-0020](decision-log-ui-visualiser-model.md)). Both are recorded in
 [Architecture Model](architecture-model.md) §"Technology (section F)"
 alongside the `TechnologyFunction` that actually performs the
 cross-subsystem UI composition.

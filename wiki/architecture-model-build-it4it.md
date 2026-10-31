@@ -47,7 +47,7 @@ entries through, and writes the XML only after successful assembly
 
 The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
 `elements.yaml`/`relationships.yaml`, tagged `props: {source: it4it}` so it
-could be filtered from the platform's own model. [ADR-0029](decision-log.md)
+could be filtered from the platform's own model. [ADR-0029](decision-log-ui-visualiser-model.md)
 moved it out: it now lives in `third_party/it4it`, a **git submodule**
 pointing at `wolffy-au/frictionless-it4it` on GitHub, in the same
 `elements.yaml` / `relationships.yaml` / `views.yaml` schema this repo uses.
@@ -95,5 +95,5 @@ model, so IT4IT elements never pollute a platform-only diagram.
 
 If IT4IT is ever consumed via its own independently-generated `.xml` (its own
 `build.py` / `NS`) instead of raw YAML, this merged-hashing approach no
-longer holds — that would need its own ADR ([ADR-0029](decision-log.md)
+longer holds — that would need its own ADR ([ADR-0029](decision-log-ui-visualiser-model.md)
 §"Consequences").

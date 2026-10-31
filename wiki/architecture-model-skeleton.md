@@ -29,8 +29,8 @@ PR #62 it also carries a Phase B business layer. In brief:
 - **Business:** 16 processes grouped under 10 business functions, and the business
   objects they read and write.
 
-[ADR-0027](decision-log.md) and [ADR-0033](decision-log.md) record the shape;
-[ADR-0037](decision-log.md) (GH #108) added the fifth of each. The README's
+[ADR-0027](decision-log-ui-visualiser-model.md) and [ADR-0033](decision-log-0030-onward.md) record the shape;
+[ADR-0037](decision-log-0030-onward.md) (GH #108) added the fifth of each. The README's
 own counts ("5 stakeholders, 4 assessments, 4 drivers, 1 goal, 4 outcomes, 3
 principles, 4 constraints, 9 functional requirements", "8 capabilities, 3
 courses of action, 5 resources + 4 value streams … with 11 stages" —

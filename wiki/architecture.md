@@ -328,7 +328,7 @@ build tooling for each `ui/` tree itself remains the open part of #55.
 ## Decision log
 
 The load-bearing decisions are recorded as MADR-lite files under `docs/adr/` (`docs/adr/README.md`).
-The ADR index, statuses and per-decision summaries are on the [Architecture Decision Log](decision-log.md) page.
+The ADR index, statuses and per-decision summaries are on the [Architecture Decision Log](decision-log.md) page (ADR-0000–0019), continued on [ADR-0020–0029](decision-log-ui-visualiser-model.md) and [ADR-0030 onward](decision-log-0030-onward.md).
 
 ## Technical standards
 
