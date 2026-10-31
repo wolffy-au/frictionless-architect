@@ -14,7 +14,7 @@ Implementation_Gap(e_id1db7789502785e, "Gap: move authoritative source from YAML
 Implementation_Plateau(e_id726fa9a2d0835f, "architecture-strategy-mvp")
 Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration")
 Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
-Grouping(e_id2fe39f74e00e5c, "Digital Twin & Knowledge Graph") {
+Grouping(e_id2fe39f74e00e5c, "Architecture Knowledge Graph") {
   Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
   Implementation_WorkPackage(e_id07f2b195f01056, "GH-106 Scaffold digital-twin-knowledge-graph")
 }

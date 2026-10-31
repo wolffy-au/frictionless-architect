@@ -1185,10 +1185,11 @@
 - type: ApplicationComponent
   id: sub-twin
   context: digital-twin-knowledge-graph
-  name: Digital Twin & Knowledge Graph
+  name: Architecture Knowledge Graph
   desc: >-
-    Maintains the Architecture Knowledge Graph: an intent plane and a
-    current-state digital twin plane.
+    Maintains the Architecture Knowledge Graph's intent plane (read/write,
+    built). The current-state digital twin plane (fn-twin-ingest) is modelled
+    but not yet built — see specs/001-knowledge-graph-read-path/spec.md.
 - type: ApplicationComponent
   id: sub-governance
   context: architecture-governance
@@ -1644,6 +1645,17 @@
     default, a detected match pauses the call for the architect to confirm,
     edit or allow before it proceeds, since they are already present in the
     same conversational turn.
+- type: ApplicationFunction
+  id: fn-override-escalation
+  context: modelling-specification
+  name: Governance Override Escalation
+  desc: >-
+    GH #108: when an architect overrides a flagged objection from
+    fn-conversational-authoring (metamodel-pass but convention-fail, or a
+    confirmed non-duplicate), auto-drafts a Status: Proposed ADR stub under
+    docs/adr/ (ADR-0037 item 4) rather than appending to store-ledger, since
+    an override is an architecture-governance decision, not controls/
+    compliance evidence.
 - type: ApplicationFunction
   id: fn-solution-modelling
   context: reusable-architecture-library

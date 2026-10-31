@@ -7,7 +7,7 @@ Application_Component(e_ide4bef3733af65a, "Controls & Compliance Catalog") {
   Application_Interface(e_id8b35221248445f, "Control Conversion Playground")
 }
 Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library")
-Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
+Application_Component(e_id3da203d482f955, "Architecture Knowledge Graph") {
   Application_Interface(e_id0c9a1a2f155254, "Knowledge Graph Read Path")
 }
 Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance")

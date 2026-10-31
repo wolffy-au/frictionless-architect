@@ -280,6 +280,7 @@
 - {type: Realization, source: process-pattern-traceability, target: cap-reusable-architecture}
 - {type: Realization, source: process-blueprint-traceability, target: cap-reusable-architecture}
 - {type: Realization, source: process-solution-design, target: cap-reusable-architecture}
+- {type: Realization, source: process-conversational-solution-modelling, target: cap-reusable-architecture}
 - {type: Realization, source: process-target-state-definition, target: cap-digital-twin}
 - {type: Realization, source: process-conversational-authoring, target: cap-conversational-governance}
 
@@ -611,7 +612,7 @@
 - type: Access
   source: sub-twin
   target: store-akg
-  label: writes the digital twin plane
+  label: reads & writes the intent plane; writes the current-state digital twin plane once fn-twin-ingest is built
   props: {access_type: Write}
 - type: Access
   source: sub-twin
@@ -690,6 +691,7 @@
 - {type: Assignment, source: sub-assurance, target: fn-drift-engine}
 - {type: Assignment, source: sub-modelling, target: fn-notation-engine}
 - {type: Assignment, source: sub-modelling, target: fn-conversational-authoring}
+- {type: Assignment, source: sub-modelling, target: fn-override-escalation}
 - {type: Assignment, source: sub-modelling, target: fn-spec-generator}
 - {type: Assignment, source: ext-scm, target: fn-scm-versioning}
 - {type: Assignment, source: ext-scm, target: fn-scm-change-review}
@@ -765,10 +767,12 @@
 - {type: Access, source: fn-notation-engine, target: do-candidate-arch, label: renders, props: {access_type: Read}}
 - {type: Serving, source: fn-notation-engine, target: fn-options-model, label: renders candidate models for}
 - {type: Access, source: fn-conversational-authoring, target: do-metamodel, label: validates proposed changes against, props: {access_type: Read}}
-- {type: Access, source: fn-conversational-authoring, target: do-candidate-arch, label: proposes model deltas as, props: {access_type: Write}}
+- {type: Access, source: fn-conversational-authoring, target: do-candidate-arch, label: "proposes & applies deltas to the model, including", props: {access_type: Write}}
 - {type: Access, source: fn-conversational-authoring, target: do-convention-rules, label: validates proposed changes against, props: {access_type: Read}}
 - {type: Serving, source: fn-conversational-authoring, target: fn-notation-engine, label: renders the view under discussion live via}
 - {type: Realization, source: fn-conversational-authoring, target: process-conversational-authoring}
+- {type: Triggering, source: fn-conversational-authoring, target: fn-override-escalation, label: overridden objection}
+- {type: Access, source: fn-override-escalation, target: do-adr, label: auto-drafts a Proposed-status ADR stub for overridden objections as, props: {access_type: Write}}
 
 # =====================================================================
 # C. Forensic ledger — every governed action lands an immutable record

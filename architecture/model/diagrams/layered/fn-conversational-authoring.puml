@@ -3,42 +3,53 @@
 
 title Feature Steel Thread: Conversational Model Authoring (GH #108)
 
-Motivation_Driver(e_idb3458ded88aa5a, "Systemic Sustainability & Complexity Management")
+Motivation_Driver(e_ida87011c08f1e5a, "Market Agility & Competitive Pressure")
+Motivation_Driver(e_ida75d463a748254, "Human-to-Machine Operational Scaling")
 Motivation_Driver(e_idf653e0ef73fe55, "Architect Authoring Friction & Governance Consistency")
+Motivation_Stakeholder(e_id19419ed668d556, "Executive Leadership & Board")
 Motivation_Stakeholder(e_id3bf463ccf22a53, "Enterprise Architecture Function")
-Motivation_Assessment(e_id62397473120e57, "Architectural drift is accumulating as unmanaged risk")
+Motivation_Stakeholder(e_idb1fdf098c7c056, "Delivery Organisation")
+Motivation_Assessment(e_id6f46906d5a1152, "Time-to-market is falling behind AI-native competitors, risking market share")
 Motivation_Assessment(e_idf7ed73f063ed53, "Hand-edited model changes are too slow and too easily ungoverned to trust")
 Motivation_Goal(e_id76f6d8b4d70151, "Frictionless Architecture & Governance at Machine Speed") {
-  Motivation_Goal(e_id9b62e16ecac95a, "Drift Detected and Reconciled Continuously")
+  Motivation_Goal(e_idf778f6d99a555c, "Approved Change Reaches Production at AI Speed")
   Motivation_Goal(e_idb41cf5b59c165f, "Architectural Intent Becomes Governed Model Truth")
 }
-Motivation_Outcome(e_idcd8b25865d285b, "Zero Drift Findings Older Than One Sprint")
+Motivation_Outcome(e_idd3d97949409b5a, "90% of Approved Changes Reach Production Within One Business Day")
 Motivation_Outcome(e_id9900ce57054756, "Zero Hand-Edited Model Artifacts Reach Main")
-Motivation_Requirement(e_id945f98ac87fe5d, "Authoritative Digital Twin of System State")
+Motivation_Requirement(e_id8d56dd769b9058, "Curated Reusable Architecture Library")
 Motivation_Requirement(e_id71c4f5aeb1bc5b, "Strategically Aligned, Convention-Compliant Conversational Authoring")
-Strategy_Resource(e_id079f659ad9ac5c, "Architecture Knowledge Graph") {
-  Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
-}
 Strategy_Resource(e_id55d6b63f66465b, "Enterprise Architecture Practice") {
+  Strategy_Capability(e_id752d1de3794f5f, "Reusable Architecture Curation")
   Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance")
 }
-Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph")
+Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
+  Application_Function(e_id774463b70fec5c, "Conversational Solution Modelling")
+}
+Application_Component(e_id3da203d482f955, "Architecture Knowledge Graph")
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
+  Application_Interface(e_id178b6a78b39b51, "Conversational Authoring UI")
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
   Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
+  Application_Function(e_id524ad7dd09c255, "Governance Override Escalation")
+}
+Application_DataObject(e_idb9264b9a2b5a50, "Pattern & Blueprint Repository") {
+  Application_DataObject(e_idf91aecdf564a55, "Solution Design")
 }
 Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
   Application_DataObject(e_ide500d303f47455, "Candidate Architecture Option")
+  Application_DataObject(e_idc6a20aaf9c5950, "Architecture Decision Record")
 }
 Business_Role(e_id2b5394f913985a, "Enterprise Architect") {
-  Business_Function(e_id5794c15b037251, "Architecture Strategy") {
-    Business_Process(e_id395c9c2923aa56, "Target State Definition")
-  }
   Business_Function(e_idd35dc0fbf5a554, "Conversational Candidate Architecture Authoring") {
     Business_Process(e_id5959dd7c3bbe59, "Conversational Candidate Architecture Authoring")
   }
 }
-Business_Role(e_ide2cb7f3efa6256, "Solution Architect")
+Business_Role(e_ide2cb7f3efa6256, "Solution Architect") {
+  Business_Function(e_id86f3d2dd174754, "Solution Design") {
+    Business_Process(e_idb15bf3bc08d15d, "Conversational Solution Modelling")
+  }
+}
 Application_DataObject(e_idd52b11acc8ff53, "Notation Metamodel")
 Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
   Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x") {
@@ -46,31 +57,47 @@ Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
   }
 }
 
-Rel_Realization_Up(e_id18ec07397a9d5f, e_id945f98ac87fe5d, "")
+Rel_Realization_Up(e_id752d1de3794f5f, e_id8d56dd769b9058, "")
 Rel_Realization_Up(e_id6c60f4feb89058, e_id71c4f5aeb1bc5b, "")
-Rel_Association(e_id3bf463ccf22a53, e_idb3458ded88aa5a, "")
+Rel_Association(e_id19419ed668d556, e_ida87011c08f1e5a, "")
+Rel_Association(e_idb1fdf098c7c056, e_ida75d463a748254, "")
 Rel_Association(e_id3bf463ccf22a53, e_idf653e0ef73fe55, "")
-Rel_Association(e_idb3458ded88aa5a, e_id62397473120e57, "")
+Rel_Association(e_ida87011c08f1e5a, e_id6f46906d5a1152, "")
+Rel_Association(e_ida75d463a748254, e_id6f46906d5a1152, "")
 Rel_Association(e_idf653e0ef73fe55, e_idf7ed73f063ed53, "")
-Rel_Association(e_id62397473120e57, e_id9b62e16ecac95a, "")
+Rel_Association(e_id6f46906d5a1152, e_idf778f6d99a555c, "")
 Rel_Association(e_idf7ed73f063ed53, e_idb41cf5b59c165f, "")
-Rel_Realization_Up(e_idcd8b25865d285b, e_id9b62e16ecac95a, "")
+Rel_Realization_Up(e_idd3d97949409b5a, e_idf778f6d99a555c, "")
 Rel_Realization_Up(e_id9900ce57054756, e_idb41cf5b59c165f, "")
-Rel_Realization_Up(e_id945f98ac87fe5d, e_idcd8b25865d285b, "")
+Rel_Realization_Up(e_id8d56dd769b9058, e_idd3d97949409b5a, "")
 Rel_Realization_Up(e_id71c4f5aeb1bc5b, e_id9900ce57054756, "")
-Rel_Serving_Up(e_id18ec07397a9d5f, e_id6c60f4feb89058, "authoritative model for proposal validation (GH #108)")
-Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_idb15bf3bc08d15d, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id5959dd7c3bbe59, e_id6c60f4feb89058, "")
-Rel_Triggering_Right(e_id5959dd7c3bbe59, e_id395c9c2923aa56, "evaluated candidate options feed target-state decisions")
-Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_id774463b70fec5c, e_idb15bf3bc08d15d, "")
+Rel_Realization_Up(e_id3b0beba52b5a5c, e_id752d1de3794f5f, "")
 Rel_Realization_Up(e_id82f04fecbdd85e, e_id6c60f4feb89058, "")
-Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "writes the digital twin plane")
+Rel_Serving_Up(e_id3b0beba52b5a5c, e_id2b5394f913985a, "curates patterns & models future-state options in")
+Rel_Serving_Up(e_id3b0beba52b5a5c, e_ide2cb7f3efa6256, "composes blueprints & designs in")
+Rel_Serving_Up(e_id178b6a78b39b51, e_id2b5394f913985a, "propose, review & apply model changes")
+Rel_Serving_Up(e_id178b6a78b39b51, e_ide2cb7f3efa6256, "propose, review & apply model changes")
+Rel_Serving_Up(e_id7cc5a30769435c, e_id178b6a78b39b51, "exposed via")
+Rel_Serving_Up(e_id774463b70fec5c, e_id178b6a78b39b51, "exposed via")
+Rel_Access_w(e_id3b0beba52b5a5c, e_idb9264b9a2b5a50, "stores patterns, blueprints & designs")
+Rel_Access_w(e_id3b0beba52b5a5c, e_id989d401ffdae55, "publishes approved patterns & candidate options (intent plane)")
+Rel_Serving_Up(e_id82f04fecbdd85e, e_id3b0beba52b5a5c, "renders candidate & solution models with")
+Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "reads & writes the intent plane; writes the current-state digital twin plane once fn-twin-ingest is built")
+Rel_Access_r(e_id82f04fecbdd85e, e_idb9264b9a2b5a50, "reads patterns, blueprints & designs")
+Rel_Access_r(e_id774463b70fec5c, e_idd52b11acc8ff53, "validates proposed changes against")
+Rel_Access_w(e_id774463b70fec5c, e_idf91aecdf564a55, "proposes & applies deltas to")
+Rel_Serving_Up(e_id774463b70fec5c, e_id3a42c87ebb235a, "renders the Solution Design view live via")
 Rel_Access_r(e_id3a42c87ebb235a, e_idd52b11acc8ff53, "constrained by")
 Rel_Access_r(e_id3a42c87ebb235a, e_ide500d303f47455, "renders")
 Rel_Access_r(e_id7cc5a30769435c, e_idd52b11acc8ff53, "validates proposed changes against")
-Rel_Access_w(e_id7cc5a30769435c, e_ide500d303f47455, "proposes model deltas as")
+Rel_Access_w(e_id7cc5a30769435c, e_ide500d303f47455, "proposes & applies deltas to the model, including")
 Rel_Serving_Up(e_id7cc5a30769435c, e_id3a42c87ebb235a, "renders the view under discussion live via")
 Rel_Realization_Up(e_id7cc5a30769435c, e_id5959dd7c3bbe59, "")
+Rel_Triggering_Right(e_id7cc5a30769435c, e_id524ad7dd09c255, "overridden objection")
+Rel_Access_w(e_id524ad7dd09c255, e_idc6a20aaf9c5950, "auto-drafts a Proposed-status ADR stub for overridden objections as")
 Rel_Realization_Up(e_id420f57c4d41e52, e_id989d401ffdae55, "")
 
 @enduml

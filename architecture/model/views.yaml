@@ -303,12 +303,45 @@
   # following only edges that already exist in the model (no element was
   # added or re-wired to make this thread connect, except where noted).
   # sub-modelling now realizes a new Strategy capability,
-  # cap-conversational-governance, which Serves cap-spec-engine and is
-  # Associated with cap-digital-twin — closing the seam the first cut of
-  # this view surfaced (sub-modelling had no capability-realization path
-  # to the capability process-target-state-definition and #83's
-  # bc-model-collaboration both realize). The Technology layer reaches this
-  # thread via node-app-server -> art-tech-neo4j-volume -> store-akg
+  # cap-conversational-governance, which Serves cap-spec-engine -- closing
+  # the seam the first cut of this view surfaced (sub-modelling had no
+  # capability-realization path to the capability process-target-state-
+  # definition and #83's bc-model-collaboration both realize). The
+  # drift/digital-twin motivation chain (driver-sustainability ->
+  # assess-drift-debt -> goal-drift-reconciled -> outcome-drift-zero-aged-
+  # backlog -> req-authoritative-twin -> cap-digital-twin / res-akg) is
+  # deliberately left off this view -- it belongs to the twin's own
+  # authoritative-state story, not this conversational-authoring thread;
+  # dropping it also drops cap-digital-twin's Serving edge into
+  # cap-conversational-governance ("authoritative model for proposal
+  # validation"), so this view no longer shows *why* a proposed delta is
+  # trustworthy, only that role-ea authors one. bfn-architecture-strategy /
+  # process-target-state-definition are deliberately left off this view too
+  # (and with them, process-conversational-authoring's Triggering edge into
+  # process-target-state-definition) -- that's role-ea's target-state-adoption
+  # story, a sibling thread to this one, not part of conversational authoring
+  # itself. process-conversational-solution-modelling now mirrors
+  # process-conversational-authoring's direct capability Realization
+  # (-> cap-reusable-architecture, matching sub-library's own Realization of
+  # that capability), closing the asymmetry GH #138 left on role-sa's side.
+  # cap-reusable-architecture's own motivation spine is now in too: it
+  # Realizes req-reusable-architecture -> outcome-change-lead-time-1day ->
+  # goal-change-at-ai-speed (an Aggregation sibling of goal-intent-becomes-
+  # model-truth under goal-frictionless-architecture), traced back via
+  # assess-time-to-market to two stakeholders -- stk-exec (driver-agility)
+  # and stk-delivery (driver-scaling) -- a separate spine from role-ea's
+  # stk-architecture / driver-authoring-friction one, reflecting that reuse
+  # is justified by market/scaling pressure, not authoring friction.
+  # role-sa's Application layer now mirrors role-ea's: sub-library (realizes
+  # fn-solution-modelling, Assigned) sits alongside sub-modelling, exposing
+  # process-conversational-solution-modelling the same way sub-modelling's
+  # fn-conversational-authoring exposes process-conversational-authoring --
+  # validating against do-metamodel, writing do-solution-design (nested in
+  # store-patterns, the Pattern & Blueprint Repository, role-sa's equivalent
+  # of store-akg) and rendering its view live via fn-notation-engine /
+  # if-modelling-authoring-ui, same as role-ea's path.
+  # The Technology layer still
+  # reaches this thread via node-app-server -> art-tech-neo4j-volume -> store-akg
   # (Assignment/Realization, matching the art-tech-oscal-workspace /
   # art-tech-ledger-file pattern elsewhere in the model) with
   # sw-neo4j Assigned to the same artifact — not a direct SystemSoftware ->
@@ -342,33 +375,42 @@
   # path through it, fn-solution-modelling exposes role-sa's.
   members:
     - stk-architecture
-    - driver-sustainability
+    - stk-exec
+    - stk-delivery
     - driver-authoring-friction
-    - assess-drift-debt
+    - driver-agility
+    - driver-scaling
     - assess-manual-authoring-risk
-    - goal-drift-reconciled
+    - assess-time-to-market
     - goal-intent-becomes-model-truth
+    - goal-change-at-ai-speed
     - goal-frictionless-architecture
-    - outcome-drift-zero-aged-backlog
     - outcome-zero-hand-edited-model
-    - req-authoritative-twin
+    - outcome-change-lead-time-1day
     - req-conversational-authoring-alignment
-    - cap-digital-twin
+    - req-reusable-architecture
     - cap-conversational-governance
-    - res-akg
+    - cap-reusable-architecture
     - res-ea-practice
-    - bfn-architecture-strategy
-    - process-target-state-definition
     - bfn-conversational-authoring
     - process-conversational-authoring
+    - bfn-solution-design
+    - process-conversational-solution-modelling
     - role-ea
     - role-sa
     - sub-twin
     - sub-modelling
+    - sub-library
+    - if-modelling-authoring-ui
     - fn-conversational-authoring
+    - fn-override-escalation
+    - fn-solution-modelling
     - fn-notation-engine
     - do-metamodel
     - do-candidate-arch
+    - do-adr
+    - do-solution-design
+    - store-patterns
     - store-akg
     - sw-neo4j
     - art-tech-neo4j-volume
@@ -1095,3 +1137,28 @@
   viewpoint: implementation_migration
   include_types: [WorkPackage]
   no_direction: [Triggering]
+
+- id: view-context-modelling-specification
+  name: "Context: Modelling & Specification"
+  context: [modelling-specification]
+  diagram: layered/context-modelling-specification
+  # Everything tagged context: modelling-specification, regardless of
+  # ArchiMate layer -- the package's Strategy capabilities, Business
+  # processes/functions/collaboration, the sub-modelling component and its
+  # interface, Application functions, the DataObjects it owns, and its
+  # package Artifact. include_types, not members, so a newly tagged element
+  # appears automatically instead of silently staying off this view.
+  # Cross-layer by construction, so no standard viewpoint applies (same
+  # reasoning as other custom views in this file).
+  viewpoint: custom
+  include_types:
+    - Capability
+    - BusinessCollaboration
+    - BusinessInteraction
+    - BusinessFunction
+    - BusinessProcess
+    - ApplicationComponent
+    - ApplicationInterface
+    - ApplicationFunction
+    - DataObject
+    - Artifact
