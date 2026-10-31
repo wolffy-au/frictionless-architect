@@ -462,6 +462,41 @@ def test_jobs_warns_on_view_without_diagram_key(capsys: pytest.CaptureFixture[st
     assert "no `diagram:` key" in capsys.readouterr().err
 
 
+def test_view_diagram_jobs_fans_out_split_by_context(tmp_path: Path) -> None:
+    views_file = tmp_path / "views.yaml"
+    views_file.write_text(
+        "- {id: v1, name: V1, diagram: biz/split-view, include_types: [application-component], split_by: context}\n"
+    )
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "b", "type": "application-component", "context": "ctx-y", "name": "B"},
+    ]
+    types_by_id = {"a": "ApplicationComponent", "b": "ApplicationComponent"}
+
+    import modelling_specification.rendering as rendering_mod
+
+    jobs = rendering_mod._view_diagram_jobs(views_file, rendering_mod.DIAGRAMS, elements, types_by_id)
+
+    paths = sorted(str(p.relative_to(rendering_mod.DIAGRAMS)) for p, _ in jobs)
+    assert paths == ["biz/split-view/ctx-x.puml", "biz/split-view/ctx-y.puml"]
+    for _, cmd in jobs:
+        assert "--context" in cmd
+
+
+def test_view_diagram_jobs_without_split_by_is_a_single_job(tmp_path: Path) -> None:
+    views_file = tmp_path / "views.yaml"
+    views_file.write_text("- {id: v1, name: V1, diagram: biz/plain}\n")
+
+    import modelling_specification.rendering as rendering_mod
+
+    jobs = rendering_mod._view_diagram_jobs(views_file, rendering_mod.DIAGRAMS, [], {})
+
+    assert len(jobs) == 1
+    path, cmd = jobs[0]
+    assert path == rendering_mod.DIAGRAMS / "biz" / "plain.puml"
+    assert "--context" not in cmd
+
+
 _DIRTY_SVG = (
     '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="alert(1)">'
     "<script>alert(1)</script><foreignObject><div>x</div></foreignObject>"

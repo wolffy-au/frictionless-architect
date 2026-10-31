@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 ---
 
@@ -23,21 +23,37 @@ generator: claude-sonnet-5
 - [Architecture Overview](architecture.md) — the governance-layer-at-root
   principle, current vs. target state, the six-subsystem → package mapping
   (per-subsystem UIs), the Poetry monorepo decision and the migration sequence.
-- [Architecture Decision Log](decision-log.md) — the full `docs/adr/` decision log
-  (MADR index and per-decision summaries).
+- [Architecture Decision Log](decision-log.md) — the `docs/adr/` decision log for
+  ADR-0000–0019 (MADR index, status key and per-decision summaries).
+- [Architecture Decision Log: UIs, Visualiser & Model Conventions](decision-log-ui-visualiser-model.md)
+  — ADR-0020–0029: per-subsystem UIs, the schema visualiser stack, the
+  single-user MVP, commit conventions, governed-entity FSMs, the capability
+  value stream, relationship storage and the vendored IT4IT model.
+- [Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts](decision-log-0030-onward.md)
+  — ADR-0030 onward: vendored OSCAL content, ArchiMate namespace, value streams,
+  shared packages, the GitHub-roadmap layer, conversational authoring, roles,
+  bounded contexts and maintenance agents.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
-  generated: files, schema, the `build.py` pipeline, the generic per-viewpoint
-  `views-viewpoints.yaml` layer (GH #105), the generated GitHub roadmap
-  layer, and the vendored IT4IT 3.0 reference model (`third_party/it4it`,
-  merged in at build time — 515 elements, 1,029 relationships, 66 views total,
-  re-counted 2026-10-24).
+  generated: files, schema, the content sections and the generated GitHub
+  roadmap layer. Contexts and viewpoints, and the build pipeline with the
+  IT4IT merge, have their own pages below.
+- [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) —
+  the generic per-viewpoint views and the `context:` tag that scopes them:
+  generated bounded-context Groupings, split views and the context map
+  (GH #105, GH #129, ADR-0040).
+- [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md) —
+  how the YAML model is built into the exchange file, and how the vendored
+  IT4IT 3.0 reference model (`third_party/it4it`) is merged in at build time
+  (ADR-0029).
 - [Architecture Model: Skeleton](architecture-model-skeleton.md) — section A:
   stakeholders, drivers, assessments, one top goal with five sub-goals and ten
   measurable outcomes, principles,
-  constraints, requirements, capabilities, strategy, five value streams
-  (including the new Intent to Model stream, GH #108), and the business layer
-  (functions, processes, business objects).
+  constraints, requirements, and the business layer (functions, processes,
+  business objects). Strategy has its own page below.
+- [Architecture Model: Strategy](architecture-model-strategy.md) — section A's
+  strategy layer: capabilities, courses of action and the five value streams
+  (including the Intent to Model stream, GH #108).
 - [Architecture Model: Ecosystem](architecture-model-ecosystem.md) — section B:
   the six subsystems, shared stores, business roles, and external systems
   behind the C4 views.
@@ -67,8 +83,9 @@ generator: claude-sonnet-5
   standard-viewpoint views.
 - [OSCAL Compliance Content](oscal-compliance.md) — the vendored OSCAL/FedRAMP
   reference content (`third_party/oscal`, `oscal-content`,
-  `fedramp-automation`), the `compliance-trestle` runtime dependency, and how
-  ADR-0030 splits the vendoring approach between the two.
+  `fedramp-automation` — plain tracked files with `PROVENANCE.md` since
+  GH #167, not submodules), the `compliance-trestle` runtime dependency, and
+  how ADR-0030 splits the vendoring approach between the two.
 - [Data Model](data-model.md) — the platform domain model (ADR, CBS, Semantic
   System Model, Policy), the ArchiMate 3.1 XSD basis, the Neo4j graph shape, and
   the schema-visualiser payload contract.
@@ -84,9 +101,9 @@ generator: claude-sonnet-5
   surface, and golden-dataset validation.
 - [Conversational Model Authoring](modelling-specification.md) — the
   `platform/packages/modelling-specification` package (GH #108,
-  [ADR-0037](decision-log.md); renamed "Conversational Candidate Architecture
+  [ADR-0037](decision-log-0030-onward.md); renamed "Conversational Candidate Architecture
   Authoring" and scoped to Enterprise Architects only per
-  [ADR-0039](decision-log.md), 2026-10-24): the conversational ArchiMate
+  [ADR-0039](decision-log-0030-onward.md), 2026-10-24): the conversational ArchiMate
   authoring agent, its candidate-delta propose/validate/decide/render
   pipeline, Enterprise Convention Rules, and the ported
   `build`/`render`/`validate` CLI that root's scripts and the
@@ -102,7 +119,7 @@ generator: claude-sonnet-5
   `specs/002-neo4j-schema-ui`) ahead of the visualiser API/UI split
   (`ARCHITECTURE.md` §8, step 7).
 - [Portal](portal.md) — the `platform/packages/portal` host package
-  ([ADR-0020](decision-log.md) update, GH #120): mounts every package's UI
+  ([ADR-0020](decision-log-ui-visualiser-model.md) update, GH #120): mounts every package's UI
   under one app, owning only chrome, navigation and the role landing page.
 - [LLM Provider Configuration](llm-provider-config.md) — the shared
   `llm-provider-config` package (ADR-0034): global default plus per-component

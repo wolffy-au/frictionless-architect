@@ -1,0 +1,62 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Application Cooperation — architecture-governance
+
+Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Grouping(e_id54dd4701dbf151, "Frictionless Architecture Platform")
+Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library")
+Application_Component(e_id0d5bd02b5ffe5e, "Architecture Governance")
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph")
+Business_Role(e_id2b5394f913985a, "Enterprise Architect")
+Business_Role(e_id5e264d2f4bb551, "Compliance Officer / Auditor")
+Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
+Application_Component(e_id90a79bc0568053, "Collaboration Tools")
+Application_Function(e_id1877d57ef1ec5e, "Forensic Ledger Recording")
+Application_Function(e_id1a6bc8a929675e, "Decision Capture Ingestion")
+Application_Function(e_id26722845c7215d, "Comparative Evaluation & Decision")
+Application_Function(e_id5447be33805351, "Drift & Deviation Detection")
+Application_DataObject(e_ide732c9a4b52a59, "Current-State Digital Twin")
+Application_DataObject(e_ide500d303f47455, "Candidate Architecture Option")
+Application_DataObject(e_idc6a20aaf9c5950, "Architecture Decision Record")
+Application_DataObject(e_ideb3e3dd87f3c5c, "Impact Assessment")
+Application_DataObject(e_id0f0ef898faa15b, "Archived Rejected Option")
+Grouping(e_iddff3ddea065c5e, "Architecture Governance") {
+  Application_DataObject(e_ide2af72ef094852, "Collaboration Transcript")
+  Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+}
+
+Rel_Composition(e_id54dd4701dbf151, e_id0d5bd02b5ffe5e, "")
+Rel_Realization_Up(e_id0d5bd02b5ffe5e, e_id08f340a094e552, "")
+Rel_Serving_Up(e_id0d5bd02b5ffe5e, e_id2b5394f913985a, "evaluates options & records decisions in")
+Rel_Serving_Up(e_id0d5bd02b5ffe5e, e_id5e264d2f4bb551, "verifies traceability in")
+Rel_Access_rw(e_id0d5bd02b5ffe5e, e_id989d401ffdae55, "reads intent & twin for impact; writes decisions, impacts & archived options (intent plane)")
+Rel_Association(e_id0d5bd02b5ffe5e, e_id3b0beba52b5a5c, "governs patterns & assesses candidate options")
+Rel_Flow(e_id0d5bd02b5ffe5e, e_id3b0beba52b5a5c, "hands chosen solution to Composer for detailed design")
+Rel_Serving_Up(e_id2610ae0cc2cc50, e_id0d5bd02b5ffe5e, "requests ADR & evaluation drafts from")
+Rel_Assignment(e_id0d5bd02b5ffe5e, e_id1a6bc8a929675e, "")
+Rel_Assignment(e_id0d5bd02b5ffe5e, e_id26722845c7215d, "")
+Rel_Serving_Up(e_id90a79bc0568053, e_id1a6bc8a929675e, "supplies transcripts to")
+Rel_Access_w(e_id1a6bc8a929675e, e_ide2af72ef094852, "captures")
+Rel_Flow(e_id1a6bc8a929675e, e_id26722845c7215d, "hands scrubbed transcripts to")
+Rel_Access_r(e_id26722845c7215d, e_ide2af72ef094852, "drafts ADRs from")
+Rel_Access_r(e_id26722845c7215d, e_ide500d303f47455, "evaluates")
+Rel_Access_r(e_id26722845c7215d, e_ide732c9a4b52a59, "reads for impact")
+Rel_Access_w(e_id26722845c7215d, e_ideb3e3dd87f3c5c, "produces")
+Rel_Access_w(e_id26722845c7215d, e_idc6a20aaf9c5950, "records")
+Rel_Access_w(e_id26722845c7215d, e_id0f0ef898faa15b, "archives with rationale")
+Rel_Flow(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
+Rel_Access_r(e_id5447be33805351, e_idc6a20aaf9c5950, "reads intent")
+Rel_Aggregation(e_id989d401ffdae55, e_idc6a20aaf9c5950, "")
+Rel_Aggregation(e_id989d401ffdae55, e_ideb3e3dd87f3c5c, "")
+Rel_Aggregation(e_id989d401ffdae55, e_id0f0ef898faa15b, "")
+Rel_Realization_Up(e_id880eb98a22b15c, e_id0d5bd02b5ffe5e, "")
+Rel_Aggregation(e_iddff3ddea065c5e, e_id0d5bd02b5ffe5e, "")
+Rel_Aggregation(e_iddff3ddea065c5e, e_id1a6bc8a929675e, "")
+Rel_Aggregation(e_iddff3ddea065c5e, e_id26722845c7215d, "")
+Rel_Aggregation(e_iddff3ddea065c5e, e_idc6a20aaf9c5950, "")
+Rel_Aggregation(e_iddff3ddea065c5e, e_ideb3e3dd87f3c5c, "")
+Rel_Aggregation(e_iddff3ddea065c5e, e_id0f0ef898faa15b, "")
+
+@enduml

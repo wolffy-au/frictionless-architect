@@ -1,6 +1,6 @@
 ---
 title: LLM Provider Configuration
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0034-shared-packages-and-llm-provider-config.md
@@ -78,6 +78,14 @@ amendment to the original keychain-only decision, to make headless CI and
 devcontainers workable. `key_source` reports only `not-needed`, `keychain`,
 `environment` or `missing`, never the key (`platform/packages/llm-provider-config/src/llm_provider_config/credentials.py`).
 
+A key that is really a secret *reference* (`os.environ/NAME`) is refused with
+`InvalidCredentialError` (a subclass of `MissingCredentialError`, so callers that
+treat "no usable key" as not-configured need no change). litellm resolves such a
+value passed as `api_key` to that environment variable (CVE-2026-108575), so a
+user-supplied key must never be able to read an arbitrary variable; the check runs
+both when a key is stored and when one is read from the keychain or environment
+(`platform/packages/llm-provider-config/src/llm_provider_config/credentials.py`).
+
 ## Using it
 
 `resolve_call(component)` returns a `ResolvedCall` whose `completion_kwargs()` are
@@ -100,10 +108,16 @@ prefix and a JSON API under it (`platform/packages/llm-provider-config/src/llm_p
 - `PUT /default`, and `PUT`/`DELETE /components/{id}` — edit settings; unknown
   components give `404`.
 - `PUT`/`DELETE /keys/{provider}` — write to the keychain; `503` with an
-  environment-variable hint where there is no keychain, `422` for keyless providers,
+  environment-variable hint where there is no keychain, `422` for keyless providers
+  or an `os.environ/...` reference,
   and `404` when `DELETE` finds no stored key.
 - `POST /test` — "Test connection": a one-word completion, returning `{ok, message}`;
-  `404` for an unknown component. Testing the Global Default button (no
+  `404` for an unknown component. Failures come back as fixed, readable messages
+  (not configured, no API key, or "the call to <model> failed; see the server log
+  for details"); the provider's own error text is logged server-side and never
+  returned, because it can carry internals (CWE-209)
+  (`platform/packages/llm-provider-config/src/llm_provider_config/router.py`,
+  `specs/001-llm-provider-config/spec.md`). Testing the Global Default button (no
   `component` in the body) now tests the default settings directly rather
   than falling back to whichever component happens to be registered first —
   that earlier fallback could silently test an *overridden* component's

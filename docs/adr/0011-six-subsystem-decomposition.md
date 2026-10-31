@@ -5,6 +5,9 @@
 - **Sources:** session memory `ecosystem-c4`; `architecture/model/README.md`
   §"Model contents" (section B); `architecture/model/diagrams/c4/container.puml`
 
+<!-- adr-auditor 2026-10-29: Context's "8-component decomposition that no longer matches" is now false;
+     ARCHITECTURE.md §3–4 was realigned in #50 (see Consequences). Body left as the historical record. -->
+
 ## Context
 
 The ~15 capabilities from the ecosystem brief were first drawn as a 15-container

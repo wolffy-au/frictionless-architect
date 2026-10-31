@@ -1,6 +1,6 @@
 ---
 title: Schema Visualizer API
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0005-visualiser-api-ui-split-first-extraction.md

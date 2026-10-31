@@ -4,6 +4,25 @@
 # scoped views stay there. View ids must be unique across both files.
 #
 # Diagram paths are under diagrams/ like any other view.
+#
+# A view may add `split_by: context` + `include_neighbours: true` (GH #129
+# step 4): instead of one `<diagram>.puml`, it renders one
+# `<diagram>/<context>.puml` per bounded context actually on it, with any
+# directly-connected element from another context pulled in too (so a
+# cross-context edge still has both its endpoints on the diagram). Applied
+# below to the six oversized whole-platform sweeps named in #129 -- not to
+# view-product, which #129 itself asks to drop instead (see the comment
+# there).
+#
+# #129's ~60-element-per-diagram target is met for most contexts this way,
+# but a handful of per-context splits still come out larger -- the context
+# itself owns a lot (`reusable-architecture-library`,
+# `controls-compliance-catalog`) or its neighbour set is wide
+# (`conformance-drift-assurance`, which is directly connected to almost every
+# other context by design, being the compliance cross-cutting concern). That
+# is read off the real post-build `.puml` element counts, not predicted;
+# further splitting those down (e.g. a second axis within one context) is
+# left for a follow-up rather than engineered speculatively here.
 
 - id: view-organization
   name: Organization
@@ -96,48 +115,13 @@
     - DistributionNetwork
     - Material
 
-- id: view-product
-  name: Product
-  context: platform
-  # Generic Product viewpoint (ArchiMate 3.2 §14): products as compositions of
-  # business, application and technology services, their contracts, the
-  # interfaces they are offered through and the events around them. Swept by
-  # type, not members. Spans every layer, so it renders very large here — the
-  # model has no Product, Contract, Value, Material or any *Service elements
-  # yet, which are what give the viewpoint its shape.
-  viewpoint: product
-  diagram: business/product
-  include_types:
-    - BusinessActor
-    - BusinessRole
-    - BusinessCollaboration
-    - BusinessInterface
-    - BusinessProcess
-    - BusinessFunction
-    - BusinessInteraction
-    - BusinessEvent
-    - BusinessService
-    - BusinessObject
-    - Product
-    - Contract
-    - ApplicationComponent
-    - ApplicationCollaboration
-    - ApplicationInterface
-    - ApplicationProcess
-    - ApplicationFunction
-    - ApplicationInteraction
-    - ApplicationEvent
-    - ApplicationService
-    - DataObject
-    - TechnologyService
-    - Artifact
-    - Material
-    - Value
-  # Flow/Triggering are not one-way sequences across this whole-model sweep;
-  # leave them undirected so the Up-biased Realization/Serving edges are what
-  # drive a top-to-bottom layout instead of a wide rightward spread.
-  no_direction: [Flow, Triggering]
-  max_width: 3800
+# view-product (Product viewpoint, ArchiMate 3.2 §14) dropped, GH #129 step 6:
+# the model has no Product, Contract, Value, Material or any *Service
+# elements -- the only things that give that viewpoint its own shape -- so it
+# was a dump of every Business/Application element already covered by
+# view-application-usage/view-service-realization, with no Product-specific
+# content to justify a separate (now per-context-split) sweep. Re-add it,
+# scoped to the real Product elements, once any exist.
 
 - id: view-application-usage
   name: Application Usage
@@ -150,6 +134,8 @@
   # normally links the two layers.
   viewpoint: application_usage
   diagram: application/usage
+  split_by: context
+  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -254,6 +240,8 @@
   # the *Service/Event types are not yet modelled.
   viewpoint: application_cooperation
   diagram: application/cooperation
+  split_by: context
+  include_neighbours: true
   include_types:
     - Location
     - ApplicationComponent
@@ -280,6 +268,8 @@
   # application elements and renders very large.
   viewpoint: service_realization
   diagram: business/service-realization
+  split_by: context
+  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -319,6 +309,8 @@
   # include_types, not members: it should pick up new elements of these
   # types automatically rather than needing to be hand-maintained.
   viewpoint: implementation_migration
+  split_by: context
+  include_neighbours: true
   include_types: [Plateau, Gap, WorkPackage, Deliverable]
   # Triggering joins no_direction so the WorkPackage sequence reads
   # top-to-bottom: graphviz's own default rank direction is top-to-bottom,
@@ -341,6 +333,8 @@
   # allow-list (see view-packaging), so the hosting Nodes do not appear.
   viewpoint: implementation_deployment
   diagram: implementation/deployment
+  split_by: context
+  include_neighbours: true
   include_types:
     - ApplicationComponent
     - ApplicationCollaboration

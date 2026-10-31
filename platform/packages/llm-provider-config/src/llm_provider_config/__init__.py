@@ -6,6 +6,7 @@ keychain via `keyring`, with a labelled environment-variable fallback. See ADR-0
 """
 
 from llm_provider_config.credentials import (
+    InvalidCredentialError,
     MissingCredentialError,
     delete_api_key,
     get_api_key,
@@ -19,6 +20,7 @@ from llm_provider_config.store import default_config_path, load_settings, save_s
 
 __all__ = [
     "Component",
+    "InvalidCredentialError",
     "LlmSettings",
     "MissingCredentialError",
     "NotConfiguredError",

@@ -153,7 +153,13 @@ That release then realizes the Work Package's Plateau, so one release realizes e
 delivered work for. The roadmap view of a milestone shows only that milestone's Work Packages,
 even when its release also delivered work for others. Once the milestone itself is closed, its
 view drops its own closed Work Packages (kept in the data, just not drawn), settling to its Plateau
-and Deliverable(s); an open milestone keeps showing all of its Work Packages, open or closed.
+and Deliverable(s). An open milestone instead keeps all of its Work Packages, open or closed, but
+only for its *live* Deliverables: the unreleased Deliverable (planned, in-flight work) and whichever
+release Deliverable is the most recent to have shipped something for this Plateau. Earlier releases'
+Deliverables and the Work Packages that realize them stay in the data but drop out of that
+milestone's view, so a long-lived open milestone's diagram does not accumulate one permanent "done"
+cluster per release it has ever shipped. `migration/overview` sweeps every Deliverable/Work Package
+regardless of state or release and is unaffected by either filter.
 
 A closed issue therefore moves to a later release once one is published after it, and a reopened
 issue moves back to the unreleased Deliverable. The unreleased Deliverable is emitted only when at

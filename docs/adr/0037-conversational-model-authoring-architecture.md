@@ -5,6 +5,11 @@
 - **Sources:** `specs/EPIC-003-conversational-model-authoring/plan.md` §Constitution Check
   (Principle X), `specs/EPIC-003-conversational-model-authoring/research.md` (R1, R2, R6, R7, R12)
 
+<!-- adr-auditor 2026-10-29: evidence supports Accepted: implemented (platform/packages/modelling-specification,
+     architecture/model/conventions.yaml, root build.py/render_diagrams.py shell into its CLI) and cited
+     as settled by EPIC-003 plan/tasks and ADR-0039. Held at Proposed until a human attests it (ADR-0012).
+     The pyarchimate-in-root Consequences claim was corrected in this ADR (F3, human decision). -->
+
 ## Context
 
 GH #108 adds a conversational agent that proposes ArchiMate model deltas from natural
@@ -54,9 +59,14 @@ references, corrected alongside this ADR).
 
 ## Consequences
 
-- Root's `pyproject.toml` drops `pyarchimate`/`rapidfuzz` once the three wrapper scripts no
-  longer hold their own logic; the new platform package carries them as runtime
-  dependencies instead (`research.md` R3).
+- Root's `pyproject.toml` drops `rapidfuzz` once the three wrapper scripts no longer hold
+  their own logic; the new platform package carries it, and `pyarchimate`, as runtime
+  dependencies (`research.md` R3). Root still lists `pyarchimate` because four `.claude/skills`
+  scripts (`check_derived.py`, `viewpoints.py`, `model_to_puml.py`, `model_to_c4.py`) import it
+  and can be run directly from root's venv. The platform renderer runs the last two under the
+  platform venv, so it does not depend on root's copy. Whether to drop it from root by moving
+  the other skill scripts behind the platform CLI is left open. Corrected 2026-10-29: this
+  record originally said root would drop both.
 - CI and the vendored/generated YAML layers (ADR-0029, ADR-0035) keep running the same
   deterministic, non-conversational pipeline — now with one home instead of three — so this
   decision does not introduce a second code path for model build/render/validate.

@@ -28,9 +28,13 @@ Only the subject line is mandatory.
 | `perf`     | performance improvement                                        | patch |
 | `test`     | adding or correcting tests only                                | –     |
 | `build`    | build system, dependencies, packaging, devcontainer            | –     |
-| `ci`       | CI config and scripts (`.github/`, workflows)                  | –     |
+| `ci`       | CI config (`.github/`, workflows) and gate/audit scripts under `scripts/`, speed-ups and fixes included | – |
 | `chore`    | maintenance that fits nothing above (lockfile pins, cleanup)   | –     |
 | `revert`   | reverts a previous commit; body has `Refs: <sha>`              | –     |
+
+> **Agents and skills:** a change to `.claude/agents/` or `.claude/skills/` that
+> alters behaviour (new input, step, command or gate) is `feat(agents|skills)` or
+> `fix(agents|skills)`. Wording or clarification only is `docs(agents|skills)`.
 
 A `!` before the colon, or a `BREAKING CHANGE:` footer, marks an incompatible
 change and forces a major bump regardless of type.

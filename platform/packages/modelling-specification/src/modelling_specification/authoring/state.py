@@ -60,10 +60,15 @@ class Session:
     Attributes:
         session_id: Identifier returned to the client.
         deltas: The session's Candidate Deltas.
+        pending_options: The most recent "suggest options" proposal awaiting a pick
+            (FR-001 "ways forward"), cleared once one is selected or another propose
+            request replaces it. Each entry is a normalized option (rationale,
+            convention_refs, elements, relationships) plus its own validation result.
     """
 
     session_id: str
     deltas: dict[str, CandidateDelta] = field(default_factory=dict)
+    pending_options: list[dict[str, Any]] = field(default_factory=list)
 
 
 class SessionStore:

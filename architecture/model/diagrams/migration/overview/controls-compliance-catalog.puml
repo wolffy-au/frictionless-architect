@@ -1,0 +1,22 @@
+@startuml
+!include <archimate/Archimate>
+
+title Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables — controls-compliance-catalog
+
+Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+Implementation_WorkPackage(e_id07f2b195f01056, "GH-106 Scaffold digital-twin-knowledge-graph")
+Implementation_Deliverable(e_ide553dac909af52, "policy-to-oscal-mvp (unreleased)")
+Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
+Grouping(e_id2b3d5a23698555, "Controls & Compliance Catalog") {
+  Business_Function(e_id108dc21cee6055, "Policy-to-OSCAL Conversion")
+  Implementation_WorkPackage(e_idf0b1b54884f45d, "GH-71 Migration steps 1–3")
+}
+
+Rel_Triggering(e_idf0b1b54884f45d, e_id07f2b195f01056, "")
+Rel_Realization_Up(e_idf0b1b54884f45d, e_ide553dac909af52, "")
+Rel_Realization_Up(e_idf0b1b54884f45d, e_idfcb391a9833b5b, "")
+Rel_Aggregation(e_idb94c55ad2a0756, e_idfcb391a9833b5b, "")
+Rel_Realization_Up(e_idb94c55ad2a0756, e_id108dc21cee6055, "")
+Rel_Aggregation(e_id2b3d5a23698555, e_idfcb391a9833b5b, "")
+
+@enduml

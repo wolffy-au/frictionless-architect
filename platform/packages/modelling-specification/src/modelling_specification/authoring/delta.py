@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import difflib
 import json
+import logging
 import re
 from typing import Any
 
 from litellm import completion
 from llm_provider_config import MissingCredentialError, NotConfiguredError, resolve_call
+
+logger = logging.getLogger(__name__)
 
 COMPONENT_ID = "modelling-specification.conversational-authoring"
 
@@ -30,9 +33,22 @@ redeclaring them. The existing elements are listed below as "id | type | name": 
 the architect names to the closest element, even when they misspell it or give only part of
 its name, and copy that id exactly. Never invent an id for an element that already exists.
 
-If the request is too vague to form a concrete delta, or asks you to suggest something,
-reply with a short plain-text message instead of JSON: one clarifying question, or your
-suggestions for the architect to restate as a concrete request.
+If the architect instead asks for a way forward -- "what should I do about X", "suggest
+options for Y", "how should I evolve Z" -- rather than describing one concrete change,
+reply with JSON shaped exactly as:
+
+{"options": [{"rationale": "<why this option, citing specific existing element ids and/or convention rule ids>",
+              "convention_refs": ["<rule id from the list below, if any grounded this option>"],
+              "elements": [...], "relationships": [...]}]}
+
+Give 2-3 distinct options, each a complete, independently applicable candidate delta in the
+same "elements"/"relationships" shape as above. Ground each rationale in the existing
+elements and, where relevant, the enterprise convention rules listed below -- cite their
+ids rather than describing them vaguely. Never invent a rule id that isn't listed.
+
+If the request is too vague to form even one concrete option -- missing the subject,
+scope, or enough detail to propose anything concrete -- reply with a short
+plain-text message instead of JSON: one clarifying question for the architect to answer.
 
 You can only ADD elements and relationships. If the request asks to rename, edit or remove
 something that already exists, return {"elements": [], "relationships": []} rather than
@@ -67,11 +83,47 @@ def _catalogue_text(catalogue: list[tuple[str, str, str]]) -> str:
     return "\n".join(f"{eid} | {etype} | {name}" for eid, etype, name in catalogue)
 
 
-def propose_delta(request: str, catalogue: list[tuple[str, str, str]] | None = None) -> dict[str, list[dict[str, Any]]]:
-    """Call the configured LLM and return `{"elements": [...], "relationships": [...]}`.
+def _rules_text(rules: list[dict[str, Any]]) -> str:
+    return "\n".join(f"{r['id']} | {r['kind']} | scope={r.get('scope', [])}" for r in rules)
 
-    Raises `DeltaProposalError` for every way this can fail short of a well-formed
-    delta: no provider configured, no credential, the call itself failing, an empty
+
+def _is_single_delta(payload: Any) -> bool:
+    return isinstance(payload.get("elements"), list) and isinstance(payload.get("relationships"), list)
+
+
+def _normalize_option(option: Any, model: str) -> dict[str, Any]:
+    if (
+        not isinstance(option, dict)
+        or not isinstance(option.get("elements"), list)
+        or not isinstance(option.get("relationships"), list)
+    ):
+        raise DeltaProposalError(
+            f"The LLM returned an option missing the required 'elements'/'relationships' lists ({model})."
+        )
+    rationale = option.get("rationale")
+    convention_refs = option.get("convention_refs")
+    return {
+        "rationale": rationale if isinstance(rationale, str) else "",
+        "convention_refs": convention_refs if isinstance(convention_refs, list) else [],
+        "elements": option["elements"],
+        "relationships": option["relationships"],
+    }
+
+
+def propose_delta(
+    request: str,
+    catalogue: list[tuple[str, str, str]] | None = None,
+    rules: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Call the configured LLM and return a candidate delta, in one of two shapes:
+    a single concrete change, `{"elements": [...], "relationships": [...]}`; or, when
+    the architect asked for a way forward rather than describing one change,
+    `{"options": [{"rationale": ..., "convention_refs": [...], "elements": [...],
+    "relationships": [...]}, ...]}` -- 2-3 alternatives, each independently a
+    complete candidate delta (FR-001, "suggests ways forward" per GH #68).
+
+    Raises `DeltaProposalError` for every way this can fail short of one of those
+    shapes: no provider configured, no credential, the call itself failing, an empty
     response, or a response that is not the required JSON shape. None of these create
     a Candidate Delta -- the caller (router.py) maps this to a 502 with no write."""
     stripped = request.strip()
@@ -83,12 +135,19 @@ def propose_delta(request: str, catalogue: list[tuple[str, str, str]] | None = N
     except (NotConfiguredError, MissingCredentialError) as exc:
         raise DeltaProposalError(str(exc)) from exc
 
-    system = SYSTEM_PROMPT + (f"\n\nExisting elements:\n{_catalogue_text(catalogue)}" if catalogue else "")
+    system = SYSTEM_PROMPT
+    if catalogue:
+        system += f"\n\nExisting elements:\n{_catalogue_text(catalogue)}"
+    if rules:
+        system += f"\n\nEnterprise convention rules:\n{_rules_text(rules)}"
     messages = [{"role": "system", "content": system}, {"role": "user", "content": stripped}]
     try:
         response = completion(messages=messages, **call.completion_kwargs())
     except Exception as exc:  # noqa: BLE001 - litellm raises a wide family of provider/network errors
-        raise DeltaProposalError(f"The LLM call failed ({call.model}): {exc}") from exc
+        # The router returns this message in the 502 body, so keep provider detail in
+        # the server log only (CWE-209).
+        logger.warning("LLM call to %s failed", call.model, exc_info=True)
+        raise DeltaProposalError(f"The LLM call failed ({call.model}); see the server log for details.") from exc
 
     content = _message_content(response).strip()
     if not content:
@@ -101,16 +160,19 @@ def propose_delta(request: str, catalogue: list[tuple[str, str, str]] | None = N
     except json.JSONDecodeError as exc:
         raise LlmMessage(content) from exc
 
-    if (
-        not isinstance(payload, dict)
-        or not isinstance(payload.get("elements"), list)
-        or not isinstance(payload.get("relationships"), list)
-    ):
-        raise DeltaProposalError(
-            f"The LLM response is missing the required 'elements'/'relationships' lists ({call.model})."
-        )
+    return _parsed_proposal(payload, call.model)
 
-    return {"elements": payload["elements"], "relationships": payload["relationships"]}
+
+def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:
+    """`payload` must be a single delta or an "options" list (see `propose_delta`);
+    anything else is a `DeltaProposalError` naming the model that returned it."""
+    if isinstance(payload, dict) and _is_single_delta(payload):
+        return {"elements": payload["elements"], "relationships": payload["relationships"]}
+
+    if isinstance(payload, dict) and isinstance(payload.get("options"), list) and payload["options"]:
+        return {"options": [_normalize_option(o, model) for o in payload["options"]]}
+
+    raise DeltaProposalError(f"The LLM response is missing the required 'elements'/'relationships' lists ({model}).")
 
 
 def _closest_known_id(wanted: str, names_by_id: dict[str, str]) -> str | None:

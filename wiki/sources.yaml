@@ -34,9 +34,22 @@ topics:
 
   - name: decision-log
     title: Architecture Decision Log
-    description: The ADR log — one MADR-lite file per load-bearing decision, with status and consequences.
+    description: The ADR log, ADR-0000–0019 — template, repository and tooling foundations, model storage and decomposition, and the proposed data-layer decisions; with the ADR status key.
     sources:
-      - path: docs/adr/*.md
+      - path: docs/adr/00[01]*.md
+      - path: docs/adr/README.md
+
+  - name: decision-log-ui-visualiser-model
+    title: "Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)"
+    description: ADR-0020–0029 — per-subsystem UIs, the schema visualiser stack, single-user MVP, commit conventions, governed-entity FSMs, the capability value stream, relationship storage and the vendored IT4IT model.
+    sources:
+      - path: docs/adr/002*.md
+
+  - name: decision-log-0030-onward
+    title: "Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)"
+    description: ADR-0030 onward — vendored OSCAL content, ArchiMate namespace, value streams, shared packages, the GitHub-roadmap layer, element-id prefixes, conversational authoring, canonical roles, bounded contexts and maintenance agents.
+    sources:
+      - path: docs/adr/00[3-9]*.md
 
   - name: architecture-model
     title: Architecture Model
@@ -52,9 +65,44 @@ topics:
       - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
       - path: platform/packages/modelling-specification/src/modelling_specification/rendering.py
 
+  - name: architecture-model-contexts
+    title: "Architecture Model: Context-Level Viewpoints & Bounded Contexts"
+    description: The generic per-viewpoint views and the context tag that scopes them — generated bounded-context Groupings, split views and the context map (GH #105, GH #129, ADR-0040).
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: docs/adr/0040-bounded-contexts-as-generated-groupings.md
+
+  - name: architecture-model-build-it4it
+    title: "Architecture Model: Build Pipeline & IT4IT Merge"
+    description: How the YAML model is built into the exchange file, and how the vendored IT4IT model is merged in at build time (ADR-0029).
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/build.py
+      - path: architecture/model/render_diagrams.py
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+      - path: docs/adr/0029-it4it-as-vendored-touchpoint-model.md
+      - path: platform/packages/modelling-specification/src/modelling_specification/cli.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
+      - path: third_party/it4it/elements.yaml
+      - path: third_party/it4it/relationships.yaml
+
   - name: architecture-model-skeleton
     title: "Architecture Model: Skeleton"
     description: Section A of the model — the Motivation, Strategy and Business elements that carry the load-bearing skeleton.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+
+  - name: architecture-model-strategy
+    title: "Architecture Model: Strategy"
+    description: Section A's Strategy layer — capabilities, courses of action and value streams.
     sources:
       - path: architecture/model/README.md
       - path: architecture/model/elements.yaml
@@ -136,10 +184,13 @@ topics:
       - path: third_party/README.md
       - path: third_party/oscal/README.md
       - path: third_party/oscal/LICENSE.md
+      - path: third_party/oscal/PROVENANCE.md
       - path: third_party/oscal-content/README.md
       - path: third_party/oscal-content/LICENSE.md
+      - path: third_party/oscal-content/PROVENANCE.md
       - path: third_party/fedramp-automation/README.md
       - path: third_party/fedramp-automation/LICENSE.md
+      - path: third_party/fedramp-automation/PROVENANCE.md
       - path: pyproject.toml
       - path: sample-data/oscal/**
       - path: docs/adr/0030-vendor-oscal-reference-content.md
@@ -181,6 +232,13 @@ topics:
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/research.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/data-model.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/quickstart.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/app.py
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/llm_client.py
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/*.py
@@ -200,6 +258,7 @@ topics:
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
       - path: docs/adr/0037-conversational-model-authoring-architecture.md
+      - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
       - path: scripts/run-modelling_specification.sh
 
   - name: portal
@@ -224,6 +283,9 @@ topics:
       - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/data-model.md
       - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/contracts/read-path.md
       - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/quickstart.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/research.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/tasks.md
+      - path: platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/checklists/requirements.md
       - path: platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/*.py
       - path: docs/adr/0017-knowledge-graph-on-standard-ontology.md
 
@@ -274,6 +336,7 @@ topics:
       - path: CONTRIBUTING.md
       - path: CODE_OF_CONDUCT.md
       - path: SECURITY.md
+      - path: tests/api/README.md
 
   - name: sample-data
     title: Sample Data

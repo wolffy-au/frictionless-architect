@@ -134,7 +134,9 @@ The following patterns and practices have been established for API-level integra
 - **Tiered Test Coverage** (mirrors the current `tests/api/` layout):
   - **test_schema_payload.py**: happy-path payload retrieval and `force_reload` behaviour
   - **test_schema_status.py**: cache-age / Neo4j-health / warning reporting
-  - **test_schema_view_consistency.py**: HTML view and JSON payload stay in sync
+  - **test_schema_view_consistency.py**: the first view's nodes and connections reference
+    elements and relationships in the payload, and every node has bounds
+  - **test_app_lifespan.py**: shutdown cancels a pending retry and closes the Neo4j loader
 - **Test Naming Convention**: Use explicit, action-oriented names:
   - `test_schema_payload_returns_model` (setup + verify)
   - `test_force_reload_bypasses_cache` (feature-specific)
@@ -146,16 +148,15 @@ The following patterns and practices have been established for API-level integra
 
 ### CI/CD Integration
 
-- **Test Runner Script**: Create `scripts/run_api_tests.sh` that:
-  - Activates the virtual environment
-  - Ensures API is running (or skips with graceful exit)
-  - Executes pytest with consistent flags (`-v`, `--tb=short`, coverage options)
-  - Generates both human-readable and machine-readable output (JUnit XML for CI)
-  - Returns appropriate exit codes for pass/fail/skip scenarios
-- **GitHub Actions Integration**: Integrate into CI workflows by:
-  - Running in an isolated step after dependency installation
-  - Setting timeout limits for test suite (5-10 minutes)
-  - Collecting coverage reports and artifacts
+- **No separate API runner**: the API tests run in-process, so they need no running server
+  and no dedicated script. They are collected by the ordinary `pytest` runs below.
+- **Local gates**: `scripts/pre_commit_checks.sh` runs `tests/unit/` only;
+  `scripts/pre_merge_checks.sh` runs the full `pytest` suite (including `tests/api/`) with
+  `--cov-fail-under=90`, plus behave, the Snyk scans and the frontend UI harness.
+- **GitHub Actions** (`.github/workflows/ci.yml`): the `test` job runs pymarkdown, ruff,
+  pyright, mypy, behave and `pytest --cov-fail-under=90`, then uploads the coverage report;
+  `platform-test` runs the `platform/` package checks. CI does not run Snyk; that scan is
+  part of the local pre-merge gate only (see `AGENTS.md`).
 
 ### Performance and Stability
 

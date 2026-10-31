@@ -5,6 +5,11 @@
 - **Sources:** GH #68 (epic, decision 8); GH #138; `architecture/model/elements.yaml`
   (`fn-solution-modelling`, `process-conversational-solution-modelling`)
 
+<!-- adr-auditor 2026-10-29: evidence supports Accepted: fn-solution-modelling,
+     process-conversational-solution-modelling and their edges are in architecture/model/, and the
+     EPIC-003/002 spec cites this as decided placement. Held at Proposed until a human attests it
+     (ADR-0012). The do-convention-rules question stays open (see Consequences). -->
+
 ## Context
 
 GH #68's epic adds a conversational interface for the Solution Architect to refine a Solution

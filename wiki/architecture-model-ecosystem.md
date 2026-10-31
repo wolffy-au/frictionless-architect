@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Ecosystem'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -12,7 +12,7 @@ sources:
 > and rebuild rather than editing this page.
 
 Section B of `elements.yaml`: the application-layer ecosystem
-(`architecture/model/elements.yaml:14`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
+(`architecture/model/elements.yaml:14`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema and content sections.
 
 The platform `Grouping` (`sys-platform`, `props: c4=system`), its six
 subsystems (`ApplicationComponent`s → C4 containers), five shared stores
@@ -68,7 +68,7 @@ systems (`architecture/model/elements.yaml:1018-1054`) are Source Control, CI/CD
 (which now "runs the controls enforcement gate inline"),
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, LLM
 Provider, RFP / Vendor Submissions, and `ext-trestle`
-("compliance-trestle"), added per [ADR-0030](decision-log.md). Trestle's
+("compliance-trestle"), added per [ADR-0030](decision-log-0030-onward.md). Trestle's
 `desc` calls it a "third-party Python library/CLI dependency, not vendored
 source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
 fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data
@@ -91,7 +91,7 @@ reference content the golden datasets come from.
 
 The subsystem `includes` free-text property was removed — the same
 decomposition is carried by the section-C `ApplicationFunction`s ([Artefact Flow](architecture-model-artefact-flow.md)) and their
-`Assignment` edges ([ADR-0027](decision-log.md) §"Consequences").
+`Assignment` edges ([ADR-0027](decision-log-ui-visualiser-model.md) §"Consequences").
 
 The six business roles (`architecture/model/elements.yaml:992-1016`) are now
 also `Assignment`-linked to the section-A BusinessFunctions they perform. For
@@ -103,8 +103,16 @@ nesting is what the Controls & Compliance Catalog view draws; see
 `context:` property — `platform` for the shared kernel, or the owning
 package's name for a subsystem-specific element — so a view's `context:`
 scoping key (see [Architecture Model](architecture-model.md) §"Schema") can
-draw `include_types` sweeps from one package at a time. See "Context-level
-viewpoints" on that page.
+draw `include_types` sweeps from one package at a time. See
+[Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md). The tags are now explicit on the interfaces and
+collaboration elements too: `if-catalog-playground` is
+`controls-compliance-catalog`, `if-llm-settings-ui` `llm-provider-config`,
+`if-modelling-authoring-ui`, `bc-model-collaboration` and
+`bi-collaborative-modelling` `modelling-specification`
+(`architecture/model/elements.yaml`). The business-role descriptions that cite
+`(GH #45)` are now double-quoted, because an unquoted ` #` starts a YAML
+comment and would truncate the text in every generated diagram
+(`architecture/model/README.md` §"Schema").
 
 **New interfaces (2026-10).** Beyond `if-catalog-ui` and
 `if-twin-read-path`, three more `ApplicationInterface`s were added:
@@ -137,7 +145,7 @@ resolved where the schema-visualiser UI itself lives: `sub-schema-visualizer`
 gets a direct `Serving` edge to `role-ea`, composing into that role's
 existing journey alongside `sub-library`/`sub-governance`/`sub-assurance`
 rather than becoming a seventh subsystem or a standalone dashboard
-(ADR-0005 + [ADR-0020](decision-log.md)). Both are recorded in
+(ADR-0005 + [ADR-0020](decision-log-ui-visualiser-model.md)). Both are recorded in
 [Architecture Model](architecture-model.md) §"Technology (section F)"
 alongside the `TechnologyFunction` that actually performs the
 cross-subsystem UI composition.

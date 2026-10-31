@@ -49,8 +49,7 @@ architecture/model/{elements,relationships,views}.yaml   (canonical, hand-edited
   entirely**. The generic teaching models keep their own committed `.puml` under
   `sample-data/sample-01/` and `sample-data/sample-02/`.
 
-## Update 2026-10-18: hand-edited YAML has a scale ceiling; past it, Neo4j
-## becomes authoritative instead
+## Update 2026-10-18: hand-edited YAML has a scale ceiling; past it, Neo4j becomes authoritative instead
 
 This decision holds **through the MVP milestone** (`plat-architecture-strategy-mvp-7`),
 at the model's current scale (hundreds of elements/relationships, reviewable as

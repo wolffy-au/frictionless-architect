@@ -69,8 +69,9 @@ def test_propose_delta_wraps_a_missing_credential_error(monkeypatch: pytest.Monk
 def test_propose_delta_wraps_a_provider_failure(configured_fake_llm: FakeCompletion) -> None:
     configured_fake_llm.error = ConnectionError("connection refused")
 
-    with pytest.raises(DeltaProposalError, match=r"ollama_chat/test-model.*connection refused"):
+    with pytest.raises(DeltaProposalError, match=r"ollama_chat/test-model.*server log") as excinfo:
         propose_delta("add a function")
+    assert "connection refused" not in str(excinfo.value)
 
 
 def test_propose_delta_rejects_an_empty_response(configured_fake_llm: FakeCompletion) -> None:
@@ -110,6 +111,53 @@ def test_propose_delta_strips_a_surrounding_markdown_fence(configured_fake_llm: 
     result = propose_delta("add a function")
 
     assert result == {"elements": [], "relationships": []}
+
+
+def test_propose_delta_returns_structured_options_when_the_llm_suggests_several(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"options": ['
+        '{"rationale": "closes the drift gap per conv-interposed-neo4j-volume",'
+        ' "convention_refs": ["conv-interposed-neo4j-volume"],'
+        ' "elements": [{"type": "Requirement", "name": "Close drift gap"}], "relationships": []},'
+        '{"rationale": "alternative: realize via an existing capability",'
+        ' "convention_refs": [], "elements": [], "relationships": []}'
+        "]}"
+    )
+
+    result = propose_delta("what should I do about architectural drift?")
+
+    assert "options" in result
+    assert len(result["options"]) == 2
+    first = result["options"][0]
+    assert first["rationale"] == "closes the drift gap per conv-interposed-neo4j-volume"
+    assert first["convention_refs"] == ["conv-interposed-neo4j-volume"]
+    assert first["elements"] == [{"type": "Requirement", "name": "Close drift gap"}]
+
+
+def test_propose_delta_defaults_a_missing_rationale_and_convention_refs(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"options": [{"elements": [], "relationships": []}]}'
+
+    result = propose_delta("suggest something")
+
+    assert result["options"][0] == {"rationale": "", "convention_refs": [], "elements": [], "relationships": []}
+
+
+def test_propose_delta_rejects_an_option_missing_elements_or_relationships(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"options": [{"elements": []}]}'
+
+    with pytest.raises(DeltaProposalError, match="elements.*relationships"):
+        propose_delta("suggest something")
+
+
+def test_propose_delta_passes_the_convention_rules_to_the_llm(configured_fake_llm: FakeCompletion) -> None:
+    rules = [{"id": "conv-example", "kind": "naming", "scope": ["*"]}]
+
+    propose_delta("suggest something", rules=rules)
+
+    system = configured_fake_llm.calls[0]["messages"][0]["content"]
+    assert "conv-example | naming | scope=['*']" in system
 
 
 def test_assign_missing_ids_leaves_an_explicit_id_alone() -> None:

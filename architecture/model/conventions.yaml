@@ -34,6 +34,13 @@
 # Aggregated under `store-frameworks` as `do-convention-rules` (plan.md Model impact),
 # same pattern as `do-metamodel`. A malformed entry fails validation naming the
 # offending `id`, never silently skipped (FR-007's "never silently" posture).
+#
+# GH #129 tag-coverage check (`model_io.check_context_coverage`) lives beside this
+# file's rules but isn't one of them: it has no relationship to check, so it doesn't
+# fit any `kind` above. It warns (build-time, not a hard error) on a first-party
+# Application/Technology/BusinessObject element with no explicit `context:` and no
+# entry in `model_io._SHARED_CONTEXT_EXEMPTIONS` -- the same "never silently" posture
+# applied to bounded-context ownership instead of a relationship shape.
 
 # Complements, doesn't duplicate, the skill's check_derived.py: that script
 # is a whole-model, run-by-hand/CI *audit* for direct edges a formal

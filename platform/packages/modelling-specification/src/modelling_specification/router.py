@@ -63,6 +63,16 @@ class ProposeRequest(BaseModel):
     request: str
 
 
+class SelectOptionRequest(BaseModel):
+    """Body of ``POST /sessions/{session_id}/propose/select``.
+
+    Attributes:
+        option_index: Index into the most recent ``propose`` response's ``options``.
+    """
+
+    option_index: int
+
+
 class DecideRequest(BaseModel):
     """Body of ``POST /sessions/{session_id}/deltas/{delta_id}/decide``.
 
@@ -135,25 +145,38 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         The delta (id, status, elements, relationships, validation result, duplicates
         and pattern suggestions), plus ``notes`` when there is something to tell the
         architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
-        ``delta_id`` is ``None``.
+        ``delta_id`` is ``None``. When the architect asked for a way forward rather
+        than describing one change, ``status`` is ``"options"`` and ``options`` holds
+        2-3 candidate deltas, each with its own ``rationale``, ``convention_refs`` and
+        validation result -- pick one via ``POST .../propose/select``.
 
     Raises:
         HTTPException: 404 if the session is unknown; 502 if the LLM output cannot be
             turned into a delta.
     """
-    if _store.get_session(session_id) is None:
+    session = _store.get_session(session_id)
+    if session is None:
         raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
 
     existing, types_by_id = model_io.existing_elements_and_types()
     catalogue = [
         (e["id"], types_by_id[e["id"]], str(e.get("name", ""))) for e in existing if e.get("id") in types_by_id
     ]
+    rules = conventions.load_rules()
     try:
-        proposed = propose_delta(body.request, catalogue)
+        proposed = propose_delta(body.request, catalogue, rules)
     except LlmMessage as message:
+        session.pending_options = []
         return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    if "options" in proposed:
+        pending = _store.pending_delta(session_id)
+        in_flight = pending.elements if pending else []
+        session.pending_options = [_prepare_option(o, in_flight) for o in proposed["options"]]
+        return {"delta_id": None, "status": "options", "options": session.pending_options}
+    session.pending_options = []
 
     new_elements = assign_missing_ids(proposed["elements"], model_io.existing_element_ids())
     delta = _store.pending_delta(session_id)
@@ -183,6 +206,50 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     return response
 
 
+@router.post(
+    "/sessions/{session_id}/propose/select",
+    responses={
+        404: {"description": "no session with the given session_id"},
+        409: {"description": "no options are pending, or option_index is out of range"},
+    },
+)
+def select_option(session_id: str, body: SelectOptionRequest) -> dict[str, Any]:
+    """Pick one of the most recent ``propose`` call's suggested options (FR-001 "ways
+    forward") and turn it into the session's pending Candidate Delta, same as a
+    concrete ``propose`` request would -- reusing the same validation/duplicate/
+    pattern checks and the normal apply/reject decision loop.
+
+    Args:
+        session_id: The owning session.
+        body: The chosen option's index into the last ``propose`` response's ``options``.
+
+    Returns:
+        The resulting delta, same shape as ``propose``'s.
+
+    Raises:
+        HTTPException: 404 if the session is unknown; 409 if no options are pending or
+            the index is out of range.
+    """
+    session = _store.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
+    if not (0 <= body.option_index < len(session.pending_options)):
+        raise HTTPException(status_code=409, detail="no pending option at that index")
+
+    chosen = session.pending_options[body.option_index]
+    session.pending_options = []
+
+    delta = _store.pending_delta(session_id)
+    if delta is None:
+        delta = CandidateDelta(delta_id=_store.new_delta_id(), session_id=session_id)
+        _store.add_delta(session_id, delta)
+    delta.elements = delta.elements + chosen["elements"]
+    delta.relationships = delta.relationships + chosen["relationships"]
+
+    _validate_and_flag(delta)
+    return _delta_response(delta)
+
+
 def _delta_element_types(elements: list[dict[str, Any]]) -> dict[str, str]:
     types: dict[str, str] = {}
     for e in elements:
@@ -193,27 +260,76 @@ def _delta_element_types(elements: list[dict[str, Any]]) -> dict[str, str]:
     return types
 
 
-def _validate_and_flag(delta: CandidateDelta) -> None:
-    """Run every check (FR-002/003/005/008) against the whole accumulated delta and
-    set `validation_result`/`duplicates`/`pattern_suggestions`/`status`."""
-    metamodel_result = validate_metamodel(delta.elements, delta.relationships)
+def _validate(elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> dict[str, Any]:
+    """Run every check (FR-002/003/005/008) against the given elements/relationships
+    and return `{"validation_result", "duplicates", "pattern_suggestions", "clean"}`."""
+    metamodel_result = validate_metamodel(elements, relationships)
     rules = conventions.load_rules()
-    convention_findings = conventions.check_elements(delta.elements, rules)
+    convention_findings = conventions.check_elements(elements, rules)
     findings = metamodel_result["findings"] + convention_findings
     rules_by_id = {r["id"]: r for r in rules}
     for finding in findings:
         finding["proposed_fix"] = proposed_fix_for_finding(finding, rules_by_id)
-    delta.validation_result = {"clean": not findings, "findings": findings}
+    validation_result = {"clean": not findings, "findings": findings}
 
-    delta.duplicates = find_duplicates(delta.elements)
+    duplicates = find_duplicates(elements)
 
-    types_by_id = {**model_io.existing_element_types(), **_delta_element_types(delta.elements)}
-    delta.pattern_suggestions = find_pattern_suggestions(delta.relationships, types_by_id, rules)
+    types_by_id = {**model_io.existing_element_types(), **_delta_element_types(elements)}
+    pattern_suggestions = find_pattern_suggestions(relationships, types_by_id, rules)
 
-    if delta.validation_result["clean"] and not delta.duplicates and not delta.pattern_suggestions:
-        delta.status = DeltaStatus.VALIDATED
-    else:
-        delta.status = DeltaStatus.FLAGGED
+    return {
+        "validation_result": validation_result,
+        "duplicates": duplicates,
+        "pattern_suggestions": pattern_suggestions,
+        "clean": validation_result["clean"] and not duplicates and not pattern_suggestions,
+    }
+
+
+def _validate_and_flag(delta: CandidateDelta) -> None:
+    """Run every check against the whole accumulated delta and set
+    `validation_result`/`duplicates`/`pattern_suggestions`/`status`."""
+    outcome = _validate(delta.elements, delta.relationships)
+    delta.validation_result = outcome["validation_result"]
+    delta.duplicates = outcome["duplicates"]
+    delta.pattern_suggestions = outcome["pattern_suggestions"]
+    delta.status = DeltaStatus.VALIDATED if outcome["clean"] else DeltaStatus.FLAGGED
+
+
+def _prepare_option(option: dict[str, Any], in_flight: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    """Assign ids, repoint misspelt endpoints, and validate one suggested option
+    (FR-001 "ways forward") so the architect sees its rationale and standing before
+    picking it -- mirrors the concrete-delta path but kept independent per option.
+
+    `in_flight` is the session's already-pending `CandidateDelta.elements`, if any --
+    not yet written to disk, so `model_io.existing_element_ids()` alone can't see them.
+    Without folding them in too, assigning an id or resolving an endpoint here could
+    collide with or misresolve against an element the architect already has pending
+    (same reason `propose()`'s concrete-delta path builds its own `in_flight` list)."""
+    in_flight = in_flight or []
+    known_ids = model_io.existing_element_ids() | {e["id"] for e in in_flight if e.get("id")}
+    elements = assign_missing_ids(option["elements"], known_ids)
+    relationships, notes = resolve_unknown_endpoints(option["relationships"], _option_known_names(elements, in_flight))
+    outcome = _validate(elements, relationships)
+    return {
+        "rationale": option["rationale"],
+        "convention_refs": option["convention_refs"],
+        "elements": elements,
+        "relationships": relationships,
+        "notes": notes,
+        "validation_result": outcome["validation_result"],
+        "duplicates": outcome["duplicates"],
+        "pattern_suggestions": outcome["pattern_suggestions"],
+    }
+
+
+def _option_known_names(
+    new_elements: list[dict[str, Any]], in_flight: list[dict[str, Any]] | None = None
+) -> dict[str, str]:
+    existing, _types = model_io.existing_elements_and_types()
+    known_names = {e["id"]: str(e.get("name", "")) for e in existing if e.get("id")}
+    known_names.update({e["id"]: str(e.get("name", "")) for e in (in_flight or []) if e.get("id")})
+    known_names.update({e["id"]: str(e.get("name", "")) for e in new_elements if e.get("id")})
+    return known_names
 
 
 @router.post(

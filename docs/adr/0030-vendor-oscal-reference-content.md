@@ -1,7 +1,7 @@
-# ADR-0030: Vendor OSCAL/FedRAMP content as submodules; consume trestle as a dependency
+# ADR-0030: Vendor OSCAL/FedRAMP content as plain tracked files; consume trestle as a dependency
 
 - **Status:** Accepted
-- **Date:** 2026-09-20; revised 2026-09-24, 2026-09-28
+- **Date:** 2026-09-20; revised 2026-09-24, 2026-09-28, 2026-10-29
 - **Sources:** conversation record (this ADR is not yet back-filled from any narrative doc)
 
 ## Context
@@ -23,7 +23,7 @@ model — neither is something `build.py` has any business merging.
 
 Split the vendoring approach by what each upstream actually is:
 
-- **Vendor as plain `third_party/` git submodules** (no `fork-sync` entry —
+- **Vendor as plain tracked files under `third_party/`** (no `fork-sync` entry —
   static reference content, not a patched fork):
   - `third_party/oscal` ← `usnistgov/OSCAL` (public domain/CC0) — schemas,
     the ground truth for spec-alignment review (GH #24).
@@ -54,8 +54,10 @@ NIST/FedRAMP content isn't a "tool" requiring a fork decision at all.
 - Tests use vendored, provenance-tracked fixtures under
   `tests/fixtures/golden-oscal/` rather than reading `third_party/*`
   submodules directly — see the 2026-09-28 implementation note below.
-- CI must check out submodules (`actions/checkout: submodules: true`) or
-  `third_party/*` is silently empty (tracked as GH #21).
+- CI only needs submodule checkout (`actions/checkout: submodules: true`)
+  for `third_party/it4it`; the OSCAL/FedRAMP paths are plain tracked files
+  and are never silently empty the way a missing submodule checkout
+  (GH #21) would make them.
 - No `build.py` wiring needed for the vendored OSCAL/FedRAMP paths, unlike
   `ADR-0029`'s IT4IT case.
 - `compliance-trestle` upgrades follow normal `poetry update`/Dependabot,
@@ -169,6 +171,47 @@ note this ADR rather than compare against the rev4 content as if it were
 valid. Revisit sourcing a rev5 FedRAMP baseline (OSCAL-native GSA content, or
 a resolved-profile export at the right revision) before relying on this
 comparison.
+
+## Implementation note (2026-10-29): submodules replaced by selective vendored files
+
+The "Decision" section above vendored `third_party/oscal`, `third_party/oscal-content`,
+and `third_party/fedramp-automation` as full git submodules. GH #167 replaced that
+mechanism — none of the three sources is forked or patched, so the submodule
+machinery (pinning via gitlink, `git submodule update --init`, full upstream
+checkouts) bought nothing a plain vendored copy of the actually-consumed files
+couldn't do more simply, and it kept exposing the test suite to upstream
+availability risk the same way the 2026-09-20 and 2026-09-28 notes above already
+flagged (e.g. `GSA/fedramp-automation` disappearing outright).
+
+Each of the three is now a plain tracked directory at the same path, holding only
+the files this repo's tooling actually reads, plus a `PROVENANCE.md` (upstream
+repo, commit SHA, retrieval date) and a retained copy of the upstream `LICENSE.md`:
+
+- `third_party/oscal` — `oscal_catalog_schema.{json,xsd}` and
+  `oscal_profile_schema.{json,xsd}`, commit `e061961c7702afeabffdf5e59894d35e748dade1`
+  (tag `v1.2.3`). These are retrieved from the `v1.2.3` GitHub Release, not the git
+  tree: `usnistgov/OSCAL` publishes its built schemas only as release assets (no
+  YAML schema variant exists, only JSON Schema and XSD). Only the Catalog and
+  Profile modules are vendored — Resolved-Catalog is not yet consumed by any code.
+- `third_party/oscal-content` — the NIST SP 800-53 rev5 catalog and its
+  LOW/MODERATE/HIGH/PRIVACY baseline profiles, commit
+  `78650f02ad9321bb7b817846f8fbd4f2bcd620de` (tag `v1.5.0`) — the same commit
+  already recorded in `tests/fixtures/golden-oscal/**/*.provenance.yaml`'s
+  `source_commit` fields for this repository.
+- `third_party/fedramp-automation` — the three FedRAMP resolved baseline catalogs
+  under `bundled/catalogs/` (no PRIVACY baseline exists upstream), commit
+  `22fdd080273f5ec98c1c9c07f677659046af63f5` — the same commit this ADR's
+  2026-09-28 "Known issue" note already pinned, so that note's rev4/rev5 caveat
+  carries forward unchanged.
+
+`third_party/it4it` (ADR-0029, actively merged by `build.py`'s `det_id()` pass) is
+untouched — it is a fork we track and potentially patch, which is exactly what
+`third_party/` submodules remain for.
+
+`tests/fixtures/golden-oscal/**/*.provenance.yaml`'s `source_repo`/`source_commit`
+fields needed no rewrite: each vendored set kept its existing directory name and
+upstream-relative subpaths, and every sidecar's recorded commit already matches
+the vendored set's own `PROVENANCE.md`.
 
 ## Alternatives considered
 

@@ -35,6 +35,24 @@
 # TOGAF ADM Phase A — Architecture Vision
 # =====================================================================
 
+- id: view-context-map
+  name: Context Map
+  viewpoint: custom
+  diagram: overview/context-map
+  # GH #129 step 5: the generated bounded-context Groupings
+  # (generate_context_groupings, step 2) plus a derived Serving edge between
+  # any two contexts that have at least one element-level relationship
+  # crossing between them (generate_context_map_relationships) -- direction
+  # follows the underlying relationship's own source -> target. Entirely
+  # generated: nothing here is hand-authored, so a new context appears on
+  # this view automatically the moment an element is tagged with it.
+  # include_types sweeps every Grouping in scope; sys-platform (the C4
+  # whole-system box, unrelated to bounded contexts) is the only
+  # hand-authored Grouping that exists, so it is the only one excluded.
+  include_types: [Grouping]
+  exclude_elements:
+    - {id_prefix: "sys-"}
+
 - id: view-strategy
   name: Strategy
   viewpoint: strategy
@@ -48,15 +66,16 @@
   # Capability and Outcome are include_types, not members — a new
   # first-party element of either type (e.g. cap-conversational-governance,
   # goal-intent-becomes-model-truth) now appears automatically instead of
-  # silently staying off the view (GH #117); exclude_elements keeps the
-  # IT4IT import's vendored Capability/Outcome elements off this
-  # platform-only view. ValueStream stays members, not include_types — the
-  # IT4IT import added 36 more ValueStream elements (7 streams + 29 stages),
-  # and this view also deliberately omits first-party stage decomposition
-  # (vss-*; that's the Value Stream view's story).
+  # silently staying off the view (GH #117); the default `context: [platform]`
+  # scope (every real context, never a vendored layer's) keeps the IT4IT
+  # import's vendored Capability/Outcome elements off this platform-only
+  # view -- an explicit `exclude_elements: [{id_prefix: "it4it-"}]` here was
+  # redundant with that and removed, GH #129 step 7. ValueStream stays
+  # members, not include_types — the IT4IT import added 36 more ValueStream
+  # elements (7 streams + 29 stages), and this view also deliberately omits
+  # first-party stage decomposition (vss-*; that's the Value Stream view's
+  # story).
   include_types: [CourseOfAction, Resource, Capability, Outcome, ValueStream]
-  exclude_elements:
-    - {id_prefix: "it4it-"}
   # GH #20: the capability-to-capability Serving mesh (control mappings,
   # expected controls, etc.) is the Capability Map view's own story, not
   # this one's — exclude it here so it doesn't repeat incidentally.
@@ -68,12 +87,13 @@
   # The eight abilities and the Serving dependency order between them.
   # include_types, not members — a new first-party Capability (e.g.
   # cap-conversational-governance) now appears automatically instead of
-  # silently staying off the view (GH #117); exclude_elements keeps the
-  # IT4IT import's 42 vendored Capability elements off this platform-only
-  # view (see third_party/it4it/views.yaml's view-it4it-capability-map).
+  # silently staying off the view (GH #117); the default `context: [platform]`
+  # scope keeps the IT4IT import's 42 vendored Capability elements off this
+  # platform-only view (see third_party/it4it/views.yaml's
+  # view-it4it-capability-map) -- an explicit `exclude_elements:
+  # [{id_prefix: "it4it-"}]` here was redundant with that and removed, GH
+  # #129 step 7.
   include_types: [Capability]
-  exclude_elements:
-    - {id_prefix: "it4it-"}
 
 - id: view-value-stream
   name: Value Stream Hand-offs
@@ -89,16 +109,16 @@
   # and serving capabilities are in its own view (6a-6d).
   # include_types, not members — a new first-party ValueStream (e.g.
   # vs-intent-to-model) now appears automatically instead of silently
-  # staying off the view (GH #117); exclude_elements keeps the IT4IT
-  # import's 36 vendored ValueStream elements (7 streams + 29 stages) off
-  # this platform-only view. vs-intent-to-model has no internal stage
-  # decomposition (ADR-0037 — nothing comparable to decompose within one
-  # conversational turn), but it does hand off into vss-baseline like any
-  # other stream, so it renders connected into Governed Architecture
-  # Delivery, not as a floating box.
+  # staying off the view (GH #117); the default `context: [platform]` scope
+  # keeps the IT4IT import's 36 vendored ValueStream elements (7 streams +
+  # 29 stages) off this platform-only view -- an explicit `exclude_elements:
+  # [{id_prefix: "it4it-"}]` here was redundant with that and removed, GH
+  # #129 step 7. vs-intent-to-model has no internal stage decomposition
+  # (ADR-0037 — nothing comparable to decompose within one conversational
+  # turn), but it does hand off into vss-baseline like any other stream, so
+  # it renders connected into Governed Architecture Delivery, not as a
+  # floating box.
   include_types: [ValueStream]
-  exclude_elements:
-    - {id_prefix: "it4it-"}
 
 - id: view-vs-governed-delivery
   name: Value Stream — Governed Architecture Delivery
@@ -202,11 +222,13 @@
   # remembers to add it to this list (GH #108 postmortem: outcome-architect
   # -authored-model and friends did exactly that on first add). The IT4IT
   # import (third_party/it4it) contributes its own Capability/Outcome/
-  # ValueStream elements under an `it4it-` id prefix, which exclude_elements
-  # below keeps off this view.
+  # ValueStream elements under an `it4it-` id prefix; the default
+  # `context: [platform]` scope keeps those off this view (an explicit
+  # `exclude_elements: [{id_prefix: "it4it-"}]` here was redundant with that
+  # and removed, GH #129 step 7).
   # GH #7/#25: BusinessFunction is also include_types, not members -- no
   # vendored layer contributes one (unlike Capability/Outcome/ValueStream),
-  # so there's nothing for exclude_elements to filter. The 9 bfn-* "major
+  # so there's nothing to filter there either. The 9 bfn-* "major
   # area" groupings (4 from GH #7's controls lifecycle, 3 from GH #25's
   # spec-generation -> build -> release -> drift-discovery -> triage
   # thread, plus bfn-architecture-strategy/bfn-solution-design)
@@ -220,8 +242,6 @@
   # view's own story, not this one's — exclude it so it doesn't repeat.
   exclude:
     - {type: Serving, source_type: Capability, target_type: Capability}
-  exclude_elements:
-    - {id_prefix: "it4it-"}
   # The process chain's own left-to-right order is the Delivery Choreography
   # view's story; here Flow/Triggering are left undirected so the layout is
   # driven by the realization chain (process -> capability -> stage -> outcome).
@@ -252,15 +272,15 @@
   viewpoint: layered
   # Capability is include_types, not members — a new first-party Capability
   # (e.g. cap-conversational-governance) now appears automatically instead
-  # of silently staying off the view (GH #117); exclude_elements keeps the
-  # IT4IT import's vendored Capability elements off this platform-only
-  # view. ApplicationComponent stays members — this view's original 6
-  # subsystems only, not the external systems or the newer
+  # of silently staying off the view (GH #117). This view has no explicit
+  # `context:`, so its default `[platform]` scope already keeps the IT4IT
+  # import's vendored Capability elements off it -- an explicit
+  # `exclude_elements: [{id_prefix: "it4it-"}]` here was redundant with that
+  # and removed, GH #129 step 7. ApplicationComponent stays members — this
+  # view's original 6 subsystems only, not the external systems or the newer
   # sub-llm-provider-config/sub-schema-visualizer, none of which have a
   # Capability realization edge.
   include_types: [Capability]
-  exclude_elements:
-    - {id_prefix: "it4it-"}
   # GH #20: the capability-to-capability Serving mesh is the Capability Map
   # view's own story, not this one's (ApplicationComponent -> Capability) —
   # exclude it so it doesn't repeat incidentally.
@@ -555,11 +575,11 @@
     - bo-drift-finding
     - bo-oscal-poam
 
-# --- Capability-scoped slices of the full-sweep application_usage / product /
+# --- Capability-scoped slices of the full-sweep application_usage /
 #     service_realization views (views-viewpoints.yaml: view-application-usage,
-#     view-product, view-business-process-cooperation's counterparts). Those
-#     three sweep the whole model by include_types and are reference diagrams
-#     by design; these four groups (the same ones the view-business-* slices
+#     view-business-process-cooperation's counterparts; view-product was
+#     dropped, GH #129 step 6). Those sweep the whole model by include_types
+#     and are reference diagrams by design; these four groups (the same ones the view-business-* slices
 #     above use) add the directly-connected Application-layer elements so a
 #     reader can see business + app for one capability at a time without the
 #     full-model dump. view-business-process-cooperation already has its own

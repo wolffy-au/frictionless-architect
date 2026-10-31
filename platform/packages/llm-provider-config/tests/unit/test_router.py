@@ -80,6 +80,16 @@ def test_key_without_keychain_points_at_env_var(client: TestClient, no_keyring: 
     assert "OPENAI_API_KEY" in response.json()["detail"]
 
 
+def test_secret_reference_key_is_refused_and_not_stored(client: TestClient, fake_keyring: Any) -> None:
+    """CVE-2026-108575: an `os.environ/NAME` key would make litellm read that env var."""
+    response = client.put("/settings/llm/keys/openai", json={"api_key": "os.environ/AWS_SECRET_ACCESS_KEY"})
+
+    assert response.status_code == 422
+    assert "secret reference" in response.json()["detail"]
+    assert "AWS_SECRET_ACCESS_KEY" not in response.text
+    assert fake_keyring.get_password(SERVICE_NAME, "openai") is None
+
+
 def test_ollama_key_is_refused(client: TestClient) -> None:
     assert client.put("/settings/llm/keys/ollama", json={"api_key": "x"}).status_code == 422
 
@@ -102,6 +112,14 @@ def test_connection_test_reports_not_configured(client: TestClient) -> None:
     assert "No LLM provider is configured" in body["message"]
 
 
+def test_connection_test_reports_missing_credential(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    client.put("/settings/llm/default", json={"provider": "openai", "model": "gpt-x"})
+    body = client.post("/settings/llm/test", json={}).json()
+    assert body["ok"] is False
+    assert "No API key is available" in body["message"]
+
+
 def test_connection_test_success_and_failure(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     client.put("/settings/llm/default", json=OLLAMA)
     seen: dict[str, Any] = {}
@@ -121,7 +139,8 @@ def test_connection_test_success_and_failure(client: TestClient, monkeypatch: py
     monkeypatch.setattr(router_module, "completion", failing_completion)
     body = client.post("/settings/llm/test", json={}).json()
     assert body["ok"] is False
-    assert "connection refused" in body["message"]
+    assert "connection refused" not in body["message"]
+    assert "server log" in body["message"]
 
 
 def test_default_connection_test_ignores_component_overrides(

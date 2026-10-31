@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Artefact Flow'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -12,7 +12,7 @@ sources:
 > and rebuild rather than editing this page.
 
 Section C of `elements.yaml`: the application-layer input/output pipeline
-(`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema, build pipeline and IT4IT alignment.
+(`architecture/model/elements.yaml:15`). Part of the [Architecture Model](architecture-model.md), which covers the files, schema and content sections.
 
 Section C has 28 `ApplicationFunction`s (24 before a 2026-09-27 pass added
 three — see "Controls & OSCAL" below — plus `fn-conversational-authoring`,
@@ -92,6 +92,11 @@ from" the forensic ledger and reads the expected controls from the SSP
 (`architecture/model/relationships.yaml:564`, `648-654`).
 
 ## Conversational model authoring (GH #108)
+
+Section C functions now carry explicit bounded-context tags too:
+`fn-conversational-authoring` is owned by `modelling-specification` and
+`fn-enforcement-gate` by `conformance-drift-assurance`
+(`architecture/model/elements.yaml`; GH #129).
 
 `fn-conversational-authoring` ("Conversational Model Authoring"), assigned to
 `sub-modelling`, sits outside the five per-stage views above — it is one of

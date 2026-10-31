@@ -1,9 +1,10 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
+- docs/adr/0041-structured-suggestion-options-in-delta-py.md
 - platform/packages/modelling-specification/README.md
 - platform/packages/modelling-specification/pyproject.toml
 - platform/packages/modelling-specification/specs/README.md
@@ -46,7 +47,7 @@ Enterprise Architect into a validated candidate-architecture delta,
 live-rendered on accept. The package also now holds the deterministic model
 build/render/validate logic that root's scripts and the `model-archimate`
 skill used to carry themselves. See [Architecture Model](architecture-model.md)
-for the model elements this feature adds, and [Decision Log](decision-log.md)
+for the model elements this feature adds, and [Decision Log](decision-log-0030-onward.md)
 for ADR-0037, the record of its five load-bearing design decisions.
 
 **Renamed, and a sibling distinguished (ADR-0039, GH #68/#138, 2026-10-24).**
@@ -59,12 +60,12 @@ editing `do-candidate-arch` in the enterprise knowledge graph. The unused
 Solution Architect `Assignment` is dropped in favour of a new, distinct
 sibling function, `fn-solution-modelling`, which edits a `do-solution-design`
 instead — the Solution Architect's own conversational authoring mode, not a
-variant of this one. See [Architecture Decision Log](decision-log.md) and
+variant of this one. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for both.
 
 ## Why the code lives here
 
-[ADR-0037](decision-log.md) (Proposed 2026-10-10) decided the package's
+[ADR-0037](decision-log-0030-onward.md) (Proposed 2026-10-10) decided the package's
 shape and three related questions `plan.md`'s Constitution Check flagged as
 load-bearing:
 
@@ -173,7 +174,8 @@ All endpoints are under `/authoring`; shapes are in
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/sessions` | Start a session, returns `session_id` |
-| `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta |
+| `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta, a clarifying message, or (ADR-0041) 2-3 structured suggestion options |
+| `POST` | `/sessions/{session_id}/propose/select` | Turn one of the last `propose` call's options into the session's pending candidate delta (ADR-0041) |
 | `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct, or override |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta, nothing written |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
@@ -207,6 +209,25 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    JSON. A second proposal in the same conversation amends the still-pending
    delta rather than validating fresh against the last-applied state
    (`specs/EPIC-003-conversational-model-authoring/spec.md` Clarifications, 2026-10-08).
+   When the architect asks for a way forward instead ("what should I do
+   about X") rather than describing one change, the LLM instead returns
+   `{"options": [...]}` — 2-3 independently applicable candidate deltas,
+   each with a `rationale` grounded in existing element ids and/or
+   `conventions.yaml` rule ids. `router.py` validates every option through
+   the same metamodel/duplicate/pattern pipeline below *before* the
+   architect sees it, and `POST .../propose/select` turns the chosen one
+   into the session's pending Candidate Delta. This is a deliberate
+   deviation from the plan GH #68's filed sub-issues (#140-#151) describe —
+   built directly against today's architecture rather than waiting for #142's
+   future journey-API rework, for demo priority
+   (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
+   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). If the LLM call itself
+   fails, `propose_delta` logs the provider detail server-side only and
+   raises `DeltaProposalError` with a generic "The LLM call failed
+   (<model>); see the server log for details." message, because the router
+   returns that message in the 502 body and provider text must not leak to
+   the client (CWE-209)
+   (`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py`).
 2. **Validate** (`validation/metamodel.py`, `platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py`,
    `validation/duplicates.py`, `validation/patterns.py`). The candidate is
    merged into the whole model (`model_io.merge_candidate`) and checked —
@@ -362,7 +383,7 @@ Draft`) — no `reusable-architecture-library` package, journey API, or UI
 exists yet. See
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for
 `process-conversational-solution-modelling` and `bfn-solution-design`, and
-[Decision Log](decision-log.md) for ADR-0039 in full.
+[Decision Log](decision-log-0030-onward.md) for ADR-0039 in full.
 
 Not covered by current sources: rollout/feature-flag status, since
 ADR-0037 is still **Proposed**, not **Accepted**.
@@ -372,5 +393,5 @@ data-model.md, tasks.md) for the full requirements, data model and task
 breakdown behind this package, and
 `specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/`
 (spec.md, checklists/requirements.md) for the sibling Solution Design
-Modelling feature above, and [Decision Log](decision-log.md) for ADR-0037
+Modelling feature above, and [Decision Log](decision-log-0030-onward.md) for ADR-0037
 and ADR-0039 in full.

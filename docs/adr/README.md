@@ -101,7 +101,7 @@ not yet re-ratified in a spec).
 - **A** — [0029](0029-it4it-as-vendored-touchpoint-model.md) — IT4IT vendored
   as a `third_party/` model, imported at touchpoints via shared `det_id`/`NS`
 - **A** — [0030](0030-vendor-oscal-reference-content.md) — NIST/FedRAMP OSCAL
-  content vendored as `third_party/` submodules; `compliance-trestle`
+  content vendored as plain tracked files under `third_party/`; `compliance-trestle`
   consumed as a Poetry dependency, not vendored; `oscal-document-workbench`'s
   scripts are ported as native Python, not vendored or depended on
 - **A** — [0031](0031-fr016-no-redaction-for-policy-documents.md) — Policy/
@@ -137,3 +137,15 @@ not yet re-ratified in a spec).
   (`do-solution-design`/`store-patterns`), distinct from ADR-0037's `fn-conversational-authoring`
   (enterprise knowledge graph); its new business process Composes into the existing
   `bfn-solution-design`, not a new `BusinessFunction`
+- **A** — [0040](0040-bounded-contexts-as-generated-groupings.md) — Bounded contexts
+  are generated `Grouping`s + Aggregations from `context:` tags; oversized views
+  split per-context with `include_neighbours` to keep cross-context edges; a
+  generated context map derives Serving edges between contexts from element-level
+  crossings
+- **P** — [0041](0041-structured-suggestion-options-in-delta-py.md) — `delta.py` gains
+  structured, validated suggestion options ("ways forward") built against today's
+  ADR-0037 agent, a deliberate documented deviation from GH #68's filed #140-#151
+  breakdown rather than waiting for #142's journey-API rework
+- **P** — [0042](0042-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
+  generated wiki as repo-governance tooling; transitive security floors pinned in each package
+  manifest (draft stub, decision unconfirmed)

@@ -290,6 +290,19 @@ def view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by
     }
 
 
+def view_split_contexts(v: dict[str, Any], elements: list[dict[str, Any]], types_by_id: dict[str, str]) -> list[str]:
+    """The real package contexts actually present among `v`'s own membership
+    (via `view_element_ids`), sorted -- `platform` and vendored-layer contexts
+    excluded, same convention `generate_context_groupings` uses for which
+    contexts are "real" ones. Used by `rendering.py` to fan a `split_by:
+    context` view (GH #129 step 4) out into one `.puml` per context, skipping
+    any context this particular view has nothing in."""
+    by_id = {e["id"]: e for e in elements}
+    ids = view_element_ids(v, elements, types_by_id)
+    contexts = {by_id[eid].get("context", DEFAULT_CONTEXT) for eid in ids if eid in by_id}
+    return sorted(contexts - {DEFAULT_CONTEXT} - LAYER_CONTEXTS)
+
+
 def _check_derived_goal_edges(
     elements: list[dict[str, Any]],
     rels: list[dict[str, Any]],
@@ -351,7 +364,8 @@ def check_motivation_conventions(
     errors: list[str],
     rules: list[dict[str, Any]] | None = None,
 ) -> list[str]:
-    """Apply configured whole-model relationship conventions and the derived-edge note."""
+    """Apply configured whole-model relationship conventions, the derived-edge note,
+    and the GH #129 tag-coverage warning -- despite the name, not motivation-only."""
     from modelling_specification.validation import conventions
 
     if rules is None:
@@ -361,7 +375,213 @@ def check_motivation_conventions(
             errors.append(str(exc))
             rules = []
     errors.extend(conventions.check_relationships(elements, rels, types_by_id, rules))
-    return _check_derived_goal_edges(elements, rels, views, types_by_id)
+    return (
+        _check_derived_goal_edges(elements, rels, views, types_by_id)
+        + check_context_coverage()
+        + check_view_coverage(elements, views, types_by_id)
+    )
+
+
+def check_view_coverage(
+    elements: list[dict[str, Any]], views: list[dict[str, Any]], types_by_id: dict[str, str]
+) -> list[str]:
+    """Warn about a first-party element that `view_element_ids` places on no view at
+    all (GH #129 step 7) -- it was authored but never swept into any `members`/
+    `include_types` scope, so nothing ever shows it. A vendored layer (`it4it-*`,
+    `gh-roadmap`) is excluded: those are bulk imports with their own coverage story,
+    not a first-party authoring gap. Generated Groupings/Aggregations are never in
+    `elements` here (`_assemble` keeps them out of what this function sees), so they
+    need no exemption."""
+    shown = {eid for v in views if "id" in v for eid in view_element_ids(v, elements, types_by_id)}
+    return [
+        f"warning: {element['type']} {element['id']!r} is on no view"
+        for element in elements
+        if element.get("context", DEFAULT_CONTEXT) not in LAYER_CONTEXTS and element["id"] not in shown
+    ]
+
+
+# GH #129 tag-coverage check, scope. Motivation/Strategy layers (Driver,
+# Stakeholder, Goal, Outcome, Requirement, Capability's shared cases, etc.),
+# BusinessRole and ValueStream are cross-cutting by design and excluded from
+# this check entirely -- only the layers #129 calls out (Application,
+# Technology, BusinessObject) are checked, since those are where an element
+# usually belongs to exactly one package.
+_CONTEXT_COVERAGE_TYPES = {
+    "ApplicationComponent",
+    "ApplicationFunction",
+    "ApplicationInterface",
+    "DataObject",
+    "BusinessObject",
+    "Grouping",
+    "Node",
+    "SystemSoftware",
+    "TechnologyProcess",
+    "TechnologyFunction",
+    "Artifact",
+}
+# Elements of the types above that are genuinely shared across every package
+# (a shared kernel, host/portal, or something entirely outside the platform
+# Grouping) rather than owned by one -- reviewed and accepted here, the same
+# "never silently" posture as `check_derived.py`'s SERVING_EXCEPTIONS: an
+# addition to this set is a conscious decision, not a default.
+_SHARED_CONTEXT_EXEMPTIONS = {
+    "sys-platform",  # the platform Grouping itself
+    "sub-portal",  # host package, not one of the six subsystems (ADR-0020)
+    "if-portal-ui",  # the portal's own shared entry point
+    "art-flat-src",  # legacy pre-migration flat src/, not one package
+    "art-pkg-portal",  # host package Artifact, not one of the six subsystems
+    # Shared stores -- the "shared kernel" DataObjects multiple subsystems read/write.
+    "store-oscal",
+    "store-patterns",
+    "store-akg",
+    "store-frameworks",
+    "store-ledger",
+    # External systems -- outside the platform Grouping entirely.
+    "ext-scm",
+    "ext-cicd",
+    "ext-cloud",
+    "ext-itsm",
+    "ext-trestle",
+    "ext-llm",
+    "ext-rfp",
+    "ext-collab",
+    "fn-scm-versioning",
+    "fn-scm-change-review",
+    "fn-cicd-build",
+    "fn-cicd-deploy",
+    "fn-itsm-backlog",
+    "fn-itsm-change",
+    # Cross-cutting pipeline artefacts with no single owning subsystem.
+    "do-target-architecture",
+    "do-release-candidate",
+    "do-gate-decision",
+    "bo-release-gate-decision",
+    "bo-target-state-architecture",
+    "bo-transition-state-architecture",
+    # Shared infra -- the common deployment target/runtime/CI, not one package's.
+    "node-ci-runner",
+    "node-app-server",
+    "node-hosted-cluster",
+    "sw-pytest",
+    "sw-uvicorn-fastapi",
+    # Cross-subsystem composition, owned by no single subsystem (ADR-0020).
+    "techfn-role-journey-composition",
+}
+
+
+def check_context_coverage() -> list[str]:
+    """Warn about a first-party Application/Technology/BusinessObject element with
+    no explicit `context:` and no recorded exemption (GH #129 tag-coverage check).
+
+    Re-reads `elements.yaml` directly rather than taking `load_all_elements()`'s
+    result: that result has already run through `tag_contexts()`, whose
+    `setdefault` fills in `context` for every element in place -- by then an
+    originally-untagged element is indistinguishable from one explicitly tagged
+    `platform`. Only first-party `elements.yaml` is in scope; a vendored layer
+    (`it4it-*`, `gh-roadmap`) already carries its own layer-name context from its
+    own `tag_contexts()` pass, not a first-party package decision."""
+    warnings: list[str] = []
+    for element in load(ELEMENTS_FILENAME, []):
+        element_id = str(element.get("id", ""))
+        if element.get("type") not in _CONTEXT_COVERAGE_TYPES:
+            continue
+        if "context" in element or element_id in _SHARED_CONTEXT_EXEMPTIONS:
+            continue
+        warnings.append(
+            f"warning: {element['type']} {element_id!r} has no explicit context and no "
+            f"recorded shared-context exemption — defaults to {DEFAULT_CONTEXT!r}"
+        )
+    return warnings
+
+
+def _context_display_name(context: str, elements: list[dict[str, Any]]) -> str:
+    """The context's subsystem `ApplicationComponent`'s own `name` (every current
+    context has exactly one `sub-*` element carrying it) -- falls back to a
+    title-cased slug for a context with no such component."""
+    for element in elements:
+        if element.get("context") == context and str(element.get("id", "")).startswith("sub-"):
+            name = element.get("name")
+            if name:
+                return str(name)
+    return context.replace("-", " ").title()
+
+
+def generate_context_groupings(
+    elements: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Derive one ArchiMate `Grouping` per bounded context (`grp-ctx-<context>`,
+    GH #129 step 2) plus an Aggregation relationship from it to each of its members.
+    Not hand-authored: `context:` tags (already on disk, GH #129 step 1) are the only
+    input. `elements` must not already carry generated Groupings -- call this once on
+    the raw, pre-generation element list, never on its own output.
+
+    `DEFAULT_CONTEXT` ("platform", the shared-kernel fallback) and `LAYER_CONTEXTS`
+    (vendored layers, keyed by directory not by package) get no Grouping, matching
+    `_view_scope`'s existing treatment of `platform` as the whole-model default scope
+    rather than a real bounded context. A generated Grouping itself carries no
+    `context` -- it is a cross-cutting device describing a boundary, not a member
+    inside one, and leaving it unset also keeps this function idempotent-safe: were
+    its output ever fed back in, an untagged element defaults to `platform` and is
+    skipped rather than re-aggregating the Grouping under itself."""
+    members_by_context: dict[str, list[str]] = {}
+    for element in elements:
+        element_id = element.get("id")
+        context = element.get("context", DEFAULT_CONTEXT)
+        if not element_id or context == DEFAULT_CONTEXT or context in LAYER_CONTEXTS:
+            continue
+        members_by_context.setdefault(context, []).append(element_id)
+
+    groupings: list[dict[str, Any]] = []
+    aggregations: list[dict[str, Any]] = []
+    for context, member_ids in sorted(members_by_context.items()):
+        grouping_id = f"grp-ctx-{context}"
+        groupings.append(
+            {
+                "type": "Grouping",
+                "id": grouping_id,
+                "name": _context_display_name(context, elements),
+                "desc": (
+                    f"Generated bounded-context boundary for every element tagged "
+                    f"`context: {context}` (GH #129) -- not hand-authored."
+                ),
+                "props": {"generated": "true"},
+            }
+        )
+        for member_id in member_ids:
+            aggregations.append({"type": "Aggregation", "source": grouping_id, "target": member_id})
+    return groupings, aggregations
+
+
+def generate_context_map_relationships(
+    elements: list[dict[str, Any]], rels: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Derive one Serving relationship between two bounded-context Groupings for every
+    ordered pair of real contexts (GH #129 step 5's context map) that has at least one
+    element-level relationship crossing between them. Not hand-authored: only this
+    model's own `rels` decide which context serves which; direction follows the
+    underlying relationship's own source -> target. Collapsed to one edge per ordered
+    (source-context, target-context) pair regardless of how many element-level
+    relationships cross it, and regardless of each one's own ArchiMate type -- the
+    context map's own story is *that* two contexts are coupled and which way, not the
+    relationship kind that happens to carry it.
+
+    `DEFAULT_CONTEXT` ("platform") and `LAYER_CONTEXTS` (vendored layers) are excluded
+    on either end, same as `generate_context_groupings` -- an edge touching the shared
+    kernel or a vendored import is not a bounded-context coupling. Call on the raw,
+    pre-generation `elements`/`rels`, same convention as `generate_context_groupings`."""
+    context_by_id = {e["id"]: e.get("context", DEFAULT_CONTEXT) for e in elements if e.get("id")}
+    pairs: set[tuple[str, str]] = set()
+    for r in rels:
+        source_ctx = context_by_id.get(r.get("source"))
+        target_ctx = context_by_id.get(r.get("target"))
+        if source_ctx is None or target_ctx is None or source_ctx == target_ctx:
+            continue
+        if DEFAULT_CONTEXT in (source_ctx, target_ctx):
+            continue
+        if source_ctx in LAYER_CONTEXTS or target_ctx in LAYER_CONTEXTS:
+            continue
+        pairs.add((source_ctx, target_ctx))
+    return [{"type": "Serving", "source": f"grp-ctx-{a}", "target": f"grp-ctx-{b}"} for a, b in sorted(pairs)]
 
 
 def check_view_viewpoint(v: dict[str, Any], el_types: set[str], rel_types: set[str], errors: list[str]) -> None:
@@ -522,6 +742,17 @@ def add_views(
     that silently drops any new first-party element of that type until
     someone remembers to add it.
 
+    A view may also declare `include_neighbours: true` -- add a node for every
+    element exactly one relationship hop from an element already on the view
+    (via `members`/`include_types`), regardless of that neighbour's own
+    `context`. Without this, a view scoped to one context never shows a
+    cross-context edge at all (the far endpoint is simply never placed, so
+    `_connect_view_relationships`'s both-endpoints-on-view rule drops it too)
+    -- GH #129 step 3, so a per-context split view (step 4) can still show
+    what a context actually talks to, with the neighbour visually distinct
+    from (not inside) that context's own generated Grouping boundary once the
+    diagram-archimate skill renders it.
+
     The richer view schema (auto-membership rules) is still deferred."""
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
     known_contexts = {e.get("context", DEFAULT_CONTEXT) for e in elements}
@@ -544,6 +775,14 @@ def add_views(
         on_view, view_el_types = _select_view_elements(
             view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
         )
+        if v.get("include_neighbours"):
+            # Neighbours are incidental boundary-crossing context, not part of
+            # what the view's own `viewpoint:` is declared to be about -- they
+            # are deliberately NOT folded into view_el_types, so a neighbour of
+            # a type the viewpoint doesn't allow (e.g. a Capability one hop
+            # from an Application Usage view) doesn't fail check_view_viewpoint
+            # below (GH #129 step 4 fallout).
+            _add_neighbour_elements(view, m, on_view, uuid_to_id, types_by_id, exclude_element_patterns, v["id"])
         exclude_patterns = _compile_exclude_patterns(v, errors)
         view_rel_types = _connect_view_relationships(
             view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
@@ -581,6 +820,39 @@ def _select_view_elements(
             on_view.add(el.uuid)
             view_el_types.add(types_by_id[e["id"]])
     return on_view, view_el_types
+
+
+def _add_neighbour_elements(
+    view: Any,
+    m: Model,
+    on_view: set[str],
+    uuid_to_id: dict[str, str],
+    types_by_id: dict[str, str],
+    exclude_element_patterns: list[dict[str, str | None]],
+    view_id: str,
+) -> set[str]:
+    """`include_neighbours: true` (GH #129 step 3): add a node for every element
+    exactly one relationship hop from an element already in `on_view`, whatever
+    its `context`. Mutates `on_view` in place so `_connect_view_relationships`
+    (run after this) also draws the connecting edge; returns the ArchiMate
+    types added (informational only -- the caller does not feed this into
+    `check_view_viewpoint`, since a neighbour is incidental boundary context,
+    not part of what the view's viewpoint is about). Walks from the view's
+    original membership only (`base`), never the set as it grows, so a
+    neighbour's own neighbours are not pulled in -- exactly one hop."""
+    base = frozenset(on_view)
+    added_types: set[str] = set()
+    for rel in m.relationships:
+        for near, far in ((rel.source, rel.target), (rel.target, rel.source)):
+            if near.uuid not in base or far.uuid in on_view:
+                continue
+            far_id = uuid_to_id.get(far.uuid)
+            if far_id is None or _element_excluded(far_id, exclude_element_patterns, types_by_id):
+                continue
+            view.add(ref=far, uuid=det_id(view_id, "node", far.uuid))
+            on_view.add(far.uuid)
+            added_types.add(types_by_id[far_id])
+    return added_types
 
 
 def _connect_view_relationships(
@@ -640,10 +912,23 @@ def _assemble(
     """Add `elements`/`rels`/`views` to a fresh `Model` named `name`, running the same
     checks `build_model()` always has. `errors` already carries any YAML-load errors
     the caller collected; this appends to it rather than starting fresh, so a load
-    error and a structural one are both reported in one pass."""
+    error and a structural one are both reported in one pass.
+
+    Also generates and adds the GH #129 step 2 context Groupings + Aggregations
+    (`generate_context_groupings`) and the step 5 context-map Serving edges between
+    them (`generate_context_map_relationships`) -- `elements`/`rels` as passed in
+    must not already carry them, since that would double-add. The generated content
+    is added to the `Model` and made selectable by a view's own `include_types`
+    (`add_views` gets `elements + groupings`, so a view like view-context-map can
+    sweep `[Grouping]`), but not to what `check_motivation_conventions` below sees:
+    those conventions are about first-party content, and a generated
+    Grouping/Aggregation/Serving edge has no `desc` worth altitude-checking and no
+    motivation-chain role."""
+    groupings, aggregations = generate_context_groupings(elements)
+    context_map_rels = generate_context_map_relationships(elements, rels)
     m = Model(name)
-    by_id, types_by_id = add_elements(m, elements, errors)
-    add_relationships(m, rels, by_id, errors)
+    by_id, types_by_id = add_elements(m, elements + groupings, errors)
+    add_relationships(m, rels + aggregations + context_map_rels, by_id, errors)
     seen_views: set[str] = set()
     for v in views:
         if (vid := v.get("id")) is None:
@@ -651,7 +936,7 @@ def _assemble(
         if vid in seen_views:
             errors.append(f"duplicate view id: {vid}")
         seen_views.add(vid)
-    add_views(m, views, elements, by_id, types_by_id, errors)
+    add_views(m, views, elements + groupings, by_id, types_by_id, errors)
     motivation_warnings = check_motivation_conventions(elements, rels, views, types_by_id, errors)
     if errors:
         return None, errors, motivation_warnings

@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
@@ -31,17 +31,16 @@ One flat repo with a single narrow slice built: the Neo4j Schema Visualiser
 governance docs, `.specify/` SpecKit machinery, `sample-data/`, and tests
 (`ARCHITECTURE.md` §2). See [Visualizer Service](visualizer-service.md).
 
-Branch → state (`ARCHITECTURE.md` §2 branch matrix): `main` / `develop` carry
-spec 002 and the visualiser only; `001-governance-platform` has the full spec
-and an API contract but no implementation; `prototype-neo4j` was an unmerged
-exploratory branch (knowledge-graph model, DB seeding, ArchiMate layers,
-forensic ledger), treated as reference, not a merge source
-(`docs/adr/0006-prototype-neo4j-reference-only.md`). The branch itself was
-**deleted on 2026-09-05**; its tag `archive/prototype-neo4j` was moved to the
-branch's final commit (`c78de3d`) first and is now its sole trace. One commit
-past that point (`d703f89`, ArchiMate XML schema validation) was salvaged and
-cherry-picked into `develop` before the deletion
-(`docs/adr/0006-prototype-neo4j-reference-only.md` §Consequences).
+What is built today (`ARCHITECTURE.md` §2, "What is built today"): the JSON-only
+schema visualiser and the Neo4j schema manager and seeding CLI in `src/`, plus
+the `platform/` packages `controls-compliance-catalog`, `modelling-specification`,
+`llm-provider-config` and `portal`. `digital-twin-knowledge-graph` is a library
+the visualiser does not consume yet, and `schema-visualizer-api` is a specs-only
+placeholder. The `prototype-neo4j` branch was reference material, not a merge
+source (`docs/adr/0006-prototype-neo4j-reference-only.md`); it was deleted on
+2026-09-05, leaving the tag `archive/prototype-neo4j` as its sole trace, after
+one commit (`d703f89`, ArchiMate XML schema validation) was cherry-picked into
+`develop` (`docs/adr/0006-prototype-neo4j-reference-only.md` §Consequences).
 
 ## Target state
 
@@ -146,8 +145,8 @@ OSCAL is now **resolved** — [ADR-0030](#decision-log) answers `ARCHITECTURE.md
 ordinary Poetry runtime dependency (not a fork/submodule), and NIST/FedRAMP
 reference content (`third_party/oscal`, `third_party/oscal-content`,
 `third_party/fedramp-automation`) — consumed by `controls-compliance-catalog`
-once it's built — is vendored as plain read-only
-`third_party/` submodules with no `fork-sync` entry and no `build.py`
+once it's built — is vendored as plain tracked files under `third_party/`
+(not submodules, GH #167), with no `fork-sync` entry and no `build.py`
 merge step — unlike the IT4IT case below, it isn't ArchiMate model data.
 A 2026-09-24 revision adds a third path. The scripts of
 `oscal-document-workbench`, a Claude Code plugin with no installable
@@ -165,7 +164,7 @@ first-party/vendored split
 low-touch external reference. Its `elements.yaml`/`relationships.yaml`
 merge into the canonical model's own `det_id()`/`NS` hashing pass rather
 than getting a separate build step — see
-[Architecture Model](architecture-model.md) §"IT4IT alignment".
+[Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md).
 
 ## Monorepo tooling
 
@@ -329,7 +328,7 @@ build tooling for each `ui/` tree itself remains the open part of #55.
 ## Decision log
 
 The load-bearing decisions are recorded as MADR-lite files under `docs/adr/` (`docs/adr/README.md`).
-The ADR index, statuses and per-decision summaries are on the [Architecture Decision Log](decision-log.md) page.
+The ADR index, statuses and per-decision summaries are on the [Architecture Decision Log](decision-log.md) page (ADR-0000–0019), continued on [ADR-0020–0029](decision-log-ui-visualiser-model.md) and [ADR-0030 onward](decision-log-0030-onward.md).
 
 ## Technical standards
 
