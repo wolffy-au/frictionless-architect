@@ -23,7 +23,11 @@ every LLM ingestion path is scrubbed of PII/PHI **before** it is passed to an LL
 or other external/high-risk component, *except* policy/regulatory-standard
 documents (ADR-0031's scoped exemption). In scope: collaboration-tool transcripts
 (Slack, whiteboard) for AI-assisted ADR drafting, ADR/evaluation drafts, spec
-drafts, and RFP/vendor submissions.
+drafts, RFP/vendor submissions, and the conversational-modelling agent's own
+prompts (`fn-conversational-authoring`, ADR-0037, GH #68/#108 — added
+2026-10-31, `specs/EPIC-001-governance-platform/spec.md` Clarifications session
+2026-10-31: no exemption basis comparable to ADR-0031's applies to that agent's
+architect-authored free text).
 
 ## Consequences
 
@@ -42,3 +46,9 @@ drafts, and RFP/vendor submissions.
 - Adds a testable pre-processing stage to every in-scope ingestion path
   (FR-003 → FR-004). ADR-0031 remains the authoritative record of the
   policy-document exemption.
+- **Model impact (added 2026-10-31):** none — GH #68, not yet built, takes
+  `pii-gateway` as a path dependency the same way `architecture-governance` and
+  `modelling-specification` do; no new Serving edge is modelled, consistent
+  with the no-per-consumer-edge statement above. Recorded as an explicit GH #68
+  acceptance obligation instead (GH #136 comment thread, GH #68 tracking
+  comment).
