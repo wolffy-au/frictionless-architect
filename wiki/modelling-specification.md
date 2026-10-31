@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-10-29'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -221,7 +221,13 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    built directly against today's architecture rather than waiting for #142's
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
-   [Architecture Decision Log](decision-log.md).
+   [Architecture Decision Log](decision-log.md). If the LLM call itself
+   fails, `propose_delta` logs the provider detail server-side only and
+   raises `DeltaProposalError` with a generic "The LLM call failed
+   (<model>); see the server log for details." message, because the router
+   returns that message in the 502 body and provider text must not leak to
+   the client (CWE-209)
+   (`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py`).
 2. **Validate** (`validation/metamodel.py`, `platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py`,
    `validation/duplicates.py`, `validation/patterns.py`). The candidate is
    merged into the whole model (`model_io.merge_candidate`) and checked —
