@@ -17,7 +17,7 @@ Ex.
 - [ ] `bash scripts/pre_commit_checks.sh` passes
 - [ ] `bash scripts/pre_merge_checks.sh` passes (if diagrams/frontend/coverage-sensitive)
 - [ ] New/changed behaviour has test coverage
-- [ ] CI green (ruff/pyright/mypy/pytest, Snyk, Sonar)
+- [ ] CI green (ruff/pyright/mypy/pytest, CodeQL, Sonar)
 -->
 
 - [ ]
