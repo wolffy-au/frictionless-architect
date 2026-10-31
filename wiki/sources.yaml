@@ -219,6 +219,13 @@ topics:
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/research.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/data-model.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/quickstart.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md
+      - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/app.py
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/llm_client.py
       - path: platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/*.py

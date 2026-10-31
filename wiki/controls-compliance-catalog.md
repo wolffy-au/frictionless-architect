@@ -1,6 +1,6 @@
 ---
 title: Controls & Compliance Catalog
-generated: '2026-10-29'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - platform/packages/controls-compliance-catalog/README.md
@@ -12,6 +12,13 @@ sources:
 - platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
 - platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/research.md
 - platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/checklists/requirements.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/data-model.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/quickstart.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/research.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md
+- platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md
 - platform/packages/controls-compliance-catalog/specs/README.md
 - platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/app.py
 - platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/llm_client.py
@@ -43,13 +50,15 @@ platform's wider extraction sequence.
 The package is a standalone Poetry project under `platform/` (shared
 `platform/poetry.lock`, ADR-0002), still on a placeholder
 `version = "0.0.0"` (`pyproject.toml`), targeting Python `>=3.11,<3.14`. Its
-one declared spec so far is `001-oscal-ai-conversion`, re-homed here from
+first declared spec is `001-oscal-ai-conversion`, re-homed here from
 the repo-root `specs/003-oscal-ai-conversion` on 2026-09-28 — per-package
 spec numbering restarts at `001` (`ARCHITECTURE.md` §6, ADR-0005's
 "Implementation status (2026-09-28)" note; `platform/packages/controls-compliance-catalog/specs/README.md`). That `001` is not
 the root `specs/EPIC-001-governance-platform`, so specs are cited by package and slug
 (`platform/packages/controls-compliance-catalog/specs/README.md`). The spec and plan headers now give the feature branch as `001-oscal-ai-conversion`, "formerly `003-oscal-ai-conversion`", and note that the package's spec number `001` is separate from the root `specs/EPIC-001-governance-platform`
-(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md`). `dependencies`
+(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md`).
+A second spec, `002-vendor-oscal-fedramp-files`, covers the vendoring
+migration described under [Spec 002](#spec-002-vendoring-the-oscal-and-fedramp-reference-files). `dependencies`
 in `pyproject.toml`, empty at extraction, now declares the stack the
 AI-conversion pipeline and its playground spikes actually run on: `fastapi
 (>=0.141.0,<0.142.0)` and `uvicorn (>=0.43.0,<0.44.0)` for the API surface,
@@ -339,6 +348,92 @@ vendored files already present in the checkout — no submodule init needed
 playground, run `scripts/run-controls_compliance_catalog.sh` and open `/catalog`. `scripts/platform_checks.sh` gates the package (lock
 check, pyright, per-package mypy, pytest at 90% coverage) and is folded
 into `scripts/pre_commit_checks.sh` — see [Development & Quickstart](development.md).
+
+## Spec 002: vendoring the OSCAL and FedRAMP reference files
+
+`002-vendor-oscal-fedramp-files` (GH #167, created 2026-10-29, status Draft in
+its header) is a documentation and file-migration feature, not application
+code (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md`, `platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md` Technical Context).
+It drops the `third_party/oscal`, `third_party/oscal-content` and
+`third_party/fedramp-automation` git submodules and replaces each with plain
+tracked copies of only the files the tooling reads: the NIST OSCAL schemas
+(`usnistgov/OSCAL`); the SP 800-53 rev5 catalog plus its LOW, MODERATE, HIGH and
+PRIVACY baseline profiles (`usnistgov/oscal-content`); and the FedRAMP LOW,
+MODERATE and HIGH resolved baseline catalogs from `GoComply/fedramp`'s
+`bundled/catalogs/`, for which no PRIVACY baseline exists upstream
+(`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md` FR-002–FR-004). One stated motive is shedding
+`fedramp-automation`'s non-CC0 Go dependency licence surface for content the
+repo never consumes (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md` User Story 1).
+`third_party/it4it` stays a submodule, since `build.py` merges it into the
+architecture model (ADR-0029; `platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md` FR-012).
+
+### User stories
+
+- **US1 (P1)** — `git submodule status` lists only `it4it`, and the existing
+  OSCAL schema-alignment and golden-fixture tests pass unchanged against the
+  vendored files (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md` SC-001, SC-003).
+- **US2 (P1)** — each vendored set carries a `PROVENANCE.md` naming its upstream
+  repository, an exact commit SHA and a retrieval date; the assumptions add the
+  upstream licence (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md` FR-005, Assumptions).
+  US1 and US2 are meant to land together so no untraceable vendored content
+  ever ships.
+- **US3 (P2)** — ADR-0030, `third_party/README.md`, the golden-fixture
+  `*.provenance.yaml` sidecars and the `001-oscal-ai-conversion` artefacts stop
+  instructing readers to run `git submodule update --init` for the dropped
+  repositories, with each fact edited in its one owning artefact (Principle XI;
+  `platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md` FR-006–FR-009).
+
+### Design decisions
+
+The research table records nine decisions (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/research.md` R1–R9):
+
+- **Paths preserved (R1).** The vendored sets keep the directory names and
+  upstream-relative subpaths, so existing path references need no rename.
+- **Provenance beside the files (R2).** Each set has its own `PROVENANCE.md`
+  (repo URL, commit SHA, retrieval date, licence), mirroring the sidecar
+  convention ADR-0030 already set for the golden fixtures.
+- **Verify, don't rewrite, the fixture sidecars (R3).** Because paths are
+  preserved, the `source_repo` and `source_commit` fields in the 17
+  `tests/fixtures/golden-oscal/**/*.provenance.yaml` files are checked against
+  each set's `PROVENANCE.md` commit SHA rather than blindly rewritten.
+- **ADR-0030 amended, not superseded (R4).** The switch is a dated
+  implementation note on ADR-0030, since the decision area is unchanged and
+  only the mechanism differs.
+- **Licence files retained (R5).** Upstream `LICENSE`/`LICENSE.md` stay beside
+  each set, because existing docs cite them as the basis for the
+  public-domain/CC0 claims.
+- **Wiki regenerated, never hand-edited (R6).**
+- **Submodule removal is git surgery (R7).** Deinit the three paths, remove
+  their gitlinks, `.gitmodules` stanzas and `.git/modules/<name>` entries; on
+  the drvfs workspace the `.git/modules` cleanup needs `sudo`.
+- **Scope fixed to the files GH #167 names (R8).** A wider audit of which other
+  files are read is left as separate follow-up work.
+- **No CI change (R9).** `ci.yml`'s `submodules: true` checkout stays, as it
+  still initialises `it4it`.
+
+The data model has one entity, the *vendored file set*, with three instances
+(`OscalSchemas`, `Sp80053CatalogAndBaselines`, `FedrampResolvedBaselines`), each
+owning one `ProvenanceRecord` and optionally a retained `LicenseFile`. Each
+source moves `Submodule → Deinitialized → VendoredFileSet` once, with no partial
+state committed (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/data-model.md`). The plan exposes no API, so it has no
+`contracts/` directory, and records no Constitution violations: the
+`architecture/model/` graph is untouched because `build.py` merges none of the
+three (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md` Constitution Check, Project Structure).
+
+### Validation and status
+
+The quickstart checks that `git submodule status` shows only `it4it`, that the
+three `PROVENANCE.md` files exist, that `poetry run pytest -k golden_oscal -k
+oscal` passes from `platform/`, and that a grep finds no remaining
+`submodule update --init` instruction naming `oscal-content` or
+`fedramp-automation` (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/quickstart.md`). The task list
+(T001–T020, across setup, foundational, one phase per story and polish) shows
+every task checked off, including the ADR-0030 amendment and the wiki
+regeneration (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md`), and the spec-quality checklist passes
+(`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/checklists/requirements.md`). The spec header still reads "Draft"
+(`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md`), so the status field and the completed task list disagree.
+This page's [Running it](#running-it) section reflects the outcome. For the
+content itself see [OSCAL Compliance Content](oscal-compliance.md).
 
 ## Not covered by current sources
 

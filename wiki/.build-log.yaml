@@ -1198,6 +1198,27 @@ topics:
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/spec.md:
           sha256: c27c6457855549a97cb90d1d9b72fe1944ffc4298ec7703cd4da58d9ab3a66e4
           lines: 137
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/checklists/requirements.md:
+          sha256: af4dc6be5fb877d64b32a3e0a0545ca980ae866e96cc49f6dd73650d9f0dc467
+          lines: 38
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/data-model.md:
+          sha256: f066ce013a25b2365ba3444a3c4d0601c663dbdfe2e57d47d672eb12e43bd967
+          lines: 97
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md:
+          sha256: 3c5e2645b6d622d96ab68d3febb24fdc9b1ff9b7ab4eab4bc06c3b0e4c0c256a
+          lines: 191
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/quickstart.md:
+          sha256: f4e3b4db52cabc53d9c3df2135647167346ffe69d67c7cfe4d30752c5f5a01c0
+          lines: 67
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/research.md:
+          sha256: 7048ddf40458647daaa6188b0b3c0facfbeac1254daa0148e4b8587c8649aba6
+          lines: 13
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md:
+          sha256: 6aa986b69eb1df0234bc14ce4bc07f5139493b36f631a0d16118241f0ed8f203
+          lines: 310
+        platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md:
+          sha256: fe5d9b9a14c5bede7737b68b43efa90086fea9ecb8f63d1b339b9a31b6cfd5b9
+          lines: 170
         platform/packages/controls-compliance-catalog/specs/README.md:
           sha256: c9fd9c378c178cbd825aad58ef0b3e0c05a2dbb2884dd7e443142e25dc2de657
           lines: 6
