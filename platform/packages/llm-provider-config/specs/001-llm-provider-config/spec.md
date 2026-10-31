@@ -76,7 +76,7 @@ An operator wants one AI feature (for example candidate conversion) on a differe
 1. **Given** an override for a component, **When** that component asks, **Then** it gets the override; every other component gets the default.
 2. **Given** an override, **When** the operator removes it, **Then** the component falls back to the default.
 3. **Given** an override for a component the host has not declared, **When** it is submitted, **Then** it is rejected as unknown.
-4. **Given** a saved configuration, **When** the operator runs "Test connection", **Then** a one-word reply from the provider reports success, and any failure (not configured, missing key, provider error) is reported as a readable message, not a crash.
+4. **Given** a saved configuration, **When** the operator runs "Test connection", **Then** a one-word reply from the provider reports success, and any failure (not configured, missing key, provider error) is reported as a readable message, not a crash. Provider-error detail is written to the server log and is never returned in the response (CWE-209).
 
 ---
 
