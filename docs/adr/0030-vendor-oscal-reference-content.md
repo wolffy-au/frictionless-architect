@@ -1,4 +1,4 @@
-# ADR-0030: Vendor OSCAL/FedRAMP content as submodules; consume trestle as a dependency
+# ADR-0030: Vendor OSCAL/FedRAMP content as plain tracked files; consume trestle as a dependency
 
 - **Status:** Accepted
 - **Date:** 2026-09-20; revised 2026-09-24, 2026-09-28, 2026-10-29
@@ -23,7 +23,7 @@ model — neither is something `build.py` has any business merging.
 
 Split the vendoring approach by what each upstream actually is:
 
-- **Vendor as plain `third_party/` git submodules** (no `fork-sync` entry —
+- **Vendor as plain tracked files under `third_party/`** (no `fork-sync` entry —
   static reference content, not a patched fork):
   - `third_party/oscal` ← `usnistgov/OSCAL` (public domain/CC0) — schemas,
     the ground truth for spec-alignment review (GH #24).
@@ -54,8 +54,10 @@ NIST/FedRAMP content isn't a "tool" requiring a fork decision at all.
 - Tests use vendored, provenance-tracked fixtures under
   `tests/fixtures/golden-oscal/` rather than reading `third_party/*`
   submodules directly — see the 2026-09-28 implementation note below.
-- CI must check out submodules (`actions/checkout: submodules: true`) or
-  `third_party/*` is silently empty (tracked as GH #21).
+- CI only needs submodule checkout (`actions/checkout: submodules: true`)
+  for `third_party/it4it`; the OSCAL/FedRAMP paths are plain tracked files
+  and are never silently empty the way a missing submodule checkout
+  (GH #21) would make them.
 - No `build.py` wiring needed for the vendored OSCAL/FedRAMP paths, unlike
   `ADR-0029`'s IT4IT case.
 - `compliance-trestle` upgrades follow normal `poetry update`/Dependabot,

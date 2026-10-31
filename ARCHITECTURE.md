@@ -225,7 +225,7 @@ package, built and gated the same way but carrying no subsystem UI obligation
 
 **OSCAL** is resolved (see [ADR-0030](docs/adr/0030-vendor-oscal-reference-content.md)):
 NIST/FedRAMP reference content (`usnistgov/OSCAL`, `usnistgov/oscal-content`,
-`GSA/fedramp-automation`) is vendored as plain `third_party/` submodules, consumed by
+`GSA/fedramp-automation`) is vendored as plain tracked files under `third_party/`, consumed by
 `controls-compliance-catalog` when it's built; `compliance-trestle` (the catalog/profile
 authoring and round-trip tool) is an ordinary Poetry dependency, not a submodule.
 
