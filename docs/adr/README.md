@@ -149,3 +149,11 @@ not yet re-ratified in a spec).
 - **P** — [0042](0042-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
   generated wiki as repo-governance tooling; transitive security floors pinned in each package
   manifest (draft stub, decision unconfirmed)
+- **P** — [0043](0043-pii-gateway-detector-library-presidio.md) — `pii-gateway`
+  (GH #136) uses Presidio as its detection/anonymization engine;
+  third-party `sether`, `scrubadub`, cloud DLP APIs, and regex-only were
+  considered and rejected
+- **P** — [0044](0044-adrd-dependency-gets-technology-element.md) — A runtime
+  dependency decided by its own ADR (not just mentioned in passing) gets a
+  Technology-layer `SystemSoftware` element; backfills `sw-litellm`, adds
+  `sw-presidio`/`sw-pyarchimate`/`sw-rapidfuzz`
