@@ -1,6 +1,6 @@
 # ADR-0041: Structured suggestion options in `delta.py` — a deliberate deviation from GH #68's filed breakdown
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-29
 - **Sources:** GH #68 (epic, sub-issues #140-#151); GH #108 (closed, origin of ADR-0037's
   `modelling-specification` agent); GH #142 (journey-API/Solution-Design rework of the
