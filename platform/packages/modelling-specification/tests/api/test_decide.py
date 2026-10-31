@@ -41,6 +41,30 @@ def test_decide_apply_writes_the_delta_and_marks_it_applied(
     assert "applicationfunction-decide-apply-test-function" in elements_text
 
 
+def test_decide_apply_writes_a_proposed_view_to_disk(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "views": [{"name": "Context Sweep Decide Test", "context": ["modelling-specification"],'
+        ' "include_types": ["ApplicationFunction"]}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add a view scoped to context modelling-specification"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    views_text = (isolated_model / "views.yaml").read_text()
+    assert "view-context-sweep-decide-test" in views_text
+    assert "context-sweep-decide-test" in views_text
+
+
 def test_decide_against_an_unknown_delta_returns_409(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
     session_id = client.post("/authoring/sessions").json()["session_id"]
 

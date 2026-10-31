@@ -20,6 +20,7 @@ from modelling_specification.authoring.delta import (
     LlmMessage,
     PiiReviewRequired,
     assign_missing_ids,
+    assign_missing_view_ids,
     propose_delta,
     resolve_unknown_endpoints,
     resume_proposal,
@@ -139,6 +140,7 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
         "status": delta.status.value,
         "elements": delta.elements,
         "relationships": delta.relationships,
+        "views": delta.views,
         "validation_result": delta.validation_result,
         "duplicates": delta.duplicates,
         "pattern_suggestions": delta.pattern_suggestions,
@@ -195,6 +197,7 @@ def _handle_proposed(
     session.pending_options = []
 
     new_elements = assign_missing_ids(proposed["elements"], model_io.existing_element_ids())
+    new_views = assign_missing_view_ids(proposed["views"], model_io.existing_view_ids())
     delta = _store.pending_delta(session_id)
     in_flight = [*(delta.elements if delta else []), *new_elements]
     known_names = {eid: name for eid, _etype, name in catalogue}
@@ -209,13 +212,14 @@ def _handle_proposed(
     # until it is applied or discarded (data-model.md Candidate Delta lifecycle).
     delta.elements = delta.elements + new_elements
     delta.relationships = delta.relationships + new_relationships
+    delta.views = delta.views + new_views
 
     _validate_and_flag(delta)
     response = _delta_response(delta)
-    if not delta.elements and not delta.relationships:
+    if not delta.elements and not delta.relationships and not delta.views:
         notes.append(
-            "No change was proposed. This feature can only add elements and relationships; "
-            "it cannot edit, rename or remove existing ones."
+            "No change was proposed. This feature can only add elements, relationships and "
+            "views; it cannot edit, rename or remove existing ones."
         )
     if notes:
         response["notes"] = notes
@@ -240,9 +244,9 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         body: The request text.
 
     Returns:
-        The delta (id, status, elements, relationships, validation result, duplicates
-        and pattern suggestions), plus ``notes`` when there is something to tell the
-        architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
+        The delta (id, status, elements, relationships, views, validation result,
+        duplicates and pattern suggestions), plus ``notes`` when there is something to
+        tell the architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
         ``delta_id`` is ``None``. When the architect asked for a way forward rather
         than describing one change, ``status`` is ``"options"`` and ``options`` holds
         2-3 candidate deltas, each with its own ``rationale``, ``convention_refs`` and
@@ -272,7 +276,14 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         return _pii_review_response(review)
     except LlmMessage as message:
         session.pending_options = []
-        return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
+        return {
+            "delta_id": None,
+            "status": "message",
+            "message": message.text,
+            "elements": [],
+            "relationships": [],
+            "views": [],
+        }
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -339,7 +350,14 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
         proposed = resume_proposal(resolved_text, catalogue, rules)
     except LlmMessage as message:
         session.pending_options = []
-        return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
+        return {
+            "delta_id": None,
+            "status": "message",
+            "message": message.text,
+            "elements": [],
+            "relationships": [],
+            "views": [],
+        }
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -400,10 +418,17 @@ def _delta_element_types(elements: list[dict[str, Any]]) -> dict[str, str]:
     return types
 
 
-def _validate(elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> dict[str, Any]:
-    """Run every check (FR-002/003/005/008) against the given elements/relationships
-    and return `{"validation_result", "duplicates", "pattern_suggestions", "clean"}`."""
-    metamodel_result = validate_metamodel(elements, relationships)
+def _validate(
+    elements: list[dict[str, Any]], relationships: list[dict[str, Any]], views: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    """Run every check (FR-002/003/005/008) against the given elements/relationships/
+    views and return `{"validation_result", "duplicates", "pattern_suggestions",
+    "clean"}`. A proposed view is checked the same way `model_io.add_views` always
+    checks one -- unknown context, unknown include_types concept, unknown member id,
+    a colliding view id, viewpoint conformance -- surfacing as a `build_error`
+    finding, same as an illegal relationship (duplicate/pattern checks don't apply to
+    views, only to elements/relationships)."""
+    metamodel_result = validate_metamodel(elements, relationships, views)
     rules = conventions.load_rules()
     convention_findings = conventions.check_elements(elements, rules)
     findings = metamodel_result["findings"] + convention_findings
@@ -428,7 +453,7 @@ def _validate(elements: list[dict[str, Any]], relationships: list[dict[str, Any]
 def _validate_and_flag(delta: CandidateDelta) -> None:
     """Run every check against the whole accumulated delta and set
     `validation_result`/`duplicates`/`pattern_suggestions`/`status`."""
-    outcome = _validate(delta.elements, delta.relationships)
+    outcome = _validate(delta.elements, delta.relationships, delta.views)
     delta.validation_result = outcome["validation_result"]
     delta.duplicates = outcome["duplicates"]
     delta.pattern_suggestions = outcome["pattern_suggestions"]
@@ -612,7 +637,7 @@ def _merge_into_existing(delta: CandidateDelta, target_existing_id: str) -> None
 
 
 def _apply_and_respond(delta: CandidateDelta, state_classification: str | None) -> dict[str, Any]:
-    model_io.append_delta(delta.elements, delta.relationships)
+    model_io.append_delta(delta.elements, delta.relationships, delta.views)
     code, build_errors, _warnings, _result = model_io.write_and_validate()
     if build_errors or code != 0:
         raise HTTPException(status_code=500, detail="applying the delta left the model invalid")
@@ -654,7 +679,7 @@ def _apply_with_override(
     delta: CandidateDelta, rationale: str | None, state_classification: str | None
 ) -> dict[str, Any]:
     overridden_objection, objection_detail = _describe_objection(delta)
-    model_io.append_delta(delta.elements, delta.relationships)
+    model_io.append_delta(delta.elements, delta.relationships, delta.views)
     code, build_errors, _warnings, _result = model_io.write_and_validate()
     if build_errors or code != 0:
         raise HTTPException(status_code=500, detail="applying the override left the model invalid")
@@ -696,12 +721,17 @@ def put_config(body: ConfigRequest) -> dict[str, bool]:
 
 def _first_affected_object_id(delta: CandidateDelta) -> str | None:
     """A representative id for the delta's "affected element(s)" (FR-012): the first
-    new element if any, else the first new relationship's target -- a delta that only
-    adds an edge between existing elements still has an affected object to render."""
+    new element if any, else the first new relationship's target, else the first new
+    view's own id -- a delta that only adds an edge between existing elements, or only
+    adds a view, still has an affected object to render. `rendering.resolve_view_request`
+    tries `object_id` as an exact view id before an element id, so a new view's id
+    resolves straight to itself once it's on disk."""
     if delta.elements:
         return delta.elements[0].get("id")
     if delta.relationships:
         return delta.relationships[0].get("target")
+    if delta.views:
+        return delta.views[0].get("id")
     return None
 
 

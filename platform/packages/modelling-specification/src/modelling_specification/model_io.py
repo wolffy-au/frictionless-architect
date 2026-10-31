@@ -1093,6 +1093,16 @@ def existing_element_ids() -> set[str]:
     return {e["id"] for e in elements if e.get("id")}
 
 
+def existing_view_ids() -> set[str]:
+    """Every view id currently on disk (`views.yaml`, `views-viewpoints.yaml`, and
+    every layer's) -- used to de-duplicate an id the router synthesizes for a
+    proposed view the LLM left blank, same reason `existing_element_ids()` exists
+    for elements."""
+    errors: list[str] = []
+    views = load_all_views(errors)
+    return {v["id"] for v in views if v.get("id")}
+
+
 def existing_elements_and_types() -> tuple[list[dict[str, Any]], dict[str, str]]:
     """`(elements, types_by_id)` loaded once -- `rendering.py`'s `resolve_view_request`
     uses this with `view_element_ids` to resolve an `object_id` against every view in
@@ -1130,6 +1140,7 @@ def existing_relationships() -> list[tuple[str, str, str, str]]:
 
 _ELEMENT_FIELD_ORDER = ["type", "id", "name", "desc", "props"]
 _RELATIONSHIP_FIELD_ORDER = ["type", "source", "target", "label", "props"]
+_VIEW_FIELD_ORDER = ["id", "name", "context", "diagram", "viewpoint", "include_types", "members"]
 
 
 def _append_yaml_flow_entries(path: Path, entries: list[dict[str, Any]], field_order: list[str]) -> None:
@@ -1145,30 +1156,40 @@ def _append_yaml_flow_entries(path: Path, entries: list[dict[str, Any]], field_o
         f.writelines(lines)
 
 
-def append_delta(elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> None:
-    """Append an applied Candidate Delta's elements/relationships to `elements.yaml`/
-    `relationships.yaml` (FR-001's apply step, R9) -- additive only; no existing entry
-    is edited, retired or reordered (plan.md Model impact)."""
+def append_delta(
+    elements: list[dict[str, Any]], relationships: list[dict[str, Any]], views: list[dict[str, Any]] | None = None
+) -> None:
+    """Append an applied Candidate Delta's elements/relationships/views to
+    `elements.yaml`/`relationships.yaml`/`views.yaml` (FR-001's apply step, R9) --
+    additive only; no existing entry is edited, retired or reordered (plan.md Model
+    impact)."""
     if elements:
         _append_yaml_flow_entries(HERE / ELEMENTS_FILENAME, elements, _ELEMENT_FIELD_ORDER)
     if relationships:
         _append_yaml_flow_entries(HERE / RELATIONSHIPS_FILENAME, relationships, _RELATIONSHIP_FIELD_ORDER)
+    if views:
+        _append_yaml_flow_entries(HERE / VIEWS_FILENAME, views, _VIEW_FIELD_ORDER)
 
 
 def merge_candidate(
-    delta_elements: list[dict[str, Any]], delta_relationships: list[dict[str, Any]]
+    delta_elements: list[dict[str, Any]],
+    delta_relationships: list[dict[str, Any]],
+    delta_views: list[dict[str, Any]] | None = None,
 ) -> tuple[Model | None, list[str], list[str]]:
     """Load the current YAML model from disk, merge a Candidate Delta's elements/
-    relationships on top, and assemble+check the whole resulting in-memory model
-    (FR-002, R9) -- never the delta in isolation, so a change that is valid on its
-    own but breaks referential integrity elsewhere is also caught. Nothing is written
-    to disk; the delta is additive only, same as `build_model()` otherwise."""
+    relationships/views on top, and assemble+check the whole resulting in-memory
+    model (FR-002, R9) -- never the delta in isolation, so a change that is valid on
+    its own but breaks referential integrity elsewhere is also caught (a proposed
+    view's `context`/`include_types`/`members` are checked the same way `add_views`
+    always checks them -- unknown context, unknown type, unknown member id, a
+    colliding view id, viewpoint conformance). Nothing is written to disk; the delta
+    is additive only, same as `build_model()` otherwise."""
     errors: list[str] = []
     elements = load_all_elements(errors) + list(delta_elements)
     rels = (
         load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
     )
-    views = load_all_views(errors)
+    views = load_all_views(errors) + list(delta_views or [])
     return _assemble("candidate-delta", elements, rels, views, errors)
 
 

@@ -37,6 +37,7 @@ class CandidateDelta:
         session_id: The owning session.
         elements: Proposed elements (model YAML shape).
         relationships: Proposed relationships (model YAML shape).
+        views: Proposed views (model YAML shape).
         status: Where the delta is in its lifecycle.
         validation_result: ``{"clean": bool, "findings": [...]}`` once validated.
         duplicates: Likely duplicates of existing elements.
@@ -48,6 +49,7 @@ class CandidateDelta:
     session_id: str
     elements: list[dict[str, Any]] = field(default_factory=list)
     relationships: list[dict[str, Any]] = field(default_factory=list)
+    views: list[dict[str, Any]] = field(default_factory=list)
     status: DeltaStatus = DeltaStatus.PROPOSED
     validation_result: dict[str, Any] | None = None
     duplicates: list[dict[str, Any]] = field(default_factory=list)

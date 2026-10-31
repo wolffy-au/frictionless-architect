@@ -10,6 +10,7 @@ from modelling_specification.authoring.delta import (
     DeltaProposalError,
     LlmMessage,
     assign_missing_ids,
+    assign_missing_view_ids,
     propose_delta,
     resolve_unknown_endpoints,
 )
@@ -110,7 +111,7 @@ def test_propose_delta_strips_a_surrounding_markdown_fence(configured_fake_llm: 
 
     result = propose_delta("add a function")
 
-    assert result == {"elements": [], "relationships": []}
+    assert result == {"elements": [], "relationships": [], "views": []}
 
 
 def test_propose_delta_returns_structured_options_when_the_llm_suggests_several(
@@ -200,6 +201,47 @@ def test_propose_delta_gives_the_llm_the_existing_relationship_graph(configured_
     system = configured_fake_llm.calls[0]["messages"][0]["content"]
     assert "Existing relationships:" in system
     assert "Realization | fn-solution-modelling | cap-reusable-architecture | " in system
+
+
+def test_propose_delta_parses_a_proposed_view(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "views": [{"name": "Context Sweep", "context": ["modelling-specification"],'
+        ' "include_types": ["ApplicationFunction"]}]}'
+    )
+
+    result = propose_delta("add a view scoped to context modelling-specification")
+
+    assert result["views"] == [
+        {"name": "Context Sweep", "context": ["modelling-specification"], "include_types": ["ApplicationFunction"]}
+    ]
+
+
+def test_propose_delta_defaults_views_to_empty_when_the_llm_omits_the_key(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    result = propose_delta("add a function")
+
+    assert result["views"] == []
+
+
+def test_assign_missing_view_ids_leaves_an_explicit_id_and_diagram_alone() -> None:
+    result = assign_missing_view_ids([{"name": "X", "id": "view-explicit", "diagram": "layered/explicit"}], set())
+
+    assert result == [{"name": "X", "id": "view-explicit", "diagram": "layered/explicit"}]
+
+
+def test_assign_missing_view_ids_slugifies_the_name_and_derives_a_diagram_path() -> None:
+    result = assign_missing_view_ids([{"name": "Context Sweep!"}], set())
+
+    assert result[0]["id"] == "view-context-sweep"
+    assert result[0]["diagram"] == "context-sweep"
+
+
+def test_assign_missing_view_ids_deduplicates_against_existing_ids() -> None:
+    result = assign_missing_view_ids([{"name": "X"}], {"view-x"})
+
+    assert result[0]["id"] == "view-x-2"
 
 
 _KNOWN = {
