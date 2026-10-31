@@ -1,3 +1,39 @@
+## v0.7.0 (2026-10-31)
+
+### Feat
+
+- **controls-compliance-catalog**: vendor OSCAL/FedRAMP, drop submodules
+- **modelling-specification**: return structured suggestion options
+- **model**: add a generated context map view
+- **model**: split oversized views by context, drop view-product
+- **model**: add include_neighbours view option
+- **model**: generate a Grouping per bounded context, with Aggregations
+- **model**: tag elements with explicit bounded-context ownership
+- **skills**: have pr-preflight open draft PR, watch CI
+- **agents**: have quality-uplift pull CodeQL alerts
+
+### Fix
+
+- **llm-provider-config**: refuse os.environ/ API keys, renew ignores
+- **modelling-specification**: hide provider errors in propose 502
+- **llm-provider-config**: hide exception text in the test route
+- **model**: quote YAML descriptions that contain ' #'
+- **model**: trim open milestones' views to their live deliverables
+- **ci**: stop apt clobbering the cached PlantUML jar
+- **modelling-specification**: dedupe option ids against pending delta
+- **sample-data**: cover milestone 5 in the gh-roadmap layer test fixture
+- **scripts**: paginate the Dependabot alerts query in the vuln audit
+- **scripts**: widen spec-alignment weekly tool allowlist
+
+### Refactor
+
+- **modelling-specification**: cut complexity in conventions.py
+
+### Perf
+
+- **scripts**: scope platform-checks to the pushed packages
+- **modelling-specification**: parallelize diagram puml rendering
+
 ## v0.6.0 (2026-10-29)
 
 ### Feat
