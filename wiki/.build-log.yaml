@@ -966,12 +966,12 @@ topics:
   gh-roadmap-layer:
     title: GitHub Roadmap Layer
     page: wiki/gh-roadmap-layer.md
-    built: '2026-10-24'
+    built: '2026-10-31'
     sources:
       files:
         architecture/model/import_gh_roadmap.py:
-          sha256: 462ac7bcdc25292f1a0bda4021c8c021ce148e8afa8e5a62d7f01113aecb6af0
-          lines: 576
+          sha256: fd694fa36bc1527273dff3501ef64dd2e8c3ec2bb8b04f116cf7f8450d5ef6b8
+          lines: 595
         specs/EPIC-002-gh-roadmap-archimate/checklists/requirements.md:
           sha256: caf61a6d21971888cf2b5e2d72782eb96b1a9d0f7f1a7bd1ccbda66f428b7a52
           lines: 43
@@ -982,8 +982,8 @@ topics:
           sha256: b39ee1ea3c8f854afdc0a891427f546d086a46b094819d9080e42d1939d1540f
           lines: 70
         specs/EPIC-002-gh-roadmap-archimate/data-model.md:
-          sha256: 4d39d8f9a26e528e77a7815268dabe3bf321e4ad8400b0c9c75540ce0b332e1a
-          lines: 269
+          sha256: bac454449722b7bc1257a5aea36f9a21415e682e14fd24b3a49afaada4d75d4e
+          lines: 275
         specs/EPIC-002-gh-roadmap-archimate/plan.md:
           sha256: c6b7010635b2ca398c2e48a8f53ac5b6049a8384471927d80a0810cd196aaa3e
           lines: 181
@@ -994,8 +994,8 @@ topics:
           sha256: b7bf5d8234742163f5bab95779cb9e5064a6c062c05bc41c5483b2aba4c1cb35
           lines: 22
         specs/EPIC-002-gh-roadmap-archimate/spec.md:
-          sha256: a1c2a8d68628d89549411f4bf3086a8a551530445eb969c4aa104c9e0019cb03
-          lines: 146
+          sha256: 3835e8c0f2a55caaa56989358503a3adb59df09db556e2a07e931cd4d8e6ef52
+          lines: 151
         specs/EPIC-002-gh-roadmap-archimate/tasks.md:
           sha256: f45944e046f64f2822972f47057503249b85b379580b84210609714bc1fbd2e9
           lines: 119

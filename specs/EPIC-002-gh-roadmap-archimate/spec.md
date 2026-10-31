@@ -27,6 +27,11 @@ Implementation & Migration elements, milestone-first and user-facing, not a dump
 - A child whose own Deliverable target differs from its root's — because it shipped in a different release, or (seen in practice: GH-83's child GH-90) because it carries a different milestone — always keeps its own distinct Realization edge and stays in its own milestone's view.
 - Once a milestone itself is closed, its view drops its own closed Work Packages (they stay in the data, just not drawn): a shipped milestone's diagram settles to its Plateau and Deliverable(s) rather than accumulating every issue it ever contained. An open milestone still shows all of its Work Packages, open or closed, so in-flight progress stays visible.
 
+### Session 2026-10-31
+
+- An open milestone that has shipped several releases was still accumulating one permanent "done" cluster of Work Packages per past release in its own view, even though each release's Work Packages stay visible forever once drawn (the 2026-10-17 closed-milestone rule only prunes a milestone once it itself closes). The user confirmed the fix: **only Work Packages included as part of the planned and last release Deliverables** are drawn in an open milestone's view — i.e. the unreleased Deliverable (planned, in-flight work) plus whichever release Deliverable is the most recent to have shipped something for that Plateau. Earlier releases' Deliverables and Work Packages stay in the data (`relationships.yaml`, traceability) and are unaffected; they are only left out of the diagram. This is additional to, not a replacement for, the 2026-10-17 closed-milestone rule above: a closed milestone keeps all of its Deliverables and applies its own closed-Work-Package filter as before; the live-Deliverable trim applies only while the milestone is still open.
+- `view-implementation-migration-overview` (`migration/overview`) is explicitly unaffected by either filter: it sweeps every Deliverable/Work Package by type regardless of state or release, and stays the one place to see a milestone's full history.
+
 ## Mapping
 
 | GitHub | Becomes | Relationships |

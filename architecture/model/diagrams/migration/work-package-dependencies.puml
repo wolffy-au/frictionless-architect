@@ -56,7 +56,7 @@ Implementation_WorkPackage(e_ida2391cc6745852, "GH-83 Epic: multi-user access to
   Implementation_WorkPackage(e_idb6c3aa5bb1e853, "GH-92 UI changes: user/role management and per-model sharing in the visualiser")
 }
 Implementation_WorkPackage(e_id0d5fd9c46de652, "GH-102 feat(model): generate Gaps from speckit specs with a mapping file")
-Implementation_WorkPackage(e_id975839b5e2f95f, "GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)")
+Implementation_WorkPackage(e_id975839b5e2f95f, " --GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)--")
 Implementation_WorkPackage(e_ida666466870f351, " --GH-4 feat(model): vendor IT4IT as third_party/it4it submodule (ADR-0029)--")
 Implementation_WorkPackage(e_id7b8c620c6e8b57, "GH-120 feat(portal): add a portal host package that composes package UIs")
 Implementation_WorkPackage(e_ide9cad46822105d, " --GH-95 Import GitHub milestones/issues/releases into ArchiMate Implementation & Migration layer--")

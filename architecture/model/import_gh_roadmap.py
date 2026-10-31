@@ -438,7 +438,14 @@ def _views(
     Once a milestone itself is closed, its own closed Work Packages drop out of its view: the data still
     keeps them (relationships.yaml, traceability, check_derived.py are unaffected), but the diagram stops
     accumulating a permanent wall of "done" boxes for work nobody is tracking anymore. A milestone still
-    open keeps showing all its Work Packages, open or closed, so in-flight progress stays visible.
+    open keeps showing all its Work Packages, open or closed -- EXCEPT that an open milestone's diagram is
+    also trimmed to only the Work Packages realizing its two *live* Deliverables: the unreleased one
+    (planned, in-flight work) and whichever release is the most recent to have shipped something for this
+    Plateau. Earlier releases' Deliverables, and the Work Packages that realize them, are left out (kept
+    in the data, just not drawn): a long-lived open milestone's view stops accumulating one permanent
+    "done" cluster per release it has ever shipped. view-implementation-migration-overview
+    (migration/overview) is unaffected by either filter -- it sweeps every Deliverable/WorkPackage by type
+    regardless of state or release, so it stays the one place to see a milestone's full history.
     """
     realizes: dict[str, set[str]] = {}
     aggregates: dict[str, set[str]] = {}
@@ -449,11 +456,23 @@ def _views(
             aggregates.setdefault(rel["source"], set()).add(rel["target"])
     ids = {e["id"] for e in elements}
     wp_state = {e["id"]: e.get("props", {}).get("gh-state") for e in elements if e["type"] == "WorkPackage"}
+    published_at = {
+        e["id"]: e["props"]["gh-published"]
+        for e in elements
+        if e["type"] == "Deliverable" and "gh-published" in e.get("props", {})
+    }
     views = []
     for m in milestones:
         pid = plateau_id(m.title, m.number)
         deliverables = {d for d in realizes.get(pid, set()) if d in ids and d.startswith("del-")}
-        packages = {w for d in deliverables for w in realizes.get(d, set()) if plateau_of.get(w) == pid}
+        live_deliverables = deliverables
+        if m.state != "closed":
+            last_release = max(
+                (d for d in deliverables if d in published_at), key=lambda d: published_at[d], default=None
+            )
+            unreleased = next((d for d in deliverables if d not in published_at), None)
+            live_deliverables = {d for d in (last_release, unreleased) if d}
+        packages = {w for d in live_deliverables for w in realizes.get(d, set()) if plateau_of.get(w) == pid}
         packages |= _aggregation_descendants(packages, aggregates, plateau_of, pid)
         if m.state == "closed":
             packages = {w for w in packages if wp_state.get(w) != "closed"}
@@ -463,7 +482,7 @@ def _views(
                 "name": f"Roadmap: {m.title}",
                 "viewpoint": "implementation_migration",
                 "diagram": f"migration/{pid}",
-                "members": sorted({pid, *deliverables, *packages}),
+                "members": sorted({pid, *live_deliverables, *packages}),
             }
         )
     return views

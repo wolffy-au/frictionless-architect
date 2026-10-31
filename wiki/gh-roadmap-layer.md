@@ -1,6 +1,6 @@
 ---
 title: GitHub Roadmap Layer
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/import_gh_roadmap.py
@@ -79,7 +79,16 @@ Scope rules:
   Packages — kept in the data, just not drawn — so a shipped milestone's
   diagram settles to its Plateau and Deliverable(s) instead of accumulating
   every issue it ever contained. An open milestone still shows all of its
-  Work Packages, open or closed.
+  Work Packages, open or closed (`specs/EPIC-002-gh-roadmap-archimate/spec.md`
+  Clarifications, session 2026-10-17) — but only for its two *live*
+  Deliverables: the unreleased one and whichever release is the most recent
+  to have shipped something for this Plateau. Earlier releases' Deliverables
+  and Work Packages stay in the data but drop out of that milestone's view,
+  so a long-lived open milestone's diagram stops accumulating one permanent
+  "done" cluster per release it has ever shipped
+  (`specs/EPIC-002-gh-roadmap-archimate/spec.md` Clarifications, session
+  2026-10-31). `migration/overview` sweeps every Deliverable/Work Package
+  regardless of state or release and is unaffected by either filter.
 
 ## Ids
 
