@@ -23,8 +23,16 @@ generator: claude-sonnet-5
 - [Architecture Overview](architecture.md) — the governance-layer-at-root
   principle, current vs. target state, the six-subsystem → package mapping
   (per-subsystem UIs), the Poetry monorepo decision and the migration sequence.
-- [Architecture Decision Log](decision-log.md) — the full `docs/adr/` decision log
-  (MADR index and per-decision summaries).
+- [Architecture Decision Log](decision-log.md) — the `docs/adr/` decision log for
+  ADR-0000–0019 (MADR index, status key and per-decision summaries).
+- [Architecture Decision Log: UIs, Visualiser & Model Conventions](decision-log-ui-visualiser-model.md)
+  — ADR-0020–0029: per-subsystem UIs, the schema visualiser stack, the
+  single-user MVP, commit conventions, governed-entity FSMs, the capability
+  value stream, relationship storage and the vendored IT4IT model.
+- [Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts](decision-log-0030-onward.md)
+  — ADR-0030 onward: vendored OSCAL content, ArchiMate namespace, value streams,
+  shared packages, the GitHub-roadmap layer, conversational authoring, roles,
+  bounded contexts and maintenance agents.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: files, schema, the content sections and the generated GitHub
@@ -93,9 +101,9 @@ generator: claude-sonnet-5
   surface, and golden-dataset validation.
 - [Conversational Model Authoring](modelling-specification.md) — the
   `platform/packages/modelling-specification` package (GH #108,
-  [ADR-0037](decision-log.md); renamed "Conversational Candidate Architecture
+  [ADR-0037](decision-log-0030-onward.md); renamed "Conversational Candidate Architecture
   Authoring" and scoped to Enterprise Architects only per
-  [ADR-0039](decision-log.md), 2026-10-24): the conversational ArchiMate
+  [ADR-0039](decision-log-0030-onward.md), 2026-10-24): the conversational ArchiMate
   authoring agent, its candidate-delta propose/validate/decide/render
   pipeline, Enterprise Convention Rules, and the ported
   `build`/`render`/`validate` CLI that root's scripts and the
@@ -111,7 +119,7 @@ generator: claude-sonnet-5
   `specs/002-neo4j-schema-ui`) ahead of the visualiser API/UI split
   (`ARCHITECTURE.md` §8, step 7).
 - [Portal](portal.md) — the `platform/packages/portal` host package
-  ([ADR-0020](decision-log.md) update, GH #120): mounts every package's UI
+  ([ADR-0020](decision-log-ui-visualiser-model.md) update, GH #120): mounts every package's UI
   under one app, owning only chrome, navigation and the role landing page.
 - [LLM Provider Configuration](llm-provider-config.md) — the shared
   `llm-provider-config` package (ADR-0034): global default plus per-component

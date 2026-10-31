@@ -103,6 +103,16 @@ topics:
         docs/adr/0019-opa-rego-policy-engine.md:
           sha256: 0f92f59961924fe76df3d630a6536cce784eee2921a1b27c38ce0f9d7241838f
           lines: 25
+        docs/adr/README.md:
+          sha256: d6a8946ddb5e33f47070866556f8d05d61d8047d4d92745ad7bf55ea01317cb7
+          lines: 151
+      urls: {}
+  decision-log-ui-visualiser-model:
+    title: "Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020\u20130029)"
+    page: wiki/decision-log-ui-visualiser-model.md
+    built: '2026-10-31'
+    sources:
+      files:
         docs/adr/0020-per-subsystem-uis.md:
           sha256: 2c76702a8b411d77660254d56e8b17e496457d75208af3d8ef20c5cc39c2f0d8
           lines: 110
@@ -133,6 +143,13 @@ topics:
         docs/adr/0029-it4it-as-vendored-touchpoint-model.md:
           sha256: 71839e834d40064c3df1210d66765568acb5499e5e753f7a6202ec709c8dcdbd
           lines: 93
+      urls: {}
+  decision-log-0030-onward:
+    title: 'Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)'
+    page: wiki/decision-log-0030-onward.md
+    built: '2026-10-31'
+    sources:
+      files:
         docs/adr/0030-vendor-oscal-reference-content.md:
           sha256: 3375c290f8123368ced68aadf92d22e8640da701d2daf247182592beb4c6b6d4
           lines: 236
@@ -172,9 +189,6 @@ topics:
         docs/adr/0042-maintenance-agents-and-generated-wiki.md:
           sha256: ad13142f72deb29e597bb46b09ac36ba5d3838ca5488671ad812bea43918bd2c
           lines: 44
-        docs/adr/README.md:
-          sha256: d6a8946ddb5e33f47070866556f8d05d61d8047d4d92745ad7bf55ea01317cb7
-          lines: 151
       urls: {}
   architecture-model:
     title: Architecture Model

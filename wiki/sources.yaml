@@ -34,9 +34,22 @@ topics:
 
   - name: decision-log
     title: Architecture Decision Log
-    description: The ADR log — one MADR-lite file per load-bearing decision, with status and consequences.
+    description: The ADR log, ADR-0000–0019 — template, repository and tooling foundations, model storage and decomposition, and the proposed data-layer decisions; with the ADR status key.
     sources:
-      - path: docs/adr/*.md
+      - path: docs/adr/00[01]*.md
+      - path: docs/adr/README.md
+
+  - name: decision-log-ui-visualiser-model
+    title: "Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)"
+    description: ADR-0020–0029 — per-subsystem UIs, the schema visualiser stack, single-user MVP, commit conventions, governed-entity FSMs, the capability value stream, relationship storage and the vendored IT4IT model.
+    sources:
+      - path: docs/adr/002*.md
+
+  - name: decision-log-0030-onward
+    title: "Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)"
+    description: ADR-0030 onward — vendored OSCAL content, ArchiMate namespace, value streams, shared packages, the GitHub-roadmap layer, element-id prefixes, conversational authoring, canonical roles, bounded contexts and maintenance agents.
+    sources:
+      - path: docs/adr/00[3-9]*.md
 
   - name: architecture-model
     title: Architecture Model
