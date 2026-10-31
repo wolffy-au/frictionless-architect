@@ -12,6 +12,7 @@ import contextlib
 import os
 from pathlib import Path
 
+from pii_gateway._paths import resolve_override
 from pii_gateway.models import AuditEntry
 
 PATH_ENV_VAR = "PII_GATEWAY_AUDIT_PATH"
@@ -23,10 +24,14 @@ def default_audit_path() -> Path:
     Returns:
         ``$PII_GATEWAY_AUDIT_PATH`` if set, else
         ``~/.local/state/frictionless-architect/pii-gateway-audit.jsonl``.
+
+    Raises:
+        ValueError: If the env var is set to a path outside the user's home
+            or the system temp directory (see `pii_gateway._paths`).
     """
     override = os.environ.get(PATH_ENV_VAR)
     if override:
-        return Path(override)
+        return resolve_override(override, env_var=PATH_ENV_VAR)
     return Path.home() / ".local" / "state" / "frictionless-architect" / "pii-gateway-audit.jsonl"
 
 

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 
 import pytest
@@ -12,7 +11,10 @@ from pii_gateway.audit import default_audit_path
 
 
 def _audit_lines() -> list[dict[str, object]]:
-    path = Path(os.environ["PII_GATEWAY_AUDIT_PATH"])
+    # Route through `default_audit_path()` rather than reconstructing a
+    # `Path` from `os.environ` directly, so the env-var-to-Path traversal
+    # hardening in `pii_gateway.audit` applies here too (see `_paths.py`).
+    path = default_audit_path()
     if not path.exists():
         return []
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
@@ -33,7 +35,7 @@ def test_records_one_entry_per_call() -> None:
 def test_entry_never_contains_matched_text_or_surrounding_content() -> None:
     scrub("Contact Jane Doe at jane@example.com", context="spec-generator")
 
-    raw = Path(os.environ["PII_GATEWAY_AUDIT_PATH"]).read_text(encoding="utf-8")
+    raw = default_audit_path().read_text(encoding="utf-8")
     assert "Jane Doe" not in raw
     assert "jane@example.com" not in raw
     assert "Contact" not in raw

@@ -15,6 +15,7 @@ from pathlib import Path
 
 import tomli_w
 
+from pii_gateway._paths import resolve_override
 from pii_gateway.detectors import ALL_ENTITIES
 from pii_gateway.models import DetectorCategoryConfiguration, ScrubAction
 
@@ -33,10 +34,14 @@ def default_config_path() -> Path:
     Returns:
         ``$PII_GATEWAY_CONFIG_PATH`` if set, else
         ``~/.config/frictionless-architect/pii-gateway.toml``.
+
+    Raises:
+        ValueError: If the env var is set to a path outside the user's home
+            or the system temp directory (see `pii_gateway._paths`).
     """
     override = os.environ.get(PATH_ENV_VAR)
     if override:
-        return Path(override)
+        return resolve_override(override, env_var=PATH_ENV_VAR)
     return Path.home() / ".config" / "frictionless-architect" / "pii-gateway.toml"
 
 
