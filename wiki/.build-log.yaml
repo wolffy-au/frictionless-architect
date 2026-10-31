@@ -40,17 +40,17 @@ topics:
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-10-29'
+    built: '2026-10-31'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 7db91244db3c52c7eee9def10b237bc7377a07ec03ca4b5f8d355c86c317217f
-          lines: 173
+          sha256: de7d483b8b9790377961fb14d6a087094b115bd0d5817c5513b51e71bef1b667
+          lines: 176
         architecture/model/build.py:
           sha256: 695e42e0f4ef2c22e22b9d5d691122d64e239be0624e699fa3cc943196c5a5e0
           lines: 55
         architecture/model/elements.yaml:
-          sha256: 01845d251c49644bbb2506e34af8a447e6100d688182cf58a4c0df302c542d70
+          sha256: 3a4c66ae3ba3d513dd97960cab154857d52c6ebb71ecda6d5c918eaa779513dc
           lines: 2118
         architecture/model/relationships.yaml:
           sha256: 6f455c9a46fd55be5e54b36d69a6cf10a41ce084467bace2e3f52f5ae62fc39c
@@ -73,15 +73,15 @@ topics:
   architecture-model-skeleton:
     title: 'Architecture Model: Skeleton'
     page: wiki/architecture-model-skeleton.md
-    built: '2026-10-25'
+    built: '2026-10-31'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 7db91244db3c52c7eee9def10b237bc7377a07ec03ca4b5f8d355c86c317217f
-          lines: 173
+          sha256: de7d483b8b9790377961fb14d6a087094b115bd0d5817c5513b51e71bef1b667
+          lines: 176
         architecture/model/elements.yaml:
-          sha256: 78d0a616173d55b53dada5c8c4a14d5dc5a2ac1b7ae4d65978f48f943ab9d40d
-          lines: 2045
+          sha256: 3a4c66ae3ba3d513dd97960cab154857d52c6ebb71ecda6d5c918eaa779513dc
+          lines: 2118
         architecture/model/relationships.yaml:
           sha256: 6f455c9a46fd55be5e54b36d69a6cf10a41ce084467bace2e3f52f5ae62fc39c
           lines: 1071
@@ -89,15 +89,15 @@ topics:
   architecture-model-ecosystem:
     title: 'Architecture Model: Ecosystem'
     page: wiki/architecture-model-ecosystem.md
-    built: '2026-10-25'
+    built: '2026-10-31'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 7db91244db3c52c7eee9def10b237bc7377a07ec03ca4b5f8d355c86c317217f
-          lines: 173
+          sha256: de7d483b8b9790377961fb14d6a087094b115bd0d5817c5513b51e71bef1b667
+          lines: 176
         architecture/model/elements.yaml:
-          sha256: 78d0a616173d55b53dada5c8c4a14d5dc5a2ac1b7ae4d65978f48f943ab9d40d
-          lines: 2045
+          sha256: 3a4c66ae3ba3d513dd97960cab154857d52c6ebb71ecda6d5c918eaa779513dc
+          lines: 2118
         architecture/model/relationships.yaml:
           sha256: 6f455c9a46fd55be5e54b36d69a6cf10a41ce084467bace2e3f52f5ae62fc39c
           lines: 1071
@@ -105,15 +105,15 @@ topics:
   architecture-model-artefact-flow:
     title: 'Architecture Model: Artefact Flow'
     page: wiki/architecture-model-artefact-flow.md
-    built: '2026-10-25'
+    built: '2026-10-31'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 7db91244db3c52c7eee9def10b237bc7377a07ec03ca4b5f8d355c86c317217f
-          lines: 173
+          sha256: de7d483b8b9790377961fb14d6a087094b115bd0d5817c5513b51e71bef1b667
+          lines: 176
         architecture/model/elements.yaml:
-          sha256: 78d0a616173d55b53dada5c8c4a14d5dc5a2ac1b7ae4d65978f48f943ab9d40d
-          lines: 2045
+          sha256: 3a4c66ae3ba3d513dd97960cab154857d52c6ebb71ecda6d5c918eaa779513dc
+          lines: 2118
         architecture/model/relationships.yaml:
           sha256: 6f455c9a46fd55be5e54b36d69a6cf10a41ce084467bace2e3f52f5ae62fc39c
           lines: 1071
@@ -761,7 +761,7 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-10-25'
+    built: '2026-10-31'
     sources:
       files:
         .claude/agents/README.md:
@@ -783,8 +783,8 @@ topics:
           sha256: 16ae1714dcd7a9affa7c25365fba927f3a46c13a461a85bff57721ccf0291370
           lines: 63
         .claude/agents/quality-uplift.md:
-          sha256: 3d24dfe9e8bb0ceec6216f1b9a593374f876a4ddfc6609c27deecc95cadd8bc6
-          lines: 68
+          sha256: 0eb6935981b8f1557ac2406c864b03485d6fb75d5c266a3e1e33d5126ecb497e
+          lines: 76
         .claude/agents/refactor-analyst.md:
           sha256: ebaa2b5f69b30f254628fe3552db51cc6a26a2346ceeba9df5804f9cadf79e2b
           lines: 57
@@ -795,8 +795,8 @@ topics:
           sha256: 35a342d2a4650dcae339191f3756ca1dbadc390e86f66ea6777e590042ecae98
           lines: 92
         .claude/agents/vulnerability-remediator.md:
-          sha256: c90ed9cce668d5994e0b3c32010da11ea5fcd92e7ea04c48d7bf06901ec8503a
-          lines: 64
+          sha256: b503b197f327d151eaa03693e916029bff3ea3d41ec6ee652a904223a87c76e3
+          lines: 70
         .claude/agents/wiki-maintenance.md:
           sha256: 7ee5458233db0448184319e3fbfaba2031e930017dfe8e81e05d32c8ac1232c5
           lines: 83
@@ -1003,31 +1003,31 @@ topics:
   architecture-model-migration:
     title: 'Architecture Model: Packaging, Migration & Technology'
     page: wiki/architecture-model-migration.md
-    built: '2026-10-25'
+    built: '2026-10-31'
     sources:
       files:
         architecture/model/README.md:
-          sha256: 7db91244db3c52c7eee9def10b237bc7377a07ec03ca4b5f8d355c86c317217f
-          lines: 173
+          sha256: de7d483b8b9790377961fb14d6a087094b115bd0d5817c5513b51e71bef1b667
+          lines: 176
         architecture/model/elements.yaml:
-          sha256: 78d0a616173d55b53dada5c8c4a14d5dc5a2ac1b7ae4d65978f48f943ab9d40d
-          lines: 2045
+          sha256: 3a4c66ae3ba3d513dd97960cab154857d52c6ebb71ecda6d5c918eaa779513dc
+          lines: 2118
         architecture/model/relationships.yaml:
           sha256: 6f455c9a46fd55be5e54b36d69a6cf10a41ce084467bace2e3f52f5ae62fc39c
           lines: 1071
         architecture/model/views.yaml:
-          sha256: 17cdc5616b13615c23c02f74bb5aa0c1bae00f2bc80e3a48876880777c21d770
-          lines: 1077
+          sha256: dca787417dd71f8abbf34ba36ad5b639e2f66ae4d2b49a41c72ceea7f205680f
+          lines: 1097
       urls: {}
   modelling-specification:
     title: Conversational Model Authoring
     page: wiki/modelling-specification.md
-    built: '2026-10-29'
+    built: '2026-10-31'
     sources:
       files:
         docs/adr/0037-conversational-model-authoring-architecture.md:
-          sha256: 205cc6e12a51ec5d4d6b50b4eee54e24e970dc5d57ac98a6b6c965ec69c9e7b0
-          lines: 95
+          sha256: 28bdd08d182a416f0a7a8318f729e027775635159e098c33debb64d1189fd8e0
+          lines: 105
         docs/adr/0041-structured-suggestion-options-in-delta-py.md:
           sha256: f5ef74faafd34cf856397e23bcd8dce5b43d6fd76d1d082c4f72e346b40b4ccc
           lines: 68
@@ -1050,8 +1050,8 @@ topics:
           sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
           lines: 0
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: 207f9bea6aadaea310e65e8981bcfefdef607a643009f44dadb64e601e6a6f75
-          lines: 241
+          sha256: e3ead59d3635855e51032eb391fb1d10f2eb328b6b70bed1effafea1bc47a59c
+          lines: 247
         platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py:
           sha256: e56e9ec15c28545e484d5f2611daedef5b542f16fd07f3b70d376c58d5618a9f
           lines: 60
@@ -1113,7 +1113,7 @@ topics:
           sha256: 57c50808d81776548eb4039b30a382edb3167e025e69b27340a978855ce009ec
           lines: 235
         specs/EPIC-003-conversational-model-authoring/quickstart.md:
-          sha256: d5df6faaaeae13bc569cf887a082df6d1e2ca2083459543e2532cf23fefc7572
+          sha256: 655facce0f4215db5f6ddafbc5f7a78122e5f41991f2f6086ea49470345bbc6a
           lines: 98
         specs/EPIC-003-conversational-model-authoring/research.md:
           sha256: 70bc67f17319a4e8935540fa9fac7ded73e0623737f5cc5c3e9049aa3358fcc4
@@ -1336,7 +1336,7 @@ topics:
   digital-twin-knowledge-graph:
     title: Digital Twin Knowledge Graph
     page: wiki/digital-twin-knowledge-graph.md
-    built: '2026-10-24'
+    built: '2026-10-31'
     sources:
       files:
         docs/adr/0017-knowledge-graph-on-standard-ontology.md:
@@ -1348,6 +1348,9 @@ topics:
         platform/packages/digital-twin-knowledge-graph/pyproject.toml:
           sha256: 03f42c804ac7c1d7477975bdb139d394828173109ae798d784e8afe4ac9227c5
           lines: 22
+        platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/checklists/requirements.md:
+          sha256: c8e6f1a5351c52d5d90e899672c51ecc3191b48858173a9bf6024ef236aa3ab5
+          lines: 57
         platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/contracts/read-path.md:
           sha256: ad8be609bf94d9a195968f7524fb2db776921fa5237c9203a68108e40661ac42
           lines: 78
@@ -1360,9 +1363,15 @@ topics:
         platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/quickstart.md:
           sha256: da9ee8a675e2c8deb14d1e09d3d455244b0916b9f9d812c7fab256baebcdb600
           lines: 88
+        platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/research.md:
+          sha256: b89500f8703db8c201427969c781c2af18891ff40623606a9b0e8ab0ac95dc66
+          lines: 116
         platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/spec.md:
           sha256: 8f0f7d921374c2176a18ee6533964bfe1a7b2697bc3c3b705c577c302cd46b69
           lines: 395
+        platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/tasks.md:
+          sha256: 6738a94e09e0bc896d50007de71bd66a3c2ddd713f21ecc122b34c106ee81c28
+          lines: 467
         platform/packages/digital-twin-knowledge-graph/specs/README.md:
           sha256: 75295e9611d3fc005717b6c40b47d93bf16d3dbba0ba8648659d2e0fa8a0380d
           lines: 9
