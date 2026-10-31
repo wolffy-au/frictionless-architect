@@ -24,6 +24,16 @@
 - Q: Standard format for Critical Business Service (CBS) impact tolerances (e.g. RTO, RPO)? → A: Human-readable strings with units (e.g. "4 hours", "1 hour").
 - Q: Target response times for non-matrix queries? → A: Under 1 second for most queries; under 5 seconds for complex model queries.
 
+### Session 2026-10-31 (GH #136 spec-alignment audit follow-up)
+
+- Q: Does FR-004's mandatory PII/PHI scrubbing extend to the conversational-modelling
+  agent's own LLM prompts (GH #68/#108, ADR-0037's `fn-conversational-authoring`), or is
+  that path implicitly exempt the way ADR-0031 exempts policy/regulatory-standard
+  documents? → A: In scope. The conversational agent's prompts carry the same
+  architect-authored free text FR-004 was written for, with no exemption basis comparable
+  to ADR-0031's. GH #68 must wire `fn-conversational-authoring` through `pii-gateway`
+  (ADR-0014) before that agent ships; see ADR-0014's amended scope list.
+
 ### Deferred solution decisions (were prematurely fixed in the original draft)
 
 These are implementation choices, not requirements. They are listed so the rework can decide
