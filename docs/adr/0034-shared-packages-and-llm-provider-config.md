@@ -98,6 +98,11 @@ dependents only pull in what they actually use.
   for this package's own test suite (tracked as implementation follow-up).
 - `ARCHITECTURE.md` and `architecture/model/` carry the corresponding
   package/capability entries in this same PR, per Principle X.
+- **Model impact (added 2026-10-31, ADR-0044):** `sw-litellm` (`SystemSoftware`) is added
+  to `architecture/model/`, wired to `sub-llm-provider-config` with a `Serving`
+  relationship — this ADR's choice of `litellm` crosses ADR-0044's "subject of its own ADR
+  decision" bar, previously represented only as prose in `sub-llm-provider-config`'s `desc`.
+  Diagrams including that component are regenerated in the same change.
 - If the platform later needs multi-user/hosted secrets (ADR-0024 is revisited),
   the keyring-backed store is swapped for a server-side secret store behind the
   same resolution interface; this ADR's settings/override model is designed to
@@ -141,6 +146,11 @@ built (`create_settings_router`) and mounted at `/settings/llm`. Choices the ADR
   — rejected: the need for global-plus-per-component provider settings is
   explicitly cross-subsystem; duplicating it per package the next time another
   subsystem needs an LLM call was the problem this ADR exists to avoid.
+- **An LLM client other than `litellm`** — not seriously weighed: `litellm` was already
+  the client library spec `001-oscal-ai-conversion` research.md R2 settled on for
+  `llm_client.py`'s single-provider stub, and it natively supports every provider day 1
+  requires (OpenAI, Gemini, Claude, Ollama, Copilot) behind one call surface, so writing or
+  adopting a second abstraction over multiple provider SDKs directly was never considered.
 - **One catch-all `common`/`shared` package for all cross-cutting
   functionality** — rejected: becomes an undifferentiated dependency magnet
   with unrelated concerns coupled together; one package per shared concern
