@@ -29,6 +29,17 @@ prompts (`fn-conversational-authoring`, ADR-0037, GH #68/#108 — added
 2026-10-31: no exemption basis comparable to ADR-0031's applies to that agent's
 architect-authored free text).
 
+**Default failure-mode behavior (added 2026-10-31, GH #136):** when the gateway
+detects a PII/PHI match, the default action is **auto-redact and proceed** for
+every consumer except the conversational-modelling agent
+(`fn-conversational-authoring`, ADR-0037), which defaults to
+**flag-for-review** instead — a match pauses the call and the architect
+confirms, edits, or overrides it before it proceeds, since that agent already
+has a human present in the same conversational turn. Neither default is a
+hard-block. Per-category tuning (e.g. a stricter default for PHI-specific
+recognizers than for email/phone) is left to `pii-gateway`'s config surface
+(GH #136 scope) rather than decided here.
+
 ## Consequences
 
 - The gateway is its own `pii-gateway` package — a **shared, non-subsystem**
@@ -52,3 +63,20 @@ architect-authored free text).
   with the no-per-consumer-edge statement above. Recorded as an explicit GH #68
   acceptance obligation instead (GH #136 comment thread, GH #68 tracking
   comment).
+
+## Alternatives considered
+
+- **Hard-block globally on any match (added 2026-10-31)** — rejected. The
+  automated, unattended paths (`fn-governance-eval`, `fn-spec-generator`) have
+  no human present at call time to resolve a false positive; a block would
+  stop ADR/spec drafting outright on any detector false alarm, and this
+  platform's content is mostly ordinary technical prose where false positives
+  are expected.
+- **Flag-for-review globally** — rejected. The same unattended paths have no
+  one to flag to; a pending confirmation with no confirmer is a silent stall,
+  not a safety improvement.
+- **Auto-redact globally, including the conversational agent** — rejected.
+  That agent already has the architect present in the same conversational
+  turn (ADR-0037's "within one conversational turn" framing); silently
+  mutating their free-text input on a detector guess costs them nothing to
+  avoid, by asking instead, where the automated paths have no one to ask.
