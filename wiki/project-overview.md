@@ -113,14 +113,16 @@ server-rendered page was dropped ahead of a separate UI extraction
 ## Platform packages
 
 Code being extracted from the flat `src/` layout lives in the `platform/` Poetry
-monorepo (ADR-0002), with its own lock and virtualenv. The README now lists four
+monorepo (ADR-0002), with its own lock and virtualenv. The README now lists six
 packages: `controls-compliance-catalog` (policy and standard documents to OSCAL
 Catalogs and Profiles), `llm-provider-config` (shared LLM provider, model and
 credential resolution), `modelling-specification` (conversational ArchiMate
 model authoring: a service, a split-screen UI and a model build/render/validate
 CLI, run with `./scripts/run-modelling_specification.sh`; GH #108) and `portal` (the composition host that serves every
 package's UI from one app, `uvicorn portal.app:app` on `http://127.0.0.1:8000/`,
-ADR-0020); `bash scripts/platform_checks.sh` runs their gate (`README.md`
+ADR-0020), plus `digital-twin-knowledge-graph` (a library for the knowledge-graph read
+path, not yet consumed by the visualiser) and `schema-visualizer-api` (a specs-only placeholder);
+`bash scripts/platform_checks.sh` runs their gate (`README.md`
 §"Platform packages"). See [Controls & Compliance Catalog](controls-compliance-catalog.md),
 [LLM Provider Configuration](llm-provider-config.md),
 [Conversational Model Authoring](modelling-specification.md) and

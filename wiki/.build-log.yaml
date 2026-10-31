@@ -1,15 +1,15 @@
-generated: '2026-10-29'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 topics:
   project-overview:
     title: Project Overview
     page: wiki/project-overview.md
-    built: '2026-10-24'
+    built: '2026-10-31'
     sources:
       files:
         README.md:
-          sha256: 0df2b4b9283ecba4496c122716410f5104ddde74366396d3d1fc471b86e963f9
-          lines: 268
+          sha256: c5b058227465326aeebe67007a3e4fe52aa57c5e5182e8c5e47ea7f28708572a
+          lines: 292
         specs/EPIC-001-governance-platform/spec.md:
           sha256: 4260862e50f674c0ab0d58555778350f284ecbd510f19a98d21b9f00840040e5
           lines: 201
@@ -27,15 +27,15 @@ topics:
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
-    built: '2026-10-24'
+    built: '2026-10-31'
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: c812ac12940b5c64e27a95ae1c86257bd9aa58ea6a2d27f3b512d7ece2d0bcd3
-          lines: 462
+          sha256: b6be0153898458eadf28a2e1ae722f094a370500d96895595e9167d7c43f9603
+          lines: 480
         TECHNICAL.md:
-          sha256: f2418d3db4146a7d73ef4bcecbea24a46a9eff0aaf99ddeef56136be54ee48dc
-          lines: 428
+          sha256: 2393c337587725cc70bb8987ec379f6dc13ebd26cea2eb75de74042924a0a318
+          lines: 429
       urls: {}
   architecture-model:
     title: Architecture Model
@@ -515,12 +515,12 @@ topics:
   controls-compliance-catalog:
     title: Controls & Compliance Catalog
     page: wiki/controls-compliance-catalog.md
-    built: '2026-10-29'
+    built: '2026-10-31'
     sources:
       files:
         platform/packages/controls-compliance-catalog/README.md:
-          sha256: 0a77a8215c3e5d24157467fba3b78ef41f9aaaac5ada76be0dc49e45dad71dfb
-          lines: 31
+          sha256: e4024833137ad7fd113d4c3371f1d9446e9e111041fcf617f7243199e8f5a393
+          lines: 53
         platform/packages/controls-compliance-catalog/pyproject.toml:
           sha256: bdf017774c369283510d5706dec2103bf1255bb21e84d8900f1b01655906eb3e
           lines: 27
@@ -579,7 +579,7 @@ topics:
           sha256: 46298a3d15a85fc7a570369121995a4deda203cb1abaccbff35aad655e0a98f8
           lines: 39
         scripts/run-controls_compliance_catalog.sh:
-          sha256: bc3d3771cf50e245a38ab77a3aecb3e4258b471a9bd64af9267647acd131383e
+          sha256: 3886b1868d627d1a99f97bdf61d74f7d4125c9f47cbc0c1af24729ab2f8dc966
           lines: 19
       urls: {}
   llm-provider-config:

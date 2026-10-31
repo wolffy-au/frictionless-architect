@@ -303,8 +303,7 @@ router at `/settings/llm`, declaring this one component
 
 **Running it.** `scripts/run-controls_compliance_catalog.sh` (renamed from
 `run-playground.sh`) starts the standalone app on `http://127.0.0.1:8001`
-with reload. Its header comment still says the playground takes
-"control/catalog JSON"; the code now takes YAML (and JSON). The same
+with reload, serving the playground at `/catalog`. The same
 playground is also reachable through [Portal](portal.md) at
 `http://127.0.0.1:8000/catalog` without running this package's app
 separately.
