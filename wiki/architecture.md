@@ -31,17 +31,16 @@ One flat repo with a single narrow slice built: the Neo4j Schema Visualiser
 governance docs, `.specify/` SpecKit machinery, `sample-data/`, and tests
 (`ARCHITECTURE.md` §2). See [Visualizer Service](visualizer-service.md).
 
-Branch → state (`ARCHITECTURE.md` §2 branch matrix): `main` / `develop` carry
-spec 002 and the visualiser only; `001-governance-platform` has the full spec
-and an API contract but no implementation; `prototype-neo4j` was an unmerged
-exploratory branch (knowledge-graph model, DB seeding, ArchiMate layers,
-forensic ledger), treated as reference, not a merge source
-(`docs/adr/0006-prototype-neo4j-reference-only.md`). The branch itself was
-**deleted on 2026-09-05**; its tag `archive/prototype-neo4j` was moved to the
-branch's final commit (`c78de3d`) first and is now its sole trace. One commit
-past that point (`d703f89`, ArchiMate XML schema validation) was salvaged and
-cherry-picked into `develop` before the deletion
-(`docs/adr/0006-prototype-neo4j-reference-only.md` §Consequences).
+What is built today (`ARCHITECTURE.md` §2, "What is built today"): the JSON-only
+schema visualiser and the Neo4j schema manager and seeding CLI in `src/`, plus
+the `platform/` packages `controls-compliance-catalog`, `modelling-specification`,
+`llm-provider-config` and `portal`. `digital-twin-knowledge-graph` is a library
+the visualiser does not consume yet, and `schema-visualizer-api` is a specs-only
+placeholder. The `prototype-neo4j` branch was reference material, not a merge
+source (`docs/adr/0006-prototype-neo4j-reference-only.md`); it was deleted on
+2026-09-05, leaving the tag `archive/prototype-neo4j` as its sole trace, after
+one commit (`d703f89`, ArchiMate XML schema validation) was cherry-picked into
+`develop` (`docs/adr/0006-prototype-neo4j-reference-only.md` §Consequences).
 
 ## Target state
 

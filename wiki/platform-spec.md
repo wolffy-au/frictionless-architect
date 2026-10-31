@@ -100,7 +100,7 @@ are "provisional benchmarks carried from the original draft."
 `specs/EPIC-001-governance-platform/contracts/api.yaml` is an OpenAPI **3.0.0**
 document (API version 1.0.0), "Frictionless Architecture Governance API"
 (`specs/EPIC-001-governance-platform/contracts/api.yaml:1-4`). It is a design
-artifact — no implementation exists on any branch (`ARCHITECTURE.md` §2 branch matrix).
+artifact — no implementation exists (`ARCHITECTURE.md` §2, "What is built today").
 Endpoints:
 
 | Path | Verbs | Area |
