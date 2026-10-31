@@ -37,7 +37,7 @@ would receive (SC-001), and ordinary prose is untouched (SC-002).
 poetry run python - <<'PY'
 from pii_gateway import scrub
 
-result = scrub("My SSN is 123-45-6789", context="conversational-authoring")
+result = scrub("My SSN is 234-56-7890", context="conversational-authoring")
 assert result.action == "flagged_for_review"
 assert result.pending_confirmation is not None
 
@@ -81,7 +81,7 @@ failure-mode immediately (SC-003), with no redeploy.
 ```bash
 cd platform
 poetry run pytest packages/modelling-specification/tests/integration/test_pii_scrubbing.py
-poetry run pytest packages/controls-compliance-catalog/tests/ -k "markdown_conversion or quality_feedback"
+poetry run pytest packages/controls-compliance-catalog/tests/test_pii_gateway_exemption.py
 ```
 
 Expected: the first proves a planted PII string never reaches the stubbed LLM call

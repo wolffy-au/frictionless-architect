@@ -62,7 +62,7 @@ end
 |---|---|---|---|
 | `"Contact Jane Doe at jane@example.com"` | `governance-eval` | `redacted_and_proceeded` | `"Contact <PERSON> at <EMAIL_ADDRESS>"` |
 | `"The event-sourcing pattern decouples writes from reads."` | `spec-generator` | `passed_through_unchanged` | identical to input |
-| `"My SSN is 123-45-6789"` | `conversational-authoring` | `flagged_for_review` | input text, with `pending_confirmation` set — no mutation until resolved |
+| `"My SSN is 234-56-7890"` | `conversational-authoring` | `flagged_for_review` | input text, with `pending_confirmation` set — no mutation until resolved |
 | (detector engine raises) | any | matches `DetectorCategoryConfiguration.failure_mode` for that context | treated as a match, never a silent pass-through |
 
 ## Settings router contract
