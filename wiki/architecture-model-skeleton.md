@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Skeleton'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -392,6 +392,22 @@ The sign-off returns to Release as a `Flow`, not a second `Triggering`. A
 Triggering there would make Prove → Release derived through the escalation path.
 
 ## Business layer
+
+**Context ownership.** The section-A capabilities, business processes,
+business functions and business objects now carry an explicit `context:` tag
+naming the bounded context that owns them rather than falling back to
+`platform` (GH #129). For example `cap-digital-twin` and `cap-forensic-ledger`
+belong to `digital-twin-knowledge-graph`; `cap-spec-engine`,
+`cap-conversational-governance` and the conversational-authoring process and
+function to `modelling-specification`; `cap-control-plane`,
+`cap-drift-dashboard` and the drift, CI/CD-gate and effectiveness processes to
+`conformance-drift-assurance`; `cap-control-catalog` and the policy/OSCAL
+conversion processes to `controls-compliance-catalog`; and
+`cap-reusable-architecture`, the pattern/blueprint/solution-design processes
+and `bfn-security-assurance` to `reusable-architecture-library`
+(`architecture/model/elements.yaml`; `architecture/model/README.md` §"Schema").
+Descriptions that contain `GH #n` are double-quoted so the `#` isn't parsed as
+a YAML comment.
 
 ### Processes and functions
 

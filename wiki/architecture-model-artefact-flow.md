@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Artefact Flow'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -92,6 +92,11 @@ from" the forensic ledger and reads the expected controls from the SSP
 (`architecture/model/relationships.yaml:564`, `648-654`).
 
 ## Conversational model authoring (GH #108)
+
+Section C functions now carry explicit bounded-context tags too:
+`fn-conversational-authoring` is owned by `modelling-specification` and
+`fn-enforcement-gate` by `conformance-drift-assurance`
+(`architecture/model/elements.yaml`; GH #129).
 
 `fn-conversational-authoring` ("Conversational Model Authoring"), assigned to
 `sub-modelling`, sits outside the five per-stage views above — it is one of

@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Ecosystem'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -104,7 +104,15 @@ nesting is what the Controls & Compliance Catalog view draws; see
 package's name for a subsystem-specific element — so a view's `context:`
 scoping key (see [Architecture Model](architecture-model.md) §"Schema") can
 draw `include_types` sweeps from one package at a time. See "Context-level
-viewpoints" on that page.
+viewpoints" on that page. The tags are now explicit on the interfaces and
+collaboration elements too: `if-catalog-playground` is
+`controls-compliance-catalog`, `if-llm-settings-ui` `llm-provider-config`,
+`if-modelling-authoring-ui`, `bc-model-collaboration` and
+`bi-collaborative-modelling` `modelling-specification`
+(`architecture/model/elements.yaml`). The business-role descriptions that cite
+`(GH #45)` are now double-quoted, because an unquoted ` #` starts a YAML
+comment and would truncate the text in every generated diagram
+(`architecture/model/README.md` §"Schema").
 
 **New interfaces (2026-10).** Beyond `if-catalog-ui` and
 `if-twin-read-path`, three more `ApplicationInterface`s were added:

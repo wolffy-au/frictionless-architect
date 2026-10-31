@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: '2026-10-29'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -87,7 +87,11 @@ Schema rules (`architecture/model/README.md` §"Schema";
   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:81-92`).
 - **`id`** — a stable kebab id, hashed to a deterministic UUID so regeneration
   never churns identifiers or diagrams. *Never renumber a live id.*
-- **`name` / `desc`** — top-level keys, not inside `props`.
+- **`name` / `desc`** — top-level keys, not inside `props`. Double-quote any
+  value containing a `#` that follows a space (for example
+  `desc: "… (GH #45)."`): in an unquoted YAML scalar that `#` starts a
+  comment, so the text is silently cut off and the truncation shows up in
+  every generated diagram (`architecture/model/README.md` §"Schema").
 - **`context`** — optional top-level key on an element: its bounded context.
   Defaults to `platform` for first-party files and to the layer directory's
   name for `third_party/<name>` and `gh-roadmap/`; written to the XML as a
@@ -106,7 +110,15 @@ Schema rules (`architecture/model/README.md` §"Schema";
   (GH #129) warns at build time on a first-party Application/Technology/
   BusinessObject element with no explicit `context:` and no recorded
   exemption, so a package can't silently fall back to the shared `platform`
-  context by omission.
+  context by omission. Section C–F elements now carry that tag explicitly —
+  for example the capabilities, business processes, business functions and
+  business objects of the policy/OSCAL pipeline are tagged
+  `controls-compliance-catalog`, the drift, release-gate and assessment
+  elements `conformance-drift-assurance`, the pattern/blueprint/solution
+  elements `reusable-architecture-library`, and the graph/ledger/Neo4j
+  elements `digital-twin-knowledge-graph`
+  (`architecture/model/elements.yaml`, e.g. `cap-control-catalog`,
+  `bfn-release-enforcement`, `bo-architecture-pattern`, `sw-neo4j`).
 - **`exclude_elements`** on a view (optional) — a list of patterns that drop
   otherwise-selected elements (via `members` or `include_types`) before nodes
   and connections are built. Each entry may give `type` (ArchiMate concept
@@ -118,7 +130,12 @@ Schema rules (`architecture/model/README.md` §"Schema";
   so `{id_prefix: "it4it-"}` keeps those off a first-party view without
   reverting to an explicit `members` allow-list that silently drops any new
   first-party element of that type until someone remembers to add it (GH
-  #117). This is distinct from the relationship-level `exclude` key below.
+  #117). Views that sweep by `include_types` under the default
+  `context: [platform]` no longer need that entry — the default scope already
+  excludes vendored layers — so `views.yaml` dropped the redundant
+  `{id_prefix: "it4it-"}` excludes (GH #129 step 7;
+  `architecture/model/views.yaml`). This is distinct from the
+  relationship-level `exclude` key below.
 - **`props`** — string→string. `c4` / `c4-label` for the C4 projection,
   `access_type` (`Read` | `Write` | `ReadWrite`) on `Access` relationships,
   `requirement-type`, and `archimate-analogue` on a BusinessObject whose

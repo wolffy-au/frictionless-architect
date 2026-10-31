@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Packaging, Migration & Technology'
-generated: '2026-10-25'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -55,6 +55,13 @@ the existing `ext-llm` edges (`architecture/model/relationships.yaml` §"E. LLM
 provider configuration is a shared package, not a subsystem"). It appears in
 the Artefact Flow — Controls & OSCAL and Packaging views, and its package Artifact in
 the Packaging and Migration Sequence views (`architecture/model/views.yaml`).
+`views.yaml` also gained the generated `view-context-map` (GH #129 step 5),
+which sweeps every bounded-context `Grouping` and derives a `Serving` edge
+between any two contexts with a relationship crossing between them; and the
+platform-only `include_types` views dropped their redundant
+`{id_prefix: "it4it-"}` excludes, since the default `context: [platform]`
+scope already keeps vendored layers off them
+(`architecture/model/views.yaml` §"view-context-map").
 
 **Artifacts (code packages, `c4: ignore`).** Ten `Artifact` elements: today's
 flat `art-flat-src`, plus one per target package —
@@ -99,11 +106,23 @@ aggregated (`art-pkg-digital-twin-knowledge-graph` under
 `plat-multi-user-collaboration-2`; `art-pkg-modelling-specification` and, as
 of GH #162, `art-pkg-reusable-architecture-library` under
 `plat-solution-design-mvp-8`; `art-pkg-conformance-drift-assurance` under
-`plat-drift-management-mvp-5` as of GH #163). Only two package Artifacts now
-stay unaggregated: `art-pkg-schema-visualizer-api` (GH #161, no milestone set)
-and `art-pkg-architecture-governance` (no GH issue yet) — both wait on a
-milestoned issue that performs their extraction
+`plat-drift-management-mvp-5` as of GH #163). GH #162 and #163 are still open
+(2026-10-25 spec-alignment audit), so those two `Aggregation` edges describe a
+planned, not yet built, state — expected, not drift; before closing either
+issue, confirm its package directory actually exists under
+`platform/packages/`, otherwise the Aggregation is dishonest and the next
+audit should flag it as Diverged rather than Partial. Only two package
+Artifacts now stay unaggregated: `art-pkg-schema-visualizer-api` (GH #161, no
+milestone set) and `art-pkg-architecture-governance` (no GH issue yet) — both
+wait on a milestoned issue that performs their extraction
 (`architecture/model/elements.yaml` §"E. Work Packages", GH #103 comment).
+Work Packages and Technology elements now also carry an explicit `context:`
+tag where a package owns them (`wp-71-migration-steps-1-3` is tagged
+`controls-compliance-catalog`, `wp-106-scaffold-twin` and `sw-neo4j`
+`digital-twin-knowledge-graph`, `sw-keyring` `llm-provider-config`), and
+descriptions containing `GH #n` are double-quoted so the `#` isn't parsed as
+a YAML comment (`architecture/model/elements.yaml`;
+`architecture/model/README.md` §"Schema").
 The Gap convention is one `Gap` per feature,
 `Association`-linked to the Plateau either side (the Plateau is always the
 `source` and the Gap the `target`, flipped from the original source/target
