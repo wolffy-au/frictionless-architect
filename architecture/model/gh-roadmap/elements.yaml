@@ -453,7 +453,8 @@
   name: 'GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)'
   props:
     gh-number: '129'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/129
 - type: WorkPackage
   id: wp-feat-model-vendor-it4it-as-third-party-gh-4

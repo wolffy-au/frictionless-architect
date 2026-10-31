@@ -548,6 +548,33 @@ def test_closed_milestones_view_keeps_a_still_open_straggler(kit: Kit) -> None:
     assert "wp-open-gh-2" in view["members"]
 
 
+def test_open_milestones_view_trims_to_the_latest_release_and_the_unreleased_work(kit: Kit) -> None:
+    # Two releases have shipped work for this still-open Plateau, plus one unreleased issue:
+    # the view should keep only the most recent release's Deliverable/Work Package and the
+    # unreleased one, while the earlier release stays in the data (elements/relationships),
+    # just dropped from the diagram.
+    releases = [kit.release("v1", "2026-01-01T00:00:00Z"), kit.release("v2", "2026-03-01T00:00:00Z")]
+    issues = [
+        kit.issue(1, "old", state="closed", closed_at="2025-12-01T00:00:00Z"),
+        kit.issue(2, "mid", state="closed", closed_at="2026-02-01T00:00:00Z"),
+        kit.issue(3, "new"),
+    ]
+    layer = kit.layer([kit.milestone()], releases, issues)
+    assert ("Realization", "wp-old-gh-1", "del-release-v1") in links(layer)
+    assert ("Realization", "wp-mid-gh-2", "del-release-v2") in links(layer)
+    assert ("Realization", "wp-new-gh-3", "del-mvp-1-unreleased") in links(layer)
+    view = next(v for v in layer["views.yaml"] if v["id"] == "view-plat-mvp-1")
+    assert set(view["members"]) == {
+        "plat-mvp-1",
+        "del-release-v2",
+        "del-mvp-1-unreleased",
+        "wp-mid-gh-2",
+        "wp-new-gh-3",
+    }
+    assert "del-release-v1" not in view["members"]
+    assert "wp-old-gh-1" not in view["members"]
+
+
 def test_child_shipped_separately_from_its_epic_keeps_its_own_realization(kit: Kit) -> None:
     # The epic is still open (unreleased) while its child already shipped in a release: their
     # targets differ, so the child's own edge is genuine information, not a duplicate (GH-83/#108 shape).
