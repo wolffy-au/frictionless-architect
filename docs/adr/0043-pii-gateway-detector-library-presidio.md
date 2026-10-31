@@ -1,6 +1,6 @@
 # ADR-0043: Presidio as the `pii-gateway` detection/anonymization engine
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-31
 - **Sources:** GH #136 (`pii-gateway` package build), ADR-0014 (mandatory scrubbing scope), ADR-0034 (shared-package pattern)
 
