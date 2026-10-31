@@ -10,6 +10,8 @@ from controls_compliance_catalog.playground.api import create_playground_router
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from llm_provider_config import Component, create_settings_router
+from pii_gateway.config import KNOWN_CONTEXTS
+from pii_gateway.router import create_settings_router as create_pii_gateway_settings_router
 
 
 @dataclass(frozen=True)
@@ -27,6 +29,7 @@ class MountedUi:
 MOUNTED_UIS: tuple[MountedUi, ...] = (
     MountedUi("/catalog", "Control conversion playground", "Compliance Officer / Auditor"),
     MountedUi("/settings/llm", "LLM settings", "All roles"),
+    MountedUi("/settings/pii-gateway", "PII gateway settings", "All roles"),
 )
 
 app = FastAPI(title="Frictionless Architect Portal")
@@ -34,6 +37,7 @@ app.include_router(create_playground_router(prefix="/catalog"))
 app.include_router(
     create_settings_router([Component(id=CATALOG_COMPONENT_ID, label="Control conversion (AI candidate)")]),
 )
+app.include_router(create_pii_gateway_settings_router(KNOWN_CONTEXTS))
 
 
 def _landing_page() -> str:

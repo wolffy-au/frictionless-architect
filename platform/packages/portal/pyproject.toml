@@ -11,6 +11,7 @@ dependencies = [
     "uvicorn (>=0.43.0,<0.44.0)",
     "controls-compliance-catalog",
     "llm-provider-config",
+    "pii-gateway",
     # Transitive floors for GHSA-6q48-6c7w-9gw2 (certifi), GHSA-v4x8-3wr5-3wq8 et al. (filelock)
     # — already satisfied by the lock, pinned here so Dependabot's per-manifest graph agrees
     # with it.
@@ -24,6 +25,7 @@ packages = [{ include = "portal", from = "src" }]
 [tool.poetry.dependencies]
 controls-compliance-catalog = { path = "../controls-compliance-catalog", develop = true }
 llm-provider-config = { path = "../llm-provider-config", develop = true }
+pii-gateway = { path = "../pii-gateway", develop = true }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
