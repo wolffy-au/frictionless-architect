@@ -1,16 +1,19 @@
 ---
 title: Digital Twin Knowledge Graph
-generated: '2026-10-24'
+generated: '2026-10-31'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0017-knowledge-graph-on-standard-ontology.md
 - platform/packages/digital-twin-knowledge-graph/README.md
 - platform/packages/digital-twin-knowledge-graph/pyproject.toml
+- platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/checklists/requirements.md
 - platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/contracts/read-path.md
 - platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/data-model.md
 - platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/plan.md
 - platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/quickstart.md
+- platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/research.md
 - platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/spec.md
+- platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/tasks.md
 - platform/packages/digital-twin-knowledge-graph/specs/README.md
 - platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/__init__.py
 - platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/config.py
@@ -133,6 +136,68 @@ Five user stories (`platform/packages/digital-twin-knowledge-graph/specs/001-kno
 (`platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/spec.md` §Requirements, §"Success Criteria").
 FR-012 is explicit that repointing flat-`src/`'s callers onto this package, and
 retiring the flat originals, is **out of scope** for this increment.
+
+### Design decisions (research)
+
+Phase 0 research records seven decisions
+(`platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/research.md`):
+
+- **R1 — plain library.** A `KnowledgeGraphReadPath` class plus `ReadPathError`
+  in `digital_twin_knowledge_graph.read_path`; no FastAPI app, router or CLI,
+  because ADR-0005 defers an HTTP boundary until a second consumer needs one.
+- **R2 — build fresh, don't cut over.** The four modules (`read_path`,
+  `sample_parser`, `schema_manager`, `namespaces`) are new, with flat-`src/`
+  as reference behaviour. The root and `platform/` are separate Poetry
+  projects with separate lockfiles, and no ADR documents how a root consumer
+  would depend on a `platform/packages/*` path, so full or partial cutover was
+  rejected for this increment.
+- **R3 — no driver-type leakage.** All `neo4j` imports are confined to
+  `read_path.py` and `schema_manager.py`; public calls return plain data or
+  raise `ReadPathError`.
+- **R4 — selective port from `prototype-neo4j`.** Only the ArchiMate
+  business/motivation vocabulary and the batched `UNWIND`-style ingestion are
+  ported (attributed to ADR-0006). The forensic ledger stays with
+  `controls-compliance-catalog`, and cherry-picking from the archive tag was
+  rejected.
+- **R5 — rename.** `DataLoader` becomes `KnowledgeGraphReadPath` and
+  `DataLoaderError` becomes `ReadPathError`, to match the model's
+  `if-twin-read-path` name. `SampleParser` and `SchemaManager` keep theirs.
+- **R6 — settings.** `GraphSettings(BaseSettings)` in the package's own
+  `config.py` reads `neo4j_uri`/`neo4j_user`/`neo4j_password` under the
+  existing `FRICTIONLESS_ARCHITECT_` prefix, so operators configure Neo4j once.
+- **R7 — tests.** The flat-`src/` unit tests are ported with unchanged
+  assertions, plus the one integration test needing a real Neo4j.
+
+### Task breakdown
+
+`tasks.md` lays out 31 tasks (T001–T031), all marked done, in eight phases:
+setup (T001–T005), foundational `GraphSettings` and exports (T006–T007), then
+one phase per user story, then polish
+(`platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/tasks.md`).
+Ordering is deliberate: the parser (US2) lands before the read path (US1)
+because it needs no Neo4j and gives the read path's tests a `ParsedSample`
+fixture. US1 plus US2 form the MVP. Two tasks go beyond the package itself:
+T021 adds the package as a **permanent** path dependency of
+`modelling-specification` with a test calling
+`KnowledgeGraphReadPath(GraphSettings()).collect()` directly, which is the
+cross-package proof of SC-006; and T024 re-runs the flat-`src/` tests to show
+they are untouched (FR-011). Polish enforces `mypy --strict`, pyright, 90%
+coverage (FR-014), `platform_checks.sh`, and `architecture/model/build.py`
+(this feature adds no model elements).
+
+### Spec quality checklist
+
+`checklists/requirements.md` (created 2026-10-12) has every item ticked. Its
+notes record that the spec deliberately names existing modules, since the
+feature is a structural move of real code. They also record two exclusions
+added on 2026-10-18 after a re-read of `architecture/model/elements.yaml`:
+`fn-twin-ingest` and the `[later]` direct YAML-to-Neo4j seed from
+`architecture/model/` were originally omitted silently and are now stated as
+out of scope. ADR-0017's ontology question is left as an Assumption, not a
+`[NEEDS CLARIFICATION]` marker, but the checklist says the maintainer should
+weigh in before the vocabulary is treated as settled
+(`platform/packages/digital-twin-knowledge-graph/specs/001-knowledge-graph-read-path/checklists/requirements.md`
+§Notes).
 
 ## Not covered by current sources
 
