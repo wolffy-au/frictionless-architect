@@ -57,6 +57,16 @@ below (and the ArchiMate 3.2 concept names for element/relationship types). This
 a clarifying question: answer from the data you were given rather than asking the
 architect to clarify a question that data already answers.
 
+The same applies to a factual question about the model's connection graph -- for
+example "what connects to this element", "is this element orphaned", "what capability
+does X realize", "trace this element up to a stakeholder", "which elements mirror X's
+structure on another path through the model" -- answer it by tracing the "Existing
+relationships" data given below (each line is `type | source id | target id | label`;
+resolve ids to names via "Existing elements"). Walk the graph as far as the question
+needs -- multiple hops, either direction -- and show the chain of ids/names and
+relationship types you followed, not just the endpoint. If the data given doesn't
+contain a path that answers the question, say so plainly rather than guessing one.
+
 If the request is too vague to form even one concrete option -- missing the subject,
 scope, or enough detail to propose anything concrete -- reply with a short
 plain-text message instead of JSON: one clarifying question for the architect to answer.
@@ -119,6 +129,35 @@ def _views_text(views: list[tuple[str, str, str]]) -> str:
     return "\n".join(f"{vid} | {name} | viewpoint={viewpoint or 'custom'}" for vid, name, viewpoint in views)
 
 
+def _relationships_text(relationships: list[tuple[str, str, str, str]]) -> str:
+    return "\n".join(f"{rtype} | {source} | {target} | {label}" for rtype, source, target, label in relationships)
+
+
+def _grounded_system_prompt(
+    catalogue: list[tuple[str, str, str]] | None,
+    contexts: list[str] | None,
+    views: list[tuple[str, str, str]] | None,
+    relationships: list[tuple[str, str, str, str]] | None,
+    rules: list[dict[str, Any]] | None,
+) -> str:
+    """`SYSTEM_PROMPT` plus one labelled block per non-empty grounding input, in a
+    fixed order -- factored out of `propose_delta` to keep its own branching under
+    the complexity gate; each block is independently optional, so a caller can pass
+    only the data it has."""
+    blocks = [
+        ("Existing elements", catalogue, _catalogue_text),
+        ("Existing contexts", contexts, _contexts_text),
+        ("Existing views", views, _views_text),
+        ("Existing relationships", relationships, _relationships_text),
+        ("Enterprise convention rules", rules, _rules_text),
+    ]
+    system = SYSTEM_PROMPT
+    for label, data, render in blocks:
+        if data:
+            system += f"\n\n{label}:\n{render(data)}"
+    return system
+
+
 def _is_single_delta(payload: Any) -> bool:
     return isinstance(payload.get("elements"), list) and isinstance(payload.get("relationships"), list)
 
@@ -148,6 +187,7 @@ def propose_delta(
     rules: list[dict[str, Any]] | None = None,
     contexts: list[str] | None = None,
     views: list[tuple[str, str, str]] | None = None,
+    relationships: list[tuple[str, str, str, str]] | None = None,
 ) -> dict[str, Any]:
     """Call the configured LLM and return a candidate delta, in one of two shapes:
     a single concrete change, `{"elements": [...], "relationships": [...]}`; or, when
@@ -157,9 +197,11 @@ def propose_delta(
     complete candidate delta (FR-001, "suggests ways forward" per GH #68).
 
     A factual question about the model's own vocabulary (e.g. "what are my choices
-    for context", "what views/viewpoints are available") is answered in plain text
-    from `catalogue`/`contexts`/`rules`/`views` via the `LlmMessage` path below, same
-    as a clarifying question.
+    for context", "what views/viewpoints are available") or its connection graph
+    (e.g. "what connects to this element", "what capability does X realize", "trace
+    this up to a stakeholder") is answered in plain text from
+    `catalogue`/`contexts`/`rules`/`views`/`relationships` via the `LlmMessage` path
+    below, same as a clarifying question.
 
     Raises `DeltaProposalError` for every way this can fail short of one of those
     shapes: no provider configured, no credential, the call itself failing, an empty
@@ -174,7 +216,7 @@ def propose_delta(
     if not stripped:
         raise DeltaProposalError("Cannot propose a delta from an empty request.")
 
-    return resume_proposal(scrub_or_require_review(stripped), catalogue, rules, contexts)
+    return resume_proposal(scrub_or_require_review(stripped), catalogue, rules, contexts, views, relationships)
 
 
 def scrub_or_require_review(text: str) -> str:
@@ -201,6 +243,8 @@ def resume_proposal(
     catalogue: list[tuple[str, str, str]] | None = None,
     rules: list[dict[str, Any]] | None = None,
     contexts: list[str] | None = None,
+    views: list[tuple[str, str, str]] | None = None,
+    relationships: list[tuple[str, str, str, str]] | None = None,
 ) -> dict[str, Any]:
     """Make the LLM call with text that has already been scrubbed or explicitly
     resolved by the architect (a `PiiReviewRequired` match the caller resolved via
@@ -212,15 +256,7 @@ def resume_proposal(
     except (NotConfiguredError, MissingCredentialError) as exc:
         raise DeltaProposalError(str(exc)) from exc
 
-    system = SYSTEM_PROMPT
-    if catalogue:
-        system += f"\n\nExisting elements:\n{_catalogue_text(catalogue)}"
-    if contexts:
-        system += f"\n\nExisting contexts:\n{_contexts_text(contexts)}"
-    if views:
-        system += f"\n\nExisting views:\n{_views_text(views)}"
-    if rules:
-        system += f"\n\nEnterprise convention rules:\n{_rules_text(rules)}"
+    system = _grounded_system_prompt(catalogue, contexts, views, relationships, rules)
     messages = [{"role": "system", "content": system}, {"role": "user", "content": resolved_text}]
     try:
         response = completion(messages=messages, **call.completion_kwargs())
