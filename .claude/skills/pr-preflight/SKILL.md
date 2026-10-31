@@ -1,6 +1,7 @@
 ---
 name: pr-preflight
 description: 'Pre-flight checklist for a branch about to become a PR — refresh docs/wiki/diagrams against the real diff, run an autofix pass, confirm the quality/security/commit gates, open the PR as a draft, then watch CI and fix failures before marking it ready for human review. Use for "get this ready for a PR", "preflight this branch", "/pr-preflight".'
+allowed-tools: Bash(gh pr create:*)
 ---
 
 # pr-preflight
