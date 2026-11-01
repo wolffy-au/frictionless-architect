@@ -13,6 +13,7 @@ from modelling_specification.authoring.delta import (
     assign_missing_view_ids,
     propose_delta,
     resolve_unknown_endpoints,
+    resolve_unknown_members,
 )
 from support.fake_llm import FakeCompletion
 
@@ -111,7 +112,7 @@ def test_propose_delta_strips_a_surrounding_markdown_fence(configured_fake_llm: 
 
     result = propose_delta("add a function")
 
-    assert result == {"elements": [], "relationships": [], "views": []}
+    assert result == {"elements": [], "relationships": [], "views": [], "view_membership_edits": []}
 
 
 def test_propose_delta_returns_structured_options_when_the_llm_suggests_several(
@@ -268,4 +269,45 @@ def test_resolve_unknown_endpoints_leaves_a_weak_or_ambiguous_match_for_validati
     resolved, notes = resolve_unknown_endpoints(rels, _KNOWN)
 
     assert resolved == rels
+    assert notes == []
+
+
+def test_propose_delta_parses_a_view_membership_edit(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "view_membership_edits": [{"view_id": "view-capability", "add": ["role-ea"], "remove": []}]}'
+    )
+
+    result = propose_delta("add role-ea to the capability map")
+
+    assert result["view_membership_edits"] == [{"view_id": "view-capability", "add": ["role-ea"], "remove": []}]
+
+
+def test_propose_delta_defaults_view_membership_edits_to_empty_when_the_llm_omits_the_key(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    result = propose_delta("add a function")
+
+    assert result["view_membership_edits"] == []
+
+
+def test_resolve_unknown_members_repoints_a_misspelt_id_and_reports_it() -> None:
+    edits = [{"view_id": "view-capability", "add": ["assess-drfit-debt"], "remove": ["role-ea"]}]
+
+    resolved, notes = resolve_unknown_members(edits, _KNOWN)
+
+    assert resolved[0]["add"] == ["assess-drift-debt"]
+    assert resolved[0]["remove"] == ["role-ea"]
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_members_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    edits = [{"view_id": "view-capability", "add": ["something-unrelated"], "remove": []}]
+
+    resolved, notes = resolve_unknown_members(edits, _KNOWN)
+
+    assert resolved == edits
     assert notes == []
