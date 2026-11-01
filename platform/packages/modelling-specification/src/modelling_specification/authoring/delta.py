@@ -28,16 +28,35 @@ candidate ArchiMate model delta. Respond with JSON only, no prose, shaped exactl
 {"elements": [{"type": "<ArchiMate 3.2 concept, e.g. ApplicationFunction>", "id": "<optional stable id>", "name": "<name>", "desc": "<optional description>"}],
  "relationships": [{"type": "<ArchiMate 3.2 relationship, e.g. Serving>", "source": "<element id>", "target": "<element id>", "label": "<optional>"}],
  "views": [{"id": "<optional stable id>", "name": "<name>", "context": ["<context value, from \\"Existing contexts\\" below>", ...], "include_types": ["<ArchiMate 3.2 concept>", ...], "members": ["<existing element id>", ...], "viewpoint": "<standard viewpoint slug, or \\"custom\\">"}],
- "view_membership_edits": [{"view_id": "<id of an existing view, from \\"Existing views\\" below>", "add": ["<existing element id>", ...], "remove": ["<existing element id>", ...]}]}
+ "view_membership_edits": [{"view_id": "<id of an existing view, from \\"Existing views\\" below>", "add": ["<existing element id>", ...], "remove": ["<existing element id>", ...]}],
+ "element_edits": [{"id": "<existing element id>", "name": "<its new name>"}],
+ "element_removals": ["<existing element id>", ...],
+ "relationship_removals": [{"type": "<ArchiMate 3.2 relationship>", "source": "<existing element id>", "target": "<existing element id>"}]}
 
-"elements", "relationships", "views" and "view_membership_edits" are all required
-keys, each a (possibly empty) list. Only describe the new or changed elements/
-relationships/views/membership the request asks for; refer to elements already in
-the model by their existing id in "source"/"target"/"members"/"add"/"remove" rather
-than redeclaring them. The existing elements are listed below as "id | type | name":
-match what the architect names to the closest element, even when they misspell it or
-give only part of its name, and copy that id exactly. Never invent an id for an
-element that already exists.
+"elements", "relationships", "views", "view_membership_edits", "element_edits",
+"element_removals" and "relationship_removals" are all required keys, each a
+(possibly empty) list. Only describe the new or changed elements/relationships/
+views/membership/edits/removals the request asks for; refer to elements already in
+the model by their existing id in "source"/"target"/"members"/"add"/"remove"/"id"
+rather than redeclaring them. The existing elements are listed below as "id | type |
+name": match what the architect names to the closest element, even when they
+misspell it or give only part of its name, and copy that id exactly. Never invent an
+id for an element that already exists.
+
+A request to rename an existing element -- "rename X to Y", "call X something else"
+-- is an "element_edits" entry naming the existing element's id and its new "name",
+never a new "elements" entry. A request to permanently remove an existing element or
+relationship -- "remove X", "delete the Y relationship between X and Z", "X doesn't
+belong in the model anymore" -- is an "element_removals" id or a
+"relationship_removals" entry (type/source/target copied exactly from "Existing
+relationships" below); removing an element never auto-removes a relationship that
+still references it, so name that relationship's own removal too if the request
+implies it should go as well. Nothing else about an existing element or relationship
+-- its type, description, or a relationship's label -- can be edited; if the request
+asks for one of those, or to rename/retype/redescribe a relationship, return
+{"elements": [], "relationships": [], "views": [], "view_membership_edits": [],
+"element_edits": [], "element_removals": [], "relationship_removals": []} rather than
+guessing at a change this feature can't make.
 
 A view scoped to one or more contexts (e.g. "a view of everything tagged context X")
 needs "context" and broad "include_types" (every element in those contexts of those
@@ -91,11 +110,15 @@ If the request is too vague to form even one concrete option -- missing the subj
 scope, or enough detail to propose anything concrete -- reply with a short
 plain-text message instead of JSON: one clarifying question for the architect to answer.
 
-You can only ADD elements, relationships and views, and add/remove an existing element
-from an existing view's membership via "view_membership_edits" -- nothing else about an
-existing element, relationship or view can be renamed, edited or removed. If the request
-asks for one of those, return {"elements": [], "relationships": [], "views": [],
-"view_membership_edits": []} rather than re-declaring the existing element or view."""
+You can add elements, relationships and views; rename an existing element
+("element_edits"); remove an existing element or relationship ("element_removals"/
+"relationship_removals"); and add/remove an existing element from an existing view's
+membership ("view_membership_edits"). Nothing else about an existing element,
+relationship or view -- its type, its description, a relationship's label, or
+anything about a view besides its membership -- can be changed. If the request asks
+for one of those, return {"elements": [], "relationships": [], "views": [],
+"view_membership_edits": [], "element_edits": [], "element_removals": [],
+"relationship_removals": []} rather than re-declaring the existing element or view."""
 
 # Models often wrap JSON output in a single ```json fence despite being told not to.
 _SURROUNDING_FENCE = re.compile(r"\A\s*```[A-Za-z]*\n(.*?)\n```\s*\Z", re.DOTALL)
@@ -186,6 +209,9 @@ def _is_single_delta(payload: Any) -> bool:
         and isinstance(payload.get("relationships"), list)
         and isinstance(payload.get("views", []), list)
         and isinstance(payload.get("view_membership_edits", []), list)
+        and isinstance(payload.get("element_edits", []), list)
+        and isinstance(payload.get("element_removals", []), list)
+        and isinstance(payload.get("relationship_removals", []), list)
     )
 
 
@@ -317,6 +343,9 @@ def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:
             "relationships": payload["relationships"],
             "views": payload.get("views") or [],
             "view_membership_edits": payload.get("view_membership_edits") or [],
+            "element_edits": payload.get("element_edits") or [],
+            "element_removals": payload.get("element_removals") or [],
+            "relationship_removals": payload.get("relationship_removals") or [],
         }
 
     if isinstance(payload, dict) and isinstance(payload.get("options"), list) and payload["options"]:
@@ -391,6 +420,40 @@ def resolve_unknown_members(
                 repointed.append(wanted)
             fixed[key] = repointed
         resolved.append(fixed)
+    return resolved, notes
+
+
+def resolve_unknown_element_edits(
+    edits: list[dict[str, Any]], names_by_id: dict[str, str]
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Same repointing as `resolve_unknown_endpoints`, but for an element edit's own
+    `id` field -- the element being renamed, rather than a relationship endpoint."""
+    notes: list[str] = []
+    resolved: list[dict[str, Any]] = []
+    for edit in edits:
+        fixed = dict(edit)
+        wanted = fixed.get("id")
+        if isinstance(wanted, str) and wanted not in names_by_id:
+            match = _closest_known_id(wanted, names_by_id)
+            if match is not None:
+                notes.append(f"id {wanted!r} is not an element; using {match!r} ({names_by_id[match]})")
+                fixed["id"] = match
+        resolved.append(fixed)
+    return resolved, notes
+
+
+def resolve_unknown_element_removals(removals: list[str], names_by_id: dict[str, str]) -> tuple[list[str], list[str]]:
+    """Same repointing as `resolve_unknown_endpoints`, but for a flat list of element
+    ids to remove rather than a relationship's two named endpoints."""
+    notes: list[str] = []
+    resolved: list[str] = []
+    for wanted in removals:
+        if isinstance(wanted, str) and wanted not in names_by_id:
+            match = _closest_known_id(wanted, names_by_id)
+            if match is not None:
+                notes.append(f"{wanted!r} is not an element; using {match!r} ({names_by_id[match]})")
+                wanted = match
+        resolved.append(wanted)
     return resolved, notes
 
 

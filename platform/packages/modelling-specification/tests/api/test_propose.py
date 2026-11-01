@@ -93,7 +93,7 @@ def test_propose_an_empty_delta_says_nothing_was_proposed(configured_fake_llm: F
 
     body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "rename role-ea"}).json()
 
-    assert any("only add" in n for n in body["notes"])
+    assert any("No change was proposed" in n for n in body["notes"])
 
 
 def test_propose_reusing_an_existing_id_explains_that_edits_are_unsupported(
@@ -248,6 +248,64 @@ def test_propose_a_view_membership_edit_returns_validated(configured_fake_llm: F
     assert body["elements"] == []
     assert body["relationships"] == []
     assert body["views"] == []
+
+
+def test_propose_an_element_rename_returns_validated(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "element_edits": [{"id": "sub-modelling", "name": "Renamed Modelling Package"}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "rename sub-modelling to Renamed Modelling Package"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (edit,) = body["element_edits"]
+    assert edit == {"id": "sub-modelling", "name": "Renamed Modelling Package"}
+    assert body["elements"] == []
+    assert body["relationships"] == []
+
+
+def test_propose_a_relationship_removal_returns_validated(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "relationship_removals": [{"type": "Serving", "source": "cap-control-catalog",'
+        ' "target": "cap-reusable-architecture"}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove the Serving relationship from cap-control-catalog to cap-reusable-architecture"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (removal,) = body["relationship_removals"]
+    assert removal == {"type": "Serving", "source": "cap-control-catalog", "target": "cap-reusable-architecture"}
+
+
+def test_propose_an_element_removal_that_would_dangle_a_relationship_is_flagged(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": [], "element_removals": ["cap-spec-engine"]}'
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove cap-spec-engine"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "flagged"
+    assert body["validation_result"]["clean"] is False
 
 
 def test_propose_a_context_scoped_view_returns_validated_with_an_assigned_id(

@@ -22,6 +22,8 @@ from modelling_specification.authoring.delta import (
     assign_missing_ids,
     assign_missing_view_ids,
     propose_delta,
+    resolve_unknown_element_edits,
+    resolve_unknown_element_removals,
     resolve_unknown_endpoints,
     resolve_unknown_members,
     resume_proposal,
@@ -143,6 +145,9 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
         "relationships": delta.relationships,
         "views": delta.views,
         "view_membership_edits": delta.view_membership_edits,
+        "element_edits": delta.element_edits,
+        "element_removals": delta.element_removals,
+        "relationship_removals": delta.relationship_removals,
         "validation_result": delta.validation_result,
         "duplicates": delta.duplicates,
         "pattern_suggestions": delta.pattern_suggestions,
@@ -208,7 +213,16 @@ def _handle_proposed(
     new_membership_edits, membership_notes = resolve_unknown_members(
         proposed.get("view_membership_edits") or [], known_names
     )
-    notes = rel_notes + membership_notes
+    new_element_edits, element_edit_notes = resolve_unknown_element_edits(
+        proposed.get("element_edits") or [], known_names
+    )
+    new_element_removals, element_removal_notes = resolve_unknown_element_removals(
+        proposed.get("element_removals") or [], known_names
+    )
+    new_relationship_removals, relationship_removal_notes = resolve_unknown_endpoints(
+        proposed.get("relationship_removals") or [], known_names
+    )
+    notes = rel_notes + membership_notes + element_edit_notes + element_removal_notes + relationship_removal_notes
 
     if delta is None:
         delta = CandidateDelta(delta_id=_store.new_delta_id(), session_id=session_id)
@@ -220,14 +234,28 @@ def _handle_proposed(
     delta.relationships = delta.relationships + new_relationships
     delta.views = delta.views + new_views
     delta.view_membership_edits = delta.view_membership_edits + new_membership_edits
+    delta.element_edits = delta.element_edits + new_element_edits
+    delta.element_removals = delta.element_removals + new_element_removals
+    delta.relationship_removals = delta.relationship_removals + new_relationship_removals
 
     _validate_and_flag(delta)
     response = _delta_response(delta)
-    if not delta.elements and not delta.relationships and not delta.views and not delta.view_membership_edits:
+    if not any(
+        (
+            delta.elements,
+            delta.relationships,
+            delta.views,
+            delta.view_membership_edits,
+            delta.element_edits,
+            delta.element_removals,
+            delta.relationship_removals,
+        )
+    ):
         notes.append(
-            "No change was proposed. This feature can only add elements, relationships and "
-            "views, or add/remove an existing element from an existing view's membership; it "
-            "cannot otherwise edit, rename or remove existing ones."
+            "No change was proposed. This feature can add elements, relationships and views; "
+            "rename or remove an existing element; remove an existing relationship; or "
+            "add/remove an existing element from an existing view's membership. Nothing else "
+            "about an existing element, relationship or view can be changed."
         )
     if notes:
         response["notes"] = notes
@@ -252,7 +280,8 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         body: The request text.
 
     Returns:
-        The delta (id, status, elements, relationships, views, validation result,
+        The delta (id, status, elements, relationships, views, view_membership_edits,
+        element_edits, element_removals, relationship_removals, validation result,
         duplicates and pattern suggestions), plus ``notes`` when there is something to
         tell the architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
         ``delta_id`` is ``None``. When the architect asked for a way forward rather
@@ -292,6 +321,9 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
             "relationships": [],
             "views": [],
             "view_membership_edits": [],
+            "element_edits": [],
+            "element_removals": [],
+            "relationship_removals": [],
         }
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
@@ -367,6 +399,9 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
             "relationships": [],
             "views": [],
             "view_membership_edits": [],
+            "element_edits": [],
+            "element_removals": [],
+            "relationship_removals": [],
         }
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
@@ -433,6 +468,9 @@ def _validate(
     relationships: list[dict[str, Any]],
     views: list[dict[str, Any]] | None = None,
     view_membership_edits: list[dict[str, Any]] | None = None,
+    element_edits: list[dict[str, Any]] | None = None,
+    element_removals: list[str] | None = None,
+    relationship_removals: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Run every check (FR-002/003/005/008) against the given elements/relationships/
     views and return `{"validation_result", "duplicates", "pattern_suggestions",
@@ -441,8 +479,14 @@ def _validate(
     a colliding view id, viewpoint conformance -- surfacing as a `build_error`
     finding, same as an illegal relationship (duplicate/pattern checks don't apply to
     views, only to elements/relationships). `view_membership_edits` is checked the
-    same way: applied to the named existing view before the same membership checks run."""
-    metamodel_result = validate_metamodel(elements, relationships, views, view_membership_edits)
+    same way: applied to the named existing view before the same membership checks
+    run. `element_edits`/`element_removals`/`relationship_removals` (ADR-0037 item 8)
+    are applied to the existing model before the same metamodel/referential-integrity
+    checks run, so a removal that would leave a dangling relationship endpoint
+    elsewhere surfaces as the usual finding, never silently."""
+    metamodel_result = validate_metamodel(
+        elements, relationships, views, view_membership_edits, element_edits, element_removals, relationship_removals
+    )
     rules = conventions.load_rules()
     convention_findings = conventions.check_elements(elements, rules)
     findings = metamodel_result["findings"] + convention_findings
@@ -467,7 +511,15 @@ def _validate(
 def _validate_and_flag(delta: CandidateDelta) -> None:
     """Run every check against the whole accumulated delta and set
     `validation_result`/`duplicates`/`pattern_suggestions`/`status`."""
-    outcome = _validate(delta.elements, delta.relationships, delta.views, delta.view_membership_edits)
+    outcome = _validate(
+        delta.elements,
+        delta.relationships,
+        delta.views,
+        delta.view_membership_edits,
+        delta.element_edits,
+        delta.element_removals,
+        delta.relationship_removals,
+    )
     delta.validation_result = outcome["validation_result"]
     delta.duplicates = outcome["duplicates"]
     delta.pattern_suggestions = outcome["pattern_suggestions"]
@@ -650,10 +702,22 @@ def _merge_into_existing(delta: CandidateDelta, target_existing_id: str) -> None
             rel["target"] = target_existing_id
 
 
-def _apply_and_respond(delta: CandidateDelta, state_classification: str | None) -> dict[str, Any]:
-    model_io.append_delta(delta.elements, delta.relationships, delta.views)
+def _apply_delta_edits_and_removals(delta: CandidateDelta) -> None:
+    """The ADR-0037 item 8 write paths: narrow, scoped edits/removals to existing
+    elements/relationships, distinct from `append_delta`'s additive-only writes."""
     if delta.view_membership_edits:
         model_io.apply_view_membership_edits(delta.view_membership_edits)
+    if delta.element_edits:
+        model_io.apply_element_edits(delta.element_edits)
+    if delta.element_removals:
+        model_io.apply_element_removals(delta.element_removals)
+    if delta.relationship_removals:
+        model_io.apply_relationship_removals(delta.relationship_removals)
+
+
+def _apply_and_respond(delta: CandidateDelta, state_classification: str | None) -> dict[str, Any]:
+    model_io.append_delta(delta.elements, delta.relationships, delta.views)
+    _apply_delta_edits_and_removals(delta)
     code, build_errors, _warnings, _result = model_io.write_and_validate()
     if build_errors or code != 0:
         raise HTTPException(status_code=500, detail="applying the delta left the model invalid")
@@ -696,8 +760,7 @@ def _apply_with_override(
 ) -> dict[str, Any]:
     overridden_objection, objection_detail = _describe_objection(delta)
     model_io.append_delta(delta.elements, delta.relationships, delta.views)
-    if delta.view_membership_edits:
-        model_io.apply_view_membership_edits(delta.view_membership_edits)
+    _apply_delta_edits_and_removals(delta)
     code, build_errors, _warnings, _result = model_io.write_and_validate()
     if build_errors or code != 0:
         raise HTTPException(status_code=500, detail="applying the override left the model invalid")
@@ -740,11 +803,12 @@ def put_config(body: ConfigRequest) -> dict[str, bool]:
 def _first_affected_object_id(delta: CandidateDelta) -> str | None:
     """A representative id for the delta's "affected element(s)" (FR-012): the first
     new element if any, else the first new relationship's target, else the first new
-    view's own id, else the first view-membership edit's view id -- a delta that only
-    adds an edge between existing elements, only adds a view, or only edits an existing
-    view's membership, still has an affected object to render. `rendering.resolve_view_request`
-    tries `object_id` as an exact view id before an element id, so a view id resolves
-    straight to itself once it's on disk."""
+    view's own id, else the first view-membership edit's view id, else the first
+    edited/removed element's own id, else the first removed relationship's target --
+    a delta that only touches existing objects still has an affected object to
+    render where one still exists on disk (a removal has none, so falls through to
+    `None`). `rendering.resolve_view_request` tries `object_id` as an exact view id
+    before an element id, so a view id resolves straight to itself once it's on disk."""
     if delta.elements:
         return delta.elements[0].get("id")
     if delta.relationships:
@@ -753,6 +817,8 @@ def _first_affected_object_id(delta: CandidateDelta) -> str | None:
         return delta.views[0].get("id")
     if delta.view_membership_edits:
         return delta.view_membership_edits[0].get("view_id")
+    if delta.element_edits:
+        return delta.element_edits[0].get("id")
     return None
 
 
