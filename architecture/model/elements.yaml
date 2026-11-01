@@ -1638,7 +1638,12 @@
     before being proposed, with candidate duplicates surfaced for an explicit
     human decision rather than silently merged or created. Renders the
     element(s)/view under discussion live via fn-notation-engine as the
-    conversation proceeds.
+    conversation proceeds. The architect's request is scrubbed of PII/PHI by
+    sub-pii-gateway before the LLM call, under its conversational-authoring
+    context (ADR-0014 amendment): unlike fn-governance-eval's auto-redact
+    default, a detected match pauses the call for the architect to confirm,
+    edit or allow before it proceeds, since they are already present in the
+    same conversational turn.
 - type: ApplicationFunction
   id: fn-solution-modelling
   context: reusable-architecture-library
