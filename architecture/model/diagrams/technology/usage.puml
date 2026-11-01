@@ -87,6 +87,10 @@ Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
 Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x") {
   Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
 }
+Technology_SystemSoftware(e_ida94fafd401dd5f, "litellm")
+Technology_SystemSoftware(e_idd46328fd3f165d, "Presidio (presidio-analyzer / presidio-anonymizer)")
+Technology_SystemSoftware(e_idd62a55cffffa59, "pyArchimate")
+Technology_SystemSoftware(e_id6c6f4b966e8e57, "rapidfuzz")
 Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
 Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
 
@@ -144,6 +148,10 @@ Rel_Serving_Up(e_id2610ae0cc2cc50, e_id2f83bc5585b95c, "provides LLM-as-judge pa
 Rel_Serving_Up(e_id0aed952692a556, e_id2f83bc5585b95c, "runs real profile-resolve for")
 Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
 Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Serving_Up(e_ida94fafd401dd5f, e_id305eddd7c8dc55, "routes provider calls for")
+Rel_Serving_Up(e_idd46328fd3f165d, e_idc7fc80ba220752, "detects and anonymizes PII/PHI for")
+Rel_Serving_Up(e_idd62a55cffffa59, e_id7cc5a30769435c, "supplies ArchiMate 3.2 metamodel rules for")
+Rel_Serving_Up(e_id6c6f4b966e8e57, e_id7cc5a30769435c, "fuzzy-matches duplicate candidates for")
 Rel_Serving_Up(e_ida1d9ee28fe8258, e_id6603be277fb85c, "hosts")
 Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6603be277fb85c, "mounts package routers for")
 Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")

@@ -1638,7 +1638,12 @@
     before being proposed, with candidate duplicates surfaced for an explicit
     human decision rather than silently merged or created. Renders the
     element(s)/view under discussion live via fn-notation-engine as the
-    conversation proceeds.
+    conversation proceeds. The architect's request is scrubbed of PII/PHI by
+    sub-pii-gateway before the LLM call, under its conversational-authoring
+    context (ADR-0014 amendment): unlike fn-governance-eval's auto-redact
+    default, a detected match pauses the call for the architect to confirm,
+    edit or allow before it proceeds, since they are already present in the
+    same conversational turn.
 - type: ApplicationFunction
   id: fn-solution-modelling
   context: reusable-architecture-library
@@ -2013,6 +2018,38 @@
     node-app-server's `orchestration/compose/` stack through the MVP
     milestone; moves to node-hosted-cluster once target architecture is
     built (ADR-0018, updated 2026-09-27).
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-litellm
+  name: litellm
+  desc: >-
+    Multi-provider LLM client library (OpenAI, Google Gemini, Anthropic Claude,
+    Ollama, GitHub Copilot) backing sub-llm-provider-config's `resolve_call`
+    (ADR-0034). Modelled per ADR-0041: a runtime dependency decided by its own
+    ADR, not just mentioned in passing.
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-presidio
+  name: Presidio (presidio-analyzer / presidio-anonymizer)
+  desc: >-
+    PII/PHI detection (regex + NER recognizers) and anonymization
+    (redact/replace/hash) engine backing sub-pii-gateway's `scrub()` contract
+    (ADR-0040). Modelled per ADR-0041.
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-pyarchimate
+  name: pyArchimate
+  desc: >-
+    Source of fixed ArchiMate 3.2 metamodel rules for fn-conversational-authoring's
+    validation step (ADR-0037 item 5). Modelled per ADR-0041.
+  props: {c4: ignore}
+- type: SystemSoftware
+  id: sw-rapidfuzz
+  name: rapidfuzz
+  desc: >-
+    Fuzzy string-matching library (`token_sort_ratio`) backing
+    fn-conversational-authoring's duplicate-candidate surfacing (ADR-0037 item
+    6, research.md R5). Modelled per ADR-0041.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-keyring

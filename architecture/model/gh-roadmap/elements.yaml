@@ -99,6 +99,13 @@
     gh-tag: v0.6.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.6.0
 - type: Deliverable
+  id: del-release-v0-7-0
+  name: v0.7.0
+  props:
+    gh-published: '2026-10-31T12:11:47Z'
+    gh-tag: v0.7.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.7.0
+- type: Deliverable
   id: del-solution-design-mvp-8-unreleased
   name: solution-design-mvp (unreleased)
   props:
@@ -321,7 +328,8 @@
   name: 'GH-136 Build the pii-gateway package: PII/PHI scrubbing before every non-exempt LLM call'
   props:
     gh-number: '136'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/136
 - type: WorkPackage
   id: wp-changeset-api-with-metamodel-validation-gh-144

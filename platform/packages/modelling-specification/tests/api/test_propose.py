@@ -182,7 +182,8 @@ def test_propose_select_turns_the_chosen_option_into_a_pending_delta(configured_
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "validated"
-    assert isinstance(body["delta_id"], str) and body["delta_id"]
+    assert isinstance(body["delta_id"], str)
+    assert body["delta_id"]
     assert body["elements"][0]["name"] == "Select Test"
 
 

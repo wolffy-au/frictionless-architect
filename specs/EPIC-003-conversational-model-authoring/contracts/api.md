@@ -69,6 +69,24 @@ Starts a session. Returns `session_id`, used by every other call below.
   ```
 - **Response (200)** — message (FR-001: ask, don't guess): when the request is too vague to form even one concrete delta and the LLM answers with a clarifying question in plain text, `{ "delta_id": null, "status": "message", "message": "...", "elements": [], "relationships": [] }`. No Candidate Delta is created and nothing is applied.
 - **Response (200)** — options (ADR-0041, a deviation from this spec's filed FR-001 text — see the ADR): when the architect asks for a way forward rather than describing one change (e.g. "what should I do about X"), `{ "delta_id": null, "status": "options", "options": [{"rationale": "...", "convention_refs": [...], "elements": [...], "relationships": [...], "notes": [...], "validation_result": {...}, "duplicates": [...], "pattern_suggestions": [...]}, ...] }` — 2-3 independently applicable candidates, each pre-validated. No Candidate Delta is created yet; pick one via `POST .../propose/select`.
+- **Response (200)** — pii_review_required (ADR-0014 amendment, GH #181): when `pii-gateway`'s `scrub()` flags a PII/PHI match in the request under the `conversational-authoring` context, `{ "delta_id": null, "status": "pii_review_required", "pii_review_required": true, "matches": [{"category": "PERSON", "location": [21, 30], "confidence": 0.85}], "elements": [], "relationships": [] }`. The LLM call has NOT been made; resolve the match via `POST .../propose/resolve-pii` before a delta is proposed.
+- **Error (502)**: the LLM call failed, was empty, or returned JSON that is not a delta or an options list — no Candidate Delta is created; the architect is told to rephrase.
+
+## POST /authoring/sessions/{session_id}/propose/resolve-pii
+
+ADR-0014 amendment: resolve a PII/PHI match that `propose` flagged for review and
+make the LLM call `propose` withheld, using the resolved text. Returns the same
+response shapes as `propose` (clean/flagged delta, options, or message) once the
+call proceeds.
+
+- **Body**: `{ "resolution": "redact" }` — proceeds with the matched span(s) redacted.
+- **Body**: `{ "resolution": "allow" }` — proceeds with the original text unchanged.
+- **Body**: `{ "resolution": "edit", "edited_text": "..." }` — `edited_text` is the architect's own replacement for the flagged original (required, must be non-blank). It is **not** assumed clean: `edited_text` is re-scrubbed under the same `conversational-authoring` context before proceeding. If it comes back flagged again, the response is another `pii_review_required` (below) with no LLM call made — never silently sent on, never escalated to a different behaviour. If it comes back clean, the call proceeds with `edited_text` unchanged.
+- **Response (200)** — resolved: the resulting delta/options/message, same shape as `propose`'s.
+- **Response (200)** — still flagged (`edit` only): `{ "delta_id": null, "status": "pii_review_required", "pii_review_required": true, "matches": [...], "elements": [], "relationships": [] }`, same shape as `propose`'s pii_review_required response. The session's pending confirmation is replaced with the new one; resolve it with another `resolve-pii` call.
+- **Error (404)**: unknown session.
+- **Error (409)**: no PII/PHI match is pending review for this session (none was flagged, it was already resolved, or a later `propose` call superseded it).
+- **Error (400)**: `resolution` is `"edit"` with no (or blank) `edited_text`.
 - **Error (502)**: the LLM call failed, was empty, or returned JSON that is not a delta or an options list — no Candidate Delta is created; the architect is told to rephrase.
 
 ## POST /authoring/sessions/{session_id}/propose/select

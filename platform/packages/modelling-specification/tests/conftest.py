@@ -21,6 +21,10 @@ def configured_fake_llm(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Fake
         tmp_path / "llm.toml",
     )
     monkeypatch.setenv("LLM_PROVIDER_CONFIG_PATH", str(config))
+    # pii-gateway's scrub() now sits in front of every propose_delta() call
+    # (ADR-0014, FR-007) -- keep its config/audit files out of the real $HOME too.
+    monkeypatch.setenv("PII_GATEWAY_CONFIG_PATH", str(tmp_path / "pii-gateway.toml"))
+    monkeypatch.setenv("PII_GATEWAY_AUDIT_PATH", str(tmp_path / "pii-gateway-audit.jsonl"))
     fake = FakeCompletion()
     monkeypatch.setattr("modelling_specification.authoring.delta.completion", fake)
     return fake

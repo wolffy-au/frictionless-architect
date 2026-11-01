@@ -3,7 +3,8 @@
 - **Status:** Proposed
 - **Date:** 2026-10-10
 - **Sources:** `specs/EPIC-003-conversational-model-authoring/plan.md` §Constitution Check
-  (Principle X), `specs/EPIC-003-conversational-model-authoring/research.md` (R1, R2, R6, R7, R12)
+  (Principle X), `specs/EPIC-003-conversational-model-authoring/research.md` (R1, R2, R3, R5,
+  R6, R7, R12)
 
 <!-- adr-auditor 2026-10-29: evidence supports Accepted: implemented (platform/packages/modelling-specification,
      architecture/model/conventions.yaml, root build.py/render_diagrams.py shell into its CLI) and cited
@@ -50,7 +51,16 @@ references, corrected alongside this ADR).
    controls/compliance evidence; reusing `store-ledger` would couple architecture decisions
    to evidence-grade retention semantics they don't need. `adr-auditor` already sweeps for
    exactly this kind of undocumented decision.
-5. **Business-layer/ValueStream wiring**: a new `vs-intent-to-model` ValueStream and
+5. **Metamodel validation library**: pyArchimate is the fixed source of ArchiMate 3.2
+   metamodel rules (item 3 above); promoted from a root dev/test-only dependency to a
+   runtime dependency of `modelling-specification`, since the running agent needs it at
+   request time, not just at build/test time (`research.md` R3).
+6. **Duplicate-detection library**: `rapidfuzz.fuzz.token_sort_ratio`, threshold 80, matches
+   `name`/`description` for the duplicate-candidate surfacing in item 4 above; `type`
+   matches only on exact equality, and a candidate exists only when ≥2 of the 3 fields
+   match (`research.md` R5). Also promoted to a runtime dependency alongside pyArchimate
+   (`research.md` R3).
+7. **Business-layer/ValueStream wiring**: a new `vs-intent-to-model` ValueStream and
    `process-conversational-authoring` BusinessProcess, served by the existing
    `coa-executable-governance` course of action and `stk-architecture` stakeholder — the same
    1:1 stream↔outcome, stream↔course-of-action shape as the other four outcome streams. The
@@ -78,6 +88,10 @@ references, corrected alongside this ADR).
   the control against them going stale or unreviewed, not a new mechanism.
 - Follow-up: `plan.md`'s two "ADR-0036" references are corrected to "ADR-0037" in the same
   change that files this record, so the plan and the filed ADR agree.
+- **Model impact**: items 5 and 6 now cross ADR-0044's "subject of its own ADR decision"
+  bar, so `sw-pyarchimate` and `sw-rapidfuzz` (`SystemSoftware`) are added to
+  `architecture/model/`, each wired to `fn-conversational-authoring` with a `Serving`
+  relationship. Diagrams including that function are regenerated in the same change.
 
 ## Alternatives considered
 
@@ -95,6 +109,15 @@ references, corrected alongside this ADR).
   artifact: rejected, conflates architecture-decision traceability with controls evidence.
   A dedicated override-records table/file: rejected, a second traceability mechanism
   alongside the ADR log for no gain.
+- **Metamodel validation library** — hand-rolling an ArchiMate 3.2 metamodel rules engine:
+  rejected, duplicates a maintained, spec-conformant rule set for no gain. A different
+  ArchiMate parsing library: not evaluated — pyArchimate already underlies `build.py`/
+  `render_diagrams.py`/the skill's `validate.py`, and switching would fork the single-
+  implementation goal item 2 sets.
+- **Duplicate-detection library** — plain Levenshtein ratio: rejected, more sensitive to
+  word-order differences than architect-authored names/descriptions tolerate.
+  Embedding-similarity: rejected, a new ML dependency unjustified for matching short
+  strings (`research.md` R5).
 - **Business wiring** — folding conversational authoring into `vs-governed-delivery`'s
   `vss-baseline` stage: rejected, contradicts the already-settled spec decision (Assumption
   6) that this gets its own ValueStream. A multi-stage `vs-intent-to-model` mirroring the

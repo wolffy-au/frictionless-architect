@@ -1,3 +1,18 @@
+## v0.8.0 (2026-11-01)
+
+### Feat
+
+- **portal**: mount the pii-gateway settings router
+- **modelling-specification**: scrub PII/PHI before every LLM call
+- **pii-gateway**: build the PII/PHI anonymization gateway package
+
+### Fix
+
+- **modelling-specification**: flag PII matches instead of auto-redacting
+- **modelling-specification**: split composite assertion in propose test
+- **pii-gateway**: confine env path overrides to a base dir
+- **model**: regenerate diagrams stale from the it4it submodule gap
+
 ## v0.7.0 (2026-10-31)
 
 ### Feat

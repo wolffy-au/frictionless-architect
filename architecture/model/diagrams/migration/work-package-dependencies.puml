@@ -16,7 +16,7 @@ Implementation_WorkPackage(e_id97a8d1f00f725a, " --GH-19 ADR: decide the OSCAL/t
 Implementation_WorkPackage(e_id340c952eaee456, "GH-61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams")
 Implementation_WorkPackage(e_id5d12242ca8a553, " --GH-51 ArchiMate namespace mismatch: parser pins 3.0, bundled XSDs mix 3.0/3.1--")
 Implementation_WorkPackage(e_id0d0b53b9527a58, " --GH-50 ARCHITECTURE.md still describes the old 8-component split, not the 6-subsystem decomposition--")
-Implementation_WorkPackage(e_idc21d5f17bfc154, "GH-136 Build the pii-gateway package: PII/PHI scrubbing before every non-exempt LLM call")
+Implementation_WorkPackage(e_idc21d5f17bfc154, " --GH-136 Build the pii-gateway package: PII/PHI scrubbing before every non-exempt LLM call--")
 Implementation_WorkPackage(e_id19df20e325705a, " --GH-103 chore(model): place WP 7 and art-pkg artifacts under a Plateau--")
 Implementation_WorkPackage(e_ida3e6c1727c645c, " --GH-109 chore(model): rename the art-* id prefix to stop implying the ArchiMate Artifact type--")
 Implementation_WorkPackage(e_idac2bec25d8f058, " --GH-101 chore(typing): apply mypy strict to skill/build tooling modules--")

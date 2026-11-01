@@ -1017,6 +1017,10 @@
 - {type: Assignment, source: sw-neo4j, target: art-tech-neo4j-volume, label: writes to}
 - {type: Realization, source: art-tech-neo4j-volume, target: store-akg}
 - {type: Assignment, source: node-app-server, target: sw-keyring, label: hosts}
+- {type: Serving, source: sw-litellm, target: sub-llm-provider-config, label: routes provider calls for}
+- {type: Serving, source: sw-presidio, target: sub-pii-gateway, label: detects and anonymizes PII/PHI for}
+- {type: Serving, source: sw-pyarchimate, target: fn-conversational-authoring, label: supplies ArchiMate 3.2 metamodel rules for}
+- {type: Serving, source: sw-rapidfuzz, target: fn-conversational-authoring, label: fuzzy-matches duplicate candidates for}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: node-app-server}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-neo4j}
 - {type: Aggregation, source: plat-policy-to-oscal-mvp-1, target: sw-keyring}

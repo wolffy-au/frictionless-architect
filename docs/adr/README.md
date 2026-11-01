@@ -142,10 +142,18 @@ not yet re-ratified in a spec).
   split per-context with `include_neighbours` to keep cross-context edges; a
   generated context map derives Serving edges between contexts from element-level
   crossings
-- **P** — [0041](0041-structured-suggestion-options-in-delta-py.md) — `delta.py` gains
+- **A** — [0041](0041-structured-suggestion-options-in-delta-py.md) — `delta.py` gains
   structured, validated suggestion options ("ways forward") built against today's
   ADR-0037 agent, a deliberate documented deviation from GH #68's filed #140-#151
   breakdown rather than waiting for #142's journey-API rework
 - **P** — [0042](0042-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
   generated wiki as repo-governance tooling; transitive security floors pinned in each package
   manifest (draft stub, decision unconfirmed)
+- **A** — [0043](0043-pii-gateway-detector-library-presidio.md) — `pii-gateway`
+  (GH #136) uses Presidio as its detection/anonymization engine;
+  third-party `sether`, `scrubadub`, cloud DLP APIs, and regex-only were
+  considered and rejected
+- **A** — [0044](0044-adrd-dependency-gets-technology-element.md) — A runtime
+  dependency decided by its own ADR (not just mentioned in passing) gets a
+  Technology-layer `SystemSoftware` element; backfills `sw-litellm`, adds
+  `sw-presidio`/`sw-pyarchimate`/`sw-rapidfuzz`

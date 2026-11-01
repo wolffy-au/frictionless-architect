@@ -2,7 +2,8 @@
 (FR-001), via `llm-provider-config`/`litellm` (ADR-0034, R4), component
 `modelling-specification.conversational-authoring`. Mirrors
 `controls-compliance-catalog.llm_client`'s own seam (same pattern, no new credential
-path, plan.md Security).
+path, plan.md Security). The request is scrubbed of PII/PHI before the LLM call
+(ADR-0014, pii-gateway FR-007).
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from typing import Any
 
 from litellm import completion
 from llm_provider_config import MissingCredentialError, NotConfiguredError, resolve_call
+from pii_gateway import PendingConfirmation, ScrubAction, scrub
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +74,19 @@ class LlmMessage(Exception):
         self.text = text
 
 
+class PiiReviewRequired(Exception):
+    """`scrub()` flagged a PII/PHI match in the architect's request for review
+    (ADR-0014 amendment, `conversational-authoring` context) rather than
+    auto-redacting -- the LLM call must NOT proceed yet. Carries the
+    `PendingConfirmation` the caller resolves (via `pii_gateway.Resolution`) before
+    retrying with `resume_proposal()`. No Candidate Delta is created."""
+
+    def __init__(self, pending_confirmation: PendingConfirmation) -> None:
+        super().__init__("a PII/PHI match in the request needs the architect's review before the LLM call proceeds")
+        self.pending_confirmation = pending_confirmation
+        self.matches = pending_confirmation.matches
+
+
 def _message_content(response: Any) -> str:
     choices = getattr(response, "choices", None) or []
     message = getattr(choices[0], "message", None) if choices else None
@@ -125,11 +140,48 @@ def propose_delta(
     Raises `DeltaProposalError` for every way this can fail short of one of those
     shapes: no provider configured, no credential, the call itself failing, an empty
     response, or a response that is not the required JSON shape. None of these create
-    a Candidate Delta -- the caller (router.py) maps this to a 502 with no write."""
+    a Candidate Delta -- the caller (router.py) maps this to a 502 with no write.
+
+    Raises `PiiReviewRequired` when `scrub()` flags a PII/PHI match in `request` for
+    the architect's review (ADR-0014 amendment) -- the LLM call is NOT made; the
+    caller must resolve the flagged match (via `pii_gateway.Resolution`) and retry
+    with `resume_proposal()`."""
     stripped = request.strip()
     if not stripped:
         raise DeltaProposalError("Cannot propose a delta from an empty request.")
 
+    return resume_proposal(scrub_or_require_review(stripped), catalogue, rules)
+
+
+def scrub_or_require_review(text: str) -> str:
+    """Scrub `text` under the `conversational-authoring` context (ADR-0014
+    amendment) and return the text to proceed with, or raise `PiiReviewRequired`
+    if a match was flagged rather than auto-redacted.
+
+    Used both by `propose_delta`'s own first pass and by the router's
+    `resolve-pii` `edit` path: an architect-supplied replacement string is NOT
+    assumed clean -- it is re-scrubbed exactly like any other request text, so a
+    still-sensitive edit is re-flagged rather than ever reaching the LLM call
+    unscrubbed (never auto-escalated to a different behaviour; the caller sees
+    the same `pii_review_required` shape as a fresh `propose` would)."""
+    result = scrub(text, context="conversational-authoring")
+    if result.action == ScrubAction.FLAGGED_FOR_REVIEW:
+        if result.pending_confirmation is None:  # pragma: no cover - scrub() always sets this when flagged
+            raise DeltaProposalError("PII/PHI was flagged for review but no confirmation handle was returned.")
+        raise PiiReviewRequired(result.pending_confirmation)
+    return result.text
+
+
+def resume_proposal(
+    resolved_text: str,
+    catalogue: list[tuple[str, str, str]] | None = None,
+    rules: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Make the LLM call with text that has already been scrubbed or explicitly
+    resolved by the architect (a `PiiReviewRequired` match the caller resolved via
+    `pii_gateway.Resolution`, or `propose_delta`'s own non-flagged `scrub()` output).
+    Never re-scrubs -- callers decide separately whether `resolved_text` still needs
+    scrubbing. Same return shape and error behaviour as `propose_delta`."""
     try:
         call = resolve_call(COMPONENT_ID)
     except (NotConfiguredError, MissingCredentialError) as exc:
@@ -140,7 +192,7 @@ def propose_delta(
         system += f"\n\nExisting elements:\n{_catalogue_text(catalogue)}"
     if rules:
         system += f"\n\nEnterprise convention rules:\n{_rules_text(rules)}"
-    messages = [{"role": "system", "content": system}, {"role": "user", "content": stripped}]
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": resolved_text}]
     try:
         response = completion(messages=messages, **call.completion_kwargs())
     except Exception as exc:  # noqa: BLE001 - litellm raises a wide family of provider/network errors
