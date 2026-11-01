@@ -34,6 +34,14 @@
   to ADR-0031's. GH #68 must wire `fn-conversational-authoring` through `pii-gateway`
   (ADR-0014) before that agent ships; see ADR-0014's amended scope list.
 
+  **Update (2026-10-31, GH #181):** wired, and fixed — `fn-conversational-authoring`
+  (`modelling_specification.authoring.delta.propose_delta()`) now scrubs under
+  `pii-gateway`'s `conversational-authoring` context (not the never-implemented
+  `spec-generator` context it was mis-wired to) and withholds the LLM call entirely
+  on a flagged match until the architect resolves it via
+  `POST /authoring/sessions/{id}/propose/resolve-pii`, per ADR-0014's flag-for-review
+  default for this agent. See ADR-0014's 2026-10-31 amendment.
+
 ### Deferred solution decisions (were prematurely fixed in the original draft)
 
 These are implementation choices, not requirements. They are listed so the rework can decide

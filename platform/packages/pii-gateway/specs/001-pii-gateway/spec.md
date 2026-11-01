@@ -49,8 +49,14 @@ content is scrubbed of PII/PHI and, if nothing is found, passed through unchange
 `architecture-governance`'s AI-assisted ADR/evaluation drafting is in scope for this same
 guarantee (ADR-0014), but that package doesn't exist yet (`ARCHITECTURE.md` §4 lists it
 **build**, not built) — there is no drafting call site to wire today. Wiring it is
-deferred to that package's own build-out, the same deferral already used for GH #68's
-conversational-authoring agent (2026-10-31 decision, GH #136 comment thread).
+deferred to that package's own build-out.
+
+**Update (2026-10-31, GH #181):** GH #68's conversational-authoring agent
+(`fn-conversational-authoring`, `modelling-specification.authoring.delta`) is no
+longer deferred — it is built, and as of this update correctly wired to this
+package's `conversational-authoring` context (flag-for-review, per User Story 2
+below), not the `spec-generator` context it was mis-wired to. The deferral
+language above now applies only to `architecture-governance`.
 
 **Why this priority**: This is ADR-0014's mandatory requirement and the reason GH #136
 exists — without it, FR-004 is unenforced in code on this feature's only buildable
@@ -196,9 +202,11 @@ assert the new behavior applies immediately.
 > **Deferred (not a numbered FR, no task in this feature)**: `architecture-governance`'s
 > ADR/evaluation drafting path will need to call this package's scrub contract before
 > any content reaches the LLM provider, once that package is built — tracked as
-> `architecture-governance`'s own future acceptance obligation (2026-10-31 decision),
-> the same deferral pattern already used for GH #68. FR-006 is intentionally skipped in
-> the numbering below rather than assigned to a requirement with no coverage task.
+> `architecture-governance`'s own future acceptance obligation (2026-10-31 decision).
+> GH #68's conversational-authoring agent is no longer under this deferral — it is
+> built and wired through the `conversational-authoring` context (2026-10-31 update,
+> GH #181). FR-006 is intentionally skipped in the numbering below rather than
+> assigned to a requirement with no coverage task.
 
 - **FR-007**: `modelling-specification`'s spec-drafting path MUST call this package's
   scrub contract before any content reaches the LLM provider.
@@ -257,9 +265,11 @@ Field-level shape, relationships and lifecycle live in `data-model.md`'s class d
   rather than silently passing unscrubbed content through; this is a new default this spec
   introduces, not yet covered by an ADR, and should be revisited if it proves too strict
   in practice.
-- GH #68's conversational-modelling agent is not built here; this package only commits to
-  the `scrub()` contract and flag-for-review behavior that agent will depend on once built
-  (tracked as its own acceptance obligation, per the 2026-10-31 GH #68 comment).
+- GH #68's conversational-modelling agent was not built in this feature; this package
+  committed to the `scrub()` contract and flag-for-review behavior that agent depends on.
+  **Update (2026-10-31, GH #181):** the agent is now built
+  (`modelling-specification.authoring.delta.propose_delta()`) and correctly wired to
+  the `conversational-authoring` context, closing this assumption out.
 - `architecture-governance` is not built here either (`ARCHITECTURE.md` §4: status
   **build**, not yet built) — the same deferral pattern applies: this package exposes
   the `scrub()` contract the Deferred callout above (formerly FR-006) requires, and
