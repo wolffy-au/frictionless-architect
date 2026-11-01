@@ -1115,6 +1115,36 @@ def test_merge_candidate_catches_a_proposed_view_id_colliding_with_a_real_existi
     assert any("duplicate view id: view-context-map" in e for e in errors)
 
 
+def test_merge_candidate_validates_a_clean_view_membership_edit_against_the_real_model() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        None,
+        [{"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}],
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_a_view_membership_edit_adding_an_unknown_member() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        None,
+        [{"view_id": "view-vs-governed-delivery", "add": ["no-such-element"], "remove": []}],
+    )
+    assert model is None
+    assert any("no-such-element" in e for e in errors)
+
+
+def test_merge_candidate_flags_a_view_membership_edit_against_an_unknown_view_id() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [], [], None, [{"view_id": "view-no-such-view", "add": ["sub-modelling"], "remove": []}]
+    )
+    assert model is None
+    assert any("unknown view id: view-no-such-view" in e for e in errors)
+
+
 def test_existing_view_ids_includes_a_real_view() -> None:
     assert "view-context-map" in model_io.existing_view_ids()
 
@@ -1179,6 +1209,44 @@ def test_append_delta_quotes_values_containing_yaml_special_characters(tmp_path:
     model_io.append_delta([{"type": "ApplicationFunction", "id": "fn-new", "name": "Has: a colon"}], [])
 
     assert "name: 'Has: a colon'" in elements_path.read_text()
+
+
+def test_apply_view_membership_edits_adds_and_removes_members(tmp_path: Any, monkeypatch: Any) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text(
+        "- id: view-a\n  name: View A\n  members:\n    - keep-me\n    - drop-me\n- id: view-b\n  name: View B\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_view_membership_edits([{"view_id": "view-a", "add": ["new-member"], "remove": ["drop-me"]}])
+
+    text = views_path.read_text()
+    assert "- keep-me" in text
+    assert "- drop-me" not in text
+    assert "- new-member" in text
+    assert "- id: view-b\n  name: View B\n" in text
+
+
+def test_apply_view_membership_edits_adds_a_members_key_to_a_view_with_none_yet(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- id: view-a\n  name: View A\n- id: view-b\n  name: View B\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_view_membership_edits([{"view_id": "view-a", "add": ["new-member"], "remove": []}])
+
+    text = views_path.read_text()
+    assert "- id: view-a\n  members:\n    - new-member\n  name: View A\n- id: view-b\n" in text
+
+
+def test_apply_view_membership_edits_raises_for_an_unknown_view_id(tmp_path: Any, monkeypatch: Any) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- id: view-a\n  name: View A\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="no view 'view-no-such-view'"):
+        model_io.apply_view_membership_edits([{"view_id": "view-no-such-view", "add": ["x"], "remove": []}])
 
 
 def test_write_and_validate_against_the_real_repo_model() -> None:

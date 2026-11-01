@@ -27,15 +27,17 @@ candidate ArchiMate model delta. Respond with JSON only, no prose, shaped exactl
 
 {"elements": [{"type": "<ArchiMate 3.2 concept, e.g. ApplicationFunction>", "id": "<optional stable id>", "name": "<name>", "desc": "<optional description>"}],
  "relationships": [{"type": "<ArchiMate 3.2 relationship, e.g. Serving>", "source": "<element id>", "target": "<element id>", "label": "<optional>"}],
- "views": [{"id": "<optional stable id>", "name": "<name>", "context": ["<context value, from \\"Existing contexts\\" below>", ...], "include_types": ["<ArchiMate 3.2 concept>", ...], "members": ["<existing element id>", ...], "viewpoint": "<standard viewpoint slug, or \\"custom\\">"}]}
+ "views": [{"id": "<optional stable id>", "name": "<name>", "context": ["<context value, from \\"Existing contexts\\" below>", ...], "include_types": ["<ArchiMate 3.2 concept>", ...], "members": ["<existing element id>", ...], "viewpoint": "<standard viewpoint slug, or \\"custom\\">"}],
+ "view_membership_edits": [{"view_id": "<id of an existing view, from \\"Existing views\\" below>", "add": ["<existing element id>", ...], "remove": ["<existing element id>", ...]}]}
 
-"elements", "relationships" and "views" are all required keys, each a (possibly empty)
-list. Only describe the new or changed elements/relationships/views the request asks
-for; refer to elements already in the model by their existing id in "source"/"target"/
-"members" rather than redeclaring them. The existing elements are listed below as
-"id | type | name": match what the architect names to the closest element, even when
-they misspell it or give only part of its name, and copy that id exactly. Never invent
-an id for an element that already exists.
+"elements", "relationships", "views" and "view_membership_edits" are all required
+keys, each a (possibly empty) list. Only describe the new or changed elements/
+relationships/views/membership the request asks for; refer to elements already in
+the model by their existing id in "source"/"target"/"members"/"add"/"remove" rather
+than redeclaring them. The existing elements are listed below as "id | type | name":
+match what the architect names to the closest element, even when they misspell it or
+give only part of its name, and copy that id exactly. Never invent an id for an
+element that already exists.
 
 A view scoped to one or more contexts (e.g. "a view of everything tagged context X")
 needs "context" and broad "include_types" (every element in those contexts of those
@@ -44,6 +46,12 @@ not an exhaustive "members" list naming each one by hand. Use "members" only for
 built from specific named elements regardless of context. "viewpoint" is optional;
 omit it, or use "custom", for a cross-cutting view that doesn't match one of the
 standard ArchiMate viewpoints.
+
+A request to add or drop an already-existing element from an already-existing view --
+e.g. "add X to view Y so it connects", "add that chain as members of view Y", "drop Z
+from view Y" -- is a "view_membership_edits" entry naming the existing view's id and
+the existing element id(s) to "add"/"remove", never a "views" entry (that key is only
+for a brand-new view) and never a new element.
 
 If the architect instead asks for a way forward -- "what should I do about X", "suggest
 options for Y", "how should I evolve Z" -- rather than describing one concrete change,
@@ -54,8 +62,9 @@ reply with JSON shaped exactly as:
               "elements": [...], "relationships": [...]}]}
 
 Give 2-3 distinct options, each a complete, independently applicable candidate delta in the
-same "elements"/"relationships" shape as above (an option never proposes a view -- "views"
-is only ever part of the one-concrete-change shape). Ground each rationale in the existing
+same "elements"/"relationships" shape as above (an option never proposes a view or a
+membership edit -- "views" and "view_membership_edits" are only ever part of the
+one-concrete-change shape). Ground each rationale in the existing
 elements and, where relevant, the enterprise convention rules listed below -- cite their
 ids rather than describing them vaguely. Never invent a rule id that isn't listed.
 
@@ -82,10 +91,11 @@ If the request is too vague to form even one concrete option -- missing the subj
 scope, or enough detail to propose anything concrete -- reply with a short
 plain-text message instead of JSON: one clarifying question for the architect to answer.
 
-You can only ADD elements, relationships and views. If the request asks to rename, edit or
-remove something that already exists -- including a view's own scope or membership --
-return {"elements": [], "relationships": [], "views": []} rather than re-declaring the
-existing element or view."""
+You can only ADD elements, relationships and views, and add/remove an existing element
+from an existing view's membership via "view_membership_edits" -- nothing else about an
+existing element, relationship or view can be renamed, edited or removed. If the request
+asks for one of those, return {"elements": [], "relationships": [], "views": [],
+"view_membership_edits": []} rather than re-declaring the existing element or view."""
 
 # Models often wrap JSON output in a single ```json fence despite being told not to.
 _SURROUNDING_FENCE = re.compile(r"\A\s*```[A-Za-z]*\n(.*?)\n```\s*\Z", re.DOTALL)
@@ -175,6 +185,7 @@ def _is_single_delta(payload: Any) -> bool:
         isinstance(payload.get("elements"), list)
         and isinstance(payload.get("relationships"), list)
         and isinstance(payload.get("views", []), list)
+        and isinstance(payload.get("view_membership_edits", []), list)
     )
 
 
@@ -207,8 +218,8 @@ def propose_delta(
 ) -> dict[str, Any]:
     """Call the configured LLM and return a candidate delta, in one of two shapes:
     a single concrete change, `{"elements": [...], "relationships": [...], "views":
-    [...]}`; or, when the architect asked for a way forward rather than describing
-    one change,
+    [...], "view_membership_edits": [...]}`; or, when the architect asked for a way
+    forward rather than describing one change,
     `{"options": [{"rationale": ..., "convention_refs": [...], "elements": [...],
     "relationships": [...]}, ...]}` -- 2-3 alternatives, each independently a
     complete candidate delta (FR-001, "suggests ways forward" per GH #68).
@@ -305,6 +316,7 @@ def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:
             "elements": payload["elements"],
             "relationships": payload["relationships"],
             "views": payload.get("views") or [],
+            "view_membership_edits": payload.get("view_membership_edits") or [],
         }
 
     if isinstance(payload, dict) and isinstance(payload.get("options"), list) and payload["options"]:
@@ -353,6 +365,31 @@ def resolve_unknown_endpoints(
                 if match is not None:
                     notes.append(f"{end} {wanted!r} is not an element; using {match!r} ({names_by_id[match]})")
                     fixed[end] = match
+        resolved.append(fixed)
+    return resolved, notes
+
+
+def resolve_unknown_members(
+    edits: list[dict[str, Any]], names_by_id: dict[str, str]
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Same repointing as `resolve_unknown_endpoints`, but for a view membership
+    edit's `add`/`remove` element id lists rather than a relationship's two named
+    endpoints."""
+    notes: list[str] = []
+    resolved: list[dict[str, Any]] = []
+    for edit in edits:
+        fixed = dict(edit)
+        for key in ("add", "remove"):
+            wanted_ids = fixed.get(key) or []
+            repointed = []
+            for wanted in wanted_ids:
+                if isinstance(wanted, str) and wanted not in names_by_id:
+                    match = _closest_known_id(wanted, names_by_id)
+                    if match is not None:
+                        notes.append(f"{key} {wanted!r} is not an element; using {match!r} ({names_by_id[match]})")
+                        wanted = match
+                repointed.append(wanted)
+            fixed[key] = repointed
         resolved.append(fixed)
     return resolved, notes
 

@@ -30,6 +30,7 @@ identifiers (and therefore diagrams).
 
 from __future__ import annotations
 
+import re
 import sys
 import uuid
 from pathlib import Path
@@ -1171,10 +1172,127 @@ def append_delta(
         _append_yaml_flow_entries(HERE / VIEWS_FILENAME, views, _VIEW_FIELD_ORDER)
 
 
+_VIEW_START_RE = re.compile(r"^- id:\s*(\S+)\s*$")
+_MEMBERS_KEY_RE = re.compile(r"^  members:\s*$")
+_MEMBERS_ITEM_RE = re.compile(r"^    - (\S+)\s*$")
+
+
+def _view_block_bounds(lines: list[str], view_id: str) -> tuple[int, int] | None:
+    """`[start, end)` line range of the `views.yaml` top-level entry whose first line
+    is `- id: <view_id>`, through the line just before the next such line (or EOF) --
+    relies on every entry in this file starting with its own `id:` first, which is
+    this file's one established convention (no entry starts with another key)."""
+    start = next(
+        (i for i, line in enumerate(lines) if (m := _VIEW_START_RE.match(line.rstrip("\n"))) and m.group(1) == view_id),
+        None,
+    )
+    if start is None:
+        return None
+    end = next((i for i in range(start + 1, len(lines)) if _VIEW_START_RE.match(lines[i].rstrip("\n"))), len(lines))
+    return start, end
+
+
+def _members_block_bounds(lines: list[str], start: int, end: int) -> tuple[int, int] | None:
+    """`[members_key_idx, items_end)` -- the `  members:` key line through its last
+    `    - id` item line, within `[start, end)`. `None` if the view has no
+    `members:` key at all."""
+    key_idx = next((i for i in range(start, end) if _MEMBERS_KEY_RE.match(lines[i].rstrip("\n"))), None)
+    if key_idx is None:
+        return None
+    items_end = key_idx + 1
+    while items_end < end and _MEMBERS_ITEM_RE.match(lines[items_end].rstrip("\n")):
+        items_end += 1
+    if items_end < end and lines[items_end].strip().startswith("#"):
+        raise ValueError(
+            "a comment line immediately follows the members: block this editor just stopped reading -- "
+            "refusing to guess whether more members follow it; edit views.yaml by hand for this view instead"
+        )
+    return key_idx, items_end
+
+
+def apply_view_membership_edits(edits: list[dict[str, Any]]) -> None:
+    """Add/remove existing element ids from an existing view's `members:` list in
+    `views.yaml`, in place -- the one existing-view edit this module allows,
+    distinct from `append_delta`'s additive-only writes (a view's own curated scope
+    is architect-maintained, so changing what it shows isn't the same kind of change
+    as adding a wholly new element/relationship/view). Touches only the `members:`
+    block of the matching view entry (inserting a new one right after its `- id:`
+    line if it has none yet) -- every other line in the file, including that view's
+    own other keys, is untouched.
+
+    Raises `ValueError` for a view id not found in `views.yaml` (this editor only
+    ever touches the first-party file, never a layer's), or a `members:` layout it
+    doesn't recognise -- this file's one established style, a `  members:` key
+    followed by `    - id` lines with nothing else interleaved. It never guesses at a
+    rewrite it can't do precisely; a Candidate Delta that would hit either case is
+    expected to have already been rejected by `merge_candidate`'s own check for the
+    first, and this function raising for the second surfaces as the apply-step 500
+    FR-002 already treats any other post-write validation failure as."""
+    path = HERE / VIEWS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for edit in edits:
+        view_id = edit["view_id"]
+        bounds = _view_block_bounds(lines, view_id)
+        if bounds is None:
+            raise ValueError(f"no view {view_id!r} in {VIEWS_FILENAME}")
+        start, end = bounds
+        members_bounds = _members_block_bounds(lines, start, end)
+        if members_bounds is None:
+            existing: list[str] = []
+        else:
+            key_idx, items_end = members_bounds
+            existing = [
+                m.group(1)
+                for line in lines[key_idx + 1 : items_end]
+                if (m := _MEMBERS_ITEM_RE.match(line.rstrip("\n")))
+            ]  # noqa: E501
+        remove = set(edit.get("remove", []))
+        new_members = [m for m in existing if m not in remove]
+        for eid in edit.get("add", []):
+            if eid not in new_members:
+                new_members.append(eid)
+        if members_bounds is None:
+            if not edit.get("add"):
+                continue  # nothing to remove from a view that has no members: key
+            block = ["  members:\n", *(f"    - {m}\n" for m in new_members)]
+            lines[start + 1 : start + 1] = block
+        else:
+            key_idx, items_end = members_bounds
+            block = [lines[key_idx], *(f"    - {m}\n" for m in new_members)]
+            lines[key_idx:items_end] = block
+    path.write_text("".join(lines))
+
+
+def _membership_edited_view(view: dict[str, Any], edit: dict[str, Any]) -> dict[str, Any]:
+    """`view` with `edit`'s `add`/`remove` element ids applied to its `members:` list
+    -- order preserved for survivors, added ids appended, never duplicated."""
+    members = [m for m in (view.get("members") or []) if m not in edit.get("remove", [])]
+    for eid in edit.get("add", []):
+        if eid not in members:
+            members.append(eid)
+    return {**view, "members": members}
+
+
+def _apply_membership_edits_for_validation(
+    views: list[dict[str, Any]], edits: list[dict[str, Any]], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`views` with each of `edits` applied to the view it names -- used by
+    `merge_candidate` so a proposed membership edit is checked (unknown member id,
+    etc.) against the *resulting* view, the same way a proposed view itself is
+    checked. An edit naming a view id that doesn't exist is reported the same way
+    `add_views` reports any other unknown reference, rather than silently ignored."""
+    edits_by_id = {e["view_id"]: e for e in edits}
+    edited = [_membership_edited_view(v, edits_by_id[v["id"]]) if v.get("id") in edits_by_id else v for v in views]
+    for view_id in edits_by_id.keys() - {v.get("id") for v in views}:
+        errors.append(f"view membership edit references unknown view id: {view_id}")
+    return edited
+
+
 def merge_candidate(
     delta_elements: list[dict[str, Any]],
     delta_relationships: list[dict[str, Any]],
     delta_views: list[dict[str, Any]] | None = None,
+    delta_view_membership_edits: list[dict[str, Any]] | None = None,
 ) -> tuple[Model | None, list[str], list[str]]:
     """Load the current YAML model from disk, merge a Candidate Delta's elements/
     relationships/views on top, and assemble+check the whole resulting in-memory
@@ -1182,14 +1300,18 @@ def merge_candidate(
     its own but breaks referential integrity elsewhere is also caught (a proposed
     view's `context`/`include_types`/`members` are checked the same way `add_views`
     always checks them -- unknown context, unknown type, unknown member id, a
-    colliding view id, viewpoint conformance). Nothing is written to disk; the delta
-    is additive only, same as `build_model()` otherwise."""
+    colliding view id, viewpoint conformance; same for the resulting `members:` of an
+    existing view a `delta_view_membership_edits` entry would add to/remove from).
+    Nothing is written to disk; the delta is additive only, same as `build_model()`
+    otherwise."""
     errors: list[str] = []
     elements = load_all_elements(errors) + list(delta_elements)
     rels = (
         load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
     )
     views = load_all_views(errors) + list(delta_views or [])
+    if delta_view_membership_edits:
+        views = _apply_membership_edits_for_validation(views, delta_view_membership_edits, errors)
     return _assemble("candidate-delta", elements, rels, views, errors)
 
 

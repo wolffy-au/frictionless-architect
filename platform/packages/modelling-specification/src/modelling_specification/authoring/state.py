@@ -38,6 +38,7 @@ class CandidateDelta:
         elements: Proposed elements (model YAML shape).
         relationships: Proposed relationships (model YAML shape).
         views: Proposed views (model YAML shape).
+        view_membership_edits: Add/remove edits to an existing view's ``members:``.
         status: Where the delta is in its lifecycle.
         validation_result: ``{"clean": bool, "findings": [...]}`` once validated.
         duplicates: Likely duplicates of existing elements.
@@ -50,6 +51,7 @@ class CandidateDelta:
     elements: list[dict[str, Any]] = field(default_factory=list)
     relationships: list[dict[str, Any]] = field(default_factory=list)
     views: list[dict[str, Any]] = field(default_factory=list)
+    view_membership_edits: list[dict[str, Any]] = field(default_factory=list)
     status: DeltaStatus = DeltaStatus.PROPOSED
     validation_result: dict[str, Any] | None = None
     duplicates: list[dict[str, Any]] = field(default_factory=list)

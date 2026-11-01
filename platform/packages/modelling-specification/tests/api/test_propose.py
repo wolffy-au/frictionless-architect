@@ -228,6 +228,28 @@ def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
     assert body["relationships"] == []
 
 
+def test_propose_a_view_membership_edit_returns_validated(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "view_membership_edits": [{"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add stk-regulator to the governed delivery value stream view"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (edit,) = body["view_membership_edits"]
+    assert edit == {"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}
+    assert body["elements"] == []
+    assert body["relationships"] == []
+    assert body["views"] == []
+
+
 def test_propose_a_context_scoped_view_returns_validated_with_an_assigned_id(
     configured_fake_llm: FakeCompletion,
 ) -> None:
