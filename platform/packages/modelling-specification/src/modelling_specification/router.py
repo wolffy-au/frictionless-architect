@@ -10,6 +10,7 @@ from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import JSONResponse
+from pii_gateway import Resolution
 from pydantic import BaseModel
 
 from modelling_specification import model_io, rendering
@@ -17,11 +18,14 @@ from modelling_specification.authoring import overrides
 from modelling_specification.authoring.delta import (
     DeltaProposalError,
     LlmMessage,
+    PiiReviewRequired,
     assign_missing_ids,
     propose_delta,
     resolve_unknown_endpoints,
+    resume_proposal,
+    scrub_or_require_review,
 )
-from modelling_specification.authoring.state import CandidateDelta, DeltaStatus, SessionStore
+from modelling_specification.authoring.state import CandidateDelta, DeltaStatus, Session, SessionStore
 from modelling_specification.validation import conventions
 from modelling_specification.validation.duplicates import find_duplicates
 from modelling_specification.validation.fixes import proposed_fix_for_finding
@@ -71,6 +75,23 @@ class SelectOptionRequest(BaseModel):
     """
 
     option_index: int
+
+
+class ResolvePiiRequest(BaseModel):
+    """Body of ``POST /sessions/{session_id}/propose/resolve-pii``.
+
+    Attributes:
+        resolution: How the architect resolves the flagged match --
+            ``"redact"`` (proceed with the matched span(s) redacted),
+            ``"allow"`` (proceed with the original text unchanged), or
+            ``"edit"`` (``edited_text``, which the architect supplies themselves in
+            place of the flagged original, is re-scrubbed before proceeding -- not
+            assumed clean).
+        edited_text: Required when ``resolution`` is ``"edit"``; ignored otherwise.
+    """
+
+    resolution: Resolution
+    edited_text: str | None = None
 
 
 class DecideRequest(BaseModel):
@@ -124,53 +145,39 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
     }
 
 
-@router.post(
-    "/sessions/{session_id}/propose",
-    responses={
-        404: {"description": "no session with the given session_id"},
-        502: {"description": "the LLM proposal could not be turned into a usable delta"},
-    },
-)
-def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
-    """Turn a natural-language request into a validated, possibly flagged, delta.
-
-    Later requests extend the session's pending delta rather than starting a new one.
-    Nothing is written to the model.
-
-    Args:
-        session_id: The session the request belongs to.
-        body: The request text.
-
-    Returns:
-        The delta (id, status, elements, relationships, validation result, duplicates
-        and pattern suggestions), plus ``notes`` when there is something to tell the
-        architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
-        ``delta_id`` is ``None``. When the architect asked for a way forward rather
-        than describing one change, ``status`` is ``"options"`` and ``options`` holds
-        2-3 candidate deltas, each with its own ``rationale``, ``convention_refs`` and
-        validation result -- pick one via ``POST .../propose/select``.
-
-    Raises:
-        HTTPException: 404 if the session is unknown; 502 if the LLM output cannot be
-            turned into a delta.
-    """
-    session = _store.get_session(session_id)
-    if session is None:
-        raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
-
+def _catalogue_and_rules() -> tuple[list[tuple[str, str, str]], list[dict[str, Any]]]:
     existing, types_by_id = model_io.existing_elements_and_types()
     catalogue = [
         (e["id"], types_by_id[e["id"]], str(e.get("name", ""))) for e in existing if e.get("id") in types_by_id
     ]
-    rules = conventions.load_rules()
-    try:
-        proposed = propose_delta(body.request, catalogue, rules)
-    except LlmMessage as message:
-        session.pending_options = []
-        return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
-    except DeltaProposalError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return catalogue, conventions.load_rules()
 
+
+def _pii_match_payload(review: PiiReviewRequired) -> list[dict[str, Any]]:
+    return [{"category": m.category, "location": list(m.location), "confidence": m.confidence} for m in review.matches]
+
+
+def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
+    """`propose`/`resolve-pii`'s response when `scrub()` flags a PII/PHI match for
+    review (ADR-0014 amendment): no delta is created and the LLM call has not been
+    made -- the architect must resolve it via `POST .../propose/resolve-pii`."""
+    return {
+        "delta_id": None,
+        "status": "pii_review_required",
+        "pii_review_required": True,
+        "matches": _pii_match_payload(review),
+        "elements": [],
+        "relationships": [],
+    }
+
+
+def _handle_proposed(
+    session_id: str, session: Session, catalogue: list[tuple[str, str, str]], proposed: dict[str, Any]
+) -> dict[str, Any]:
+    """Turn `propose_delta`/`resume_proposal`'s successful output into the shared
+    `propose`/`propose/select`/`propose/resolve-pii` response: accumulate a single
+    concrete delta into the session's pending `CandidateDelta`, or stash "ways
+    forward" options for `propose/select` to pick from."""
     if "options" in proposed:
         pending = _store.pending_delta(session_id)
         in_flight = pending.elements if pending else []
@@ -204,6 +211,130 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     if notes:
         response["notes"] = notes
     return response
+
+
+@router.post(
+    "/sessions/{session_id}/propose",
+    responses={
+        404: {"description": "no session with the given session_id"},
+        502: {"description": "the LLM proposal could not be turned into a usable delta"},
+    },
+)
+def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
+    """Turn a natural-language request into a validated, possibly flagged, delta.
+
+    Later requests extend the session's pending delta rather than starting a new one.
+    Nothing is written to the model.
+
+    Args:
+        session_id: The session the request belongs to.
+        body: The request text.
+
+    Returns:
+        The delta (id, status, elements, relationships, validation result, duplicates
+        and pattern suggestions), plus ``notes`` when there is something to tell the
+        architect. When the LLM answers in plain text, ``status`` is ``"message"`` and
+        ``delta_id`` is ``None``. When the architect asked for a way forward rather
+        than describing one change, ``status`` is ``"options"`` and ``options`` holds
+        2-3 candidate deltas, each with its own ``rationale``, ``convention_refs`` and
+        validation result -- pick one via ``POST .../propose/select``. When `scrub()`
+        flags a PII/PHI match in the request for review (ADR-0014 amendment),
+        ``status`` is ``"pii_review_required"``, ``pii_review_required`` is ``true``,
+        ``matches`` lists what was flagged, and the LLM call has NOT been made --
+        resolve it via ``POST .../propose/resolve-pii`` before a delta is proposed.
+
+    Raises:
+        HTTPException: 404 if the session is unknown; 502 if the LLM output cannot be
+            turned into a delta.
+    """
+    session = _store.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
+
+    catalogue, rules = _catalogue_and_rules()
+    # A fresh `propose` call supersedes any PII review left pending from an earlier
+    # one in this session (the architect moved on without resolving it).
+    session.pending_pii_confirmation = None
+    try:
+        proposed = propose_delta(body.request, catalogue, rules)
+    except PiiReviewRequired as review:
+        session.pending_pii_confirmation = review.pending_confirmation
+        session.pending_options = []
+        return _pii_review_response(review)
+    except LlmMessage as message:
+        session.pending_options = []
+        return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
+    except DeltaProposalError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    return _handle_proposed(session_id, session, catalogue, proposed)
+
+
+@router.post(
+    "/sessions/{session_id}/propose/resolve-pii",
+    responses={
+        404: {"description": "no session with the given session_id"},
+        409: {"description": "no PII/PHI match is pending review"},
+        400: {"description": "resolution is 'edit' but edited_text was not supplied"},
+        502: {"description": "the LLM proposal could not be turned into a usable delta"},
+    },
+)
+def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
+    """Resolve a PII/PHI match that `propose` flagged for review (ADR-0014
+    amendment) and make the LLM call `propose` withheld, using the resolved text.
+
+    ``resolution="redact"`` proceeds with the matched span(s) redacted;
+    ``"allow"`` proceeds with the original text unchanged; ``"edit"`` re-scrubs
+    ``edited_text`` -- the architect's own replacement for the flagged original --
+    under the same `conversational-authoring` context before proceeding: it is
+    never assumed clean. A still-sensitive edit is re-flagged exactly like a fresh
+    `propose` call (``pii_review_required`` again, no LLM call), never silently
+    sent on and never escalated to a different behaviour.
+
+    Args:
+        session_id: The owning session.
+        body: The architect's chosen resolution and, for ``edit``, the replacement text.
+
+    Returns:
+        The resulting delta/options/message, same shape as ``propose``'s -- or,
+        for ``edit``, another ``pii_review_required`` response if the replacement
+        text is itself still flagged.
+
+    Raises:
+        HTTPException: 404 if the session is unknown; 409 if no PII/PHI match is
+            pending review; 400 if ``resolution`` is ``edit`` with no (or blank)
+            ``edited_text``; 502 if the LLM output cannot be turned into a delta.
+    """
+    session = _store.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail=f"no session {session_id!r}")
+    pending = session.pending_pii_confirmation
+    if pending is None:
+        raise HTTPException(status_code=409, detail="no PII/PHI match is pending review")
+
+    if body.resolution == Resolution.EDIT:
+        if not body.edited_text or not body.edited_text.strip():
+            raise HTTPException(status_code=400, detail="resolution 'edit' requires non-empty edited_text")
+        try:
+            resolved_text = scrub_or_require_review(body.edited_text)
+        except PiiReviewRequired as review:
+            session.pending_pii_confirmation = review.pending_confirmation
+            session.pending_options = []
+            return _pii_review_response(review)
+    else:
+        resolved_text = pending.resolve(body.resolution)
+    session.pending_pii_confirmation = None
+
+    catalogue, rules = _catalogue_and_rules()
+    try:
+        proposed = resume_proposal(resolved_text, catalogue, rules)
+    except LlmMessage as message:
+        session.pending_options = []
+        return {"delta_id": None, "status": "message", "message": message.text, "elements": [], "relationships": []}
+    except DeltaProposalError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    return _handle_proposed(session_id, session, catalogue, proposed)
 
 
 @router.post(

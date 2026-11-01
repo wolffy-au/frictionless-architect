@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from pii_gateway import PendingConfirmation
+
 
 class DeltaStatus(str, Enum):
     """Lifecycle state of a Candidate Delta: proposed, validated or flagged, then applied or discarded."""
@@ -64,11 +66,18 @@ class Session:
             (FR-001 "ways forward"), cleared once one is selected or another propose
             request replaces it. Each entry is a normalized option (rationale,
             convention_refs, elements, relationships) plus its own validation result.
+        pending_pii_confirmation: A `propose` call's `scrub()` flagged a PII/PHI
+            match for the architect's review (ADR-0014 amendment) rather than
+            proceeding to the LLM call. Cleared once resolved via
+            `POST .../propose/resolve-pii` or replaced by a later `propose` call.
+            Mirrors `pending_options`' session-scoped, turn-local shape -- same as
+            `pii_gateway.PendingConfirmation` itself, nothing here is persisted.
     """
 
     session_id: str
     deltas: dict[str, CandidateDelta] = field(default_factory=dict)
     pending_options: list[dict[str, Any]] = field(default_factory=list)
+    pending_pii_confirmation: PendingConfirmation | None = None
 
 
 class SessionStore:
