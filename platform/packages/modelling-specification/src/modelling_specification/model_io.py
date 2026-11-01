@@ -67,6 +67,91 @@ VENDORED_MODELS = [THIRD_PARTY / "it4it"]
 MODEL_LAYERS = [*VENDORED_MODELS, HERE / "gh-roadmap"]
 LAYER_CONTEXTS = {p.name for p in MODEL_LAYERS}
 
+# ArchiMate *architecture* layer per concept name -- unrelated to MODEL_LAYERS
+# above (that's model-source layering: vendored repos vs. first-party). Used
+# only by `include_neighbours: same_layer` (GH #129 step 4 follow-up) to keep
+# a same-layer-only neighbour pull from crossing into another ArchiMate
+# layer. Transcribed from the model-archimate skill's
+# `.claude/skills/model-archimate/scripts/viewpoints.py` COLLECTIONS dict
+# (not imported: that script is root tooling, not a platform package
+# dependency, per ADR-0001) -- keep in sync when that file re-syncs from
+# Archi's viewpoint XML. Composite/always-allowed concepts (Grouping,
+# Junction, Location) are deliberately absent: a same-layer check against
+# them would be meaningless, so they never block a neighbour pull.
+ARCHIMATE_LAYER_OF: dict[str, str] = {
+    **dict.fromkeys(["Resource", "Capability", "ValueStream", "CourseOfAction"], "strategy"),
+    **dict.fromkeys(
+        [
+            "BusinessActor",
+            "BusinessRole",
+            "BusinessCollaboration",
+            "BusinessInterface",
+            "BusinessProcess",
+            "BusinessFunction",
+            "BusinessInteraction",
+            "BusinessEvent",
+            "BusinessService",
+            "BusinessObject",
+            "Contract",
+            "Representation",
+            "Product",
+        ],
+        "business",
+    ),
+    **dict.fromkeys(
+        [
+            "ApplicationComponent",
+            "ApplicationCollaboration",
+            "ApplicationInterface",
+            "ApplicationFunction",
+            "ApplicationInteraction",
+            "ApplicationProcess",
+            "ApplicationEvent",
+            "ApplicationService",
+            "DataObject",
+        ],
+        "application",
+    ),
+    **dict.fromkeys(
+        [
+            "Node",
+            "Device",
+            "SystemSoftware",
+            "TechnologyCollaboration",
+            "TechnologyInterface",
+            "Path",
+            "CommunicationNetwork",
+            "TechnologyFunction",
+            "TechnologyProcess",
+            "TechnologyInteraction",
+            "TechnologyEvent",
+            "TechnologyService",
+            "Artifact",
+        ],
+        "technology",
+    ),
+    **dict.fromkeys(["Equipment", "Facility", "DistributionNetwork", "Material"], "physical"),
+    **dict.fromkeys(
+        [
+            "Stakeholder",
+            "Driver",
+            "Assessment",
+            "Goal",
+            "Outcome",
+            "Principle",
+            "Requirement",
+            "Constraint",
+            "Meaning",
+            "Value",
+        ],
+        "motivation",
+    ),
+    **dict.fromkeys(
+        ["WorkPackage", "Deliverable", "ImplementationEvent", "Plateau", "Gap"],
+        "implementation_migration",
+    ),
+}
+
 # The model-archimate skill owns the standard-viewpoint reference and the
 # conformance check a view is held to when it declares `viewpoint:`.
 sys.path.insert(0, str(SKILL_SCRIPTS))
@@ -751,7 +836,12 @@ def add_views(
     -- GH #129 step 3, so a per-context split view (step 4) can still show
     what a context actually talks to, with the neighbour visually distinct
     from (not inside) that context's own generated Grouping boundary once the
-    diagram-archimate skill renders it.
+    diagram-archimate skill renders it. `include_neighbours: same_layer`
+    narrows this to only a neighbour in the same ArchiMate layer
+    (`ARCHIMATE_LAYER_OF`) as the on-view element it is one hop from -- for a
+    single-layer viewpoint like Application Cooperation, pulling in a
+    neighbour of *any* layer otherwise erases the one thing that
+    distinguishes it from a cross-layer viewpoint like Application Usage.
 
     The richer view schema (auto-membership rules) is still deferred."""
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
@@ -781,8 +871,23 @@ def add_views(
             # are deliberately NOT folded into view_el_types, so a neighbour of
             # a type the viewpoint doesn't allow (e.g. a Capability one hop
             # from an Application Usage view) doesn't fail check_view_viewpoint
-            # below (GH #129 step 4 fallout).
-            _add_neighbour_elements(view, m, on_view, uuid_to_id, types_by_id, exclude_element_patterns, v["id"])
+            # below (GH #129 step 4 fallout). `include_neighbours: same_layer`
+            # (as opposed to `true`) additionally restricts the pull to
+            # neighbours in the same ArchiMate layer as the on-view element
+            # they are one hop from -- for a single-layer viewpoint like
+            # Application Cooperation, an unrestricted pull otherwise erases
+            # the one thing that distinguishes it from a cross-layer viewpoint
+            # like Application Usage.
+            _add_neighbour_elements(
+                view,
+                m,
+                on_view,
+                uuid_to_id,
+                types_by_id,
+                exclude_element_patterns,
+                v["id"],
+                same_layer_only=v.get("include_neighbours") == "same_layer",
+            )
         exclude_patterns = _compile_exclude_patterns(v, errors)
         view_rel_types = _connect_view_relationships(
             view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
@@ -830,6 +935,8 @@ def _add_neighbour_elements(
     types_by_id: dict[str, str],
     exclude_element_patterns: list[dict[str, str | None]],
     view_id: str,
+    *,
+    same_layer_only: bool = False,
 ) -> set[str]:
     """`include_neighbours: true` (GH #129 step 3): add a node for every element
     exactly one relationship hop from an element already in `on_view`, whatever
@@ -839,7 +946,20 @@ def _add_neighbour_elements(
     `check_view_viewpoint`, since a neighbour is incidental boundary context,
     not part of what the view's viewpoint is about). Walks from the view's
     original membership only (`base`), never the set as it grows, so a
-    neighbour's own neighbours are not pulled in -- exactly one hop."""
+    neighbour's own neighbours are not pulled in -- exactly one hop.
+
+    `same_layer_only=True` (`include_neighbours: same_layer`) additionally
+    requires the neighbour's ArchiMate layer (`ARCHIMATE_LAYER_OF`) to match
+    the on-view element it is one hop from. A neighbour whose own type, or the
+    near element's type, is not in `ARCHIMATE_LAYER_OF` (always-allowed
+    concepts like Junction/Location) is never filtered by this -- there is no
+    layer to compare.
+
+    A neighbour of type Grouping is never pulled in, regardless of
+    same_layer_only: a Grouping is a structural container (e.g. sys-platform,
+    Composition-parent of nearly every ApplicationComponent), not a thing one
+    relationship hop away in the sense GH #129 means -- pulling it in would
+    wrap almost every per-context split in the same content-free outer box."""
     base = frozenset(on_view)
     added_types: set[str] = set()
     for rel in m.relationships:
@@ -849,6 +969,14 @@ def _add_neighbour_elements(
             far_id = uuid_to_id.get(far.uuid)
             if far_id is None or _element_excluded(far_id, exclude_element_patterns, types_by_id):
                 continue
+            if types_by_id[far_id] == "Grouping":
+                continue
+            if same_layer_only:
+                near_id = uuid_to_id.get(near.uuid)
+                near_layer = ARCHIMATE_LAYER_OF.get(types_by_id.get(near_id, "")) if near_id else None
+                far_layer = ARCHIMATE_LAYER_OF.get(types_by_id[far_id])
+                if near_layer is not None and far_layer is not None and near_layer != far_layer:
+                    continue
             view.add(ref=far, uuid=det_id(view_id, "node", far.uuid))
             on_view.add(far.uuid)
             added_types.add(types_by_id[far_id])

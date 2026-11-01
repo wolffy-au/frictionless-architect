@@ -153,8 +153,11 @@ ACCESS_TYPE_SUFFIX = {
 
 # Relationship types rendered as containment (child nested in parent's box) rather
 # than an arrow. source = whole/container/active-structure, target = part/behaviour.
-# A child is only nested if it has exactly one such parent on the diagram and the
-# nesting introduces no cycle; otherwise the relationship stays a plain arrow.
+# A child is only nested if it has exactly one such parent on the diagram, or --
+# failing that -- exactly one Composition parent among several (Composition is
+# exclusive ownership per the spec, so it breaks the tie in its own favour); the
+# nesting must also introduce no cycle. Every other containment stays a plain
+# arrow.
 NEST_RELS = {"Composition", "Aggregation", "Assignment"}
 
 
@@ -200,29 +203,42 @@ def _context_filtered(elements: list[Any], relationships: list[Any], context: st
     return [e for e in elements if e.uuid in wanted], kept_rels
 
 
+def _pick_parent(parents: list[tuple[str, Any]]) -> tuple[str, Any] | None:
+    """Pick a part's single container: the lone candidate, or -- if several
+    compete -- the lone Composition one (exclusive ownership per the spec
+    breaks the tie in its own favour). Returns None if neither applies."""
+    if len(parents) == 1:
+        return parents[0]
+    compositions = [p for p in parents if p[1].type == "Composition"]
+    return compositions[0] if len(compositions) == 1 else None
+
+
 def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str, list[str]], set[str], set[int]]:
     """Fold containment relationships into nesting.
 
     Returns (children, roots-excluded set, ``id()``s of the folded relationships).
-    A part is nested under a whole only if it has exactly one containment parent
-    on the diagram and the nesting introduces no cycle.
+    A part is nested under a whole when it has exactly one containment parent on
+    the diagram, or -- failing that -- exactly one Composition parent among
+    several (Composition wins the tie: it is exclusive ownership per the spec,
+    unlike Aggregation/Assignment, which can be shared); the nesting must also
+    introduce no cycle. Every other containment stays an arrow.
     """
     by_uuid = {e.uuid: e for e in elements}
 
-    # Pass 1: gather the legal containment edges and count each part's parents.
-    candidates: list[tuple[str, str, Any]] = []
-    parent_count: dict[str, int] = {}
+    # Pass 1: gather the legal containment edges, grouped by part, in first-seen
+    # order (dict preserves insertion order) so nesting stays deterministic.
+    candidates_by_part: dict[str, list[tuple[str, Any]]] = {}
     for r in relationships:
         if r.type not in NEST_RELS:
             continue
         whole, part = r.source.uuid, r.target.uuid
         if whole not in by_uuid or part not in by_uuid or whole == part:
             continue
-        candidates.append((whole, part, r))
-        parent_count[part] = parent_count.get(part, 0) + 1
+        candidates_by_part.setdefault(part, []).append((whole, r))
 
-    # Pass 2: nest a part only when it has exactly one container on the diagram
-    # and the nesting introduces no cycle; every other containment stays an arrow.
+    # Pass 2: pick each part's single container -- the lone candidate, or the
+    # lone Composition one if several compete -- and nest it there unless that
+    # introduces a cycle; every other containment stays an arrow.
     parent_of: dict[str, str] = {}
     children: dict[str, list[str]] = {}
     nested: set[int] = set()
@@ -235,8 +251,12 @@ def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str,
             cur = parent_of.get(cur)
         return False
 
-    for whole, part, r in candidates:
-        if parent_count[part] != 1 or is_descendant(part, whole):
+    for part, parents in candidates_by_part.items():
+        picked = _pick_parent(parents)
+        if picked is None:
+            continue
+        whole, r = picked
+        if is_descendant(part, whole):
             continue
         parent_of[part] = whole
         children.setdefault(whole, []).append(part)

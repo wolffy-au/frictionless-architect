@@ -823,35 +823,38 @@
 - {type: Access, source: fn-effectiveness-monitor, target: do-oscal-poam, label: records control deficiencies in, props: {access_type: Write}}
 
 # =====================================================================
-# C. Stores aggregate the persistent artefacts (ties C back to section B)
+# C. Stores compose the persistent artefacts (ties C back to section B):
+#    Composition, not Aggregation -- every do-* record here is single-parent
+#    and has no existence independent of its store; deleting the store
+#    deletes its records with it.
 # =====================================================================
-- {type: Aggregation, source: store-oscal, target: do-oscal-catalog}
-- {type: Aggregation, source: store-oscal, target: do-oscal-profile}
-- {type: Aggregation, source: store-oscal, target: do-oscal-resolved-catalog}
-- {type: Aggregation, source: store-oscal, target: do-oscal-component}
-- {type: Aggregation, source: store-oscal, target: do-oscal-ssp}
-- {type: Aggregation, source: store-oscal, target: do-oscal-assessment-plan}
-- {type: Aggregation, source: store-oscal, target: do-oscal-ar}
-- {type: Aggregation, source: store-oscal, target: do-oscal-poam}
-- {type: Aggregation, source: store-patterns, target: do-pattern}
-- {type: Aggregation, source: store-patterns, target: do-blueprint}
-- {type: Aggregation, source: store-patterns, target: do-solution-design}
-- {type: Aggregation, source: store-patterns, target: do-threat-model}
-- {type: Aggregation, source: store-akg, target: do-twin}
-- {type: Aggregation, source: store-akg, target: do-candidate-arch}
-- {type: Aggregation, source: store-akg, target: do-adr}
-- {type: Aggregation, source: store-akg, target: do-target-architecture}
-- {type: Aggregation, source: store-akg, target: do-architecture-roadmap}
-- {type: Aggregation, source: store-akg, target: do-impact-assessment}
-- {type: Aggregation, source: store-akg, target: do-archived-option}
-- {type: Aggregation, source: store-akg, target: do-drift-report}
-- {type: Aggregation, source: store-akg, target: do-effectiveness-evidence}
-- {type: Aggregation, source: store-frameworks, target: do-baseline}
-- {type: Aggregation, source: store-frameworks, target: do-baseline-profile}
-- {type: Aggregation, source: store-frameworks, target: do-baseline-resolved-catalog}
-- {type: Aggregation, source: store-frameworks, target: do-metamodel}
-- {type: Aggregation, source: store-frameworks, target: do-convention-rules}
-- {type: Aggregation, source: store-ledger, target: do-ledger-entry}
+- {type: Composition, source: store-oscal, target: do-oscal-catalog}
+- {type: Composition, source: store-oscal, target: do-oscal-profile}
+- {type: Composition, source: store-oscal, target: do-oscal-resolved-catalog}
+- {type: Composition, source: store-oscal, target: do-oscal-component}
+- {type: Composition, source: store-oscal, target: do-oscal-ssp}
+- {type: Composition, source: store-oscal, target: do-oscal-assessment-plan}
+- {type: Composition, source: store-oscal, target: do-oscal-ar}
+- {type: Composition, source: store-oscal, target: do-oscal-poam}
+- {type: Composition, source: store-patterns, target: do-pattern}
+- {type: Composition, source: store-patterns, target: do-blueprint}
+- {type: Composition, source: store-patterns, target: do-solution-design}
+- {type: Composition, source: store-patterns, target: do-threat-model}
+- {type: Composition, source: store-akg, target: do-twin}
+- {type: Composition, source: store-akg, target: do-candidate-arch}
+- {type: Composition, source: store-akg, target: do-adr}
+- {type: Composition, source: store-akg, target: do-target-architecture}
+- {type: Composition, source: store-akg, target: do-architecture-roadmap}
+- {type: Composition, source: store-akg, target: do-impact-assessment}
+- {type: Composition, source: store-akg, target: do-archived-option}
+- {type: Composition, source: store-akg, target: do-drift-report}
+- {type: Composition, source: store-akg, target: do-effectiveness-evidence}
+- {type: Composition, source: store-frameworks, target: do-baseline}
+- {type: Composition, source: store-frameworks, target: do-baseline-profile}
+- {type: Composition, source: store-frameworks, target: do-baseline-resolved-catalog}
+- {type: Composition, source: store-frameworks, target: do-metamodel}
+- {type: Composition, source: store-frameworks, target: do-convention-rules}
+- {type: Composition, source: store-ledger, target: do-ledger-entry}
 
 # =====================================================================
 # D. IT4IT TOUCHPOINTS — this platform's own capabilities aligned to IT4IT

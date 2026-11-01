@@ -53,6 +53,50 @@
   exclude_elements:
     - {id_prefix: "sys-"}
 
+- id: view-application-cooperation
+  name: Application Cooperation
+  context: platform
+  # Generic Application Cooperation viewpoint (ArchiMate 3.2 §14): the
+  # application landscape — components and the information flows or services
+  # between them. Swept by type, not members; the view-artefact-* views are
+  # the curated per-subsystem cuts. Application layer only, but with every
+  # component, function and data object it still renders large. Location and
+  # the *Service/Event types are not yet modelled.
+  # include_neighbours: same_layer, not true -- unlike the other five sweeps
+  # this flag was applied to for GH #129 step 4 (Usage, Business Process
+  # Cooperation, Service Realization, Implementation & Deployment,
+  # Implementation & Migration), Cooperation's whole identity per the spec is
+  # "Application layer only, component-to-component"; an unrestricted
+  # neighbour pull was dragging in Strategy/Business/Technology elements and
+  # erasing the one thing that distinguishes it from Application Usage. The
+  # other five are already cross-layer by their own standard include_types,
+  # so an unrestricted pull there doesn't contradict their own shape the same
+  # way -- left as `true` for those. (sys-platform, the C4 whole-system box,
+  # never leaks in as a same_layer neighbour either way -- Grouping is never
+  # pulled in by _add_neighbour_elements at all, since #129.) This is the
+  # curated sibling of view-application-cooperation-standard in
+  # views-viewpoints.yaml, which keeps the pristine unrestricted sweep for
+  # reference/comparison; it lives here, next to view-context-map, because
+  # same_layer-only is a hand-curated restriction, not the generic sweep
+  # views-viewpoints.yaml's own header promises.
+  viewpoint: application_cooperation
+  diagram: application/cooperation
+  split_by: context
+  include_neighbours: same_layer
+  include_types:
+    - Location
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+  no_direction: [Flow]
+  max_width: 3800
+
 - id: view-strategy
   name: Strategy
   viewpoint: strategy
@@ -1162,3 +1206,33 @@
     - ApplicationFunction
     - DataObject
     - Artifact
+
+- id: view-application-cooperation-modelling-specification
+  name: "Application Cooperation — Modelling & Specification"
+  context: [modelling-specification]
+  diagram: application/modelling-specification-cooperation
+  # The single-application zoom of the standard Application Cooperation
+  # viewpoint ($ApplicationElements$ + Location, per archi-viewpoints.xml),
+  # same role view-application-structure-catalog plays for Application
+  # Structure. Deliberately NOT either whole-platform per-context split
+  # above: view-application-cooperation-standard (views-viewpoints.yaml)
+  # pulls in every one-hop neighbour whatever its layer, so it also shows
+  # Strategy/Business/Technology elements despite the "Cooperation" name --
+  # a renderer widening on top of the viewpoint, not part of its legal
+  # element set; view-application-cooperation (this file) narrows that pull
+  # to same-ArchiMate-layer neighbours only, which is closer but still a
+  # sweep-plus-neighbours, not a pure single-context zoom. This view has no
+  # include_neighbours at all, so it stays pure Application layer: the
+  # component, its interface, its functions, and the DataObjects it owns.
+  # include_types, not members, so a newly tagged element appears
+  # automatically. Application Structure (view-application-structure-catalog)
+  # omits ApplicationFunction, and this context has several load-bearing
+  # ones (fn-conversational-authoring, fn-override-escalation,
+  # fn-notation-engine, fn-spec-generator), so Cooperation is the correct
+  # standard fit here, not Structure.
+  viewpoint: application_cooperation
+  include_types:
+    - ApplicationComponent
+    - ApplicationInterface
+    - ApplicationFunction
+    - DataObject

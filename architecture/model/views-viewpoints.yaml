@@ -10,9 +10,9 @@
 # `<diagram>/<context>.puml` per bounded context actually on it, with any
 # directly-connected element from another context pulled in too (so a
 # cross-context edge still has both its endpoints on the diagram). Applied
-# below to the six oversized whole-platform sweeps named in #129 -- not to
-# view-product, which #129 itself asks to drop instead (see the comment
-# there).
+# below to the oversized whole-platform sweeps named in #129, plus
+# view-application-cooperation-standard and view-product (the latter
+# re-added after #129 step 6 asked to drop it; see its own comment).
 #
 # #129's ~60-element-per-diagram target is met for most contexts this way,
 # but a handful of per-context splits still come out larger -- the context
@@ -115,13 +115,49 @@
     - DistributionNetwork
     - Material
 
-# view-product (Product viewpoint, ArchiMate 3.2 §14) dropped, GH #129 step 6:
-# the model has no Product, Contract, Value, Material or any *Service
-# elements -- the only things that give that viewpoint its own shape -- so it
-# was a dump of every Business/Application element already covered by
-# view-application-usage/view-service-realization, with no Product-specific
-# content to justify a separate (now per-context-split) sweep. Re-add it,
-# scoped to the real Product elements, once any exist.
+- id: view-product
+  name: Product
+  context: platform
+  # Generic Product viewpoint (ArchiMate 3.2 §14): the composition of a
+  # product from the services and contracts that make it up, the value it
+  # offers, and the actors/processes that deliver it. Swept by type, not
+  # members. Re-added per request after being dropped at GH #129 step 6: the
+  # model still has no Product, Contract, Value or Material elements -- the
+  # only things that give this viewpoint its own shape -- so until some
+  # exist it renders as a dump of the same Business/Application elements
+  # already covered by view-application-usage/view-service-realization.
+  viewpoint: product
+  diagram: business/product
+  split_by: context
+  include_neighbours: true
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - BusinessInterface
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessService
+    - BusinessObject
+    - Contract
+    - Product
+    - Value
+    - Material
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+    - TechnologyService
+    - Artifact
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-application-usage
   name: Application Usage
@@ -229,17 +265,20 @@
   no_direction: [Flow, Triggering]
   max_width: 3800
 
-- id: view-application-cooperation
-  name: Application Cooperation
+- id: view-application-cooperation-standard
+  name: "Application Cooperation (Standard)"
   context: platform
-  # Generic Application Cooperation viewpoint (ArchiMate 3.2 §14): the
-  # application landscape — components and the information flows or services
-  # between them. Swept by type, not members; the view-artefact-* views are
-  # the curated per-subsystem cuts. Application layer only, but with every
-  # component, function and data object it still renders large. Location and
-  # the *Service/Event types are not yet modelled.
+  # Generic Application Cooperation viewpoint (ArchiMate 3.2 §14), unmodified:
+  # the application landscape — components and the information flows or
+  # services between them — swept by type only, with the same unrestricted
+  # include_neighbours: true every other GH #129 sweep in this file uses.
+  # view-application-cooperation in views.yaml is the curated sibling: same
+  # include_types, but same_layer-only neighbours, to stay strictly
+  # Application-layer and legible per-context. Keep both: this one is the
+  # literal standard viewpoint for reference/comparison, that one is what
+  # the per-context diagrams are meant to be read from.
   viewpoint: application_cooperation
-  diagram: application/cooperation
+  diagram: application/cooperation-standard
   split_by: context
   include_neighbours: true
   include_types:
