@@ -33,6 +33,7 @@ from __future__ import annotations
 import re
 import sys
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -1263,6 +1264,136 @@ def apply_view_membership_edits(edits: list[dict[str, Any]]) -> None:
     path.write_text("".join(lines))
 
 
+# Every top-level entry in elements.yaml/relationships.yaml is either a hand-authored
+# block (`- type: X` through its own fields at 2-space indent) or a flow-style one-liner
+# appended by `append_delta` (`- {type: X, id: Y, ...}`) -- the only two shapes either
+# file uses (ADR-0037 item 8 Consequences).
+_TOP_LEVEL_START_RE = re.compile(r"^- (\{|type:\s)")
+_BLOCK_FIELD_RE = re.compile(r"^  (\w+):\s*(\S.*)\s*$")
+# The entry-start line itself (`- type: X`) carries its `type:` field inline after the
+# dash, not on its own 2-space-indented line like every other field.
+_BLOCK_START_FIELD_RE = re.compile(r"^- (\w+):\s*(\S.*)\s*$")
+
+
+def _block_field_value(raw: str) -> str:
+    """`raw` with a trailing ` # inline comment` stripped, same convention
+    `relationships.yaml` already uses on a `source:`/`target:` line -- left alone for
+    a quoted scalar, where a `#` is just a character, not a comment start."""
+    return raw if raw.startswith(('"', "'")) else re.sub(r"\s+#.*$", "", raw)
+
+
+def _flow_entry_dict(line: str) -> dict[str, Any] | None:
+    try:
+        parsed = yaml.safe_load(line.rstrip("\n")[2:])
+    except yaml.YAMLError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _find_top_level_entry(lines: list[str], matches: Callable[[dict[str, Any]], bool]) -> tuple[int, int, bool] | None:
+    """`(start, end, is_flow)` of the first top-level entry for which `matches` its
+    fields is true -- a flow one-liner's own parsed dict, or a block entry's fields
+    collected from its `  key: value` lines (multi-line values like a folded `desc:`
+    are not collected, since nothing here ever needs to match on one)."""
+    i = 0
+    while i < len(lines):
+        line = lines[i].rstrip("\n")
+        if line.startswith("- {"):
+            parsed = _flow_entry_dict(line)
+            if parsed is not None and matches(parsed):
+                return i, i + 1, True
+            i += 1
+            continue
+        if _TOP_LEVEL_START_RE.match(line):
+            end = i + 1
+            while end < len(lines) and not _TOP_LEVEL_START_RE.match(lines[end].rstrip("\n")):
+                end += 1
+            fields = {
+                m.group(1): _block_field_value(m.group(2))
+                for j in range(i, end)
+                if (m := (_BLOCK_START_FIELD_RE if j == i else _BLOCK_FIELD_RE).match(lines[j].rstrip("\n")))
+            }
+            if matches(fields):
+                return i, end, False
+            i = end
+            continue
+        i += 1
+    return None
+
+
+def apply_element_edits(edits: list[dict[str, Any]]) -> None:
+    """Rename an existing element in `elements.yaml`, in place (ADR-0037 item 8) --
+    `name` only; `desc`/`type` are not editable this way (folded multi-line `desc:`
+    values make the same precise, comment-preserving text surgery `apply_view_
+    membership_edits` does for `members:` impractical to extend to them safely).
+
+    Raises `ValueError` for an element id not found in `elements.yaml` (merge_candidate
+    is expected to have already rejected an unknown id before apply is reached)."""
+    path = HERE / ELEMENTS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for edit in edits:
+        element_id = edit["id"]
+        found = _find_top_level_entry(lines, lambda f, eid=element_id: f.get("id") == eid)
+        if found is None:
+            raise ValueError(f"no element {element_id!r} in {ELEMENTS_FILENAME}")
+        start, end, is_flow = found
+        if is_flow:
+            parsed = _flow_entry_dict(lines[start]) or {}
+            parsed["name"] = edit["name"]
+            ordered = {k: parsed[k] for k in _ELEMENT_FIELD_ORDER if parsed.get(k) not in (None, {})}
+            lines[start] = (
+                f"- {yaml.safe_dump(ordered, default_flow_style=True, sort_keys=False, width=10**9).strip()}\n"
+            )
+        else:
+            name_idx = next((i for i in range(start, end) if re.match(r"^  name:", lines[i])), None)
+            if name_idx is None:
+                raise ValueError(f"element {element_id!r} has no name: line this editor can rewrite")
+            dumped = yaml.safe_dump({"name": edit["name"]}, default_flow_style=False, sort_keys=False, width=10**9)
+            lines[name_idx] = f"  {dumped.strip()}\n"
+    path.write_text("".join(lines))
+
+
+def apply_element_removals(element_ids: list[str]) -> None:
+    """Delete an existing element's whole entry from `elements.yaml`, in place
+    (ADR-0037 item 8) -- nothing else in the file is touched. A relationship or view
+    still referencing the removed id is not repointed or dropped here; that is caught
+    as a `broken_connection`/`orphan_view_node` finding by `merge_candidate`'s
+    validation path before apply is ever reached (never silently cascaded).
+
+    Raises `ValueError` for an element id not found in `elements.yaml`."""
+    path = HERE / ELEMENTS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for element_id in element_ids:
+        found = _find_top_level_entry(lines, lambda f, eid=element_id: f.get("id") == eid)
+        if found is None:
+            raise ValueError(f"no element {element_id!r} in {ELEMENTS_FILENAME}")
+        start, end, _is_flow = found
+        del lines[start:end]
+    path.write_text("".join(lines))
+
+
+def apply_relationship_removals(removals: list[dict[str, Any]]) -> None:
+    """Delete an existing relationship's whole entry from `relationships.yaml`, in
+    place (ADR-0037 item 8), matched by its `(type, source, target)` triple -- a
+    relationship has no id of its own. Raises `ValueError` for a removal matching no
+    entry in `relationships.yaml`."""
+    path = HERE / RELATIONSHIPS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for removal in removals:
+        wanted_type = _type_key(str(removal.get("type", "")))
+        source, target = removal.get("source"), removal.get("target")
+
+        def _matches(f: dict[str, Any], wt: str = wanted_type, s: Any = source, t: Any = target) -> bool:
+            return _type_key(str(f.get("type", ""))) == wt and f.get("source") == s and f.get("target") == t
+
+        found = _find_top_level_entry(lines, _matches)
+        if found is None:
+            raise ValueError(f"no relationship {removal.get('type')} {source} -> {target} in {RELATIONSHIPS_FILENAME}")
+        start, end, _is_flow = found
+        del lines[start:end]
+    path.write_text("".join(lines))
+
+
 def _membership_edited_view(view: dict[str, Any], edit: dict[str, Any]) -> dict[str, Any]:
     """`view` with `edit`'s `add`/`remove` element ids applied to its `members:` list
     -- order preserved for survivors, added ids appended, never duplicated."""
@@ -1288,11 +1419,79 @@ def _apply_membership_edits_for_validation(
     return edited
 
 
+def _apply_element_edits_for_validation(
+    elements: list[dict[str, Any]], edits: list[dict[str, Any]], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`elements` with each of `edits`' `name` applied to the element it names (ADR-0037
+    item 8: rename only -- `desc`/`type` are not editable this way). An edit naming an
+    element id that doesn't exist is reported the same way any other unknown reference is."""
+    edits_by_id = {e["id"]: e for e in edits}
+    edited = [{**e, "name": edits_by_id[e["id"]]["name"]} if e.get("id") in edits_by_id else e for e in elements]
+    for element_id in edits_by_id.keys() - {e.get("id") for e in elements}:
+        errors.append(f"element edit references unknown element id: {element_id}")
+    return edited
+
+
+def _apply_element_removals_for_validation(
+    elements: list[dict[str, Any]], removals: list[str], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`elements` with each id in `removals` dropped. A removal naming an unknown id is
+    reported; a removal leaving a dangling relationship endpoint elsewhere is not caught
+    here -- it surfaces as `validate_model`'s usual `broken_connection` finding once the
+    resulting elements/relationships are assembled into a `Model` (ADR-0037 item 8: never
+    silently cascaded)."""
+    present = {e.get("id") for e in elements}
+    for element_id in removals:
+        if element_id not in present:
+            errors.append(f"element removal references unknown element id: {element_id}")
+    removal_set = set(removals)
+    return [e for e in elements if e.get("id") not in removal_set]
+
+
+def _type_key(raw: str) -> str:
+    """Case/separator-insensitive key for an ArchiMate type name, for comparing a
+    removal's `type` against a loaded relationship's -- same normalization `canon` uses,
+    without `canon`'s side effect of appending to an errors list for an unknown name."""
+    return str(raw).strip().replace("_", "").replace("-", "").lower()
+
+
+def _apply_relationship_removals_for_validation(
+    relationships: list[dict[str, Any]], removals: list[dict[str, Any]], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`relationships` with the first relationship matching each of `removals`' (type,
+    source, target) triple dropped. A removal matching nothing is reported rather than
+    silently ignored."""
+    remaining = list(relationships)
+    for removal in removals:
+        wanted_type = _type_key(str(removal.get("type", "")))
+        match = next(
+            (
+                i
+                for i, r in enumerate(remaining)
+                if _type_key(str(r.get("type", ""))) == wanted_type
+                and r.get("source") == removal.get("source")
+                and r.get("target") == removal.get("target")
+            ),
+            None,
+        )
+        if match is None:
+            errors.append(
+                "relationship removal references no matching relationship: "
+                f"{removal.get('type')} {removal.get('source')} -> {removal.get('target')}"
+            )
+            continue
+        remaining.pop(match)
+    return remaining
+
+
 def merge_candidate(
     delta_elements: list[dict[str, Any]],
     delta_relationships: list[dict[str, Any]],
     delta_views: list[dict[str, Any]] | None = None,
     delta_view_membership_edits: list[dict[str, Any]] | None = None,
+    delta_element_edits: list[dict[str, Any]] | None = None,
+    delta_element_removals: list[str] | None = None,
+    delta_relationship_removals: list[dict[str, Any]] | None = None,
 ) -> tuple[Model | None, list[str], list[str]]:
     """Load the current YAML model from disk, merge a Candidate Delta's elements/
     relationships/views on top, and assemble+check the whole resulting in-memory
@@ -1301,14 +1500,21 @@ def merge_candidate(
     view's `context`/`include_types`/`members` are checked the same way `add_views`
     always checks them -- unknown context, unknown type, unknown member id, a
     colliding view id, viewpoint conformance; same for the resulting `members:` of an
-    existing view a `delta_view_membership_edits` entry would add to/remove from).
-    Nothing is written to disk; the delta is additive only, same as `build_model()`
-    otherwise."""
+    existing view a `delta_view_membership_edits` entry would add to/remove from, and
+    for a renamed/removed existing element or a removed existing relationship,
+    ADR-0037 item 8). Nothing is written to disk; the delta is additive-plus-these-
+    narrow-edits only, same as `build_model()` otherwise."""
     errors: list[str] = []
     elements = load_all_elements(errors) + list(delta_elements)
+    if delta_element_edits:
+        elements = _apply_element_edits_for_validation(elements, delta_element_edits, errors)
+    if delta_element_removals:
+        elements = _apply_element_removals_for_validation(elements, delta_element_removals, errors)
     rels = (
         load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
     )
+    if delta_relationship_removals:
+        rels = _apply_relationship_removals_for_validation(rels, delta_relationship_removals, errors)
     views = load_all_views(errors) + list(delta_views or [])
     if delta_view_membership_edits:
         views = _apply_membership_edits_for_validation(views, delta_view_membership_edits, errors)

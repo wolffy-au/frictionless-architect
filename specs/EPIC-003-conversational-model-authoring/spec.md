@@ -60,7 +60,7 @@ else (no)
 endif
 :Repoint a misspelt endpoint at its\nunique nearest element and report it;
 if (Delta empty?) then (yes)
-  :Say nothing was proposed\n(add-only: no edit, rename or remove);
+  :Say nothing was proposed;
   |Architect|
   stop
 else (no)

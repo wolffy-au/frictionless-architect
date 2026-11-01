@@ -12,6 +12,8 @@ from modelling_specification.authoring.delta import (
     assign_missing_ids,
     assign_missing_view_ids,
     propose_delta,
+    resolve_unknown_element_edits,
+    resolve_unknown_element_removals,
     resolve_unknown_endpoints,
     resolve_unknown_members,
 )
@@ -112,7 +114,15 @@ def test_propose_delta_strips_a_surrounding_markdown_fence(configured_fake_llm: 
 
     result = propose_delta("add a function")
 
-    assert result == {"elements": [], "relationships": [], "views": [], "view_membership_edits": []}
+    assert result == {
+        "elements": [],
+        "relationships": [],
+        "views": [],
+        "view_membership_edits": [],
+        "element_edits": [],
+        "element_removals": [],
+        "relationship_removals": [],
+    }
 
 
 def test_propose_delta_returns_structured_options_when_the_llm_suggests_several(
@@ -310,4 +320,75 @@ def test_resolve_unknown_members_leaves_a_weak_or_ambiguous_match_for_validation
     resolved, notes = resolve_unknown_members(edits, _KNOWN)
 
     assert resolved == edits
+    assert notes == []
+
+
+def test_propose_delta_parses_element_edits_removals_and_relationship_removals(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "element_edits": [{"id": "role-ea", "name": "Enterprise Architect (Renamed)"}],'
+        ' "element_removals": ["assess-drift-debt"],'
+        ' "relationship_removals": [{"type": "Association", "source": "assess-drift-debt",'
+        ' "target": "goal-frictionless-architecture"}]}'
+    )
+
+    result = propose_delta("rename role-ea and remove assess-drift-debt")
+
+    assert result["element_edits"] == [{"id": "role-ea", "name": "Enterprise Architect (Renamed)"}]
+    assert result["element_removals"] == ["assess-drift-debt"]
+    assert result["relationship_removals"] == [
+        {"type": "Association", "source": "assess-drift-debt", "target": "goal-frictionless-architecture"}
+    ]
+
+
+def test_propose_delta_defaults_the_new_edit_removal_keys_to_empty_when_the_llm_omits_them(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    result = propose_delta("add a function")
+
+    assert result["element_edits"] == []
+    assert result["element_removals"] == []
+    assert result["relationship_removals"] == []
+
+
+def test_resolve_unknown_element_edits_repoints_a_misspelt_id_and_reports_it() -> None:
+    edits = [{"id": "assess-drfit-debt", "name": "New Name"}]
+
+    resolved, notes = resolve_unknown_element_edits(edits, _KNOWN)
+
+    assert resolved[0]["id"] == "assess-drift-debt"
+    assert resolved[0]["name"] == "New Name"
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_element_edits_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    edits = [{"id": "something-unrelated", "name": "X"}]
+
+    resolved, notes = resolve_unknown_element_edits(edits, _KNOWN)
+
+    assert resolved == edits
+    assert notes == []
+
+
+def test_resolve_unknown_element_removals_repoints_a_misspelt_id_and_reports_it() -> None:
+    removals = ["assess-drfit-debt"]
+
+    resolved, notes = resolve_unknown_element_removals(removals, _KNOWN)
+
+    assert resolved == ["assess-drift-debt"]
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_element_removals_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    removals = ["something-unrelated"]
+
+    resolved, notes = resolve_unknown_element_removals(removals, _KNOWN)
+
+    assert resolved == removals
     assert notes == []

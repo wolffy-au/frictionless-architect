@@ -39,6 +39,10 @@ class CandidateDelta:
         relationships: Proposed relationships (model YAML shape).
         views: Proposed views (model YAML shape).
         view_membership_edits: Add/remove edits to an existing view's ``members:``.
+        element_edits: Rename edits (``{"id": ..., "name": ...}``) to an existing element.
+        element_removals: Ids of existing elements to remove.
+        relationship_removals: ``{"type", "source", "target"}`` triples of existing
+            relationships to remove.
         status: Where the delta is in its lifecycle.
         validation_result: ``{"clean": bool, "findings": [...]}`` once validated.
         duplicates: Likely duplicates of existing elements.
@@ -52,6 +56,9 @@ class CandidateDelta:
     relationships: list[dict[str, Any]] = field(default_factory=list)
     views: list[dict[str, Any]] = field(default_factory=list)
     view_membership_edits: list[dict[str, Any]] = field(default_factory=list)
+    element_edits: list[dict[str, Any]] = field(default_factory=list)
+    element_removals: list[str] = field(default_factory=list)
+    relationship_removals: list[dict[str, Any]] = field(default_factory=list)
     status: DeltaStatus = DeltaStatus.PROPOSED
     validation_result: dict[str, Any] | None = None
     duplicates: list[dict[str, Any]] = field(default_factory=list)
