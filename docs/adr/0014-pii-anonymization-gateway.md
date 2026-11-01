@@ -57,12 +57,32 @@ recognizers than for email/phone) is left to `pii-gateway`'s config surface
 - Adds a testable pre-processing stage to every in-scope ingestion path
   (FR-003 → FR-004). ADR-0031 remains the authoritative record of the
   policy-document exemption.
-- **Model impact (added 2026-10-31):** none — GH #68, not yet built, takes
-  `pii-gateway` as a path dependency the same way `architecture-governance` and
-  `modelling-specification` do; no new Serving edge is modelled, consistent
-  with the no-per-consumer-edge statement above. Recorded as an explicit GH #68
-  acceptance obligation instead (GH #136 comment thread, GH #68 tracking
-  comment).
+- **Model impact:** none — `fn-conversational-authoring` (GH #68/#108, built as
+  `modelling-specification.authoring.delta.propose_delta()`) takes `pii-gateway`
+  as a path dependency the same way `architecture-governance` and
+  `modelling-specification`'s other consumers do; no new Serving edge is
+  modelled, consistent with the no-per-consumer-edge statement above.
+
+## Amendment (2026-10-31, GH #181 spec-alignment follow-up)
+
+GH #136's spec-alignment audit flagged that `propose_delta()` called `scrub()`
+with `context="spec-generator"` — a context with no real caller, since there is
+no `fn-spec-generator` implementation in this codebase. The one context
+purpose-built for this call, `"conversational-authoring"` (already seeded with
+`flagged_for_review` in `pii-gateway`'s own config defaults), was never actually
+used by it: every match was silently auto-redacted and sent on, exactly the
+behavior this ADR rejected under "Auto-redact globally, including the
+conversational agent" above.
+
+Fixed: `propose_delta()` now calls `scrub()` with
+`context="conversational-authoring"`. A flagged match no longer proceeds to the
+LLM call at all — `delta.py` raises `PiiReviewRequired` and the
+`modelling-specification` router (`POST /authoring/sessions/{id}/propose`)
+returns `{"status": "pii_review_required", "matches": [...]}` with no LLM call
+made; the architect resolves it via `POST .../propose/resolve-pii`
+(`redact`/`allow`/`edit`) before the call proceeds with the resolved text. This
+closes the gap between this ADR's decision and `fn-conversational-authoring`'s
+actual behavior; no further model or decision change follows from it.
 
 ## Alternatives considered
 
