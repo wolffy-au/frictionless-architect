@@ -38,6 +38,7 @@ All under `/authoring`; request and response shapes are in
 | `POST` | `/sessions` | Start a session, returns `session_id` |
 | `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta; validated, flagged, a clarifying message, or (for a "what should I do about X" request) 2-3 structured options to pick from (ADR-0041) |
 | `POST` | `/sessions/{session_id}/propose/select` | Pick one of the most recent `propose` call's suggested options, turning it into the session's pending candidate delta (ADR-0041) |
+| `POST` | `/sessions/{session_id}/propose/resolve-pii` | Resolve a PII/PHI match `propose` flagged for review (`redact`/`allow`/`edit` -- `edit`'s replacement text is itself re-scrubbed, not assumed clean) and proceed with the withheld LLM call (ADR-0014 amendment) |
 | `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct or override |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta, nothing written |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
