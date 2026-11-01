@@ -124,6 +124,37 @@ def test_resolve_pii_edit_without_edited_text_returns_400(configured_fake_llm: F
     assert configured_fake_llm.calls == []
 
 
+def test_resolve_pii_allow_with_a_plain_text_llm_reply_returns_a_message(configured_fake_llm: FakeCompletion) -> None:
+    # Resolving a flagged match can still land on a plain-text LLM reply (not
+    # options), same as a clean `propose` call would -- same "message" shape,
+    # no delta created.
+    configured_fake_llm.content = "I'm not sure what you mean -- could you rephrase that?"
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "allow"})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "message"
+    assert "rephrase" in body["message"]
+    assert body["delta_id"] is None
+    assert body["elements"] == []
+    assert body["relationships"] == []
+
+
+def test_resolve_pii_allow_returns_502_when_the_llm_call_fails(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.error = ConnectionError("connection refused")
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "allow"})
+
+    assert response.status_code == 502
+    assert "connection refused" not in response.text
+    assert "server log" in response.json()["detail"]
+
+
 def test_resolve_pii_without_a_pending_match_returns_409(configured_fake_llm: FakeCompletion) -> None:
     session_id = _new_session()
 
