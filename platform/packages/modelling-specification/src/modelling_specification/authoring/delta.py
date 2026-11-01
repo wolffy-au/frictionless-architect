@@ -12,6 +12,7 @@ import difflib
 import json
 import logging
 import re
+from collections.abc import Callable
 from typing import Any
 
 from litellm import completion
@@ -189,7 +190,7 @@ def _grounded_system_prompt(
     fixed order -- factored out of `propose_delta` to keep its own branching under
     the complexity gate; each block is independently optional, so a caller can pass
     only the data it has."""
-    blocks = [
+    blocks: list[tuple[str, list[Any] | None, Callable[[Any], str]]] = [
         ("Existing elements", catalogue, _catalogue_text),
         ("Existing contexts", contexts, _contexts_text),
         ("Existing views", views, _views_text),

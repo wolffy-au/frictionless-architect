@@ -1333,7 +1333,11 @@ def apply_element_edits(edits: list[dict[str, Any]]) -> None:
     lines = path.read_text().splitlines(keepends=True)
     for edit in edits:
         element_id = edit["id"]
-        found = _find_top_level_entry(lines, lambda f, eid=element_id: f.get("id") == eid)
+
+        def _matches_id(f: dict[str, Any], eid: str = element_id) -> bool:
+            return f.get("id") == eid
+
+        found = _find_top_level_entry(lines, _matches_id)
         if found is None:
             raise ValueError(f"no element {element_id!r} in {ELEMENTS_FILENAME}")
         start, end, is_flow = found
@@ -1364,7 +1368,11 @@ def apply_element_removals(element_ids: list[str]) -> None:
     path = HERE / ELEMENTS_FILENAME
     lines = path.read_text().splitlines(keepends=True)
     for element_id in element_ids:
-        found = _find_top_level_entry(lines, lambda f, eid=element_id: f.get("id") == eid)
+
+        def _matches_id(f: dict[str, Any], eid: str = element_id) -> bool:
+            return f.get("id") == eid
+
+        found = _find_top_level_entry(lines, _matches_id)
         if found is None:
             raise ValueError(f"no element {element_id!r} in {ELEMENTS_FILENAME}")
         start, end, _is_flow = found
