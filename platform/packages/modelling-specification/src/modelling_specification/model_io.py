@@ -1415,14 +1415,24 @@ def _membership_edited_view(view: dict[str, Any], edit: dict[str, Any]) -> dict[
 def _apply_membership_edits_for_validation(
     views: list[dict[str, Any]], edits: list[dict[str, Any]], errors: list[str]
 ) -> list[dict[str, Any]]:
-    """`views` with each of `edits` applied to the view it names -- used by
+    """`views` with each of `edits` applied to the view it names, in order -- used by
     `merge_candidate` so a proposed membership edit is checked (unknown member id,
     etc.) against the *resulting* view, the same way a proposed view itself is
-    checked. An edit naming a view id that doesn't exist is reported the same way
-    `add_views` reports any other unknown reference, rather than silently ignored."""
-    edits_by_id = {e["view_id"]: e for e in edits}
-    edited = [_membership_edited_view(v, edits_by_id[v["id"]]) if v.get("id") in edits_by_id else v for v in views]
-    for view_id in edits_by_id.keys() - {v.get("id") for v in views}:
+    checked. Two edits naming the same view (e.g. accumulated across separate
+    `propose` turns in one session) are both applied, each to the previous edit's
+    result, the same cumulative way `apply_view_membership_edits` applies them to
+    `views.yaml` -- collapsing them to only the last would validate a different
+    membership than the one actually written. An edit naming a view id that doesn't
+    exist is reported the same way `add_views` reports any other unknown reference,
+    rather than silently ignored."""
+    named_ids = {e["view_id"] for e in edits}
+    edited = []
+    for v in views:
+        for edit in edits:
+            if edit["view_id"] == v.get("id"):
+                v = _membership_edited_view(v, edit)
+        edited.append(v)
+    for view_id in named_ids - {v.get("id") for v in views}:
         errors.append(f"view membership edit references unknown view id: {view_id}")
     return edited
 
@@ -1443,17 +1453,25 @@ def _apply_element_edits_for_validation(
 def _apply_element_removals_for_validation(
     elements: list[dict[str, Any]], removals: list[str], errors: list[str]
 ) -> list[dict[str, Any]]:
-    """`elements` with each id in `removals` dropped. A removal naming an unknown id is
-    reported; a removal leaving a dangling relationship endpoint elsewhere is not caught
-    here -- it surfaces as `validate_model`'s usual `broken_connection` finding once the
-    resulting elements/relationships are assembled into a `Model` (ADR-0037 item 8: never
-    silently cascaded)."""
-    present = {e.get("id") for e in elements}
+    """`elements` with each id in `removals` dropped, one at a time -- a removal
+    repeating an id already dropped earlier in the same list (e.g. accumulated
+    across separate `propose` turns in one session) is reported as unknown, the
+    same way `apply_element_removals` would raise for it at apply time: that writer
+    deletes sequentially and has nothing left to find the second time, so validation
+    checking the whole list against the original element set (tolerating duplicates
+    as a set) would pass a delta that then crashes on apply. A removal naming an
+    unknown id is reported; a removal leaving a dangling relationship endpoint
+    elsewhere is not caught here -- it surfaces as `validate_model`'s usual
+    `broken_connection` finding once the resulting elements/relationships are
+    assembled into a `Model` (ADR-0037 item 8: never silently cascaded)."""
+    remaining = list(elements)
     for element_id in removals:
-        if element_id not in present:
+        present_ids = {e.get("id") for e in remaining}
+        if element_id not in present_ids:
             errors.append(f"element removal references unknown element id: {element_id}")
-    removal_set = set(removals)
-    return [e for e in elements if e.get("id") not in removal_set]
+            continue
+        remaining = [e for e in remaining if e.get("id") != element_id]
+    return remaining
 
 
 def _type_key(raw: str) -> str:
