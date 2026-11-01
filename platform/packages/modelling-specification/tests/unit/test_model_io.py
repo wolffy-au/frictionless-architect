@@ -1312,6 +1312,31 @@ def test_apply_view_membership_edits_raises_for_an_unknown_view_id(tmp_path: Any
         model_io.apply_view_membership_edits([{"view_id": "view-no-such-view", "add": ["x"], "remove": []}])
 
 
+def test_apply_view_membership_edits_raises_for_a_comment_right_after_the_members_block(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text(
+        "- id: view-a\n  name: View A\n  members:\n    - keep-me\n  # trailing comment\n- id: view-b\n  name: View B\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="a comment line immediately follows"):
+        model_io.apply_view_membership_edits([{"view_id": "view-a", "add": ["x"], "remove": []}])
+
+
+def test_apply_view_membership_edits_is_a_noop_removing_from_a_view_with_no_members_key(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- id: view-a\n  name: View A\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_view_membership_edits([{"view_id": "view-a", "add": [], "remove": ["ghost-member"]}])
+
+    assert views_path.read_text() == "- id: view-a\n  name: View A\n"
+
+
 def test_apply_element_edits_renames_a_block_style_element(tmp_path: Any, monkeypatch: Any) -> None:
     elements_path = tmp_path / "elements.yaml"
     elements_path.write_text(
@@ -1353,6 +1378,29 @@ def test_apply_element_edits_raises_for_an_unknown_element_id(tmp_path: Any, mon
 
     with pytest.raises(ValueError, match="no element 'no-such-element'"):
         model_io.apply_element_edits([{"id": "no-such-element", "name": "X"}])
+
+
+def test_apply_element_edits_skips_an_unparsable_flow_entry_line(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text(
+        "- {type: DataObject, id: do-a, name: Old Name\n- type: Driver\n  id: driver-b\n  name: B\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_element_edits([{"id": "driver-b", "name": "New Name"}])
+
+    text = elements_path.read_text()
+    assert "name: New Name" in text
+    assert "{type: DataObject, id: do-a, name: Old Name" in text
+
+
+def test_apply_element_edits_raises_for_a_block_entry_with_no_name_line(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- type: Driver\n  id: driver-a\n  desc: No name field\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="has no name: line this editor can rewrite"):
+        model_io.apply_element_edits([{"id": "driver-a", "name": "New Name"}])
 
 
 def test_apply_element_removals_deletes_a_block_style_element(tmp_path: Any, monkeypatch: Any) -> None:

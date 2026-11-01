@@ -136,6 +136,28 @@ def test_decide_apply_removes_a_relationship_from_disk(
     assert "control mappings" not in rels_text
 
 
+def test_decide_apply_removes_an_element_from_disk(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [], "element_removals": ["const-apra"],'
+        ' "relationship_removals": [{"type": "Influence", "source": "const-apra", "target": "req-pre-deploy-gate"}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove the const-apra constraint and its influence relationship"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    elements_text = (isolated_model / "elements.yaml").read_text()
+    assert "const-apra" not in elements_text
+
+
 def test_decide_against_an_unknown_delta_returns_409(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
     session_id = client.post("/authoring/sessions").json()["session_id"]
 
