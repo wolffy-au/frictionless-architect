@@ -4,8 +4,8 @@
     python -m modelling_specification.c4 MODEL --system "Name" \
         [--level context|container] [--layout WITH_LEGEND|TOP_DOWN|LEFT_RIGHT]
 
-Applies the mapping in references/archimate-to-c4-mapping.md. Exit 0 = wrote
-output, 2 = load/lookup error.
+Applies the mapping in references/archimate-to-c4-mapping.md and prints the
+diagram to stdout. Exit 0 = generated, 2 = load/lookup error.
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from dataclasses import dataclass, field
 from typing import Any
 
 from pyArchimate import Model
@@ -30,7 +31,6 @@ BUSINESS_STORE_TYPES = {"BusinessObject"}
 # silently dropping relationships unique to the app-layer element. Mark such
 # an element c4=ignore explicitly if you want only the BusinessService shown.
 BUSINESS_SERVICE_TYPES = {"BusinessService"}
-DEPLOY_TYPES = {"Node", "Device", "SystemSoftware", "CommunicationNetwork", "Path", "Equipment", "Facility"}
 STRUCTURAL_RELS = {"Realization", "Assignment", "Composition", "Aggregation", "Specialization"}
 ACCESS_LABEL = {
     "Read": "reads from",
@@ -47,6 +47,20 @@ ELEMENT_MACROS = {
     "externalQueue": "SystemQueue_Ext",
 }
 SYSTEM_MACROS = {"db": "SystemDb", "queue": "SystemQueue"}
+# c4 classification -> C4-PlantUML macro, for elements inside the system boundary.
+CONTAINER_MACROS = {
+    "container": "Container",
+    "containerDb": "ContainerDb",
+    "containerQueue": "ContainerQueue",
+}
+# Relationship type -> label when the relationship names none. Access is absent:
+# its default depends on the access type.
+DEFAULT_LABELS = {
+    "Serving": "uses",
+    "Flow": "sends data to",
+    "Triggering": "triggers",
+    "Association": "related to",
+}
 DIRECTIONS = {"U", "D", "L", "R"}
 
 
@@ -91,22 +105,32 @@ def contained_by_system(model: Model, system_uuid: str) -> set[str]:
     return inside
 
 
-def generate(  # noqa: C901 - linear codegen
-    path: str, system_name: str, level: str, layout: str, enterprise: str | None = None
-) -> tuple[str, list[str]]:
-    model = Model("c4")
-    model.read(path)
-    warns: list[str] = []
+@dataclass
+class _Diagram:
+    """What one generation is drawing: the system in focus, the elements inside
+    it, and the C4 kind of each element emitted so far."""
 
+    system: Any
+    inside: set[str]
+    level: str
+    kind: dict[str, str] = field(default_factory=dict[str, str])
+
+
+# (source, target, label, technology, macro)
+_RawRel = tuple[str, str, str, str, str]
+
+
+def _find_system(model: Model, system_name: str) -> Any:
     systems = [e for e in model.elements if e.name == system_name or prop(e, "c4") == "system"]
     systems = [e for e in systems if e.name == system_name] or systems
     if not systems:
         raise KeyError(f"no element named {system_name!r} and none with c4=system")
-    system = systems[0]
-    inside = contained_by_system(model, system.uuid)
+    return systems[0]
 
+
+def _header(path: str, system: Any, level: str, layout: str) -> list[str]:
     include = "C4_Container" if level == "container" else "C4_Context"
-    header = [
+    return [
         "@startuml",
         f"' GENERATED from {path} by diagram-c4 (model_to_c4.py) — do not edit; fix the ArchiMate model.",
         f"!include <C4/{include}>",
@@ -115,159 +139,172 @@ def generate(  # noqa: C901 - linear codegen
         f"LAYOUT_{layout}()",
         "",
     ]
-    lines: list[str] = []
 
-    kind: dict[str, str] = {}  # uuid -> emitted C4 macro alias-kind
 
-    def classify(e: Any) -> str:
-        override = prop(e, "c4")
-        if override:
-            return override
-        if e.type in PERSON_TYPES:
-            return "person"
-        if e.uuid in inside:
-            if e.type in STORE_TYPES or e.type in BUSINESS_STORE_TYPES:
-                return "containerDb"
-            if e.type == "ApplicationComponent":
-                return "container"
-            return "ignore"
-        if e.type in ("ApplicationComponent", "ApplicationService"):
-            return "external"
-        if level == "context" and e.type in BUSINESS_STORE_TYPES:
-            return "externalDb"
-        if level == "context" and e.type in BUSINESS_SERVICE_TYPES:
-            return "external"
-        if e.type in DEPLOY_TYPES:
-            return "ignore"
-        return "ignore"
+def _classify_inside(e: Any) -> str:
+    if e.type in STORE_TYPES or e.type in BUSINESS_STORE_TYPES:
+        return "containerDb"
+    return "container" if e.type == "ApplicationComponent" else "ignore"
 
-    # System box
-    if level == "container":
-        lines.append(f'System_Boundary({alias(system.uuid)}, "{esc(system.name)}") {{')
-        for e in model.elements:
-            if e.uuid not in inside:
-                continue
-            c = classify(e)
-            if c == "container":
-                lines.append(f'  Container({alias(e.uuid)}, "{esc(e.name)}", "", "{esc(e.desc)}")')
-                kind[e.uuid] = "container"
-            elif c == "containerDb":
-                lines.append(f'  ContainerDb({alias(e.uuid)}, "{esc(e.name)}", "", "{esc(e.desc)}")')
-                kind[e.uuid] = "containerDb"
-            elif c == "containerQueue":
-                lines.append(f'  ContainerQueue({alias(e.uuid)}, "{esc(e.name)}", "", "{esc(e.desc)}")')
-                kind[e.uuid] = "containerQueue"
-        lines.append("}")
-    else:
+
+def _classify_outside(e: Any, level: str) -> str:
+    if e.type in ("ApplicationComponent", "ApplicationService"):
+        return "external"
+    if level == "context" and e.type in BUSINESS_STORE_TYPES:
+        return "externalDb"
+    if level == "context" and e.type in BUSINESS_SERVICE_TYPES:
+        return "external"
+    return "ignore"
+
+
+def _classify(e: Any, diagram: _Diagram) -> str:
+    override = prop(e, "c4")
+    if override:
+        return override
+    if e.type in PERSON_TYPES:
+        return "person"
+    return _classify_inside(e) if e.uuid in diagram.inside else _classify_outside(e, diagram.level)
+
+
+def _system_lines(model: Model, diagram: _Diagram) -> list[str]:
+    """The system box: a boundary of containers, or one box at Context level."""
+    system = diagram.system
+    if diagram.level != "container":
         sys_macro = SYSTEM_MACROS.get(prop(system, "c4-kind") or "", "System")
-        lines.append(f'{sys_macro}({alias(system.uuid)}, "{esc(system.name)}", "{esc(system.desc)}")')
-        kind[system.uuid] = "system"
-
-    # People + external systems
+        diagram.kind[system.uuid] = "system"
+        return [f'{sys_macro}({alias(system.uuid)}, "{esc(system.name)}", "{esc(system.desc)}")']
+    lines = [f'System_Boundary({alias(system.uuid)}, "{esc(system.name)}") {{']
     for e in model.elements:
-        if e.uuid in kind or e.uuid == system.uuid:
+        if e.uuid not in diagram.inside:
             continue
-        c = classify(e)
+        c = _classify(e, diagram)
+        macro = CONTAINER_MACROS.get(c)
+        if macro:
+            lines.append(f'  {macro}({alias(e.uuid)}, "{esc(e.name)}", "", "{esc(e.desc)}")')
+            diagram.kind[e.uuid] = c
+    lines.append("}")
+    return lines
+
+
+def _external_lines(model: Model, diagram: _Diagram) -> list[str]:
+    """People and external systems."""
+    lines: list[str] = []
+    for e in model.elements:
+        if e.uuid in diagram.kind or e.uuid == diagram.system.uuid:
+            continue
+        c = _classify(e, diagram)
         macro = ELEMENT_MACROS.get(c)
         if macro:
             lines.append(f'{macro}({alias(e.uuid)}, "{esc(e.name)}", "{esc(e.desc)}")')
-            kind[e.uuid] = c
+            diagram.kind[e.uuid] = c
+    return lines
 
-    # For context level, fold inside-elements onto the system box.
-    def endpoint(uuid: str) -> str | None:
-        if uuid in kind:
-            return alias(uuid)
-        if level == "context" and uuid in inside:
-            return alias(system.uuid)
-        return None
 
-    def rel_macro(r: Any) -> str:
-        if str(prop(r, "c4-birel") or "").lower() in {"true", "yes", "1"}:
-            return "BiRel"
-        direction = str(prop(r, "c4-direction") or "").upper()
-        if direction in DIRECTIONS:
-            return f"Rel_{direction}"
-        return "Rel"
+def _endpoint(uuid: str, diagram: _Diagram) -> str | None:
+    """A relationship end's alias. At Context level, inside-elements fold onto the system box."""
+    if uuid in diagram.kind:
+        return alias(uuid)
+    if diagram.level == "context" and uuid in diagram.inside:
+        return alias(diagram.system.uuid)
+    return None
 
-    lines.append("")
-    raw: list[tuple[str, str, str, str, str]] = []  # (source, target, label, technology, macro)
+
+def _rel_macro(r: Any) -> str:
+    if str(prop(r, "c4-birel") or "").lower() in {"true", "yes", "1"}:
+        return "BiRel"
+    direction = str(prop(r, "c4-direction") or "").upper()
+    return f"Rel_{direction}" if direction in DIRECTIONS else "Rel"
+
+
+def _rel_label(r: Any, warns: list[str]) -> str:
+    label = prop(r, "c4-label") or (getattr(r, "name", "") or None)
+    if r.type in DEFAULT_LABELS:
+        return label or DEFAULT_LABELS[r.type]
+    if r.type == "Access":
+        return label or ACCESS_LABEL.get(str(getattr(r, "access_type", "Access")), "accesses")
+    warns.append(f"relationship type {r.type!r} not in C4 mapping — drawn as generic Rel")
+    return label or r.type.lower()
+
+
+def _raw_rels(model: Model, diagram: _Diagram, warns: list[str]) -> list[_RawRel]:
+    raw: list[_RawRel] = []
     for r in model.relationships:
         if r.type in STRUCTURAL_RELS:
             continue
-        s, t = endpoint(r.source.uuid), endpoint(r.target.uuid)
+        s, t = _endpoint(r.source.uuid, diagram), _endpoint(r.target.uuid, diagram)
         if not s or not t or s == t:
             continue
-        macro = rel_macro(r)
-        label = prop(r, "c4-label") or (getattr(r, "name", "") or None)
-        tech = esc(prop(r, "c4-technology") or "")
         if r.type == "Serving":
             s, t = t, s  # served party depends on the server
-            label = label or "uses"
-        elif r.type == "Flow":
-            label = label or "sends data to"
-        elif r.type == "Triggering":
-            label = label or "triggers"
-        elif r.type == "Access":
-            label = label or ACCESS_LABEL.get(str(getattr(r, "access_type", "Access")), "accesses")
-        elif r.type == "Association":
-            label = label or "related to"
-        else:
-            warns.append(f"relationship type {r.type!r} not in C4 mapping — drawn as generic Rel")
-            label = label or r.type.lower()
-        raw.append((s, t, label or "", tech, macro))
+        tech = esc(prop(r, "c4-technology") or "")
+        raw.append((s, t, _rel_label(r, warns), tech, _rel_macro(r)))
+    return raw
 
-    def merge_macro(current: str, incoming: str) -> str:
-        # BiRel wins outright; otherwise first non-default (directional) macro sticks.
-        if "BiRel" in (current, incoming):
-            return "BiRel"
-        return incoming if current == "Rel" and incoming != "Rel" else current
 
-    if level == "context":
-        # Every interaction with an inside-element folds onto the one system
-        # box, so many container-level relationships collapse onto the same
-        # (source, target) pair. Merge each pair into a single Rel (or
-        # BiRel/Rel_<dir> if any contributing relationship asked for one)
-        # that lists its distinct labels one per line, rather than drawing a
-        # fan of near-duplicate arrows.
-        merged: dict[tuple[str, str], tuple[list[str], str, str]] = {}
-        order: list[tuple[str, str]] = []
-        for s, t, label, tech, macro in raw:
-            key = (s, t)
-            if key not in merged:
-                merged[key] = ([], tech, "Rel")
-                order.append(key)
-            labels, kept_tech, kept_macro = merged[key]
-            if label and label not in labels:
-                labels.append(label)
-            if tech and not kept_tech:
-                kept_tech = tech
-            merged[key] = (labels, kept_tech, merge_macro(kept_macro, macro))
-        for s, t in order:
-            labels, tech, macro = merged[(s, t)]
-            joined = "\\n".join(esc(x) for x in labels)
-            args = f'{s}, {t}, "{joined}"'
-            if tech:
-                args += f', "{tech}"'
-            lines.append(f"{macro}({args})")
-    else:
-        # Container level: keep distinct labels as separate arrows; drop only
-        # exact duplicates.
-        seen: set[tuple[str, str, str]] = set()
-        for s, t, label, tech, macro in raw:
-            if (s, t, label) in seen:
-                continue
+def _merge_macro(current: str, incoming: str) -> str:
+    # BiRel wins outright; otherwise first non-default (directional) macro sticks.
+    if "BiRel" in (current, incoming):
+        return "BiRel"
+    return incoming if current == "Rel" and incoming != "Rel" else current
+
+
+def _rel_line(macro: str, s: str, t: str, label: str, tech: str) -> str:
+    args = f'{s}, {t}, "{label}"'
+    if tech:
+        args += f', "{tech}"'
+    return f"{macro}({args})"
+
+
+def _merged_rel_lines(raw: list[_RawRel]) -> list[str]:
+    """Context level. Every interaction with an inside-element folds onto the one
+    system box, so many container-level relationships collapse onto the same
+    (source, target) pair. Merge each pair into a single Rel (or BiRel/Rel_<dir>
+    if any contributing relationship asked for one) that lists its distinct labels
+    one per line, rather than drawing a fan of near-duplicate arrows."""
+    merged: dict[tuple[str, str], tuple[list[str], str, str]] = {}
+    for s, t, label, tech, macro in raw:
+        labels, kept_tech, kept_macro = merged.setdefault((s, t), ([], tech, "Rel"))
+        if label and label not in labels:
+            labels.append(label)
+        merged[(s, t)] = (labels, kept_tech or tech, _merge_macro(kept_macro, macro))
+    return [
+        _rel_line(macro, s, t, "\\n".join(esc(x) for x in labels), tech)
+        for (s, t), (labels, tech, macro) in merged.items()
+    ]
+
+
+def _distinct_rel_lines(raw: list[_RawRel]) -> list[str]:
+    """Container level: keep distinct labels as separate arrows; drop only exact duplicates."""
+    lines: list[str] = []
+    seen: set[tuple[str, str, str]] = set()
+    for s, t, label, tech, macro in raw:
+        if (s, t, label) not in seen:
             seen.add((s, t, label))
-            args = f'{s}, {t}, "{esc(label)}"'
-            if tech:
-                args += f', "{tech}"'
-            lines.append(f"{macro}({args})")
+            lines.append(_rel_line(macro, s, t, esc(label), tech))
+    return lines
+
+
+def generate(
+    path: str, system_name: str, level: str, layout: str, enterprise: str | None = None
+) -> tuple[str, list[str]]:
+    model = Model("c4")
+    model.read(path)
+    warns: list[str] = []
+
+    system = _find_system(model, system_name)
+    diagram = _Diagram(system, contained_by_system(model, system.uuid), level)
+
+    lines = _system_lines(model, diagram)
+    lines += _external_lines(model, diagram)
+    lines.append("")
+    raw = _raw_rels(model, diagram, warns)
+    lines += _merged_rel_lines(raw) if level == "context" else _distinct_rel_lines(raw)
 
     if enterprise:
         boundary_alias = "enterprise_" + re.sub(r"[^0-9a-zA-Z]", "", enterprise)[:16]
         lines = [f'Enterprise_Boundary({boundary_alias}, "{esc(enterprise)}") {{', *lines, "}"]
 
-    lines = header + lines + ["", "@enduml", ""]
-    return "\n".join(lines), warns
+    return "\n".join([*_header(path, system, level, layout), *lines, "", "@enduml", ""]), warns
 
 
 def main() -> int:
