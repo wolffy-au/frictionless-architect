@@ -65,7 +65,7 @@ logic to (ADR-0037's thin-wrapper pattern).
    pattern `validate.py` already used — this repo's own documented skill workflows are
    unaffected. The `puml`/`c4` modules only print, since `rendering.py` needs nothing
    else and CLI arguments an agent builds should not reach a file write in a package
-   other repos install; the wrappers own `-o`.
+   other repos install; callers redirect.
 
 **Model impact:** none — this is a tooling/packaging change; no element, relationship, or
 view in `architecture/model/` changes.
