@@ -1033,10 +1033,10 @@ topics:
           sha256: 2d346b1924ad639931ac4d74a3e8a5468bddf373167bd636328c96161240862b
           lines: 1
         architecture/model/diagrams/migration/plat-architecture-strategy-future-13.puml:
-          sha256: 1a12bdee9b357983b92dc0afb56cdf633faf3711b30b16eb9f13191eb710e714
-          lines: 33
+          sha256: 506f59aa8bdd74db991e96c45d91ac19a55ed256532f4ba85dc71bc9ca018ac5
+          lines: 31
         architecture/model/diagrams/migration/plat-architecture-strategy-future-13.svg:
-          sha256: 062da4127f4147766872f8555d77f22729362a121c6511d0b299f0491d95446e
+          sha256: dd7bfb0ae4a1acb615d2e54b2c0afa708882ff781d09fda7610f4b9e97334d81
           lines: 1
         architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml:
           sha256: 0d9de3d6700b4bd6a74bc9cbdda9532931dd5524046152cdd659cb0017cc3b10
@@ -1081,10 +1081,10 @@ topics:
           sha256: ec933b6914dcac307057e97f0fdcf99be41a6d6c788234430ef6f1d01e1d42ad
           lines: 1
         architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml:
-          sha256: 8b24a2e96799b1db34c1ee022a93b7fcffa7dff1954164c92e3a300754ffa6a5
-          lines: 29
+          sha256: f4aab45d48401e4236cd6af2caa72c098793c177e5332d5644bb2e6b1b3bb0ba
+          lines: 31
         architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg:
-          sha256: a3ed89d0be25a739aca3c03a0b3bc4c3c59eda64a1acafc3a23b7077bedb36d2
+          sha256: 19f7ea27ba8de37aa6c17bae298463ec7b12a0f8dc6650e9a874f7b3d2944384
           lines: 1
         architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.puml:
           sha256: df6a10d3de2dc48ae8e4774de4c092cca0b3d592556b8af2df592d0d031ad966
@@ -1117,10 +1117,10 @@ topics:
           sha256: 0c1a88da4464e541a21eabcfb23fcd88214d4c2947e95c71279d62134dd9678e
           lines: 1
         architecture/model/diagrams/migration/work-package-dependencies.puml:
-          sha256: eb81459450795bf4766c88c0cfb81418c73e17015b9d7808b5b53c5c33a2f82a
-          lines: 156
+          sha256: 955bdfbfac08f3099a1e799fb1fa84f6428c488a904d414ca1e64fadbbe89e06
+          lines: 157
         architecture/model/diagrams/migration/work-package-dependencies.svg:
-          sha256: aee67311f70f7e0ec5c564008497b265b5c4b37a05d4e73435ba566949b061cd
+          sha256: 24521ac76fbb9dabf6f4f7c16e73406e9d0b011339b112b3bb2368d8304926fd
           lines: 1
         architecture/model/diagrams/technology/landscape.puml:
           sha256: ec032487030ffa012c5ec192a0f57693889c2ce0a1f7ade0e5e7db6eb38395e4
