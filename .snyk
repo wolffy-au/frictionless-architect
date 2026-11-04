@@ -25,3 +25,6 @@ exclude:
     # was attempted and blocked (org lacks "Consistent Ignores for Snyk Code"); this path
     # exclude is the fallback until that's enabled or a Web UI ignore is recorded.
     - platform/packages/modelling-specification/src/modelling_specification/router.py
+    # Third-party numpy/fastembed stack semsearch.py installs here on first use; gitignored,
+    # never shipped, and not this repo's code. Snyk Code scans it anyway (121 findings).
+    - .claude/skills/wiki-librarian/tools/.venv/**
