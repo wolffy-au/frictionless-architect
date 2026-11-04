@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate an ArchiMate PlantUML diagram from a validated ArchiMate model.
 
-    python -m modelling_specification.puml MODEL[.archimate|.xml] [--view NAME] [-o OUT.puml]
+    python -m modelling_specification.puml MODEL[.archimate|.xml] [--view NAME]
         [--no-direction TYPE ...]
 
 Emits PlantUML using the bundled `<archimate/Archimate>` stdlib. With
@@ -22,7 +22,7 @@ neighbourhood: elements tagged `context: CTX`, plus any other element on the
 view connected to one of them by a relationship also on the view -- GH #129
 step 4's `split_by: context`, one invocation per context.
 
-Exit 0 = wrote output, 2 = load/lookup error.
+Prints the PlantUML to stdout. Exit 0 = printed, 2 = load/lookup error.
 """
 
 from __future__ import annotations
@@ -33,8 +33,6 @@ import sys
 from typing import Any
 
 from pyArchimate import Model
-
-from modelling_specification.model_io import write_diagram
 
 # ArchiMate element type (pyArchimate bare name) -> <archimate/Archimate> macro.
 # Verified against PlantUML 1.2026.7's bundled stdlib.
@@ -389,7 +387,6 @@ def main() -> int:
         metavar="PX",
         help="cap the rendered width in pixels (PlantUML `scale max PX width`); smaller diagrams are untouched",
     )
-    ap.add_argument("-o", "--output", help="write .puml here (default: stdout)")
     args = ap.parse_args()
 
     try:
@@ -401,14 +398,7 @@ def main() -> int:
     for w in warnings:
         sys.stderr.write(f"warning: {w}\n")
 
-    if args.output:
-        try:
-            sys.stderr.write(f"wrote {write_diagram(args.output, puml)}\n")
-        except ValueError as exc:
-            sys.stderr.write(f"error: {exc}\n")
-            return 2
-    else:
-        print(puml)
+    print(puml)
     return 0
 
 

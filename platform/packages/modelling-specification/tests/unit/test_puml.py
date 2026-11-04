@@ -175,18 +175,6 @@ def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:
     return puml.main()
 
 
-def test_cli_refuses_output_outside_the_project(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path / "project")
-    model = Model("m")
-    model.add(ArchiType.Goal, "G")
-    outside = tmp_path / "outside.puml"
-    assert _cli(monkeypatch, _write(model, tmp_path), "-o", str(outside)) == 2
-    assert not outside.exists()
-    assert "must be a .puml file inside" in capsys.readouterr().err
-
-
 def test_view_concepts_skips_nodes_without_a_concept_and_walks_nested_ones() -> None:
     nested = SimpleNamespace(concept=SimpleNamespace(uuid="inner"), nodes=[])
     outer = SimpleNamespace(concept=None, nodes=[nested])
@@ -209,18 +197,6 @@ def test_access_without_a_type_uses_the_plain_macro(tmp_path: Path) -> None:
     text, _ = puml.generate(_write(model, tmp_path), None)
     assert "Rel_Access" in text
     assert "Rel_Access_r" not in text
-
-
-def test_cli_writes_the_output_file(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path)
-    model = Model("m")
-    model.add(ArchiType.Goal, "G")
-    out = tmp_path / "nested" / "out.puml"
-    assert _cli(monkeypatch, _write(model, tmp_path), "-o", str(out)) == 0
-    assert out.read_text().startswith("@startuml")
-    assert "wrote" in capsys.readouterr().err
 
 
 def test_cli_prints_to_stdout_by_default(
@@ -256,3 +232,10 @@ def test_unmapped_types_fall_back_and_warn(
     assert len(warnings) == 2
     assert _cli(monkeypatch, str(tmp_path / "m.xml")) == 0
     assert "warning: unmapped" in capsys.readouterr().err
+
+
+def test_cli_has_no_file_output(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The package only prints; the repo's skill wrappers own `-o` (ADR-0045)."""
+    with pytest.raises(SystemExit) as exit_info:
+        _cli(monkeypatch, "model.xml", "-o", "x.puml")
+    assert exit_info.value.code == 2
