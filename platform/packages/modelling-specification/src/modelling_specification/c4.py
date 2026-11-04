@@ -2,7 +2,7 @@
 """Project a validated ArchiMate model into a C4-PlantUML diagram.
 
     python -m modelling_specification.c4 MODEL --system "Name" \
-        [--level context|container] [--layout WITH_LEGEND|TOP_DOWN|LEFT_RIGHT] [-o OUT.puml]
+        [--level context|container] [--layout WITH_LEGEND|TOP_DOWN|LEFT_RIGHT]
 
 Applies the mapping in references/archimate-to-c4-mapping.md. Exit 0 = wrote
 output, 2 = load/lookup error.
@@ -16,8 +16,6 @@ import sys
 from typing import Any
 
 from pyArchimate import Model
-
-from modelling_specification.model_io import write_diagram
 
 PERSON_TYPES = {"BusinessActor", "BusinessRole"}
 STORE_TYPES = {"DataObject", "Artifact"}
@@ -279,7 +277,6 @@ def main() -> int:
     ap.add_argument("--level", choices=("context", "container"), default="container")
     ap.add_argument("--layout", choices=("WITH_LEGEND", "TOP_DOWN", "LEFT_RIGHT"), default="WITH_LEGEND")
     ap.add_argument("--enterprise", help="wrap the diagram in an Enterprise_Boundary with this label")
-    ap.add_argument("-o", "--output")
     args = ap.parse_args()
 
     try:
@@ -290,14 +287,7 @@ def main() -> int:
 
     for w in warns:
         sys.stderr.write(f"warning: {w}\n")
-    if args.output:
-        try:
-            sys.stderr.write(f"wrote {write_diagram(args.output, puml)}\n")
-        except ValueError as exc:
-            sys.stderr.write(f"error: {exc}\n")
-            return 2
-    else:
-        print(puml)
+    print(puml)
     return 0
 
 

@@ -12,7 +12,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
-from modelling_specification import c4, model_io, rendering
+from modelling_specification import c4, rendering
 from modelling_specification.model_io import REPO_ROOT
 from pyArchimate import ArchiType, Model
 
@@ -233,28 +233,6 @@ def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:
     return c4.main()
 
 
-def test_cli_refuses_output_outside_the_project(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path / "project")
-    model, _, _ = _system_model()
-    outside = tmp_path / "outside.puml"
-    assert _cli(monkeypatch, _write(model, tmp_path), "--system", SYSTEM, "-o", str(outside)) == 2
-    assert not outside.exists()
-    assert "must be a .puml file inside" in capsys.readouterr().err
-
-
-def test_cli_writes_the_output_file(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path)
-    model, _, _ = _system_model()
-    out = tmp_path / "nested" / "out.puml"
-    assert _cli(monkeypatch, _write(model, tmp_path), "--system", SYSTEM, "-o", str(out)) == 0
-    assert out.read_text().startswith("@startuml")
-    assert "wrote" in capsys.readouterr().err
-
-
 def test_cli_prints_warnings_and_stdout(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -272,3 +250,10 @@ def test_cli_reports_an_unknown_system(
     model.add(ArchiType.Goal, "G")
     assert _cli(monkeypatch, _write(model, tmp_path), "--system", SYSTEM) == 2
     assert "no element named" in capsys.readouterr().err
+
+
+def test_cli_has_no_file_output(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The package only prints; the repo's skill wrappers own `-o` (ADR-0045)."""
+    with pytest.raises(SystemExit) as exit_info:
+        _cli(monkeypatch, "model.xml", "--system", "S", "-o", "x.puml")
+    assert exit_info.value.code == 2

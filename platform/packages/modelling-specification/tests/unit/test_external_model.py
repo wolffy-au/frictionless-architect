@@ -148,25 +148,6 @@ def test_project_relative_keeps_a_path_outside_the_project_whole(tmp_path: Path)
     assert model_io.project_relative(tmp_path) == str(tmp_path)
 
 
-@pytest.mark.parametrize("destination", ["../escaped.puml", "/etc/escaped.puml", "inside.txt"])
-def test_write_diagram_refuses_a_bad_destination(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, destination: str
-) -> None:
-    root = tmp_path / "project"
-    root.mkdir()
-    monkeypatch.setattr(model_io, "PROJECT_ROOT", root)
-    with pytest.raises(ValueError, match="must be a .puml file inside"):
-        model_io.write_diagram(destination, "x")
-
-
-def test_write_diagram_resolves_a_relative_destination_against_the_project(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path)
-    assert model_io.write_diagram("a/b.puml", "x") == tmp_path / "a" / "b.puml"
-    assert (tmp_path / "a" / "b.puml").read_text() == "x"
-
-
 def test_no_c4_jobs_without_a_system(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(rendering, "SYSTEM", "")
     assert rendering._c4_diagram_jobs(tmp_path) == []

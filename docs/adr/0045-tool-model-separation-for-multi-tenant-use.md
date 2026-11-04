@@ -63,7 +63,9 @@ logic to (ADR-0037's thin-wrapper pattern).
 4. The three original `.claude/skills/*/scripts` files (`viewpoints.py`, `model_to_puml.py`,
    `model_to_c4.py`) become thin wrappers shelling into the platform CLI, mirroring the
    pattern `validate.py` already used — this repo's own documented skill workflows are
-   unaffected.
+   unaffected. The `puml`/`c4` modules only print, since `rendering.py` needs nothing
+   else and CLI arguments an agent builds should not reach a file write in a package
+   other repos install; the wrappers own `-o`.
 
 **Model impact:** none — this is a tooling/packaging change; no element, relationship, or
 view in `architecture/model/` changes.
