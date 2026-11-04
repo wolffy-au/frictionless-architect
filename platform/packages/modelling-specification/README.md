@@ -79,10 +79,11 @@ under the current directory. These env vars override that:
 | --- | --- | --- |
 | `FRICTIONLESS_MODEL_DIR` | Directory holding `elements.yaml`, `relationships.yaml`, `views.yaml` and optional `conventions.yaml`; `diagrams/` is written here | -- |
 | `FRICTIONLESS_THIRD_PARTY_DIR` | Directory of vendored models (ADR-0029): each subdirectory with an `elements.yaml` is merged in | `third_party/` beside the model directory |
-| `FRICTIONLESS_MODEL_NAME` | Model name and built file name (`<name>.xml`) | `frictionless-architect` |
+| `FRICTIONLESS_MODEL_NAME` | Model name and built file name (`<name>.xml`); path separators and a leading dot are rejected | `frictionless-architect` |
 | `FRICTIONLESS_C4_SYSTEM` | Element the C4 diagrams are drawn around | none: C4 diagrams are skipped |
 | `FRICTIONLESS_ADR_DIR` | Where override ADR stubs are written | `docs/adr/` beside the model directory |
 
+Each directory variable must name an existing directory, or the package refuses to start.
 Paths in generated files and CLI output are relative to the model directory's parent.
 The `puml`/`c4` modules print to stdout and never write files themselves; redirect
 their output, or let `render` place it.

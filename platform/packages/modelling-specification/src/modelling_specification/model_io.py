@@ -51,10 +51,23 @@ def _source_checkout() -> Path | None:
     return next((p for p in Path(__file__).resolve().parents if (p / marker).is_dir()), None)
 
 
-def _env_path(name: str, default: Path) -> Path:
-    """`default` unless env var `name` holds a non-empty path."""
+def env_dir(name: str, default: Path) -> Path:
+    """`default` unless env var `name` is set, when it must name an existing directory."""
     value = os.environ.get(name)
-    return Path(value).resolve() if value else default
+    if not value:
+        return default
+    path = Path(value).resolve()
+    if not path.is_dir():
+        raise ValueError(f"{name}={value!r} is not an existing directory")
+    return path
+
+
+def _model_name() -> str:
+    """The model's name, which is also a file name: it must stay in the model directory."""
+    value = os.environ.get("FRICTIONLESS_MODEL_NAME") or "frictionless-architect"
+    if value.startswith(".") or not re.fullmatch(r"[\w .-]+", value):
+        raise ValueError(f"FRICTIONLESS_MODEL_NAME={value!r} must be a plain file name")
+    return value
 
 
 # Every path below anchors here rather than on the process's current working directory
@@ -63,18 +76,18 @@ def _env_path(name: str, default: Path) -> Path:
 _CHECKOUT = _source_checkout()
 REPO_ROOT = _CHECKOUT or Path.cwd()
 _MODEL_DIR_FROM_ENV = bool(os.environ.get("FRICTIONLESS_MODEL_DIR"))
-HERE = _env_path("FRICTIONLESS_MODEL_DIR", REPO_ROOT / "architecture" / "model")
+HERE = env_dir("FRICTIONLESS_MODEL_DIR", REPO_ROOT / "architecture" / "model")
 # Root that generated files' displayed paths are relative to, and the generators' cwd.
 PROJECT_ROOT = HERE.parent if _MODEL_DIR_FROM_ENV else REPO_ROOT
 # True only for this repo's own model; settings naming it apply to nothing else.
 IS_HOME_MODEL = _CHECKOUT is not None and not _MODEL_DIR_FROM_ENV
-MODEL_NAME = os.environ.get("FRICTIONLESS_MODEL_NAME") or "frictionless-architect"
+MODEL_NAME = _model_name()
 OUT = HERE / f"{MODEL_NAME}.xml"
 # Vendored reference models (ADR-0029): each is loaded alongside the
 # first-party elements.yaml/relationships.yaml and merged into the same
 # det_id()/NS pass below -- their own id prefix (e.g. `it4it-`) is what keeps
 # the merged id space unique, not any separate reconciliation step.
-THIRD_PARTY = _env_path("FRICTIONLESS_THIRD_PARTY_DIR", PROJECT_ROOT / "third_party")
+THIRD_PARTY = env_dir("FRICTIONLESS_THIRD_PARTY_DIR", PROJECT_ROOT / "third_party")
 # Ownership scope: every element carries a `context` (a bounded context, in DDD
 # terms). First-party elements default to this one; a layer's elements default
 # to the layer directory's name (`it4it`, `gh-roadmap`). An explicit `context:`

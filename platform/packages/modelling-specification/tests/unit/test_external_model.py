@@ -130,17 +130,29 @@ def test_source_checkout_is_none_outside_a_checkout(monkeypatch: pytest.MonkeyPa
     assert model_io._source_checkout() is None
 
 
-def test_env_path_prefers_the_variable(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_env_dir_prefers_the_variable(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("FRICTIONLESS_TEST_PATH", str(tmp_path))
-    assert model_io._env_path("FRICTIONLESS_TEST_PATH", Path("/fallback")) == tmp_path.resolve()
+    assert model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback")) == tmp_path.resolve()
 
 
 @pytest.mark.parametrize("value", [None, ""])
-def test_env_path_falls_back(monkeypatch: pytest.MonkeyPatch, value: str | None) -> None:
+def test_env_dir_falls_back(monkeypatch: pytest.MonkeyPatch, value: str | None) -> None:
     monkeypatch.delenv("FRICTIONLESS_TEST_PATH", raising=False)
     if value is not None:
         monkeypatch.setenv("FRICTIONLESS_TEST_PATH", value)
-    assert model_io._env_path("FRICTIONLESS_TEST_PATH", Path("/fallback")) == Path("/fallback")
+    assert model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback")) == Path("/fallback")
+
+
+def test_env_dir_rejects_a_missing_directory(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("FRICTIONLESS_TEST_PATH", str(tmp_path / "missing"))
+    with pytest.raises(ValueError, match="is not an existing directory"):
+        model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback"))
+
+
+def test_model_name_rejects_a_path(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("FRICTIONLESS_MODEL_NAME", "../escaped")
+    with pytest.raises(ValueError, match="must be a plain file name"):
+        model_io._model_name()
 
 
 def test_project_relative_keeps_a_path_outside_the_project_whole(tmp_path: Path) -> None:
@@ -176,3 +188,30 @@ def test_override_adr_creates_a_missing_directory(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr(overrides, "ADR_DIR", adr_dir)
     assert overrides.draft_override("duplicate", "detail", None, "summary")["id"] == "0001"
     assert len(list(adr_dir.glob("0001-*.md"))) == 1
+
+
+@pytest.mark.parametrize("name", ["../../escaped", "sub/name", ".hidden", ".."])
+def test_model_name_must_stay_in_the_model_directory(model_dir: Path, tmp_path: Path, name: str) -> None:
+    env = _environ(FRICTIONLESS_MODEL_DIR=str(model_dir), FRICTIONLESS_MODEL_NAME=name)
+    result = _cli(env, tmp_path, "build")
+    assert result.returncode != 0
+    assert "must be a plain file name" in result.stderr
+    assert not list(tmp_path.rglob("*.xml"))
+
+
+def test_model_name_may_contain_spaces(model_dir: Path, tmp_path: Path) -> None:
+    env = _environ(FRICTIONLESS_MODEL_DIR=str(model_dir), FRICTIONLESS_MODEL_NAME="Acme Model")
+    assert _cli(env, tmp_path, "build").returncode == 0
+    assert (model_dir / "Acme Model.xml").is_file()
+
+
+@pytest.mark.parametrize("variable", ["FRICTIONLESS_MODEL_DIR", "FRICTIONLESS_THIRD_PARTY_DIR", "FRICTIONLESS_ADR_DIR"])
+def test_directory_settings_must_exist(model_dir: Path, tmp_path: Path, variable: str) -> None:
+    env = {"FRICTIONLESS_MODEL_DIR": str(model_dir), variable: str(tmp_path / "missing")}
+    code = "import modelling_specification.authoring.overrides"
+    result = subprocess.run(
+        [sys.executable, "-c", code], env=_environ(**env), cwd=tmp_path, capture_output=True, text=True
+    )
+    assert result.returncode != 0
+    assert f"{variable}=" in result.stderr
+    assert "is not an existing directory" in result.stderr
