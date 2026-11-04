@@ -208,6 +208,28 @@ def _pick_parent(parents: list[tuple[str, Any]]) -> tuple[str, Any] | None:
     return compositions[0] if len(compositions) == 1 else None
 
 
+def _containment_candidates(elements: list[Any], relationships: list[Any]) -> dict[str, list[tuple[str, Any]]]:
+    """The legal containment edges, grouped by part, in first-seen order (dict
+    preserves insertion order) so nesting stays deterministic."""
+    on_diagram = {e.uuid for e in elements}
+    candidates_by_part: dict[str, list[tuple[str, Any]]] = {}
+    for r in relationships:
+        whole, part = r.source.uuid, r.target.uuid
+        if r.type in NEST_RELS and whole in on_diagram and part in on_diagram and whole != part:
+            candidates_by_part.setdefault(part, []).append((whole, r))
+    return candidates_by_part
+
+
+def _is_descendant(node: str, of: str, parent_of: dict[str, str]) -> bool:
+    """Whether `of` is `node` or sits anywhere beneath it."""
+    cur: str | None = of
+    while cur is not None:
+        if cur == node:
+            return True
+        cur = parent_of.get(cur)
+    return False
+
+
 def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str, list[str]], set[str], set[int]]:
     """Fold containment relationships into nesting.
 
@@ -218,41 +240,18 @@ def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str,
     unlike Aggregation/Assignment, which can be shared); the nesting must also
     introduce no cycle. Every other containment stays an arrow.
     """
-    by_uuid = {e.uuid: e for e in elements}
-
-    # Pass 1: gather the legal containment edges, grouped by part, in first-seen
-    # order (dict preserves insertion order) so nesting stays deterministic.
-    candidates_by_part: dict[str, list[tuple[str, Any]]] = {}
-    for r in relationships:
-        if r.type not in NEST_RELS:
-            continue
-        whole, part = r.source.uuid, r.target.uuid
-        if whole not in by_uuid or part not in by_uuid or whole == part:
-            continue
-        candidates_by_part.setdefault(part, []).append((whole, r))
-
-    # Pass 2: pick each part's single container -- the lone candidate, or the
-    # lone Composition one if several compete -- and nest it there unless that
+    # Pick each part's single container -- the lone candidate, or the lone
+    # Composition one if several compete -- and nest it there unless that
     # introduces a cycle; every other containment stays an arrow.
     parent_of: dict[str, str] = {}
     children: dict[str, list[str]] = {}
     nested: set[int] = set()
 
-    def is_descendant(node: str, of: str) -> bool:
-        cur: str | None = of
-        while cur is not None:
-            if cur == node:
-                return True
-            cur = parent_of.get(cur)
-        return False
-
-    for part, parents in candidates_by_part.items():
+    for part, parents in _containment_candidates(elements, relationships).items():
         picked = _pick_parent(parents)
-        if picked is None:
+        if picked is None or _is_descendant(part, picked[0], parent_of):
             continue
         whole, r = picked
-        if is_descendant(part, whole):
-            continue
         parent_of[part] = whole
         children.setdefault(whole, []).append(part)
         nested.add(id(r))
@@ -314,6 +313,27 @@ def _view_scoped(model: Any, view_name: str, context: str | None) -> tuple[list[
     return elements, relationships, view_name
 
 
+def _rel_macro(r: Any, no_direction: set[str] | None) -> str | None:
+    """`r`'s macro with its access-type and layout-direction suffixes, or None if unmapped."""
+    macro = REL_MACRO.get(r.type)
+    if not macro:
+        return None
+    suffix = ACCESS_TYPE_SUFFIX.get(getattr(r, "access_type", None) or "") if r.type == "Access" else None
+    if suffix:
+        macro = f"{macro}_{suffix}"
+    direction = None if no_direction and r.type in no_direction else REL_DIRECTION.get(r.type)
+    return f"{macro}_{direction}" if direction else macro
+
+
+def _rel_line(r: Any, no_direction: set[str] | None, warnings: list[str]) -> str:
+    s, t = alias(r.source.uuid), alias(r.target.uuid)
+    macro = _rel_macro(r, no_direction)
+    if macro:
+        return f'{macro}({s}, {t}, "{esc(getattr(r, "name", ""))}")'
+    warnings.append(f"unmapped relationship type {r.type!r} -> plain association")
+    return f"{s} --> {t}"
+
+
 def generate(
     path: str,
     view_name: str | None,
@@ -344,23 +364,7 @@ def generate(
     lines += _element_lines(elements, children, contained, warnings)
     lines.append("")
 
-    for r in relationships:
-        if id(r) in nested:
-            continue
-        macro = REL_MACRO.get(r.type)
-        s, t = alias(r.source.uuid), alias(r.target.uuid)
-        if macro:
-            if r.type == "Access":
-                suffix = ACCESS_TYPE_SUFFIX.get(getattr(r, "access_type", None) or "")
-                if suffix:
-                    macro = f"{macro}_{suffix}"
-            direction = None if no_direction and r.type in no_direction else REL_DIRECTION.get(r.type)
-            if direction:
-                macro = f"{macro}_{direction}"
-            lines.append(f'{macro}({s}, {t}, "{esc(getattr(r, "name", ""))}")')
-        else:
-            warnings.append(f"unmapped relationship type {r.type!r} -> plain association")
-            lines.append(f"{s} --> {t}")
+    lines += [_rel_line(r, no_direction, warnings) for r in relationships if id(r) not in nested]
 
     lines += ["", "@enduml", ""]
     return "\n".join(lines), warnings
