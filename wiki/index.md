@@ -1,7 +1,7 @@
 ---
 title: Frictionless Architect Wiki
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 ---
 
 > This wiki is **generated** by the `wiki-librarian` skill from the sources

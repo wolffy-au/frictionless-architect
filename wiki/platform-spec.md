@@ -1,7 +1,7 @@
 ---
 title: Platform Specification & API
-generated: '2026-10-24'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/checklists/requirements.md
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md
@@ -29,10 +29,18 @@ during the architecture rework (`specs/EPIC-001-governance-platform/spec.md:3-14
 Requirements describe *what* the platform must do and *what properties* the
 solution must have, never which product provides it.
 
+A 2026-10-31 clarification brings the conversational-modelling agent's own LLM
+prompts into FR-004's mandatory PII/PHI scrubbing, because they carry the same
+architect-authored free text with no exemption like ADR-0031's. The wiring landed
+with GH #181: `propose_delta()` scrubs under `pii-gateway`'s
+`conversational-authoring` context and withholds the LLM call on a flagged match
+until the architect resolves it through `POST /authoring/sessions/{id}/propose/resolve-pii`
+(`specs/EPIC-001-governance-platform/spec.md` §"Session 2026-10-31").
+
 ### Deferred solution decisions
 
 Choices deliberately removed from the spec so the rework can make them
-intentionally (`specs/EPIC-001-governance-platform/spec.md:27-38`): token/session
+intentionally (`specs/EPIC-001-governance-platform/spec.md:45-56`): token/session
 mechanism for auth, the authorization model and policy-rule language, the
 crypto scheme and identity model for ADR attestation, accepted serialization
 formats for model/interface ingestion, the wire format for structured API
@@ -44,7 +52,7 @@ metadata.
 Spec 001 is the platform's business specification since the root
 `PROJECT_SPECIFICATION.md` was retired (2026-09-26); FR-021–FR-023 were
 carried over from it (`specs/EPIC-001-governance-platform/spec.md` header "Last
-revised"). Highlights (`specs/EPIC-001-governance-platform/spec.md:114-163`):
+revised"). Highlights (`specs/EPIC-001-governance-platform/spec.md:132-181`):
 
 - Maintain a machine-readable semantic model mapping technical components to
   data domains, CBS, and regulations (FR-001, FR-002).
@@ -82,13 +90,13 @@ revised"). Highlights (`specs/EPIC-001-governance-platform/spec.md:114-163`):
 P1 core governance (Break-Glass exception, ADR attestation, traceability-matrix
 query); P2 specification lifecycle (developer initiates a spec, gets an
 AI-drafted ADR); P3 platform operations (admin inspects KPIs)
-(`specs/EPIC-001-governance-platform/spec.md:41-108`). Edge cases cover an architect
+(`specs/EPIC-001-governance-platform/spec.md:59-126`). Edge cases cover an architect
 refusing to attest, two conflicting ADRs, and a single consistent structured
 error shape.
 
 ### Success criteria (provisional)
 
-`specs/EPIC-001-governance-platform/spec.md:181-191` — Mean Time to Compliance −30%
+`specs/EPIC-001-governance-platform/spec.md:199-209` — Mean Time to Compliance −30%
 (SC-001); drift-detection accuracy > 98% (SC-002); Governance Friction
 Coefficient −25% (SC-003); 100% of critical AI-drafted ADRs get a human
 attestation before Approved (SC-005); traceability-matrix queries within

@@ -1,7 +1,7 @@
 ---
 title: Architecture Overview
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - ARCHITECTURE.md
 - TECHNICAL.md
@@ -117,6 +117,10 @@ standalone dashboard; `packages/portal` mounts it once for every package
 (ADR-0020). Its first consumer is `controls-compliance-catalog`'s
 `llm_client.py`. See [LLM Provider Configuration](llm-provider-config.md) and
 [Portal](portal.md).
+
+The second shared package is `pii-gateway`, a Presidio-backed PII/PHI scrubbing
+gateway (ADR-0014, ADR-0043). `packages/portal` mounts it, and
+`modelling-specification` calls it before every LLM call (`ARCHITECTURE.md` §3.2, §4).
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or
 dissolved (`ARCHITECTURE.md` §4):

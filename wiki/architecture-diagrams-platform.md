@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/diagrams/implementation/deployment/architecture-governance.puml
@@ -253,7 +253,7 @@ pure `Capability`-to-`Capability` cut across two repos, so it lives in this
 repo's `views.yaml` rather than the vendored one. Because it is a cross-*model*
 cut, its diagram stays flat at the `diagrams/` root. By contrast,
 `layered/subsystem-capabilities` is only a cross-*layer* cut within this repo's
-own model, so it gets a layer folder (`architecture/model/views.yaml:679-713`).
+own model, so it gets a layer folder (`architecture/model/views.yaml:765-799`).
 
 An earlier "IT4IT Alignment" monolith view (79 elements, everything at once)
 predated the 4-view split and was dropped once the split fully superseded it. It
@@ -280,14 +280,14 @@ renderer reads each view's `diagram:` key, a path under `diagrams/`
 with no extension, and emits one `.puml`/`.svg` pair per view. A view with no
 `diagram:` key is skipped with a note. The two C4 diagrams are a fixed list in the
 script: `c4/context` with a legend, and `c4/container` laid out left to right
-(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:65-70`).
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:76-82`).
 
 Views declared in `third_party/it4it/views.yaml` render into the vendored model's
 own `third_party/it4it/diagrams/`. Every view in this repo's `views.yaml` renders
 under `architecture/model/diagrams/`.
 
-Two per-view keys pass extra options to `model_to_puml.py`
-(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:98-114`):
+Two per-view keys pass extra options to `puml.py`
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:113-129`):
 
 - `no_direction:` lists relationship types that are passed as `--no-direction`.
   This switches off the layout-direction hint described below for that view.
@@ -311,11 +311,11 @@ Options and exit codes:
 - `--no-svg` emits `.puml` only.
 - The script reads the generated XML and does not rebuild it, so run `build.py`
   first. If the XML is missing, the script exits `2`
-  (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:234-240`).
+  (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:252-258`).
 
 Changed `.puml` files are rendered in a single `plantuml -tsvg` call. Each
 resulting `.svg` gets a trailing newline, so re-renders don't churn on
-PlantUML's missing one (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:196-202`, `226-229`).
+PlantUML's missing one (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:214-220`, `244-247`).
 
 **Layout direction.** `diagram-archimate` fixes the layout direction for two
 groups of relationship types:
@@ -326,5 +326,5 @@ groups of relationship types:
 - `Triggering` and `Flow` render `_Right`, so process sequences read left to
   right.
 
-This is a rendering hint only (`REL_DIRECTION` in `model_to_puml.py`), not a
+This is a rendering hint only (`REL_DIRECTION` in `puml.py`), not a
 change to source/target semantics. See [Agent Skills & Workflows](agent-workflows.md).
