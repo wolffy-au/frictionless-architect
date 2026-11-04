@@ -8,12 +8,14 @@ log, which `adr-auditor`'s normal sweep already picks the stub up for review fro
 from __future__ import annotations
 
 import datetime
+import os
 import re
+from pathlib import Path
 from typing import Any
 
 from modelling_specification import model_io
 
-ADR_DIR = model_io.REPO_ROOT / "docs" / "adr"
+ADR_DIR = Path(os.environ.get("FRICTIONLESS_ADR_DIR") or model_io.PROJECT_ROOT / "docs" / "adr").resolve()
 _NUMBER_RE = re.compile(r"^(\d{4})-")
 
 
@@ -49,6 +51,7 @@ def draft_override(
         "- Recorded for later review by the `adr-auditor` sweep (Constitution Principle X).\n"
     )
     slug = re.sub(r"[^a-z0-9]+", "-", overridden_objection.lower()).strip("-") or "objection"
+    ADR_DIR.mkdir(parents=True, exist_ok=True)
     (ADR_DIR / f"{adr_id}-conversational-authoring-override-{slug}.md").write_text(body)
     return {
         "id": adr_id,

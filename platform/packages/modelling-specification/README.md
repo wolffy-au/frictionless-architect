@@ -71,22 +71,25 @@ poetry run --directory platform python -m modelling_specification.cli validate <
 
 ## Using this package against a different model (ADR-0045)
 
-`model_io.HERE`/`OUT` (and `THIRD_PARTY`) default to this repo's own
-`architecture/model/` and `third_party/`, but resolve from two env vars first:
+Every path resolves from `model_io.py` at import. With nothing set, a checkout of
+this repo uses its own model, and an installed copy reads `architecture/model/`
+under the current directory. These env vars override that:
 
-- `FRICTIONLESS_MODEL_DIR` -- the model directory (`elements.yaml` /
-  `relationships.yaml` / `views.yaml` / `conventions.yaml` live here).
-- `FRICTIONLESS_THIRD_PARTY_DIR` -- the vendored-model directory (ADR-0029);
-  omit if the consuming model has none.
+| Variable | Meaning | Default when `FRICTIONLESS_MODEL_DIR` is set |
+| --- | --- | --- |
+| `FRICTIONLESS_MODEL_DIR` | Directory holding `elements.yaml`, `relationships.yaml`, `views.yaml` and optional `conventions.yaml`; `diagrams/` is written here | -- |
+| `FRICTIONLESS_THIRD_PARTY_DIR` | Directory of vendored models (ADR-0029): each subdirectory with an `elements.yaml` is merged in | `third_party/` beside the model directory |
+| `FRICTIONLESS_MODEL_NAME` | Model name and built file name (`<name>.xml`) | `frictionless-architect` |
+| `FRICTIONLESS_C4_SYSTEM` | Element the C4 diagrams are drawn around | none: C4 diagrams are skipped |
+| `FRICTIONLESS_ADR_DIR` | Where override ADR stubs are written | `docs/adr/` beside the model directory |
 
-Set both and this package -- including diagram rendering (`puml.py`/`c4.py`)
-and viewpoint conformance checking (`viewpoints.py`) -- is self-contained: it
-no longer depends on anything under this repo's own `.claude/skills/`. A
-different repo can depend on `modelling-specification` (e.g. a Poetry git
-dependency with `subdirectory = "platform/packages/modelling-specification"`
-pointing at this repo) and run its own `elements.yaml`/`relationships.yaml`/
-`views.yaml` through the same `build`/`render`/`validate` CLI below, entirely
-independent of this repo's own model or history.
+Paths in generated files and CLI output are relative to the model directory's parent.
+This repo's vendored models and C4 system never apply to another model.
+
+A different repo can depend on `modelling-specification` as a Poetry git dependency
+with `subdirectory = "platform/packages/modelling-specification"`, then run its own
+YAML through the `build`/`render`/`validate` CLI below. Nothing from this repo's model,
+history or `.claude/skills/` is needed.
 
 ## Development
 

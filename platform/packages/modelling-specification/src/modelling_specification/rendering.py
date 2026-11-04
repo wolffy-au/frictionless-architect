@@ -32,6 +32,7 @@ removed from ``views.yaml``) are deleted.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
@@ -44,15 +45,24 @@ import yaml
 from defusedxml import ElementTree as SafeET
 
 from modelling_specification import model_io
-from modelling_specification.model_io import ELEMENTS_FILENAME, OUT, RELATIONSHIPS_FILENAME, REPO_ROOT, VIEWS_FILENAME
+from modelling_specification.model_io import (
+    ELEMENTS_FILENAME,
+    HERE,
+    IS_HOME_MODEL,
+    OUT,
+    PROJECT_ROOT,
+    RELATIONSHIPS_FILENAME,
+    VENDORED_MODELS,
+    VIEWS_FILENAME,
+    project_relative,
+)
 
-# Repo-relative string, not OUT's absolute Path: model_to_puml.py/model_to_c4.py echo
-# their input path verbatim into each generated file's "GENERATED from ..." header, and
-# subprocesses below run with cwd=REPO_ROOT, so this must match what render_diagrams.py
-# always passed or every view would show as spuriously stale against the committed .puml.
-MODEL_REL = str(OUT.relative_to(REPO_ROOT))
+# Project-relative string, not OUT's absolute Path: puml.py/c4.py echo their input path
+# verbatim into each generated file's "GENERATED from ..." header, and subprocesses
+# below run with cwd=PROJECT_ROOT, so this must match what render_diagrams.py always
+# passed or every view would show as spuriously stale against the committed .puml.
+MODEL_REL = project_relative(OUT)
 
-HERE = REPO_ROOT / "architecture" / "model"
 VIEWS = HERE / VIEWS_FILENAME
 # Generic one-per-standard-viewpoint views (include_types only), split out of views.yaml.
 VIEWPOINT_VIEWS = HERE / "views-viewpoints.yaml"
@@ -62,7 +72,7 @@ DIAGRAMS = HERE / "diagrams"
 # Vendored models (ADR-0029) each carry their own views.yaml, rendering into
 # their own diagrams/ dir -- (views file, diagrams dir) pairs, same order as
 # model_io.py's VENDORED_MODELS.
-VENDORED_VIEW_SOURCES = [(REPO_ROOT / "third_party/it4it/views.yaml", REPO_ROOT / "third_party/it4it/diagrams")]
+VENDORED_VIEW_SOURCES = [(d / VIEWS_FILENAME, d / "diagrams") for d in VENDORED_MODELS]
 
 # Resolved via Python's module system (ADR-0045), not a repo-relative file path, so
 # this works identically whether `modelling_specification` is this checkout's own
@@ -70,7 +80,9 @@ VENDORED_VIEW_SOURCES = [(REPO_ROOT / "third_party/it4it/views.yaml", REPO_ROOT 
 ARCHIMATE_PUML_MODULE = "modelling_specification.puml"
 C4_PUML_MODULE = "modelling_specification.c4"
 
-SYSTEM = "Frictionless Architecture Platform"
+# The element C4 diagrams are drawn around. Empty skips them: another model has no such
+# element, so it opts in by naming its own (ADR-0045).
+SYSTEM = os.environ.get("FRICTIONLESS_C4_SYSTEM") or ("Frictionless Architecture Platform" if IS_HOME_MODEL else "")
 C4_DIAGRAMS = [
     # (slug, level, layout)
     ("c4/context", "context", "WITH_LEGEND"),
@@ -83,9 +95,9 @@ class ViewNotFoundError(Exception):
 
 
 def _capture(cmd: list[str]) -> str:
-    # Run from the repo root so generators that echo their input path into a
+    # Run from the project root so generators that echo their input path into a
     # "GENERATED from ..." header emit a stable repo-relative path.
-    r = subprocess.run(cmd, capture_output=True, text=True, cwd=REPO_ROOT)
+    r = subprocess.run(cmd, capture_output=True, text=True, cwd=PROJECT_ROOT)
     if r.returncode != 0:
         sys.stderr.write(r.stdout + r.stderr)
         raise SystemExit(2)
@@ -95,7 +107,7 @@ def _capture(cmd: list[str]) -> str:
 
 
 def _run(cmd: list[str]) -> None:
-    r = subprocess.run(cmd, capture_output=True, text=True, cwd=REPO_ROOT)
+    r = subprocess.run(cmd, capture_output=True, text=True, cwd=PROJECT_ROOT)
     if r.returncode != 0:
         sys.stderr.write(r.stdout + r.stderr)
         raise SystemExit(2)
@@ -137,6 +149,8 @@ def _view_diagram_jobs(
 def _c4_diagram_jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     """Generator-command jobs for the fixed C4 context/container/component pair."""
     jobs: list[tuple[Path, list[str]]] = []
+    if not SYSTEM:
+        return jobs
     for slug, level, layout in C4_DIAGRAMS:
         cmd = [
             sys.executable,
@@ -182,7 +196,7 @@ def _orphans(root: Path, wanted: set[Path], *, write: bool) -> list[str]:
             continue
         if f.with_suffix(".puml") in wanted:
             continue
-        found.append(str(f.relative_to(REPO_ROOT)))
+        found.append(project_relative(f))
         if write:
             f.unlink()
     return found
@@ -190,10 +204,10 @@ def _orphans(root: Path, wanted: set[Path], *, write: bool) -> list[str]:
 
 def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path], set[Path]]:
     """Generate every job's `.puml` for `root`; returns (stale, changed, wanted) as
-    repo-relative stale paths, the changed `.puml` paths, and every path `_jobs`
+    project-relative stale paths, the changed `.puml` paths, and every path `_jobs`
     produced (stale or not, for `_orphans` to compare against)."""
     jobs = _jobs(root)
-    # Each _capture() is a separate `python model_to_puml.py`/`model_to_c4.py` process
+    # Each _capture() is a separate `python -m modelling_specification.puml`/`.c4` process
     # that reparses the whole model XML -- dozens of these in sequence is the slow part
     # (observed ~65s for this repo's ~70 views), not CPU work in this process. They're
     # independent (no shared state, each writes to its own puml path below), so running
@@ -210,7 +224,7 @@ def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path
         current = puml.read_text() if puml.exists() else None
         if current == new_text:
             continue
-        stale.append(str(puml.relative_to(REPO_ROOT)))
+        stale.append(project_relative(puml))
         changed.append(puml)
         if write:
             puml.parent.mkdir(parents=True, exist_ok=True)
@@ -265,8 +279,8 @@ def render(diagram_roots: list[Path], svg: bool, *, write: bool) -> tuple[list[s
 def render_diagrams(*, check: bool, svg: bool) -> tuple[int, list[str], list[str]]:
     """Batch-regenerate (or `--check`) every diagram. Returns (exit_code, stale, orphan).
 
-    0 = up to date / written, 1 = stale (`check`), 2 = `architecture/model/
-    frictionless-architect.xml` is missing (run `model_io.write_and_validate()` first)."""
+    0 = up to date / written, 1 = stale (`check`), 2 = the built model
+    (`OUT`) is missing (run `model_io.write_and_validate()` first)."""
     if not OUT.exists():
         return 2, [], []
 
@@ -421,11 +435,11 @@ def _render_svg(v: dict[str, Any], model_path: str) -> str:
 def render_single_view(view_id: str) -> str:
     """Render one view's current SVG in-process, without touching any committed
     `.puml`/`.svg` file (FR-013) -- used by `GET /authoring/render`'s unambiguous-resolve
-    path. Reads the already-built `frictionless-architect.xml`; raises `ViewNotFoundError`
+    path. Reads the already-built model (`OUT`); raises `ViewNotFoundError`
     if `view_id` matches nothing in `views.yaml` (the fuzzy/ambiguous-candidates resolution
     FR-016 adds sits in front of this, in the router)."""
     if not OUT.exists():
-        raise ViewNotFoundError("architecture/model/frictionless-architect.xml is missing — build the model first")
+        raise ViewNotFoundError(f"{MODEL_REL} is missing — build the model first")
     _refresh_model_if_sources_changed()
     return _render_svg(_find_view(view_id), MODEL_REL)
 
@@ -436,7 +450,7 @@ class PreviewError(Exception):
 
 def render_candidate_view(view_id: str, elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> str:
     """Render `view_id` as it would look with the delta applied -- built in memory and
-    written only to a throwaway temp file, never to `architecture/model/`."""
+    written only to a throwaway temp file, never to the model directory."""
     v = _find_view(view_id)
     model, errors = model_io.preview_model(elements, relationships, v)
     if model is None:
