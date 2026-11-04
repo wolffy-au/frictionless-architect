@@ -86,10 +86,21 @@ under the current directory. These env vars override that:
 Paths in generated files and CLI output are relative to the model directory's parent.
 This repo's vendored models and C4 system never apply to another model.
 
-A different repo can depend on `modelling-specification` as a Poetry git dependency
-with `subdirectory = "platform/packages/modelling-specification"`, then run its own
-YAML through the `build`/`render`/`validate` CLI below. Nothing from this repo's model,
-history or `.claude/skills/` is needed.
+A different repo can depend on this package through Poetry git dependencies, then run
+its own YAML through the `build`/`render`/`validate` CLI below. Nothing from this repo's
+model, history or `.claude/skills/` is needed. The three sibling packages must be listed
+too: they are `path` dependencies here and are not on PyPI.
+
+```toml
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+modelling-specification = { git = "<this repo>", subdirectory = "platform/packages/modelling-specification" }
+llm-provider-config = { git = "<this repo>", subdirectory = "platform/packages/llm-provider-config" }
+digital-twin-knowledge-graph = { git = "<this repo>", subdirectory = "platform/packages/digital-twin-knowledge-graph" }
+pii-gateway = { git = "<this repo>", subdirectory = "platform/packages/pii-gateway" }
+```
 
 ## Development
 
