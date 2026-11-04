@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Skeleton'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -341,7 +341,11 @@ Several processes are new or have been renamed:
   *existing* `bfn-solution-design` function alongside the structured
   Solution Design Composition process, not a new function
   (`docs/adr/0039-conversational-solution-modelling-scope.md` §Decision; see
-  [Architecture Decision Log](decision-log.md)).
+  [Architecture Decision Log](decision-log.md)). It now realizes
+  `cap-reusable-architecture` directly, mirroring
+  `process-conversational-authoring`'s own capability `Realization` and closing
+  the asymmetry GH #138 left on `role-sa`'s side
+  (`architecture/model/relationships.yaml`; `architecture/model/views.yaml`).
 - **GH #69 follow-on (ADR-0038 consequences):** `role-sec` and `role-dev` had
   no business-layer presence at all. Two minimal new functions close that gap
   by wrapping each role's one already-modelled touchpoint rather than
@@ -365,7 +369,7 @@ They "could — and arguably should — be re-cut to align with the journeys of 
 section-B roles" (`architecture/model/elements.yaml:603-609`).
 
 **The choreography.** The processes form one connected chain, with Triggering
-hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-343`):
+hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-344`):
 
 ```text
 Policy Authoring → OSCAL Catalog Generation → Baseline Tailoring
@@ -420,7 +424,7 @@ back to their `DataObject`; see
   check enablement against, the *resolved catalog* rather than the raw Profile.
   A profile only selects and tailors controls, while the resolved catalog
   carries the effective control content
-  (`architecture/model/relationships.yaml:301-316`).
+  (`architecture/model/relationships.yaml:302-317`).
 - **Architecture strategy and drift.** The second group is Current State,
   Target State and Transition State Architecture, Architecture Roadmap, Drift
   Finding, and the Architecture Conformance Register. The Architecture
@@ -449,12 +453,12 @@ the Current State against the **Transition State in effect**, "so gaps planned f
 states are not flagged as drift". It records findings in the Conformance
 Register, and Drift Review & Triage updates their status there
 (`architecture/model/elements.yaml:572-588`;
-`architecture/model/relationships.yaml:338-351`).
+`architecture/model/relationships.yaml:339-352`).
 
 **Where the POA&M sits.** Target State Definition takes remediation milestones
 from the OSCAL POA&M. The CICD gate and effectiveness monitoring both write
 control deficiencies into the POA&M
-(`architecture/model/relationships.yaml:341-358`).
+(`architecture/model/relationships.yaml:342-359`).
 
 > **Sources disagree on what Drift Management reconciles against and what the
 > traceability functions read.**
@@ -467,4 +471,4 @@ control deficiencies into the POA&M
 >   Profile controls". `process-blueprint-traceability` still describes checking
 >   "against the OSCAL Profile". Their `Access` edges read the Resolved OSCAL
 >   Profile Catalog (`architecture/model/elements.yaml:641-646`, `716-722`;
->   `architecture/model/relationships.yaml:301-303`).
+>   `architecture/model/relationships.yaml:302-304`).

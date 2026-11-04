@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: '2026-10-24'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - README.md
 - specs/EPIC-001-governance-platform/spec.md
@@ -113,10 +113,10 @@ server-rendered page was dropped ahead of a separate UI extraction
 ## Platform packages
 
 Code being extracted from the flat `src/` layout lives in the `platform/` Poetry
-monorepo (ADR-0002), with its own lock and virtualenv. The README now lists six
+monorepo (ADR-0002), with its own lock and virtualenv. The README now lists seven
 packages: `controls-compliance-catalog` (policy and standard documents to OSCAL
 Catalogs and Profiles), `llm-provider-config` (shared LLM provider, model and
-credential resolution), `modelling-specification` (conversational ArchiMate
+credential resolution), `pii-gateway` (Presidio-backed PII/PHI scrubbing before content reaches an LLM provider, ADR-0014/ADR-0043, called from `modelling-specification` today), `modelling-specification` (conversational ArchiMate
 model authoring: a service, a split-screen UI and a model build/render/validate
 CLI, run with `./scripts/run-modelling_specification.sh`; GH #108) and `portal` (the composition host that serves every
 package's UI from one app, `uvicorn portal.app:app` on `http://127.0.0.1:8000/`,

@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Build Pipeline & IT4IT Merge'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/build.py
@@ -25,23 +25,28 @@ the files, schema and content sections.
 
 ## Build pipeline
 
+The package finds the model through `FRICTIONLESS_MODEL_DIR`, defaulting to this
+directory, so another repo can install it and point it at its own model
+(`architecture/model/README.md` §"Architecture model"; ADR-0045; see
+[Conversational Model Authoring](modelling-specification.md#using-it-against-another-model-adr-0045)).
+
 The root `build.py` dispatches to the package CLI, which owns the YAML-to-XML
 build path (`architecture/model/README.md` §"Architecture model";
-`architecture/model/build.py:1-56`;
+`architecture/model/build.py:1-55`;
 `platform/packages/modelling-specification/src/modelling_specification/cli.py:18-36`):
 
 1. The CLI loads and merges first-party YAML with optional vendored and
    generated layers, then assembles and validates the model
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:159-205,633-670,854-872`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:279-325,753-790,1017-1035`).
 2. Stable identifiers are derived from element ids and relationship fields, so
    repeated builds do not churn the exchange model
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:94-105,200-270`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:214-225,320-390`).
 3. Motivation and viewpoint conventions are checked during model assembly
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:346-379,466-610`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:466-499,586-730`).
 
 The loader rejects null YAML values rather than allowing truncated flow-style
 entries through, and writes the XML only after successful assembly
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:106-157,661-670,854-872`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:226-277,781-790,1017-1035`).
 
 ## IT4IT alignment — vendored as its own repo, imported at build time
 
@@ -56,7 +61,7 @@ The model loader loads it alongside the first-party YAML and merges both into th
 separate `.xml`, and no ID-reconciliation machinery. Every IT4IT element and
 relationship keeps the `it4it-` id prefix it always had, and that prefix
 alone is what keeps the merged id space collision-free
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:45-68,173-205`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:86-104,293-325`).
 
 This is a decision about *packaging*, not content — nothing about the IT4IT
 data itself changed:

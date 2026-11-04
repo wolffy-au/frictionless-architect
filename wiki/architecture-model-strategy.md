@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Strategy'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -38,6 +38,11 @@ from the resource that equips it (`architecture/model/relationships.yaml:47-57`)
 | Reusable Architecture Curation (`cap-reusable-architecture`) | `req-reusable-architecture` | Enterprise Architecture Practice |
 | Conversational Architecture Governance (`cap-conversational-governance`) | `req-conversational-authoring-alignment` | Enterprise Architecture Practice |
 
+`process-conversational-solution-modelling` now realizes
+`cap-reusable-architecture` as well, so reuse has a conversational path from
+`role-sa` alongside the pattern and blueprint processes
+(`architecture/model/relationships.yaml`).
+
 `cap-conversational-governance` sits between spec generation and the digital
 twin it validates proposals against: it `Serving`s `cap-spec-engine`
 ("validated authoring") and is served by `cap-digital-twin` ("authoritative
@@ -47,7 +52,7 @@ discipline, not the store or the generator
 `architecture/model/relationships.yaml:237-238`). It is realized by
 `sub-modelling` (the Modelling & Specification subsystem) and by the
 `process-conversational-authoring` business process below
-(`architecture/model/relationships.yaml:259,457`).
+(`architecture/model/relationships.yaml:259,458`).
 
 The fifth resource, **Accumulated Evidence Record** (`res-evidence-record`), is new.
 It is "the growing, append-only body of recorded agent" actions and decisions

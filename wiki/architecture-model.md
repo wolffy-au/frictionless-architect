@@ -1,7 +1,7 @@
 ---
 title: Architecture Model
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/build.py
@@ -40,22 +40,22 @@ elements.yaml + relationships.yaml + views.yaml   (canonical, hand-edited)
 the `modelling-specification` package's CLI; model loading, merging,
 validation and rendering live there
 (`architecture/model/README.md` §"Architecture model";
-`architecture/model/build.py:1-56`;
+`architecture/model/build.py:1-55`;
 `platform/packages/modelling-specification/src/modelling_specification/cli.py:89-113`).
 The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:346-379`; see
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:466-499`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 515 elements, 1029 relationships and 66 views
-(re-counted 2026-10-24 against a clean `build.py` run; the model validates
-with no metamodel or referential-integrity violations). Of those, 280
-elements and 658 relationships are hand-authored in this repo's own
+current merged model is 554 elements, 1265 relationships and 74 views
+(re-counted 2026-11-04 against a clean `build.py` run; the model validates
+with no metamodel or referential-integrity violations). Of those, 287
+elements and 672 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
-view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 93
-elements and 136 relationships are generated into
+view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 116
+elements and 195 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
-roadmap layer" below); and 142 elements and 235 relationships are the
+roadmap layer" below); 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
 ([ADR-0029](decision-log-ui-visualiser-model.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The generated
 `frictionless-architect.xml` is committed but never hand-edited — same status
@@ -84,7 +84,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
   `BusinessProcess`, `ApplicationComponent`, `ApplicationFunction`,
   `DataObject`, `Grouping`, …). Case-insensitive; the model loader
   canonicalises against the supported ArchiMate types
-  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:81-92`).
+  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:195-212`).
 - **`id`** — a stable kebab id, hashed to a deterministic UUID so regeneration
   never churns identifiers or diagrams. *Never renumber a live id.*
 - **`name` / `desc`** — top-level keys, not inside `props`. Double-quote any
@@ -151,7 +151,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
   and AND-combined per entry) matched against each in-scope relationship
   before it's drawn as a view connection; a relationship is suppressed when
   every key given in an entry matches, and omitted keys are wildcards
-  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:380-420,466-610`, GH #20). Added
+  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:500-540,586-730`, GH #20). Added
   because the renderer draws any relationship whose both
   endpoints are in scope, so a mesh that is core to one view's story (e.g.
   the 8-edge capability-to-capability `Serving` mesh on `view-capability`)
@@ -169,7 +169,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
 
   (`architecture/model/views.yaml`.)
 - **`viewpoint`** on a view (optional) — a standard ArchiMate viewpoint slug
-  from `.claude/skills/model-archimate/reference/archi-viewpoints.xml`
+  from the `modelling-specification` package's `reference/archi-viewpoints.xml` (ADR-0045)
   (`poetry run python .claude/skills/model-archimate/scripts/viewpoints.py
   list`). `build.py` holds that view to the viewpoint's allowed concepts and
   fails on a stray one. `viewpoint: custom` marks a deliberate cross-layer view
@@ -190,7 +190,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
 
 The model loader accumulates invalid model entries and reports collected
 build errors before writing or validating the exchange-format model
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:106-126,633-670,854-872`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:226-246,753-790,1017-1035`).
 
 ## Model contents — per-layer pages
 
@@ -466,6 +466,5 @@ the latter renaming `fn-conversational-authoring` and its process to
 Architecture Strategy transition view and a new, generated
 `plat-architecture-strategy-future-13` milestone Plateau were also added (see
 [Architecture Views & Diagrams: Platform, Migration &
-Rendering](architecture-diagrams-platform.md)). That brings the model to its
-current **515 elements, 1029 relationships, 66 views**, confirmed by a clean
-`build.py` run on 2026-10-24.
+Rendering](architecture-diagrams-platform.md)). That brought the model to 515 elements, 1029 relationships and 66 views on
+2026-10-24; see the top of this page for the current count.

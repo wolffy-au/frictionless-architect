@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Packaging, Migration & Technology'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -208,6 +208,17 @@ Hand-authored `Triggering` edges order the three Plateaus, and
 `view-runtime-migration` (now `diagrams/migration/runtime`) shows them together
 with the two Nodes, `sw-neo4j` and `sw-keyring`.
 
+**Decided libraries (ADR-0044).** Four `SystemSoftware` elements, all
+`c4: ignore`, now represent libraries chosen by their own ADR, each with a
+`Serving` edge: `sw-litellm` to `sub-llm-provider-config`, `sw-presidio` to
+`sub-pii-gateway`, and `sw-pyarchimate` and `sw-rapidfuzz` to
+`fn-conversational-authoring` (`architecture/model/elements.yaml` §F;
+`architecture/model/relationships.yaml`). **Sources disagree on the ADR numbers:**
+those element descriptions cite ADR-0041 for the modelling rule and ADR-0040 for
+Presidio, but the decisions are recorded in
+[ADR-0044 and ADR-0043](decision-log-0030-onward.md). The build also warns that
+the four have no explicit `context`, so they default to `platform`.
+
 **Neo4j persistence (GH #108).** A new technology Artifact,
 `art-tech-neo4j-volume` ("Neo4j Graph Database Files") — the on-disk database
 files `sw-neo4j` reads/writes, a Docker volume under
@@ -219,7 +230,7 @@ this chain (`node-app-server` → `sw-neo4j` → `art-tech-neo4j-volume` →
 `store-akg`) rather than a direct `SystemSoftware → DataObject` edge, which
 the relationship matrix doesn't permit anyway (only `Access`/`Association`)
 and which would skip the Artifact the model always interposes between a Node
-and the store it backs (`architecture/model/relationships.yaml:923-924`; see
+and the store it backs (`architecture/model/relationships.yaml:930-931`; see
 the "Feature Steel Thread" view below).
 
 **Feature Steel Thread (GH #108).** `view-gh108-conversational-authoring`
@@ -238,6 +249,13 @@ jointly `Assignment`-ed from both `role-ea` and `role-sa`), application
 already existed in the model, no element added or re-wired solely to make
 the thread connect (`architecture/model/views.yaml` §"view-gh108-conversational-authoring").
 See [Conversational Model Authoring](modelling-specification.md).
+
+The view has since narrowed to authoring itself. The drift and digital-twin
+motivation chain and the target-state-adoption elements are deliberately off it, so
+it no longer shows why a proposed delta is trustworthy, only that `role-ea`
+authors one. In their place is `cap-reusable-architecture`'s motivation spine, traced
+through `goal-change-at-ai-speed` to `stk-exec` and `stk-delivery`, and `role-sa`'s
+application path through `sub-library` (`architecture/model/views.yaml`).
 
 **Model Collaboration.** `bc-model-collaboration` (a `BusinessCollaboration`)
 aggregates `role-ea` and `role-sa` and is assigned the
