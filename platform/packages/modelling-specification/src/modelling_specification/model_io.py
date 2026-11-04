@@ -21,8 +21,9 @@ Schema (see ``architecture/model/README.md``):
   ``label`` in the C4 projection only)
 * view: ``id`` / ``name`` / ``members`` (element ids) and/or ``include_types``
   (optionally narrowed by ``exclude_elements``) / ``viewpoint`` (optional
-  standard-viewpoint slug; see the model-archimate skill's
-  ``reference/archi-viewpoints.xml`` -- a declared viewpoint is enforced)
+  standard-viewpoint slug; see this package's
+  ``viewpoints.py``/``reference/archi-viewpoints.xml`` -- a declared viewpoint
+  is enforced)
 
 ``id`` values are hashed to deterministic UUIDs so regeneration does not churn
 identifiers (and therefore diagrams).
@@ -30,8 +31,8 @@ identifiers (and therefore diagrams).
 
 from __future__ import annotations
 
+import os
 import re
-import sys
 import uuid
 from collections.abc import Callable
 from pathlib import Path
@@ -41,19 +42,31 @@ import yaml
 from pyArchimate import ArchiType, Element, Model, check_valid_relationship
 from pyArchimate.view.layout import LayoutConfig, apply_format, apply_layout
 
+from modelling_specification.viewpoints import UNRESTRICTED, check_conformance, get_viewpoint, known_slugs
+
 # This file lives at
 # platform/packages/modelling-specification/src/modelling_specification/model_io.py --
 # five parents up is the repo root, anchoring every path below independently of the
-# process's current working directory (the CLI may run with cwd=platform/).
+# process's current working directory (the CLI may run with cwd=platform/). HERE/
+# THIRD_PARTY default to this repo's own layout but are overridable via env vars
+# (ADR-0045) so a different repo can install this package and point it at its own
+# model directory instead of this one.
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HERE = REPO_ROOT / "architecture" / "model"
+HERE = (
+    Path(os.environ["FRICTIONLESS_MODEL_DIR"]).resolve()
+    if os.environ.get("FRICTIONLESS_MODEL_DIR")
+    else REPO_ROOT / "architecture" / "model"
+)
 OUT = HERE / "frictionless-architect.xml"
-SKILL_SCRIPTS = REPO_ROOT / ".claude" / "skills" / "model-archimate" / "scripts"
 # Vendored reference models (ADR-0029): each is loaded alongside the
 # first-party elements.yaml/relationships.yaml and merged into the same
 # det_id()/NS pass below -- their own id prefix (e.g. `it4it-`) is what keeps
 # the merged id space unique, not any separate reconciliation step.
-THIRD_PARTY = REPO_ROOT / "third_party"
+THIRD_PARTY = (
+    Path(os.environ["FRICTIONLESS_THIRD_PARTY_DIR"]).resolve()
+    if os.environ.get("FRICTIONLESS_THIRD_PARTY_DIR")
+    else REPO_ROOT / "third_party"
+)
 # Ownership scope: every element carries a `context` (a bounded context, in DDD
 # terms). First-party elements default to this one; a layer's elements default
 # to the layer directory's name (`it4it`, `gh-roadmap`). An explicit `context:`
@@ -73,8 +86,7 @@ LAYER_CONTEXTS = {p.name for p in MODEL_LAYERS}
 # above (that's model-source layering: vendored repos vs. first-party). Used
 # only by `include_neighbours: same_layer` (GH #129 step 4 follow-up) to keep
 # a same-layer-only neighbour pull from crossing into another ArchiMate
-# layer. Transcribed from the model-archimate skill's
-# `.claude/skills/model-archimate/scripts/viewpoints.py` COLLECTIONS dict
+# layer. Transcribed from this package's `viewpoints.py` COLLECTIONS dict
 # (not imported: that script is root tooling, not a platform package
 # dependency, per ADR-0001) -- keep in sync when that file re-syncs from
 # Archi's viewpoint XML. Composite/always-allowed concepts (Grouping,
@@ -153,11 +165,6 @@ ARCHIMATE_LAYER_OF: dict[str, str] = {
         "implementation_migration",
     ),
 }
-
-# The model-archimate skill owns the standard-viewpoint reference and the
-# conformance check a view is held to when it declares `viewpoint:`.
-sys.path.insert(0, str(SKILL_SCRIPTS))
-from viewpoints import UNRESTRICTED, check_conformance, get_viewpoint, known_slugs  # noqa: E402
 
 # Fixed namespace -- do not change; it anchors every generated identifier.
 NS = uuid.UUID("6f4c0d2e-1a3b-5c7d-8e9f-0a1b2c3d4e5f")
@@ -787,8 +794,8 @@ def add_views(
     when opened directly in Archi (the diagram skills re-lay-out via PlantUML
     and ignore these coordinates).
 
-    A view may also declare `viewpoint: <slug>` (see the model-archimate
-    skill's `reference/archi-viewpoints.xml`). When it does -- and the slug is
+    A view may also declare `viewpoint: <slug>` (see this package's
+    `reference/archi-viewpoints.xml`). When it does -- and the slug is
     not `custom` -- every element type placed on the view is held to that
     standard ArchiMate viewpoint's allow-set, and a stray concept fails the
     build. The declaration is not written into the generated XML (pyArchimate

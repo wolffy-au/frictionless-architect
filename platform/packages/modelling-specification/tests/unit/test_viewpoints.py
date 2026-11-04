@@ -1,4 +1,4 @@
-"""Unit tests for the model-archimate skill's viewpoints.py.
+"""Unit tests for modelling_specification.viewpoints (ADR-0045).
 
 Authority is reference/archi-viewpoints.xml (verbatim Archi viewpoint file);
 these lock in the parse + Archi allow-list semantics.
@@ -7,7 +7,7 @@ these lock in the parse + Archi allow-list semantics.
 from __future__ import annotations
 
 import pytest
-import viewpoints
+from modelling_specification import viewpoints
 
 
 def test_parses_the_archi_viewpoint_file() -> None:

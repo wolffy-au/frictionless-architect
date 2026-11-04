@@ -64,8 +64,11 @@ DIAGRAMS = HERE / "diagrams"
 # model_io.py's VENDORED_MODELS.
 VENDORED_VIEW_SOURCES = [(REPO_ROOT / "third_party/it4it/views.yaml", REPO_ROOT / "third_party/it4it/diagrams")]
 
-ARCHIMATE_PUML = REPO_ROOT / ".claude/skills/diagram-archimate/scripts/model_to_puml.py"
-C4_PUML = REPO_ROOT / ".claude/skills/diagram-c4/scripts/model_to_c4.py"
+# Resolved via Python's module system (ADR-0045), not a repo-relative file path, so
+# this works identically whether `modelling_specification` is this checkout's own
+# `platform/` package or an installed dependency in a different repo.
+ARCHIMATE_PUML_MODULE = "modelling_specification.puml"
+C4_PUML_MODULE = "modelling_specification.c4"
 
 SYSTEM = "Frictionless Architecture Platform"
 C4_DIAGRAMS = [
@@ -118,7 +121,7 @@ def _view_diagram_jobs(
         if not slug:
             sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
             continue
-        base_cmd = [sys.executable, str(ARCHIMATE_PUML), MODEL_REL, "--view", v["name"]]
+        base_cmd = [sys.executable, "-m", ARCHIMATE_PUML_MODULE, MODEL_REL, "--view", v["name"]]
         for rel_type in v.get("no_direction", []):
             base_cmd += ["--no-direction", rel_type]
         if v.get("max_width"):
@@ -137,7 +140,8 @@ def _c4_diagram_jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     for slug, level, layout in C4_DIAGRAMS:
         cmd = [
             sys.executable,
-            str(C4_PUML),
+            "-m",
+            C4_PUML_MODULE,
             MODEL_REL,
             "--system",
             SYSTEM,
@@ -402,7 +406,7 @@ def sanitize_svg(svg: str) -> str:
 
 
 def _render_svg(v: dict[str, Any], model_path: str) -> str:
-    cmd = [sys.executable, str(ARCHIMATE_PUML), model_path, "--view", v["name"]]
+    cmd = [sys.executable, "-m", ARCHIMATE_PUML_MODULE, model_path, "--view", v["name"]]
     for rel_type in v.get("no_direction", []):
         cmd += ["--no-direction", rel_type]
     if v.get("max_width"):

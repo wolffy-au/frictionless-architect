@@ -69,6 +69,25 @@ poetry run --directory platform python -m modelling_specification.cli validate <
   `--no-svg` writes `.puml` only.
 - `validate` -- run the metamodel checks on a model file; exits non-zero when it is not clean.
 
+## Using this package against a different model (ADR-0045)
+
+`model_io.HERE`/`OUT` (and `THIRD_PARTY`) default to this repo's own
+`architecture/model/` and `third_party/`, but resolve from two env vars first:
+
+- `FRICTIONLESS_MODEL_DIR` -- the model directory (`elements.yaml` /
+  `relationships.yaml` / `views.yaml` / `conventions.yaml` live here).
+- `FRICTIONLESS_THIRD_PARTY_DIR` -- the vendored-model directory (ADR-0029);
+  omit if the consuming model has none.
+
+Set both and this package -- including diagram rendering (`puml.py`/`c4.py`)
+and viewpoint conformance checking (`viewpoints.py`) -- is self-contained: it
+no longer depends on anything under this repo's own `.claude/skills/`. A
+different repo can depend on `modelling-specification` (e.g. a Poetry git
+dependency with `subdirectory = "platform/packages/modelling-specification"`
+pointing at this repo) and run its own `elements.yaml`/`relationships.yaml`/
+`views.yaml` through the same `build`/`render`/`validate` CLI below, entirely
+independent of this repo's own model or history.
+
 ## Development
 
 From `platform/` (one shared lock for every package -- ADR-0002):

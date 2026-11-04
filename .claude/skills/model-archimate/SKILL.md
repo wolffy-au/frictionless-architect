@@ -45,11 +45,14 @@ m.write("model.archimate")
 ## Viewpoints
 
 A **view** should declare the **viewpoint** it is drawn to. The authority for
-which concepts a viewpoint may show is `reference/archi-viewpoints.xml` — a
-verbatim copy of Archi's viewpoint file, the closest freely-available
-machine-readable form of the ArchiMate 3.2 §14 viewpoint tables. See
-`reference/README.md`. `scripts/viewpoints.py` parses it (expanding Archi's
-`$…Elements$` collection tokens and applying Archi's allow-list semantics):
+which concepts a viewpoint may show is the modelling-specification platform
+package's `reference/archi-viewpoints.xml` (ADR-0045) — a verbatim copy of
+Archi's viewpoint file, the closest freely-available machine-readable form of
+the ArchiMate 3.2 §14 viewpoint tables. See that package's
+`reference/README.md`. Its `viewpoints.py` module parses it (expanding Archi's
+`$…Elements$` collection tokens and applying Archi's allow-list semantics),
+shared with `model_io.py`'s own build-time check; `scripts/viewpoints.py` here
+is a thin wrapper into it:
 
 ```bash
 poetry run python .claude/skills/model-archimate/scripts/viewpoints.py list
@@ -68,8 +71,9 @@ Semantics (from Archi's `ViewpointManager` / `Viewpoint`):
   `build.py` already applies by drawing only connections with both endpoints
   on the view.
 
-Choosing one — `reference/viewpoints-guidance.yaml` (advisory, ArchiMate 3.2
-§14.2) has purpose / abstraction / concerns / stakeholders per slug:
+Choosing one — the package's `reference/viewpoints-guidance.yaml` (advisory,
+ArchiMate 3.2 §14.2) has purpose / abstraction / concerns / stakeholders per
+slug:
 
 - **Purpose** — *designing* (architects, detailed), *deciding* (managers,
   cross-cutting, often tabular), *informing* (everyone, illustrative).

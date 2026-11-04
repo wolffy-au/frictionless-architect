@@ -93,13 +93,13 @@ reportMissingImports = true
 reportUnusedVariable = "warning"
 reportMissingTypeStubs = "none"
 reportUnknownMemberType = false
-extraPaths = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
+extraPaths = ["src", ".claude/skills/wiki-librarian/tools", "architecture/model"]
 # platform/ has its own venv and pyright config — scripts/platform_checks.sh checks it.
 exclude = ["third_party", "platform", "**/node_modules", "**/__pycache__"]
 
 [tool.mypy]
 strict = true
-mypy_path = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
+mypy_path = ["src", ".claude/skills/wiki-librarian/tools", "architecture/model"]
 packages = ["frictionless_architect", "tests"]
 show_error_codes = true
 ignore_missing_imports = false
@@ -175,7 +175,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.pytest.ini_options]
-pythonpath = ["src", ".claude/skills/wiki-librarian/tools", ".claude/skills/model-archimate/scripts", "architecture/model"]
+pythonpath = ["src", ".claude/skills/wiki-librarian/tools", "architecture/model"]
 testpaths = ["./tests/unit", "./tests/integration", "./tests/api", "./tests/tools"]
 python_files = "*_test.py test_*.py *_spec.py"
 asyncio_default_fixture_loop_scope = "module"
