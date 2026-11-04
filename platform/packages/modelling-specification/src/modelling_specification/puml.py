@@ -30,10 +30,11 @@ from __future__ import annotations
 import argparse
 import re
 import sys
-from pathlib import Path
 from typing import Any
 
 from pyArchimate import Model
+
+from modelling_specification.model_io import write_diagram
 
 # ArchiMate element type (pyArchimate bare name) -> <archimate/Archimate> macro.
 # Verified against PlantUML 1.2026.7's bundled stdlib.
@@ -401,15 +402,11 @@ def main() -> int:
         sys.stderr.write(f"warning: {w}\n")
 
     if args.output:
-        # Resolve before writing: `-o` is a normal CLI output flag, not
-        # untrusted network input, but an agent may construct this path from
-        # other data, so a bad value should fail with a clear error here
-        # rather than an ambiguous OS error, or worse, land somewhere the
-        # caller didn't intend.
-        out_path = Path(args.output).expanduser().resolve()
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(puml)
-        sys.stderr.write(f"wrote {out_path}\n")
+        try:
+            sys.stderr.write(f"wrote {write_diagram(args.output, puml)}\n")
+        except ValueError as exc:
+            sys.stderr.write(f"error: {exc}\n")
+            return 2
     else:
         print(puml)
     return 0

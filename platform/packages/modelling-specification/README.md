@@ -84,6 +84,8 @@ under the current directory. These env vars override that:
 | `FRICTIONLESS_ADR_DIR` | Where override ADR stubs are written | `docs/adr/` beside the model directory |
 
 Paths in generated files and CLI output are relative to the model directory's parent.
+`-o` on `puml`/`c4` only writes `.puml` files inside that project root; for anywhere
+else, redirect their stdout.
 This repo's vendored models and C4 system never apply to another model.
 
 A different repo can depend on this package through Poetry git dependencies, then run

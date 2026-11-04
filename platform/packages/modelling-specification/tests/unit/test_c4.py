@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
-from modelling_specification import c4, rendering
+from modelling_specification import c4, model_io, rendering
 from modelling_specification.model_io import REPO_ROOT
 from pyArchimate import ArchiType, Model
 
@@ -78,8 +79,9 @@ def test_system_falls_back_to_the_c4_system_prop(tmp_path: Path) -> None:
 def test_unknown_system_is_an_error(tmp_path: Path) -> None:
     model = Model("m")
     model.add(ArchiType.Goal, "G")
+    path = _write(model, tmp_path)
     with pytest.raises(KeyError, match="no element named"):
-        c4.generate(_write(model, tmp_path), SYSTEM, "context", "WITH_LEGEND")
+        c4.generate(path, SYSTEM, "context", "WITH_LEGEND")
 
 
 def test_system_kind_prop_picks_the_macro(tmp_path: Path) -> None:
@@ -212,8 +214,18 @@ def test_enterprise_boundary_wraps_the_diagram(tmp_path: Path) -> None:
     assert 'Enterprise_Boundary(enterprise_AcmeCorp, "Acme Corp") {' in text
 
 
-def test_prop_on_an_object_without_props_is_none() -> None:
-    assert c4.prop(object(), "c4") is None
+def test_context_level_keeps_the_first_technology_when_merging(tmp_path: Path) -> None:
+    model, service, store = _system_model()
+    person = model.add(ArchiType.BusinessActor, "User")
+    model.add_relationship(ArchiType.Flow, person, service, name="plain")
+    model.add_relationship(ArchiType.Flow, person, store, name="secure").prop("c4-technology", "HTTPS")
+    text, _ = c4.generate(_write(model, tmp_path), SYSTEM, "context", "WITH_LEGEND")
+    assert 'plain\\nsecure", "HTTPS"' in text
+
+
+@pytest.mark.parametrize("obj", [object(), SimpleNamespace(props=None)])
+def test_prop_without_usable_props_is_none(obj: object) -> None:
+    assert c4.prop(obj, "c4") is None
 
 
 def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:
@@ -221,9 +233,21 @@ def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:
     return c4.main()
 
 
+def test_cli_refuses_output_outside_the_project(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path / "project")
+    model, _, _ = _system_model()
+    outside = tmp_path / "outside.puml"
+    assert _cli(monkeypatch, _write(model, tmp_path), "--system", SYSTEM, "-o", str(outside)) == 2
+    assert not outside.exists()
+    assert "must be a .puml file inside" in capsys.readouterr().err
+
+
 def test_cli_writes_the_output_file(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path)
     model, _, _ = _system_model()
     out = tmp_path / "nested" / "out.puml"
     assert _cli(monkeypatch, _write(model, tmp_path), "--system", SYSTEM, "-o", str(out)) == 0
