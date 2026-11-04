@@ -19,7 +19,7 @@ skill only renders.
 
    ```bash
    poetry run python .claude/skills/diagram-archimate/scripts/model_to_puml.py \
-     MODEL.archimate [--view "View Name"] -o OUT.puml
+     MODEL.archimate [--view "View Name"] > OUT.puml
    ```
 
    - `--view` restricts output to the elements/relationships shown on that

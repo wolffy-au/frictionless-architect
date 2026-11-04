@@ -28,7 +28,7 @@ and relabels it into C4-PlantUML using the mapping in
    ```bash
    poetry run python .claude/skills/diagram-c4/scripts/model_to_c4.py \
      MODEL.archimate --system "Payments Platform" \
-     --level container [--layout TOP_DOWN] -o OUT.puml
+     --level container [--layout TOP_DOWN] > OUT.puml
    ```
 
    - `--system` names the `Grouping`/component in focus. Everything it
