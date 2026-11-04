@@ -220,6 +220,20 @@ def test_cli_check(
     assert expected in capsys.readouterr().out
 
 
+def test_cli_check_walks_past_a_node_with_no_concept(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A note on a view has no concept of its own, but what it contains still counts."""
+    nested = SimpleNamespace(concept=SimpleNamespace(uuid="g1", type="Goal"), nodes=[])
+    note = SimpleNamespace(concept=None, nodes=[nested])
+    view = SimpleNamespace(name="Goals", nodes=[note])
+    model = SimpleNamespace(read=lambda _path: None, views=[view], relationships=[])
+    monkeypatch.setattr(viewpoints, "Model", lambda _name: model)
+
+    assert _cli(monkeypatch, "check", "model.xml", "--view", "Goals", "--viewpoint", "technology") == 1
+    assert "does NOT conform" in capsys.readouterr().out
+
+
 def test_cli_check_unknown_view(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], model_with_goal_view: str
 ) -> None:
