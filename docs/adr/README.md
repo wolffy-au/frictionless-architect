@@ -157,3 +157,8 @@ not yet re-ratified in a spec).
   dependency decided by its own ADR (not just mentioned in passing) gets a
   Technology-layer `SystemSoftware` element; backfills `sw-litellm`, adds
   `sw-presidio`/`sw-pyarchimate`/`sw-rapidfuzz`
+- **A** — [0045](0045-tool-model-separation-for-multi-tenant-use.md) — The model
+  root is env-configured (`FRICTIONLESS_MODEL_DIR`/`FRICTIONLESS_THIRD_PARTY_DIR`);
+  viewpoint checking and diagram projection move from `.claude/skills/*/scripts`
+  into the `modelling-specification` package so it is installable standalone by
+  a different repo holding an unrelated model
