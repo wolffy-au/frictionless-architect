@@ -50,10 +50,11 @@ logic to (ADR-0037's thin-wrapper pattern).
 2. Viewpoint conformance checking (`viewpoints.py` + its two reference data files) and
    ArchiMate/C4 PlantUML projection (`model_to_puml.py`/`model_to_c4.py`, renamed
    `puml.py`/`c4.py`) move from `.claude/skills/*/scripts` into the `modelling_specification`
-   package itself, as real importable modules and bundled package data. The package is
-   now self-contained: installing it (e.g. as a Poetry git dependency with
-   `subdirectory = "platform/packages/modelling-specification"`) is sufficient, with no
-   dependency on this repo's `.claude/skills/` tree.
+   package itself, as real importable modules and bundled package data. The package no
+   longer depends on this repo's `.claude/skills/` tree. A consumer installs it as a
+   Poetry git dependency with `subdirectory = "platform/packages/modelling-specification"`,
+   and lists `llm-provider-config`, `digital-twin-knowledge-graph` and `pii-gateway` the
+   same way, because those are path dependencies here and are not published to PyPI.
 3. `rendering.py` locates the puml/c4 generators via Python's module system
    (`python -m modelling_specification.puml`/`.c4`), not a repo-relative file path, so the
    same subprocess + thread-pool concurrency it already relies on for render speed works
