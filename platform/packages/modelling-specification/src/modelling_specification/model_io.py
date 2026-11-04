@@ -198,6 +198,24 @@ def project_relative(path: Path) -> str:
     return str(path.relative_to(PROJECT_ROOT)) if path.is_relative_to(PROJECT_ROOT) else str(path)
 
 
+def write_diagram(destination: str, text: str) -> Path:
+    """Write a generated `.puml` to `destination`, which must lie inside `PROJECT_ROOT`.
+
+    `-o` is a CLI flag an agent may build from model or conversation data, so a bad value
+    is refused rather than written. Anything else can take the generators' stdout.
+
+    Raises:
+        ValueError: `destination` is outside the project or not a `.puml` file.
+    """
+    root = PROJECT_ROOT.resolve()
+    path = (root / Path(destination).expanduser()).resolve()
+    if not path.is_relative_to(root) or path.suffix != ".puml":
+        raise ValueError(f"-o must be a .puml file inside {root}, got {destination!r}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    return path
+
+
 def det_id(*parts: str) -> str:
     """Derive a stable identifier from the given parts, so regeneration never churns ids.
 

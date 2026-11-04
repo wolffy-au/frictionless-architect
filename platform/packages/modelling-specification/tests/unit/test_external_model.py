@@ -7,13 +7,14 @@ with the environment a consuming repo would have.
 from __future__ import annotations
 
 import os
+import runpy
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 import yaml
-from modelling_specification import model_io
+from modelling_specification import model_io, rendering
 from modelling_specification.authoring import overrides
 from modelling_specification.validation import conventions
 
@@ -145,6 +146,39 @@ def test_env_path_falls_back(monkeypatch: pytest.MonkeyPatch, value: str | None)
 def test_project_relative_keeps_a_path_outside_the_project_whole(tmp_path: Path) -> None:
     assert model_io.project_relative(model_io.PROJECT_ROOT / "a" / "b") == str(Path("a") / "b")
     assert model_io.project_relative(tmp_path) == str(tmp_path)
+
+
+@pytest.mark.parametrize("destination", ["../escaped.puml", "/etc/escaped.puml", "inside.txt"])
+def test_write_diagram_refuses_a_bad_destination(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, destination: str
+) -> None:
+    root = tmp_path / "project"
+    root.mkdir()
+    monkeypatch.setattr(model_io, "PROJECT_ROOT", root)
+    with pytest.raises(ValueError, match="must be a .puml file inside"):
+        model_io.write_diagram(destination, "x")
+
+
+def test_write_diagram_resolves_a_relative_destination_against_the_project(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path)
+    assert model_io.write_diagram("a/b.puml", "x") == tmp_path / "a" / "b.puml"
+    assert (tmp_path / "a" / "b.puml").read_text() == "x"
+
+
+def test_no_c4_jobs_without_a_system(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(rendering, "SYSTEM", "")
+    assert rendering._c4_diagram_jobs(tmp_path) == []
+
+
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+@pytest.mark.parametrize("module", ["puml", "c4", "viewpoints", "cli"])
+def test_each_module_runs_as_a_script(monkeypatch: pytest.MonkeyPatch, module: str) -> None:
+    monkeypatch.setattr(sys, "argv", [module, "--help"])
+    with pytest.raises(SystemExit) as exit_info:
+        runpy.run_module(f"modelling_specification.{module}", run_name="__main__")
+    assert exit_info.value.code == 0
 
 
 def test_first_party_exclusion_follows_the_vendored_directories(monkeypatch: pytest.MonkeyPatch) -> None:

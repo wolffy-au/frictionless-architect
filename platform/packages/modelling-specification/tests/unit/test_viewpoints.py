@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -138,6 +139,36 @@ def test_restricted_relationship_set_flags_a_stray_relationship() -> None:
     assert viewpoints.check_conformance(vp, ["Goal"], ["Serving", "Flow"]) == [
         "relationship type 'Flow' is not part of the 'x' viewpoint"
     ]
+
+
+def test_a_file_without_a_root_element_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(viewpoints, "_safe_parse", lambda _: SimpleNamespace(getroot=lambda: None))
+    viewpoints.load_viewpoints.cache_clear()
+    try:
+        with pytest.raises(ValueError, match="has no root element"):
+            viewpoints.load_viewpoints("empty.xml")
+    finally:
+        viewpoints.load_viewpoints.cache_clear()
+
+
+def test_cli_show_prints_guidance_only_when_present(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    bare = {
+        "slug": "bare",
+        "name": "Bare",
+        "purpose": "Why",
+        "elements": set(),
+        "relationships": set(),
+        "elements_unrestricted": True,
+        "relationships_unrestricted": True,
+    }
+    monkeypatch.setattr(viewpoints, "get_viewpoint", lambda _: bare)
+    assert _cli(monkeypatch, "show", "bare") == 0
+    out = capsys.readouterr().out
+    assert "Why" in out
+    assert "stakeholders" not in out
+    assert "always allowed" not in out
 
 
 def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -174,9 +175,46 @@ def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:
     return puml.main()
 
 
+def test_cli_refuses_output_outside_the_project(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path / "project")
+    model = Model("m")
+    model.add(ArchiType.Goal, "G")
+    outside = tmp_path / "outside.puml"
+    assert _cli(monkeypatch, _write(model, tmp_path), "-o", str(outside)) == 2
+    assert not outside.exists()
+    assert "must be a .puml file inside" in capsys.readouterr().err
+
+
+def test_view_concepts_skips_nodes_without_a_concept_and_walks_nested_ones() -> None:
+    nested = SimpleNamespace(concept=SimpleNamespace(uuid="inner"), nodes=[])
+    outer = SimpleNamespace(concept=None, nodes=[nested])
+    assert puml._view_concepts(SimpleNamespace(nodes=[outer])) == {"inner"}
+
+
+def test_nesting_ignores_self_loops_and_elements_off_the_diagram() -> None:
+    element = SimpleNamespace(uuid="a")
+    off_diagram = SimpleNamespace(uuid="b")
+    self_loop = SimpleNamespace(type="Composition", source=element, target=element)
+    outward = SimpleNamespace(type="Composition", source=element, target=off_diagram)
+    assert puml._nest_tree([element], [self_loop, outward]) == ({}, set(), set())
+
+
+def test_access_without_a_type_uses_the_plain_macro(tmp_path: Path) -> None:
+    model = Model("m")
+    app = model.add(ArchiType.ApplicationComponent, "App")
+    data = model.add(ArchiType.DataObject, "Data")
+    model.add_relationship(ArchiType.Access, app, data)
+    text, _ = puml.generate(_write(model, tmp_path), None)
+    assert "Rel_Access" in text
+    assert "Rel_Access_r" not in text
+
+
 def test_cli_writes_the_output_file(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    monkeypatch.setattr(model_io, "PROJECT_ROOT", tmp_path)
     model = Model("m")
     model.add(ArchiType.Goal, "G")
     out = tmp_path / "nested" / "out.puml"

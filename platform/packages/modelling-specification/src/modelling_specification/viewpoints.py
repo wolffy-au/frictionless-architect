@@ -180,11 +180,9 @@ def load_viewpoints(xml_path: str | None = None) -> dict[str, dict[str, Any]]:
         name_el = vp.find("name")
         name = (name_el.text or "").strip() if name_el is not None else slug
 
-        elements: set[str] = set()
-        relationships: set[str] = set()
-        for c in vp.findall("concept"):
-            for resolved in _expand((c.text or "").strip()):
-                (relationships if resolved in _RELATIONSHIP_NAMES else elements).add(resolved)
+        concepts = {resolved for c in vp.findall("concept") for resolved in _expand((c.text or "").strip())}
+        relationships = concepts & _RELATIONSHIP_NAMES
+        elements = concepts - relationships
 
         entry: dict[str, Any] = {
             "slug": slug,
