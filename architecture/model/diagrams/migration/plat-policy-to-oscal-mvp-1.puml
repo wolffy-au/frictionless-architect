@@ -16,11 +16,13 @@ Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue convert
   Implementation_WorkPackage(e_ida4e1cf750ab05d, "GH-165 Stubbed OSCAL conversion API, validated against the UI")
   Implementation_WorkPackage(e_idfa67ddb39e825f, "GH-164 Stubbed OSCAL conversion UI, validated against stub data")
 }
+Implementation_WorkPackage(e_id6d792a77f2a259, "GH-183 Spike: restructure architecture/model/diagrams/ for legibility")
 
 Rel_Realization_Up(e_ide553dac909af52, e_idb94c55ad2a0756, "")
 Rel_Realization_Up(e_idd0d06b4c05ff55, e_idb94c55ad2a0756, "")
 Rel_Realization_Up(e_id340c952eaee456, e_ide553dac909af52, "")
 Rel_Realization_Up(e_idec7bd9bf840c5d, e_ide553dac909af52, "")
+Rel_Realization_Up(e_id6d792a77f2a259, e_ide553dac909af52, "")
 Rel_Triggering_Right(e_id3b113120236658, e_id95068ecc4fb85d, "")
 Rel_Triggering_Right(e_id5d51f859e99754, e_idec7bd9bf840c5d, "")
 Rel_Triggering_Right(e_idd0542e6c93e658, e_id95068ecc4fb85d, "")

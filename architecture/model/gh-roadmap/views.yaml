@@ -13,7 +13,7 @@
   diagram: migration/plat-architecture-strategy-future-13
   members:
   - del-architecture-strategy-future-13-unreleased
-  - del-release-v0-5-0
+  - del-release-v0-8-0
   - plat-architecture-strategy-future-13
   - wp-alignment-overlay-or-gap-report-in-the-gh-147
   - wp-build-the-pii-gateway-package-pii-phi-gh-136
@@ -21,7 +21,6 @@
   - wp-link-real-identity-to-journey-roles-via-gh-148
   - wp-many-architects-on-shared-models-locking-gh-151
   - wp-pluggable-framework-touchpoints-it4it-gh-146
-  - wp-scope-the-archimate-modelling-ide-gh-59
   - wp-tamper-evident-audit-trail-of-prompts-gh-150
 - id: view-plat-architecture-strategy-mvp-7
   name: 'Roadmap: architecture-strategy-mvp'
@@ -123,6 +122,7 @@
   - wp-markdown-catalogue-converter-gh-44
   - wp-oscal-conversion-backend-endpoints-gh-166
   - wp-prepare-a-golden-data-set-bulk-testing-gh-49
+  - wp-spike-restructure-architecture-model-gh-183
   - wp-stubbed-oscal-conversion-api-validated-gh-165
   - wp-stubbed-oscal-conversion-ui-validated-gh-164
 - id: view-plat-release-enforcement-mvp-9

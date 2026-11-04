@@ -91,6 +91,7 @@ Implementation_WorkPackage(e_id4eb86cc3b03c53, "GH-163 Scaffold platform/package
 Implementation_WorkPackage(e_id70f95394827a54, "GH-162 Scaffold platform/packages/reusable-architecture-library (ADR-0004 two-tier numbering; relocate 002-solution-design-modelling spec)")
 Implementation_WorkPackage(e_id3acc5b2b0ae458, " --GH-82 Schedule maintenance subagents on a recurring cadence (start with adr-auditor weekly)--")
 Implementation_WorkPackage(e_id4608a4b3ca8a52, " --GH-59 Scope the ArchiMate modelling IDE features from the retired PROJECT_SPECIFICATION.md--")
+Implementation_WorkPackage(e_id6d792a77f2a259, "GH-183 Spike: restructure architecture/model/diagrams/ for legibility")
 Implementation_WorkPackage(e_idf0376def52fa5a, "GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform")
 Implementation_WorkPackage(e_id86bfb9c548ad56, " --GH-104 test(model): set a performance and scale criterion for the GH roadmap importer--")
 Implementation_WorkPackage(e_id0c73670e085f56, "GH-119 test(ui): establish Playwright browser tests for the HTML UIs")
