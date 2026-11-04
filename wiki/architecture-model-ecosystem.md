@@ -59,7 +59,8 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 
 `sub-twin` is renamed from "Digital Twin & Knowledge Graph" in
 `architecture/model/elements.yaml`, which now separates what is built from what
-is only modelled. `ARCHITECTURE.md` still uses the old subsystem name.
+is only modelled. `ARCHITECTURE.md` uses the new name, while the package keeps
+`digital-twin-knowledge-graph`.
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
 view back to the skeleton (`architecture/model/relationships.yaml:420-429`).

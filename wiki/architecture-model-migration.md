@@ -213,11 +213,9 @@ with the two Nodes, `sw-neo4j` and `sw-keyring`.
 `Serving` edge: `sw-litellm` to `sub-llm-provider-config`, `sw-presidio` to
 `sub-pii-gateway`, and `sw-pyarchimate` and `sw-rapidfuzz` to
 `fn-conversational-authoring` (`architecture/model/elements.yaml` §F;
-`architecture/model/relationships.yaml`). **Sources disagree on the ADR numbers:**
-those element descriptions cite ADR-0041 for the modelling rule and ADR-0040 for
-Presidio, but the decisions are recorded in
-[ADR-0044 and ADR-0043](decision-log-0030-onward.md). The build also warns that
-the four have no explicit `context`, so they default to `platform`.
+`architecture/model/relationships.yaml`). The modelling rule is
+[ADR-0044](decision-log-0030-onward.md) and the Presidio choice is ADR-0043. The
+build warns that the four have no explicit `context`, so they default to `platform`.
 
 **Neo4j persistence (GH #108).** A new technology Artifact,
 `art-tech-neo4j-volume` ("Neo4j Graph Database Files") — the on-disk database
