@@ -8,14 +8,12 @@ log, which `adr-auditor`'s normal sweep already picks the stub up for review fro
 from __future__ import annotations
 
 import datetime
-import os
 import re
-from pathlib import Path
 from typing import Any
 
 from modelling_specification import model_io
 
-ADR_DIR = Path(os.environ.get("FRICTIONLESS_ADR_DIR") or model_io.PROJECT_ROOT / "docs" / "adr").resolve()
+ADR_DIR = model_io.env_dir("FRICTIONLESS_ADR_DIR", model_io.PROJECT_ROOT / "docs" / "adr")
 _NUMBER_RE = re.compile(r"^(\d{4})-")
 
 
