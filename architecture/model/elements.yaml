@@ -2037,7 +2037,7 @@
   desc: >-
     Multi-provider LLM client library (OpenAI, Google Gemini, Anthropic Claude,
     Ollama, GitHub Copilot) backing sub-llm-provider-config's `resolve_call`
-    (ADR-0034). Modelled per ADR-0041: a runtime dependency decided by its own
+    (ADR-0034). Modelled per ADR-0044: a runtime dependency decided by its own
     ADR, not just mentioned in passing.
   props: {c4: ignore}
 - type: SystemSoftware
@@ -2046,14 +2046,14 @@
   desc: >-
     PII/PHI detection (regex + NER recognizers) and anonymization
     (redact/replace/hash) engine backing sub-pii-gateway's `scrub()` contract
-    (ADR-0040). Modelled per ADR-0041.
+    (ADR-0043). Modelled per ADR-0044.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-pyarchimate
   name: pyArchimate
   desc: >-
     Source of fixed ArchiMate 3.2 metamodel rules for fn-conversational-authoring's
-    validation step (ADR-0037 item 5). Modelled per ADR-0041.
+    validation step (ADR-0037 item 5). Modelled per ADR-0044.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-rapidfuzz
@@ -2061,7 +2061,7 @@
   desc: >-
     Fuzzy string-matching library (`token_sort_ratio`) backing
     fn-conversational-authoring's duplicate-candidate surfacing (ADR-0037 item
-    6, research.md R5). Modelled per ADR-0041.
+    6, research.md R5). Modelled per ADR-0044.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-keyring
