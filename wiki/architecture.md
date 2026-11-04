@@ -97,7 +97,7 @@ packages under `platform/packages/`, each holding an `api/` and a `ui/`
 |---|---|---|---|---|
 | 1 | Controls & Compliance Catalog | `controls-compliance-catalog` | build, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles; consumes the vendored OSCAL content. **First extraction** (§8.1, ADR-0005) |
 | 2 | Reusable Architecture Library | `reusable-architecture-library` | build | Patterns, blueprints, solution designs, candidate options, and threat modelling of them (the user-facing part of old 8) |
-| 3 | Digital Twin & Knowledge Graph | `digital-twin-knowledge-graph` | build, wraps a forked ArchiMate parser | Old 2 + old 6: intent and twin planes, forensic ledger, traceability matrix, NL-to-graph queries; absorbs `schema/manager.py` and `sample_parser.py` |
+| 3 | Architecture Knowledge Graph | `digital-twin-knowledge-graph` | build, wraps a forked ArchiMate parser | Old 2 + old 6: intent and twin planes, forensic ledger, traceability matrix, NL-to-graph queries; absorbs `schema/manager.py` and `sample_parser.py` |
 | 4 | Architecture Governance | `architecture-governance` | build | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off |
 | 5 | Conformance & Drift Assurance | `conformance-drift-assurance` | build, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate enforcement (CPS 230/234), BAU monitoring, drift detection, Break-Glass, remediation tickets |
 | 6 | Modelling & Specification | `modelling-specification` | build | ArchiMate / C4 / UML modelling and executable-spec generation |
