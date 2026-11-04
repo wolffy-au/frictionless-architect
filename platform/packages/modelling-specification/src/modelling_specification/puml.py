@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate an ArchiMate PlantUML diagram from a validated ArchiMate model.
 
-    poetry run python model_to_puml.py MODEL[.archimate|.xml] [--view NAME] [-o OUT.puml]
+    python -m modelling_specification.puml MODEL[.archimate|.xml] [--view NAME] [-o OUT.puml]
         [--no-direction TYPE ...]
 
 Emits PlantUML using the bundled `<archimate/Archimate>` stdlib. With
@@ -33,11 +33,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-try:
-    from pyArchimate import Model
-except ImportError:
-    sys.stderr.write("pyArchimate not importable — run via: poetry run python model_to_puml.py ...\n")
-    raise SystemExit(2) from None
+from pyArchimate import Model
 
 # ArchiMate element type (pyArchimate bare name) -> <archimate/Archimate> macro.
 # Verified against PlantUML 1.2026.7's bundled stdlib.

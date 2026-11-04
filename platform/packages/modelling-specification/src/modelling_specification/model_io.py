@@ -44,29 +44,37 @@ from pyArchimate.view.layout import LayoutConfig, apply_format, apply_layout
 
 from modelling_specification.viewpoints import UNRESTRICTED, check_conformance, get_viewpoint, known_slugs
 
-# This file lives at
-# platform/packages/modelling-specification/src/modelling_specification/model_io.py --
-# five parents up is the repo root, anchoring every path below independently of the
-# process's current working directory (the CLI may run with cwd=platform/). HERE/
-# THIRD_PARTY default to this repo's own layout but are overridable via env vars
-# (ADR-0045) so a different repo can install this package and point it at its own
-# model directory instead of this one.
-REPO_ROOT = Path(__file__).resolve().parents[5]
-HERE = (
-    Path(os.environ["FRICTIONLESS_MODEL_DIR"]).resolve()
-    if os.environ.get("FRICTIONLESS_MODEL_DIR")
-    else REPO_ROOT / "architecture" / "model"
-)
-OUT = HERE / "frictionless-architect.xml"
+
+def _source_checkout() -> Path | None:
+    """This repo's root when running from its own checkout; None when installed elsewhere."""
+    marker = Path("platform") / "packages" / "modelling-specification"
+    return next((p for p in Path(__file__).resolve().parents if (p / marker).is_dir()), None)
+
+
+def _env_path(name: str, default: Path) -> Path:
+    """`default` unless env var `name` holds a non-empty path."""
+    value = os.environ.get(name)
+    return Path(value).resolve() if value else default
+
+
+# Every path below anchors here rather than on the process's current working directory
+# (the CLI may run with cwd=platform/), except for an installed copy with no
+# FRICTIONLESS_MODEL_DIR, which reads `architecture/model/` under the cwd (ADR-0045).
+_CHECKOUT = _source_checkout()
+REPO_ROOT = _CHECKOUT or Path.cwd()
+_MODEL_DIR_FROM_ENV = bool(os.environ.get("FRICTIONLESS_MODEL_DIR"))
+HERE = _env_path("FRICTIONLESS_MODEL_DIR", REPO_ROOT / "architecture" / "model")
+# Root that generated files' displayed paths are relative to, and the generators' cwd.
+PROJECT_ROOT = HERE.parent if _MODEL_DIR_FROM_ENV else REPO_ROOT
+# True only for this repo's own model; settings naming it apply to nothing else.
+IS_HOME_MODEL = _CHECKOUT is not None and not _MODEL_DIR_FROM_ENV
+MODEL_NAME = os.environ.get("FRICTIONLESS_MODEL_NAME") or "frictionless-architect"
+OUT = HERE / f"{MODEL_NAME}.xml"
 # Vendored reference models (ADR-0029): each is loaded alongside the
 # first-party elements.yaml/relationships.yaml and merged into the same
 # det_id()/NS pass below -- their own id prefix (e.g. `it4it-`) is what keeps
 # the merged id space unique, not any separate reconciliation step.
-THIRD_PARTY = (
-    Path(os.environ["FRICTIONLESS_THIRD_PARTY_DIR"]).resolve()
-    if os.environ.get("FRICTIONLESS_THIRD_PARTY_DIR")
-    else REPO_ROOT / "third_party"
-)
+THIRD_PARTY = _env_path("FRICTIONLESS_THIRD_PARTY_DIR", PROJECT_ROOT / "third_party")
 # Ownership scope: every element carries a `context` (a bounded context, in DDD
 # terms). First-party elements default to this one; a layer's elements default
 # to the layer directory's name (`it4it`, `gh-roadmap`). An explicit `context:`
@@ -75,7 +83,7 @@ DEFAULT_CONTEXT = "platform"
 ELEMENTS_FILENAME = "elements.yaml"
 RELATIONSHIPS_FILENAME = "relationships.yaml"
 VIEWS_FILENAME = "views.yaml"
-VENDORED_MODELS = [THIRD_PARTY / "it4it"]
+VENDORED_MODELS = sorted(p.parent for p in THIRD_PARTY.glob(f"*/{ELEMENTS_FILENAME}"))
 # Every optional layer merged into the same pass: the vendored models plus the
 # generated GitHub roadmap (GH #95, import_gh_roadmap.py), whose ids are
 # prefixed by ArchiMate type (plat-, del-, wp-) rather than by source system.
@@ -86,12 +94,11 @@ LAYER_CONTEXTS = {p.name for p in MODEL_LAYERS}
 # above (that's model-source layering: vendored repos vs. first-party). Used
 # only by `include_neighbours: same_layer` (GH #129 step 4 follow-up) to keep
 # a same-layer-only neighbour pull from crossing into another ArchiMate
-# layer. Transcribed from this package's `viewpoints.py` COLLECTIONS dict
-# (not imported: that script is root tooling, not a platform package
-# dependency, per ADR-0001) -- keep in sync when that file re-syncs from
-# Archi's viewpoint XML. Composite/always-allowed concepts (Grouping,
-# Junction, Location) are deliberately absent: a same-layer check against
-# them would be meaningless, so they never block a neighbour pull.
+# layer. Transcribed from this package's `viewpoints.py` COLLECTIONS dict --
+# keep in sync when that file re-syncs from Archi's viewpoint XML.
+# Composite/always-allowed concepts (Grouping, Junction, Location) are
+# deliberately absent: a same-layer check against them would be meaningless,
+# so they never block a neighbour pull.
 ARCHIMATE_LAYER_OF: dict[str, str] = {
     **dict.fromkeys(["Resource", "Capability", "ValueStream", "CourseOfAction"], "strategy"),
     **dict.fromkeys(
@@ -183,6 +190,12 @@ def canon(raw: str, errors: list[str], ctx: str) -> str | None:
     if name is None:
         errors.append(f"{ctx}: {raw!r} is not an ArchiMate 3.2 concept name (pyArchimate.ArchiType)")
     return name
+
+
+def project_relative(path: Path) -> str:
+    """`path` relative to `PROJECT_ROOT` for display, or whole if it lies outside it
+    (a `FRICTIONLESS_THIRD_PARTY_DIR` may point anywhere)."""
+    return str(path.relative_to(PROJECT_ROOT)) if path.is_relative_to(PROJECT_ROOT) else str(path)
 
 
 def det_id(*parts: str) -> str:
@@ -1090,7 +1103,7 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
     elements = load_all_elements(errors)
     rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
     views = load_all_views(errors)
-    return _assemble("frictionless-architect", elements, rels, views, errors)
+    return _assemble(MODEL_NAME, elements, rels, views, errors)
 
 
 def existing_element_ids() -> set[str]:

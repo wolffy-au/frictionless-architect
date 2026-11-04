@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Project a validated ArchiMate model into a C4-PlantUML diagram.
 
-    poetry run python model_to_c4.py MODEL --system "Name" \
+    python -m modelling_specification.c4 MODEL --system "Name" \
         [--level context|container] [--layout WITH_LEGEND|TOP_DOWN|LEFT_RIGHT] [-o OUT.puml]
 
 Applies the mapping in references/archimate-to-c4-mapping.md. Exit 0 = wrote
@@ -16,11 +16,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-try:
-    from pyArchimate import Model
-except ImportError:
-    sys.stderr.write("pyArchimate not importable — run via: poetry run python model_to_c4.py ...\n")
-    raise SystemExit(2) from None
+from pyArchimate import Model
 
 PERSON_TYPES = {"BusinessActor", "BusinessRole"}
 STORE_TYPES = {"DataObject", "Artifact"}

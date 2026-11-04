@@ -24,7 +24,7 @@ def _build(_args: argparse.Namespace) -> int:
             print(msg)
         assert result is not None
         print(
-            f"wrote {model_io.OUT.relative_to(model_io.REPO_ROOT)}  "
+            f"wrote {model_io.project_relative(model_io.OUT)}  "
             f"({result['elements']} elements, {result['relationships']} relationships)"
         )
         if result["clean"]:

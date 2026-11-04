@@ -37,7 +37,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable, cast
 
+import yaml
 from defusedxml.ElementTree import parse as _safe_parse
+from pyArchimate import Model
 
 REFERENCE_DIR = Path(__file__).resolve().parent / "reference"
 ARCHI_XML = REFERENCE_DIR / "archi-viewpoints.xml"
@@ -152,8 +154,6 @@ def _expand(concept: str) -> list[str]:
 def _load_guidance() -> dict[str, dict[str, Any]]:
     if not GUIDANCE_YAML.exists():
         return {}
-    import yaml  # local import: pyyaml is a dev dependency
-
     data = yaml.safe_load(GUIDANCE_YAML.read_text()) or {}
     return cast(dict[str, dict[str, Any]], data.get("guidance", {}))
 
@@ -271,12 +271,6 @@ def _cmd_check(model_path: str, view_name: str, slug: str) -> int:
     if vp is None:
         sys.stderr.write(f"unknown viewpoint {slug!r}; known: {', '.join(known_slugs())}\n")
         return 2
-    try:
-        from pyArchimate import Model
-    except ImportError:
-        sys.stderr.write("pyArchimate not importable — run via: poetry run python viewpoints.py ...\n")
-        return 2
-
     model = Model("viewpoints")
     model.read(model_path)
     views = [v for v in model.views if v.name == view_name]

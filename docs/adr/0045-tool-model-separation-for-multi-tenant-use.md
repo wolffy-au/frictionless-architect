@@ -11,8 +11,8 @@ ArchiMate model belonging to an unrelated organisation, by installing the releva
 platform packages (`modelling-specification` at minimum) as a dependency in a separate
 repo that holds only that org's own `elements.yaml`/`relationships.yaml`/`views.yaml`.
 
-That use case was blocked by three hardcoded assumptions that this exact checkout is the
-only place the tool ever runs:
+That use case was blocked by hardcoded assumptions that this exact checkout is the only
+place the tool ever runs:
 
 1. `model_io.py`'s `HERE`/`OUT`/`THIRD_PARTY` were derived from
    `Path(__file__).resolve().parents[5]`, hardcoding the model directory to
@@ -24,6 +24,10 @@ only place the tool ever runs:
 3. `rendering.py` shelled out, per diagram, to `.claude/skills/diagram-archimate/scripts/
    model_to_puml.py` and `.claude/skills/diagram-c4/scripts/model_to_c4.py` by repo-relative
    file path — again, not part of the installable package.
+4. Paths and names specific to this repo's own model were fixed in code: the `it4it`
+   vendored directory, the `frictionless-architect` model name and the C4 system in focus,
+   `docs/adr/` for override stubs, and `rendering.py`'s own `architecture/model` path and
+   its model path relative to the repo root.
 
 None of this is specific to *this org's* model data; it is generic ArchiMate/C4
 projection and viewpoint-checking logic that happened to live in Claude Code skill
@@ -32,9 +36,17 @@ logic to (ADR-0037's thin-wrapper pattern).
 
 ## Decision
 
-1. The model root is env-configured: `FRICTIONLESS_MODEL_DIR` and
-   `FRICTIONLESS_THIRD_PARTY_DIR`, read by `model_io.py`, default to this repo's own
-   `architecture/model/`/`third_party/` when unset, so behaviour here is unchanged.
+1. The model root is env-configured: `FRICTIONLESS_MODEL_DIR`, read once by `model_io.py`,
+   which every other module derives its paths from. Unset, a checkout of this repo uses its
+   own `architecture/model/` and an installed copy uses `architecture/model/` under the
+   current directory. When set, the project root is the model directory's parent.
+   `FRICTIONLESS_THIRD_PARTY_DIR`, `FRICTIONLESS_MODEL_NAME` and `FRICTIONLESS_ADR_DIR`
+   override the rest; their defaults follow the project root, so setting the model
+   directory alone cannot merge this repo's vendored models into another model.
+   Vendored models are discovered as `third_party/*/elements.yaml`, and the
+   `first_party_only` convention rules exclude their directory-name id prefixes.
+   C4 diagrams are skipped for another model unless `FRICTIONLESS_C4_SYSTEM` names its
+   system. Unset, all of this resolves to this repo's existing behaviour.
 2. Viewpoint conformance checking (`viewpoints.py` + its two reference data files) and
    ArchiMate/C4 PlantUML projection (`model_to_puml.py`/`model_to_c4.py`, renamed
    `puml.py`/`c4.py`) move from `.claude/skills/*/scripts` into the `modelling_specification`
