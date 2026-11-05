@@ -42,6 +42,9 @@ release take hours instead of minutes.
   and doc/spec/ADR drift get fixed as they appear, days before anyone cuts a release.
   §3–§5 below should then be a quick read of already-green status, not a remediation
   pass.
+- **The session driving the release dispatches these agents, not `release-runner`.** It
+  has no `Agent` tool, so it stops and hands back the agents it needs, including
+  `commit-auditor` at preflight. The session runs them and resumes it with the results.
 - **If §3–§5 do find something at release time** (continuous maintenance lapsed, or
   new findings landed since the last scheduled run), dispatch the independent agents
   **in parallel** (one message, multiple `Agent` calls) rather than one after another:
@@ -103,8 +106,8 @@ curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictio
 
 This should normally come back empty — `quality-uplift` is expected to be running on
 a schedule against `develop` (see "Keeping releases fast"), not invoked here for the
-first time. If it does find something, dispatch `quality-uplift` and continue to step
-4 rather than waiting on it in isolation; run both in parallel.
+first time. If it does find something, finish the step 4 check before dispatching
+`quality-uplift`, so both remediators go out in parallel.
 
 ### 4. Security — no unresolved high/critical vulnerabilities
 
