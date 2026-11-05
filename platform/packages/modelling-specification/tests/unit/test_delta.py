@@ -7,6 +7,7 @@ import pytest
 from llm_provider_config import MissingCredentialError, NotConfiguredError
 from modelling_specification.authoring import delta
 from modelling_specification.authoring.delta import (
+    MAX_DESC_CHARS,
     DeltaProposalError,
     LlmMessage,
     assign_missing_ids,
@@ -197,7 +198,7 @@ def test_assign_missing_ids_deduplicates_against_existing_and_sibling_ids() -> N
 
 
 def test_propose_delta_gives_the_llm_the_existing_element_catalogue(configured_fake_llm: FakeCompletion) -> None:
-    propose_delta("link drift to the goal", [("assess-drift-debt", "Assessment", "Architectural drift")])
+    propose_delta("link drift to the goal", [("assess-drift-debt", "Assessment", "Architectural drift", "")])
 
     system = configured_fake_llm.calls[0]["messages"][0]["content"]
     assert "assess-drift-debt | Assessment | Architectural drift" in system
@@ -392,3 +393,20 @@ def test_resolve_unknown_element_removals_leaves_a_weak_or_ambiguous_match_for_v
 
     assert resolved == removals
     assert notes == []
+
+
+def test_catalogue_lines_carry_a_flattened_truncated_description(configured_fake_llm: FakeCompletion) -> None:
+    long_desc = "word " * 200
+    propose_delta(
+        "link drift to the goal",
+        [
+            ("assess-drift", "Assessment", "Drift", "folded\n  over lines"),
+            ("assess-long", "Assessment", "Long", long_desc),
+        ],
+    )
+
+    system = configured_fake_llm.calls[0]["messages"][0]["content"]
+    assert "assess-drift | Assessment | Drift | folded over lines\n" in system
+    long_line = next(line for line in system.splitlines() if line.startswith("assess-long"))
+    assert long_line.endswith("...")
+    assert len(long_line) < MAX_DESC_CHARS + 40

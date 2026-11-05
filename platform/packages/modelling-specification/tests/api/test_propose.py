@@ -345,3 +345,13 @@ def test_a_view_only_delta_is_a_real_change(configured_fake_llm: FakeCompletion)
 
     assert body["status"] == "validated"
     assert "notes" not in body
+
+
+def test_catalogue_grounding_includes_element_descriptions(configured_fake_llm: FakeCompletion) -> None:
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a function"})
+
+    system = configured_fake_llm.calls[-1]["messages"][0]["content"]
+    line = next(ln for ln in system.splitlines() if ln.startswith("vs-intent-to-model | "))
+    assert "natural-language request" in line

@@ -155,7 +155,7 @@ def _delta_response(delta: CandidateDelta) -> dict[str, Any]:
 
 
 def _catalogue_and_rules() -> tuple[
-    list[tuple[str, str, str]],
+    list[tuple[str, str, str, str]],
     list[dict[str, Any]],
     list[str],
     list[tuple[str, str, str]],
@@ -163,7 +163,9 @@ def _catalogue_and_rules() -> tuple[
 ]:
     existing, types_by_id = model_io.existing_elements_and_types()
     catalogue = [
-        (e["id"], types_by_id[e["id"]], str(e.get("name", ""))) for e in existing if e.get("id") in types_by_id
+        (e["id"], types_by_id[e["id"]], str(e.get("name", "")), str(e.get("desc") or ""))
+        for e in existing
+        if e.get("id") in types_by_id
     ]
     contexts = sorted({str(e.get("context", model_io.DEFAULT_CONTEXT)) for e in existing})
     views = rendering.view_catalogue()
@@ -196,7 +198,7 @@ def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
 
 
 def _handle_proposed(
-    session_id: str, session: Session, catalogue: list[tuple[str, str, str]], proposed: dict[str, Any]
+    session_id: str, session: Session, catalogue: list[tuple[str, str, str, str]], proposed: dict[str, Any]
 ) -> dict[str, Any]:
     """Turn `propose_delta`/`resume_proposal`'s successful output into the shared
     `propose`/`propose/select`/`propose/resolve-pii` response: accumulate a single
@@ -213,7 +215,7 @@ def _handle_proposed(
     new_views = assign_missing_view_ids(proposed["views"], model_io.existing_view_ids())
     delta = _store.pending_delta(session_id)
     in_flight = [*(delta.elements if delta else []), *new_elements]
-    known_names = {eid: name for eid, _etype, name in catalogue}
+    known_names = {eid: name for eid, _etype, name, _desc in catalogue}
     known_names.update({e["id"]: str(e.get("name", "")) for e in in_flight if e.get("id")})
     new_relationships, rel_notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
     new_membership_edits, membership_notes = resolve_unknown_members(
@@ -401,9 +403,9 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
     session.pending_pii_confirmation = None
 
-    catalogue, rules, _contexts, _views, _relationships = _catalogue_and_rules()
+    catalogue, rules, contexts, views, relationships = _catalogue_and_rules()
     try:
-        proposed = resume_proposal(resolved_text, catalogue, rules)
+        proposed = resume_proposal(resolved_text, catalogue, rules, contexts, views, relationships)
     except LlmMessage as message:
         session.pending_options = []
         return {

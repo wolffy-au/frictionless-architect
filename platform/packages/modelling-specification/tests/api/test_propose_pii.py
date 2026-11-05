@@ -260,3 +260,14 @@ def test_a_fresh_propose_call_supersedes_a_stale_pending_pii_review(configured_f
     # The superseded match can no longer be resolved.
     response = client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "allow"})
     assert response.status_code == 409
+
+
+def test_a_resolved_request_gets_the_same_grounding_as_any_other(configured_fake_llm: FakeCompletion) -> None:
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "redact"})
+
+    system = configured_fake_llm.calls[-1]["messages"][0]["content"]
+    for block in ("Existing elements:", "Existing contexts:", "Existing views:", "Existing relationships:"):
+        assert block in system

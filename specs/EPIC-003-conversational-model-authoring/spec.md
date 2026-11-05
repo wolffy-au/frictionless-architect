@@ -258,6 +258,7 @@ Architect --> UC2
 - **FR-015**: When a later request in the same conversation touches an element or relationship already part of the pending candidate delta, the agent MUST amend/extend that pending delta rather than validating the new request as an independent delta against the last-applied model state.
 - **FR-016**: When a view request resolves to more than one plausible existing view, or to none, the agent MUST ask the architect to disambiguate among the matches, or to restate the request, rather than guessing or rendering an unconfirmed choice.
 - **FR-017**: When the architect rejects the agent's proposed fix for an already-rejected change, the agent MUST ask the architect to restate or refine the request rather than automatically retrying a different fix or dropping the request unprompted.
+- **FR-019**: The agent MUST ground each proposal in the existing elements' descriptions as well as their names, so it judges what an element is rather than guessing from its name.
 
 ### Key Entities *(include if feature involves data)*
 

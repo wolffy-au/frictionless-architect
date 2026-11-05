@@ -40,9 +40,11 @@ candidate ArchiMate model delta. Respond with JSON only, no prose, shaped exactl
 views/membership/edits/removals the request asks for; refer to elements already in
 the model by their existing id in "source"/"target"/"members"/"add"/"remove"/"id"
 rather than redeclaring them. The existing elements are listed below as "id | type |
-name": match what the architect names to the closest element, even when they
-misspell it or give only part of its name, and copy that id exactly. Never invent an
-id for an element that already exists.
+name | description" (a long description is cut short with "..."): match what the
+architect names to the closest element, even when they misspell it or give only part
+of its name, and copy that id exactly. Judge what an element is and whether it fits
+the request from its description, not from its name alone. Never invent an id for an
+element that already exists.
 
 A request to rename an existing element -- "rename X to Y", "call X something else"
 -- is an "element_edits" entry naming the existing element's id and its new "name",
@@ -125,6 +127,10 @@ for one of those, return {"elements": [], "relationships": [], "views": [],
 # Models often wrap JSON output in a single ```json fence despite being told not to.
 _SURROUNDING_FENCE = re.compile(r"\A\s*```[A-Za-z]*\n(.*?)\n```\s*\Z", re.DOTALL)
 
+# Grounding budget: the catalogue goes out on every turn, and the longest descriptions
+# run to 1000+ characters. 300 leaves most of them whole (the median is about 120).
+MAX_DESC_CHARS = 300
+
 
 class DeltaProposalError(Exception):
     """Raised when the LLM call fails or returns an unparseable delta (contracts/api.md 502)."""
@@ -160,8 +166,15 @@ def _message_content(response: Any) -> str:
     return content if isinstance(content, str) else ""
 
 
-def _catalogue_text(catalogue: list[tuple[str, str, str]]) -> str:
-    return "\n".join(f"{eid} | {etype} | {name}" for eid, etype, name in catalogue)
+def _short_description(desc: str) -> str:
+    """`desc` on one line, cut to `MAX_DESC_CHARS` -- a folded YAML description would
+    otherwise break the catalogue's one-element-per-line shape."""
+    flat = " ".join(desc.split())
+    return flat if len(flat) <= MAX_DESC_CHARS else f"{flat[:MAX_DESC_CHARS].rstrip()}..."
+
+
+def _catalogue_text(catalogue: list[tuple[str, str, str, str]]) -> str:
+    return "\n".join(f"{eid} | {etype} | {name} | {_short_description(desc)}" for eid, etype, name, desc in catalogue)
 
 
 def _rules_text(rules: list[dict[str, Any]]) -> str:
@@ -181,7 +194,7 @@ def _relationships_text(relationships: list[tuple[str, str, str, str]]) -> str:
 
 
 def _grounded_system_prompt(
-    catalogue: list[tuple[str, str, str]] | None,
+    catalogue: list[tuple[str, str, str, str]] | None,
     contexts: list[str] | None,
     views: list[tuple[str, str, str]] | None,
     relationships: list[tuple[str, str, str, str]] | None,
@@ -238,7 +251,7 @@ def _normalize_option(option: Any, model: str) -> dict[str, Any]:
 
 def propose_delta(
     request: str,
-    catalogue: list[tuple[str, str, str]] | None = None,
+    catalogue: list[tuple[str, str, str, str]] | None = None,
     rules: list[dict[str, Any]] | None = None,
     contexts: list[str] | None = None,
     views: list[tuple[str, str, str]] | None = None,
@@ -296,7 +309,7 @@ def scrub_or_require_review(text: str) -> str:
 
 def resume_proposal(
     resolved_text: str,
-    catalogue: list[tuple[str, str, str]] | None = None,
+    catalogue: list[tuple[str, str, str, str]] | None = None,
     rules: list[dict[str, Any]] | None = None,
     contexts: list[str] | None = None,
     views: list[tuple[str, str, str]] | None = None,

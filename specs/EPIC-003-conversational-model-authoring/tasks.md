@@ -351,6 +351,7 @@ guarantee every other `apply`-resulting action already has.
 
 - [X] T086 Widen `get_preview`, `model_io.preview_model` and `rendering.render_candidate_view` to every kind of delta change, including a view the delta proposes (FR-012a); tests in `tests/api/test_preview.py`
 - [X] T087 List every kind of proposed change in the chat, enable Apply for non-element deltas, and select a proposed or edited view (FR-012a); scenarios in `tests/features/conversational_authoring_ui.feature`
+- [X] T089 Add element descriptions to the catalogue grounding (FR-019), and give `resolve-pii` the same grounding as `propose`
 - [X] T090 [Model] Add `Realization process-conversational-authoring → vs-intent-to-model`, run `validate.py`, regenerate diagrams
 
 ---
