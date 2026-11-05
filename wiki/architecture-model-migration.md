@@ -214,8 +214,8 @@ with the two Nodes, `sw-neo4j` and `sw-keyring`.
 `sub-pii-gateway`, and `sw-pyarchimate` and `sw-rapidfuzz` to
 `fn-conversational-authoring` (`architecture/model/elements.yaml` §F;
 `architecture/model/relationships.yaml`). The modelling rule is
-[ADR-0044](decision-log-0030-onward.md) and the Presidio choice is ADR-0043. The
-build warns that the four have no explicit `context`, so they default to `platform`.
+[ADR-0044](decision-log-0030-onward.md) and the Presidio choice is ADR-0043. `sw-litellm`,
+`sw-presidio`, `sw-pyarchimate` and `sw-rapidfuzz` carry the context of what they serve.
 
 **Neo4j persistence (GH #108).** A new technology Artifact,
 `art-tech-neo4j-volume` ("Neo4j Graph Database Files") — the on-disk database

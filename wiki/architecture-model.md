@@ -46,7 +46,7 @@ The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:466-499`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 556 elements, 1267 relationships and 74 views
+current merged model is 556 elements, 1271 relationships and 74 views
 (re-counted 2026-11-04 against a clean `build.py` run; the model validates
 with no metamodel or referential-integrity violations). Of those, 287
 elements and 672 relationships are hand-authored in this repo's own
