@@ -10,6 +10,8 @@ same module objects) picks up identically.
 
 from __future__ import annotations
 
+import json
+
 from behave import given, step, then, when
 from behave.runner import Context
 
@@ -205,3 +207,36 @@ def step_chat_shows_message(context: Context, text: str) -> None:
 @then("Apply is still disabled")
 def step_apply_disabled(context: Context) -> None:
     assert context.page.is_disabled("#apply")
+
+
+@given("the LLM suggests two ways forward")
+def step_llm_suggests_options(context: Context) -> None:
+    context.fake_llm.content = json.dumps(
+        {
+            "options": [
+                {
+                    "rationale": "Add a new Value Stream for conversational modelling.",
+                    "convention_refs": [],
+                    "elements": [{"type": "ValueStream", "name": "Conversational Modelling"}],
+                    "relationships": [],
+                },
+                {
+                    "rationale": "Extend an existing value stream to cover conversational modelling instead.",
+                    "convention_refs": [],
+                    "elements": [{"type": "ValueStream", "name": "Conversational Modelling Delivery"}],
+                    "relationships": [],
+                },
+            ]
+        }
+    )
+
+
+@then("the chat pane offers two options to pick")
+def step_chat_offers_options(context: Context) -> None:
+    context.page.locator("#messages").get_by_text("ways forward", exact=False).wait_for()
+    assert context.page.get_by_role("button", name="Pick this option").count() == 2
+
+
+@when("the architect picks the first option")
+def step_pick_first_option(context: Context) -> None:
+    context.page.get_by_role("button", name="Pick this option").first.click()

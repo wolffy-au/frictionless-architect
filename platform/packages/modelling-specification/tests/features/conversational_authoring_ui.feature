@@ -67,3 +67,10 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     When the architect sends that request in the UI
     Then the chat pane shows the message "Which assessment do you mean?"
     And Apply is still disabled
+
+  Scenario: A suggested way forward offers each option to pick (FR-001 "ways forward", GH #68)
+    Given the LLM suggests two ways forward
+    When the architect sends that request in the UI
+    Then the chat pane offers two options to pick
+    When the architect picks the first option
+    Then the chat pane shows no objections

@@ -68,8 +68,9 @@ _PAGE = """\
   #messages { padding: 12px 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .msg { font-size: 13px; line-height: 1.5; }
   .msg.user { color: var(--text-muted); }
-  .finding, .duplicate, .pattern { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
+  .finding, .duplicate, .pattern, .option { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
   .finding { border-color: var(--err); background: var(--err-soft); }
+  .option .sub { margin: 4px 0 0; }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   button { font: inherit; font-size: 12.5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
   button:hover { background: var(--surface-2); }
@@ -453,11 +454,105 @@ _PAGE = """\
     });
   }
 
+  function describeElements(elements) {
+    return (elements || []).map((e) => escapeHtml((e.name || e.id) + " (" + e.type + ")")).join(", ");
+  }
+
+  function describeRelationships(relationships, elements) {
+    const names = {};
+    for (const e of elements || []) if (e.id) names[e.id] = e.name || e.id;
+    return (relationships || []).map((r) => {
+      const source = names[r.source] || r.source;
+      const target = names[r.target] || r.target;
+      return escapeHtml(r.type + ": " + source + " -> " + target + (r.label ? " (" + r.label + ")" : ""));
+    }).join(", ");
+  }
+
+  // Read-only version of renderFindings for an as-yet-unpicked option: shows what
+  // picking it would flag, without reject/override actions -- there is no delta to
+  // act on until `propose/select` turns this option into one.
+  function renderOptionCaveats(option) {
+    const parts = [];
+    const notes = (option.notes || []).map((n) => '<div class="finding">Corrected: ' + escapeHtml(n) + "</div>");
+    parts.push(...notes);
+    const validation = option.validation_result;
+    if (validation && !validation.clean) {
+      for (const finding of validation.findings) {
+        parts.push(
+          '<div class="finding">' + escapeHtml(finding.detail)
+          + (finding.proposed_fix ? "<br><i>Suggested fix: " + escapeHtml(finding.proposed_fix) + "</i>" : "")
+          + "</div>"
+        );
+      }
+    }
+    for (const dup of option.duplicates || []) {
+      parts.push(
+        '<div class="duplicate">Looks like a duplicate of <b>' + escapeHtml(dup.existing_element_id)
+        + "</b> (matched on " + escapeHtml(dup.matched_fields.join(", ")) + ")</div>"
+      );
+    }
+    for (const pattern of option.pattern_suggestions || []) {
+      parts.push(
+        '<div class="pattern">An established pattern uses an intermediary '
+        + escapeHtml((pattern.established_pattern.intermediary_types || []).join(", ")) + " here.</div>"
+      );
+    }
+    return parts.join("");
+  }
+
+  async function selectOption(index) {
+    const response = await fetch(
+      "/authoring/sessions/" + sessionId + "/propose/select",
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ option_index: index }) }
+    );
+    const result = await response.json();
+    if (!response.ok) {
+      addMessage("agent", '<span class="error">' + escapeHtml(result.detail || "That option could not be picked.") + "</span>");
+      return null;
+    }
+    return result;
+  }
+
+  // The architect asked for a way forward rather than describing one concrete
+  // change (FR-001 "ways forward", GH #68): show each candidate with its rationale
+  // so they can pick one via `propose/select`, which turns it into a normal delta.
+  function renderOptions(body) {
+    const blocks = (body.options || []).map((option, index) => {
+      const elementsDesc = describeElements(option.elements);
+      const relationshipsDesc = describeRelationships(option.relationships, option.elements);
+      return (
+        '<div class="option">'
+        + "<div>" + escapeHtml(option.rationale) + "</div>"
+        + (option.convention_refs && option.convention_refs.length
+            ? '<div class="sub">Grounded in: ' + escapeHtml(option.convention_refs.join(", ")) + "</div>" : "")
+        + (elementsDesc ? '<div class="sub">Adds: ' + elementsDesc + "</div>" : "")
+        + (relationshipsDesc ? '<div class="sub">Relationships: ' + relationshipsDesc + "</div>" : "")
+        + renderOptionCaveats(option)
+        + '<div class="actions"><button data-option-index="' + index + '">Pick this option</button></div>'
+        + "</div>"
+      );
+    });
+    const div = addMessage("agent", "Here are some ways forward:" + blocks.join(""));
+    div.querySelectorAll("button[data-option-index]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        div.querySelectorAll("button[data-option-index]").forEach((b) => { b.disabled = true; });
+        const result = await selectOption(Number(button.dataset.optionIndex));
+        if (result) renderProposeResponse(result);
+      });
+    });
+  }
+
   function renderProposeResponse(body) {
     if (body.status === "message") {
       // The LLM asked a question or made a suggestion instead of proposing a delta.
       const bubble = addMessage("agent", escapeHtml(body.message));
       bubble.style.whiteSpace = "pre-wrap";
+      return body;
+    }
+    if (body.status === "options") {
+      // No concrete delta yet -- the architect still has to pick one of the options.
+      renderOptions(body);
+      resetPendingDelta();
       return body;
     }
     const notes = (body.notes || []).map((n) => '<div class="finding">Corrected: ' + escapeHtml(n) + "</div>").join("");
