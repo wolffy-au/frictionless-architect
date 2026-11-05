@@ -157,10 +157,26 @@ NEST_RELS = {"Composition", "Aggregation", "Assignment"}
 
 
 def alias(uuid: str) -> str:
+    """Return a PlantUML-safe alias (`e_` plus up to 16 alphanumerics of the UUID).
+
+    Args:
+        uuid: Model element or relationship identifier.
+
+    Returns:
+        The alias string.
+    """
     return "e_" + re.sub(r"[^0-9a-zA-Z]", "", uuid)[:16]
 
 
 def esc(text: str | None) -> str:
+    """Make text safe inside a double-quoted PlantUML string.
+
+    Args:
+        text: Raw label, or None.
+
+    Returns:
+        Text with double quotes swapped for single quotes and newlines flattened.
+    """
     return (text or "").replace('"', "'").replace("\n", " ").strip()
 
 
@@ -341,6 +357,21 @@ def generate(
     max_width: int | None = None,
     context: str | None = None,
 ) -> tuple[str, list[str]]:
+    """Generate ArchiMate PlantUML from a model file.
+
+    Args:
+        path: Path to the ArchiMate model XML.
+        view_name: Restrict to this view, or None for the whole model.
+        no_direction: Relationship types drawn without a direction hint.
+        max_width: Optional layout width limit.
+        context: With `view_name`, restrict to one context neighbourhood.
+
+    Returns:
+        The PlantUML source and a list of warnings.
+
+    Raises:
+        ValueError: If `context` is given without `view_name`.
+    """
     if context and not view_name:
         raise ValueError("--context requires --view")
     model = Model("diagram")
@@ -371,6 +402,11 @@ def generate(
 
 
 def main() -> int:
+    """Run the command-line entry point.
+
+    Returns:
+        Process exit code.
+    """
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("model")
     ap.add_argument("--view", help="restrict to the contents of this ArchiMate view")

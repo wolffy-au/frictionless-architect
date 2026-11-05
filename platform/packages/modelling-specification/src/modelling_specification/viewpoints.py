@@ -199,10 +199,27 @@ def load_viewpoints(xml_path: str | None = None) -> dict[str, dict[str, Any]]:
 
 
 def get_viewpoint(slug: str, xml_path: str | None = None) -> dict[str, Any] | None:
+    """Look up one viewpoint definition.
+
+    Args:
+        slug: Viewpoint slug.
+        xml_path: Optional override for the viewpoints XML.
+
+    Returns:
+        The definition, or None if the slug is unknown.
+    """
     return load_viewpoints(xml_path).get(slug)
 
 
 def known_slugs(xml_path: str | None = None) -> list[str]:
+    """List known viewpoint slugs.
+
+    Args:
+        xml_path: Optional override for the viewpoints XML.
+
+    Returns:
+        Sorted slugs.
+    """
     return sorted(load_viewpoints(xml_path))
 
 
@@ -300,6 +317,11 @@ def _cmd_check(model_path: str, view_name: str, slug: str) -> int:
 
 
 def main() -> int:
+    """Run the `list`, `show` and `check` command-line entry point.
+
+    Returns:
+        Process exit code.
+    """
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list", help="list every known viewpoint slug")

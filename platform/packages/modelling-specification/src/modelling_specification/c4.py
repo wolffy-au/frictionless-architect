@@ -65,14 +65,39 @@ DIRECTIONS = {"U", "D", "L", "R"}
 
 
 def alias(uuid: str) -> str:
+    """Return a PlantUML-safe alias (`n_` plus up to 16 alphanumerics of the UUID).
+
+    Args:
+        uuid: Model element or relationship identifier.
+
+    Returns:
+        The alias string.
+    """
     return "n_" + re.sub(r"[^0-9a-zA-Z]", "", uuid)[:16]
 
 
 def esc(text: str | None) -> str:
+    """Make text safe inside a double-quoted PlantUML string.
+
+    Args:
+        text: Raw label, or None.
+
+    Returns:
+        Text with double quotes swapped for single quotes and newlines flattened.
+    """
     return (text or "").replace('"', "'").replace("\n", " ").strip()
 
 
 def prop(obj: Any, key: str) -> str | None:
+    """Read a property value from a model object, tolerating missing props.
+
+    Args:
+        obj: Object exposing a `props` mapping.
+        key: Property name.
+
+    Returns:
+        The value, or None when absent or `props` is unavailable.
+    """
     try:
         props = obj.props
     except Exception:  # noqa: BLE001
@@ -287,6 +312,21 @@ def _distinct_rel_lines(raw: list[_RawRel]) -> list[str]:
 def generate(
     path: str, system_name: str, level: str, layout: str, enterprise: str | None = None
 ) -> tuple[str, list[str]]:
+    """Generate C4-PlantUML for one system from a model file.
+
+    Args:
+        path: Path to the ArchiMate model XML.
+        system_name: Name of the system in focus.
+        level: `context` or `container`.
+        layout: C4-PlantUML layout option.
+        enterprise: Optional Enterprise_Boundary label.
+
+    Returns:
+        The PlantUML source and a list of warnings.
+
+    Raises:
+        KeyError: If the system cannot be found.
+    """
     model = Model("c4")
     model.read(path)
     warns: list[str] = []
@@ -308,6 +348,11 @@ def generate(
 
 
 def main() -> int:
+    """Run the command-line entry point.
+
+    Returns:
+        Process exit code: 0 on success, 2 on error.
+    """
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("model")
     ap.add_argument("--system", required=True, help="name of the system in focus")

@@ -922,6 +922,7 @@ def _svg_headers(view_id: str) -> dict[str, str]:
 
 @router.get("/views")
 def get_views() -> list[dict[str, str]]:
+    """List the views available to render."""
     return rendering.list_views()
 
 
@@ -934,6 +935,11 @@ def get_render(
     description: str | None = None,
     output_format: Annotated[Literal["json", "svg"], Query(alias="format")] = "json",
 ) -> Any:
+    """Render a view resolved from `object_id` or `description`.
+
+    Returns a 300 response listing candidates when the request is ambiguous and a
+    404 when nothing resolves; otherwise the view as JSON or SVG.
+    """
     resolution = rendering.resolve_view_request(object_id, description)
     if resolution["ambiguous_candidates"]:
         return JSONResponse(status_code=300, content={"ambiguous_candidates": resolution["ambiguous_candidates"]})
