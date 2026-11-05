@@ -1,4 +1,4 @@
-generated: '2026-11-04'
+generated: '2026-11-05'
 generator: claude-opus-5-5
 topics:
   project-overview:
@@ -1668,6 +1668,100 @@ topics:
         platform/packages/llm-provider-config/src/llm_provider_config/store.py:
           sha256: 8424b0ae1105b4bd9b75521f5aa14853f4b9cdc2acd7b205333306f9f17c3a40
           lines: 72
+      urls: {}
+  pii-gateway:
+    title: PII Gateway
+    page: wiki/pii-gateway.md
+    built: '2026-11-05'
+    sources:
+      files:
+        docs/adr/0014-pii-anonymization-gateway.md:
+          sha256: f17b8ac39eeea98c2a5afc6f9d764fad0b13a171e5250b9e91a2a98a8e24c407
+          lines: 102
+        docs/adr/0031-fr016-no-redaction-for-policy-documents.md:
+          sha256: 753c699f633443bce3d376df219d67194d406622edf1c9acc8ff7eb9f34a418d
+          lines: 48
+        docs/adr/0043-pii-gateway-detector-library-presidio.md:
+          sha256: 167b71ff4645adf40861e929427d09fbe9adefd1c7e2e4085797e82166954cc1
+          lines: 75
+        platform/packages/controls-compliance-catalog/tests/test_pii_gateway_exemption.py:
+          sha256: adcba41b27d5dae3d3a57f22dfeccc66156128c6debeb3dac20d3727e0f30f01
+          lines: 43
+        platform/packages/modelling-specification/pyproject.toml:
+          sha256: e2681e33e7b808c3ea52b06c01ce56fd830a031d92715c09292f29f9bcdb7f2b
+          lines: 35
+        platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
+          sha256: dcfa9d7f98e7466789297efbfb986109b0bc92f08c4ab7fe10cb0d7aa43f6604
+          lines: 509
+        platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
+          sha256: e3959c65259f4d570f55e13cbd19b2ac11bc9aba77e12f7664ccb497c48e2d2d
+          lines: 161
+        platform/packages/modelling-specification/src/modelling_specification/router.py:
+          sha256: 57aa1891d2c7c39848ae759d57829f8486b8aac8ad95b0b666fcf230d7eca096
+          lines: 946
+        platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py:
+          sha256: f1c8f836135f5fb3bdeb25e56853d558475fd66804e363e55072bf24c926939b
+          lines: 58
+        platform/packages/pii-gateway/README.md:
+          sha256: 52b7af1abe3f107e524f01a729040fc884be2709cf131ba4f37e8d308dc423c4
+          lines: 82
+        platform/packages/pii-gateway/pyproject.toml:
+          sha256: 9ec7b22ec0b8efb9c91d5abf80da157060962e38f6e5b1966c87ed3f6d4112a5
+          lines: 22
+        platform/packages/pii-gateway/specs/001-pii-gateway/checklists/requirements.md:
+          sha256: 9ee0528da4f75dd67f6d355b0e88df7e44282ba229a94343ac4a9fc66bc9e109
+          lines: 41
+        platform/packages/pii-gateway/specs/001-pii-gateway/contracts/scrub.md:
+          sha256: 52d70d41717d0fbd2ff120bf73ad76e90e0a8009d596673ab53d7f1f1a0403ed
+          lines: 78
+        platform/packages/pii-gateway/specs/001-pii-gateway/data-model.md:
+          sha256: 34eaedecc75629b0968b10e5d16c5a3480ec4e1bfefd3035c71e9367c9f30dd7
+          lines: 110
+        platform/packages/pii-gateway/specs/001-pii-gateway/plan.md:
+          sha256: d0d846761fca90bb68bebf772a68ec8cbd7150f5db02b0872814fb386a562ee7
+          lines: 169
+        platform/packages/pii-gateway/specs/001-pii-gateway/quickstart.md:
+          sha256: d5d7796a65c77d938e176371a16e15bf231d979cdbd949aceabf53a0959274e1
+          lines: 98
+        platform/packages/pii-gateway/specs/001-pii-gateway/research.md:
+          sha256: 6d4ac9298a6d59e21e13ee3d83429f097e5589bef6fbcc73d8d83ddf68ace3b3
+          lines: 14
+        platform/packages/pii-gateway/specs/001-pii-gateway/spec.md:
+          sha256: 27c730632f3d92204f3bc8c4afcc6e70c15de76c50e24fa2107c1ed91c70eb66
+          lines: 279
+        platform/packages/pii-gateway/specs/001-pii-gateway/tasks.md:
+          sha256: f033d056d2a5eb2bb4731418a91cd174e4ad98ed2263c4268ba4e93802266ac1
+          lines: 304
+        platform/packages/pii-gateway/src/pii_gateway/__init__.py:
+          sha256: aa89ba864a81769dcde97bcc10b44c3890b8084f7d44bd11424a47790c188f71
+          lines: 38
+        platform/packages/pii-gateway/src/pii_gateway/_paths.py:
+          sha256: 0a6afe233a3ecc0613dc96c0ce44430fa6b00a51c553926ab557d837f44d8c07
+          lines: 45
+        platform/packages/pii-gateway/src/pii_gateway/audit.py:
+          sha256: 2e07cd1fd561a9f482b19fed79c4d469f5df97ce90cf9fb8bd29864e56c116b1
+          lines: 57
+        platform/packages/pii-gateway/src/pii_gateway/config.py:
+          sha256: fbfac8aa1bb2a583efe8b7e098528fd193734ba373f10a409fa6a431c72c418d
+          lines: 117
+        platform/packages/pii-gateway/src/pii_gateway/detectors.py:
+          sha256: 0bf2fe4b449c7b56ad88d19b284eaa0dc49101bc68c65915d808a824775aa729
+          lines: 93
+        platform/packages/pii-gateway/src/pii_gateway/models.py:
+          sha256: a4caa61d582fc49f1830a95f5c1b7851232c097c9c0b2b8a8dff0eb7c430ce12
+          lines: 125
+        platform/packages/pii-gateway/src/pii_gateway/router.py:
+          sha256: 11163677058de714cd81d9bc4864aa6f5b44ba49a8d24b868e4a76b32f67c4f5
+          lines: 144
+        platform/packages/pii-gateway/src/pii_gateway/scrub.py:
+          sha256: e33f91df40172736522c42c4f470f46790128ce3a4b0cf64d2e7e045745cee34
+          lines: 111
+        platform/packages/pii-gateway/tests/unit/test_scrub.py:
+          sha256: f8d8ef133c90c23e5e7e8b029556cca136eefde5b5e1326a761529907e447c8f
+          lines: 122
+        platform/packages/portal/src/portal/app.py:
+          sha256: 2fb288d7ca8f5ec71744d9ee9da9dbacf4404c780a83267cc0743138c5cfc557
+          lines: 79
       urls: {}
   non-functionals:
     title: Non-Functional Requirements

@@ -310,6 +310,26 @@ topics:
       - path: platform/packages/llm-provider-config/src/llm_provider_config/*.py
       - path: docs/adr/0034-shared-packages-and-llm-provider-config.md
 
+  - name: pii-gateway
+    title: PII Gateway
+    description: The shared pii-gateway package (ADR-0014, ADR-0043) — the Presidio-backed scrub contract, per-context failure-modes, metadata-only audit log, and the mountable settings router.
+    sources:
+      - path: platform/packages/pii-gateway/README.md
+      - path: platform/packages/pii-gateway/pyproject.toml
+      - path: platform/packages/pii-gateway/specs/**/*.md
+      - path: platform/packages/pii-gateway/src/pii_gateway/*.py
+      - path: platform/packages/pii-gateway/tests/unit/test_scrub.py
+      - path: platform/packages/modelling-specification/pyproject.toml
+      - path: platform/packages/modelling-specification/src/modelling_specification/router.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/authoring/state.py
+      - path: platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py
+      - path: platform/packages/controls-compliance-catalog/tests/test_pii_gateway_exemption.py
+      - path: platform/packages/portal/src/portal/app.py
+      - path: docs/adr/0014-pii-anonymization-gateway.md
+      - path: docs/adr/0031-fr016-no-redaction-for-policy-documents.md
+      - path: docs/adr/0043-pii-gateway-detector-library-presidio.md
+
   - name: non-functionals
     title: Non-Functional Requirements
     description: Performance, security, operability, and other cross-cutting constraints.
