@@ -369,7 +369,7 @@ They "could — and arguably should — be re-cut to align with the journeys of 
 section-B roles" (`architecture/model/elements.yaml:603-609`).
 
 **The choreography.** The processes form one connected chain, with Triggering
-hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:235-344`):
+hand-offs unless marked `Flow` (`architecture/model/relationships.yaml:239-348`):
 
 ```text
 Policy Authoring → OSCAL Catalog Generation → Baseline Tailoring
@@ -424,7 +424,7 @@ back to their `DataObject`; see
   check enablement against, the *resolved catalog* rather than the raw Profile.
   A profile only selects and tailors controls, while the resolved catalog
   carries the effective control content
-  (`architecture/model/relationships.yaml:302-317`).
+  (`architecture/model/relationships.yaml:306-321`).
 - **Architecture strategy and drift.** The second group is Current State,
   Target State and Transition State Architecture, Architecture Roadmap, Drift
   Finding, and the Architecture Conformance Register. The Architecture
@@ -453,12 +453,12 @@ the Current State against the **Transition State in effect**, "so gaps planned f
 states are not flagged as drift". It records findings in the Conformance
 Register, and Drift Review & Triage updates their status there
 (`architecture/model/elements.yaml:572-588`;
-`architecture/model/relationships.yaml:339-352`).
+`architecture/model/relationships.yaml:343-356`).
 
 **Where the POA&M sits.** Target State Definition takes remediation milestones
 from the OSCAL POA&M. The CICD gate and effectiveness monitoring both write
 control deficiencies into the POA&M
-(`architecture/model/relationships.yaml:342-359`).
+(`architecture/model/relationships.yaml:346-363`).
 
 > **Sources disagree on what Drift Management reconciles against and what the
 > traceability functions read.**
@@ -471,4 +471,4 @@ control deficiencies into the POA&M
 >   Profile controls". `process-blueprint-traceability` still describes checking
 >   "against the OSCAL Profile". Their `Access` edges read the Resolved OSCAL
 >   Profile Catalog (`architecture/model/elements.yaml:641-646`, `716-722`;
->   `architecture/model/relationships.yaml:302-304`).
+>   `architecture/model/relationships.yaml:306-308`).

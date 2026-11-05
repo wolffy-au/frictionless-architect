@@ -82,7 +82,8 @@ It now uses `conversational-authoring`, raises `PiiReviewRequired` with no LLM
 call made, and the architect resolves the match through
 `POST .../propose/resolve-pii` (`docs/adr/0014-pii-anonymization-gateway.md`
 §Decision, §Amendment). The detector choice is
-[ADR-0043](decision-log-0030-onward.md).
+[ADR-0043](decision-log-0030-onward.md), and [ADR-0046](decision-log-0030-onward.md)
+sets what happens when that detector itself fails.
 
 The **P** rows (0017–0019) exist because `specs/EPIC-001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,

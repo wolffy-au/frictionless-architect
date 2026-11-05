@@ -32,13 +32,13 @@ now reserved for genuine ArchiMate `Artifact`-typed elements), plus
 which ties section C back to section B
 ([Ecosystem](architecture-model-ecosystem.md))
 (`architecture/model/elements.yaml:1055-1287`,
-`architecture/model/relationships.yaml:543-702`).
+`architecture/model/relationships.yaml:547-706`).
 
 A dedicated Forensic Ledger Recording function (`fn-ledger-record` →
 `do-ledger-entry`) receives `Flow` edges from four functions: governance
 evaluation, the enforcement gate, the drift engine and build supervision. As a
 result, every governed action lands an immutable record
-(`architecture/model/relationships.yaml:627-632`, `648`).
+(`architecture/model/relationships.yaml:631-636`, `648`).
 
 > **Sources disagree on counts.** The README's section-C summary still gives
 > the older figures of 15 functions and 25 DataObjects
@@ -75,21 +75,21 @@ realizes its business object (`bo-target-state-architecture`,
 `bo-architecture-roadmap`). The drift engine now diffs the twin against the
 roadmap and "reconciles against the transition state in effect", rather than
 against the target
-(`architecture/model/relationships.yaml:376-378`, `666`, `691-692`).
+(`architecture/model/relationships.yaml:380-382`, `666`, `691-692`).
 
 **POA&M.** The OSCAL Plan of Action & Milestones (`do-oscal-poam`) now
 realizes a business-layer counterpart, `bo-oscal-poam`. It is written from
 both assessment cadences: the enforcement gate and the BAU effectiveness
 monitor both "record control deficiencies in" it. `store-oscal` composes it.
 At the business layer, target-state definition reads it for remediation
-milestones (`architecture/model/relationships.yaml:367-381`, `670-671`,
+milestones (`architecture/model/relationships.yaml:371-385`, `670-671`,
 `683`).
 
 **The enforcement gate** (`fn-enforcement-gate`) is assigned to the external
 CI/CD Pipeline, not to a platform subsystem. It verifies artefact-observable
 controls directly on the release candidate. It "verifies process controls
 from" the forensic ledger and reads the expected controls from the SSP
-(`architecture/model/relationships.yaml:565`, `649-655`).
+(`architecture/model/relationships.yaml:569`, `649-655`).
 
 ## Conversational model authoring (GH #108)
 
@@ -112,10 +112,10 @@ already existed in the model. It reads
 the bundled ArchiMate metamodel and configurable Enterprise Convention Rules
 before being proposed, with candidate duplicates surfaced for an explicit
 human decision rather than silently merged or created
-(`architecture/model/relationships.yaml:699-701`). It also `Serving`s
+(`architecture/model/relationships.yaml:703-705`). It also `Serving`s
 `fn-notation-engine`, rendering the element(s)/view under discussion live as
 the conversation proceeds, and is exposed via `if-modelling-authoring-ui`
-(`architecture/model/relationships.yaml:483,702`). At the business layer it
+(`architecture/model/relationships.yaml:487,702`). At the business layer it
 realizes `process-conversational-authoring` (see
 [Skeleton](architecture-model-skeleton.md)). See
 [Conversational Model Authoring](modelling-specification.md) for the package
@@ -185,7 +185,7 @@ do-policy-doc / do-regulatory-standard   (verbatim documents)
   controls from") and writes `do-oscal-profile` ("tailors"), and
   compliance-trestle serves it ("provides profile authoring for")
   (`architecture/model/elements.yaml` — `fn-baseline-tailoring`;
-  `architecture/model/relationships.yaml:450`, `577-578`).
+  `architecture/model/relationships.yaml:454`, `577-578`).
 - **`fn-oscal-profile-resolve`** is split out so creation and resolution
   get their own views. Its output, `do-oscal-resolved-catalog`, is modelled
   as a `Specialization` of `do-oscal-catalog`, because OSCAL and Trestle
@@ -195,7 +195,7 @@ do-policy-doc / do-regulatory-standard   (verbatim documents)
   named **Resolved OSCAL Profile Catalog**. Downstream, the Library reads it
   instead of the raw profile: `fn-pattern-authoring` reads it,
   `fn-blueprint-authoring` "checks enablement against" it, and `do-pattern`
-  "maps to" it (`architecture/model/relationships.yaml:589-593`).
+  "maps to" it (`architecture/model/relationships.yaml:593-597`).
 - **Documents, not integrations.** `do-regulatory-standard` (e.g. NIST
   CSF, NIST SP 800-53 in prose) is a `Specialization` of `do-policy-doc`,
   labelled "externally-published instance". The business layer mirrors this
@@ -214,19 +214,19 @@ do-policy-doc / do-regulatory-standard   (verbatim documents)
   | `do-baseline-resolved-catalog` | FedRAMP LOW/MODERATE/HIGH resolved baselines (fedramp-automation) | Profile resolution |
 
   (`architecture/model/elements.yaml` §"C. Artefacts (DataObject)";
-  `architecture/model/relationships.yaml:290-300`)
+  `architecture/model/relationships.yaml:294-304`)
 
   `do-baseline` is also `Association`-linked to `do-regulatory-standard`,
   labelled "expected OSCAL output for (golden pair)". The NIST SP 800-53
   prose document is the converter's input, and the vendored catalog is the
-  output it should produce (`architecture/model/relationships.yaml:292`).
+  output it should produce (`architecture/model/relationships.yaml:296`).
 
 At the business layer, `process-oscal-conversion` is realized by
 `fn-ai-markdown-conversion` and `fn-oscal-conversion`. `fn-oscal-profile-resolve`
 realizes its own process, `process-profile-resolution`, and
 `fn-baseline-tailoring` realizes `process-baseline-tailoring`. Tailoring
 triggers resolution ("tailored profile feeds
-resolution") (`architecture/model/relationships.yaml:277-286`).
+resolution") (`architecture/model/relationships.yaml:281-290`).
 
 A modelling note on this change: `sub-catalog`'s former `Access` →
 `store-oscal` ("writes Catalogs & Profiles") edge was dropped, and no direct
@@ -246,7 +246,7 @@ artefact flow are:
 - Release Controls Enforcement, which comprises the CI/CD pipeline
 - Controls Effectiveness Assurance, which comprises effectiveness monitoring
 
-(`architecture/model/relationships.yaml:262-270`, `305-306`, `350-351`.) The
+(`architecture/model/relationships.yaml:266-274`, `305-306`, `350-351`.) The
 full set of nine is on [Skeleton](architecture-model-skeleton.md).
 
 Business roles are `Assignment`-linked to the **BusinessFunction** they
@@ -258,7 +258,7 @@ perform, not to individual processes:
 - Solution Architect → Solution Design
 - Platform Operations (BAU) → Controls Effectiveness Assurance
 
-(`architecture/model/relationships.yaml:264`, `307`, `358-363`, `384`.) Only
+(`architecture/model/relationships.yaml:268`, `307`, `358-363`, `384`.) Only
 Release Controls Enforcement, among the controls functions, has no human role;
 it runs inline in the pipeline. This role-on-function modelling is what lets
 the consolidated Controls & Compliance Catalog view nest Function > Role >

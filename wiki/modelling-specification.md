@@ -143,15 +143,15 @@ itself.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1702 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
-| `router.py` | 946 | FastAPI router: propose/validate/decide/render/config/state |
-| `ui.py` | 697 | Split-screen authoring UI |
-| `authoring/delta.py` | 509 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 461 | Ported view-render logic from root's `render_diagrams.py` |
+| `model_io.py` | 1746 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
+| `router.py` | 1043 | FastAPI router: propose/validate/decide/render/config/state |
+| `ui.py` | 855 | Split-screen authoring UI |
+| `authoring/delta.py` | 574 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
+| `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
 | `puml.py` | 410 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 322 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
 | `validation/conventions.py` | 321 | Loads and evaluates `conventions.yaml` rules |
-| `authoring/state.py` | 161 | In-memory Candidate Delta session store |
+| `authoring/state.py` | 179 | In-memory Candidate Delta session store |
 | `cli.py` | 118 | `build`/`render`/`validate` entry points root's scripts shell into |
 | `c4.py` | 332 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `validation/patterns.py` | 105 | Interposed-element pattern matching and synthesis |
@@ -190,7 +190,7 @@ All endpoints are under `/authoring`; shapes are in
 | `POST` | `/sessions/{session_id}/propose/resolve-pii` | Resolve a flagged PII/PHI match (`redact`, `allow` or `edit`) so the held call can proceed (ADR-0014) |
 | `POST` | `/sessions/{session_id}/propose/select` | Turn one of the last `propose` call's options into the session's pending candidate delta (ADR-0041) |
 | `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct, or override |
-| `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta, nothing written |
+| `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta of any kind, nothing written; `view_id` may name a view the delta proposes |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
 | `GET` | `/views` | Renderable views for the picker |
 | `GET` | `/render` | Render a view by `object_id` or `description` |
@@ -239,7 +239,11 @@ their output, and anyone else redirects it
    `llm-provider-config`/`litellm` seam `controls-compliance-catalog`'s own
    LLM client uses, component id
    `modelling-specification.conversational-authoring`) with a system prompt
-   that asks for strict JSON with seven required (possibly-empty) keys:
+   grounded in the current model: elements as `id | type | name | description`,
+   with descriptions cut to 300 characters so the LLM judges what an element is
+   rather than guessing from its name (FR-019), plus contexts, views, relationships
+   and convention rules. The prompt asks for strict JSON with seven required
+   (possibly-empty) keys:
    `elements`, `relationships`, `views`, `view_membership_edits`,
    `element_edits`, `element_removals`, `relationship_removals`. The prompt
    matches named entities against the existing model by id rather than
@@ -266,6 +270,14 @@ their output, and anyone else redirects it
    the same conversation amends the still-pending delta rather than
    validating fresh against the last-applied state
    (`specs/EPIC-003-conversational-model-authoring/spec.md` Clarifications, 2026-10-08).
+   Each call also carries the session's earlier turns (FR-018, ADR-0037 item 9):
+   the last 20 messages, in process memory, recording only text the LLM was
+   actually sent, so a flagged request stays out until resolved and then only its
+   resolved form goes in. The prompt also includes the pending delta and tells the
+   LLM to add to it rather than repeat it; anything it restates exactly is dropped.
+   A past proposal found in neither the model nor the pending delta counts as
+   discarded, so decisions need no entry of their own in the history
+   (`specs/EPIC-003-conversational-model-authoring/data-model.md` §Conversation History).
    When the architect asks for a way forward instead ("what should I do
    about X") rather than describing one change, the LLM instead returns
    `{"options": [...]}` — 2-3 independently applicable candidate deltas,
@@ -301,6 +313,17 @@ their output, and anyone else redirects it
    `pii_review_required` with the matches until the architect resolves them
    through `POST .../propose/resolve-pii` (ADR-0014 amendment, GH #181;
    `specs/EPIC-003-conversational-model-authoring/contracts/api.md`).
+   A resolved request gets the same grounding as any other; until 2026-11-05 it
+   lost the contexts, views and relationships.
+   The chat lists every kind of pending change and, until Apply, the render pane
+   previews it in memory (FR-012a): new elements marked `+`, renamed ones `~`,
+   removed ones gone, and a proposed or edited view opened as that view. A view
+   that breaks its viewpoint still previews, but stays flagged and can't be applied.
+   Before
+   2026-11-05 the UI and the preview endpoint only considered `elements` and
+   `relationships`, so a delta that only proposed a view looked empty: nothing was
+   drawn and Apply stayed disabled
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
 2. **Validate** (`validation/metamodel.py`, `platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py`,
    `validation/duplicates.py`, `validation/patterns.py`). The candidate is
    merged into the whole model (`model_io.merge_candidate`) and checked —

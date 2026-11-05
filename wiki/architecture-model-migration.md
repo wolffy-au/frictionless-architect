@@ -228,7 +228,7 @@ this chain (`node-app-server` → `sw-neo4j` → `art-tech-neo4j-volume` →
 `store-akg`) rather than a direct `SystemSoftware → DataObject` edge, which
 the relationship matrix doesn't permit anyway (only `Access`/`Association`)
 and which would skip the Artifact the model always interposes between a Node
-and the store it backs (`architecture/model/relationships.yaml:930-931`; see
+and the store it backs (`architecture/model/relationships.yaml:934-935`; see
 the "Feature Steel Thread" view below).
 
 **Feature Steel Thread (GH #108).** `view-gh108-conversational-authoring`

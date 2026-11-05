@@ -1,5 +1,5 @@
 generated: '2026-11-05'
-generator: claude-sonnet-5
+generator: claude-opus-5-5
 topics:
   project-overview:
     title: Project Overview
@@ -40,7 +40,7 @@ topics:
   decision-log:
     title: Architecture Decision Log
     page: wiki/decision-log.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         docs/adr/0000-adr-template.md:
@@ -104,11 +104,11 @@ topics:
           sha256: 0f92f59961924fe76df3d630a6536cce784eee2921a1b27c38ce0f9d7241838f
           lines: 25
         docs/adr/README.md:
-          sha256: dd1cd16bb41a5a6f42a2882620034fb9fb6fca31825328c1fe3501b3bc432d37
-          lines: 164
+          sha256: 03d50c631caaf3f7061b2b41fc1e2e350319b53699dc458a1c28902cdfb2dc7f
+          lines: 168
       urls: {}
   decision-log-ui-visualiser-model:
-    title: 'Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)'
+    title: "Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020\u20130029)"
     page: wiki/decision-log-ui-visualiser-model.md
     built: '2026-10-31'
     sources:
@@ -145,10 +145,9 @@ topics:
           lines: 93
       urls: {}
   decision-log-0030-onward:
-    title: 'Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030
-      onward)'
+    title: 'Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)'
     page: wiki/decision-log-0030-onward.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
@@ -173,8 +172,8 @@ topics:
           sha256: 43872d5b6aab0af5f611a7990b665192ffb17f24777c1bbd17c39339beb89cb1
           lines: 97
         docs/adr/0037-conversational-model-authoring-architecture.md:
-          sha256: 5cedadab146dab77c31a089b1d34962ef280aff41e86caf5963d7fff6b74d507
-          lines: 167
+          sha256: a12a42e6bb3c15b6e0ff0af51ea632f42e3cf2d6f03944a28352624f3c79d243
+          lines: 182
         docs/adr/0038-section-b-roles-canonical.md:
           sha256: a8755517c57f836f33c9c978905788f46464f19a2ff58b68e70533c3e4ca5384
           lines: 66
@@ -199,11 +198,14 @@ topics:
         docs/adr/0045-tool-model-separation-for-multi-tenant-use.md:
           sha256: a6bc3308a61eb52af4ed0ccf0f752b661ac35896900756d94f4c681e90afe900
           lines: 98
+        docs/adr/0046-pii-gateway-engine-error-fail-closed-semantics.md:
+          sha256: 97f77e47755d0ce9345c125a017b7a80a8b0ac9403d7fdf625b9e245fa7d8faf
+          lines: 99
       urls: {}
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -216,8 +218,8 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
         architecture/model/views-viewpoints.yaml:
           sha256: 3b019378b5ede873eab0632fdd2162ecb06fe1938674f203be4519064e356056
           lines: 443
@@ -228,16 +230,16 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: 92d6f7b3db8eed8848ae5d9e87f48ee676808a4e107c3b45ea1f5ff3b2bf491b
-          lines: 1702
+          sha256: a7d73e36fe688e00124e19986d2f7b5ae680f37461e5b67f034ae99d925dd7c5
+          lines: 1746
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          sha256: 9f529f40fbc33d97f7a0bef2c4acfd9c21e5b558fa0d6d3868f7aa569f1bc231
-          lines: 461
+          sha256: f20de9a1a8963c78c0f696820b35360d709c468e04fc69540065c04a37520bfa
+          lines: 473
       urls: {}
   architecture-model-contexts:
     title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
     page: wiki/architecture-model-contexts.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -247,8 +249,8 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
         architecture/model/views-viewpoints.yaml:
           sha256: 3b019378b5ede873eab0632fdd2162ecb06fe1938674f203be4519064e356056
           lines: 443
@@ -262,7 +264,7 @@ topics:
   architecture-model-build-it4it:
     title: 'Architecture Model: Build Pipeline & IT4IT Merge'
     page: wiki/architecture-model-build-it4it.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -275,8 +277,8 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
         architecture/model/render_diagrams.py:
           sha256: dc0df223392d36986b1906d18c46405835a68247ea86956906210f96e87cf6f1
           lines: 56
@@ -290,8 +292,8 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: 92d6f7b3db8eed8848ae5d9e87f48ee676808a4e107c3b45ea1f5ff3b2bf491b
-          lines: 1702
+          sha256: a7d73e36fe688e00124e19986d2f7b5ae680f37461e5b67f034ae99d925dd7c5
+          lines: 1746
         third_party/it4it/elements.yaml:
           sha256: 60002f1ce238f396a46f24bdca2f562c21075fdeead9583261659c838cc4cd4e
           lines: 1127
@@ -302,7 +304,7 @@ topics:
   architecture-model-skeleton:
     title: 'Architecture Model: Skeleton'
     page: wiki/architecture-model-skeleton.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -312,13 +314,13 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
       urls: {}
   architecture-model-strategy:
     title: 'Architecture Model: Strategy'
     page: wiki/architecture-model-strategy.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -328,13 +330,13 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
       urls: {}
   architecture-model-ecosystem:
     title: 'Architecture Model: Ecosystem'
     page: wiki/architecture-model-ecosystem.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -344,13 +346,13 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
       urls: {}
   architecture-model-artefact-flow:
     title: 'Architecture Model: Artefact Flow'
     page: wiki/architecture-model-artefact-flow.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -360,13 +362,13 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
       urls: {}
   architecture-model-migration:
     title: 'Architecture Model: Packaging, Migration & Technology'
     page: wiki/architecture-model-migration.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -376,8 +378,8 @@ topics:
           sha256: 8a5f45e1e87761c011b6c45eca7940533bc16242268abca8526e83d8283c1cc6
           lines: 2171
         architecture/model/relationships.yaml:
-          sha256: c0d54d8cb381c85881daf7e2f3cd2bfb56e2fa90c81b8daecbdcd3e6cc88a52e
-          lines: 1082
+          sha256: 2b7fb2ba6f811dbb2b71f3ab8b20f8ca2b08b3ef76f1856d8d7961cc4f6a3398
+          lines: 1086
         architecture/model/views.yaml:
           sha256: c19ab51bb84caa639d98ec3b40794a0297753b42660d595797f30503c530f0cd
           lines: 1238
@@ -422,7 +424,7 @@ topics:
   architecture-diagrams:
     title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
     page: wiki/architecture-diagrams.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         architecture/model/README.md:
@@ -639,10 +641,10 @@ topics:
           sha256: 5c6b86759ef137b3164437dbd5329a75625505de9532dc605996236057c14f58
           lines: 1
         architecture/model/diagrams/application/usage/modelling-specification.puml:
-          sha256: e394c0c46452c933a308daf7761b77de462f2f8110a964dde4850b33a988c60b
-          lines: 116
+          sha256: 4259b2d16032a892ad1d5db65cab5acfb76c3bcf58eb25a6f7e086f80c3d840d
+          lines: 118
         architecture/model/diagrams/application/usage/modelling-specification.svg:
-          sha256: 0d626bd0bb041156c304818fad611772a49b0cffa2620fdb039964d76c9cf533
+          sha256: 5b79db3a0bfb6db63e538539c9801a4a316ce85a02f1e5fa0b27e65660d4f20f
           lines: 1
         architecture/model/diagrams/application/usage/pii-gateway.puml:
           sha256: 6343241ab1ead5b47bcafc3121c719f5821efec9b6f4c6bcecfac576cda0b7f2
@@ -741,10 +743,10 @@ topics:
           sha256: 3b2f0de44c7d18ee71c7b4c502f0309890aa397d0c41ed274fa0ca8de385585f
           lines: 1
         architecture/model/diagrams/business/product/modelling-specification.puml:
-          sha256: 30dc83a03870fece56ea30b5659b09e56f22d89c4e0f829a9d91324ef2e863be
-          lines: 120
+          sha256: 086956b7dbc93ad2b2c0e6b185791bd720a16cc73f922248ea415db8e6027e7d
+          lines: 122
         architecture/model/diagrams/business/product/modelling-specification.svg:
-          sha256: b56837dc7e4806037708a5d4a8d204d0d12d86dba776ccc4b197317f4679591f
+          sha256: dc3bbfdf39af6a6e0d8b9e4a84a93a8affd248e57f3d476cb8800807a7fce1b7
           lines: 1
         architecture/model/diagrams/business/product/pii-gateway.puml:
           sha256: 6abb51127e925977ca81e7f407048cc7864387b87d1adbe393edecadbe063f35
@@ -795,10 +797,10 @@ topics:
           sha256: 1dd0b118bdfdcc8fffe84feb09554b279440188d814b9a87a40eb2334830b037
           lines: 1
         architecture/model/diagrams/business/service-realization/modelling-specification.puml:
-          sha256: 36a3d8224d5fabd0b31ec2fe3577db93717378ab1cd1c5c3150be4a02be1fc2e
-          lines: 116
+          sha256: e62a0945f7e70f459a7dfb3b1a5a13e99bbdc225d60ffa687a7423019dd4a63b
+          lines: 118
         architecture/model/diagrams/business/service-realization/modelling-specification.svg:
-          sha256: 1994e63c4971d7021be1d127d7da57de9309fbe64bafd239d1c1ce4a7830e7ed
+          sha256: 6ae683bedf4fd043a2c0526b10f6991d1322f42724e58f2850c773565295f5be
           lines: 1
         architecture/model/diagrams/business/service-realization/pii-gateway.puml:
           sha256: 5b55c7e64392da944ec4ab1cea4d22d0930a970daf27a501179a678c68d3e82f
@@ -921,10 +923,10 @@ topics:
           sha256: 3610194faddde1091cf9ab43a95adfe6532cfd4ce33cc79bd48dca9a0e9b025e
           lines: 1
         architecture/model/diagrams/vision/7-outcome-realization.puml:
-          sha256: 5736fa2f97970b066848cd8e6e4c551e36e841e8ea9a4013298daf4ba83504fc
-          lines: 161
+          sha256: 7ea3a5b5e3ce3c9bd479012dd68bd0fa53c8b41019c07934a16db7fefc145eaa
+          lines: 162
         architecture/model/diagrams/vision/7-outcome-realization.svg:
-          sha256: 5e7d143ebfe96720d5db8afcc1458c518d98da9f6a34d5662eb65b91eeb07c25
+          sha256: 943e5a276bd79368165b9b3642dd8131515453b1bc9173522219462bdc94b489
           lines: 1
         architecture/model/diagrams/vision/8-requirements-realization.puml:
           sha256: e33c7bd798abe87fbbebd3aaf265b4a0fb737359dfbd27c83c14e077549a6479
@@ -1407,14 +1409,14 @@ topics:
     sources:
       files:
         docs/adr/0037-conversational-model-authoring-architecture.md:
-          sha256: 5cedadab146dab77c31a089b1d34962ef280aff41e86caf5963d7fff6b74d507
-          lines: 167
+          sha256: a12a42e6bb3c15b6e0ff0af51ea632f42e3cf2d6f03944a28352624f3c79d243
+          lines: 182
         docs/adr/0041-structured-suggestion-options-in-delta-py.md:
           sha256: 68cdb36ca73438463e78365dcfb0bad8c2e55e85e41ac3f701d8a4c8a0648e07
           lines: 68
         platform/packages/modelling-specification/README.md:
-          sha256: 842be3a546cd6dff766f67758eae9bc241eb441dd7e6b9c468cc4327fd3e2946
-          lines: 125
+          sha256: 04216a6c73932284d998bb66f0af786f222bf4856e43a2d67fc25b322f406521
+          lines: 156
         platform/packages/modelling-specification/pyproject.toml:
           sha256: e2681e33e7b808c3ea52b06c01ce56fd830a031d92715c09292f29f9bcdb7f2b
           lines: 35
@@ -1431,14 +1433,14 @@ topics:
           sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
           lines: 0
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: dcfa9d7f98e7466789297efbfb986109b0bc92f08c4ab7fe10cb0d7aa43f6604
-          lines: 509
+          sha256: 1e4f6690b601a833440008113911230157cd3a69aedcf533ca06757a1bae091c
+          lines: 574
         platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py:
           sha256: 5cdaa9680c524209714102d7fb02ff0e21f56077cc1cb9d52256d9410c67e13d
           lines: 61
         platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
-          sha256: e3959c65259f4d570f55e13cbd19b2ac11bc9aba77e12f7664ccb497c48e2d2d
-          lines: 161
+          sha256: c183a1ce283b1a12f3adc005ec8a64b222acd4db6ad913ced189acad158146ab
+          lines: 179
         platform/packages/modelling-specification/src/modelling_specification/c4.py:
           sha256: 57960968502ba3c322a60223153f25728bc809ea243b448bc41fbac2e82907eb
           lines: 332
@@ -1446,20 +1448,20 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: 92d6f7b3db8eed8848ae5d9e87f48ee676808a4e107c3b45ea1f5ff3b2bf491b
-          lines: 1702
+          sha256: a7d73e36fe688e00124e19986d2f7b5ae680f37461e5b67f034ae99d925dd7c5
+          lines: 1746
         platform/packages/modelling-specification/src/modelling_specification/puml.py:
           sha256: 7f75ee0543c56c6136b5b5544c2241051ea893e645bbd95cbca749982a655efe
           lines: 410
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          sha256: 9f529f40fbc33d97f7a0bef2c4acfd9c21e5b558fa0d6d3868f7aa569f1bc231
-          lines: 461
+          sha256: f20de9a1a8963c78c0f696820b35360d709c468e04fc69540065c04a37520bfa
+          lines: 473
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: 57aa1891d2c7c39848ae759d57829f8486b8aac8ad95b0b666fcf230d7eca096
-          lines: 946
+          sha256: 8c58d0d422efcc27186ea1efc03aad5a0131e5342175a40e283c71e636b5de5a
+          lines: 1043
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: 7483bd3b8aafdf58dd39aeda61ecefbfe5e0ca7b3f5501ac98d1c991c5d4cd56
-          lines: 697
+          sha256: f19d73347fb3ff172258ceffb9fec66ee55e7ff0fc48bccf4f4a295d12b30581
+          lines: 855
         platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
           sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
           lines: 0
@@ -1494,26 +1496,26 @@ topics:
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
           lines: 77
         specs/EPIC-003-conversational-model-authoring/contracts/api.md:
-          sha256: 3ae3cc9caa7140cc358acbd4dc4fff4a22c35c8ca31a93807d82cb4684d43c43
+          sha256: 72253dea43cec32cfe1844aa49d670a79a34f154bd267c850e28cbd92b6d727d
           lines: 170
         specs/EPIC-003-conversational-model-authoring/data-model.md:
-          sha256: 7c38c8c0c1bc6f6e742285e5cf2f2a046c8b0faf75e090e4a3e171a38363a7aa
-          lines: 194
+          sha256: 65ea63e4f8a8868fd5f810645c329a97d4543b2621d501155741f303827cfbcf
+          lines: 206
         specs/EPIC-003-conversational-model-authoring/plan.md:
-          sha256: 57c50808d81776548eb4039b30a382edb3167e025e69b27340a978855ce009ec
-          lines: 235
+          sha256: b516a8b4cd0b0d172d43292ea6c314148b7421908ec9c301b39d28751abf53e9
+          lines: 236
         specs/EPIC-003-conversational-model-authoring/quickstart.md:
-          sha256: 655facce0f4215db5f6ddafbc5f7a78122e5f41991f2f6086ea49470345bbc6a
-          lines: 98
+          sha256: 97cb366d5dafff5f723e8999c04915777da3b203dc1ef891046c98b5c75a75e1
+          lines: 106
         specs/EPIC-003-conversational-model-authoring/research.md:
           sha256: 70bc67f17319a4e8935540fa9fac7ded73e0623737f5cc5c3e9049aa3358fcc4
           lines: 25
         specs/EPIC-003-conversational-model-authoring/spec.md:
-          sha256: 98f72f55490af3960da29f5a4addc4223d570efec3db440428ed212e00a221fc
-          lines: 291
+          sha256: 77294f752f345571d540cc1c9290d5a14bdf15832d0332e25614c992ba265372
+          lines: 293
         specs/EPIC-003-conversational-model-authoring/tasks.md:
-          sha256: b4d317992178fcc27c0abceac9f99a542e538bb3be038fb4b91e1498e9f77b18
-          lines: 447
+          sha256: 54050ff4e5706a1fd20f60da5430261d86145010e7b610d4ccb8ae140b76a996
+          lines: 455
       urls: {}
   portal:
     title: Portal
@@ -1694,17 +1696,17 @@ topics:
           sha256: e2681e33e7b808c3ea52b06c01ce56fd830a031d92715c09292f29f9bcdb7f2b
           lines: 35
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: dcfa9d7f98e7466789297efbfb986109b0bc92f08c4ab7fe10cb0d7aa43f6604
-          lines: 509
+          sha256: 1e4f6690b601a833440008113911230157cd3a69aedcf533ca06757a1bae091c
+          lines: 574
         platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
-          sha256: e3959c65259f4d570f55e13cbd19b2ac11bc9aba77e12f7664ccb497c48e2d2d
-          lines: 161
+          sha256: c183a1ce283b1a12f3adc005ec8a64b222acd4db6ad913ced189acad158146ab
+          lines: 179
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: 114ee097ecf80f52575e804e3e2a1416b3c2fefb806259c4b558c0c7d48d8852
-          lines: 971
+          sha256: 8c58d0d422efcc27186ea1efc03aad5a0131e5342175a40e283c71e636b5de5a
+          lines: 1043
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: 4f0ecbfa9fee0167c77ce3f9ab9b2ec70fe7047fa6252131df3631c3ab55146b
-          lines: 769
+          sha256: f19d73347fb3ff172258ceffb9fec66ee55e7ff0fc48bccf4f4a295d12b30581
+          lines: 855
         platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py:
           sha256: f1c8f836135f5fb3bdeb25e56853d558475fd66804e363e55072bf24c926939b
           lines: 58
@@ -1825,7 +1827,7 @@ topics:
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-10-31'
+    built: '2026-11-05'
     sources:
       files:
         .github/workflows/ci.yml:
@@ -1844,8 +1846,8 @@ topics:
           sha256: 5df8531fc489256afb9c91275f1e891c39b78ac9a971cd1739c1e465895ce8e0
           lines: 122
         RELEASE.md:
-          sha256: dd1427035c2d00d3011827edea6d549196e04dccfcec6a924c654d3fd05489c8
-          lines: 280
+          sha256: dfe57d2efa1f7057d0154c0339fd53f51fa73a12b5817516a8f073b987675038
+          lines: 283
         SECURITY.md:
           sha256: 31571f7297e96f97630abc338a44ac2e24c292c5ab94bcba5505037debe8faaa
           lines: 54
@@ -1908,11 +1910,11 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         .claude/agents/README.md:
-          sha256: b9208bfca5f72cf6f31e00c517c82690ba9eedd41b2f9b2dfaee942af320b87a
+          sha256: a180c426b76be3d09f835e7891604eba646cffdafbf9a8af275f546010077f8a
           lines: 39
         .claude/agents/acceptance-author.md:
           sha256: 0dfe679f953201c94ca6b8c7c5f3e76d31a3647a6c023b79d274d19facc8082f
@@ -1936,8 +1938,8 @@ topics:
           sha256: ebaa2b5f69b30f254628fe3552db51cc6a26a2346ceeba9df5804f9cadf79e2b
           lines: 57
         .claude/agents/release-runner.md:
-          sha256: 81ba210acf4cb2dac7371317990718d4fcc22ccd706be78876fe7f7a8502b9d1
-          lines: 84
+          sha256: 87d09f67ca8d9c9e17cb4393c40d231074ce928bbfa5a4bf30eb3d29df33891e
+          lines: 97
         .claude/agents/spec-alignment.md:
           sha256: 35a342d2a4650dcae339191f3756ca1dbadc390e86f66ea6777e590042ecae98
           lines: 92

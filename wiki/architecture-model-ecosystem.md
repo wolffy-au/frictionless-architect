@@ -28,7 +28,7 @@ provider, model and credential for LLM calls. It is composed into
 is realised by `art-pkg-llm-provider-config`; there is deliberately no
 `Serving` edge to its consumers, since consumption is a path dependency, not
 a runtime call
-(`architecture/model/elements.yaml:942-950`, `architecture/model/relationships.yaml:776-790`).
+(`architecture/model/elements.yaml:942-950`, `architecture/model/relationships.yaml:780-794`).
 It appears in the Artefact Flow — Controls & OSCAL and Packaging views
 (`architecture/model/views.yaml`).
 
@@ -63,7 +63,7 @@ is only modelled. `ARCHITECTURE.md` uses the new name, while the package keeps
 `digital-twin-knowledge-graph`.
 
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
-view back to the skeleton (`architecture/model/relationships.yaml:420-429`).
+view back to the skeleton (`architecture/model/relationships.yaml:424-433`).
 Shared stores (`architecture/model/elements.yaml:967-991`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
@@ -83,7 +83,7 @@ round-trip), `fn-baseline-tailoring` (profile authoring) and
 `fn-oscal-profile-resolve` (profile resolution). The LLM
 Provider now also serves `fn-ai-markdown-conversion`, so its `desc` covers
 converting policy/standard documents alongside its drafting uses
-(`architecture/model/relationships.yaml:447-452`).
+(`architecture/model/relationships.yaml:451-456`).
 
 The former `ext-regsources` ("Regulatory Content Sources") external system
 has been **removed**. It implied a system integration with upstream

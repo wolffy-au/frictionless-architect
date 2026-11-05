@@ -107,17 +107,17 @@ for `ALLOW` and `EDIT` -- except `ALLOW` on the synthetic engine-error match (se
 complete operation in the gateway: the caller has to supply the replacement.
 `modelling-specification` does that by re-scrubbing the architect's `edited_text` under
 the same context, so a still-sensitive edit is flagged again rather than sent
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:395-403`;
-`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:277-293`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:431-439`;
+`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:318-334`).
 
 The confirmation has no timeout and no stored form. An abandoned turn just discards it
 (`platform/packages/pii-gateway/specs/001-pii-gateway/spec.md` §Clarifications). In
 `modelling-specification` it sits on the in-memory session between `propose` and
 `propose/resolve-pii`, which is the one place it outlives a single `scrub()` call
-(`platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:80-85`).
+(`platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:94-99`).
 A flagged response carries the matches and makes no LLM call
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:178-195`,
-`platform/packages/modelling-specification/src/modelling_specification/router.py:310-313`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:191-208`,
+`platform/packages/modelling-specification/src/modelling_specification/router.py:337-340`).
 
 ## Detection
 
@@ -179,11 +179,11 @@ unaffected
 `modelling-specification`'s `resolve_pii` maps the exception to `409` and leaves the
 pending confirmation in place, so `REDACT`/`EDIT` still resolve it and no LLM call is
 made
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:404-411`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:440-447`).
 The flag-for-review response also carries `detection_failed: bool` so a caller is told
 detection failed outright, rather than left to infer it from the `_ENGINE_ERROR`
 category string in `matches`
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:178-192`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:191-205`).
 
 Both are recorded in ADR-0046, filed because the spec's fail-closed guarantee itself
 was (and still is) a spec-level default with no ADR of its own -- this record covers
@@ -195,7 +195,7 @@ The browser authoring UI has a related, separately-tracked rough edge: its three
 PII-review buttons (Redact/Allow/Edit) disable on click and only re-enable on a
 successful `resolve-pii` response, so an `ALLOW` rejected under this path needed its
 own re-enable path to stay usable
-(`platform/packages/modelling-specification/src/modelling_specification/ui.py:583-600`).
+(`platform/packages/modelling-specification/src/modelling_specification/ui.py:666-683`).
 
 ## Configuration and audit
 
@@ -242,7 +242,7 @@ to localhost (`platform/packages/pii-gateway/README.md:63-65`).
 | `fn-spec-generator` | `spec-generator` | Registered; no implementation calls it |
 | `fn-ai-markdown-conversion`, `fn-policy-quality-feedback` | None | Exempt (ADR-0031) |
 
-(`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:288`;
+(`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:329`;
 `docs/adr/0014-pii-anonymization-gateway.md` §Amendment;
 `platform/packages/pii-gateway/specs/001-pii-gateway/spec.md` §Assumptions)
 
