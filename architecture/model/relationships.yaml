@@ -605,7 +605,7 @@
 - {type: Serving, source: sub-modelling, target: sub-library, label: renders candidate & solution models with}
 
 # =====================================================================
-# B. Digital Twin & Knowledge Graph
+# B. Architecture Knowledge Graph
 # =====================================================================
 - {type: Flow, source: ext-cloud, target: sub-twin, label: current-state configuration}
 - {type: Flow, source: ext-cicd, target: sub-twin, label: deployment events & gate outcomes}

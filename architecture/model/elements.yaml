@@ -1222,7 +1222,7 @@
     Serves the aggregated ArchiMate schema and sample-model coverage as JSON
     (/schema-payload, /refresh, /status). Not one of the six subsystems;
     extracted after the knowledge-graph scaffold (ADR-0005), reading the
-    knowledge graph only through the Digital Twin & Knowledge Graph read path.
+    knowledge graph only through the Architecture Knowledge Graph read path.
 - type: ApplicationComponent
   id: sub-llm-provider-config
   context: llm-provider-config
@@ -1552,7 +1552,7 @@
     Model one or more candidate future-state architectures, including competing
     vendor / RFP responses, as decision input for Architecture Governance.
 
-# --- C. Functions: Digital Twin & Knowledge Graph ---
+# --- C. Functions: Architecture Knowledge Graph ---
 - type: ApplicationFunction
   id: fn-twin-ingest
   context: digital-twin-knowledge-graph
