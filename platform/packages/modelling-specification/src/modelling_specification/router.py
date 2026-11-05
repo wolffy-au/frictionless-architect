@@ -10,7 +10,7 @@ from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import JSONResponse
-from pii_gateway import Resolution
+from pii_gateway import EngineErrorAllowRejected, Resolution
 from pydantic import BaseModel
 
 from modelling_specification import model_io, rendering
@@ -178,11 +178,17 @@ def _pii_match_payload(review: PiiReviewRequired) -> list[dict[str, Any]]:
 def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
     """`propose`/`resolve-pii`'s response when `scrub()` flags a PII/PHI match for
     review (ADR-0014 amendment): no delta is created and the LLM call has not been
-    made -- the architect must resolve it via `POST .../propose/resolve-pii`."""
+    made -- the architect must resolve it via `POST .../propose/resolve-pii`.
+
+    `detection_failed` is true when the flagged "match" is pii-gateway's synthetic
+    engine-error match (research.md R6) rather than a real detection -- the
+    architect must be told detection failed, not left to infer it from the
+    `_ENGINE_ERROR` category in `matches` (2026-11-05 decision)."""
     return {
         "delta_id": None,
         "status": "pii_review_required",
         "pii_review_required": True,
+        "detection_failed": review.pending_confirmation.detection_failed,
         "matches": _pii_match_payload(review),
         "elements": [],
         "relationships": [],
@@ -335,7 +341,11 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     "/sessions/{session_id}/propose/resolve-pii",
     responses={
         404: {"description": "no session with the given session_id"},
-        409: {"description": "no PII/PHI match is pending review"},
+        409: {
+            "description": "no PII/PHI match is pending review, or resolution is 'allow' but the "
+            "pending match is a detector-engine error (detection never ran, so there is nothing "
+            "real to allow -- the pending confirmation is left in place; redact or edit instead)"
+        },
         400: {"description": "resolution is 'edit' but edited_text was not supplied"},
         502: {"description": "the LLM proposal could not be turned into a usable delta"},
     },
@@ -352,6 +362,13 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
     `propose` call (``pii_review_required`` again, no LLM call), never silently
     sent on and never escalated to a different behaviour.
 
+    When the pending match is pii-gateway's synthetic engine-error match
+    (research.md R6) rather than a real detection, ``"allow"`` is rejected (409,
+    2026-11-05 decision): detection never ran, so there is no real match for the
+    architect to judge and allow, and letting it through would send wholly
+    uninspected text to the LLM. The pending confirmation is left in place --
+    ``"redact"`` or ``"edit"`` still resolve it.
+
     Args:
         session_id: The owning session.
         body: The architect's chosen resolution and, for ``edit``, the replacement text.
@@ -363,8 +380,10 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
 
     Raises:
         HTTPException: 404 if the session is unknown; 409 if no PII/PHI match is
-            pending review; 400 if ``resolution`` is ``edit`` with no (or blank)
-            ``edited_text``; 502 if the LLM output cannot be turned into a delta.
+            pending review, or if ``resolution`` is ``allow`` on a pending
+            detector-engine-error match; 400 if ``resolution`` is ``edit`` with no
+            (or blank) ``edited_text``; 502 if the LLM output cannot be turned into
+            a delta.
     """
     session = _store.get_session(session_id)
     if session is None:
@@ -383,7 +402,13 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
             session.pending_options = []
             return _pii_review_response(review)
     else:
-        resolved_text = pending.resolve(body.resolution)
+        try:
+            resolved_text = pending.resolve(body.resolution)
+        except EngineErrorAllowRejected as exc:
+            # Pending confirmation is deliberately left in place -- the architect
+            # can still redact or edit; only `allow` on an engine-error match is
+            # rejected (2026-11-05 decision).
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
     session.pending_pii_confirmation = None
 
     catalogue, rules, _contexts, _views, _relationships = _catalogue_and_rules()

@@ -9,7 +9,7 @@ import time
 import pytest
 from pii_gateway import ScrubAction, scrub
 from pii_gateway.config import KNOWN_CONTEXTS
-from pii_gateway.models import ENGINE_ERROR_CATEGORY, Resolution
+from pii_gateway.models import ENGINE_ERROR_CATEGORY, EngineErrorAllowRejected, Resolution
 
 # A representative corpus of ordinary technical prose (this platform's typical
 # content) that must never be false-positive redacted (FR-004, SC-002).
@@ -103,12 +103,75 @@ def test_detector_engine_error_fails_closed(monkeypatch: pytest.MonkeyPatch) -> 
     # function (pii_gateway/__init__.py); patch the submodule via sys.modules instead.
     monkeypatch.setattr(sys.modules["pii_gateway.scrub"], "analyze", _raise)
 
-    result = scrub("Ordinary prose with no PII.", context="spec-generator")
+    result = scrub("Contact Jane Doe about the proposal.", context="spec-generator")
 
     # Fails closed: an engine error is treated the same as a detected match, never a
     # silent pass-through (research.md R6).
     assert result.action != ScrubAction.PASSED_THROUGH_UNCHANGED
     assert any(match.category == ENGINE_ERROR_CATEGORY for match in result.matches)
+    # The synthetic match is a zero-length span -- redacting only that span would
+    # leave the real PII in `result.text` untouched. Fail-closed means no part of
+    # the original text survives when the engine couldn't inspect it.
+    assert "Jane Doe" not in result.text
+    assert result.text == f"<{ENGINE_ERROR_CATEGORY}>"
+
+
+def test_detector_engine_error_flagged_for_review_redact_strips_the_whole_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    monkeypatch.setattr(sys.modules["pii_gateway.scrub"], "analyze", _raise)
+
+    result = scrub("Contact Jane Doe about the proposal.", context="conversational-authoring")
+
+    assert result.action == ScrubAction.FLAGGED_FOR_REVIEW
+    pending = result.pending_confirmation
+    assert pending is not None
+
+    redacted = pending.resolve(Resolution.REDACT)
+
+    # Same fail-closed requirement via the flag-for-review path's REDACT
+    # resolution: the zero-length synthetic span must not leave the PII in place.
+    assert "Jane Doe" not in redacted
+    assert redacted == f"<{ENGINE_ERROR_CATEGORY}>"
+
+
+def test_detector_engine_error_flagged_for_review_allow_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Nothing inspected this text -- ALLOW would let it through unexamined, which
+    # is a stricter case than a real match an architect has actually seen and
+    # chosen to allow. Decided: ALLOW is rejected outright for an engine-error
+    # match; the architect can still choose redact or edit.
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    monkeypatch.setattr(sys.modules["pii_gateway.scrub"], "analyze", _raise)
+
+    result = scrub("Contact Jane Doe about the proposal.", context="conversational-authoring")
+
+    assert result.action == ScrubAction.FLAGGED_FOR_REVIEW
+    pending = result.pending_confirmation
+    assert pending is not None
+    assert pending.detection_failed is True
+
+    with pytest.raises(EngineErrorAllowRejected):
+        pending.resolve(Resolution.ALLOW)
+
+    # Rejected ALLOW doesn't poison the pending confirmation -- redact still works.
+    assert pending.resolve(Resolution.REDACT) == f"<{ENGINE_ERROR_CATEGORY}>"
+
+
+def test_flagged_for_review_allow_on_a_real_match_is_unaffected(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Non-regression: the engine-error ALLOW rejection must not catch real matches
+    # -- ALLOW on an actual detection still proceeds with the original text
+    # (existing behaviour, test_flagged_for_review_resolver_redacts_or_restores_the_original).
+    result = scrub("My SSN is 234-56-7890.", context="conversational-authoring")
+
+    pending = result.pending_confirmation
+    assert pending is not None
+    assert pending.detection_failed is False
+    assert pending.resolve(Resolution.ALLOW) == "My SSN is 234-56-7890."
 
 
 @pytest.mark.parametrize("context", KNOWN_CONTEXTS)

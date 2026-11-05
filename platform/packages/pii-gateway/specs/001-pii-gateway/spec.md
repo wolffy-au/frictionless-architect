@@ -263,8 +263,12 @@ Field-level shape, relationships and lifecycle live in `data-model.md`'s class d
   decided — ADR-0043 and ADR-0014 — and are constraints on this spec, not open questions.
 - A detector-engine internal error is treated the same as a detected match (fails closed)
   rather than silently passing unscrubbed content through; this is a new default this spec
-  introduces, not yet covered by an ADR, and should be revisited if it proves too strict
-  in practice.
+  introduces. **Update (2026-11-05, ADR-0046):** the redaction-shape bug this left open
+  (a zero-length synthetic span redacted nothing, so the original text survived
+  unscrubbed) is fixed, and `Resolution.ALLOW` is rejected outright for this case — closing
+  the ADR gap this bullet originally flagged. Still revisit if fail-closed itself proves
+  too strict in practice; ADR-0046 only settles the engine-error redaction shape and the
+  ALLOW question, not the broader default.
 - GH #68's conversational-modelling agent was not built in this feature; this package
   committed to the `scrub()` contract and flag-for-review behavior that agent depends on.
   **Update (2026-10-31, GH #181):** the agent is now built

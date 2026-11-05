@@ -10,6 +10,9 @@ fixture (tests/conftest.py) -- never a live network (plan.md Testing).
 
 from __future__ import annotations
 
+import sys
+
+import pytest
 from fastapi.testclient import TestClient
 from modelling_specification.app import app
 from support.fake_llm import FakeCompletion
@@ -40,6 +43,58 @@ def test_propose_with_pii_is_flagged_for_review_and_never_reaches_the_llm(
     assert body["relationships"] == []
     assert body["matches"]
     assert configured_fake_llm.calls == []
+    # A real detection -- the response must not claim detection failed.
+    assert body["detection_failed"] is False
+
+
+def test_propose_with_a_detector_engine_error_flags_detection_as_failed(
+    configured_fake_llm: FakeCompletion, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The flagged-for-review response for the synthetic engine-error match
+    # (research.md R6) must tell the architect detection failed, not imply a real
+    # PII/PHI match was found.
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    monkeypatch.setattr(sys.modules["pii_gateway.scrub"], "analyze", _raise)
+    session_id = _new_session()
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "pii_review_required"
+    assert body["detection_failed"] is True
+    assert configured_fake_llm.calls == []
+
+
+def test_resolve_pii_allow_after_a_detector_engine_error_is_rejected_and_pending_survives(
+    configured_fake_llm: FakeCompletion, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Decided (2026-11-05): ALLOW after an engine error is rejected outright --
+    # nothing inspected this text, so there is no real match for the architect to
+    # judge and allow. The rejection must not clear the pending confirmation: the
+    # architect can still redact or edit, and must not reach the LLM via allow.
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    monkeypatch.setattr(sys.modules["pii_gateway.scrub"], "analyze", _raise)
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "allow"})
+
+    assert 400 <= response.status_code < 500
+    assert configured_fake_llm.calls == []
+    detail = response.json()["detail"].lower()
+    assert "detect" in detail or "engine" in detail
+
+    # The pending confirmation is still there -- redact can still resolve it.
+    follow_up = client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "redact"})
+    assert follow_up.status_code == 200
+    sent_content = configured_fake_llm.calls[0]["messages"][-1]["content"]
+    assert "Jane Doe" not in sent_content
+    assert "jane@example.com" not in sent_content
 
 
 def test_resolve_pii_allow_proceeds_with_the_original_text(configured_fake_llm: FakeCompletion) -> None:
@@ -64,6 +119,29 @@ def test_resolve_pii_redact_proceeds_with_the_redacted_text(configured_fake_llm:
 
     assert response.status_code == 200
     sent_content = configured_fake_llm.calls[0]["messages"][-1]["content"]
+    assert "jane@example.com" not in sent_content
+
+
+def test_resolve_pii_redact_strips_the_whole_text_after_a_detector_engine_error(
+    configured_fake_llm: FakeCompletion, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # pii-gateway's fail-closed synthetic match for a detector-engine error is a
+    # zero-length span (research.md R6) -- `scrub_or_require_review`/`resolve_pii`
+    # must not let any of the original request text leak through on REDACT just
+    # because the span itself covered nothing.
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    monkeypatch.setattr(sys.modules["pii_gateway.scrub"], "analyze", _raise)
+
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    response = client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "redact"})
+
+    assert response.status_code == 200
+    sent_content = configured_fake_llm.calls[0]["messages"][-1]["content"]
+    assert "Jane Doe" not in sent_content
     assert "jane@example.com" not in sent_content
 
 

@@ -162,3 +162,7 @@ not yet re-ratified in a spec).
   viewpoint checking and diagram projection move from `.claude/skills/*/scripts`
   into the `modelling-specification` package so it is installable standalone by
   a different repo holding an unrelated model
+- **A** — [0046](0046-pii-gateway-engine-error-fail-closed-semantics.md) —
+  `pii-gateway`'s engine-error redaction replaces the whole text (the zero-length
+  synthetic span was a no-op redaction, the actual bug); `Resolution.ALLOW` is
+  rejected outright for that case, `REDACT`/`EDIT` remain available
