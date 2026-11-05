@@ -240,3 +240,23 @@ def step_chat_offers_options(context: Context) -> None:
 @when("the architect picks the first option")
 def step_pick_first_option(context: Context) -> None:
     context.page.get_by_role("button", name="Pick this option").first.click()
+
+
+@when("the architect sends a request containing personal information in the UI")
+def step_send_pii_request(context: Context) -> None:
+    # Real text containing a name and email, scrubbed by the real `pii_gateway`
+    # (not the stubbed LLM) -- the fake LLM's canned reply is never reached until
+    # the match is resolved, same as `tests/api/test_propose_pii.py`.
+    context.page.fill("#chat-input", "Add an application function for Jane Doe (jane@example.com) to review.")
+    context.page.click("#send")
+    context.page.wait_for_selector("#messages .msg.agent")
+
+
+@then("the chat pane flags it as personal information")
+def step_chat_flags_pii(context: Context) -> None:
+    context.page.locator("#messages").get_by_text("personal information", exact=False).wait_for()
+
+
+@when("the architect chooses to redact and continue")
+def step_pii_redact(context: Context) -> None:
+    context.page.get_by_role("button", name="Redact and continue").click()

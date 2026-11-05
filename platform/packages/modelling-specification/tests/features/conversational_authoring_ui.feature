@@ -74,3 +74,9 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Then the chat pane offers two options to pick
     When the architect picks the first option
     Then the chat pane shows no objections
+
+  Scenario: A flagged PII/PHI match is reviewed and resolved before the LLM is asked (ADR-0014 amendment)
+    When the architect sends a request containing personal information in the UI
+    Then the chat pane flags it as personal information
+    When the architect chooses to redact and continue
+    Then the chat pane shows no objections

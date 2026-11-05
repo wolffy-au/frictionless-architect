@@ -2,12 +2,13 @@
 `GET /authoring/` page, mirroring `controls_compliance_catalog.playground.api`'s
 `_PAGE_TEMPLATE`/`_PAGE` module-level-string pattern -- no Jinja2, no static-asset
 pipeline, no JS framework build step. A plain fetch() client over the existing
-`sessions`/`propose`/`propose/select`/`decide`/`render`/`config` JSON contract
-(contracts/api.md); `session_id`/`delta_id` live in page-scoped JS state only (R16),
-nothing new server-side. `renderProposeResponse` branches on `propose`'s `status`:
-a plain-text `"message"`, a set of `"options"` to pick from via `propose/select`
-(ADR-0041), or the single-delta validated/flagged path; `"pii_review_required"`
-(ADR-0014 amendment) has no dedicated branch yet and falls through to the latter.
+`sessions`/`propose`/`propose/select`/`propose/resolve-pii`/`decide`/`render`/`config`
+JSON contract (contracts/api.md); `session_id`/`delta_id` live in page-scoped JS state
+only (R16), nothing new server-side. `renderProposeResponse` branches on `propose`'s
+`status`: a plain-text `"message"`, a set of `"options"` to pick from via
+`propose/select` (ADR-0041), a PII/PHI match flagged for review via
+`propose/resolve-pii` (`"pii_review_required"`, ADR-0014 amendment), or the
+single-delta validated/flagged path.
 """
 
 from __future__ import annotations
@@ -71,7 +72,7 @@ _PAGE = """\
   #messages { padding: 12px 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .msg { font-size: 13px; line-height: 1.5; }
   .msg.user { color: var(--text-muted); }
-  .finding, .duplicate, .pattern, .option { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
+  .finding, .duplicate, .pattern, .option, .pii { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
   .finding { border-color: var(--err); background: var(--err-soft); }
   .option .sub { margin: 4px 0 0; }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
@@ -545,11 +546,66 @@ _PAGE = """\
     });
   }
 
+  async function resolvePii(resolution, editedText) {
+    const body = { resolution };
+    if (editedText !== undefined) body.edited_text = editedText;
+    const response = await fetch(
+      "/authoring/sessions/" + sessionId + "/propose/resolve-pii",
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+    );
+    const result = await response.json();
+    if (!response.ok) {
+      addMessage("agent", '<span class="error">' + escapeHtml(result.detail || "That could not be resolved.") + "</span>");
+      return null;
+    }
+    return result;
+  }
+
+  // `propose` paused before making the LLM call because `scrub()` flagged a PII/PHI
+  // match in the request text (ADR-0014 amendment): show what was flagged and let
+  // the architect resolve it via `propose/resolve-pii`, whose response is the same
+  // `message`/`options`/delta shape `propose` itself returns -- or, for "Edit text"
+  // with a still-flagged replacement, another `pii_review_required` to resolve.
+  function renderPiiReview(body) {
+    const matchesHtml = (body.matches || []).map((m) =>
+      '<div class="pii">Flagged as <b>' + escapeHtml(m.category) + "</b> (confidence "
+      + Math.round(m.confidence * 100) + "%)</div>"
+    ).join("");
+    const div = addMessage(
+      "agent",
+      "This looks like it may contain personal information:" + matchesHtml
+      + '<div class="actions">'
+      + '<button data-pii-action="redact">Redact and continue</button>'
+      + '<button data-pii-action="allow">Send as-is</button>'
+      + '<button data-pii-action="edit">Edit text</button>'
+      + "</div>"
+    );
+    div.querySelectorAll("button[data-pii-action]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const action = button.dataset.piiAction;
+        let editedText;
+        if (action === "edit") {
+          editedText = window.prompt("Replace the flagged text with:", "");
+          if (!editedText || !editedText.trim()) return;
+        }
+        div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = true; });
+        const result = await resolvePii(action, editedText);
+        if (result) renderProposeResponse(result);
+      });
+    });
+  }
+
   function renderProposeResponse(body) {
     if (body.status === "message") {
       // The LLM asked a question or made a suggestion instead of proposing a delta.
       const bubble = addMessage("agent", escapeHtml(body.message));
       bubble.style.whiteSpace = "pre-wrap";
+      return body;
+    }
+    if (body.status === "pii_review_required") {
+      // No delta yet -- the architect must resolve the flagged match first.
+      renderPiiReview(body);
+      resetPendingDelta();
       return body;
     }
     if (body.status === "options") {
