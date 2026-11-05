@@ -65,6 +65,20 @@ class CandidateDelta:
     pattern_suggestions: list[dict[str, Any]] = field(default_factory=list)
     state_classification: str | None = None
 
+    def has_changes(self) -> bool:
+        """Whether the delta proposes anything at all, of any kind."""
+        return any(
+            (
+                self.elements,
+                self.relationships,
+                self.views,
+                self.view_membership_edits,
+                self.element_edits,
+                self.element_removals,
+                self.relationship_removals,
+            )
+        )
+
 
 @dataclass
 class Session:

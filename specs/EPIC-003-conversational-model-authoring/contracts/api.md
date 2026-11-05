@@ -119,11 +119,11 @@ duplicate, accept-pattern/keep-direct on a pattern suggestion, or overriding a r
 
 Render a pending delta in a view **before anything is written** (FR-012a). Nothing is persisted: the candidate model is built in memory and rendered from a throwaway temp file.
 
-- **Query**: `view_id` (optional). Without it, the view is resolved from an existing element the delta touches.
-- **Response (200)**: the SVG with `image/svg+xml`, and an `X-View-Id` header. New elements are marked with a `+` prefix, and both endpoints of a new relationship are shown.
+- **Query**: `view_id` (optional), which may name a view the delta itself proposes. Without it, the view is the first one the delta proposes or edits, else one showing an existing element the delta touches.
+- **Response (200)**: the SVG with `image/svg+xml`, and an `X-View-Id` header. New elements are marked with a `+` prefix and renamed ones with `~`, both endpoints of a new relationship are shown, and removed elements and relationships are gone.
 - **Response (300)**: `{ "ambiguous_candidates": [...] }` -- the touched element is in several views; pass `view_id`.
 - **Error (404)**: unknown or already applied/discarded delta, or no view to resolve and none given.
-- **Error (409)**: the delta is empty, or cannot be assembled into a model (`detail` says why).
+- **Error (409)**: the delta has no change of any kind, or cannot be assembled into a model (`detail` says why).
 
 ## GET /authoring/sessions/{session_id}/deltas/{delta_id}/state
 

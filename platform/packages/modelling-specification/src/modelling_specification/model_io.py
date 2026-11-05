@@ -1543,6 +1543,36 @@ def _apply_relationship_removals_for_validation(
     return remaining
 
 
+def _merged_candidate_parts(
+    delta_elements: list[dict[str, Any]],
+    delta_relationships: list[dict[str, Any]],
+    delta_views: list[dict[str, Any]] | None = None,
+    delta_view_membership_edits: list[dict[str, Any]] | None = None,
+    delta_element_edits: list[dict[str, Any]] | None = None,
+    delta_element_removals: list[str] | None = None,
+    delta_relationship_removals: list[dict[str, Any]] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+    """The on-disk model with every part of a Candidate Delta applied, as
+    `(elements, relationships, views, errors)` ready for `_assemble` -- shared by
+    `merge_candidate` (validation) and `preview_model` (rendering) so a preview shows
+    exactly what validation checked."""
+    errors: list[str] = []
+    elements = load_all_elements(errors) + list(delta_elements)
+    if delta_element_edits:
+        elements = _apply_element_edits_for_validation(elements, delta_element_edits, errors)
+    if delta_element_removals:
+        elements = _apply_element_removals_for_validation(elements, delta_element_removals, errors)
+    rels = (
+        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    )
+    if delta_relationship_removals:
+        rels = _apply_relationship_removals_for_validation(rels, delta_relationship_removals, errors)
+    views = load_all_views(errors) + list(delta_views or [])
+    if delta_view_membership_edits:
+        views = _apply_membership_edits_for_validation(views, delta_view_membership_edits, errors)
+    return elements, rels, views, errors
+
+
 def merge_candidate(
     delta_elements: list[dict[str, Any]],
     delta_relationships: list[dict[str, Any]],
@@ -1563,43 +1593,57 @@ def merge_candidate(
     for a renamed/removed existing element or a removed existing relationship,
     ADR-0037 item 8). Nothing is written to disk; the delta is additive-plus-these-
     narrow-edits only, same as `build_model()` otherwise."""
-    errors: list[str] = []
-    elements = load_all_elements(errors) + list(delta_elements)
-    if delta_element_edits:
-        elements = _apply_element_edits_for_validation(elements, delta_element_edits, errors)
-    if delta_element_removals:
-        elements = _apply_element_removals_for_validation(elements, delta_element_removals, errors)
-    rels = (
-        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    parts = _merged_candidate_parts(
+        delta_elements,
+        delta_relationships,
+        delta_views,
+        delta_view_membership_edits,
+        delta_element_edits,
+        delta_element_removals,
+        delta_relationship_removals,
     )
-    if delta_relationship_removals:
-        rels = _apply_relationship_removals_for_validation(rels, delta_relationship_removals, errors)
-    views = load_all_views(errors) + list(delta_views or [])
-    if delta_view_membership_edits:
-        views = _apply_membership_edits_for_validation(views, delta_view_membership_edits, errors)
-    return _assemble("candidate-delta", elements, rels, views, errors)
+    return _assemble("candidate-delta", *parts)
 
 
 def preview_model(
-    delta_elements: list[dict[str, Any]], delta_relationships: list[dict[str, Any]], view: dict[str, Any]
+    delta_elements: list[dict[str, Any]],
+    delta_relationships: list[dict[str, Any]],
+    view: dict[str, Any],
+    delta_views: list[dict[str, Any]] | None = None,
+    delta_view_membership_edits: list[dict[str, Any]] | None = None,
+    delta_element_edits: list[dict[str, Any]] | None = None,
+    delta_element_removals: list[str] | None = None,
+    delta_relationship_removals: list[dict[str, Any]] | None = None,
 ) -> tuple[Model | None, list[str]]:
-    """The model with a Candidate Delta merged in, for rendering `view` as it *would*
-    look -- nothing is written. The delta's elements (marked "+") and both endpoints of
-    its relationships are added to the view's members so a members-listed view shows
-    them; `merge_candidate`'s own checks still apply."""
-    errors: list[str] = []
-    elements = load_all_elements(errors)
+    """The model with a whole Candidate Delta merged in, for rendering `view` as it
+    *would* look -- nothing is written. New elements are marked "+" and renamed ones
+    "~"; both are added to the view's members, with the endpoints of new relationships,
+    so a members-listed view shows them. A removed element is dropped from every view's
+    members, with any relationship still touching it, so it disappears from the preview
+    instead of failing it, and a proposed view is drawn without its `viewpoint` tag, so
+    a viewpoint it doesn't conform to doesn't hide it. Whether either may be applied is
+    `merge_candidate`'s call, reported as findings."""
     marked = [{**e, "name": f"+ {e.get('name', e.get('id', ''))}"} for e in delta_elements]
-    rels = (
-        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    marked_edits = [{**e, "name": f"~ {e.get('name', '')}"} for e in delta_element_edits or []]
+    elements, rels, views, errors = _merged_candidate_parts(
+        marked,
+        delta_relationships,
+        [{k: v for k, v in view_.items() if k != "viewpoint"} for view_ in delta_views or []],
+        delta_view_membership_edits,
+        marked_edits,
+        delta_element_removals,
+        delta_relationship_removals,
     )
-    shown = [e["id"] for e in delta_elements if e.get("id")]
+    shown = [e["id"] for e in [*delta_elements, *(delta_element_edits or [])] if e.get("id")]
     shown += [end for r in delta_relationships for end in (r.get("source"), r.get("target")) if end]
-    views = load_all_views(errors)
-    views = [
-        {**v, "members": [*(v.get("members") or []), *shown]} if v.get("id") == view.get("id") else v for v in views
-    ]
-    model, errors, _warnings = _assemble("candidate-preview", elements + marked, rels, views, errors)
+    removed = set(delta_element_removals or [])
+    rels = [r for r in rels if r.get("source") not in removed and r.get("target") not in removed]
+    previewed_views = []
+    for v in views:
+        members = [*(v.get("members") or []), *(shown if v.get("id") == view.get("id") else [])]
+        kept = [m for m in members if m not in removed]
+        previewed_views.append({**v, "members": kept} if kept or v.get("members") else v)
+    model, errors, _warnings = _assemble("candidate-preview", elements, rels, previewed_views, errors)
     return model, errors
 
 

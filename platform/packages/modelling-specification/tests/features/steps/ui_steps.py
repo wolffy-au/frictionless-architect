@@ -292,3 +292,37 @@ def step_pii_allow(context: Context) -> None:
 @then("the chat pane shows that detection failed and it cannot be sent as-is")
 def step_chat_shows_detection_failed(context: Context) -> None:
     context.page.locator("#messages").get_by_text("detector engine failed", exact=False).wait_for()
+
+
+@given('the LLM proposes the new view "{name}"')
+def step_llm_proposes_view(context: Context, name: str) -> None:
+    context.fake_llm.content = json.dumps(
+        {"elements": [], "relationships": [], "views": [{"name": name, "members": ["sub-modelling"]}]}
+    )
+
+
+@given("the LLM proposes a new view that is objected to")
+def step_llm_proposes_flagged_view(context: Context) -> None:
+    context.fake_llm.content = json.dumps(
+        {
+            "elements": [],
+            "relationships": [],
+            "views": [{"id": "view-objected-to", "name": "Objected To", "members": ["no-such-element"]}],
+        }
+    )
+
+
+@then('the chat pane lists "{name}" as proposed')
+def step_chat_lists_proposal(context: Context, name: str) -> None:
+    context.page.locator("#messages .sub").get_by_text(name, exact=False).wait_for()
+
+
+@when("the architect rejects the proposal")
+def step_reject_proposal(context: Context) -> None:
+    context.page.click('#messages button[data-action="reject"]')
+    context.page.locator("#messages").get_by_text("Discarded", exact=False).wait_for()
+
+
+@then('the view "{view_id}" is not offered')
+def step_view_not_offered(context: Context, view_id: str) -> None:
+    assert context.page.locator(f'#view-select option[value="{view_id}"]').count() == 0

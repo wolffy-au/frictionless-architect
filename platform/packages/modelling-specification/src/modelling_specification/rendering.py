@@ -448,11 +448,23 @@ class PreviewError(Exception):
     """The candidate delta cannot be assembled into a model to preview."""
 
 
-def render_candidate_view(view_id: str, elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> str:
+def render_candidate_view(
+    view_id: str,
+    elements: list[dict[str, Any]],
+    relationships: list[dict[str, Any]],
+    views: list[dict[str, Any]] | None = None,
+    view_membership_edits: list[dict[str, Any]] | None = None,
+    element_edits: list[dict[str, Any]] | None = None,
+    element_removals: list[str] | None = None,
+    relationship_removals: list[dict[str, Any]] | None = None,
+) -> str:
     """Render `view_id` as it would look with the delta applied -- built in memory and
-    written only to a throwaway temp file, never to the model directory."""
-    v = _find_view(view_id)
-    model, errors = model_io.preview_model(elements, relationships, v)
+    written only to a throwaway temp file, never to the model directory. `view_id` may
+    name a view the delta itself proposes."""
+    v = next((d for d in views or [] if d.get("id") == view_id), None) or _find_view(view_id)
+    model, errors = model_io.preview_model(
+        elements, relationships, v, views, view_membership_edits, element_edits, element_removals, relationship_removals
+    )
     if model is None:
         raise PreviewError("; ".join(errors))
     with tempfile.TemporaryDirectory() as tmp:

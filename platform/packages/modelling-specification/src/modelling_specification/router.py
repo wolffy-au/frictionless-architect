@@ -246,17 +246,7 @@ def _handle_proposed(
 
     _validate_and_flag(delta)
     response = _delta_response(delta)
-    if not any(
-        (
-            delta.elements,
-            delta.relationships,
-            delta.views,
-            delta.view_membership_edits,
-            delta.element_edits,
-            delta.element_removals,
-            delta.relationship_removals,
-        )
-    ):
+    if not delta.has_changes():
         notes.append(
             "No change was proposed. This feature can add elements, relationships and views; "
             "rename or remove an existing element; remove an existing relationship; or "
@@ -915,6 +905,25 @@ def get_render(
     }
 
 
+def _preview_view_resolution(delta: CandidateDelta) -> dict[str, Any]:
+    """Where to preview `delta` when no view was chosen, in `resolve_view_request`'s
+    shape: the view it proposes or edits, else a view showing an existing element it
+    touches -- the first such element that resolves, or is ambiguous, wins."""
+    named = [v.get("id") for v in delta.views] + [e.get("view_id") for e in delta.view_membership_edits]
+    if named:
+        return {"resolved_view_id": named[0], "ambiguous_candidates": []}
+    existing = model_io.existing_element_ids()
+    touched: list[Any] = [end for r in delta.relationships for end in (r.get("source"), r.get("target"))]
+    touched += [*(e.get("id") for e in delta.element_edits), *delta.element_removals]
+    touched += [end for r in delta.relationship_removals for end in (r.get("source"), r.get("target"))]
+    for object_id in touched:
+        if object_id in existing:
+            resolution = rendering.resolve_view_request(object_id, None)
+            if resolution["resolved_view_id"] is not None or resolution["ambiguous_candidates"]:
+                return resolution
+    return {"resolved_view_id": None, "ambiguous_candidates": []}
+
+
 @router.get(
     "/sessions/{session_id}/deltas/{delta_id}/preview",
     responses={
@@ -923,29 +932,37 @@ def get_render(
     },
 )
 def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> Response:
-    """Render a pending delta in a view *before* anything is written (nothing is
-    persisted). Without `view_id`, the view is resolved from an existing element the
-    delta touches; ambiguity or no match is reported like `GET /render`."""
+    """Render a pending delta, of any kind, in a view *before* anything is written
+    (nothing is persisted). `view_id` may name a view the delta itself proposes. Without
+    it the view comes from `_preview_view_resolution`; ambiguity or no match is reported
+    like `GET /render`."""
     delta = _store.get_delta(session_id, delta_id)
     if delta is None or delta.status in (DeltaStatus.APPLIED, DeltaStatus.DISCARDED):
         raise HTTPException(status_code=404, detail=f"no pending delta {delta_id!r}")
-    if not delta.elements and not delta.relationships:
+    if not delta.has_changes():
         raise HTTPException(status_code=409, detail="the delta is empty; there is nothing to preview")
     if view_id is None:
-        existing = model_io.existing_element_ids()
-        touched = [e for r in delta.relationships for e in (r.get("source"), r.get("target")) if e in existing]
-        resolution = rendering.resolve_view_request(touched[0] if touched else None, None)
+        resolution = _preview_view_resolution(delta)
         if resolution["ambiguous_candidates"]:
             return JSONResponse(status_code=300, content={"ambiguous_candidates": resolution["ambiguous_candidates"]})
         resolved = resolution["resolved_view_id"]
         if resolved is None:
             raise HTTPException(status_code=404, detail="no view to preview in; choose one")
         view_id = str(resolved)
-    known = _known_view_id(view_id)
+    known = next((v["id"] for v in delta.views if v.get("id") == view_id), None) or _known_view_id(view_id)
     if known is None:
         raise HTTPException(status_code=404, detail=f"no view with id {view_id!r}")
     try:
-        svg = rendering.render_candidate_view(known, delta.elements, delta.relationships)
+        svg = rendering.render_candidate_view(
+            known,
+            delta.elements,
+            delta.relationships,
+            delta.views,
+            delta.view_membership_edits,
+            delta.element_edits,
+            delta.element_removals,
+            delta.relationship_removals,
+        )
     except rendering.ViewNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except rendering.PreviewError as exc:

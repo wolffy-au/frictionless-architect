@@ -65,7 +65,8 @@ types is swept in automatically, now and for anything added to that context late
 not an exhaustive "members" list naming each one by hand. Use "members" only for a view
 built from specific named elements regardless of context. "viewpoint" is optional;
 omit it, or use "custom", for a cross-cutting view that doesn't match one of the
-standard ArchiMate viewpoints.
+standard ArchiMate viewpoints, or whenever you aren't sure every element type in the
+view belongs to that viewpoint: a view that breaks its viewpoint can't be applied.
 
 A request to add or drop an already-existing element from an already-existing view --
 e.g. "add X to view Y so it connects", "add that chain as members of view Y", "drop Z

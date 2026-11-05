@@ -332,3 +332,16 @@ def test_propose_a_context_scoped_view_returns_validated_with_an_assigned_id(
     assert view["context"] == ["modelling-specification"]
     assert body["elements"] == []
     assert body["relationships"] == []
+
+
+def test_a_view_only_delta_is_a_real_change(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [], "views": [{"id": "view-real-change",'
+        ' "name": "Real Change", "members": ["sub-modelling"]}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "draw it"}).json()
+
+    assert body["status"] == "validated"
+    assert "notes" not in body

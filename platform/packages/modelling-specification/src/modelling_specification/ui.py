@@ -8,7 +8,8 @@ only (R16), nothing new server-side. `renderProposeResponse` branches on `propos
 `status`: a plain-text `"message"`, a set of `"options"` to pick from via
 `propose/select` (ADR-0041), a PII/PHI match flagged for review via
 `propose/resolve-pii` (`"pii_review_required"`, ADR-0014 amendment), or the
-single-delta validated/flagged path.
+single-delta validated/flagged path, which lists every kind of proposed change in the
+chat and previews it (FR-012a).
 """
 
 from __future__ import annotations
@@ -365,13 +366,54 @@ _PAGE = """\
     currentViewId = response.headers.get("X-View-Id");
     if (currentViewId) { viewSelect.value = currentViewId; prefs.set("view", currentViewId); }
     renderCanvas.innerHTML = await response.text();
-    renderBanner.textContent = "Preview \u2014 not written yet. New elements are marked +. Click Apply to write this to the model.";
+    renderBanner.textContent = "Preview \u2014 not written yet. New elements are marked +, renamed ones ~. Click Apply to write this to the model.";
     loadDiagram();
+  }
+
+  // A view the delta proposes isn't in the picker until it is written, but the
+  // preview still has to select it.
+  function ensureViewOption(viewId, name) {
+    if ([...viewSelect.options].some((o) => o.value === viewId)) return;
+    const option = document.createElement("option");
+    option.value = viewId;
+    option.textContent = (name || viewId) + " (proposed)";
+    option.dataset.proposed = "true";
+    viewSelect.appendChild(option);
+  }
+
+  // Applied, a proposed view becomes an ordinary one; discarded, it goes -- along
+  // with its preview, since there is no such view left to show instead.
+  function settleProposedViews(applied) {
+    for (const option of [...viewSelect.options]) {
+      if (!option.dataset.proposed) continue;
+      if (applied) {
+        option.textContent = option.textContent.replace(/ \\(proposed\\)$/, "");
+        delete option.dataset.proposed;
+      } else {
+        if (viewSelect.value === option.value) {
+          viewSelect.value = "";
+          renderCanvas.innerHTML = "";
+          loadDiagram();
+        }
+        option.remove();
+      }
+    }
+  }
+
+  // A delta that is about a particular view is previewed in that view, whichever one
+  // happens to be selected.
+  function selectDeltaView(body) {
+    const proposed = (body.views || []).at(-1);
+    const edited = (body.view_membership_edits || []).at(-1);
+    if (proposed) ensureViewOption(proposed.id, proposed.name);
+    const viewId = proposed ? proposed.id : edited && edited.view_id;
+    if (viewId) viewSelect.value = viewId;
   }
 
   // After a change is written (or discarded), show the model as it now is.
   async function afterDecision(applied, elements, relationships) {
     renderBanner.textContent = "";
+    settleProposedViews(applied);
     if (viewSelect.value) await showRender({ object_id: viewSelect.value });
     else if (applied) await maybeAutoRender(elements, relationships);
   }
@@ -470,6 +512,47 @@ _PAGE = """\
       const target = names[r.target] || r.target;
       return escapeHtml(r.type + ": " + source + " -> " + target + (r.label ? " (" + r.label + ")" : ""));
     }).join(", ");
+  }
+
+  function describeMembershipEdits(edits) {
+    return (edits || []).map((edit) => {
+      const changes = [
+        ...(edit.add || []).map((id) => "+" + id),
+        ...(edit.remove || []).map((id) => "-" + id),
+      ];
+      return escapeHtml(edit.view_id + ": " + changes.join(", "));
+    }).join("; ");
+  }
+
+  function describeViews(views) {
+    return (views || []).map((v) => escapeHtml(v.name || v.id)).join(", ");
+  }
+
+  function describeRenames(edits) {
+    return (edits || []).map((e) => escapeHtml(e.id + " -> " + e.name)).join(", ");
+  }
+
+  const DELTA_PARTS = [
+    ["Adds", "elements", (body) => describeElements(body.elements)],
+    ["Relationships", "relationships", (body) => describeRelationships(body.relationships, body.elements)],
+    ["New views", "views", (body) => describeViews(body.views)],
+    ["View membership", "view_membership_edits", (body) => describeMembershipEdits(body.view_membership_edits)],
+    ["Renames", "element_edits", (body) => describeRenames(body.element_edits)],
+    ["Removes elements", "element_removals", (body) => escapeHtml((body.element_removals || []).join(", "))],
+    ["Removes relationships", "relationship_removals",
+      (body) => describeRelationships(body.relationship_removals, [])],
+  ];
+
+  function deltaHasChanges(body) {
+    return DELTA_PARTS.some(([, key]) => (body[key] || []).length);
+  }
+
+  // Everything the pending delta would change, whatever its kind.
+  function describeProposal(body) {
+    const lines = DELTA_PARTS
+      .filter(([, key]) => (body[key] || []).length)
+      .map(([label, , describe]) => '<div class="sub">' + label + ": " + describe(body) + "</div>");
+    return lines.length ? "<div>Proposed so far:</div>" + lines.join("") : "";
   }
 
   // Read-only version of renderFindings for an as-yet-unpicked option: shows what
@@ -622,17 +705,20 @@ _PAGE = """\
       return body;
     }
     const notes = (body.notes || []).map((n) => '<div class="finding">Corrected: ' + escapeHtml(n) + "</div>").join("");
-    const empty = !(body.elements || []).length && !(body.relationships || []).length;
+    const changed = deltaHasChanges(body);
     const findingsHtml = notes + renderFindings(body);
-    const div = addMessage("agent", findingsHtml
-      || "Looks good -- no objections. Nothing is written until you click Apply.");
+    const div = addMessage("agent", describeProposal(body) + (findingsHtml
+      || "Looks good -- no objections. Nothing is written until you click Apply."));
     wireDecisionButtons(div, body.delta_id);
     currentDeltaId = body.delta_id;
-    currentDeltaValidated = body.status === "validated" && !empty;
+    currentDeltaValidated = body.status === "validated" && changed;
     currentElements = body.elements || [];
     currentRelationships = body.relationships || [];
     updateApplyButton();
-    if (!empty) showPreview();
+    if (changed) {
+      selectDeltaView(body);
+      showPreview();
+    }
     return body;
   }
 

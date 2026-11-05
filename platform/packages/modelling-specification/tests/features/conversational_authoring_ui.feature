@@ -62,6 +62,21 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     When the architect clicks Apply in the UI
     Then the preview banner is gone
 
+  Scenario: A proposed view is listed, previewed in its own view and can be applied (FR-012a)
+    Given the LLM proposes the new view "Requested Diagram"
+    When the architect sends that request in the UI
+    Then the chat pane lists "Requested Diagram" as proposed
+    And the render pane shows a preview that is not written yet
+    And the view "view-requested-diagram" is still selected
+    When the architect clicks Apply in the UI
+    Then the view "view-requested-diagram" is still selected
+
+  Scenario: Discarding a proposed view removes it from the picker (FR-012a)
+    Given the LLM proposes a new view that is objected to
+    When the architect sends that request in the UI
+    And the architect rejects the proposal
+    Then the view "view-objected-to" is not offered
+
   Scenario: A suggestion or question from the LLM is shown in the chat, not as an error
     Given the LLM answers with the plain-text message "Which assessment do you mean?"
     When the architect sends that request in the UI
