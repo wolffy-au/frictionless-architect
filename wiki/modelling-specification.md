@@ -1,7 +1,7 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-05'
+generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
 - docs/adr/0041-structured-suggestion-options-in-delta-py.md
@@ -145,7 +145,7 @@ itself.
 |---|---|---|
 | `model_io.py` | 1702 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
 | `router.py` | 946 | FastAPI router: propose/validate/decide/render/config/state |
-| `ui.py` | 602 | Split-screen authoring UI |
+| `ui.py` | 697 | Split-screen authoring UI |
 | `authoring/delta.py` | 509 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
 | `rendering.py` | 461 | Ported view-render logic from root's `render_diagrams.py` |
 | `puml.py` | 410 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
@@ -278,7 +278,17 @@ their output, and anyone else redirects it
    built directly against today's architecture rather than waiting for #142's
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
-   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). If the LLM call itself
+   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). The
+   split-screen UI's `renderProposeResponse` originally had no branch for this
+   `status: "options"` reply — it fell through to the single-delta path, which
+   saw empty top-level `elements`/`relationships` and printed the generic
+   "Looks good -- no objections" text, silently dropping every suggested
+   option. Fixed (2026-11-05): `ui.py`'s `renderOptions` now shows each
+   option's rationale, convention references, proposed elements/relationships
+   and validation caveats, with a "Pick this option" button that calls
+   `propose/select`
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
+   If the LLM call itself
    fails, `propose_delta` logs the provider detail server-side only and
    raises `DeltaProposalError` with a generic "The LLM call failed
    (<model>); see the server log for details." message, because the router

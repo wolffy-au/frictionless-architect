@@ -1,5 +1,5 @@
 generated: '2026-11-05'
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 topics:
   project-overview:
     title: Project Overview
@@ -1403,7 +1403,7 @@ topics:
   modelling-specification:
     title: Conversational Model Authoring
     page: wiki/modelling-specification.md
-    built: '2026-11-04'
+    built: '2026-11-05'
     sources:
       files:
         docs/adr/0037-conversational-model-authoring-architecture.md:
@@ -1458,8 +1458,8 @@ topics:
           sha256: 57aa1891d2c7c39848ae759d57829f8486b8aac8ad95b0b666fcf230d7eca096
           lines: 946
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: 7f4e57336622e76c5566e7c37d5b72ac90f59496e7fbc0f8880ce20ae0e670cf
-          lines: 602
+          sha256: 7483bd3b8aafdf58dd39aeda61ecefbfe5e0ca7b3f5501ac98d1c991c5d4cd56
+          lines: 697
         platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
           sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
           lines: 0
