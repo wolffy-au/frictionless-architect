@@ -80,3 +80,12 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Then the chat pane flags it as personal information
     When the architect chooses to redact and continue
     Then the chat pane shows no objections
+
+  Scenario: Allow is rejected after a detector-engine error, and redact still works (ADR-0046)
+    Given the PII/PHI detector engine is forced to fail
+    When the architect sends a request containing personal information in the UI
+    Then the chat pane flags it as personal information
+    When the architect chooses to send it as-is
+    Then the chat pane shows that detection failed and it cannot be sent as-is
+    When the architect chooses to redact and continue
+    Then the chat pane shows no objections

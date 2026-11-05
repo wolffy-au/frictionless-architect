@@ -590,7 +590,14 @@ _PAGE = """\
         }
         div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = true; });
         const result = await resolvePii(action, editedText);
-        if (result) renderProposeResponse(result);
+        if (result) {
+          renderProposeResponse(result);
+        } else {
+          // resolvePii() already showed the error (e.g. "allow" rejected after a
+          // detector-engine error, ADR-0046) -- re-enable so redact/edit, which the
+          // pending confirmation is still open for, remain reachable.
+          div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = false; });
+        }
       });
     });
   }

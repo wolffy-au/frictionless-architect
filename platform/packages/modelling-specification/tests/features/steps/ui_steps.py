@@ -260,3 +260,35 @@ def step_chat_flags_pii(context: Context) -> None:
 @when("the architect chooses to redact and continue")
 def step_pii_redact(context: Context) -> None:
     context.page.get_by_role("button", name="Redact and continue").click()
+
+
+@given("the PII/PHI detector engine is forced to fail")
+def step_force_detector_engine_failure(context: Context) -> None:
+    # Same process as the live uvicorn server (environment.py's docstring) -- this
+    # patch reaches it directly. `pii_gateway.scrub` the attribute is the
+    # re-exported `scrub()` function (`pii_gateway/__init__.py`), shadowing the
+    # submodule, so patch via `sys.modules` like `pii-gateway`'s own `test_scrub.py`.
+    import sys
+
+    scrub_mod = sys.modules["pii_gateway.scrub"]
+
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    # `scrub_mod` is typed as the generic `ModuleType`, which has no declared
+    # `analyze` attribute -- go through `vars()` rather than attribute access
+    # so pyright doesn't flag it (ruff's setattr/getattr-with-literal checks
+    # don't apply to dict indexing).
+    original = vars(scrub_mod)["analyze"]
+    vars(scrub_mod)["analyze"] = _raise
+    context.add_cleanup(setattr, scrub_mod, "analyze", original)
+
+
+@when("the architect chooses to send it as-is")
+def step_pii_allow(context: Context) -> None:
+    context.page.get_by_role("button", name="Send as-is").click()
+
+
+@then("the chat pane shows that detection failed and it cannot be sent as-is")
+def step_chat_shows_detection_failed(context: Context) -> None:
+    context.page.locator("#messages").get_by_text("detector engine failed", exact=False).wait_for()
