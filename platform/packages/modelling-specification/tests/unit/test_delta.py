@@ -8,6 +8,7 @@ from llm_provider_config import MissingCredentialError, NotConfiguredError
 from modelling_specification.authoring import delta
 from modelling_specification.authoring.delta import (
     MAX_DESC_CHARS,
+    MAX_HISTORY_MESSAGES,
     DeltaProposalError,
     LlmMessage,
     assign_missing_ids,
@@ -410,3 +411,50 @@ def test_catalogue_lines_carry_a_flattened_truncated_description(configured_fake
     long_line = next(line for line in system.splitlines() if line.startswith("assess-long"))
     assert long_line.endswith("...")
     assert len(long_line) < MAX_DESC_CHARS + 40
+
+
+def test_earlier_turns_are_sent_ahead_of_the_request(configured_fake_llm: FakeCompletion) -> None:
+    history: list[dict[str, str]] = []
+    configured_fake_llm.content = "Which subsystem?"
+    with pytest.raises(LlmMessage):
+        propose_delta("add a function", history=history)
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    propose_delta("the modelling one", history=history)
+
+    assert [(m["role"], m["content"]) for m in configured_fake_llm.calls[1]["messages"][1:]] == [
+        ("user", "add a function"),
+        ("assistant", "Which subsystem?"),
+        ("user", "the modelling one"),
+    ]
+    assert [m["role"] for m in history] == ["user", "assistant", "user", "assistant"]
+
+
+def test_history_keeps_only_the_newest_messages(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+    history: list[dict[str, str]] = []
+
+    for turn in range(MAX_HISTORY_MESSAGES):
+        propose_delta(f"turn {turn}", history=history)
+
+    assert len(history) == MAX_HISTORY_MESSAGES
+    assert history[-2]["content"] == f"turn {MAX_HISTORY_MESSAGES - 1}"
+
+
+def test_a_failed_call_or_unusable_reply_is_not_remembered(configured_fake_llm: FakeCompletion) -> None:
+    history: list[dict[str, str]] = []
+    configured_fake_llm.error = RuntimeError("provider down")
+    with pytest.raises(DeltaProposalError):
+        propose_delta("add a function", history=history)
+    configured_fake_llm.error = None
+    configured_fake_llm.content = '{"unexpected": true}'
+    with pytest.raises(DeltaProposalError):
+        propose_delta("add a function", history=history)
+
+    assert history == []
+
+
+def test_the_pending_delta_is_shown_to_the_llm(configured_fake_llm: FakeCompletion) -> None:
+    propose_delta("add a function", pending={"elements": [{"id": "fn-held"}]})
+
+    assert 'Pending delta:\n{"elements": [{"id": "fn-held"}]}' in configured_fake_llm.calls[0]["messages"][0]["content"]

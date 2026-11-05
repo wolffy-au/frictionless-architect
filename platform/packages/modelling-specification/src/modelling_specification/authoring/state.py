@@ -97,12 +97,16 @@ class Session:
             `POST .../propose/resolve-pii` or replaced by a later `propose` call.
             Mirrors `pending_options`' session-scoped, turn-local shape -- same as
             `pii_gateway.PendingConfirmation` itself, nothing here is persisted.
+        history: Earlier turns as LLM chat messages (FR-018), oldest first: only text
+            already cleared for the LLM (scrubbed, or resolved by the architect) and
+            the LLM's own replies. Bounded by `delta.MAX_HISTORY_MESSAGES`.
     """
 
     session_id: str
     deltas: dict[str, CandidateDelta] = field(default_factory=dict)
     pending_options: list[dict[str, Any]] = field(default_factory=list)
     pending_pii_confirmation: PendingConfirmation | None = None
+    history: list[dict[str, str]] = field(default_factory=list)
 
 
 class SessionStore:

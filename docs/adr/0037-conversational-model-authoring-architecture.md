@@ -18,6 +18,9 @@
      than as a new record because this ADR is still Proposed/unratified and already the one
      filed for this feature's load-bearing choices. Status stays Proposed. -->
 
+<!-- 2026-11-05: item 9 added for the same reason as item 8: this record is still Proposed
+     and already the one filed for this feature's load-bearing choices. Status stays Proposed. -->
+
 ## Context
 
 GH #108 adds a conversational agent that proposes ArchiMate model deltas from natural
@@ -73,12 +76,12 @@ references, corrected alongside this ADR).
    1:1 stream↔outcome, stream↔course-of-action shape as the other four outcome streams. The
    already-built `fn-conversational-authoring` ApplicationFunction realizes this process,
    resolving the business-layer owner this feature's ApplicationFunction previously lacked.
-8. **Lifting the add-only restriction**: the original scope (`spec.md` FR-001, the
-   `SYSTEM_PROMPT` in `delta.py`) only ever let a Candidate Delta add new elements,
-   relationships and views — never edit, rename or remove an existing one. That limit was
    The process in turn realizes the stream (`process-conversational-authoring →
    vs-intent-to-model`), the one process → stream edge in the model: the other streams' stages
    are served by capabilities, and this stream has a single stage (added 2026-11-05).
+8. **Lifting the add-only restriction**: the original scope (`spec.md` FR-001, the
+   `SYSTEM_PROMPT` in `delta.py`) only ever let a Candidate Delta add new elements,
+   relationships and views — never edit, rename or remove an existing one. That limit was
    inherited unexamined from GH #108's "propose a candidate model delta" framing, not a
    deliberated decision. This lifts it: a Candidate Delta may also describe an edit (field
    changes on an existing element/relationship) or a removal of an existing element or
@@ -89,6 +92,15 @@ references, corrected alongside this ADR).
    would leave a dangling relationship end, or drop an element/relationship a view still
    references, is a `build_error` finding, same as any other broken reference — never
    silently cascaded.
+9. **Conversation history reaches the LLM** (2026-11-05): each call now carries the session's
+   earlier turns (FR-018), the last 20 messages, in process memory only. The ADR-0014 boundary
+   holds because a turn is recorded only after a successful call, with the text that call
+   actually sent, so scrubbed or redacted text stays that way. Text the architect chose to send
+   as-is is re-sent on later turns of that session, to the same provider. Each prompt also
+   carries the pending delta, and the model listing is rebuilt every turn, so a discarded
+   proposal is recognisable as dead without recording decisions in the history. Element
+   descriptions (FR-019) join names in the grounding, cut to 300 characters each. Like names,
+   they are committed model content rather than request text, so they are not scrubbed.
 
 ## Consequences
 

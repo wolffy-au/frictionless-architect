@@ -262,6 +262,27 @@ def test_a_fresh_propose_call_supersedes_a_stale_pending_pii_review(configured_f
     assert response.status_code == 409
 
 
+def test_a_flagged_request_stays_out_of_later_turns_until_resolved(configured_fake_llm: FakeCompletion) -> None:
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add an application function fn-example"})
+
+    assert "jane@example.com" not in str(configured_fake_llm.calls[-1]["messages"])
+
+
+def test_only_the_redacted_text_reaches_later_turns(configured_fake_llm: FakeCompletion) -> None:
+    session_id = _new_session()
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})
+    client.post(f"/authoring/sessions/{session_id}/propose/resolve-pii", json={"resolution": "redact"})
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add an application function fn-example"})
+
+    later_turn = configured_fake_llm.calls[-1]["messages"]
+    assert len(later_turn) == 4
+    assert "jane@example.com" not in str(later_turn)
+
+
 def test_a_resolved_request_gets_the_same_grounding_as_any_other(configured_fake_llm: FakeCompletion) -> None:
     session_id = _new_session()
     client.post(f"/authoring/sessions/{session_id}/propose", json={"request": _PII_REQUEST})

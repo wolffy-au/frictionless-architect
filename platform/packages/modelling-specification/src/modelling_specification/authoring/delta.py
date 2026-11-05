@@ -46,6 +46,13 @@ of its name, and copy that id exactly. Judge what an element is and whether it f
 the request from its description, not from its name alone. Never invent an id for an
 element that already exists.
 
+Earlier turns of this conversation are included for context, so a follow-up like
+"now connect it to Y" or "do the same for Z" means what those turns established. The
+"Existing ..." and "Pending delta" data below is the current truth: an earlier
+proposal found in neither was discarded by the architect, so don't build on it. The
+"Pending delta" is already held for the architect, and your reply is added to it, so
+return only what this request adds -- never repeat anything already in it.
+
 A request to rename an existing element -- "rename X to Y", "call X something else"
 -- is an "element_edits" entry naming the existing element's id and its new "name",
 never a new "elements" entry. A request to permanently remove an existing element or
@@ -130,6 +137,8 @@ _SURROUNDING_FENCE = re.compile(r"\A\s*```[A-Za-z]*\n(.*?)\n```\s*\Z", re.DOTALL
 # Grounding budget: the catalogue goes out on every turn, and the longest descriptions
 # run to 1000+ characters. 300 leaves most of them whole (the median is about 120).
 MAX_DESC_CHARS = 300
+# Earlier turns kept for and sent to the LLM (FR-018) -- ten exchanges.
+MAX_HISTORY_MESSAGES = 20
 
 
 class DeltaProposalError(Exception):
@@ -193,23 +202,29 @@ def _relationships_text(relationships: list[tuple[str, str, str, str]]) -> str:
     return "\n".join(f"{rtype} | {source} | {target} | {label}" for rtype, source, target, label in relationships)
 
 
+def _pending_text(pending: dict[str, Any]) -> str:
+    return json.dumps(pending, ensure_ascii=False)
+
+
 def _grounded_system_prompt(
     catalogue: list[tuple[str, str, str, str]] | None,
     contexts: list[str] | None,
     views: list[tuple[str, str, str]] | None,
     relationships: list[tuple[str, str, str, str]] | None,
     rules: list[dict[str, Any]] | None,
+    pending: dict[str, Any] | None = None,
 ) -> str:
     """`SYSTEM_PROMPT` plus one labelled block per non-empty grounding input, in a
     fixed order -- factored out of `propose_delta` to keep its own branching under
     the complexity gate; each block is independently optional, so a caller can pass
     only the data it has."""
-    blocks: list[tuple[str, list[Any] | None, Callable[[Any], str]]] = [
+    blocks: list[tuple[str, list[Any] | dict[str, Any] | None, Callable[[Any], str]]] = [
         ("Existing elements", catalogue, _catalogue_text),
         ("Existing contexts", contexts, _contexts_text),
         ("Existing views", views, _views_text),
         ("Existing relationships", relationships, _relationships_text),
         ("Enterprise convention rules", rules, _rules_text),
+        ("Pending delta", pending, _pending_text),
     ]
     system = SYSTEM_PROMPT
     for label, data, render in blocks:
@@ -256,6 +271,9 @@ def propose_delta(
     contexts: list[str] | None = None,
     views: list[tuple[str, str, str]] | None = None,
     relationships: list[tuple[str, str, str, str]] | None = None,
+    *,
+    history: list[dict[str, str]] | None = None,
+    pending: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Call the configured LLM and return a candidate delta, in one of two shapes:
     a single concrete change, `{"elements": [...], "relationships": [...], "views":
@@ -285,7 +303,16 @@ def propose_delta(
     if not stripped:
         raise DeltaProposalError("Cannot propose a delta from an empty request.")
 
-    return resume_proposal(scrub_or_require_review(stripped), catalogue, rules, contexts, views, relationships)
+    return resume_proposal(
+        scrub_or_require_review(stripped),
+        catalogue,
+        rules,
+        contexts,
+        views,
+        relationships,
+        history=history,
+        pending=pending,
+    )
 
 
 def scrub_or_require_review(text: str) -> str:
@@ -307,6 +334,16 @@ def scrub_or_require_review(text: str) -> str:
     return result.text
 
 
+def _remember(history: list[dict[str, str]] | None, request: str, reply: str) -> None:
+    """Record one completed exchange (FR-018), keeping only the newest
+    `MAX_HISTORY_MESSAGES` messages. `request` must be the text the LLM was actually
+    sent -- a flagged or unscrubbed original never reaches this point."""
+    if history is None:
+        return
+    history += [{"role": "user", "content": request}, {"role": "assistant", "content": reply}]
+    del history[:-MAX_HISTORY_MESSAGES]
+
+
 def resume_proposal(
     resolved_text: str,
     catalogue: list[tuple[str, str, str, str]] | None = None,
@@ -314,19 +351,30 @@ def resume_proposal(
     contexts: list[str] | None = None,
     views: list[tuple[str, str, str]] | None = None,
     relationships: list[tuple[str, str, str, str]] | None = None,
+    *,
+    history: list[dict[str, str]] | None = None,
+    pending: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Make the LLM call with text that has already been scrubbed or explicitly
     resolved by the architect (a `PiiReviewRequired` match the caller resolved via
     `pii_gateway.Resolution`, or `propose_delta`'s own non-flagged `scrub()` output).
     Never re-scrubs -- callers decide separately whether `resolved_text` still needs
-    scrubbing. Same return shape and error behaviour as `propose_delta`."""
+    scrubbing. Same return shape and error behaviour as `propose_delta`.
+
+    `history` holds the session's earlier turns (FR-018): they are sent ahead of this
+    request, and this exchange is appended once it succeeds. `pending` is the session's
+    not-yet-applied delta, shown to the LLM so it doesn't repeat it."""
     try:
         call = resolve_call(COMPONENT_ID)
     except (NotConfiguredError, MissingCredentialError) as exc:
         raise DeltaProposalError(str(exc)) from exc
 
-    system = _grounded_system_prompt(catalogue, contexts, views, relationships, rules)
-    messages = [{"role": "system", "content": system}, {"role": "user", "content": resolved_text}]
+    system = _grounded_system_prompt(catalogue, contexts, views, relationships, rules, pending)
+    messages = [
+        {"role": "system", "content": system},
+        *(history or []),
+        {"role": "user", "content": resolved_text},
+    ]
     try:
         response = completion(messages=messages, **call.completion_kwargs())
     except Exception as exc:  # noqa: BLE001 - litellm raises a wide family of provider/network errors
@@ -344,9 +392,12 @@ def resume_proposal(
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as exc:
+        _remember(history, resolved_text, content)
         raise LlmMessage(content) from exc
 
-    return _parsed_proposal(payload, call.model)
+    proposal = _parsed_proposal(payload, call.model)
+    _remember(history, resolved_text, content)
+    return proposal
 
 
 def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:

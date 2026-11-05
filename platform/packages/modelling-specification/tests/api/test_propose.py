@@ -334,6 +334,49 @@ def test_propose_a_context_scoped_view_returns_validated_with_an_assigned_id(
     assert body["relationships"] == []
 
 
+_PROBE = '{"elements": [{"type": "ApplicationFunction", "id": "fn-history-probe", "name": "History Probe"}], "relationships": []}'
+
+
+def test_a_follow_up_is_sent_with_the_earlier_turns_and_the_pending_delta(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = _PROBE
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a probe"})
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "and repeat that"})
+
+    messages = configured_fake_llm.calls[-1]["messages"]
+    assert [(m["role"], m["content"]) for m in messages[1:]] == [
+        ("user", "add a probe"),
+        ("assistant", _PROBE),
+        ("user", "and repeat that"),
+    ]
+    assert (
+        'Pending delta:\n{"elements": [{"type": "ApplicationFunction", "id": "fn-history-probe"'
+        in messages[0]["content"]
+    )
+
+
+def test_restating_part_of_the_pending_delta_does_not_duplicate_it(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = _PROBE
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a probe"})
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "again"}).json()
+
+    assert [e["id"] for e in body["elements"]] == ["fn-history-probe"]
+    assert body["status"] == "validated"
+
+
+def test_catalogue_grounding_includes_element_descriptions(configured_fake_llm: FakeCompletion) -> None:
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a function"})
+
+    system = configured_fake_llm.calls[-1]["messages"][0]["content"]
+    line = next(ln for ln in system.splitlines() if ln.startswith("vs-intent-to-model | "))
+    assert "natural-language request" in line
+
+
 def test_a_view_only_delta_is_a_real_change(configured_fake_llm: FakeCompletion) -> None:
     configured_fake_llm.content = (
         '{"elements": [], "relationships": [], "views": [{"id": "view-real-change",'
@@ -345,13 +388,3 @@ def test_a_view_only_delta_is_a_real_change(configured_fake_llm: FakeCompletion)
 
     assert body["status"] == "validated"
     assert "notes" not in body
-
-
-def test_catalogue_grounding_includes_element_descriptions(configured_fake_llm: FakeCompletion) -> None:
-    session_id = client.post("/authoring/sessions").json()["session_id"]
-
-    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a function"})
-
-    system = configured_fake_llm.calls[-1]["messages"][0]["content"]
-    line = next(ln for ln in system.splitlines() if ln.startswith("vs-intent-to-model | "))
-    assert "natural-language request" in line

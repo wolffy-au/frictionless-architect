@@ -48,6 +48,17 @@ _METAMODEL_CHECK_NAMES = {
     "build_error",
 }
 
+# The parts of a Candidate Delta that describe a change, in `_delta_response`'s shape.
+_DELTA_CHANGE_KEYS = {
+    "elements",
+    "relationships",
+    "views",
+    "view_membership_edits",
+    "element_edits",
+    "element_removals",
+    "relationship_removals",
+}
+
 # FR-009: every decide action that results in an applied change carries a
 # Current/Transition/Target classification; the agent asks rather than guessing
 # (US3 Scenario 2) when the architect's decide call doesn't supply one.
@@ -197,6 +208,26 @@ def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
     }
 
 
+def _pending_grounding(session_id: str) -> dict[str, Any] | None:
+    """The session's pending delta as the LLM should see it -- the non-empty change
+    lists only, `None` when nothing is pending."""
+    delta = _store.pending_delta(session_id)
+    if delta is None:
+        return None
+    return {k: v for k, v in _delta_response(delta).items() if k in _DELTA_CHANGE_KEYS and v} or None
+
+
+def _new_only(existing: list[Any], proposed: list[Any]) -> list[Any]:
+    """`proposed` minus anything already in `existing` or repeated within itself: with
+    earlier turns in view (FR-018) an LLM can restate part of the pending delta, and
+    FR-015's accumulation must not turn that into a duplicate change."""
+    fresh: list[Any] = []
+    for item in proposed:
+        if item not in existing and item not in fresh:
+            fresh.append(item)
+    return fresh
+
+
 def _handle_proposed(
     session_id: str, session: Session, catalogue: list[tuple[str, str, str, str]], proposed: dict[str, Any]
 ) -> dict[str, Any]:
@@ -238,13 +269,17 @@ def _handle_proposed(
     # FR-015: a later request touching the pending delta amends/extends it rather
     # than starting an independent one -- one accumulating delta per conversation
     # until it is applied or discarded (data-model.md Candidate Delta lifecycle).
-    delta.elements = delta.elements + new_elements
-    delta.relationships = delta.relationships + new_relationships
-    delta.views = delta.views + new_views
-    delta.view_membership_edits = delta.view_membership_edits + new_membership_edits
-    delta.element_edits = delta.element_edits + new_element_edits
-    delta.element_removals = delta.element_removals + new_element_removals
-    delta.relationship_removals = delta.relationship_removals + new_relationship_removals
+    delta.elements = delta.elements + _new_only(delta.elements, new_elements)
+    delta.relationships = delta.relationships + _new_only(delta.relationships, new_relationships)
+    delta.views = delta.views + _new_only(delta.views, new_views)
+    delta.view_membership_edits = delta.view_membership_edits + _new_only(
+        delta.view_membership_edits, new_membership_edits
+    )
+    delta.element_edits = delta.element_edits + _new_only(delta.element_edits, new_element_edits)
+    delta.element_removals = delta.element_removals + _new_only(delta.element_removals, new_element_removals)
+    delta.relationship_removals = delta.relationship_removals + _new_only(
+        delta.relationship_removals, new_relationship_removals
+    )
 
     _validate_and_flag(delta)
     response = _delta_response(delta)
@@ -304,7 +339,16 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     # one in this session (the architect moved on without resolving it).
     session.pending_pii_confirmation = None
     try:
-        proposed = propose_delta(body.request, catalogue, rules, contexts, views, relationships)
+        proposed = propose_delta(
+            body.request,
+            catalogue,
+            rules,
+            contexts,
+            views,
+            relationships,
+            history=session.history,
+            pending=_pending_grounding(session_id),
+        )
     except PiiReviewRequired as review:
         session.pending_pii_confirmation = review.pending_confirmation
         session.pending_options = []
@@ -405,7 +449,16 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
 
     catalogue, rules, contexts, views, relationships = _catalogue_and_rules()
     try:
-        proposed = resume_proposal(resolved_text, catalogue, rules, contexts, views, relationships)
+        proposed = resume_proposal(
+            resolved_text,
+            catalogue,
+            rules,
+            contexts,
+            views,
+            relationships,
+            history=session.history,
+            pending=_pending_grounding(session_id),
+        )
     except LlmMessage as message:
         session.pending_options = []
         return {
