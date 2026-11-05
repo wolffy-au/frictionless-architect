@@ -2,9 +2,12 @@
 `GET /authoring/` page, mirroring `controls_compliance_catalog.playground.api`'s
 `_PAGE_TEMPLATE`/`_PAGE` module-level-string pattern -- no Jinja2, no static-asset
 pipeline, no JS framework build step. A plain fetch() client over the existing
-`sessions`/`propose`/`decide`/`render`/`config` JSON contract (contracts/api.md);
-`session_id`/`delta_id` live in page-scoped JS state only (R16), nothing new
-server-side.
+`sessions`/`propose`/`propose/select`/`decide`/`render`/`config` JSON contract
+(contracts/api.md); `session_id`/`delta_id` live in page-scoped JS state only (R16),
+nothing new server-side. `renderProposeResponse` branches on `propose`'s `status`:
+a plain-text `"message"`, a set of `"options"` to pick from via `propose/select`
+(ADR-0041), or the single-delta validated/flagged path; `"pii_review_required"`
+(ADR-0014 amendment) has no dedicated branch yet and falls through to the latter.
 """
 
 from __future__ import annotations
@@ -694,4 +697,10 @@ _PAGE = """\
 
 @router.get("/", response_class=HTMLResponse)
 def authoring_page() -> str:
+    """Serve the split-screen conversational authoring page.
+
+    Returns:
+        The self-contained `_PAGE` HTML/CSS/JS document described in this module's
+        docstring; there is no templating or per-request state.
+    """
     return _PAGE

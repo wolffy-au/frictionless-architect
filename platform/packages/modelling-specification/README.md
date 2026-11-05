@@ -28,6 +28,26 @@ This runs `modelling_specification.app:app` with `uvicorn` from `platform/` on
 live render pane); the OpenAPI docs are at `/docs`. Standalone for now: the portal
 does not mount it yet.
 
+### What the chat pane shows for each `propose` outcome
+
+`renderProposeResponse` (in `ui.py`'s embedded JS) branches on the response `status`:
+
+- `"message"` -- the LLM's plain-text question or remark, shown verbatim; Apply stays
+  disabled, there is no delta.
+- `"options"` -- a "what should I do about X" request (ADR-0041): each of the 2-3
+  suggested ways forward renders with its rationale, `convention_refs`, the elements/
+  relationships it would add and any validation findings/duplicates/pattern suggestions
+  it would raise, each behind a "Pick this option" button wired to `propose/select`.
+- anything else (`"validated"`/`"flagged"`) -- the single concrete delta: corrected
+  notes, validation findings, duplicate and pattern-suggestion callouts (with
+  Reject/Override actions when flagged), and a live preview; "Looks good -- no
+  objections" when there is nothing to flag.
+
+`"pii_review_required"` is not among the branches above: the chat pane currently has no
+dedicated rendering for it and falls through to the generic branch, which shows "Looks
+good -- no objections" even though a PII/PHI match is awaiting `propose/resolve-pii`.
+`resolve-pii` is reachable via the API (see Endpoints below) but not from this UI yet.
+
 ### Endpoints
 
 All under `/authoring`; request and response shapes are in
