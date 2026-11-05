@@ -2033,6 +2033,7 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-litellm
+  context: llm-provider-config
   name: litellm
   desc: >-
     Multi-provider LLM client library (OpenAI, Google Gemini, Anthropic Claude,
@@ -2042,6 +2043,7 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-presidio
+  context: pii-gateway
   name: Presidio (presidio-analyzer / presidio-anonymizer)
   desc: >-
     PII/PHI detection (regex + NER recognizers) and anonymization
@@ -2050,6 +2052,7 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-pyarchimate
+  context: modelling-specification
   name: pyArchimate
   desc: >-
     Source of fixed ArchiMate 3.2 metamodel rules for fn-conversational-authoring's
@@ -2057,6 +2060,7 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-rapidfuzz
+  context: modelling-specification
   name: rapidfuzz
   desc: >-
     Fuzzy string-matching library (`token_sort_ratio`) backing
