@@ -1,16 +1,18 @@
 ---
 title: PII Gateway
 generated: '2026-11-05'
-generator: claude-opus-5-5
+generator: claude-sonnet-5
 sources:
 - docs/adr/0014-pii-anonymization-gateway.md
 - docs/adr/0031-fr016-no-redaction-for-policy-documents.md
 - docs/adr/0043-pii-gateway-detector-library-presidio.md
+- docs/adr/0046-pii-gateway-engine-error-fail-closed-semantics.md
 - platform/packages/controls-compliance-catalog/tests/test_pii_gateway_exemption.py
 - platform/packages/modelling-specification/pyproject.toml
 - platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py
 - platform/packages/modelling-specification/src/modelling_specification/authoring/state.py
 - platform/packages/modelling-specification/src/modelling_specification/router.py
+- platform/packages/modelling-specification/src/modelling_specification/ui.py
 - platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py
 - platform/packages/pii-gateway/README.md
 - platform/packages/pii-gateway/pyproject.toml
@@ -61,7 +63,7 @@ so the model has no per-consumer Serving edge
 
 `scrub(text, *, context) -> ScrubResult` is the one call surface. Each call loads the
 config, runs the detectors, drops matches in inactive categories, and then takes one of
-three outcomes (`platform/packages/pii-gateway/src/pii_gateway/scrub.py:56-111`):
+three outcomes (`platform/packages/pii-gateway/src/pii_gateway/scrub.py:56-118`):
 
 | Outcome | When | `text` returned |
 | --- | --- | --- |
@@ -70,10 +72,10 @@ three outcomes (`platform/packages/pii-gateway/src/pii_gateway/scrub.py:56-111`)
 | `flagged_for_review` | Match, flag-for-review failure-mode | The input, with `pending_confirmation` set |
 
 Those are the only three states
-(`platform/packages/pii-gateway/src/pii_gateway/models.py:20-26`;
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:33-38`;
 `platform/packages/pii-gateway/specs/001-pii-gateway/data-model.md` §`ScrubResult`).
 A span that matches two categories yields one `Match` per category at the same location
-(`platform/packages/pii-gateway/src/pii_gateway/models.py:36-48`).
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:49-61`).
 
 `scrub()` is synchronous. The plan justifies its 2-second ceiling (SC-005) against the
 constitution's 200ms rule: every call site is already synchronous, and the cost is small
@@ -99,12 +101,13 @@ context gets the global auto-redact default
 ### Reviewing a flagged match
 
 `PendingConfirmation.resolve()` returns the redacted text for `REDACT` and the original
-for `ALLOW` and `EDIT`
-(`platform/packages/pii-gateway/src/pii_gateway/models.py:74-83`). So `EDIT` is not a
+for `ALLOW` and `EDIT` -- except `ALLOW` on the synthetic engine-error match (see
+[Failing closed](#failing-closed) below), which it refuses instead
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:93-113`). So `EDIT` is not a
 complete operation in the gateway: the caller has to supply the replacement.
 `modelling-specification` does that by re-scrubbing the architect's `edited_text` under
 the same context, so a still-sensitive edit is flagged again rather than sent
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:376-387`;
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:395-403`;
 `platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:277-293`).
 
 The confirmation has no timeout and no stored form. An abandoned turn just discards it
@@ -113,7 +116,7 @@ The confirmation has no timeout and no stored form. An abandoned turn just disca
 `propose/resolve-pii`, which is the one place it outlives a single `scrub()` call
 (`platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:80-85`).
 A flagged response carries the matches and makes no LLM call
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:178-186`,
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:178-195`,
 `platform/packages/modelling-specification/src/modelling_specification/router.py:310-313`).
 
 ## Detection
@@ -145,7 +148,7 @@ third party, and regex alone because it under-detects free-text names
 ## Failing closed
 
 The spec requires a detector-engine error to be treated like a match, never a silent
-pass-through. This is a spec-level default that no ADR covers yet
+pass-through
 (`platform/packages/pii-gateway/specs/001-pii-gateway/spec.md` §Assumptions).
 `_run_detectors` implements it by turning any exception into one synthetic
 `_ENGINE_ERROR` result, which category config can't switch off
@@ -153,16 +156,46 @@ pass-through. This is a spec-level default that no ADR covers yet
 `platform/packages/pii-gateway/src/pii_gateway/scrub.py:47-53`;
 `platform/packages/pii-gateway/specs/001-pii-gateway/research.md` R6).
 
-That synthetic result has a zero-length span at offset 0, so redaction covers none of
-the text. On a forced `RuntimeError` on 2026-11-05, `"Contact Jane Doe"` under
-`spec-generator` came back as `<_ENGINE_ERROR>Contact Jane Doe`, with action
-`redacted_and_proceeded`. The action is not the pass-through state, but the content is
-unredacted. The flag-for-review path keeps a human in front of the send, but `REDACT`
-there resolves to `anonymize()`'s output too, so it removes nothing either. The existing
-test asserts only the action and the match category, so it doesn't catch this
-(`platform/packages/pii-gateway/src/pii_gateway/scrub.py:40`,
-`platform/packages/pii-gateway/src/pii_gateway/scrub.py:82`;
-`platform/packages/pii-gateway/tests/unit/test_scrub.py:98-111`).
+That synthetic result is a zero-length span at offset 0. Redacting only the span is a
+no-op -- `anonymize()` has nothing to replace at a zero-width location -- so `scrub()`
+instead detects the synthetic match and replaces the **entire** input with
+`<_ENGINE_ERROR>`, for both `redacted_and_proceeded` and flag-for-review's `REDACT`
+resolution
+(`platform/packages/pii-gateway/src/pii_gateway/scrub.py:81-89`). This is a 2026-11-05
+bug fix: before it, a forced `RuntimeError` showed `"Contact Jane Doe"` under
+`spec-generator` coming back as `<_ENGINE_ERROR>Contact Jane Doe` -- action
+`redacted_and_proceeded`, content unredacted -- and the flag-for-review path's `REDACT`
+resolved to the same no-op output
+(`docs/adr/0046-pii-gateway-engine-error-fail-closed-semantics.md` §Context).
+
+`Resolution.ALLOW` is rejected outright when the pending match is this synthetic case:
+`PendingConfirmation.resolve()` raises `EngineErrorAllowRejected` rather than returning
+the original text, enforced in the gateway itself so no caller can reach the
+unexamined text via `ALLOW`. Nothing inspected the text, so there is no real detection
+for the architect to judge and allow -- unlike `ALLOW` on a real match, which is
+unaffected
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:20-30`,
+`platform/packages/pii-gateway/src/pii_gateway/models.py:87-113`).
+`modelling-specification`'s `resolve_pii` maps the exception to `409` and leaves the
+pending confirmation in place, so `REDACT`/`EDIT` still resolve it and no LLM call is
+made
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:404-411`).
+The flag-for-review response also carries `detection_failed: bool` so a caller is told
+detection failed outright, rather than left to infer it from the `_ENGINE_ERROR`
+category string in `matches`
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:178-192`).
+
+Both are recorded in ADR-0046, filed because the spec's fail-closed guarantee itself
+was (and still is) a spec-level default with no ADR of its own -- this record covers
+the redaction shape and the `ALLOW` question it exposed, not that wider gap
+(`docs/adr/0046-pii-gateway-engine-error-fail-closed-semantics.md` §Decision;
+`platform/packages/pii-gateway/specs/001-pii-gateway/spec.md` §Assumptions).
+
+The browser authoring UI has a related, separately-tracked rough edge: its three
+PII-review buttons (Redact/Allow/Edit) disable on click and only re-enable on a
+successful `resolve-pii` response, so an `ALLOW` rejected under this path needed its
+own re-enable path to stay usable
+(`platform/packages/modelling-specification/src/modelling_specification/ui.py:583-600`).
 
 ## Configuration and audit
 
@@ -183,7 +216,7 @@ Code flags (`platform/packages/pii-gateway/src/pii_gateway/_paths.py:1-45`).
 
 Every call appends one JSON line holding the timestamp, context, distinct matched
 categories and action. It never holds the matched text, locations or confidence
-(`platform/packages/pii-gateway/src/pii_gateway/models.py:86-99`;
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:116-129`;
 `platform/packages/pii-gateway/src/pii_gateway/audit.py:49-57`).
 
 ### Settings page
@@ -243,8 +276,6 @@ Those paths have no call site in these sources
   (`docs/adr/0043-pii-gateway-detector-library-presidio.md` §Consequences;
   `platform/packages/pii-gateway/specs/001-pii-gateway/research.md` R2;
   `platform/packages/pii-gateway/src/pii_gateway/detectors.py:28-37`).
-- **Failing closed.** See [Failing closed](#failing-closed): the spec's guarantee and
-  the auto-redact behaviour on an engine error don't match.
 
 ## Not covered by current sources
 

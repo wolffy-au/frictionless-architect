@@ -321,6 +321,7 @@ topics:
       - path: platform/packages/pii-gateway/tests/unit/test_scrub.py
       - path: platform/packages/modelling-specification/pyproject.toml
       - path: platform/packages/modelling-specification/src/modelling_specification/router.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/ui.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/state.py
       - path: platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py
@@ -329,6 +330,7 @@ topics:
       - path: docs/adr/0014-pii-anonymization-gateway.md
       - path: docs/adr/0031-fr016-no-redaction-for-policy-documents.md
       - path: docs/adr/0043-pii-gateway-detector-library-presidio.md
+      - path: docs/adr/0046-pii-gateway-engine-error-fail-closed-semantics.md
 
   - name: non-functionals
     title: Non-Functional Requirements
