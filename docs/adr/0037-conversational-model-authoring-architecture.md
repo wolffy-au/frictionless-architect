@@ -76,6 +76,9 @@ references, corrected alongside this ADR).
 8. **Lifting the add-only restriction**: the original scope (`spec.md` FR-001, the
    `SYSTEM_PROMPT` in `delta.py`) only ever let a Candidate Delta add new elements,
    relationships and views — never edit, rename or remove an existing one. That limit was
+   The process in turn realizes the stream (`process-conversational-authoring →
+   vs-intent-to-model`), the one process → stream edge in the model: the other streams' stages
+   are served by capabilities, and this stream has a single stage (added 2026-11-05).
    inherited unexamined from GH #108's "propose a candidate model delta" framing, not a
    deliberated decision. This lifts it: a Candidate Delta may also describe an edit (field
    changes on an existing element/relationship) or a removal of an existing element or

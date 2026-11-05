@@ -155,6 +155,10 @@
 - {type: Realization, source: vs-exception-to-decision, target: outcome-audit-trail-reconstructable}
 - {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-zero-aged-backlog}
 - {type: Realization, source: vs-drift-to-remediation, target: outcome-drift-detected-24h}
+# The process carrying out the stream (ADR-0037 item 7). The only process -> stream
+# edge: the other streams' stages are served by capabilities, but this stream is a
+# single stage with nothing to serve individually.
+- {type: Realization, source: process-conversational-authoring, target: vs-intent-to-model}
 - {type: Realization, source: vs-intent-to-model, target: outcome-zero-hand-edited-model}
 - {type: Realization, source: vs-intent-to-model, target: outcome-decision-to-model-latency}
 # Each requirement realizes exactly one outcome; none realizes a goal

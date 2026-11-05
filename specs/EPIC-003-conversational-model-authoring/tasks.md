@@ -347,6 +347,10 @@ names the intermediary→target type, so synthesis cannot be implemented without
 end-to-end (FR-008, spec.md Clarifications 2026-10-11), with the same validate-before-write
 guarantee every other `apply`-resulting action already has.
 
+## Phase: Conversation Continuity and Whole-Delta Preview (2026-11-05)
+
+- [X] T090 [Model] Add `Realization process-conversational-authoring → vs-intent-to-model`, run `validate.py`, regenerate diagrams
+
 ---
 
 ## Dependencies & Execution Order
