@@ -16,6 +16,13 @@ on:
       - main
       - develop
 
+# Keys on the source branch name so a push to develop and the pull_request
+# run it triggers on a develop -> main release PR land in the same group and
+# the later one cancels the earlier, instead of both running to completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
