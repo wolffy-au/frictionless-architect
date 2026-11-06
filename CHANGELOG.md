@@ -1,3 +1,45 @@
+## v0.9.0 (2026-11-06)
+
+### Feat
+
+- **modelling-specification**: send conversation history to the LLM
+- **modelling-specification**: ground proposals in element descriptions
+- **model**: realize vs-intent-to-model by its authoring process
+- **modelling-specification**: render PII review in authoring chat
+- **modelling-specification**: allow renaming and removing elements
+- **modelling-specification**: allow editing a view's membership
+- **modelling-specification**: propose and apply new views
+
+### Fix
+
+- **modelling-specification**: reject NUL and blank values in env_dir
+- **modelling-specification**: preview and apply non-element deltas
+- **skills**: record semsearch digests only after a file's chunks
+- **agents**: hand agent dispatch back from release-runner
+- **modelling-specification**: re-enable PII buttons on rejection
+- **pii-gateway**: redact entire text on a detector-engine error
+- **modelling-specification**: render suggested options in chat UI
+- **model**: use the Architecture Knowledge Graph subsystem name
+- **model**: set contexts on the sw-* elements
+- **model**: correct ADR references on the sw-* elements
+- **modelling-specification**: validate env-configured paths
+- **modelling-specification**: confine diagram output to the project
+- **modelling-specification**: make external models actually work
+- **modelling-specification**: match removal/edit validation to apply
+- **modelling-specification**: satisfy mypy on item 8's lambdas
+- **modelling-specification**: ground questions in the relationship graph
+- **modelling-specification**: answer view/viewpoint questions too
+- **modelling-specification**: answer model-vocabulary questions
+- **model**: scope same-layer cooperation views, fix store containment
+- **model**: reconcile application layer with authoring code
+
+### Refactor
+
+- **modelling-specification**: reduce c4 and puml complexity
+- **skills**: drop -o from the diagram wrapper scripts
+- **modelling-specification**: stop puml and c4 writing files
+- **modelling-specification**: decouple model root and diagrams
+
 ## v0.8.0 (2026-11-01)
 
 ### Feat
