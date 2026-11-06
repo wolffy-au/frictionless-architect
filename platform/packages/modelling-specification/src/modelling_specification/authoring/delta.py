@@ -464,6 +464,17 @@ def resolve_unknown_endpoints(
     return resolved, notes
 
 
+def _repoint_member(key: str, wanted: Any, names_by_id: dict[str, str], notes: list[str]) -> Any:
+    """One membership id: its unambiguous nearest known id (noted in `notes`) if unknown, else itself."""
+    if not isinstance(wanted, str) or wanted in names_by_id:
+        return wanted
+    match = _closest_known_id(wanted, names_by_id)
+    if match is None:
+        return wanted
+    notes.append(f"{key} {wanted!r} is not an element; using {match!r} ({names_by_id[match]})")
+    return match
+
+
 def resolve_unknown_members(
     edits: list[dict[str, Any]], names_by_id: dict[str, str]
 ) -> tuple[list[dict[str, Any]], list[str]]:
@@ -475,16 +486,7 @@ def resolve_unknown_members(
     for edit in edits:
         fixed = dict(edit)
         for key in ("add", "remove"):
-            wanted_ids = fixed.get(key) or []
-            repointed = []
-            for wanted in wanted_ids:
-                if isinstance(wanted, str) and wanted not in names_by_id:
-                    match = _closest_known_id(wanted, names_by_id)
-                    if match is not None:
-                        notes.append(f"{key} {wanted!r} is not an element; using {match!r} ({names_by_id[match]})")
-                        wanted = match
-                repointed.append(wanted)
-            fixed[key] = repointed
+            fixed[key] = [_repoint_member(key, wanted, names_by_id, notes) for wanted in fixed.get(key) or []]
         resolved.append(fixed)
     return resolved, notes
 
