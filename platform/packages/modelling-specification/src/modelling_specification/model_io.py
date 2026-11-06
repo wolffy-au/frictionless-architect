@@ -1004,20 +1004,35 @@ def _add_neighbour_elements(
             if near.uuid not in base or far.uuid in on_view:
                 continue
             far_id = uuid_to_id.get(far.uuid)
-            if far_id is None or _element_excluded(far_id, exclude_element_patterns, types_by_id):
+            if far_id is None or not _neighbour_admissible(
+                near, far_id, uuid_to_id, types_by_id, exclude_element_patterns, same_layer_only
+            ):
                 continue
-            if types_by_id[far_id] == "Grouping":
-                continue
-            if same_layer_only:
-                near_id = uuid_to_id.get(near.uuid)
-                near_layer = ARCHIMATE_LAYER_OF.get(types_by_id.get(near_id, "")) if near_id else None
-                far_layer = ARCHIMATE_LAYER_OF.get(types_by_id[far_id])
-                if near_layer is not None and far_layer is not None and near_layer != far_layer:
-                    continue
             view.add(ref=far, uuid=det_id(view_id, "node", far.uuid))
             on_view.add(far.uuid)
             added_types.add(types_by_id[far_id])
     return added_types
+
+
+def _neighbour_admissible(
+    near: Any,
+    far_id: str,
+    uuid_to_id: dict[str, str],
+    types_by_id: dict[str, str],
+    exclude_element_patterns: list[dict[str, str | None]],
+    same_layer_only: bool,
+) -> bool:
+    """Whether the element `far_id`, one hop from `near`, may be pulled in by
+    `_add_neighbour_elements`: not excluded, not a Grouping, and (if
+    `same_layer_only`) not in a different known ArchiMate layer from `near`."""
+    if _element_excluded(far_id, exclude_element_patterns, types_by_id) or types_by_id[far_id] == "Grouping":
+        return False
+    if not same_layer_only:
+        return True
+    near_id = uuid_to_id.get(near.uuid)
+    near_layer = ARCHIMATE_LAYER_OF.get(types_by_id.get(near_id, "")) if near_id else None
+    far_layer = ARCHIMATE_LAYER_OF.get(types_by_id[far_id])
+    return near_layer is None or far_layer is None or near_layer == far_layer
 
 
 def _connect_view_relationships(
@@ -1209,8 +1224,8 @@ def append_delta(
 
 
 _VIEW_START_RE = re.compile(r"^- id:\s*(\S+)\s*$")
-_MEMBERS_KEY_RE = re.compile(r"^  members:\s*$")
-_MEMBERS_ITEM_RE = re.compile(r"^    - (\S+)\s*$")
+_MEMBERS_KEY_RE = re.compile(r"^ {2}members:\s*$")
+_MEMBERS_ITEM_RE = re.compile(r"^ {4}- (\S+)\s*$")
 
 
 def _view_block_bounds(lines: list[str], view_id: str) -> tuple[int, int] | None:
@@ -1267,36 +1282,35 @@ def apply_view_membership_edits(edits: list[dict[str, Any]]) -> None:
     path = HERE / VIEWS_FILENAME
     lines = path.read_text().splitlines(keepends=True)
     for edit in edits:
-        view_id = edit["view_id"]
-        bounds = _view_block_bounds(lines, view_id)
-        if bounds is None:
-            raise ValueError(f"no view {view_id!r} in {VIEWS_FILENAME}")
-        start, end = bounds
-        members_bounds = _members_block_bounds(lines, start, end)
-        if members_bounds is None:
-            existing: list[str] = []
-        else:
-            key_idx, items_end = members_bounds
-            existing = [
-                m.group(1)
-                for line in lines[key_idx + 1 : items_end]
-                if (m := _MEMBERS_ITEM_RE.match(line.rstrip("\n")))
-            ]  # noqa: E501
-        remove = set(edit.get("remove", []))
-        new_members = [m for m in existing if m not in remove]
-        for eid in edit.get("add", []):
-            if eid not in new_members:
-                new_members.append(eid)
-        if members_bounds is None:
-            if not edit.get("add"):
-                continue  # nothing to remove from a view that has no members: key
-            block = ["  members:\n", *(f"    - {m}\n" for m in new_members)]
-            lines[start + 1 : start + 1] = block
-        else:
-            key_idx, items_end = members_bounds
-            block = [lines[key_idx], *(f"    - {m}\n" for m in new_members)]
-            lines[key_idx:items_end] = block
+        _apply_membership_edit(lines, edit)
     path.write_text("".join(lines))
+
+
+def _apply_membership_edit(lines: list[str], edit: dict[str, Any]) -> None:
+    """Apply one view-membership edit to `lines` (`views.yaml`'s text) in place."""
+    view_id = edit["view_id"]
+    bounds = _view_block_bounds(lines, view_id)
+    if bounds is None:
+        raise ValueError(f"no view {view_id!r} in {VIEWS_FILENAME}")
+    start, end = bounds
+    members_bounds = _members_block_bounds(lines, start, end)
+    existing: list[str] = []
+    if members_bounds is not None:
+        key_idx, items_end = members_bounds
+        existing = [
+            m.group(1) for line in lines[key_idx + 1 : items_end] if (m := _MEMBERS_ITEM_RE.match(line.rstrip("\n")))
+        ]
+    remove = set(edit.get("remove", []))
+    new_members = [m for m in existing if m not in remove]
+    for eid in edit.get("add", []):
+        if eid not in new_members:
+            new_members.append(eid)
+    if members_bounds is None:
+        if edit.get("add"):  # else nothing to remove from a view that has no members: key
+            lines[start + 1 : start + 1] = ["  members:\n", *(f"    - {m}\n" for m in new_members)]
+    else:
+        key_idx, items_end = members_bounds
+        lines[key_idx:items_end] = [lines[key_idx], *(f"    - {m}\n" for m in new_members)]
 
 
 # Every top-level entry in elements.yaml/relationships.yaml is either a hand-authored
@@ -1304,17 +1318,22 @@ def apply_view_membership_edits(edits: list[dict[str, Any]]) -> None:
 # appended by `append_delta` (`- {type: X, id: Y, ...}`) -- the only two shapes either
 # file uses (ADR-0037 item 8 Consequences).
 _TOP_LEVEL_START_RE = re.compile(r"^- (\{|type:\s)")
-_BLOCK_FIELD_RE = re.compile(r"^  (\w+):\s*(\S.*)\s*$")
+_BLOCK_FIELD_RE = re.compile(r"^ {2}(\w+):\s*(\S.*+)\s*+$")
 # The entry-start line itself (`- type: X`) carries its `type:` field inline after the
 # dash, not on its own 2-space-indented line like every other field.
-_BLOCK_START_FIELD_RE = re.compile(r"^- (\w+):\s*(\S.*)\s*$")
+_BLOCK_START_FIELD_RE = re.compile(r"^- (\w+):\s*(\S.*+)\s*+$")
+
+
+# `(?<!\s)` anchors the match at the start of a whitespace run, so a long run with no
+# `#` after it is scanned once rather than from every position inside it.
+_INLINE_COMMENT_RE = re.compile(r"(?<!\s)\s+#.*$")
 
 
 def _block_field_value(raw: str) -> str:
     """`raw` with a trailing ` # inline comment` stripped, same convention
     `relationships.yaml` already uses on a `source:`/`target:` line -- left alone for
     a quoted scalar, where a `#` is just a character, not a comment start."""
-    return raw if raw.startswith(('"', "'")) else re.sub(r"\s+#.*$", "", raw)
+    return raw if raw.startswith(('"', "'")) else _INLINE_COMMENT_RE.sub("", raw)
 
 
 def _flow_entry_dict(line: str) -> dict[str, Any] | None:
@@ -1340,20 +1359,31 @@ def _find_top_level_entry(lines: list[str], matches: Callable[[dict[str, Any]], 
             i += 1
             continue
         if _TOP_LEVEL_START_RE.match(line):
-            end = i + 1
-            while end < len(lines) and not _TOP_LEVEL_START_RE.match(lines[end].rstrip("\n")):
-                end += 1
-            fields = {
-                m.group(1): _block_field_value(m.group(2))
-                for j in range(i, end)
-                if (m := (_BLOCK_START_FIELD_RE if j == i else _BLOCK_FIELD_RE).match(lines[j].rstrip("\n")))
-            }
-            if matches(fields):
+            end = _block_entry_end(lines, i)
+            if matches(_block_entry_fields(lines, i, end)):
                 return i, end, False
             i = end
             continue
         i += 1
     return None
+
+
+def _block_entry_end(lines: list[str], start: int) -> int:
+    """Index just past the block entry starting at `lines[start]`."""
+    end = start + 1
+    while end < len(lines) and not _TOP_LEVEL_START_RE.match(lines[end].rstrip("\n")):
+        end += 1
+    return end
+
+
+def _block_entry_fields(lines: list[str], start: int, end: int) -> dict[str, Any]:
+    """A block entry's `key: value` fields over `lines[start:end]`; the first line
+    carries its field inline after the dash."""
+    return {
+        m.group(1): _block_field_value(m.group(2))
+        for j in range(start, end)
+        if (m := (_BLOCK_START_FIELD_RE if j == start else _BLOCK_FIELD_RE).match(lines[j].rstrip("\n")))
+    }
 
 
 def apply_element_edits(edits: list[dict[str, Any]]) -> None:
@@ -1384,7 +1414,7 @@ def apply_element_edits(edits: list[dict[str, Any]]) -> None:
                 f"- {yaml.safe_dump(ordered, default_flow_style=True, sort_keys=False, width=10**9).strip()}\n"
             )
         else:
-            name_idx = next((i for i in range(start, end) if re.match(r"^  name:", lines[i])), None)
+            name_idx = next((i for i in range(start, end) if re.match(r"^ {2}name:", lines[i])), None)
             if name_idx is None:
                 raise ValueError(f"element {element_id!r} has no name: line this editor can rewrite")
             dumped = yaml.safe_dump({"name": edit["name"]}, default_flow_style=False, sort_keys=False, width=10**9)
