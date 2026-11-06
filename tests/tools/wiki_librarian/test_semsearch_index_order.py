@@ -35,9 +35,11 @@ def _dying_after(count: int) -> Iterator[bytes]:
 def test_only_files_with_all_their_chunks_get_a_digest(repo: Path) -> None:
     db = semsearch.connect()
     chunks = [_chunk("a.md", 1), _chunk("a.md", 2), _chunk("b.md", 1), _chunk("b.md", 2)]
+    vectors = _dying_after(3)
+    digests = {"a.md": "da", "b.md": "db"}
 
     with pytest.raises(KeyboardInterrupt):
-        semsearch._store_embedded(db, chunks, _dying_after(3), {"a.md": "da", "b.md": "db"})
+        semsearch._store_embedded(db, chunks, vectors, digests)
     db.commit()
 
     assert _files(db) == {"a.md"}
