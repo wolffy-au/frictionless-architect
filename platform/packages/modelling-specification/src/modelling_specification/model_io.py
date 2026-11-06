@@ -1324,16 +1324,22 @@ _BLOCK_FIELD_RE = re.compile(r"^ {2}(\w+):\s*(\S.*+)\s*+$")
 _BLOCK_START_FIELD_RE = re.compile(r"^- (\w+):\s*(\S.*+)\s*+$")
 
 
-# `(?<!\s)` anchors the match at the start of a whitespace run, so a long run with no
-# `#` after it is scanned once rather than from every position inside it.
-_INLINE_COMMENT_RE = re.compile(r"(?<!\s)\s+#.*$")
+def _strip_inline_comment(raw: str) -> str:
+    """`raw` without a trailing whitespace-then-`#` comment, in linear time. Only the
+    last line can hold one (a final newline is kept), but the whitespace before the
+    `#` may run back across earlier lines. A regex here backtracks on whitespace runs."""
+    body = raw.removesuffix("\n")
+    pos = body.find("#", body.rfind("\n") + 1)
+    while pos != -1 and (pos == 0 or not body[pos - 1].isspace()):
+        pos = body.find("#", pos + 1)
+    return raw if pos == -1 else body[:pos].rstrip() + raw[len(body) :]
 
 
 def _block_field_value(raw: str) -> str:
     """`raw` with a trailing ` # inline comment` stripped, same convention
     `relationships.yaml` already uses on a `source:`/`target:` line -- left alone for
     a quoted scalar, where a `#` is just a character, not a comment start."""
-    return raw if raw.startswith(('"', "'")) else _INLINE_COMMENT_RE.sub("", raw)
+    return raw if raw.startswith(('"', "'")) else _strip_inline_comment(raw)
 
 
 def _flow_entry_dict(line: str) -> dict[str, Any] | None:

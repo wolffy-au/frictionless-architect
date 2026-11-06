@@ -4,6 +4,7 @@ inline-comment strip anchored), so a refactor cannot silently change what they m
 
 from __future__ import annotations
 
+import itertools
 import random
 import re
 import time
@@ -92,12 +93,19 @@ def test_block_field_keeps_trailing_whitespace_in_the_value() -> None:
     ],
 )
 def test_inline_comment_strip_matches_legacy(raw: str) -> None:
-    assert model_io._INLINE_COMMENT_RE.sub("", raw) == _LEGACY_COMMENT.sub("", raw)
+    assert model_io._strip_inline_comment(raw) == _LEGACY_COMMENT.sub("", raw)
 
 
 def test_inline_comment_strip_matches_legacy_on_random_input() -> None:
     for text in _random_lines():
-        assert model_io._INLINE_COMMENT_RE.sub("", text) == _LEGACY_COMMENT.sub("", text), repr(text)
+        assert model_io._strip_inline_comment(text) == _LEGACY_COMMENT.sub("", text), repr(text)
+
+
+def test_inline_comment_strip_matches_legacy_on_every_short_string() -> None:
+    for length in range(7):
+        for chars in itertools.product(" \n#a\u00a0", repeat=length):
+            text = "".join(chars)
+            assert model_io._strip_inline_comment(text) == _LEGACY_COMMENT.sub("", text), repr(text)
 
 
 def test_block_field_value_strips_comment_except_for_quoted_scalars() -> None:
@@ -109,7 +117,7 @@ def test_block_field_value_strips_comment_except_for_quoted_scalars() -> None:
 def test_long_whitespace_runs_stay_linear() -> None:
     hostile = "k" + " " * 200_000
     start = time.perf_counter()
-    assert model_io._INLINE_COMMENT_RE.sub("", hostile) == hostile
+    assert model_io._strip_inline_comment(hostile) == hostile
     assert model_io._BLOCK_FIELD_RE.match("  k:" + " " * 200_000) is None
     assert model_io._BLOCK_START_FIELD_RE.match("- k:" + " " * 200_000) is None
     assert time.perf_counter() - start < 2.0
