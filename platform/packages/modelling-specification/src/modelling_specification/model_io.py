@@ -56,7 +56,9 @@ def env_dir(name: str, default: Path) -> Path:
     value = os.environ.get(name)
     if not value:
         return default
-    path = Path(value).resolve()
+    if "\0" in value or not value.strip():
+        raise ValueError(f"{name} must be a directory path without NUL bytes or only whitespace")
+    path = Path(os.path.realpath(value))
     if not path.is_dir():
         raise ValueError(f"{name}={value!r} is not an existing directory")
     return path

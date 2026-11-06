@@ -149,6 +149,29 @@ def test_env_dir_rejects_a_missing_directory(monkeypatch: pytest.MonkeyPatch, tm
         model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback"))
 
 
+@pytest.mark.parametrize("value", ["bad\0dir", "   "])
+def test_env_dir_rejects_nul_bytes_and_blank_values(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
+    # The OS cannot hold a NUL in a real environment, so swap in a plain mapping.
+    monkeypatch.setattr(os, "environ", {"FRICTIONLESS_TEST_PATH": value})
+    with pytest.raises(ValueError, match="NUL bytes or only whitespace"):
+        model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback"))
+
+
+def test_env_dir_rejects_a_file(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    file = tmp_path / "f.txt"
+    file.write_text("x")
+    monkeypatch.setenv("FRICTIONLESS_TEST_PATH", str(file))
+    with pytest.raises(ValueError, match="is not an existing directory"):
+        model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback"))
+
+
+def test_env_dir_resolves_dotdot_and_symlinks(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    (tmp_path / "real").mkdir()
+    (tmp_path / "link").symlink_to(tmp_path / "real")
+    monkeypatch.setenv("FRICTIONLESS_TEST_PATH", str(tmp_path / "link" / ".." / "real"))
+    assert model_io.env_dir("FRICTIONLESS_TEST_PATH", Path("/fallback")) == (tmp_path / "real").resolve()
+
+
 def test_model_name_rejects_a_path(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("FRICTIONLESS_MODEL_NAME", "../escaped")
     with pytest.raises(ValueError, match="must be a plain file name"):
