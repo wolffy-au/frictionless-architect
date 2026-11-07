@@ -20,7 +20,9 @@ Run their scripts with `poetry run python ...`. Markdown is linted by
 ## Inputs
 
 - Optional scope (a package, a feature, "diagrams only", "docstrings only"). Default:
-  full sweep of `src/` and every tracked `*.md` doc.
+  full sweep of `src/` and every tracked `*.md` doc outside `wiki/`.
+- Out of scope: `wiki/`. It is derived and owned by `wiki-librarian`, so do not review
+  it, edit it, or cite it as evidence, even when a scope seems to include it.
 - Style: `TECHNICAL.md` (Google-style docstrings, type hints, "Diagramming" → PlantUML
   and C4-PlantUML, structural focus). Constitution VIII (docs must survive changes),
   Quality Gate ("Documentation" — READMEs, specs, inline comments updated).
