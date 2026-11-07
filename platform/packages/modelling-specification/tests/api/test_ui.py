@@ -29,9 +29,10 @@ def test_authoring_page_has_no_state_control() -> None:
     assert "state-select" not in client.get("/authoring/").text
 
 
-def test_authoring_page_renders_markdown_messages() -> None:
-    # GH #185: the LLM's free-text "message" reply must render as formatted Markdown,
-    # never as an unstyled pre-wrap block of raw syntax.
+def test_authoring_page_inserts_the_server_rendered_message_html() -> None:
+    # GH #185: the LLM's free-text "message" reply arrives pre-rendered as sanitised
+    # HTML in `message_html` (router.py); the page inserts it directly rather than
+    # building Markdown client-side or showing an unstyled pre-wrap block of raw syntax.
     page = client.get("/authoring/").text
-    assert "renderMarkdown(body.message)" in page
+    assert "body.message_html" in page
     assert 'whiteSpace = "pre-wrap"' not in page

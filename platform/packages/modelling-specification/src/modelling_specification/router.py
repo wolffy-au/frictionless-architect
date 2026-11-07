@@ -30,6 +30,7 @@ from modelling_specification.authoring.delta import (
     scrub_or_require_review,
 )
 from modelling_specification.authoring.state import CandidateDelta, DeltaStatus, Session, SessionStore
+from modelling_specification.markdown_render import render_message_markdown
 from modelling_specification.validation import conventions
 from modelling_specification.validation.duplicates import find_duplicates
 from modelling_specification.validation.fixes import proposed_fix_for_finding
@@ -208,6 +209,26 @@ def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
     }
 
 
+def _message_response(text: str) -> dict[str, Any]:
+    """`propose`/`resolve-pii`'s response when the LLM answers in plain text
+    instead of proposing a delta. `message_html` is `text` rendered to sanitised
+    HTML server-side (GH #185) -- the UI inserts it directly, never `message`,
+    which stays the raw LLM text for any other caller."""
+    return {
+        "delta_id": None,
+        "status": "message",
+        "message": text,
+        "message_html": render_message_markdown(text),
+        "elements": [],
+        "relationships": [],
+        "views": [],
+        "view_membership_edits": [],
+        "element_edits": [],
+        "element_removals": [],
+        "relationship_removals": [],
+    }
+
+
 def _pending_grounding(session_id: str) -> dict[str, Any] | None:
     """The session's pending delta as the LLM should see it -- the non-empty change
     lists only, `None` when nothing is pending."""
@@ -355,18 +376,7 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         return _pii_review_response(review)
     except LlmMessage as message:
         session.pending_options = []
-        return {
-            "delta_id": None,
-            "status": "message",
-            "message": message.text,
-            "elements": [],
-            "relationships": [],
-            "views": [],
-            "view_membership_edits": [],
-            "element_edits": [],
-            "element_removals": [],
-            "relationship_removals": [],
-        }
+        return _message_response(message.text)
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -461,18 +471,7 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
         )
     except LlmMessage as message:
         session.pending_options = []
-        return {
-            "delta_id": None,
-            "status": "message",
-            "message": message.text,
-            "elements": [],
-            "relationships": [],
-            "views": [],
-            "view_membership_edits": [],
-            "element_edits": [],
-            "element_removals": [],
-            "relationship_removals": [],
-        }
+        return _message_response(message.text)
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
