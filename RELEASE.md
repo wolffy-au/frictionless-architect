@@ -167,13 +167,14 @@ git push origin develop          # fast-forward only, never force
 gh pr create --base main --head develop    # or update the existing PR
 ```
 
-Wait until every check is resolved and green (CI, SonarCloud quality gate, Snyk), then
+Wait until every check is resolved and green (CI, CodeQL, SonarCloud quality gate), then
 **stop**. A human reviews the PR and merges it manually, using a merge commit (not squash
 or rebase, so the bump commit stays reachable from `main`). Do not use `gh pr merge`,
 a local merge, or a push to `main`.
 
-If Snyk fails on account quota ("Code test limit reached", "used your limit of private
-tests") rather than on findings, the human decides whether to accept that.
+Snyk is not a PR check; it runs locally in §2 and §4. If those scans fail on account quota
+("Code test limit reached", "used your limit of private tests") rather than on findings,
+the human decides whether to accept that.
 
 ### 8. Tag `main` after the merge
 

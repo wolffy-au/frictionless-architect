@@ -23,7 +23,7 @@ exposes each by its `name`.
 
 The write-capable agents push a branch, open a PR against `develop`, then watch CI
 (`.github/workflows/ci.yml`) and iterate on the same branch until every check is green —
-CI gates (SonarQube, Snyk, coverage) routinely surface things the local pass misses.
+CI gates (SonarQube, CodeQL, coverage) routinely surface things the local pass misses.
 They mark the PR ready but **never merge** — that stays a human decision. They hand back
 early only when a failure is outside their remit (unrelated flake, missing secret).
 `release-runner` pushes the tag and creates the release only after an explicit go-ahead.

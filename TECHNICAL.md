@@ -362,14 +362,14 @@ To force a Snyk check, run:
 ```bash
 npm install -g snyk@latest
 snyk auth <token>
-snyk test --command=python3
+snyk test --package-manager=poetry --org=wolffy-au
 ```
 
 The token is `SNYK_TOKEN` in the gitignored `.env` — never commit it.
 `scripts/pre_merge_checks.sh` loads it from `.env` when it isn't already exported, then runs
 `snyk test` on the root `poetry.lock`, `snyk code test`, and `snyk test` on
-`platform/poetry.lock`; locally these are **blocking**. In CI (`.github/workflows/ci.yml`)
-the same three scans run but are `continue-on-error` (advisory).
+`platform/poetry.lock`. All three are **blocking**, and they run locally only: CI
+(`.github/workflows/ci.yml`) does not run Snyk.
 
 ## Specification and Requirements Management
 

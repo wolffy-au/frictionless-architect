@@ -58,7 +58,7 @@ Poetry only. `poetry run ruff check .`, `poetry run pyright`, `poetry run mypy`,
    is a Sonar/issue reference; reference any closed CodeQL alert by number (e.g. "Closes
    codeql alert #N") so GitHub auto-closes it once the fix merges.
 8. Watch CI: `gh pr checks --watch` (`.github/workflows/ci.yml` — ruff, pyright, mypy,
-   behave, pytest+coverage, **SonarQube quality gate**, Snyk, **CodeQL analysis**). CI
+   behave, pytest+coverage, **SonarQube quality gate**, **CodeQL analysis**). CI
    Sonar/CodeQL will surface issues the local pass could not; that is expected.
 9. For any failing check: `gh run view --log-failed`, fix the cause on the same branch,
    push, re-watch. Repeat until green. Stop early only if a failure is genuinely
