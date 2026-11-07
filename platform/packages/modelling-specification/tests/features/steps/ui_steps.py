@@ -209,6 +209,26 @@ def step_apply_disabled(context: Context) -> None:
     assert context.page.is_disabled("#apply")
 
 
+@given('the LLM answers with the Markdown message "{text}"')
+def step_llm_markdown_text(context: Context, text: str) -> None:
+    context.fake_llm.content = text.replace("\\n", "\n")
+
+
+@then('the chat pane renders "{text}" in bold')
+def step_chat_renders_bold(context: Context, text: str) -> None:
+    context.page.locator("#messages .msg.agent strong").get_by_text(text, exact=False).wait_for()
+
+
+@then('the chat pane shows a bullet list item "{text}"')
+def step_chat_shows_bullet(context: Context, text: str) -> None:
+    context.page.locator("#messages .msg.agent li").get_by_text(text, exact=False).wait_for()
+
+
+@then('the chat pane does not show the raw Markdown syntax "{text}"')
+def step_chat_hides_raw_markdown(context: Context, text: str) -> None:
+    assert text not in context.page.locator("#messages").inner_text()
+
+
 @given("the LLM suggests two ways forward")
 def step_llm_suggests_options(context: Context) -> None:
     context.fake_llm.content = json.dumps(
