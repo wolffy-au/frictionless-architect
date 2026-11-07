@@ -2,11 +2,9 @@
 
 ## Supported Versions
 
-`frictionless-architect` has not yet cut a versioned release (no tags exist
-beyond an internal prototype archive). Only the latest commit on `main`
-receives security fixes. Once `cz bump` starts producing `v$version` tags
-(see [`RELEASE.md`](RELEASE.md)), this section will be updated with a
-supported-versions table.
+`frictionless-architect` is pre-1.0. Releases are tagged `v$version` (see
+[`RELEASE.md`](RELEASE.md)), but only the latest commit on `main` receives
+security fixes; earlier tags are not patched.
 
 ## Reporting a Vulnerability
 
