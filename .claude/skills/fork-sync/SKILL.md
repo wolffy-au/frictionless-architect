@@ -5,6 +5,12 @@ description: Keep forked GitHub dependencies in sync with upstream. Rebases fix/
 
 # fork-sync
 
+> **Status: design only, not runnable.** Of the scripts below, only `scripts/lib.sh` exists;
+> `setup.sh`, `sync-all.sh`, `sync-fork.sh`, `check-upstream.sh`, `rebuild-dist.sh`,
+> `dist/run-fork-sync.sh`, `dist/README.md` and `references/pr-template.md` have not been
+> written. The only manifest entry, `it4it`, is authored rather than forked, so there is
+> nothing to sync yet. Tell the user this instead of trying to run the workflow.
+
 Deterministic scripts do the mechanical work (fetch / rebase / rebuild / test) and
 emit JSON + exit codes. This skill is the **orchestrator**: run the scripts, read
 their output, and apply judgement only where a script escalated.
