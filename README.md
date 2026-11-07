@@ -222,7 +222,7 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
   build/render/validate CLI); run it with `./scripts/run-modelling_specification.sh`.
 - [`pii-gateway`](platform/packages/pii-gateway/README.md) — shared package that
   scrubs PII/PHI from content before it reaches an LLM provider (Presidio-backed,
-  ADR-0014/ADR-0043); called from `modelling-specification`'s spec drafting today.
+  ADR-0014/ADR-0043); called from `modelling-specification`'s conversational authoring today.
 - [`portal`](platform/packages/portal/README.md) — the composition host (ADR-0020)
   that serves every package UI from one app:
 

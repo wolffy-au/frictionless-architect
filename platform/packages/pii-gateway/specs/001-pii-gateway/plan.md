@@ -13,7 +13,7 @@ match except the `conversational-authoring` context, which gets flag-for-review
 (ADR-0014 amendment). `modelling-specification` is wired through with an integration test
 proving a planted PII string never reaches a stubbed LLM call — `architecture-governance`
 is registered as a context but not wired, since that package doesn't exist yet
-(deferred to its own build-out, like GH #68); `fn-ai-markdown-conversion`/
+(deferred to its own build-out); `fn-ai-markdown-conversion`/
 `fn-policy-quality-feedback` are confirmed to keep bypassing the gateway (ADR-0031). A
 mountable settings router (ADR-0034/ADR-0020 pattern)
 lets an operator toggle detector categories and per-context failure-mode actions without a
@@ -40,7 +40,7 @@ log file; no PII/PHI-bearing storage of any kind is introduced.
 **Testing**: `pytest` (unit tests for `scrub()`, detector-category config, audit
 logging) plus a `tests/api/`-style integration test proving a planted PII string never
 reaches a stubbed `litellm.completion` call from `modelling-specification`'s
-`authoring/delta.py` drafting path (the only buildable consumer today — see Scale/Scope),
+`authoring/delta.py` path (the only wired consumer today — see Scale/Scope),
 consistent with `scripts/pre_merge_checks.sh`'s existing suite.
 
 **Target Platform**: Linux server / local dev (same as every other `platform/packages/*`
@@ -59,13 +59,14 @@ silent pass-through — spec Assumptions); no PII/PHI value ever written to the 
 Scenario 3).
 
 **Scale/Scope**: Three known contexts registered at this feature's scope, but only one
-wired to real code today: `modelling-specification` (`fn-spec-generator`,
-`authoring/delta.py`) is the sole buildable consumer. `governance-eval`
-(`architecture-governance`/`fn-governance-eval`) and `conversational-authoring` (GH #68)
-are both registered contexts with no caller to wire yet — `architecture-governance`
-doesn't exist in the codebase (`ARCHITECTURE.md` §4: status **build**), deferred the same
-way GH #68 already was. Single-user local MVP volumes (ADR-0024) — no concurrency or
-multi-tenant design needed.
+wired to real code today: `conversational-authoring` (`fn-conversational-authoring`,
+GH #68), called from `modelling-specification`'s `authoring/delta.py` (rewired from
+`spec-generator` under GH #181). `spec-generator` (`fn-spec-generator`) and
+`governance-eval` (`architecture-governance`/`fn-governance-eval`) are registered
+contexts with no caller yet — `modelling-specification` has no separate spec-drafting
+call site, and `architecture-governance` doesn't exist in the codebase
+(`ARCHITECTURE.md` §4: status **build**). Single-user local MVP volumes (ADR-0024) — no
+concurrency or multi-tenant design needed.
 
 ## Constitution Check
 
@@ -138,7 +139,7 @@ package "platform/packages/pii-gateway" {
 }
 
 package "platform/packages/modelling-specification" as mdl {
-  [authoring/delta.py\n(fn-spec-generator)] as delta
+  [authoring/delta.py\n(fn-conversational-authoring)] as delta
 }
 
 scrub ..> detectors : uses
@@ -146,12 +147,12 @@ scrub ..> config : reads active categories / failure-mode
 scrub ..> audit : records metadata-only entry
 router ..> config : edits via mountable settings page
 
-delta --> scrub : scrub(text, context="spec-generator")
+delta --> scrub : scrub(text, context="conversational-authoring")
 note right of delta
-  architecture-governance's fn-governance-eval
-  would call scrub(text, context="governance-eval")
-  the same way, once that package is built
-  (deferred, like GH #68 - see plan.md Scale/Scope)
+  fn-spec-generator and architecture-governance's
+  fn-governance-eval would call scrub() the same way
+  with their own contexts, once those paths are built
+  (deferred - see plan.md Scale/Scope)
 end note
 @enduml
 ```
@@ -160,7 +161,7 @@ end note
 (own `pyproject.toml`, `src/pii_gateway/`, `tests/{unit,integration}/`, `README.md`,
 `specs/001-pii-gateway/`), per ADR-0034's shared-package pattern. `modelling-specification`
 takes it as a path dependency (ADR-0002) and calls `scrub()` from its existing
-`authoring/delta.py` drafting call site — no new packages or directories on its side.
+`authoring/delta.py` call site — no new packages or directories on its side.
 `architecture-governance` will do the same once it exists; no directory for it to change
 today.
 

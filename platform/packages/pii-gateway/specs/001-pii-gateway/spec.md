@@ -55,8 +55,10 @@ deferred to that package's own build-out.
 (`fn-conversational-authoring`, `modelling-specification.authoring.delta`) is no
 longer deferred — it is built, and as of this update correctly wired to this
 package's `conversational-authoring` context (flag-for-review, per User Story 2
-below), not the `spec-generator` context it was mis-wired to. The deferral
-language above now applies only to `architecture-governance`.
+below), not the `spec-generator` context it was mis-wired to. It is the only caller
+of `scrub()` today. `modelling-specification` has no separate spec-drafting call site
+(`fn-spec-generator`), so the `spec-generator` context is registered but unwired, and
+this story has no live caller until that path or `architecture-governance` is built.
 
 **Why this priority**: This is ADR-0014's mandatory requirement and the reason GH #136
 exists — without it, FR-004 is unenforced in code on this feature's only buildable
@@ -95,14 +97,14 @@ unchanged.
 
 ### User Story 2 - A detected match asks the architect first when they're already there (Priority: P2)
 
-The conversational-modelling agent (GH #68, not built in this feature) will send an
+The conversational-modelling agent (GH #68, built separately from this feature) sends an
 architect's free-text input to an LLM. Unlike the unattended drafting paths, an architect
 is present in that same conversational turn, so a detected match pauses for their
 confirmation instead of being silently redacted.
 
 **Why this priority**: Resolves the 2026-10-25 spec-alignment audit's open question and
 the 2026-10-31 failure-mode decision (ADR-0014) — this package must expose the
-flag-for-review behavior GH #68 will depend on, even though it doesn't call it yet.
+flag-for-review behavior GH #68 depends on.
 
 ```plantuml
 @startuml
@@ -209,7 +211,8 @@ assert the new behavior applies immediately.
 > assigned to a requirement with no coverage task.
 
 - **FR-007**: `modelling-specification`'s spec-drafting path MUST call this package's
-  scrub contract before any content reaches the LLM provider.
+  scrub contract before any content reaches the LLM provider. No such path exists yet
+  (see the User Story 1 update), so this binds that path when it is built.
 - **FR-008**: Policy/regulatory-standard document conversion
   (`fn-ai-markdown-conversion`, `fn-policy-quality-feedback`) MUST continue to call the
   LLM provider directly, bypassing this package (ADR-0031's exemption), verified by an
