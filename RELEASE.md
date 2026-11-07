@@ -89,9 +89,12 @@ Never merge or fast-forward `main` locally.
 bash scripts/pre_merge_checks.sh
 ```
 
-This runs `scripts/pre_commit_checks.sh` (pymarkdown, ruff, pyright, mypy, unit tests),
-then `behave`, then `pytest --cov-fail-under=90 --cov=src`, then the frontend UI harness
-if `frontend/` exists. Must pass clean.
+This runs `scripts/pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy,
+unit tests), the roadmap drift check (`import_gh_roadmap.py --check`), `poetry update`
+(fails if `poetry.lock` changes), `scripts/platform_checks.sh --update`, the three Snyk
+scans, `behave`, then `pytest --cov-fail-under=90 --cov=src --cov=architecture/model`, then
+the frontend UI harness if `frontend/` exists (it currently doesn't, so that step is
+skipped). Must pass clean.
 
 ### 3. SonarCloud — no open issues
 

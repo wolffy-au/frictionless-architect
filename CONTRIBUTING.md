@@ -36,8 +36,8 @@ By participating in this project you agree to abide by the
 ```bash
 poetry install                       # project + all dependency groups
 poetry run pytest                    # full test suite
-bash scripts/pre_commit_checks.sh    # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
-bash scripts/pre_merge_checks.sh     # + behave, coverage-gated pytest, frontend UI harness
+bash scripts/pre_commit_checks.sh    # fast gate: commit messages, pymarkdown, ruff, pyright, mypy, tests/unit/, platform checks
+bash scripts/pre_merge_checks.sh     # + roadmap-layer check, lock refresh, Snyk, behave, coverage-gated pytest, UI harness
 ```
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on
