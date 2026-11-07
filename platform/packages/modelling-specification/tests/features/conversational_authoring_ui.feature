@@ -62,8 +62,45 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     When the architect clicks Apply in the UI
     Then the preview banner is gone
 
+  Scenario: A proposed view is listed, previewed in its own view and can be applied (FR-012a)
+    Given the LLM proposes the new view "Requested Diagram"
+    When the architect sends that request in the UI
+    Then the chat pane lists "Requested Diagram" as proposed
+    And the render pane shows a preview that is not written yet
+    And the view "view-requested-diagram" is still selected
+    When the architect clicks Apply in the UI
+    Then the view "view-requested-diagram" is still selected
+
+  Scenario: Discarding a proposed view removes it from the picker (FR-012a)
+    Given the LLM proposes a new view that is objected to
+    When the architect sends that request in the UI
+    And the architect rejects the proposal
+    Then the view "view-objected-to" is not offered
+
   Scenario: A suggestion or question from the LLM is shown in the chat, not as an error
     Given the LLM answers with the plain-text message "Which assessment do you mean?"
     When the architect sends that request in the UI
     Then the chat pane shows the message "Which assessment do you mean?"
     And Apply is still disabled
+
+  Scenario: A suggested way forward offers each option to pick (FR-001 "ways forward", GH #68)
+    Given the LLM suggests two ways forward
+    When the architect sends that request in the UI
+    Then the chat pane offers two options to pick
+    When the architect picks the first option
+    Then the chat pane shows no objections
+
+  Scenario: A flagged PII/PHI match is reviewed and resolved before the LLM is asked (ADR-0014 amendment)
+    When the architect sends a request containing personal information in the UI
+    Then the chat pane flags it as personal information
+    When the architect chooses to redact and continue
+    Then the chat pane shows no objections
+
+  Scenario: Allow is rejected after a detector-engine error, and redact still works (ADR-0046)
+    Given the PII/PHI detector engine is forced to fail
+    When the architect sends a request containing personal information in the UI
+    Then the chat pane flags it as personal information
+    When the architect chooses to send it as-is
+    Then the chat pane shows that detection failed and it cannot be sent as-is
+    When the architect chooses to redact and continue
+    Then the chat pane shows no objections

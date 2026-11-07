@@ -49,6 +49,12 @@ scrub --> caller : ScrubResult(action=flagged_for_review, pending_confirmation=.
 caller -> caller : present matches to architect this turn
 alt architect confirms
   caller -> scrub : pending_confirmation.resolve(Resolution.REDACT | ALLOW | EDIT)
+  note right
+    ALLOW raises EngineErrorAllowRejected
+    (ADR-0046) when the pending match is
+    the synthetic engine-error match --
+    REDACT/EDIT are unaffected.
+  end note
   scrub --> caller : content to proceed with
 else turn abandoned
   caller -> caller : discard pending_confirmation (no timeout, no persisted state)
@@ -63,7 +69,7 @@ end
 | `"Contact Jane Doe at jane@example.com"` | `governance-eval` | `redacted_and_proceeded` | `"Contact <PERSON> at <EMAIL_ADDRESS>"` |
 | `"The event-sourcing pattern decouples writes from reads."` | `spec-generator` | `passed_through_unchanged` | identical to input |
 | `"My SSN is 234-56-7890"` | `conversational-authoring` | `flagged_for_review` | input text, with `pending_confirmation` set — no mutation until resolved |
-| (detector engine raises) | any | matches `DetectorCategoryConfiguration.failure_mode` for that context | treated as a match, never a silent pass-through |
+| (detector engine raises) | any | matches `DetectorCategoryConfiguration.failure_mode` for that context | treated as a match, never a silent pass-through -- the redacted text replaces the **entire** input with `"<_ENGINE_ERROR>"` (ADR-0046), not just the synthetic match's zero-length span |
 
 ## Settings router contract
 

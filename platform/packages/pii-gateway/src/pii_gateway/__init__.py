@@ -9,8 +9,10 @@ except the `conversational-authoring` context, which gets flag-for-review
 from pii_gateway.audit import AuditLogger, default_audit_path
 from pii_gateway.config import default_config_path, load_config, save_config
 from pii_gateway.models import (
+    ENGINE_ERROR_CATEGORY,
     AuditEntry,
     DetectorCategoryConfiguration,
+    EngineErrorAllowRejected,
     Match,
     PendingConfirmation,
     Resolution,
@@ -21,9 +23,11 @@ from pii_gateway.router import create_settings_router
 from pii_gateway.scrub import scrub
 
 __all__ = [
+    "ENGINE_ERROR_CATEGORY",
     "AuditEntry",
     "AuditLogger",
     "DetectorCategoryConfiguration",
+    "EngineErrorAllowRejected",
     "Match",
     "PendingConfirmation",
     "Resolution",

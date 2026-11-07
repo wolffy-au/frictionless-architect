@@ -183,6 +183,16 @@ evidence `store-ledger` backs. `adr-auditor`'s normal sweep picks the stub up fo
 | `applied_delta_summary` | string | What was actually applied once overridden |
 | `timestamp` | ISO 8601 | Draft time |
 
+## Conversation History
+
+Per session, in process memory, gone with the session like its deltas (FR-018,
+ADR-0037 item 9). `Session.history` is a list of LLM chat messages, oldest first, capped
+at `MAX_HISTORY_MESSAGES` (`authoring/delta.py`). One exchange is appended only after a
+successful LLM reply. The user message is the exact text the LLM was sent (scrubbed, or
+as the architect resolved it). Whether a past proposal is still live is not tracked here:
+each turn's prompt carries the current model and the pending delta, and a proposal in
+neither was discarded.
+
 ## Invariants (asserted by tests)
 
 1. No Candidate Delta reaches `applied` status without `validation_result.clean == true` or an Override Decision Record.
@@ -192,3 +202,5 @@ evidence `store-ledger` backs. `adr-auditor`'s normal sweep picks the stub up fo
 5. `architecture/model/conventions.yaml` round-trips through `yaml.safe_load`/`safe_dump` with no information loss.
 6. An Override Decision Record's `applied_delta_summary` names only elements/relationships that were in fact written to `architecture/model/` in the same apply.
 7. A `discarded` Candidate Delta is never read back in a later session (no resume path exists in code).
+8. `Session.history` never holds a request that has not been cleared for the LLM.
+9. A later turn that restates part of the pending delta does not duplicate it.

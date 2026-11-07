@@ -21,7 +21,7 @@ Application_Component(e_id3b0beba52b5a5c, "Reusable Architecture Library") {
   Application_Function(e_id2ef30ba1d68054, "Future-State & Options Modelling")
   Application_Function(e_id774463b70fec5c, "Conversational Solution Modelling")
 }
-Application_Component(e_id3da203d482f955, "Digital Twin & Knowledge Graph") {
+Application_Component(e_id3da203d482f955, "Architecture Knowledge Graph") {
   Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
   Application_Function(e_id1877d57ef1ec5e, "Forensic Ledger Recording")
 }
@@ -37,6 +37,7 @@ Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
   Application_Function(e_id7cc5a30769435c, "Conversational Candidate Architecture Authoring")
+  Application_Function(e_id524ad7dd09c255, "Governance Override Escalation")
   Application_Function(e_id4cb42acdf9de59, "Specification Generation")
 }
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
@@ -118,6 +119,7 @@ Rel_Serving_Up(e_id90a79bc0568053, e_id1a6bc8a929675e, "supplies transcripts to"
 Rel_Flow(e_id1a6bc8a929675e, e_id26722845c7215d, "hands scrubbed transcripts to")
 Rel_Serving_Up(e_id3a42c87ebb235a, e_id2ef30ba1d68054, "renders candidate models for")
 Rel_Serving_Up(e_id7cc5a30769435c, e_id3a42c87ebb235a, "renders the view under discussion live via")
+Rel_Triggering_Right(e_id7cc5a30769435c, e_id524ad7dd09c255, "overridden objection")
 Rel_Flow(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
 Rel_Flow(e_idbf7bcc015b2d5d, e_id1877d57ef1ec5e, "records gate outcomes to")
 Rel_Flow(e_id5447be33805351, e_id1877d57ef1ec5e, "records drift events to")

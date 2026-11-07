@@ -95,4 +95,12 @@ bash scripts/platform_checks.sh
 Open `http://127.0.0.1:8001/authoring/` in a browser. Expect a horizontal split (R19): a
 compact chat pane (textarea + Send) on top, a render pane below it spanning the full window
 width. Type a request, confirm the proposal's validation result/duplicates/pattern
-suggestions render in the chat pane, choose a view in the render pane: the pending change is previewed there (new elements marked `+`) with nothing written yet. Click Apply to write it; the pane then refreshes from the written model.
+suggestions render in the chat pane, choose a view in the render pane: the pending
+change is listed in the chat and previewed there (new elements marked `+`, renamed ones
+`~`) with nothing written yet. A proposed view or view membership edit opens in that view. Click
+Apply to write it; the pane then refreshes from the written model.
+
+Type a "what should I do about X" request instead (ADR-0041's "ways forward"): the chat
+pane renders each suggested option (rationale, convention references, elements/
+relationships, validation caveats) with a "Pick this option" button; clicking one calls
+`propose/select` and renders the result exactly as a normal proposal would.

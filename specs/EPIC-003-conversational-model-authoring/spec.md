@@ -60,7 +60,7 @@ else (no)
 endif
 :Repoint a misspelt endpoint at its\nunique nearest element and report it;
 if (Delta empty?) then (yes)
-  :Say nothing was proposed\n(add-only: no edit, rename or remove);
+  :Say nothing was proposed;
   |Architect|
   stop
 else (no)
@@ -252,12 +252,14 @@ Architect --> UC2
 - **FR-010**: When a classification was given, it MUST remain queryable after the fact.
 - **FR-011**: Whether a diagram renders automatically after every applied change, or only on an explicit view/object request, MUST be a configurable choice, not a hardcoded behavior.
 - **FR-012**: When configured for automatic rendering, the agent MUST render the affected element(s) as a live diagram immediately after a change is applied, without a manual render step.
-- **FR-012a**: As the architect proposes a change, the agent MUST render it in memory in the chosen view (new elements marked) without writing anything to `architecture/model/`; Apply is the only write (2026-10-12). After Apply, the displayed view is refreshed from the written model.
+- **FR-012a**: As the architect proposes a change, of any kind the delta can hold (new elements, relationships or views, view membership edits, renames, removals), the agent MUST list what is proposed in the conversation and render it in memory in the chosen view (new and renamed elements marked) without writing anything to `architecture/model/`; a proposed view or view membership edit is rendered in that view. Apply is the only write (2026-10-12, widened 2026-11-05). After Apply, the displayed view is refreshed from the written model.
 - **FR-013**: The agent MUST render a diagram for an explicitly requested object or described view without a manual render step, reflecting the model's state at the time of the request, regardless of the automatic-rendering configuration.
 - **FR-014**: When an architect overrides the agent's rejection of a convention violation, a duplicate flag, or a pattern suggestion, and proceeds anyway, the agent MUST record the override as a traceable decision — what was overridden, the agent's original objection, and the architect's rationale if one was given — for later review, rather than discarding it once applied. The architect's rationale is optional; the agent MUST NOT block or re-prompt for one before recording the override. A rejection caused by an ArchiMate metamodel-legality violation (FR-002) is never overridable through this mechanism — the agent continues to ask the architect to restate or refine the request (FR-017) rather than applying a change that would leave the model in an illegal state.
 - **FR-015**: When a later request in the same conversation touches an element or relationship already part of the pending candidate delta, the agent MUST amend/extend that pending delta rather than validating the new request as an independent delta against the last-applied model state.
 - **FR-016**: When a view request resolves to more than one plausible existing view, or to none, the agent MUST ask the architect to disambiguate among the matches, or to restate the request, rather than guessing or rendering an unconfirmed choice.
 - **FR-017**: When the architect rejects the agent's proposed fix for an already-rejected change, the agent MUST ask the architect to restate or refine the request rather than automatically retrying a different fix or dropping the request unprompted.
+- **FR-018**: Within a conversation, the agent MUST interpret each request in the light of the turns before it, so a follow-up such as "now connect it to Y" means what those turns established. Only text already cleared for the LLM may be carried forward: a request flagged for PII/PHI review stays out until the architect resolves it, and then only its resolved form is carried (ADR-0037 item 9).
+- **FR-019**: The agent MUST ground each proposal in the existing elements' descriptions as well as their names, so it judges what an element is rather than guessing from its name.
 
 ### Key Entities *(include if feature involves data)*
 

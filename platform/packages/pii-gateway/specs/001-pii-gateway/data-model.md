@@ -61,7 +61,10 @@ three values are `spec.md`'s "redacted-and-proceeded" / "flagged-for-review" /
 A span matching more than one category produces one `Match` per matching category,
 sharing the same `location`; redaction is still applied once per span (spec Edge Cases).
 A detector-engine error produces a synthetic `_ENGINE_ERROR` match with `confidence: 0.0`
-carrying no text (research.md R6, fail-closed).
+and `location: (0, 0)` -- a zero-length span, since there is no real detected location
+(research.md R6, fail-closed). Because the span is zero-length, the text this match
+causes to be redacted is the **entire** input, not the (empty) span itself -- redacting
+only the span would be a no-op and let the original text through unscrubbed (ADR-0046).
 
 ### `PendingConfirmation`
 
@@ -71,6 +74,14 @@ database row, cache entry, or queue item for this state: it exists only as the r
 value of one `scrub()` invocation and the caller's in-memory handling of it within that
 turn. `resolve` is not serializable — a closure over the original text, by design
 (nothing to persist).
+
+`detection_failed` (derived from `matches`, true iff any carries the `_ENGINE_ERROR`
+category) governs `resolve`'s one asymmetry: `resolve(Resolution.ALLOW)` raises
+`EngineErrorAllowRejected` when `detection_failed` is true, instead of returning
+`original_text` as it does for a real match (ADR-0046, 2026-11-05). `REDACT` and `EDIT`
+are unaffected -- only `ALLOW` is rejected, and only for this case, because ALLOW on a
+real match is the architect's judgment call having seen the actual detection, which
+does not exist when the engine never ran.
 
 **Lifecycle** (conversational-authoring context only):
 

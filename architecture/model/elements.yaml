@@ -1185,10 +1185,11 @@
 - type: ApplicationComponent
   id: sub-twin
   context: digital-twin-knowledge-graph
-  name: Digital Twin & Knowledge Graph
+  name: Architecture Knowledge Graph
   desc: >-
-    Maintains the Architecture Knowledge Graph: an intent plane and a
-    current-state digital twin plane.
+    Maintains the Architecture Knowledge Graph's intent plane (read/write,
+    built). The current-state digital twin plane (fn-twin-ingest) is modelled
+    but not yet built — see specs/001-knowledge-graph-read-path/spec.md.
 - type: ApplicationComponent
   id: sub-governance
   context: architecture-governance
@@ -1221,7 +1222,7 @@
     Serves the aggregated ArchiMate schema and sample-model coverage as JSON
     (/schema-payload, /refresh, /status). Not one of the six subsystems;
     extracted after the knowledge-graph scaffold (ADR-0005), reading the
-    knowledge graph only through the Digital Twin & Knowledge Graph read path.
+    knowledge graph only through the Architecture Knowledge Graph read path.
 - type: ApplicationComponent
   id: sub-llm-provider-config
   context: llm-provider-config
@@ -1551,7 +1552,7 @@
     Model one or more candidate future-state architectures, including competing
     vendor / RFP responses, as decision input for Architecture Governance.
 
-# --- C. Functions: Digital Twin & Knowledge Graph ---
+# --- C. Functions: Architecture Knowledge Graph ---
 - type: ApplicationFunction
   id: fn-twin-ingest
   context: digital-twin-knowledge-graph
@@ -1644,6 +1645,17 @@
     default, a detected match pauses the call for the architect to confirm,
     edit or allow before it proceeds, since they are already present in the
     same conversational turn.
+- type: ApplicationFunction
+  id: fn-override-escalation
+  context: modelling-specification
+  name: Governance Override Escalation
+  desc: >-
+    GH #108: when an architect overrides a flagged objection from
+    fn-conversational-authoring (metamodel-pass but convention-fail, or a
+    confirmed non-duplicate), auto-drafts a Status: Proposed ADR stub under
+    docs/adr/ (ADR-0037 item 4) rather than appending to store-ledger, since
+    an override is an architecture-governance decision, not controls/
+    compliance evidence.
 - type: ApplicationFunction
   id: fn-solution-modelling
   context: reusable-architecture-library
@@ -2021,35 +2033,39 @@
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-litellm
+  context: llm-provider-config
   name: litellm
   desc: >-
     Multi-provider LLM client library (OpenAI, Google Gemini, Anthropic Claude,
     Ollama, GitHub Copilot) backing sub-llm-provider-config's `resolve_call`
-    (ADR-0034). Modelled per ADR-0041: a runtime dependency decided by its own
+    (ADR-0034). Modelled per ADR-0044: a runtime dependency decided by its own
     ADR, not just mentioned in passing.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-presidio
+  context: pii-gateway
   name: Presidio (presidio-analyzer / presidio-anonymizer)
   desc: >-
     PII/PHI detection (regex + NER recognizers) and anonymization
     (redact/replace/hash) engine backing sub-pii-gateway's `scrub()` contract
-    (ADR-0040). Modelled per ADR-0041.
+    (ADR-0043). Modelled per ADR-0044.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-pyarchimate
+  context: modelling-specification
   name: pyArchimate
   desc: >-
     Source of fixed ArchiMate 3.2 metamodel rules for fn-conversational-authoring's
-    validation step (ADR-0037 item 5). Modelled per ADR-0041.
+    validation step (ADR-0037 item 5). Modelled per ADR-0044.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-rapidfuzz
+  context: modelling-specification
   name: rapidfuzz
   desc: >-
     Fuzzy string-matching library (`token_sort_ratio`) backing
     fn-conversational-authoring's duplicate-candidate surfacing (ADR-0037 item
-    6, research.md R5). Modelled per ADR-0041.
+    6, research.md R5). Modelled per ADR-0044.
   props: {c4: ignore}
 - type: SystemSoftware
   id: sw-keyring

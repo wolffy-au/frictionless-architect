@@ -106,6 +106,13 @@
     gh-tag: v0.7.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.7.0
 - type: Deliverable
+  id: del-release-v0-8-0
+  name: v0.8.0
+  props:
+    gh-published: '2026-11-01T12:38:46Z'
+    gh-tag: v0.8.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.8.0
+- type: Deliverable
   id: del-solution-design-mvp-8-unreleased
   name: solution-design-mvp (unreleased)
   props:
@@ -760,6 +767,13 @@
     gh-state: closed
     gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/139
+- type: WorkPackage
+  id: wp-spike-restructure-architecture-model-gh-183
+  name: 'GH-183 Spike: restructure architecture/model/diagrams/ for legibility'
+  props:
+    gh-number: '183'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/183
 - type: WorkPackage
   id: wp-stubbed-oscal-conversion-api-validated-gh-165
   name: GH-165 Stubbed OSCAL conversion API, validated against the UI

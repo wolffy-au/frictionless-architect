@@ -1,0 +1,99 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Product — digital-twin-knowledge-graph
+
+Strategy_Capability(e_id18ec07397a9d5f, "Architecture Knowledge Management")
+Strategy_Capability(e_idafba1b4ab1e756, "Executable Specification Generation")
+Strategy_Capability(e_idc29413a2099958, "Forensic Audit Recording")
+Strategy_Capability(e_id41aa3eb894c852, "Architectural Drift Detection & Reconciliation")
+Strategy_Capability(e_id08f340a094e552, "Human Oversight & Approval")
+Strategy_Capability(e_id6c60f4feb89058, "Conversational Architecture Governance")
+Business_Process(e_id9459a13c29ec5d, "Production Release")
+Business_Process(e_id3a7a27eefeb751, "Architecture Reconciliation")
+Business_Process(e_id395c9c2923aa56, "Target State Definition")
+Business_Object(e_id66f6cfb386e056, "Current State Architecture")
+Application_Component(e_id3da203d482f955, "Architecture Knowledge Graph") {
+  Application_Function(e_id1ca5384e28155c, "Digital Twin Ingestion")
+  Application_Function(e_id1877d57ef1ec5e, "Forensic Ledger Recording")
+  Application_Interface(e_id0c9a1a2f155254, "Knowledge Graph Read Path")
+}
+Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_ide732c9a4b52a59, "Current-State Digital Twin")
+}
+Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger") {
+  Application_DataObject(e_idfd63e49cbb7150, "Ledger Entry")
+}
+Business_Collaboration(e_id2aa180bf48e258, "Model Collaboration")
+Application_Component(e_iddc67769c419e5d, "CI/CD Pipeline")
+Application_Component(e_idd9989f19521155, "Cloud & Infrastructure Platforms")
+Application_Function(e_id8926bd09002459, "OSCAL Catalog Generation")
+Application_Function(e_id26722845c7215d, "Comparative Evaluation & Decision")
+Application_Function(e_id29feb234dcb55b, "Agentic Build Supervision")
+Application_Function(e_idbf7bcc015b2d5d, "Controls Enforcement Gate")
+Application_Function(e_id40274d7630725c, "Controls Effectiveness Monitoring")
+Application_Function(e_id5447be33805351, "Drift & Deviation Detection")
+Application_Function(e_idd08a9177cbed58, "Release Deployment")
+Application_DataObject(e_id9da413ec6a4b5e, "Live Infrastructure State")
+Application_DataObject(e_id70f4dc177c5c5c, "Deployment Event")
+Technology_Artifact(e_id9b247a70d9f258, "frictionless_architect (flat src/)")
+Implementation_WorkPackage(e_idf0b1b54884f45d, "GH-71 Migration steps 1–3")
+Implementation_WorkPackage(e_id07f2b195f01056, "GH-106 Scaffold digital-twin-knowledge-graph")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+}
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x") {
+  Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
+}
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+Implementation_Plateau(e_id726fa9a2d0835f, "architecture-strategy-mvp") {
+  Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+}
+Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration")
+Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
+
+Rel_Serving_Up(e_id18ec07397a9d5f, e_idafba1b4ab1e756, "authoritative graph")
+Rel_Serving_Up(e_id18ec07397a9d5f, e_id41aa3eb894c852, "as-designed intent")
+Rel_Serving_Up(e_id18ec07397a9d5f, e_id6c60f4feb89058, "authoritative model for proposal validation (GH #108)")
+Rel_Serving_Up(e_idc29413a2099958, e_id08f340a094e552, "decision evidence")
+Rel_Realization_Up(e_id9459a13c29ec5d, e_idc29413a2099958, "")
+Rel_Realization_Up(e_id395c9c2923aa56, e_id18ec07397a9d5f, "")
+Rel_Access_r(e_id3a7a27eefeb751, e_id66f6cfb386e056, "reconciles")
+Rel_Realization_Up(e_ide732c9a4b52a59, e_id66f6cfb386e056, "")
+Rel_Realization_Up(e_id3da203d482f955, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_id3da203d482f955, e_idc29413a2099958, "")
+Rel_Flow(e_idd9989f19521155, e_id3da203d482f955, "current-state configuration")
+Rel_Flow(e_iddc67769c419e5d, e_id3da203d482f955, "deployment events & gate outcomes")
+Rel_Access_w(e_id3da203d482f955, e_id989d401ffdae55, "reads & writes the intent plane; writes the current-state digital twin plane once fn-twin-ingest is built")
+Rel_Access_w(e_id3da203d482f955, e_ida4a5b51705f555, "appends forensic records")
+Rel_Access_w(e_idd9989f19521155, e_id9da413ec6a4b5e, "reports")
+Rel_Access_w(e_idd08a9177cbed58, e_id70f4dc177c5c5c, "records")
+Rel_Access_r(e_id1ca5384e28155c, e_id9da413ec6a4b5e, "reads")
+Rel_Access_r(e_id1ca5384e28155c, e_id70f4dc177c5c5c, "reads")
+Rel_Access_w(e_id1ca5384e28155c, e_ide732c9a4b52a59, "builds")
+Rel_Access_r(e_id26722845c7215d, e_ide732c9a4b52a59, "reads for impact")
+Rel_Access_w(e_id1877d57ef1ec5e, e_idfd63e49cbb7150, "appends")
+Rel_Flow(e_id26722845c7215d, e_id1877d57ef1ec5e, "records decisions to")
+Rel_Flow(e_idbf7bcc015b2d5d, e_id1877d57ef1ec5e, "records gate outcomes to")
+Rel_Flow(e_id5447be33805351, e_id1877d57ef1ec5e, "records drift events to")
+Rel_Flow(e_id29feb234dcb55b, e_id1877d57ef1ec5e, "records agent actions to")
+Rel_Flow(e_id8926bd09002459, e_id1877d57ef1ec5e, "records conversion provenance to")
+Rel_Access_r(e_idbf7bcc015b2d5d, e_idfd63e49cbb7150, "verifies process controls from")
+Rel_Access_r(e_id40274d7630725c, e_ide732c9a4b52a59, "observes")
+Rel_Access_r(e_id5447be33805351, e_ide732c9a4b52a59, "reads current state")
+Rel_Serving_Up(e_id0c9a1a2f155254, e_idd18b3d46fade58, "path-dependency library")
+Rel_Realization_Up(e_id9b247a70d9f258, e_id3da203d482f955, "")
+Rel_Realization_Up(e_id69891242354858, e_id3da203d482f955, "")
+Rel_Triggering(e_idf0b1b54884f45d, e_id07f2b195f01056, "")
+Rel_Realization_Up(e_id07f2b195f01056, e_id69891242354858, "")
+Rel_Realization_Up(e_id100dd210f7455d, e_ida4a5b51705f555, "")
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Realization_Up(e_id420f57c4d41e52, e_id989d401ffdae55, "")
+Rel_Aggregation(e_idb94c55ad2a0756, e_id625e631f1f715e, "")
+Rel_Aggregation(e_id5024d2087dac51, e_id625e631f1f715e, "")
+Rel_Realization_Up(e_id2aa180bf48e258, e_id18ec07397a9d5f, "")
+Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

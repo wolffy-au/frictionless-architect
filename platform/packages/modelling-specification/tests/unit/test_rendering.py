@@ -355,7 +355,7 @@ def test_render_svg_raises_runtime_error_when_plantuml_fails(monkeypatch: pytest
 def test_render_candidate_view_raises_preview_error_when_the_model_cannot_be_assembled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(model_io, "preview_model", lambda elements, rels, view: (None, ["boom"]))
+    monkeypatch.setattr(model_io, "preview_model", lambda *_args: (None, ["boom"]))
 
     with pytest.raises(rendering.PreviewError, match="boom"):
         rendering.render_candidate_view("view-stakeholder", [], [])

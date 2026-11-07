@@ -272,7 +272,10 @@ find something at release time anyway, dispatch the independent agents **in para
 are independent of each other and of `docs-uplift` + `spec-alignment` + `adr-auditor` —
 and re-run `pre_merge_checks.sh` only once, after they all land, not after each one. A
 release that needed remediation is a signal to fix the schedule, not the new normal
-(`RELEASE.md` §"Keeping releases fast").
+(`RELEASE.md` §"Keeping releases fast"). The session driving the release does the
+dispatching, not `release-runner`, which has no `Agent` tool: it stops and hands back
+the agents it needs, including `commit-auditor` at preflight, then resumes with their
+results (`RELEASE.md` §"Keeping releases fast"; `.claude/agents/release-runner.md`).
 
 Summary (`RELEASE.md` §"Steps"):
 

@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/diagrams/application/1-policy-conversion.puml
@@ -12,6 +12,24 @@ sources:
 - architecture/model/diagrams/application/3-control-assurance.svg
 - architecture/model/diagrams/application/catalog-structure.puml
 - architecture/model/diagrams/application/catalog-structure.svg
+- architecture/model/diagrams/application/cooperation-standard/architecture-governance.puml
+- architecture/model/diagrams/application/cooperation-standard/architecture-governance.svg
+- architecture/model/diagrams/application/cooperation-standard/conformance-drift-assurance.puml
+- architecture/model/diagrams/application/cooperation-standard/conformance-drift-assurance.svg
+- architecture/model/diagrams/application/cooperation-standard/controls-compliance-catalog.puml
+- architecture/model/diagrams/application/cooperation-standard/controls-compliance-catalog.svg
+- architecture/model/diagrams/application/cooperation-standard/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/application/cooperation-standard/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/application/cooperation-standard/llm-provider-config.puml
+- architecture/model/diagrams/application/cooperation-standard/llm-provider-config.svg
+- architecture/model/diagrams/application/cooperation-standard/modelling-specification.puml
+- architecture/model/diagrams/application/cooperation-standard/modelling-specification.svg
+- architecture/model/diagrams/application/cooperation-standard/pii-gateway.puml
+- architecture/model/diagrams/application/cooperation-standard/pii-gateway.svg
+- architecture/model/diagrams/application/cooperation-standard/reusable-architecture-library.puml
+- architecture/model/diagrams/application/cooperation-standard/reusable-architecture-library.svg
+- architecture/model/diagrams/application/cooperation-standard/schema-visualizer-api.puml
+- architecture/model/diagrams/application/cooperation-standard/schema-visualizer-api.svg
 - architecture/model/diagrams/application/cooperation/architecture-governance.puml
 - architecture/model/diagrams/application/cooperation/architecture-governance.svg
 - architecture/model/diagrams/application/cooperation/conformance-drift-assurance.puml
@@ -40,6 +58,8 @@ sources:
 - architecture/model/diagrams/application/dataflow-oscal.svg
 - architecture/model/diagrams/application/dataflow-twin-governance.puml
 - architecture/model/diagrams/application/dataflow-twin-governance.svg
+- architecture/model/diagrams/application/modelling-specification-cooperation.puml
+- architecture/model/diagrams/application/modelling-specification-cooperation.svg
 - architecture/model/diagrams/application/strategy-drift.puml
 - architecture/model/diagrams/application/strategy-drift.svg
 - architecture/model/diagrams/application/structure.puml
@@ -78,6 +98,24 @@ sources:
 - architecture/model/diagrams/business/organization.svg
 - architecture/model/diagrams/business/process-cooperation.puml
 - architecture/model/diagrams/business/process-cooperation.svg
+- architecture/model/diagrams/business/product/architecture-governance.puml
+- architecture/model/diagrams/business/product/architecture-governance.svg
+- architecture/model/diagrams/business/product/conformance-drift-assurance.puml
+- architecture/model/diagrams/business/product/conformance-drift-assurance.svg
+- architecture/model/diagrams/business/product/controls-compliance-catalog.puml
+- architecture/model/diagrams/business/product/controls-compliance-catalog.svg
+- architecture/model/diagrams/business/product/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/business/product/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/business/product/llm-provider-config.puml
+- architecture/model/diagrams/business/product/llm-provider-config.svg
+- architecture/model/diagrams/business/product/modelling-specification.puml
+- architecture/model/diagrams/business/product/modelling-specification.svg
+- architecture/model/diagrams/business/product/pii-gateway.puml
+- architecture/model/diagrams/business/product/pii-gateway.svg
+- architecture/model/diagrams/business/product/reusable-architecture-library.puml
+- architecture/model/diagrams/business/product/reusable-architecture-library.svg
+- architecture/model/diagrams/business/product/schema-visualizer-api.puml
+- architecture/model/diagrams/business/product/schema-visualizer-api.svg
 - architecture/model/diagrams/business/service-realization/architecture-governance.puml
 - architecture/model/diagrams/business/service-realization/architecture-governance.svg
 - architecture/model/diagrams/business/service-realization/conformance-drift-assurance.puml
@@ -104,6 +142,8 @@ sources:
 - architecture/model/diagrams/c4/context.svg
 - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
 - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+- architecture/model/diagrams/layered/context-modelling-specification.puml
+- architecture/model/diagrams/layered/context-modelling-specification.svg
 - architecture/model/diagrams/layered/fn-conversational-authoring.puml
 - architecture/model/diagrams/layered/fn-conversational-authoring.svg
 - architecture/model/diagrams/layered/subsystem-capabilities.puml
@@ -187,9 +227,9 @@ kind of view:
 | Folder | Contents |
 |---|---|
 | `vision/` | TOGAF Phase A views (9 hand-curated in `views.yaml` plus 4 generic ones now in `views-viewpoints.yaml`) |
-| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`; `product` was dropped, GH #129 step 6). `service-realization` now renders as one file per context |
+| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`; `product`, dropped at GH #129 step 6 and since re-added, renders as `product/<context>.puml`). `service-realization` now renders as one file per context |
 | `layered/` | the cross-layer Subsystems & Capabilities view, plus the new Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`) |
-| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` now render as `usage/<context>.puml` and `cooperation/<context>.puml` |
+| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` now render as `usage/<context>.puml` and `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml` |
 | `c4/` | the C4 context and container diagrams |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
@@ -219,7 +259,7 @@ Numeric prefixes make a directory listing sort in reading order. Views 1, 2,
 Stakeholder/Driver/Outcome/Capability/Requirement element (including
 GH #108's fifth driver, assessment, outcome and tenth requirement) appears
 on them automatically; views 4–7 stay hand-curated in `views.yaml`
-(`architecture/model/views.yaml:26-352`, `architecture/model/views-viewpoints.yaml:365-410`):
+(`architecture/model/views.yaml:26-431`, `architecture/model/views-viewpoints.yaml:404-443`):
 
 | # | View | Viewpoint | File | Covers |
 |---|---|---|---|---|
@@ -236,10 +276,10 @@ on them automatically; views 4–7 stay hand-curated in `views.yaml`
 The first Value Stream view was renamed from "Value Stream — Governed
 Architecture Delivery" to **Value Stream Hand-offs**. Each stream's recipients,
 outcome and serving capabilities moved to its own `6a`–`6d` view
-([ADR-0033](decision-log-0030-onward.md); `architecture/model/views.yaml:141-259`).
+([ADR-0033](decision-log-0030-onward.md); `architecture/model/views.yaml:185-303`).
 `8-requirements-realization` is new. It leaves the question of *why* each
 requirement exists to the Motivation and Goal Realization views
-(`architecture/model/views.yaml:327-352`).
+(`architecture/model/views.yaml:404-431`).
 
 The vendored IT4IT views follow the same numbering convention in their own
 repo (`1-stakeholder` … `4-outcome-realization`). See
@@ -247,7 +287,7 @@ repo (`1-stakeholder` … `4-outcome-realization`). See
 
 ### Generic per-viewpoint views (GH #105)
 
-`architecture/model/views-viewpoints.yaml` adds 16 views total, one per
+`architecture/model/views-viewpoints.yaml` adds 17 views total, one per
 standard ArchiMate 3.2 §14 viewpoint not already covered by a hand-curated
 view, plus the four vision views promoted from `views.yaml` above. Every one
 is scoped by `include_types` alone — never `members` — so new elements of a
@@ -265,7 +305,8 @@ switch. Twelve are brand new (the Product view was dropped):
 | Application Usage | `application/usage/<context>` | `application_usage` |
 | Technology Usage | `technology/usage` | `technology_usage` |
 | Business Process Cooperation | `business/process-cooperation` | `business_process_cooperation` |
-| Application Cooperation | `application/cooperation/<context>` | `application_cooperation` |
+| Application Cooperation (Standard) | `application/cooperation-standard/<context>` | `application_cooperation` |
+| Product | `business/product/<context>` | `product` |
 | Service Realization | `business/service-realization/<context>` | `service_realization` |
 | Implementation & Migration overview | `migration/overview/<context>` | `implementation_migration` |
 | Implementation Deployment | `implementation/deployment/<context>` | `implementation_deployment` |
@@ -285,7 +326,7 @@ type-wide sweep across whatever context it's scoped to
 ### The business (Phase B) set
 
 Six views render under `diagrams/business/`, all using
-`business_process_cooperation` (`architecture/model/views.yaml:354-586`):
+`business_process_cooperation` (`architecture/model/views.yaml:434-672`):
 
 | View | Diagram | Covers |
 |---|---|---|
@@ -300,7 +341,7 @@ Six views render under `diagrams/business/`, all using
 is now a standard Business Process Cooperation view. Which capability each
 process realizes is left to Outcome Realization. Its `Flow` edges are left
 undirected so their targets are not looped back over the chain
-(`architecture/model/views.yaml:356-368`). The rendered `.puml` carries `scale
+(`architecture/model/views.yaml:436-449`). The rendered `.puml` carries `scale
 max 3800 width` (`architecture/model/diagrams/business/delivery.puml:4`).
 
 **How the consolidated controls view nests its boxes.** Each role is assigned
@@ -313,17 +354,17 @@ Process** wherever one role owns a function outright:
 
 It nests **Function > Process** where no role is assigned, as with Release
 Controls Enforcement. This consolidation replaced an earlier near-duplicate
-`vision/controls-lifecycle` diagram (`architecture/model/views.yaml:444-471`).
+`vision/controls-lifecycle` diagram (`architecture/model/views.yaml:530-557`).
 
 **The three numbered slices** zoom into consecutive stretches of the
 consolidated view. They are deliberate subsets, and they cannot drift apart
 because all of them are projections of the same model
-(`architecture/model/views.yaml:465-471`).
+(`architecture/model/views.yaml:551-557`).
 
 > **Sources disagree on the 1 → 2 hand-off object.** The slice comment says
 > each slice repeats its hand-off object from the neighbouring slice: "the
 > OSCAL Profile (1 -> 2) and the OSCAL SSP (2 -> 3)"
-> (`architecture/model/views.yaml:508-510`). The rendered slice 2 does not
+> (`architecture/model/views.yaml:594-596`). The rendered slice 2 does not
 > contain the OSCAL Profile. What it shares with slice 1 is the **Resolved
 > OSCAL Profile Catalog**, which patterns and blueprints now read
 > (`architecture/model/diagrams/business/2-pattern-solution-design.puml`).
@@ -347,9 +388,17 @@ context owns a lot (`reusable-architecture-library`,
 (`conformance-drift-assurance`, connected to almost every other context by
 design); a second split axis is left as a follow-up.
 
-The **Product** view (`view-product`) was dropped rather than split: the model
-has no Product, Contract, Value, Material or `*Service` elements, so it only
-duplicated what Application Usage and Service Realization already show.
+The **Product** view (`view-product`) was first dropped rather than split, then
+re-added by request as a per-context sweep. The model still has no Product,
+Contract, Value or Material elements, so it duplicates what Application Usage and
+Service Realization show until some exist (`architecture/model/views-viewpoints.yaml`).
+
+**Application Cooperation** is now two views. `view-application-cooperation`
+(`application/cooperation/<context>`, in `views.yaml`) pulls same-layer neighbours
+only, so each per-context diagram stays Application-layer. It is the one to read.
+`view-application-cooperation-standard` keeps the literal viewpoint with unrestricted
+neighbours, for comparison (`architecture/model/views.yaml`;
+`architecture/model/views-viewpoints.yaml`).
 
 The new **Context Map** view (`view-context-map`, `overview/context-map`,
 `architecture/model/views.yaml`) is entirely generated: the context
@@ -393,7 +442,7 @@ business-layer presence, closed by the new `bfn-security-assurance`/
   standard `layered` viewpoint. `ApplicationComponent → Capability`
   realization spans the Strategy and Application layers, and showing "how
   layers line up" is what that viewpoint is for
-  (`architecture/model/views.yaml:370-396`). It previously used
+  (`architecture/model/views.yaml:453-482`). It previously used
   `outcome_realization` under `cross-layer/`.
 - **Feature Steel Thread: Conversational Model Authoring (GH #108)**
   (`layered/fn-conversational-authoring`) also uses `layered`, for the same
@@ -408,7 +457,7 @@ business-layer presence, closed by the new `bfn-security-assurance`/
 - **IT4IT: Capability Bridges** uses `capability`.
 
 The Controls & OSCAL stage is drawn as **two** application-layer views
-(`architecture/model/views.yaml:398-443`):
+(`architecture/model/views.yaml:484-529`):
 
 - `Data Flow — Controls & OSCAL` (`application/dataflow-oscal`, renamed from
   `artefact-oscal` 2026-10-08, GH #109 / ADR-0036). The LLM
@@ -498,10 +547,10 @@ Model](architecture-model.md) §"Schema" describes. `view-stakeholder`,
 (now in `views-viewpoints.yaml`) go the other way deliberately: they sweep
 by `include_types` with **no** `exclude_elements`, because showing the
 IT4IT import's own Stakeholder/Outcome/Capability elements alongside the
-platform's is the point there (`architecture/model/views.yaml:30-170`,
-`architecture/model/views-viewpoints.yaml:365-410`). `Outcome` had been left
+platform's is the point there (`architecture/model/views.yaml:30-214`,
+`architecture/model/views-viewpoints.yaml:404-443`). `Outcome` had been left
 commented out of `view-stakeholder`'s `include_types` (`# , Outcome`); a
 2026-10-18 change turned it on, so the Stakeholder view now also sweeps in
 the ten outcomes and the `Realization` edges from each to its sub-goal
-(`architecture/model/views-viewpoints.yaml:373`;
+(`architecture/model/views-viewpoints.yaml:412`;
 `architecture/model/diagrams/vision/1-stakeholder.puml`).

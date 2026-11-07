@@ -17,6 +17,19 @@ from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 ENGINE_ERROR_CATEGORY = "_ENGINE_ERROR"
 
 
+class EngineErrorAllowRejected(Exception):
+    """Raised by `PendingConfirmation.resolve(Resolution.ALLOW)` when the pending
+    match is the synthetic engine-error match (research.md R6), not a real
+    detection (2026-11-05 decision).
+
+    The detector engine never inspected this text, so there is nothing for an
+    "allow" to be a judgment call about -- unlike allowing a real match the
+    architect has actually seen, this would let unexamined text through. REDACT
+    and EDIT remain available; only ALLOW is rejected, and only for this
+    pending confirmation's engine-error case.
+    """
+
+
 class ScrubAction(StrEnum):
     """The outcome of one `scrub()` call."""
 
@@ -71,6 +84,12 @@ class PendingConfirmation(BaseModel):
         """Wire up the closure `resolve()` delegates to; called once, by `scrub()`."""
         self._resolver = resolver
 
+    @property
+    def detection_failed(self) -> bool:
+        """True when this pending confirmation is the synthetic engine-error match
+        (research.md R6) rather than a real detection."""
+        return any(match.category == ENGINE_ERROR_CATEGORY for match in self.matches)
+
     def resolve(self, resolution: Resolution) -> str:
         """Return the content to proceed with for the given resolution.
 
@@ -79,7 +98,18 @@ class PendingConfirmation(BaseModel):
 
         Returns:
             `original_text` for `ALLOW`/`EDIT`, `redacted_text` for `REDACT`.
+
+        Raises:
+            EngineErrorAllowRejected: `resolution` is `ALLOW` and this pending
+                confirmation is the engine-error case (`detection_failed`) --
+                enforced here so no caller can bypass it by going straight to
+                `resolve()`. `REDACT` and `EDIT` are unaffected.
         """
+        if resolution == Resolution.ALLOW and self.detection_failed:
+            raise EngineErrorAllowRejected(
+                "the PII/PHI detector engine failed and this text was never inspected; "
+                "it cannot be allowed through unscrubbed -- choose redact or edit instead"
+            )
         return self._resolver(resolution)
 
 

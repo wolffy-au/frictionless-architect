@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Strategy'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -38,23 +38,28 @@ from the resource that equips it (`architecture/model/relationships.yaml:47-57`)
 | Reusable Architecture Curation (`cap-reusable-architecture`) | `req-reusable-architecture` | Enterprise Architecture Practice |
 | Conversational Architecture Governance (`cap-conversational-governance`) | `req-conversational-authoring-alignment` | Enterprise Architecture Practice |
 
+`process-conversational-solution-modelling` now realizes
+`cap-reusable-architecture` as well, so reuse has a conversational path from
+`role-sa` alongside the pattern and blueprint processes
+(`architecture/model/relationships.yaml`).
+
 `cap-conversational-governance` sits between spec generation and the digital
 twin it validates proposals against: it `Serving`s `cap-spec-engine`
 ("validated authoring") and is served by `cap-digital-twin` ("authoritative
 model for proposal validation"), but realizes neither — it is the authoring
 discipline, not the store or the generator
 (`architecture/model/elements.yaml` — `cap-conversational-governance` desc;
-`architecture/model/relationships.yaml:237-238`). It is realized by
+`architecture/model/relationships.yaml:241-242`). It is realized by
 `sub-modelling` (the Modelling & Specification subsystem) and by the
 `process-conversational-authoring` business process below
-(`architecture/model/relationships.yaml:259,457`).
+(`architecture/model/relationships.yaml:263,458`).
 
 The fifth resource, **Accumulated Evidence Record** (`res-evidence-record`), is new.
 It is "the growing, append-only body of recorded agent" actions and decisions
 behind forensic audit recording (`architecture/model/elements.yaml:425-429`).
 
 Eight `Capability → Capability` `Serving` edges record the dependency order
-between capabilities (`architecture/model/relationships.yaml:205-216`):
+between capabilities (`architecture/model/relationships.yaml:209-220`):
 
 - Knowledge Management serves Spec Generation ("authoritative graph") and
   Drift Detection ("as-designed intent").
@@ -115,8 +120,10 @@ single-stage stream**, not decomposed further (ADR-0037): "an architect's
 natural-language request becomes a validated, applied change to the
 architecture knowledge graph". It `Triggering`-links to `vss-baseline`
 ("validated change extends the baseline"), handing its output into the
-existing reuse-baseline stage rather than growing its own stage chain
-(`architecture/model/relationships.yaml:211-214`).
+existing reuse-baseline stage rather than growing its own stage chain, and
+`process-conversational-authoring` realizes it, the one process → stream edge in
+the model
+(`architecture/model/relationships.yaml:215-218`).
 
 Stages *move* between streams rather than being duplicated
 ([ADR-0033](decision-log-0030-onward.md)):
@@ -128,7 +135,7 @@ Stages *move* between streams rather than being duplicated
 - "Release & Attest" becomes "Release to Production".
 
 **Hand-offs between streams** connect the stages across streams
-(`architecture/model/relationships.yaml:185-204`):
+(`architecture/model/relationships.yaml:189-208`):
 
 ```text
 Build ─Triggering▶ Prove ─Triggering▶ Release ─Triggering▶ Observe

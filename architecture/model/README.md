@@ -18,6 +18,10 @@ validate / render logic lives in the `modelling-specification` platform package
 (`platform/packages/modelling-specification`, ADR-0037) and is reached through its CLI
 (`python -m modelling_specification.cli build|render|validate`).
 
+That package resolves its model directory via `FRICTIONLESS_MODEL_DIR` (defaulting to
+this directory, unset) rather than a hardcoded path, so a different repo can install it
+and point it at its own model instead (ADR-0045) -- see that package's README.
+
 ## Files
 
 | File | Contents |

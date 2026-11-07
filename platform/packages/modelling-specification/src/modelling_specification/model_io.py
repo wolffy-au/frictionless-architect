@@ -21,8 +21,9 @@ Schema (see ``architecture/model/README.md``):
   ``label`` in the C4 projection only)
 * view: ``id`` / ``name`` / ``members`` (element ids) and/or ``include_types``
   (optionally narrowed by ``exclude_elements``) / ``viewpoint`` (optional
-  standard-viewpoint slug; see the model-archimate skill's
-  ``reference/archi-viewpoints.xml`` -- a declared viewpoint is enforced)
+  standard-viewpoint slug; see this package's
+  ``viewpoints.py``/``reference/archi-viewpoints.xml`` -- a declared viewpoint
+  is enforced)
 
 ``id`` values are hashed to deterministic UUIDs so regeneration does not churn
 identifiers (and therefore diagrams).
@@ -30,8 +31,10 @@ identifiers (and therefore diagrams).
 
 from __future__ import annotations
 
-import sys
+import os
+import re
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -39,19 +42,54 @@ import yaml
 from pyArchimate import ArchiType, Element, Model, check_valid_relationship
 from pyArchimate.view.layout import LayoutConfig, apply_format, apply_layout
 
-# This file lives at
-# platform/packages/modelling-specification/src/modelling_specification/model_io.py --
-# five parents up is the repo root, anchoring every path below independently of the
-# process's current working directory (the CLI may run with cwd=platform/).
-REPO_ROOT = Path(__file__).resolve().parents[5]
-HERE = REPO_ROOT / "architecture" / "model"
-OUT = HERE / "frictionless-architect.xml"
-SKILL_SCRIPTS = REPO_ROOT / ".claude" / "skills" / "model-archimate" / "scripts"
+from modelling_specification.viewpoints import UNRESTRICTED, check_conformance, get_viewpoint, known_slugs
+
+
+def _source_checkout() -> Path | None:
+    """This repo's root when running from its own checkout; None when installed elsewhere."""
+    marker = Path("platform") / "packages" / "modelling-specification"
+    return next((p for p in Path(__file__).resolve().parents if (p / marker).is_dir()), None)
+
+
+def env_dir(name: str, default: Path) -> Path:
+    """`default` unless env var `name` is set, when it must name an existing directory."""
+    value = os.environ.get(name)
+    if not value:
+        return default
+    if "\0" in value or not value.strip():
+        raise ValueError(f"{name} must be a directory path without NUL bytes or only whitespace")
+    path = Path(os.path.realpath(value))
+    if not path.is_dir():
+        raise ValueError(f"{name}={value!r} is not an existing directory")
+    return path
+
+
+def _model_name() -> str:
+    """The model's name, which is also a file name: it must stay in the model directory."""
+    value = os.environ.get("FRICTIONLESS_MODEL_NAME") or "frictionless-architect"
+    if value.startswith(".") or not re.fullmatch(r"[\w .-]+", value):
+        raise ValueError(f"FRICTIONLESS_MODEL_NAME={value!r} must be a plain file name")
+    return value
+
+
+# Every path below anchors here rather than on the process's current working directory
+# (the CLI may run with cwd=platform/), except for an installed copy with no
+# FRICTIONLESS_MODEL_DIR, which reads `architecture/model/` under the cwd (ADR-0045).
+_CHECKOUT = _source_checkout()
+REPO_ROOT = _CHECKOUT or Path.cwd()
+_MODEL_DIR_FROM_ENV = bool(os.environ.get("FRICTIONLESS_MODEL_DIR"))
+HERE = env_dir("FRICTIONLESS_MODEL_DIR", REPO_ROOT / "architecture" / "model")
+# Root that generated files' displayed paths are relative to, and the generators' cwd.
+PROJECT_ROOT = HERE.parent if _MODEL_DIR_FROM_ENV else REPO_ROOT
+# True only for this repo's own model; settings naming it apply to nothing else.
+IS_HOME_MODEL = _CHECKOUT is not None and not _MODEL_DIR_FROM_ENV
+MODEL_NAME = _model_name()
+OUT = HERE / f"{MODEL_NAME}.xml"
 # Vendored reference models (ADR-0029): each is loaded alongside the
 # first-party elements.yaml/relationships.yaml and merged into the same
 # det_id()/NS pass below -- their own id prefix (e.g. `it4it-`) is what keeps
 # the merged id space unique, not any separate reconciliation step.
-THIRD_PARTY = REPO_ROOT / "third_party"
+THIRD_PARTY = env_dir("FRICTIONLESS_THIRD_PARTY_DIR", PROJECT_ROOT / "third_party")
 # Ownership scope: every element carries a `context` (a bounded context, in DDD
 # terms). First-party elements default to this one; a layer's elements default
 # to the layer directory's name (`it4it`, `gh-roadmap`). An explicit `context:`
@@ -60,17 +98,95 @@ DEFAULT_CONTEXT = "platform"
 ELEMENTS_FILENAME = "elements.yaml"
 RELATIONSHIPS_FILENAME = "relationships.yaml"
 VIEWS_FILENAME = "views.yaml"
-VENDORED_MODELS = [THIRD_PARTY / "it4it"]
+VENDORED_MODELS = sorted(p.parent for p in THIRD_PARTY.glob(f"*/{ELEMENTS_FILENAME}"))
 # Every optional layer merged into the same pass: the vendored models plus the
 # generated GitHub roadmap (GH #95, import_gh_roadmap.py), whose ids are
 # prefixed by ArchiMate type (plat-, del-, wp-) rather than by source system.
 MODEL_LAYERS = [*VENDORED_MODELS, HERE / "gh-roadmap"]
 LAYER_CONTEXTS = {p.name for p in MODEL_LAYERS}
 
-# The model-archimate skill owns the standard-viewpoint reference and the
-# conformance check a view is held to when it declares `viewpoint:`.
-sys.path.insert(0, str(SKILL_SCRIPTS))
-from viewpoints import UNRESTRICTED, check_conformance, get_viewpoint, known_slugs  # noqa: E402
+# ArchiMate *architecture* layer per concept name -- unrelated to MODEL_LAYERS
+# above (that's model-source layering: vendored repos vs. first-party). Used
+# only by `include_neighbours: same_layer` (GH #129 step 4 follow-up) to keep
+# a same-layer-only neighbour pull from crossing into another ArchiMate
+# layer. Transcribed from this package's `viewpoints.py` COLLECTIONS dict --
+# keep in sync when that file re-syncs from Archi's viewpoint XML.
+# Composite/always-allowed concepts (Grouping, Junction, Location) are
+# deliberately absent: a same-layer check against them would be meaningless,
+# so they never block a neighbour pull.
+ARCHIMATE_LAYER_OF: dict[str, str] = {
+    **dict.fromkeys(["Resource", "Capability", "ValueStream", "CourseOfAction"], "strategy"),
+    **dict.fromkeys(
+        [
+            "BusinessActor",
+            "BusinessRole",
+            "BusinessCollaboration",
+            "BusinessInterface",
+            "BusinessProcess",
+            "BusinessFunction",
+            "BusinessInteraction",
+            "BusinessEvent",
+            "BusinessService",
+            "BusinessObject",
+            "Contract",
+            "Representation",
+            "Product",
+        ],
+        "business",
+    ),
+    **dict.fromkeys(
+        [
+            "ApplicationComponent",
+            "ApplicationCollaboration",
+            "ApplicationInterface",
+            "ApplicationFunction",
+            "ApplicationInteraction",
+            "ApplicationProcess",
+            "ApplicationEvent",
+            "ApplicationService",
+            "DataObject",
+        ],
+        "application",
+    ),
+    **dict.fromkeys(
+        [
+            "Node",
+            "Device",
+            "SystemSoftware",
+            "TechnologyCollaboration",
+            "TechnologyInterface",
+            "Path",
+            "CommunicationNetwork",
+            "TechnologyFunction",
+            "TechnologyProcess",
+            "TechnologyInteraction",
+            "TechnologyEvent",
+            "TechnologyService",
+            "Artifact",
+        ],
+        "technology",
+    ),
+    **dict.fromkeys(["Equipment", "Facility", "DistributionNetwork", "Material"], "physical"),
+    **dict.fromkeys(
+        [
+            "Stakeholder",
+            "Driver",
+            "Assessment",
+            "Goal",
+            "Outcome",
+            "Principle",
+            "Requirement",
+            "Constraint",
+            "Meaning",
+            "Value",
+        ],
+        "motivation",
+    ),
+    **dict.fromkeys(
+        ["WorkPackage", "Deliverable", "ImplementationEvent", "Plateau", "Gap"],
+        "implementation_migration",
+    ),
+}
 
 # Fixed namespace -- do not change; it anchors every generated identifier.
 NS = uuid.UUID("6f4c0d2e-1a3b-5c7d-8e9f-0a1b2c3d4e5f")
@@ -89,6 +205,12 @@ def canon(raw: str, errors: list[str], ctx: str) -> str | None:
     if name is None:
         errors.append(f"{ctx}: {raw!r} is not an ArchiMate 3.2 concept name (pyArchimate.ArchiType)")
     return name
+
+
+def project_relative(path: Path) -> str:
+    """`path` relative to `PROJECT_ROOT` for display, or whole if it lies outside it
+    (a `FRICTIONLESS_THIRD_PARTY_DIR` may point anywhere)."""
+    return str(path.relative_to(PROJECT_ROOT)) if path.is_relative_to(PROJECT_ROOT) else str(path)
 
 
 def det_id(*parts: str) -> str:
@@ -700,8 +822,8 @@ def add_views(
     when opened directly in Archi (the diagram skills re-lay-out via PlantUML
     and ignore these coordinates).
 
-    A view may also declare `viewpoint: <slug>` (see the model-archimate
-    skill's `reference/archi-viewpoints.xml`). When it does -- and the slug is
+    A view may also declare `viewpoint: <slug>` (see this package's
+    `reference/archi-viewpoints.xml`). When it does -- and the slug is
     not `custom` -- every element type placed on the view is held to that
     standard ArchiMate viewpoint's allow-set, and a stray concept fails the
     build. The declaration is not written into the generated XML (pyArchimate
@@ -751,7 +873,12 @@ def add_views(
     -- GH #129 step 3, so a per-context split view (step 4) can still show
     what a context actually talks to, with the neighbour visually distinct
     from (not inside) that context's own generated Grouping boundary once the
-    diagram-archimate skill renders it.
+    diagram-archimate skill renders it. `include_neighbours: same_layer`
+    narrows this to only a neighbour in the same ArchiMate layer
+    (`ARCHIMATE_LAYER_OF`) as the on-view element it is one hop from -- for a
+    single-layer viewpoint like Application Cooperation, pulling in a
+    neighbour of *any* layer otherwise erases the one thing that
+    distinguishes it from a cross-layer viewpoint like Application Usage.
 
     The richer view schema (auto-membership rules) is still deferred."""
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
@@ -781,8 +908,23 @@ def add_views(
             # are deliberately NOT folded into view_el_types, so a neighbour of
             # a type the viewpoint doesn't allow (e.g. a Capability one hop
             # from an Application Usage view) doesn't fail check_view_viewpoint
-            # below (GH #129 step 4 fallout).
-            _add_neighbour_elements(view, m, on_view, uuid_to_id, types_by_id, exclude_element_patterns, v["id"])
+            # below (GH #129 step 4 fallout). `include_neighbours: same_layer`
+            # (as opposed to `true`) additionally restricts the pull to
+            # neighbours in the same ArchiMate layer as the on-view element
+            # they are one hop from -- for a single-layer viewpoint like
+            # Application Cooperation, an unrestricted pull otherwise erases
+            # the one thing that distinguishes it from a cross-layer viewpoint
+            # like Application Usage.
+            _add_neighbour_elements(
+                view,
+                m,
+                on_view,
+                uuid_to_id,
+                types_by_id,
+                exclude_element_patterns,
+                v["id"],
+                same_layer_only=v.get("include_neighbours") == "same_layer",
+            )
         exclude_patterns = _compile_exclude_patterns(v, errors)
         view_rel_types = _connect_view_relationships(
             view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
@@ -830,6 +972,8 @@ def _add_neighbour_elements(
     types_by_id: dict[str, str],
     exclude_element_patterns: list[dict[str, str | None]],
     view_id: str,
+    *,
+    same_layer_only: bool = False,
 ) -> set[str]:
     """`include_neighbours: true` (GH #129 step 3): add a node for every element
     exactly one relationship hop from an element already in `on_view`, whatever
@@ -839,7 +983,20 @@ def _add_neighbour_elements(
     `check_view_viewpoint`, since a neighbour is incidental boundary context,
     not part of what the view's viewpoint is about). Walks from the view's
     original membership only (`base`), never the set as it grows, so a
-    neighbour's own neighbours are not pulled in -- exactly one hop."""
+    neighbour's own neighbours are not pulled in -- exactly one hop.
+
+    `same_layer_only=True` (`include_neighbours: same_layer`) additionally
+    requires the neighbour's ArchiMate layer (`ARCHIMATE_LAYER_OF`) to match
+    the on-view element it is one hop from. A neighbour whose own type, or the
+    near element's type, is not in `ARCHIMATE_LAYER_OF` (always-allowed
+    concepts like Junction/Location) is never filtered by this -- there is no
+    layer to compare.
+
+    A neighbour of type Grouping is never pulled in, regardless of
+    same_layer_only: a Grouping is a structural container (e.g. sys-platform,
+    Composition-parent of nearly every ApplicationComponent), not a thing one
+    relationship hop away in the sense GH #129 means -- pulling it in would
+    wrap almost every per-context split in the same content-free outer box."""
     base = frozenset(on_view)
     added_types: set[str] = set()
     for rel in m.relationships:
@@ -847,12 +1004,35 @@ def _add_neighbour_elements(
             if near.uuid not in base or far.uuid in on_view:
                 continue
             far_id = uuid_to_id.get(far.uuid)
-            if far_id is None or _element_excluded(far_id, exclude_element_patterns, types_by_id):
+            if far_id is None or not _neighbour_admissible(
+                near, far_id, uuid_to_id, types_by_id, exclude_element_patterns, same_layer_only
+            ):
                 continue
             view.add(ref=far, uuid=det_id(view_id, "node", far.uuid))
             on_view.add(far.uuid)
             added_types.add(types_by_id[far_id])
     return added_types
+
+
+def _neighbour_admissible(
+    near: Any,
+    far_id: str,
+    uuid_to_id: dict[str, str],
+    types_by_id: dict[str, str],
+    exclude_element_patterns: list[dict[str, str | None]],
+    same_layer_only: bool,
+) -> bool:
+    """Whether the element `far_id`, one hop from `near`, may be pulled in by
+    `_add_neighbour_elements`: not excluded, not a Grouping, and (if
+    `same_layer_only`) not in a different known ArchiMate layer from `near`."""
+    if _element_excluded(far_id, exclude_element_patterns, types_by_id) or types_by_id[far_id] == "Grouping":
+        return False
+    if not same_layer_only:
+        return True
+    near_id = uuid_to_id.get(near.uuid)
+    near_layer = ARCHIMATE_LAYER_OF.get(types_by_id.get(near_id, "")) if near_id else None
+    far_layer = ARCHIMATE_LAYER_OF.get(types_by_id[far_id])
+    return near_layer is None or far_layer is None or near_layer == far_layer
 
 
 def _connect_view_relationships(
@@ -953,7 +1133,7 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
     elements = load_all_elements(errors)
     rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
     views = load_all_views(errors)
-    return _assemble("frictionless-architect", elements, rels, views, errors)
+    return _assemble(MODEL_NAME, elements, rels, views, errors)
 
 
 def existing_element_ids() -> set[str]:
@@ -963,6 +1143,16 @@ def existing_element_ids() -> set[str]:
     errors: list[str] = []
     elements = load_all_elements(errors)
     return {e["id"] for e in elements if e.get("id")}
+
+
+def existing_view_ids() -> set[str]:
+    """Every view id currently on disk (`views.yaml`, `views-viewpoints.yaml`, and
+    every layer's) -- used to de-duplicate an id the router synthesizes for a
+    proposed view the LLM left blank, same reason `existing_element_ids()` exists
+    for elements."""
+    errors: list[str] = []
+    views = load_all_views(errors)
+    return {v["id"] for v in views if v.get("id")}
 
 
 def existing_elements_and_types() -> tuple[list[dict[str, Any]], dict[str, str]]:
@@ -987,8 +1177,22 @@ def existing_element_types() -> dict[str, str]:
     return existing_elements_and_types()[1]
 
 
+def existing_relationships() -> list[tuple[str, str, str, str]]:
+    """Every first-party + layer relationship as ``(type, source, target, label)`` --
+    grounds a factual question that needs the connection graph itself (what connects
+    to an element, what it realizes, a motivation chain up to a stakeholder), not just
+    the element catalogue `propose_delta` was already given."""
+    errors: list[str] = []
+    rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
+    return [
+        (str(r.get("type", "")), str(r.get("source", "")), str(r.get("target", "")), str(r.get("label") or ""))
+        for r in rels
+    ]
+
+
 _ELEMENT_FIELD_ORDER = ["type", "id", "name", "desc", "props"]
 _RELATIONSHIP_FIELD_ORDER = ["type", "source", "target", "label", "props"]
+_VIEW_FIELD_ORDER = ["id", "name", "context", "diagram", "viewpoint", "include_types", "members"]
 
 
 def _append_yaml_flow_entries(path: Path, entries: list[dict[str, Any]], field_order: list[str]) -> None:
@@ -1004,53 +1208,480 @@ def _append_yaml_flow_entries(path: Path, entries: list[dict[str, Any]], field_o
         f.writelines(lines)
 
 
-def append_delta(elements: list[dict[str, Any]], relationships: list[dict[str, Any]]) -> None:
-    """Append an applied Candidate Delta's elements/relationships to `elements.yaml`/
-    `relationships.yaml` (FR-001's apply step, R9) -- additive only; no existing entry
-    is edited, retired or reordered (plan.md Model impact)."""
+def append_delta(
+    elements: list[dict[str, Any]], relationships: list[dict[str, Any]], views: list[dict[str, Any]] | None = None
+) -> None:
+    """Append an applied Candidate Delta's elements/relationships/views to
+    `elements.yaml`/`relationships.yaml`/`views.yaml` (FR-001's apply step, R9) --
+    additive only; no existing entry is edited, retired or reordered (plan.md Model
+    impact)."""
     if elements:
         _append_yaml_flow_entries(HERE / ELEMENTS_FILENAME, elements, _ELEMENT_FIELD_ORDER)
     if relationships:
         _append_yaml_flow_entries(HERE / RELATIONSHIPS_FILENAME, relationships, _RELATIONSHIP_FIELD_ORDER)
+    if views:
+        _append_yaml_flow_entries(HERE / VIEWS_FILENAME, views, _VIEW_FIELD_ORDER)
+
+
+_VIEW_START_RE = re.compile(r"^- id:\s*(\S+)\s*$")
+_MEMBERS_KEY_RE = re.compile(r"^ {2}members:\s*$")
+_MEMBERS_ITEM_RE = re.compile(r"^ {4}- (\S+)\s*$")
+
+
+def _view_block_bounds(lines: list[str], view_id: str) -> tuple[int, int] | None:
+    """`[start, end)` line range of the `views.yaml` top-level entry whose first line
+    is `- id: <view_id>`, through the line just before the next such line (or EOF) --
+    relies on every entry in this file starting with its own `id:` first, which is
+    this file's one established convention (no entry starts with another key)."""
+    start = next(
+        (i for i, line in enumerate(lines) if (m := _VIEW_START_RE.match(line.rstrip("\n"))) and m.group(1) == view_id),
+        None,
+    )
+    if start is None:
+        return None
+    end = next((i for i in range(start + 1, len(lines)) if _VIEW_START_RE.match(lines[i].rstrip("\n"))), len(lines))
+    return start, end
+
+
+def _members_block_bounds(lines: list[str], start: int, end: int) -> tuple[int, int] | None:
+    """`[members_key_idx, items_end)` -- the `  members:` key line through its last
+    `    - id` item line, within `[start, end)`. `None` if the view has no
+    `members:` key at all."""
+    key_idx = next((i for i in range(start, end) if _MEMBERS_KEY_RE.match(lines[i].rstrip("\n"))), None)
+    if key_idx is None:
+        return None
+    items_end = key_idx + 1
+    while items_end < end and _MEMBERS_ITEM_RE.match(lines[items_end].rstrip("\n")):
+        items_end += 1
+    if items_end < end and lines[items_end].strip().startswith("#"):
+        raise ValueError(
+            "a comment line immediately follows the members: block this editor just stopped reading -- "
+            "refusing to guess whether more members follow it; edit views.yaml by hand for this view instead"
+        )
+    return key_idx, items_end
+
+
+def apply_view_membership_edits(edits: list[dict[str, Any]]) -> None:
+    """Add/remove existing element ids from an existing view's `members:` list in
+    `views.yaml`, in place -- the one existing-view edit this module allows,
+    distinct from `append_delta`'s additive-only writes (a view's own curated scope
+    is architect-maintained, so changing what it shows isn't the same kind of change
+    as adding a wholly new element/relationship/view). Touches only the `members:`
+    block of the matching view entry (inserting a new one right after its `- id:`
+    line if it has none yet) -- every other line in the file, including that view's
+    own other keys, is untouched.
+
+    Raises `ValueError` for a view id not found in `views.yaml` (this editor only
+    ever touches the first-party file, never a layer's), or a `members:` layout it
+    doesn't recognise -- this file's one established style, a `  members:` key
+    followed by `    - id` lines with nothing else interleaved. It never guesses at a
+    rewrite it can't do precisely; a Candidate Delta that would hit either case is
+    expected to have already been rejected by `merge_candidate`'s own check for the
+    first, and this function raising for the second surfaces as the apply-step 500
+    FR-002 already treats any other post-write validation failure as."""
+    path = HERE / VIEWS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for edit in edits:
+        _apply_membership_edit(lines, edit)
+    path.write_text("".join(lines))
+
+
+def _apply_membership_edit(lines: list[str], edit: dict[str, Any]) -> None:
+    """Apply one view-membership edit to `lines` (`views.yaml`'s text) in place."""
+    view_id = edit["view_id"]
+    bounds = _view_block_bounds(lines, view_id)
+    if bounds is None:
+        raise ValueError(f"no view {view_id!r} in {VIEWS_FILENAME}")
+    start, end = bounds
+    members_bounds = _members_block_bounds(lines, start, end)
+    existing: list[str] = []
+    if members_bounds is not None:
+        key_idx, items_end = members_bounds
+        existing = [
+            m.group(1) for line in lines[key_idx + 1 : items_end] if (m := _MEMBERS_ITEM_RE.match(line.rstrip("\n")))
+        ]
+    remove = set(edit.get("remove", []))
+    new_members = [m for m in existing if m not in remove]
+    for eid in edit.get("add", []):
+        if eid not in new_members:
+            new_members.append(eid)
+    if members_bounds is None:
+        if edit.get("add"):  # else nothing to remove from a view that has no members: key
+            lines[start + 1 : start + 1] = ["  members:\n", *(f"    - {m}\n" for m in new_members)]
+    else:
+        key_idx, items_end = members_bounds
+        lines[key_idx:items_end] = [lines[key_idx], *(f"    - {m}\n" for m in new_members)]
+
+
+# Every top-level entry in elements.yaml/relationships.yaml is either a hand-authored
+# block (`- type: X` through its own fields at 2-space indent) or a flow-style one-liner
+# appended by `append_delta` (`- {type: X, id: Y, ...}`) -- the only two shapes either
+# file uses (ADR-0037 item 8 Consequences).
+_TOP_LEVEL_START_RE = re.compile(r"^- (\{|type:\s)")
+_BLOCK_FIELD_RE = re.compile(r"^ {2}(\w+):\s*(\S.*+)\s*+$")
+# The entry-start line itself (`- type: X`) carries its `type:` field inline after the
+# dash, not on its own 2-space-indented line like every other field.
+_BLOCK_START_FIELD_RE = re.compile(r"^- (\w+):\s*(\S.*+)\s*+$")
+
+
+def _strip_inline_comment(raw: str) -> str:
+    """`raw` without a trailing whitespace-then-`#` comment, in linear time. Only the
+    last line can hold one (a final newline is kept), but the whitespace before the
+    `#` may run back across earlier lines. A regex here backtracks on whitespace runs."""
+    body = raw.removesuffix("\n")
+    pos = body.find("#", body.rfind("\n") + 1)
+    while pos != -1 and (pos == 0 or not body[pos - 1].isspace()):
+        pos = body.find("#", pos + 1)
+    return raw if pos == -1 else body[:pos].rstrip() + raw[len(body) :]
+
+
+def _block_field_value(raw: str) -> str:
+    """`raw` with a trailing ` # inline comment` stripped, same convention
+    `relationships.yaml` already uses on a `source:`/`target:` line -- left alone for
+    a quoted scalar, where a `#` is just a character, not a comment start."""
+    return raw if raw.startswith(('"', "'")) else _strip_inline_comment(raw)
+
+
+def _flow_entry_dict(line: str) -> dict[str, Any] | None:
+    try:
+        parsed = yaml.safe_load(line.rstrip("\n")[2:])
+    except yaml.YAMLError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _find_top_level_entry(lines: list[str], matches: Callable[[dict[str, Any]], bool]) -> tuple[int, int, bool] | None:
+    """`(start, end, is_flow)` of the first top-level entry for which `matches` its
+    fields is true -- a flow one-liner's own parsed dict, or a block entry's fields
+    collected from its `  key: value` lines (multi-line values like a folded `desc:`
+    are not collected, since nothing here ever needs to match on one)."""
+    i = 0
+    while i < len(lines):
+        line = lines[i].rstrip("\n")
+        if line.startswith("- {"):
+            parsed = _flow_entry_dict(line)
+            if parsed is not None and matches(parsed):
+                return i, i + 1, True
+            i += 1
+            continue
+        if _TOP_LEVEL_START_RE.match(line):
+            end = _block_entry_end(lines, i)
+            if matches(_block_entry_fields(lines, i, end)):
+                return i, end, False
+            i = end
+            continue
+        i += 1
+    return None
+
+
+def _block_entry_end(lines: list[str], start: int) -> int:
+    """Index just past the block entry starting at `lines[start]`."""
+    end = start + 1
+    while end < len(lines) and not _TOP_LEVEL_START_RE.match(lines[end].rstrip("\n")):
+        end += 1
+    return end
+
+
+def _block_entry_fields(lines: list[str], start: int, end: int) -> dict[str, Any]:
+    """A block entry's `key: value` fields over `lines[start:end]`; the first line
+    carries its field inline after the dash."""
+    return {
+        m.group(1): _block_field_value(m.group(2))
+        for j in range(start, end)
+        if (m := (_BLOCK_START_FIELD_RE if j == start else _BLOCK_FIELD_RE).match(lines[j].rstrip("\n")))
+    }
+
+
+def apply_element_edits(edits: list[dict[str, Any]]) -> None:
+    """Rename an existing element in `elements.yaml`, in place (ADR-0037 item 8) --
+    `name` only; `desc`/`type` are not editable this way (folded multi-line `desc:`
+    values make the same precise, comment-preserving text surgery `apply_view_
+    membership_edits` does for `members:` impractical to extend to them safely).
+
+    Raises `ValueError` for an element id not found in `elements.yaml` (merge_candidate
+    is expected to have already rejected an unknown id before apply is reached)."""
+    path = HERE / ELEMENTS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for edit in edits:
+        element_id = edit["id"]
+
+        def _matches_id(f: dict[str, Any], eid: str = element_id) -> bool:
+            return f.get("id") == eid
+
+        found = _find_top_level_entry(lines, _matches_id)
+        if found is None:
+            raise ValueError(f"no element {element_id!r} in {ELEMENTS_FILENAME}")
+        start, end, is_flow = found
+        if is_flow:
+            parsed = _flow_entry_dict(lines[start]) or {}
+            parsed["name"] = edit["name"]
+            ordered = {k: parsed[k] for k in _ELEMENT_FIELD_ORDER if parsed.get(k) not in (None, {})}
+            lines[start] = (
+                f"- {yaml.safe_dump(ordered, default_flow_style=True, sort_keys=False, width=10**9).strip()}\n"
+            )
+        else:
+            name_idx = next((i for i in range(start, end) if re.match(r"^ {2}name:", lines[i])), None)
+            if name_idx is None:
+                raise ValueError(f"element {element_id!r} has no name: line this editor can rewrite")
+            dumped = yaml.safe_dump({"name": edit["name"]}, default_flow_style=False, sort_keys=False, width=10**9)
+            lines[name_idx] = f"  {dumped.strip()}\n"
+    path.write_text("".join(lines))
+
+
+def apply_element_removals(element_ids: list[str]) -> None:
+    """Delete an existing element's whole entry from `elements.yaml`, in place
+    (ADR-0037 item 8) -- nothing else in the file is touched. A relationship or view
+    still referencing the removed id is not repointed or dropped here; that is caught
+    as a `broken_connection`/`orphan_view_node` finding by `merge_candidate`'s
+    validation path before apply is ever reached (never silently cascaded).
+
+    Raises `ValueError` for an element id not found in `elements.yaml`."""
+    path = HERE / ELEMENTS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for element_id in element_ids:
+
+        def _matches_id(f: dict[str, Any], eid: str = element_id) -> bool:
+            return f.get("id") == eid
+
+        found = _find_top_level_entry(lines, _matches_id)
+        if found is None:
+            raise ValueError(f"no element {element_id!r} in {ELEMENTS_FILENAME}")
+        start, end, _is_flow = found
+        del lines[start:end]
+    path.write_text("".join(lines))
+
+
+def apply_relationship_removals(removals: list[dict[str, Any]]) -> None:
+    """Delete an existing relationship's whole entry from `relationships.yaml`, in
+    place (ADR-0037 item 8), matched by its `(type, source, target)` triple -- a
+    relationship has no id of its own. Raises `ValueError` for a removal matching no
+    entry in `relationships.yaml`."""
+    path = HERE / RELATIONSHIPS_FILENAME
+    lines = path.read_text().splitlines(keepends=True)
+    for removal in removals:
+        wanted_type = _type_key(str(removal.get("type", "")))
+        source, target = removal.get("source"), removal.get("target")
+
+        def _matches(f: dict[str, Any], wt: str = wanted_type, s: Any = source, t: Any = target) -> bool:
+            return _type_key(str(f.get("type", ""))) == wt and f.get("source") == s and f.get("target") == t
+
+        found = _find_top_level_entry(lines, _matches)
+        if found is None:
+            raise ValueError(f"no relationship {removal.get('type')} {source} -> {target} in {RELATIONSHIPS_FILENAME}")
+        start, end, _is_flow = found
+        del lines[start:end]
+    path.write_text("".join(lines))
+
+
+def _membership_edited_view(view: dict[str, Any], edit: dict[str, Any]) -> dict[str, Any]:
+    """`view` with `edit`'s `add`/`remove` element ids applied to its `members:` list
+    -- order preserved for survivors, added ids appended, never duplicated."""
+    members = [m for m in (view.get("members") or []) if m not in edit.get("remove", [])]
+    for eid in edit.get("add", []):
+        if eid not in members:
+            members.append(eid)
+    return {**view, "members": members}
+
+
+def _apply_membership_edits_for_validation(
+    views: list[dict[str, Any]], edits: list[dict[str, Any]], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`views` with each of `edits` applied to the view it names, in order -- used by
+    `merge_candidate` so a proposed membership edit is checked (unknown member id,
+    etc.) against the *resulting* view, the same way a proposed view itself is
+    checked. Two edits naming the same view (e.g. accumulated across separate
+    `propose` turns in one session) are both applied, each to the previous edit's
+    result, the same cumulative way `apply_view_membership_edits` applies them to
+    `views.yaml` -- collapsing them to only the last would validate a different
+    membership than the one actually written. An edit naming a view id that doesn't
+    exist is reported the same way `add_views` reports any other unknown reference,
+    rather than silently ignored."""
+    named_ids = {e["view_id"] for e in edits}
+    edited = []
+    for v in views:
+        for edit in edits:
+            if edit["view_id"] == v.get("id"):
+                v = _membership_edited_view(v, edit)
+        edited.append(v)
+    for view_id in named_ids - {v.get("id") for v in views}:
+        errors.append(f"view membership edit references unknown view id: {view_id}")
+    return edited
+
+
+def _apply_element_edits_for_validation(
+    elements: list[dict[str, Any]], edits: list[dict[str, Any]], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`elements` with each of `edits`' `name` applied to the element it names (ADR-0037
+    item 8: rename only -- `desc`/`type` are not editable this way). An edit naming an
+    element id that doesn't exist is reported the same way any other unknown reference is."""
+    edits_by_id = {e["id"]: e for e in edits}
+    edited = [{**e, "name": edits_by_id[e["id"]]["name"]} if e.get("id") in edits_by_id else e for e in elements]
+    for element_id in edits_by_id.keys() - {e.get("id") for e in elements}:
+        errors.append(f"element edit references unknown element id: {element_id}")
+    return edited
+
+
+def _apply_element_removals_for_validation(
+    elements: list[dict[str, Any]], removals: list[str], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`elements` with each id in `removals` dropped, one at a time -- a removal
+    repeating an id already dropped earlier in the same list (e.g. accumulated
+    across separate `propose` turns in one session) is reported as unknown, the
+    same way `apply_element_removals` would raise for it at apply time: that writer
+    deletes sequentially and has nothing left to find the second time, so validation
+    checking the whole list against the original element set (tolerating duplicates
+    as a set) would pass a delta that then crashes on apply. A removal naming an
+    unknown id is reported; a removal leaving a dangling relationship endpoint
+    elsewhere is not caught here -- it surfaces as `validate_model`'s usual
+    `broken_connection` finding once the resulting elements/relationships are
+    assembled into a `Model` (ADR-0037 item 8: never silently cascaded)."""
+    remaining = list(elements)
+    for element_id in removals:
+        present_ids = {e.get("id") for e in remaining}
+        if element_id not in present_ids:
+            errors.append(f"element removal references unknown element id: {element_id}")
+            continue
+        remaining = [e for e in remaining if e.get("id") != element_id]
+    return remaining
+
+
+def _type_key(raw: str) -> str:
+    """Case/separator-insensitive key for an ArchiMate type name, for comparing a
+    removal's `type` against a loaded relationship's -- same normalization `canon` uses,
+    without `canon`'s side effect of appending to an errors list for an unknown name."""
+    return str(raw).strip().replace("_", "").replace("-", "").lower()
+
+
+def _apply_relationship_removals_for_validation(
+    relationships: list[dict[str, Any]], removals: list[dict[str, Any]], errors: list[str]
+) -> list[dict[str, Any]]:
+    """`relationships` with the first relationship matching each of `removals`' (type,
+    source, target) triple dropped. A removal matching nothing is reported rather than
+    silently ignored."""
+    remaining = list(relationships)
+    for removal in removals:
+        wanted_type = _type_key(str(removal.get("type", "")))
+        match = next(
+            (
+                i
+                for i, r in enumerate(remaining)
+                if _type_key(str(r.get("type", ""))) == wanted_type
+                and r.get("source") == removal.get("source")
+                and r.get("target") == removal.get("target")
+            ),
+            None,
+        )
+        if match is None:
+            errors.append(
+                "relationship removal references no matching relationship: "
+                f"{removal.get('type')} {removal.get('source')} -> {removal.get('target')}"
+            )
+            continue
+        remaining.pop(match)
+    return remaining
+
+
+def _merged_candidate_parts(
+    delta_elements: list[dict[str, Any]],
+    delta_relationships: list[dict[str, Any]],
+    delta_views: list[dict[str, Any]] | None = None,
+    delta_view_membership_edits: list[dict[str, Any]] | None = None,
+    delta_element_edits: list[dict[str, Any]] | None = None,
+    delta_element_removals: list[str] | None = None,
+    delta_relationship_removals: list[dict[str, Any]] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+    """The on-disk model with every part of a Candidate Delta applied, as
+    `(elements, relationships, views, errors)` ready for `_assemble` -- shared by
+    `merge_candidate` (validation) and `preview_model` (rendering) so a preview shows
+    exactly what validation checked."""
+    errors: list[str] = []
+    elements = load_all_elements(errors) + list(delta_elements)
+    if delta_element_edits:
+        elements = _apply_element_edits_for_validation(elements, delta_element_edits, errors)
+    if delta_element_removals:
+        elements = _apply_element_removals_for_validation(elements, delta_element_removals, errors)
+    rels = (
+        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    )
+    if delta_relationship_removals:
+        rels = _apply_relationship_removals_for_validation(rels, delta_relationship_removals, errors)
+    views = load_all_views(errors) + list(delta_views or [])
+    if delta_view_membership_edits:
+        views = _apply_membership_edits_for_validation(views, delta_view_membership_edits, errors)
+    return elements, rels, views, errors
 
 
 def merge_candidate(
-    delta_elements: list[dict[str, Any]], delta_relationships: list[dict[str, Any]]
+    delta_elements: list[dict[str, Any]],
+    delta_relationships: list[dict[str, Any]],
+    delta_views: list[dict[str, Any]] | None = None,
+    delta_view_membership_edits: list[dict[str, Any]] | None = None,
+    delta_element_edits: list[dict[str, Any]] | None = None,
+    delta_element_removals: list[str] | None = None,
+    delta_relationship_removals: list[dict[str, Any]] | None = None,
 ) -> tuple[Model | None, list[str], list[str]]:
     """Load the current YAML model from disk, merge a Candidate Delta's elements/
-    relationships on top, and assemble+check the whole resulting in-memory model
-    (FR-002, R9) -- never the delta in isolation, so a change that is valid on its
-    own but breaks referential integrity elsewhere is also caught. Nothing is written
-    to disk; the delta is additive only, same as `build_model()` otherwise."""
-    errors: list[str] = []
-    elements = load_all_elements(errors) + list(delta_elements)
-    rels = (
-        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    relationships/views on top, and assemble+check the whole resulting in-memory
+    model (FR-002, R9) -- never the delta in isolation, so a change that is valid on
+    its own but breaks referential integrity elsewhere is also caught (a proposed
+    view's `context`/`include_types`/`members` are checked the same way `add_views`
+    always checks them -- unknown context, unknown type, unknown member id, a
+    colliding view id, viewpoint conformance; same for the resulting `members:` of an
+    existing view a `delta_view_membership_edits` entry would add to/remove from, and
+    for a renamed/removed existing element or a removed existing relationship,
+    ADR-0037 item 8). Nothing is written to disk; the delta is additive-plus-these-
+    narrow-edits only, same as `build_model()` otherwise."""
+    parts = _merged_candidate_parts(
+        delta_elements,
+        delta_relationships,
+        delta_views,
+        delta_view_membership_edits,
+        delta_element_edits,
+        delta_element_removals,
+        delta_relationship_removals,
     )
-    views = load_all_views(errors)
-    return _assemble("candidate-delta", elements, rels, views, errors)
+    return _assemble("candidate-delta", *parts)
 
 
 def preview_model(
-    delta_elements: list[dict[str, Any]], delta_relationships: list[dict[str, Any]], view: dict[str, Any]
+    delta_elements: list[dict[str, Any]],
+    delta_relationships: list[dict[str, Any]],
+    view: dict[str, Any],
+    delta_views: list[dict[str, Any]] | None = None,
+    delta_view_membership_edits: list[dict[str, Any]] | None = None,
+    delta_element_edits: list[dict[str, Any]] | None = None,
+    delta_element_removals: list[str] | None = None,
+    delta_relationship_removals: list[dict[str, Any]] | None = None,
 ) -> tuple[Model | None, list[str]]:
-    """The model with a Candidate Delta merged in, for rendering `view` as it *would*
-    look -- nothing is written. The delta's elements (marked "+") and both endpoints of
-    its relationships are added to the view's members so a members-listed view shows
-    them; `merge_candidate`'s own checks still apply."""
-    errors: list[str] = []
-    elements = load_all_elements(errors)
+    """The model with a whole Candidate Delta merged in, for rendering `view` as it
+    *would* look -- nothing is written. New elements are marked "+" and renamed ones
+    "~"; both are added to the view's members, with the endpoints of new relationships,
+    so a members-listed view shows them. A removed element is dropped from every view's
+    members, with any relationship still touching it, so it disappears from the preview
+    instead of failing it, and a proposed view is drawn without its `viewpoint` tag, so
+    a viewpoint it doesn't conform to doesn't hide it. Whether either may be applied is
+    `merge_candidate`'s call, reported as findings."""
     marked = [{**e, "name": f"+ {e.get('name', e.get('id', ''))}"} for e in delta_elements]
-    rels = (
-        load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors) + list(delta_relationships)
+    marked_edits = [{**e, "name": f"~ {e.get('name', '')}"} for e in delta_element_edits or []]
+    elements, rels, views, errors = _merged_candidate_parts(
+        marked,
+        delta_relationships,
+        [{k: v for k, v in view_.items() if k != "viewpoint"} for view_ in delta_views or []],
+        delta_view_membership_edits,
+        marked_edits,
+        delta_element_removals,
+        delta_relationship_removals,
     )
-    shown = [e["id"] for e in delta_elements if e.get("id")]
+    shown = [e["id"] for e in [*delta_elements, *(delta_element_edits or [])] if e.get("id")]
     shown += [end for r in delta_relationships for end in (r.get("source"), r.get("target")) if end]
-    views = load_all_views(errors)
-    views = [
-        {**v, "members": [*(v.get("members") or []), *shown]} if v.get("id") == view.get("id") else v for v in views
-    ]
-    model, errors, _warnings = _assemble("candidate-preview", elements + marked, rels, views, errors)
+    removed = set(delta_element_removals or [])
+    rels = [r for r in rels if r.get("source") not in removed and r.get("target") not in removed]
+    previewed_views = []
+    for v in views:
+        members = [*(v.get("members") or []), *(shown if v.get("id") == view.get("id") else [])]
+        kept = [m for m in members if m not in removed]
+        previewed_views.append({**v, "members": kept} if kept or v.get("members") else v)
+    model, errors, _warnings = _assemble("candidate-preview", elements, rels, previewed_views, errors)
     return model, errors
 
 

@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -54,10 +54,16 @@ hand-authored Grouping or boundary view:
   endpoints visible) — but deliberately left out of the view's own
   `viewpoint:` conformance check, since a neighbour's type is often outside
   that viewpoint's allow-set by construction. Applied to five of the six
-  oversized views; the sixth, `view-product`, is dropped — the model has
-  no Product/Contract/Value/Material/`*Service` element to give that
-  viewpoint its own shape, so it duplicated the usage/service-realization
-  views.
+  oversized views. The sixth, `view-product`, was dropped because the model
+  has no Product/Contract/Value/Material element to give that viewpoint its
+  own shape, then re-added by request as a per-context sweep. It still has
+  none of those elements, so it renders the same Business and Application
+  elements as the usage and service-realization views
+  (`architecture/model/views-viewpoints.yaml`). Application Cooperation also
+  became two views: the curated `view-application-cooperation` in `views.yaml`
+  uses `include_neighbours: same_layer` so it stays Application-layer only, and
+  `view-application-cooperation-standard` keeps the unrestricted sweep for
+  comparison (`architecture/model/views.yaml`).
 - **A generated context map** (`generate_context_map_relationships`,
   `view-context-map`) derives one directed `Serving` edge per ordered
   context pair with at least one element-level relationship crossing

@@ -1,7 +1,8 @@
 """Integrity checks on architecture/model/views.yaml and views-viewpoints.yaml.
 
-Guards against a view that render_diagrams.py would silently skip, or a
-viewpoint slug that build.py would only reject at build time.
+Guards against a view that render_diagrams.py would silently skip. Viewpoint slugs
+are checked by the modelling-specification package's own tests (test_viewpoints.py):
+root never imports a platform package (ADR-0001), and this job has no platform venv.
 """
 
 from __future__ import annotations
@@ -9,10 +10,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import viewpoints
 import yaml
 
-MODEL_DIR = Path(__file__).resolve().parents[3] / "architecture/model"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+MODEL_DIR = REPO_ROOT / "architecture/model"
 VIEW_FILES = [MODEL_DIR / "views.yaml", MODEL_DIR / "views-viewpoints.yaml"]
 
 
@@ -30,14 +31,6 @@ def test_every_view_has_id_name_and_diagram() -> None:
 def test_diagram_slugs_are_unique() -> None:
     slugs = [v["diagram"] for v in _views()]
     assert len(slugs) == len(set(slugs)), "duplicate diagram slug across view files"
-
-
-def test_viewpoint_slugs_are_known() -> None:
-    valid = set(viewpoints.known_slugs()) | {viewpoints.UNRESTRICTED}
-    for v in _views():
-        slug = v.get("viewpoint")
-        if slug is not None:
-            assert slug in valid, f"{v['id']}: unknown viewpoint {slug!r}"
 
 
 def test_vision_views_render_under_vision_dir() -> None:

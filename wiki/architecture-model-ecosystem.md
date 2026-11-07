@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Ecosystem'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -28,7 +28,7 @@ provider, model and credential for LLM calls. It is composed into
 is realised by `art-pkg-llm-provider-config`; there is deliberately no
 `Serving` edge to its consumers, since consumption is a path dependency, not
 a runtime call
-(`architecture/model/elements.yaml:942-950`, `architecture/model/relationships.yaml:772-786`).
+(`architecture/model/elements.yaml:942-950`, `architecture/model/relationships.yaml:780-794`).
 It appears in the Artefact Flow — Controls & OSCAL and Packaging views
 (`architecture/model/views.yaml`).
 
@@ -52,13 +52,18 @@ standard `layered` view, rendered to `layered/subsystem-capabilities`; see
 |---|---|---|
 | Controls & Compliance Catalog (`sub-catalog`) | Converts externally authored policy/standard documents into OSCAL Catalogs (AI-assisted Markdown conversion + Trestle round-trip) and resolves tailored Profiles into what its `desc` calls "Resolved Catalogs" (the model's artefact is the Resolved OSCAL Profile Catalog) | `cap-control-catalog` |
 | Reusable Architecture Library (`sub-library`) | Patterns, blueprints, solution designs with OSCAL refs; threat modelling; models candidate/future-state options | `cap-reusable-architecture` |
-| Digital Twin & Knowledge Graph (`sub-twin`) | The Architecture Knowledge Graph: intent plane + current-state twin plane | `cap-digital-twin`, `cap-forensic-ledger` |
+| Architecture Knowledge Graph (`sub-twin`) | Intent plane (read/write, built); the current-state digital twin plane (`fn-twin-ingest`) is modelled but not yet built | `cap-digital-twin`, `cap-forensic-ledger` |
 | Architecture Governance (`sub-governance`) | Comparative evaluation, the decision + its ADR, archival of rejected options — pure decision-making (options are modelled in the Library) | `cap-human-approval-workflow` |
 | Conformance & Drift Assurance (`sub-assurance`) | Supervises agentic development to enforce controls at build and supplies the *expected controls* that the CI/CD pipeline's inline release gate verifies; BAU effectiveness monitor; drift engine + dashboard | `cap-control-plane`, `cap-drift-dashboard` |
 | Modelling & Specification (`sub-modelling`) | ArchiMate/C4/UML modelling; development-spec generation; conversational model authoring (GH #108) | `cap-spec-engine`, `cap-conversational-governance` |
 
+`sub-twin` is renamed from "Digital Twin & Knowledge Graph" in
+`architecture/model/elements.yaml`, which now separates what is built from what
+is only modelled. `ARCHITECTURE.md` uses the new name, while the package keeps
+`digital-twin-knowledge-graph`.
+
 Every subsystem `Realization`-links to a section-A capability ([Skeleton](architecture-model-skeleton.md)), tying the C4
-view back to the skeleton (`architecture/model/relationships.yaml:419-428`).
+view back to the skeleton (`architecture/model/relationships.yaml:424-433`).
 Shared stores (`architecture/model/elements.yaml:967-991`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
@@ -78,7 +83,7 @@ round-trip), `fn-baseline-tailoring` (profile authoring) and
 `fn-oscal-profile-resolve` (profile resolution). The LLM
 Provider now also serves `fn-ai-markdown-conversion`, so its `desc` covers
 converting policy/standard documents alongside its drafting uses
-(`architecture/model/relationships.yaml:446-451`).
+(`architecture/model/relationships.yaml:451-456`).
 
 The former `ext-regsources` ("Regulatory Content Sources") external system
 has been **removed**. It implied a system integration with upstream

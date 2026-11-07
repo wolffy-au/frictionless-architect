@@ -317,4 +317,5 @@ def _check_no_restatement(
 
 
 def _is_excluded_first_party(rule: dict[str, Any], element_id: str) -> bool:
-    return bool(rule["params"].get("first_party_only")) and element_id.startswith("it4it-")
+    vendored_prefixes = tuple(f"{model_dir.name}-" for model_dir in model_io.VENDORED_MODELS)
+    return bool(rule["params"].get("first_party_only")) and element_id.startswith(vendored_prefixes)

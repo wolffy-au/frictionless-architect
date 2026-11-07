@@ -1089,6 +1089,129 @@ def test_merge_candidate_catches_a_delta_id_colliding_with_a_real_existing_eleme
     assert any("duplicate element id: sub-modelling" in e for e in errors)
 
 
+def test_merge_candidate_validates_a_clean_proposed_view_against_the_real_model() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        [{"id": "view-test-merge-candidate", "name": "Test View", "context": ["platform"], "include_types": []}],
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_a_proposed_view_with_an_unknown_context() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        [{"id": "view-test-bad-context", "name": "Test View", "context": ["no-such-context"]}],
+    )
+    assert model is None
+    assert any("unknown context" in e for e in errors)
+
+
+def test_merge_candidate_catches_a_proposed_view_id_colliding_with_a_real_existing_view() -> None:
+    model, errors, _warnings = model_io.merge_candidate([], [], [{"id": "view-context-map", "name": "Duplicate"}])
+    assert model is None
+    assert any("duplicate view id: view-context-map" in e for e in errors)
+
+
+def test_merge_candidate_validates_a_clean_view_membership_edit_against_the_real_model() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        None,
+        [{"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}],
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_a_view_membership_edit_adding_an_unknown_member() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        None,
+        [{"view_id": "view-vs-governed-delivery", "add": ["no-such-element"], "remove": []}],
+    )
+    assert model is None
+    assert any("no-such-element" in e for e in errors)
+
+
+def test_merge_candidate_flags_a_view_membership_edit_against_an_unknown_view_id() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [], [], None, [{"view_id": "view-no-such-view", "add": ["sub-modelling"], "remove": []}]
+    )
+    assert model is None
+    assert any("unknown view id: view-no-such-view" in e for e in errors)
+
+
+def test_merge_candidate_renames_a_real_existing_element_without_flagging() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [], [], None, None, [{"id": "sub-modelling", "name": "Renamed Modelling Package"}]
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_an_element_edit_against_an_unknown_element_id() -> None:
+    model, errors, _warnings = model_io.merge_candidate([], [], None, None, [{"id": "no-such-element", "name": "X"}])
+    assert model is None
+    assert any("element edit references unknown element id: no-such-element" in e for e in errors)
+
+
+def test_merge_candidate_removes_a_delta_element_added_in_the_same_pass() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [{"id": "fn-test-removal-clean", "type": "ApplicationFunction", "name": "Removal Test"}],
+        [],
+        None,
+        None,
+        None,
+        ["fn-test-removal-clean"],
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_an_element_removal_that_would_leave_a_dangling_relationship() -> None:
+    # cap-spec-engine is a real existing element with real relationships to it --
+    # removing it without also removing those relationships must not slip through.
+    model, errors, _warnings = model_io.merge_candidate([], [], None, None, None, ["cap-spec-engine"])
+    assert model is None
+    assert any("cap-spec-engine" in e for e in errors)
+
+
+def test_merge_candidate_flags_an_element_removal_against_an_unknown_element_id() -> None:
+    model, errors, _warnings = model_io.merge_candidate([], [], None, None, None, ["no-such-element"])
+    assert model is None
+    assert any("element removal references unknown element id: no-such-element" in e for e in errors)
+
+
+def test_merge_candidate_removes_a_real_existing_relationship_without_flagging() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [],
+        [],
+        None,
+        None,
+        None,
+        None,
+        [{"type": "Serving", "source": "cap-control-catalog", "target": "cap-reusable-architecture"}],
+    )
+    assert errors == []
+    assert model is not None
+
+
+def test_merge_candidate_flags_a_relationship_removal_matching_nothing() -> None:
+    model, errors, _warnings = model_io.merge_candidate(
+        [], [], None, None, None, None, [{"type": "Serving", "source": "no-such-source", "target": "no-such-target"}]
+    )
+    assert model is None
+    assert any("relationship removal references no matching relationship" in e for e in errors)
+
+
+def test_existing_view_ids_includes_a_real_view() -> None:
+    assert "view-context-map" in model_io.existing_view_ids()
+
+
 def test_existing_element_ids_includes_a_real_element() -> None:
     assert "sub-modelling" in model_io.existing_element_ids()
 
@@ -1119,6 +1242,27 @@ def test_append_delta_appends_flow_style_entries_without_disturbing_existing_con
     assert "{type: Assignment, source: existing, target: fn-new}" in rels_text
 
 
+def test_append_delta_appends_a_proposed_view_without_disturbing_existing_content(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    (tmp_path / "elements.yaml").write_text("")
+    (tmp_path / "relationships.yaml").write_text("")
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- {id: view-existing, name: Existing View}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.append_delta(
+        [],
+        [],
+        [{"id": "view-new", "name": "New View", "context": ["platform"], "include_types": ["ApplicationFunction"]}],
+    )
+
+    views_text = views_path.read_text()
+    assert "{id: view-existing, name: Existing View}" in views_text
+    assert "id: view-new, name: New View" in views_text
+    assert "context: [platform]" in views_text
+
+
 def test_append_delta_quotes_values_containing_yaml_special_characters(tmp_path: Any, monkeypatch: Any) -> None:
     elements_path = tmp_path / "elements.yaml"
     elements_path.write_text("")
@@ -1128,6 +1272,210 @@ def test_append_delta_quotes_values_containing_yaml_special_characters(tmp_path:
     model_io.append_delta([{"type": "ApplicationFunction", "id": "fn-new", "name": "Has: a colon"}], [])
 
     assert "name: 'Has: a colon'" in elements_path.read_text()
+
+
+def test_apply_view_membership_edits_adds_and_removes_members(tmp_path: Any, monkeypatch: Any) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text(
+        "- id: view-a\n  name: View A\n  members:\n    - keep-me\n    - drop-me\n- id: view-b\n  name: View B\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_view_membership_edits([{"view_id": "view-a", "add": ["new-member"], "remove": ["drop-me"]}])
+
+    text = views_path.read_text()
+    assert "- keep-me" in text
+    assert "- drop-me" not in text
+    assert "- new-member" in text
+    assert "- id: view-b\n  name: View B\n" in text
+
+
+def test_apply_view_membership_edits_adds_a_members_key_to_a_view_with_none_yet(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- id: view-a\n  name: View A\n- id: view-b\n  name: View B\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_view_membership_edits([{"view_id": "view-a", "add": ["new-member"], "remove": []}])
+
+    text = views_path.read_text()
+    assert "- id: view-a\n  members:\n    - new-member\n  name: View A\n- id: view-b\n" in text
+
+
+def test_apply_view_membership_edits_raises_for_an_unknown_view_id(tmp_path: Any, monkeypatch: Any) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- id: view-a\n  name: View A\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="no view 'view-no-such-view'"):
+        model_io.apply_view_membership_edits([{"view_id": "view-no-such-view", "add": ["x"], "remove": []}])
+
+
+def test_apply_view_membership_edits_raises_for_a_comment_right_after_the_members_block(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text(
+        "- id: view-a\n  name: View A\n  members:\n    - keep-me\n  # trailing comment\n- id: view-b\n  name: View B\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="a comment line immediately follows"):
+        model_io.apply_view_membership_edits([{"view_id": "view-a", "add": ["x"], "remove": []}])
+
+
+def test_apply_view_membership_edits_is_a_noop_removing_from_a_view_with_no_members_key(
+    tmp_path: Any, monkeypatch: Any
+) -> None:
+    views_path = tmp_path / "views.yaml"
+    views_path.write_text("- id: view-a\n  name: View A\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_view_membership_edits([{"view_id": "view-a", "add": [], "remove": ["ghost-member"]}])
+
+    assert views_path.read_text() == "- id: view-a\n  name: View A\n"
+
+
+def test_apply_element_edits_renames_a_block_style_element(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text(
+        "- type: Driver\n"
+        "  id: driver-a\n"
+        "  name: Old Name\n"
+        "  desc: >-\n"
+        "    Some folded description text.\n"
+        "- type: Driver\n"
+        "  id: driver-b\n"
+        "  name: Other\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_element_edits([{"id": "driver-a", "name": "New Name"}])
+
+    text = elements_path.read_text()
+    assert "name: New Name" in text
+    assert "Old Name" not in text
+    assert "folded description text" in text
+    assert "  name: Other\n" in text
+
+
+def test_apply_element_edits_renames_a_flow_style_element(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- {type: DataObject, id: do-a, name: Old Name}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_element_edits([{"id": "do-a", "name": "New Name"}])
+
+    text = elements_path.read_text()
+    assert "{type: DataObject, id: do-a, name: New Name}" in text
+
+
+def test_apply_element_edits_raises_for_an_unknown_element_id(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- type: Driver\n  id: driver-a\n  name: A\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="no element 'no-such-element'"):
+        model_io.apply_element_edits([{"id": "no-such-element", "name": "X"}])
+
+
+def test_apply_element_edits_skips_an_unparsable_flow_entry_line(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text(
+        "- {type: DataObject, id: do-a, name: Old Name\n- type: Driver\n  id: driver-b\n  name: B\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_element_edits([{"id": "driver-b", "name": "New Name"}])
+
+    text = elements_path.read_text()
+    assert "name: New Name" in text
+    assert "{type: DataObject, id: do-a, name: Old Name" in text
+
+
+def test_apply_element_edits_raises_for_a_block_entry_with_no_name_line(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- type: Driver\n  id: driver-a\n  desc: No name field\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="has no name: line this editor can rewrite"):
+        model_io.apply_element_edits([{"id": "driver-a", "name": "New Name"}])
+
+
+def test_apply_element_removals_deletes_a_block_style_element(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- type: Driver\n  id: driver-a\n  name: A\n- type: Driver\n  id: driver-b\n  name: B\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_element_removals(["driver-a"])
+
+    text = elements_path.read_text()
+    assert "driver-a" not in text
+    assert "driver-b" in text
+
+
+def test_apply_element_removals_deletes_a_flow_style_element(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- {type: DataObject, id: do-a, name: A}\n- {type: DataObject, id: do-b, name: B}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_element_removals(["do-a"])
+
+    text = elements_path.read_text()
+    assert "do-a" not in text
+    assert "do-b" in text
+
+
+def test_apply_element_removals_raises_for_an_unknown_element_id(tmp_path: Any, monkeypatch: Any) -> None:
+    elements_path = tmp_path / "elements.yaml"
+    elements_path.write_text("- type: Driver\n  id: driver-a\n  name: A\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="no element 'no-such-element'"):
+        model_io.apply_element_removals(["no-such-element"])
+
+
+def test_apply_relationship_removals_deletes_a_block_style_relationship(tmp_path: Any, monkeypatch: Any) -> None:
+    rels_path = tmp_path / "relationships.yaml"
+    rels_path.write_text(
+        "- type: Serving\n"
+        "  source: a\n"
+        "  target: b          # an inline comment\n"
+        "- type: Serving\n"
+        "  source: c\n"
+        "  target: d\n"
+    )
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_relationship_removals([{"type": "Serving", "source": "a", "target": "b"}])
+
+    text = rels_path.read_text()
+    assert "source: a" not in text
+    assert "source: c" in text
+
+
+def test_apply_relationship_removals_deletes_a_flow_style_relationship(tmp_path: Any, monkeypatch: Any) -> None:
+    rels_path = tmp_path / "relationships.yaml"
+    rels_path.write_text("- {type: Serving, source: a, target: b}\n- {type: Serving, source: c, target: d}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    model_io.apply_relationship_removals([{"type": "serving", "source": "a", "target": "b"}])
+
+    text = rels_path.read_text()
+    assert "source: a" not in text
+    assert "source: c" in text
+
+
+def test_apply_relationship_removals_raises_for_no_matching_relationship(tmp_path: Any, monkeypatch: Any) -> None:
+    rels_path = tmp_path / "relationships.yaml"
+    rels_path.write_text("- {type: Serving, source: a, target: b}\n")
+    monkeypatch.setattr(model_io, "HERE", tmp_path)
+
+    with pytest.raises(ValueError, match="no relationship Serving no-such-source -> no-such-target"):
+        model_io.apply_relationship_removals(
+            [{"type": "Serving", "source": "no-such-source", "target": "no-such-target"}]
+        )
 
 
 def test_write_and_validate_against_the_real_repo_model() -> None:

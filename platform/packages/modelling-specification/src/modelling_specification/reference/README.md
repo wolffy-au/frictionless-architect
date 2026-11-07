@@ -16,7 +16,7 @@ the file from that URL:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/archimatetool/archi/master/com.archimatetool.model/model/viewpoints.xml \
-  -o .claude/skills/model-archimate/reference/archi-viewpoints.xml
+  -o platform/packages/modelling-specification/src/modelling_specification/reference/archi-viewpoints.xml
 ```
 
 Content is otherwise unmodified; pre-commit trims trailing whitespace and
@@ -26,7 +26,8 @@ fixes the final newline, which changes no viewpoint data.
 
 - Each `<concept>` is an element class, a relationship class, or a **collection
   token** (`$BusinessElements$`, `$StrategyElements$`, …). `viewpoints.py`
-  expands the tokens using `COLLECTIONS`, transcribed from
+  (this package's `modelling_specification.viewpoints` module) expands the
+  tokens using `COLLECTIONS`, transcribed from
   `com.archimatetool.model/.../ArchimateModelUtils.java`.
 - A viewpoint has an **element** allow-set and a **relationship** allow-set.
   If either set is **empty, that half is unrestricted** — so `layered` (no

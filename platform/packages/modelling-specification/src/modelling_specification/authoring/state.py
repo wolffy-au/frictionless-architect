@@ -37,6 +37,12 @@ class CandidateDelta:
         session_id: The owning session.
         elements: Proposed elements (model YAML shape).
         relationships: Proposed relationships (model YAML shape).
+        views: Proposed views (model YAML shape).
+        view_membership_edits: Add/remove edits to an existing view's ``members:``.
+        element_edits: Rename edits (``{"id": ..., "name": ...}``) to an existing element.
+        element_removals: Ids of existing elements to remove.
+        relationship_removals: ``{"type", "source", "target"}`` triples of existing
+            relationships to remove.
         status: Where the delta is in its lifecycle.
         validation_result: ``{"clean": bool, "findings": [...]}`` once validated.
         duplicates: Likely duplicates of existing elements.
@@ -48,11 +54,30 @@ class CandidateDelta:
     session_id: str
     elements: list[dict[str, Any]] = field(default_factory=list)
     relationships: list[dict[str, Any]] = field(default_factory=list)
+    views: list[dict[str, Any]] = field(default_factory=list)
+    view_membership_edits: list[dict[str, Any]] = field(default_factory=list)
+    element_edits: list[dict[str, Any]] = field(default_factory=list)
+    element_removals: list[str] = field(default_factory=list)
+    relationship_removals: list[dict[str, Any]] = field(default_factory=list)
     status: DeltaStatus = DeltaStatus.PROPOSED
     validation_result: dict[str, Any] | None = None
     duplicates: list[dict[str, Any]] = field(default_factory=list)
     pattern_suggestions: list[dict[str, Any]] = field(default_factory=list)
     state_classification: str | None = None
+
+    def has_changes(self) -> bool:
+        """Whether the delta proposes anything at all, of any kind."""
+        return any(
+            (
+                self.elements,
+                self.relationships,
+                self.views,
+                self.view_membership_edits,
+                self.element_edits,
+                self.element_removals,
+                self.relationship_removals,
+            )
+        )
 
 
 @dataclass
@@ -72,12 +97,16 @@ class Session:
             `POST .../propose/resolve-pii` or replaced by a later `propose` call.
             Mirrors `pending_options`' session-scoped, turn-local shape -- same as
             `pii_gateway.PendingConfirmation` itself, nothing here is persisted.
+        history: Earlier turns as LLM chat messages (FR-018), oldest first: only text
+            already cleared for the LLM (scrubbed, or resolved by the architect) and
+            the LLM's own replies. Bounded by `delta.MAX_HISTORY_MESSAGES`.
     """
 
     session_id: str
     deltas: dict[str, CandidateDelta] = field(default_factory=dict)
     pending_options: list[dict[str, Any]] = field(default_factory=list)
     pending_pii_confirmation: PendingConfirmation | None = None
+    history: list[dict[str, str]] = field(default_factory=list)
 
 
 class SessionStore:

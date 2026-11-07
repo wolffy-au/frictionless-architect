@@ -10,6 +10,8 @@ same module objects) picks up identically.
 
 from __future__ import annotations
 
+import json
+
 from behave import given, step, then, when
 from behave.runner import Context
 
@@ -205,3 +207,122 @@ def step_chat_shows_message(context: Context, text: str) -> None:
 @then("Apply is still disabled")
 def step_apply_disabled(context: Context) -> None:
     assert context.page.is_disabled("#apply")
+
+
+@given("the LLM suggests two ways forward")
+def step_llm_suggests_options(context: Context) -> None:
+    context.fake_llm.content = json.dumps(
+        {
+            "options": [
+                {
+                    "rationale": "Add a new Value Stream for conversational modelling.",
+                    "convention_refs": [],
+                    "elements": [{"type": "ValueStream", "name": "Conversational Modelling"}],
+                    "relationships": [],
+                },
+                {
+                    "rationale": "Extend an existing value stream to cover conversational modelling instead.",
+                    "convention_refs": [],
+                    "elements": [{"type": "ValueStream", "name": "Conversational Modelling Delivery"}],
+                    "relationships": [],
+                },
+            ]
+        }
+    )
+
+
+@then("the chat pane offers two options to pick")
+def step_chat_offers_options(context: Context) -> None:
+    context.page.locator("#messages").get_by_text("ways forward", exact=False).wait_for()
+    assert context.page.get_by_role("button", name="Pick this option").count() == 2
+
+
+@when("the architect picks the first option")
+def step_pick_first_option(context: Context) -> None:
+    context.page.get_by_role("button", name="Pick this option").first.click()
+
+
+@when("the architect sends a request containing personal information in the UI")
+def step_send_pii_request(context: Context) -> None:
+    # Real text containing a name and email, scrubbed by the real `pii_gateway`
+    # (not the stubbed LLM) -- the fake LLM's canned reply is never reached until
+    # the match is resolved, same as `tests/api/test_propose_pii.py`.
+    context.page.fill("#chat-input", "Add an application function for Jane Doe (jane@example.com) to review.")
+    context.page.click("#send")
+    context.page.wait_for_selector("#messages .msg.agent")
+
+
+@then("the chat pane flags it as personal information")
+def step_chat_flags_pii(context: Context) -> None:
+    context.page.locator("#messages").get_by_text("personal information", exact=False).wait_for()
+
+
+@when("the architect chooses to redact and continue")
+def step_pii_redact(context: Context) -> None:
+    context.page.get_by_role("button", name="Redact and continue").click()
+
+
+@given("the PII/PHI detector engine is forced to fail")
+def step_force_detector_engine_failure(context: Context) -> None:
+    # Same process as the live uvicorn server (environment.py's docstring) -- this
+    # patch reaches it directly. `pii_gateway.scrub` the attribute is the
+    # re-exported `scrub()` function (`pii_gateway/__init__.py`), shadowing the
+    # submodule, so patch via `sys.modules` like `pii-gateway`'s own `test_scrub.py`.
+    import sys
+
+    scrub_mod = sys.modules["pii_gateway.scrub"]
+
+    def _raise(_text: str) -> None:
+        raise RuntimeError("detector engine unavailable")
+
+    # `scrub_mod` is typed as the generic `ModuleType`, which has no declared
+    # `analyze` attribute -- go through `vars()` rather than attribute access
+    # so pyright doesn't flag it (ruff's setattr/getattr-with-literal checks
+    # don't apply to dict indexing).
+    original = vars(scrub_mod)["analyze"]
+    vars(scrub_mod)["analyze"] = _raise
+    context.add_cleanup(setattr, scrub_mod, "analyze", original)
+
+
+@when("the architect chooses to send it as-is")
+def step_pii_allow(context: Context) -> None:
+    context.page.get_by_role("button", name="Send as-is").click()
+
+
+@then("the chat pane shows that detection failed and it cannot be sent as-is")
+def step_chat_shows_detection_failed(context: Context) -> None:
+    context.page.locator("#messages").get_by_text("detector engine failed", exact=False).wait_for()
+
+
+@given('the LLM proposes the new view "{name}"')
+def step_llm_proposes_view(context: Context, name: str) -> None:
+    context.fake_llm.content = json.dumps(
+        {"elements": [], "relationships": [], "views": [{"name": name, "members": ["sub-modelling"]}]}
+    )
+
+
+@given("the LLM proposes a new view that is objected to")
+def step_llm_proposes_flagged_view(context: Context) -> None:
+    context.fake_llm.content = json.dumps(
+        {
+            "elements": [],
+            "relationships": [],
+            "views": [{"id": "view-objected-to", "name": "Objected To", "members": ["no-such-element"]}],
+        }
+    )
+
+
+@then('the chat pane lists "{name}" as proposed')
+def step_chat_lists_proposal(context: Context, name: str) -> None:
+    context.page.locator("#messages .sub").get_by_text(name, exact=False).wait_for()
+
+
+@when("the architect rejects the proposal")
+def step_reject_proposal(context: Context) -> None:
+    context.page.click('#messages button[data-action="reject"]')
+    context.page.locator("#messages").get_by_text("Discarded", exact=False).wait_for()
+
+
+@then('the view "{view_id}" is not offered')
+def step_view_not_offered(context: Context, view_id: str) -> None:
+    assert context.page.locator(f'#view-select option[value="{view_id}"]').count() == 0

@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Artefact Flow'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -28,25 +28,25 @@ Each function reads input artefacts and writes output artefacts via `Access`
 relationships qualified `Read` / `Write` / `ReadWrite`. There are 41 `do-*`
 `DataObject`s (renamed from `art-*`, GH #109 / ADR-0036 — the `art-` prefix is
 now reserved for genuine ArchiMate `Artifact`-typed elements), plus
-`do-convention-rules` added for GH #108. The shared stores `Aggregation`-link the persistent artefacts,
+`do-convention-rules` added for GH #108. The shared stores `Composition`-link the persistent artefacts (changed from `Aggregation`: each `do-*` record is single-parent and has no existence independent of its store, `architecture/model/relationships.yaml` §C),
 which ties section C back to section B
 ([Ecosystem](architecture-model-ecosystem.md))
-(`architecture/model/elements.yaml:1055-1286`,
-`architecture/model/relationships.yaml:542-700`).
+(`architecture/model/elements.yaml:1055-1287`,
+`architecture/model/relationships.yaml:547-706`).
 
 A dedicated Forensic Ledger Recording function (`fn-ledger-record` →
 `do-ledger-entry`) receives `Flow` edges from four functions: governance
 evaluation, the enforcement gate, the drift engine and build supervision. As a
 result, every governed action lands an immutable record
-(`architecture/model/relationships.yaml:626-631`, `647`).
+(`architecture/model/relationships.yaml:631-636`, `648`).
 
 > **Sources disagree on counts.** The README's section-C summary still gives
 > the older figures of 15 functions and 25 DataObjects
 > (`architecture/model/README.md` §"Model contents"). `elements.yaml` has 24
 > and 35.
 
-Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
-`589-679`):
+Five per-stage views scope it (`architecture/model/views.yaml:484-529`,
+`675-765`):
 
 | View | Covers |
 |---|---|
@@ -56,7 +56,7 @@ Five per-stage views scope it (`architecture/model/views.yaml:398-443`,
 | `Artefact Flow — Digital Twin & Governance` | Twin ingestion from live infra/deploy events; options modelling, comparative evaluation, ADR + archived-option capture; ledger recording; notation rendering |
 | `Artefact Flow — Assurance & Specification` | Spec generation; build supervision; the enforcement gate run inline in CI/CD; BAU effectiveness monitoring; drift detection against the roadmap → remediation backlog and POA&M |
 
-Notable artefacts (`architecture/model/elements.yaml:1250-1286`):
+Notable artefacts (`architecture/model/elements.yaml:1251-1287`):
 
 - **OSCAL:** Catalog, Profile, Resolved OSCAL Profile Catalog, Component,
   SSP, Assessment Plan, Assessment Results, and Plan of Action & Milestones.
@@ -70,26 +70,26 @@ Notable artefacts (`architecture/model/elements.yaml:1250-1286`):
 - **Other:** Development Specification, Notation Metamodel and Ledger Entry.
 
 **Strategy and drift artefacts.** `do-target-architecture` and
-`do-architecture-roadmap` are new. `store-akg` aggregates both, and each
+`do-architecture-roadmap` are new. `store-akg` composes both, and each
 realizes its business object (`bo-target-state-architecture`,
 `bo-architecture-roadmap`). The drift engine now diffs the twin against the
 roadmap and "reconciles against the transition state in effect", rather than
 against the target
-(`architecture/model/relationships.yaml:375-377`, `665`, `690-691`).
+(`architecture/model/relationships.yaml:380-382`, `666`, `691-692`).
 
 **POA&M.** The OSCAL Plan of Action & Milestones (`do-oscal-poam`) now
 realizes a business-layer counterpart, `bo-oscal-poam`. It is written from
 both assessment cadences: the enforcement gate and the BAU effectiveness
-monitor both "record control deficiencies in" it. `store-oscal` aggregates it.
+monitor both "record control deficiencies in" it. `store-oscal` composes it.
 At the business layer, target-state definition reads it for remediation
-milestones (`architecture/model/relationships.yaml:366-380`, `669-670`,
-`682`).
+milestones (`architecture/model/relationships.yaml:371-385`, `670-671`,
+`683`).
 
 **The enforcement gate** (`fn-enforcement-gate`) is assigned to the external
 CI/CD Pipeline, not to a platform subsystem. It verifies artefact-observable
 controls directly on the release candidate. It "verifies process controls
 from" the forensic ledger and reads the expected controls from the SSP
-(`architecture/model/relationships.yaml:564`, `648-654`).
+(`architecture/model/relationships.yaml:569`, `649-655`).
 
 ## Conversational model authoring (GH #108)
 
@@ -112,14 +112,23 @@ already existed in the model. It reads
 the bundled ArchiMate metamodel and configurable Enterprise Convention Rules
 before being proposed, with candidate duplicates surfaced for an explicit
 human decision rather than silently merged or created
-(`architecture/model/relationships.yaml:697-699`). It also `Serving`s
+(`architecture/model/relationships.yaml:703-705`). It also `Serving`s
 `fn-notation-engine`, rendering the element(s)/view under discussion live as
 the conversation proceeds, and is exposed via `if-modelling-authoring-ui`
-(`architecture/model/relationships.yaml:482,700`). At the business layer it
+(`architecture/model/relationships.yaml:487,702`). At the business layer it
 realizes `process-conversational-authoring` (see
 [Skeleton](architecture-model-skeleton.md)). See
 [Conversational Model Authoring](modelling-specification.md) for the package
 that implements it.
+
+Overrides now have their own function. `fn-override-escalation`, assigned to
+`sub-modelling`, is triggered by `fn-conversational-authoring` on an overridden
+objection and writes a Proposed-status ADR stub to `do-adr`. It writes there rather
+than to `store-ledger` because an override is a governance decision, not compliance
+evidence (`architecture/model/elements.yaml`;
+`architecture/model/relationships.yaml`). The authoring function's write edge to
+`do-candidate-arch` now reads as proposing and applying deltas, and its prompt is
+scrubbed by `sub-pii-gateway` before the LLM call.
 
 ## Controls & OSCAL — how policy becomes OSCAL
 
@@ -176,17 +185,17 @@ do-policy-doc / do-regulatory-standard   (verbatim documents)
   controls from") and writes `do-oscal-profile` ("tailors"), and
   compliance-trestle serves it ("provides profile authoring for")
   (`architecture/model/elements.yaml` — `fn-baseline-tailoring`;
-  `architecture/model/relationships.yaml:449`, `576-577`).
+  `architecture/model/relationships.yaml:454`, `577-578`).
 - **`fn-oscal-profile-resolve`** is split out so creation and resolution
   get their own views. Its output, `do-oscal-resolved-catalog`, is modelled
   as a `Specialization` of `do-oscal-catalog`, because OSCAL and Trestle
   treat a resolved profile as catalog-shaped. It is also `Association`-linked
-  to the profile whose control selection it fulfils. `store-oscal` aggregates
+  to the profile whose control selection it fulfils. `store-oscal` composes
   it as the operative control baseline for downstream use. The artefact is
   named **Resolved OSCAL Profile Catalog**. Downstream, the Library reads it
   instead of the raw profile: `fn-pattern-authoring` reads it,
   `fn-blueprint-authoring` "checks enablement against" it, and `do-pattern`
-  "maps to" it (`architecture/model/relationships.yaml:588-592`).
+  "maps to" it (`architecture/model/relationships.yaml:593-597`).
 - **Documents, not integrations.** `do-regulatory-standard` (e.g. NIST
   CSF, NIST SP 800-53 in prose) is a `Specialization` of `do-policy-doc`,
   labelled "externally-published instance". The business layer mirrors this
@@ -195,7 +204,7 @@ do-policy-doc / do-regulatory-standard   (verbatim documents)
   vendored upstream counterpart used to validate it. None of these is a
   production pipeline input. Each is a `Specialization` of the artefact it
   validates and realizes the matching OSCAL business object (Catalog,
-  Profile, Resolved OSCAL Profile Catalog). `store-frameworks` aggregates
+  Profile, Resolved OSCAL Profile Catalog). `store-frameworks` composes
   all three:
 
   | Artefact | Upstream source | Validates |
@@ -205,24 +214,24 @@ do-policy-doc / do-regulatory-standard   (verbatim documents)
   | `do-baseline-resolved-catalog` | FedRAMP LOW/MODERATE/HIGH resolved baselines (fedramp-automation) | Profile resolution |
 
   (`architecture/model/elements.yaml` §"C. Artefacts (DataObject)";
-  `architecture/model/relationships.yaml:289-299`)
+  `architecture/model/relationships.yaml:294-304`)
 
   `do-baseline` is also `Association`-linked to `do-regulatory-standard`,
   labelled "expected OSCAL output for (golden pair)". The NIST SP 800-53
   prose document is the converter's input, and the vendored catalog is the
-  output it should produce (`architecture/model/relationships.yaml:291`).
+  output it should produce (`architecture/model/relationships.yaml:296`).
 
 At the business layer, `process-oscal-conversion` is realized by
 `fn-ai-markdown-conversion` and `fn-oscal-conversion`. `fn-oscal-profile-resolve`
 realizes its own process, `process-profile-resolution`, and
 `fn-baseline-tailoring` realizes `process-baseline-tailoring`. Tailoring
 triggers resolution ("tailored profile feeds
-resolution") (`architecture/model/relationships.yaml:277-285`).
+resolution") (`architecture/model/relationships.yaml:281-290`).
 
 A modelling note on this change: `sub-catalog`'s former `Access` →
 `store-oscal` ("writes Catalogs & Profiles") edge was dropped, and no direct
 replacement was added. The store is linked to the new artefacts only
-through `Aggregation`, and `store-oscal` remains a member of both OSCAL
+through `Composition`, and `store-oscal` remains a member of both OSCAL
 views (`architecture/model/relationships.yaml`). The sources don't say
 whether dropping the write edge was intentional.
 
@@ -237,7 +246,7 @@ artefact flow are:
 - Release Controls Enforcement, which comprises the CI/CD pipeline
 - Controls Effectiveness Assurance, which comprises effectiveness monitoring
 
-(`architecture/model/relationships.yaml:262-270`, `304-305`, `349-350`.) The
+(`architecture/model/relationships.yaml:266-274`, `305-306`, `350-351`.) The
 full set of nine is on [Skeleton](architecture-model-skeleton.md).
 
 Business roles are `Assignment`-linked to the **BusinessFunction** they
@@ -249,7 +258,7 @@ perform, not to individual processes:
 - Solution Architect → Solution Design
 - Platform Operations (BAU) → Controls Effectiveness Assurance
 
-(`architecture/model/relationships.yaml:264`, `306`, `357-362`, `383`.) Only
+(`architecture/model/relationships.yaml:268`, `307`, `358-363`, `384`.) Only
 Release Controls Enforcement, among the controls functions, has no human role;
 it runs inline in the pipeline. This role-on-function modelling is what lets
 the consolidated Controls & Compliance Catalog view nest Function > Role >

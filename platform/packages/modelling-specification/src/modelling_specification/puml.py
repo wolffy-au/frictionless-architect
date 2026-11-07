@@ -1,0 +1,446 @@
+#!/usr/bin/env python3
+"""Generate an ArchiMate PlantUML diagram from a validated ArchiMate model.
+
+    python -m modelling_specification.puml MODEL[.archimate|.xml] [--view NAME]
+        [--no-direction TYPE ...]
+
+Emits PlantUML using the bundled `<archimate/Archimate>` stdlib. With
+--view, only the elements/relationships shown on that ArchiMate view are
+included; without it, the whole model. Unmapped element types fall back to
+a plain `rectangle` and are reported on stderr.
+
+--no-direction TYPE (repeatable) drops the default Up/Right layout hint
+(REL_DIRECTION) for that relationship type on this view, letting graphviz
+pick freely instead. Use it where the default rank hint fights itself — e.g.
+a relationship type with edges running both ways between the same pair of
+elements (a hub-and-spoke or mesh, not a one-way sequence), which forces
+graphviz to silently drop half the constraints as back-edges and produces a
+tangled layout regardless of the underlying data.
+
+--context CTX (requires --view) further restricts the view to one context's
+neighbourhood: elements tagged `context: CTX`, plus any other element on the
+view connected to one of them by a relationship also on the view -- GH #129
+step 4's `split_by: context`, one invocation per context.
+
+Prints the PlantUML to stdout. Exit 0 = printed, 2 = load/lookup error.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+from typing import Any
+
+from pyArchimate import Model
+
+# ArchiMate element type (pyArchimate bare name) -> <archimate/Archimate> macro.
+# Verified against PlantUML 1.2026.7's bundled stdlib.
+ELEMENT_MACRO = {
+    # Business
+    "BusinessActor": "Business_Actor",
+    "BusinessRole": "Business_Role",
+    "BusinessCollaboration": "Business_Collaboration",
+    "BusinessInterface": "Business_Interface",
+    "BusinessProcess": "Business_Process",
+    "BusinessFunction": "Business_Function",
+    "BusinessInteraction": "Business_Interaction",
+    "BusinessEvent": "Business_Event",
+    "BusinessService": "Business_Service",
+    "BusinessObject": "Business_Object",
+    "Contract": "Business_Contract",
+    "Representation": "Business_Representation",
+    "Product": "Business_Product",
+    # Application
+    "ApplicationComponent": "Application_Component",
+    "ApplicationCollaboration": "Application_Collaboration",
+    "ApplicationInterface": "Application_Interface",
+    "ApplicationFunction": "Application_Function",
+    "ApplicationInteraction": "Application_Interaction",
+    "ApplicationProcess": "Application_Process",
+    "ApplicationEvent": "Application_Event",
+    "ApplicationService": "Application_Service",
+    "DataObject": "Application_DataObject",
+    # Technology
+    "Node": "Technology_Node",
+    "Device": "Technology_Device",
+    "SystemSoftware": "Technology_SystemSoftware",
+    "TechnologyCollaboration": "Technology_Collaboration",
+    "TechnologyInterface": "Technology_Interface",
+    "Path": "Technology_Path",
+    "CommunicationNetwork": "Technology_CommunicationNetwork",
+    "TechnologyFunction": "Technology_Function",
+    "TechnologyProcess": "Technology_Process",
+    "TechnologyInteraction": "Technology_Interaction",
+    "TechnologyEvent": "Technology_Event",
+    "TechnologyService": "Technology_Service",
+    "Artifact": "Technology_Artifact",
+    # Physical
+    "Equipment": "Physical_Equipment",
+    "Facility": "Physical_Facility",
+    "DistributionNetwork": "Physical_DistributionNetwork",
+    "Material": "Physical_Material",
+    # Motivation
+    "Stakeholder": "Motivation_Stakeholder",
+    "Driver": "Motivation_Driver",
+    "Assessment": "Motivation_Assessment",
+    "Goal": "Motivation_Goal",
+    "Outcome": "Motivation_Outcome",
+    "Principle": "Motivation_Principle",
+    "Requirement": "Motivation_Requirement",
+    "Constraint": "Motivation_Constraint",
+    "Meaning": "Motivation_Meaning",
+    "Value": "Motivation_Value",
+    # Strategy
+    "Resource": "Strategy_Resource",
+    "Capability": "Strategy_Capability",
+    "CourseOfAction": "Strategy_CourseOfAction",
+    "ValueStream": "Strategy_ValueStream",
+    # Implementation & Migration
+    "WorkPackage": "Implementation_WorkPackage",
+    "Deliverable": "Implementation_Deliverable",
+    "ImplementationEvent": "Implementation_Event",
+    "Plateau": "Implementation_Plateau",
+    "Gap": "Implementation_Gap",
+    # Composite
+    "Grouping": "Grouping",
+}
+
+REL_MACRO = {
+    "Composition": "Rel_Composition",
+    "Aggregation": "Rel_Aggregation",
+    "Assignment": "Rel_Assignment",
+    "Realization": "Rel_Realization",
+    "Serving": "Rel_Serving",
+    "Access": "Rel_Access",
+    "Influence": "Rel_Influence",
+    "Triggering": "Rel_Triggering",
+    "Flow": "Rel_Flow",
+    "Specialization": "Rel_Specialization",
+    "Association": "Rel_Association",
+}
+
+# Default layout direction per relationship type, using the stdlib's directional
+# macro variants (e.g. `Rel_Realization_Up`). Realization/Serving read bottom-up
+# (implementation realizing/serving something above it); Triggering/Flow read
+# left-to-right (process sequence). Types not listed here use the plain macro
+# and let graphviz pick a direction. A view whose graph isn't actually a
+# one-way sequence for one of these types (e.g. a hub-and-spoke with edges
+# running both ways between the same pair) should pass that type via
+# --no-direction / views.yaml's `no_direction:` key instead of fighting it —
+# see render_diagrams.py.
+REL_DIRECTION = {
+    "Realization": "Up",
+    "Specialization": "Up",
+    "Serving": "Up",
+    "Influence": "Up",
+    "Triggering": "Right",
+    "Flow": "Right",
+}
+
+# Access relationship access_type -> stdlib macro suffix (Rel_Access_r/_w/_rw),
+# giving the connector its read/write arrowhead. Undefined/other -> plain Rel_Access.
+ACCESS_TYPE_SUFFIX = {
+    "Read": "r",
+    "Write": "w",
+    "ReadWrite": "rw",
+}
+
+# Relationship types rendered as containment (child nested in parent's box) rather
+# than an arrow. source = whole/container/active-structure, target = part/behaviour.
+# A child is only nested if it has exactly one such parent on the diagram, or --
+# failing that -- exactly one Composition parent among several (Composition is
+# exclusive ownership per the spec, so it breaks the tie in its own favour); the
+# nesting must also introduce no cycle. Every other containment stays a plain
+# arrow.
+NEST_RELS = {"Composition", "Aggregation", "Assignment"}
+
+
+def alias(uuid: str) -> str:
+    """Return a PlantUML-safe alias (`e_` plus up to 16 alphanumerics of the UUID).
+
+    Args:
+        uuid: Model element or relationship identifier.
+
+    Returns:
+        The alias string.
+    """
+    return "e_" + re.sub(r"[^0-9a-zA-Z]", "", uuid)[:16]
+
+
+def esc(text: str | None) -> str:
+    """Make text safe inside a double-quoted PlantUML string.
+
+    Args:
+        text: Raw label, or None.
+
+    Returns:
+        Text with double quotes swapped for single quotes and newlines flattened.
+    """
+    return (text or "").replace('"', "'").replace("\n", " ").strip()
+
+
+def _view_concepts(view: Any) -> set[str]:
+    """UUIDs of every concept placed on an ArchiMate view, walking nested nodes."""
+    wanted: set[str] = set()
+    stack = list(view.nodes)
+    while stack:
+        n = stack.pop()
+        if getattr(n, "concept", None) is not None:
+            wanted.add(n.concept.uuid)
+        stack.extend(getattr(n, "nodes", []) or [])
+    return wanted
+
+
+def _context_filtered(elements: list[Any], relationships: list[Any], context: str) -> tuple[list[Any], list[Any]]:
+    """Restrict a view's already-selected `elements`/`relationships` to one
+    context's neighbourhood (GH #129 step 4, `split_by: context`): every element
+    tagged `context` itself, plus any other element on the view connected to one
+    by a relationship that is also on the view -- so a cross-context edge
+    `include_neighbours` (step 3) placed on the full view still renders here,
+    from whichever context side is being split out. A relationship is kept when
+    at least one endpoint belongs to `context`; both its endpoints are then in
+    the returned element list by construction."""
+    own = {e.uuid for e in elements if e.prop("context") == context}
+    neighbours: set[str] = set()
+    kept_rels: list[Any] = []
+    for r in relationships:
+        source_in, target_in = r.source.uuid in own, r.target.uuid in own
+        if not (source_in or target_in):
+            continue
+        kept_rels.append(r)
+        neighbours.add(r.target.uuid if source_in else r.source.uuid)
+    wanted = own | neighbours
+    return [e for e in elements if e.uuid in wanted], kept_rels
+
+
+def _pick_parent(parents: list[tuple[str, Any]]) -> tuple[str, Any] | None:
+    """Pick a part's single container: the lone candidate, or -- if several
+    compete -- the lone Composition one (exclusive ownership per the spec
+    breaks the tie in its own favour). Returns None if neither applies."""
+    if len(parents) == 1:
+        return parents[0]
+    compositions = [p for p in parents if p[1].type == "Composition"]
+    return compositions[0] if len(compositions) == 1 else None
+
+
+def _containment_candidates(elements: list[Any], relationships: list[Any]) -> dict[str, list[tuple[str, Any]]]:
+    """The legal containment edges, grouped by part, in first-seen order (dict
+    preserves insertion order) so nesting stays deterministic."""
+    on_diagram = {e.uuid for e in elements}
+    candidates_by_part: dict[str, list[tuple[str, Any]]] = {}
+    for r in relationships:
+        whole, part = r.source.uuid, r.target.uuid
+        if r.type in NEST_RELS and whole in on_diagram and part in on_diagram and whole != part:
+            candidates_by_part.setdefault(part, []).append((whole, r))
+    return candidates_by_part
+
+
+def _is_descendant(node: str, of: str, parent_of: dict[str, str]) -> bool:
+    """Whether `of` is `node` or sits anywhere beneath it."""
+    cur: str | None = of
+    while cur is not None:
+        if cur == node:
+            return True
+        cur = parent_of.get(cur)
+    return False
+
+
+def _nest_tree(elements: list[Any], relationships: list[Any]) -> tuple[dict[str, list[str]], set[str], set[int]]:
+    """Fold containment relationships into nesting.
+
+    Returns (children, roots-excluded set, ``id()``s of the folded relationships).
+    A part is nested under a whole when it has exactly one containment parent on
+    the diagram, or -- failing that -- exactly one Composition parent among
+    several (Composition wins the tie: it is exclusive ownership per the spec,
+    unlike Aggregation/Assignment, which can be shared); the nesting must also
+    introduce no cycle. Every other containment stays an arrow.
+    """
+    # Pick each part's single container -- the lone candidate, or the lone
+    # Composition one if several compete -- and nest it there unless that
+    # introduces a cycle; every other containment stays an arrow.
+    parent_of: dict[str, str] = {}
+    children: dict[str, list[str]] = {}
+    nested: set[int] = set()
+
+    for part, parents in _containment_candidates(elements, relationships).items():
+        picked = _pick_parent(parents)
+        if picked is None or _is_descendant(part, picked[0], parent_of):
+            continue
+        whole, r = picked
+        parent_of[part] = whole
+        children.setdefault(whole, []).append(part)
+        nested.add(id(r))
+    return children, set(parent_of), nested
+
+
+def _element_lines(
+    elements: list[Any], children: dict[str, list[str]], contained: set[str], warnings: list[str]
+) -> list[str]:
+    by_uuid = {e.uuid: e for e in elements}
+    out: list[str] = []
+
+    def emit(e: Any, depth: int) -> None:
+        pad = "  " * depth
+        macro = ELEMENT_MACRO.get(e.type)
+        label = esc(e.name) or e.type
+        if e.type == "WorkPackage" and e.prop("gh-state") == "closed":
+            # Leading space: creole strikethrough markers don't take effect when
+            # "--" opens the string at position 0.
+            label = f" --{label}--"
+        if macro:
+            head = f'{pad}{macro}({alias(e.uuid)}, "{label}")'
+        else:
+            warnings.append(f"unmapped element type {e.type!r} ({e.name!r}) -> plain rectangle")
+            head = f'{pad}rectangle "{label}" as {alias(e.uuid)}'
+        kids = children.get(e.uuid, [])
+        if not kids:
+            out.append(head)
+            return
+        out.append(head + " {")
+        for k in kids:
+            emit(by_uuid[k], depth + 1)
+        out.append(pad + "}")
+
+    for e in elements:
+        if e.uuid not in contained:
+            emit(e, 0)
+    return out
+
+
+def _view_scoped(model: Any, view_name: str, context: str | None) -> tuple[list[Any], list[Any], str]:
+    """(elements, relationships, title) for `--view view_name`, optionally
+    further restricted to `--context`'s neighbourhood."""
+    views = [v for v in model.views if v.name == view_name]
+    if not views:
+        raise KeyError(f"no view named {view_name!r}; have: {[v.name for v in model.views]}")
+    view = views[0]
+    wanted = _view_concepts(view)
+    elements = [e for e in model.elements if e.uuid in wanted]
+    # Render exactly the connections the view itself declares, not every model
+    # relationship whose endpoints happen to both be in scope — a view may
+    # deliberately omit an in-scope relationship (build.py's per-view
+    # `exclude:` patterns), and that suppression must survive into the
+    # diagram rather than being silently recomputed away here.
+    relationships = [model.rels_dict[c.ref] for c in view.conns if c.ref in model.rels_dict]
+    if context:
+        elements, relationships = _context_filtered(elements, relationships, context)
+        return elements, relationships, f"{view_name} — {context}"
+    return elements, relationships, view_name
+
+
+def _rel_macro(r: Any, no_direction: set[str] | None) -> str | None:
+    """`r`'s macro with its access-type and layout-direction suffixes, or None if unmapped."""
+    macro = REL_MACRO.get(r.type)
+    if not macro:
+        return None
+    suffix = ACCESS_TYPE_SUFFIX.get(getattr(r, "access_type", None) or "") if r.type == "Access" else None
+    if suffix:
+        macro = f"{macro}_{suffix}"
+    direction = None if no_direction and r.type in no_direction else REL_DIRECTION.get(r.type)
+    return f"{macro}_{direction}" if direction else macro
+
+
+def _rel_line(r: Any, no_direction: set[str] | None, warnings: list[str]) -> str:
+    s, t = alias(r.source.uuid), alias(r.target.uuid)
+    macro = _rel_macro(r, no_direction)
+    if macro:
+        return f'{macro}({s}, {t}, "{esc(getattr(r, "name", ""))}")'
+    warnings.append(f"unmapped relationship type {r.type!r} -> plain association")
+    return f"{s} --> {t}"
+
+
+def generate(
+    path: str,
+    view_name: str | None,
+    no_direction: set[str] | None = None,
+    max_width: int | None = None,
+    context: str | None = None,
+) -> tuple[str, list[str]]:
+    """Generate ArchiMate PlantUML from a model file.
+
+    Args:
+        path: Path to the ArchiMate model XML.
+        view_name: Restrict to this view, or None for the whole model.
+        no_direction: Relationship types drawn without a direction hint.
+        max_width: Optional layout width limit.
+        context: With `view_name`, restrict to one context neighbourhood.
+
+    Returns:
+        The PlantUML source and a list of warnings.
+
+    Raises:
+        ValueError: If `context` is given without `view_name`.
+    """
+    if context and not view_name:
+        raise ValueError("--context requires --view")
+    model = Model("diagram")
+    model.read(path)
+    warnings: list[str] = []
+
+    if view_name:
+        elements, relationships, title = _view_scoped(model, view_name, context)
+    else:
+        elements = list(model.elements)
+        relationships = list(model.relationships)
+        title = model.name or path
+
+    children, contained, nested = _nest_tree(elements, relationships)
+
+    lines = ["@startuml", "!include <archimate/Archimate>", ""]
+    if max_width:
+        # Scales the rendered image down (never up) to fit this width in px.
+        lines.append(f"scale max {max_width} width")
+    lines += [f"title {esc(title)}", ""]
+    lines += _element_lines(elements, children, contained, warnings)
+    lines.append("")
+
+    lines += [_rel_line(r, no_direction, warnings) for r in relationships if id(r) not in nested]
+
+    lines += ["", "@enduml", ""]
+    return "\n".join(lines), warnings
+
+
+def main() -> int:
+    """Run the command-line entry point.
+
+    Returns:
+        Process exit code.
+    """
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("model")
+    ap.add_argument("--view", help="restrict to the contents of this ArchiMate view")
+    ap.add_argument(
+        "--context",
+        help="with --view, restrict further to one context's neighbourhood (GH #129 step 4, split_by: context)",
+    )
+    ap.add_argument(
+        "--no-direction",
+        action="append",
+        default=[],
+        metavar="TYPE",
+        help="drop the default layout-direction hint for this relationship type (repeatable)",
+    )
+    ap.add_argument(
+        "--max-width",
+        type=int,
+        metavar="PX",
+        help="cap the rendered width in pixels (PlantUML `scale max PX width`); smaller diagrams are untouched",
+    )
+    args = ap.parse_args()
+
+    try:
+        puml, warnings = generate(args.model, args.view, set(args.no_direction), args.max_width, args.context)
+    except Exception as exc:  # noqa: BLE001
+        sys.stderr.write(f"error: {exc}\n")
+        return 2
+
+    for w in warnings:
+        sys.stderr.write(f"warning: {w}\n")
+
+    print(puml)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

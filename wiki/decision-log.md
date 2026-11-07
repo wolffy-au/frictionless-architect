@@ -1,7 +1,7 @@
 ---
 title: Architecture Decision Log
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - docs/adr/0000-adr-template.md
 - docs/adr/0001-root-is-governance-only.md
@@ -60,7 +60,7 @@ confirmed fully reflected elsewhere, leaving only **A**/**P**
 | 0011 | Platform decomposes into 6 subsystems (replacing the 8-component grouping) | A |
 | 0012 | ADRs are an attested finite-state machine (`Draft→Under Review→Approved→Superseded`) | A |
 | 0013 | Authorization is a dedicated policy component, separate from authentication | A |
-| 0014 | Mandatory PII/PHI anonymization before any LLM processing | A |
+| 0014 | Mandatory PII/PHI anonymization before any LLM processing; amended 2026-10-31 to cover the conversational agent and set per-consumer failure modes | A |
 | 0015 | Machine-readability first: all artifacts are structured/executable data | A |
 | 0016 | Every technical change links to an ADR ("why over what") | A |
 | 0017 | Knowledge graph built on a standard ontology (Backstage/C4) | P |
@@ -68,6 +68,22 @@ confirmed fully reflected elsewhere, leaving only **A**/**P**
 | 0019 | Policy engine is OPA (Rego); bypass raises managed-drift debt | P |
 
 ## Revisions and implementation notes
+
+ADR-0014 gained two 2026-10-31 changes. Its scope now includes the
+conversational-modelling agent's own prompts (`fn-conversational-authoring`),
+because no exemption comparable to ADR-0031's applies to that agent's
+architect-authored free text. It also sets a default failure mode: a detected
+match is auto-redacted and proceeds for every consumer except that agent, which
+flags for review because the architect is already present in the same turn. Hard
+block, global flag-for-review and global auto-redact were each rejected. The
+GH #181 amendment then fixed a real gap: `propose_delta()` was scrubbing under a
+`spec-generator` context with no real caller, so matches were silently redacted.
+It now uses `conversational-authoring`, raises `PiiReviewRequired` with no LLM
+call made, and the architect resolves the match through
+`POST .../propose/resolve-pii` (`docs/adr/0014-pii-anonymization-gateway.md`
+§Decision, §Amendment). The detector choice is
+[ADR-0043](decision-log-0030-onward.md), and [ADR-0046](decision-log-0030-onward.md)
+sets what happens when that detector itself fails.
 
 The **P** rows (0017–0019) exist because `specs/EPIC-001-governance-platform`
 deliberately de-specified premature product choices — persistence technologies,

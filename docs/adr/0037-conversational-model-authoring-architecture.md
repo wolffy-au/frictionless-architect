@@ -11,6 +11,16 @@
      as settled by EPIC-003 plan/tasks and ADR-0039. Held at Proposed until a human attests it (ADR-0012).
      The pyarchimate-in-root Consequences claim was corrected in this ADR (F3, human decision). -->
 
+<!-- 2026-11-01: item 8 (lifting the add-only restriction) added after auditing this feature
+     against a real authoring transcript. Items 1-7 were already implemented; item 8 is not.
+     Add-only was never itself a decided scope: no clarification session in spec.md raised
+     it and no ADR covered it, so there is nothing to supersede -- it is added here rather
+     than as a new record because this ADR is still Proposed/unratified and already the one
+     filed for this feature's load-bearing choices. Status stays Proposed. -->
+
+<!-- 2026-11-05: item 9 added for the same reason as item 8: this record is still Proposed
+     and already the one filed for this feature's load-bearing choices. Status stays Proposed. -->
+
 ## Context
 
 GH #108 adds a conversational agent that proposes ArchiMate model deltas from natural
@@ -66,6 +76,31 @@ references, corrected alongside this ADR).
    1:1 stream↔outcome, stream↔course-of-action shape as the other four outcome streams. The
    already-built `fn-conversational-authoring` ApplicationFunction realizes this process,
    resolving the business-layer owner this feature's ApplicationFunction previously lacked.
+   The process in turn realizes the stream (`process-conversational-authoring →
+   vs-intent-to-model`), the one process → stream edge in the model: the other streams' stages
+   are served by capabilities, and this stream has a single stage (added 2026-11-05).
+8. **Lifting the add-only restriction**: the original scope (`spec.md` FR-001, the
+   `SYSTEM_PROMPT` in `delta.py`) only ever let a Candidate Delta add new elements,
+   relationships and views — never edit, rename or remove an existing one. That limit was
+   inherited unexamined from GH #108's "propose a candidate model delta" framing, not a
+   deliberated decision. This lifts it: a Candidate Delta may also describe an edit (field
+   changes on an existing element/relationship) or a removal of an existing element or
+   relationship, carried through the same propose → validate → decide → apply flow, checked
+   against the same whole-resulting-model metamodel/referential-integrity gate
+   (`merge_candidate`) plus enterprise conventions, and still requiring an explicit `decide`
+   action before anything is written (Principle VII, FR-002/004 unchanged). A removal that
+   would leave a dangling relationship end, or drop an element/relationship a view still
+   references, is a `build_error` finding, same as any other broken reference — never
+   silently cascaded.
+9. **Conversation history reaches the LLM** (2026-11-05): each call now carries the session's
+   earlier turns (FR-018), the last 20 messages, in process memory only. The ADR-0014 boundary
+   holds because a turn is recorded only after a successful call, with the text that call
+   actually sent, so scrubbed or redacted text stays that way. Text the architect chose to send
+   as-is is re-sent on later turns of that session, to the same provider. Each prompt also
+   carries the pending delta, and the model listing is rebuilt every turn, so a discarded
+   proposal is recognisable as dead without recording decisions in the history. Element
+   descriptions (FR-019) join names in the grounding, cut to 300 characters each. Like names,
+   they are committed model content rather than request text, so they are not scrubbed.
 
 ## Consequences
 
@@ -92,6 +127,17 @@ references, corrected alongside this ADR).
   bar, so `sw-pyarchimate` and `sw-rapidfuzz` (`SystemSoftware`) are added to
   `architecture/model/`, each wired to `fn-conversational-authoring` with a `Serving`
   relationship. Diagrams including that function are regenerated in the same change.
+- Item 8: Candidate Delta's JSON shape (`SYSTEM_PROMPT`, `CandidateDelta`) grows further
+  optional keys for edits/removals, alongside the existing elements/relationships/views/
+  view_membership_edits keys. `append_delta`'s additive-only YAML writer does not cover an
+  edit or removal; a second, scoped writer is needed in `model_io.py`, following the
+  precedent already set for view-membership edits.
+- Item 8: `spec.md` FR-001 and the activity diagram's "(add-only: no edit, rename or
+  remove)" label (commit `6b5762c`) become stale the moment this ships and need updating in
+  the same change.
+- Item 8: removing an element/relationship an existing view's `members:` references, or an
+  `include_types` sweep would otherwise pick up, needs the same view-reconciliation
+  `model_io.py` already does for membership edits — not a new mechanism, but a new call site.
 
 ## Alternatives considered
 
@@ -126,3 +172,11 @@ references, corrected alongside this ADR).
   (baseline → specify → build → release; escalate → decide → record), while propose /
   validate / apply-or-override happens within one conversational turn performed by a single
   process, with no comparable hand-off to decompose into stages.
+- **Lifting add-only** — a new standalone ADR instead of amending this one: considered;
+  rejected because no prior ADR ever decided add-only in the first place, so there is
+  nothing to supersede, and this ADR is still `Proposed`/unratified and already the one
+  record for this feature's load-bearing choices. Leaving add-only in place and only
+  shipping the narrower view-membership-edit exception (already implemented): rejected —
+  the audited transcript this gap analysis was run against showed real architect workflows
+  (splitting a context, correcting a misnamed element) that need a true edit/remove path,
+  not just a view-membership carve-out.

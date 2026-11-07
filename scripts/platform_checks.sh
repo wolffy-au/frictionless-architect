@@ -116,6 +116,16 @@ else
   pkg_count=$(find packages -maxdepth 1 -mindepth 1 -type d | wc -l)
 fi
 pytest_workers=$(( $(nproc) / pkg_count ))
+# A modelling-specification worker reaches about 950 MB. On this 8-core, 7.7 GB
+# devcontainer a single-package run started 8 of them, and the OOM killer ended
+# workers until xdist itself failed. Cap the count by memory as well as by core.
+mem_available_mb=$(awk '/^MemAvailable:/ { print int($2 / 1024) }' /proc/meminfo 2>/dev/null || true)
+if [[ -n "$mem_available_mb" ]]; then
+  mem_workers=$(( mem_available_mb / 1200 / pkg_count ))
+  if [[ $mem_workers -lt $pytest_workers ]]; then
+    pytest_workers=$mem_workers
+  fi
+fi
 [[ $pytest_workers -lt 1 ]] && pytest_workers=1
 
 run_package_checks() {

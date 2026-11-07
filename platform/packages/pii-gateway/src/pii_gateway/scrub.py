@@ -79,7 +79,14 @@ def scrub(text: str, *, context: str) -> ScrubResult:
         return ScrubResult(text=text, action=ScrubAction.PASSED_THROUGH_UNCHANGED, matches=[])
 
     categories = sorted({match.category for match in matches})
-    redacted_text = anonymize(text, results)
+    # The synthetic engine-error match (research.md R6) is a zero-length span --
+    # running it through anonymize() like a real match would redact nothing and
+    # leave the original text intact. Fail-closed means no part of the text the
+    # engine couldn't inspect survives, so replace all of it instead of the span.
+    if any(result.entity_type == ENGINE_ERROR_CATEGORY for result in results):
+        redacted_text = f"<{ENGINE_ERROR_CATEGORY}>"
+    else:
+        redacted_text = anonymize(text, results)
 
     if config.failure_mode == ScrubAction.FLAGGED_FOR_REVIEW:
         _audit_logger.record(

@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: '2026-10-31'
+generated: '2026-11-05'
 generator: claude-sonnet-5
 ---
 
@@ -126,6 +126,10 @@ generator: claude-sonnet-5
   provider settings, keychain keys with an env-var fallback, keyless Ollama and
   GitHub Copilot, and the settings router now mounted once by Portal for
   every package.
+- [PII Gateway](pii-gateway.md) — the shared `pii-gateway` package (ADR-0014,
+  ADR-0043): the Presidio-backed `scrub()` contract, auto-redact versus
+  flag-for-review by caller context, a metadata-only audit log, and the settings
+  router Portal mounts.
 - [Non-Functional Requirements](non-functionals.md) — performance, security,
   reliability, compliance, observability, and quality targets.
 - [Visualizer Service](visualizer-service.md) — the one implemented component:

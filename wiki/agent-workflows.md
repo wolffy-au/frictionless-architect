@@ -1,7 +1,7 @@
 ---
 title: Agent Skills & Workflows
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - .claude/agents/README.md
 - .claude/agents/acceptance-author.md
@@ -97,7 +97,7 @@ merge** (`.claude/agents/README.md:24-29`).
 | `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, the constitution. |
 | `adr-auditor` | branch + **draft** PR | Audit `docs/adr/` against the decision-bearing docs (`ARCHITECTURE.md`, `TECHNICAL.md`, constitution, `specs/**`) and recent commits; report missing / stale / misaligned / superseded records and draft `Status: Proposed` ADR stubs plus status edits. Leaves the PR **draft** — a human writes and attests the decision (`.claude/agents/README.md:30-31`). |
 | `wiki-maintenance` | flags; fixes chosen findings in the weekly session | Audits the generated wiki: stale pages, unmatched/uncovered `sources.yaml` globs, index links, dead citations, oversized pages. Audit-only by default. In the weekly `scripts/wiki_audit_weekly.sh` session it fixes the findings the user chooses: a missing `index.md` link directly, anything else by running `wiki-librarian` on the affected topics (and a `sources.yaml` edit only when chosen), then commits as `docs(wiki): …`. It never hand-edits page content (`.claude/agents/wiki-maintenance.md` §"Fixing chosen findings"). |
-| `release-runner` | branch + tag + release | Run `RELEASE.md` end to end (§1–§10): gates, `cz bump` on `develop`, then open the `develop` → `main` PR and **stop at the human merge gate** (it never merges, and never pushes to `main`). After the human merge it tags `origin/main`, creates the release with `--verify-tag`, and merges back. Stops on any red gate; pushes the tag / creates the release only after an explicit go-ahead (`.claude/agents/release-runner.md`). |
+| `release-runner` | branch + tag + release | Run `RELEASE.md` end to end (§1–§10): gates, `cz bump` on `develop`, then open the `develop` → `main` PR and **stop at the human merge gate** (it never merges, and never pushes to `main`). After the human merge it tags `origin/main`, creates the release with `--verify-tag`, and merges back. Stops on any red gate; pushes the tag / creates the release only after an explicit go-ahead (`.claude/agents/release-runner.md`). It has no `Agent` tool, so it hands back the agents it needs, runs the read-only §3 and §4 checks first, and names the §5 agents in the same hand-back so the session can dispatch them in parallel (`.claude/agents/release-runner.md`). |
 
 Several of these are wired into `RELEASE.md` step 5 (`docs-uplift`,
 `spec-alignment`, `adr-auditor`) — see [Development & Quickstart](development.md).
@@ -159,14 +159,15 @@ scripts with `poetry run python …`.
 | Skill | Purpose |
 |---|---|
 | `model-archimate` | Author, edit, and **validate** ArchiMate models (`.archimate` Archi-native or Open Group Exchange `.xml`). Runs pyArchimate's metamodel checks — relationship-matrix legality plus referential integrity — "the conformance gate every ArchiMate/C4 diagram is generated from" (`.claude/skills/model-archimate/SKILL.md`). Since [ADR-0037](decision-log-0030-onward.md) (GH #108) its `scripts/validate.py` is a thin wrapper shelling into the `modelling-specification` platform package's own CLI, the same ported implementation root's `build.py`/`render_diagrams.py` now wrap too — see [Conversational Model Authoring](modelling-specification.md). |
-| `diagram-archimate` | Projects a validated model into ArchiMate-notation PlantUML via `scripts/model_to_puml.py` (optionally `--view "Name"`), mapping element types to `<archimate/Archimate>` macros, nesting `Composition`/`Aggregation`/`Assignment` targets inside their source box (dropping the arrow) per ArchiMate's nested-notation convention, then renders via `diagram-plantuml`. The generator emits declarations only (no positions) for graphviz/PlantUML to auto-lay-out, **except** two fixed default directions: `Realization`/`Serving` render with the stdlib's `_Up` macro variant (realizing/serving element below what it realizes/serves, arrow up), and `Triggering`/`Flow` render `_Right` (process sequence reads left to right) — a layout hint only (`REL_DIRECTION` in `model_to_puml.py`), not a change to source/target semantics. For a faithful reproduction of a hand-drawn Archi view (exact coordinates), use pyArchimate's native `view.to_svg()` instead. |
-| `diagram-c4` | Projects a validated model into C4-PlantUML (Context or Container) via `scripts/model_to_c4.py <model.xml> --system "…" --level context\|container`, using the fixed mapping in `diagram-c4/references/archimate-to-c4-mapping.md`. |
+| `diagram-archimate` | Projects a validated model into ArchiMate-notation PlantUML via `scripts/model_to_puml.py` (optionally `--view "Name"`; a thin wrapper over the `modelling_specification.puml` module that prints to stdout, so callers redirect it to a file, ADR-0045), mapping element types to `<archimate/Archimate>` macros, nesting `Composition`/`Aggregation`/`Assignment` targets inside their source box (dropping the arrow) per ArchiMate's nested-notation convention, then renders via `diagram-plantuml`. The generator emits declarations only (no positions) for graphviz/PlantUML to auto-lay-out, **except** two fixed default directions: `Realization`/`Serving` render with the stdlib's `_Up` macro variant (realizing/serving element below what it realizes/serves, arrow up), and `Triggering`/`Flow` render `_Right` (process sequence reads left to right) — a layout hint only (`REL_DIRECTION` in `model_to_puml.py`), not a change to source/target semantics. For a faithful reproduction of a hand-drawn Archi view (exact coordinates), use pyArchimate's native `view.to_svg()` instead. |
+| `diagram-c4` | Projects a validated model into C4-PlantUML (Context or Container) via `scripts/model_to_c4.py <model.xml> --system "…" --level context\|container` (the same stdout-only wrapper, over `modelling_specification.c4`), using the fixed mapping in `diagram-c4/references/archimate-to-c4-mapping.md`. |
 | `diagram-plantuml` | Default workflow for authoring, validating, and rendering any PlantUML diagram. Validates against the local `plantuml` binary, falls back to the public PlantUML server (noting source leaves the machine), then to eyeballing; `plantuml.com` docs are the syntax fallback. |
 
 `model-archimate` also carries a **viewpoint** checker
-(`scripts/viewpoints.py`, backed by a verbatim copy of Archi's viewpoint file
-in `reference/archi-viewpoints.xml` plus advisory guidance in
-`reference/viewpoints-guidance.yaml`): a view tagged `viewpoint: <slug>` in
+(`scripts/viewpoints.py`, now a thin wrapper over the `modelling-specification`
+package's `viewpoints.py`, backed by that package's verbatim copy of Archi's
+viewpoint file in `reference/archi-viewpoints.xml` plus advisory guidance in
+`reference/viewpoints-guidance.yaml`, ADR-0045): a view tagged `viewpoint: <slug>` in
 `architecture/model/views.yaml` is held by `build.py` to that viewpoint's
 allowed concepts (`viewpoint: custom` opts out for a deliberate cross-layer
 view). The tag is a conformance gate, not a projection filter — two views

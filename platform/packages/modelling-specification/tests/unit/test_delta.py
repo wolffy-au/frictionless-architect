@@ -7,11 +7,17 @@ import pytest
 from llm_provider_config import MissingCredentialError, NotConfiguredError
 from modelling_specification.authoring import delta
 from modelling_specification.authoring.delta import (
+    MAX_DESC_CHARS,
+    MAX_HISTORY_MESSAGES,
     DeltaProposalError,
     LlmMessage,
     assign_missing_ids,
+    assign_missing_view_ids,
     propose_delta,
+    resolve_unknown_element_edits,
+    resolve_unknown_element_removals,
     resolve_unknown_endpoints,
+    resolve_unknown_members,
 )
 from support.fake_llm import FakeCompletion
 
@@ -110,7 +116,15 @@ def test_propose_delta_strips_a_surrounding_markdown_fence(configured_fake_llm: 
 
     result = propose_delta("add a function")
 
-    assert result == {"elements": [], "relationships": []}
+    assert result == {
+        "elements": [],
+        "relationships": [],
+        "views": [],
+        "view_membership_edits": [],
+        "element_edits": [],
+        "element_removals": [],
+        "relationship_removals": [],
+    }
 
 
 def test_propose_delta_returns_structured_options_when_the_llm_suggests_several(
@@ -185,10 +199,62 @@ def test_assign_missing_ids_deduplicates_against_existing_and_sibling_ids() -> N
 
 
 def test_propose_delta_gives_the_llm_the_existing_element_catalogue(configured_fake_llm: FakeCompletion) -> None:
-    propose_delta("link drift to the goal", [("assess-drift-debt", "Assessment", "Architectural drift")])
+    propose_delta("link drift to the goal", [("assess-drift-debt", "Assessment", "Architectural drift", "")])
 
     system = configured_fake_llm.calls[0]["messages"][0]["content"]
     assert "assess-drift-debt | Assessment | Architectural drift" in system
+
+
+def test_propose_delta_gives_the_llm_the_existing_relationship_graph(configured_fake_llm: FakeCompletion) -> None:
+    propose_delta(
+        "what connects to role-sa?",
+        relationships=[("Realization", "fn-solution-modelling", "cap-reusable-architecture", "")],
+    )
+
+    system = configured_fake_llm.calls[0]["messages"][0]["content"]
+    assert "Existing relationships:" in system
+    assert "Realization | fn-solution-modelling | cap-reusable-architecture | " in system
+
+
+def test_propose_delta_parses_a_proposed_view(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "views": [{"name": "Context Sweep", "context": ["modelling-specification"],'
+        ' "include_types": ["ApplicationFunction"]}]}'
+    )
+
+    result = propose_delta("add a view scoped to context modelling-specification")
+
+    assert result["views"] == [
+        {"name": "Context Sweep", "context": ["modelling-specification"], "include_types": ["ApplicationFunction"]}
+    ]
+
+
+def test_propose_delta_defaults_views_to_empty_when_the_llm_omits_the_key(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    result = propose_delta("add a function")
+
+    assert result["views"] == []
+
+
+def test_assign_missing_view_ids_leaves_an_explicit_id_and_diagram_alone() -> None:
+    result = assign_missing_view_ids([{"name": "X", "id": "view-explicit", "diagram": "layered/explicit"}], set())
+
+    assert result == [{"name": "X", "id": "view-explicit", "diagram": "layered/explicit"}]
+
+
+def test_assign_missing_view_ids_slugifies_the_name_and_derives_a_diagram_path() -> None:
+    result = assign_missing_view_ids([{"name": "Context Sweep!"}], set())
+
+    assert result[0]["id"] == "view-context-sweep"
+    assert result[0]["diagram"] == "context-sweep"
+
+
+def test_assign_missing_view_ids_deduplicates_against_existing_ids() -> None:
+    result = assign_missing_view_ids([{"name": "X"}], {"view-x"})
+
+    assert result[0]["id"] == "view-x-2"
 
 
 _KNOWN = {
@@ -216,3 +282,179 @@ def test_resolve_unknown_endpoints_leaves_a_weak_or_ambiguous_match_for_validati
 
     assert resolved == rels
     assert notes == []
+
+
+def test_propose_delta_parses_a_view_membership_edit(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "view_membership_edits": [{"view_id": "view-capability", "add": ["role-ea"], "remove": []}]}'
+    )
+
+    result = propose_delta("add role-ea to the capability map")
+
+    assert result["view_membership_edits"] == [{"view_id": "view-capability", "add": ["role-ea"], "remove": []}]
+
+
+def test_propose_delta_defaults_view_membership_edits_to_empty_when_the_llm_omits_the_key(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    result = propose_delta("add a function")
+
+    assert result["view_membership_edits"] == []
+
+
+def test_resolve_unknown_members_repoints_a_misspelt_id_and_reports_it() -> None:
+    edits = [{"view_id": "view-capability", "add": ["assess-drfit-debt"], "remove": ["role-ea"]}]
+
+    resolved, notes = resolve_unknown_members(edits, _KNOWN)
+
+    assert resolved[0]["add"] == ["assess-drift-debt"]
+    assert resolved[0]["remove"] == ["role-ea"]
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_members_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    edits = [{"view_id": "view-capability", "add": ["something-unrelated"], "remove": []}]
+
+    resolved, notes = resolve_unknown_members(edits, _KNOWN)
+
+    assert resolved == edits
+    assert notes == []
+
+
+def test_propose_delta_parses_element_edits_removals_and_relationship_removals(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "element_edits": [{"id": "role-ea", "name": "Enterprise Architect (Renamed)"}],'
+        ' "element_removals": ["assess-drift-debt"],'
+        ' "relationship_removals": [{"type": "Association", "source": "assess-drift-debt",'
+        ' "target": "goal-frictionless-architecture"}]}'
+    )
+
+    result = propose_delta("rename role-ea and remove assess-drift-debt")
+
+    assert result["element_edits"] == [{"id": "role-ea", "name": "Enterprise Architect (Renamed)"}]
+    assert result["element_removals"] == ["assess-drift-debt"]
+    assert result["relationship_removals"] == [
+        {"type": "Association", "source": "assess-drift-debt", "target": "goal-frictionless-architecture"}
+    ]
+
+
+def test_propose_delta_defaults_the_new_edit_removal_keys_to_empty_when_the_llm_omits_them(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    result = propose_delta("add a function")
+
+    assert result["element_edits"] == []
+    assert result["element_removals"] == []
+    assert result["relationship_removals"] == []
+
+
+def test_resolve_unknown_element_edits_repoints_a_misspelt_id_and_reports_it() -> None:
+    edits = [{"id": "assess-drfit-debt", "name": "New Name"}]
+
+    resolved, notes = resolve_unknown_element_edits(edits, _KNOWN)
+
+    assert resolved[0]["id"] == "assess-drift-debt"
+    assert resolved[0]["name"] == "New Name"
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_element_edits_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    edits = [{"id": "something-unrelated", "name": "X"}]
+
+    resolved, notes = resolve_unknown_element_edits(edits, _KNOWN)
+
+    assert resolved == edits
+    assert notes == []
+
+
+def test_resolve_unknown_element_removals_repoints_a_misspelt_id_and_reports_it() -> None:
+    removals = ["assess-drfit-debt"]
+
+    resolved, notes = resolve_unknown_element_removals(removals, _KNOWN)
+
+    assert resolved == ["assess-drift-debt"]
+    assert len(notes) == 1
+    assert "assess-drfit-debt" in notes[0]
+
+
+def test_resolve_unknown_element_removals_leaves_a_weak_or_ambiguous_match_for_validation() -> None:
+    removals = ["something-unrelated"]
+
+    resolved, notes = resolve_unknown_element_removals(removals, _KNOWN)
+
+    assert resolved == removals
+    assert notes == []
+
+
+def test_catalogue_lines_carry_a_flattened_truncated_description(configured_fake_llm: FakeCompletion) -> None:
+    long_desc = "word " * 200
+    propose_delta(
+        "link drift to the goal",
+        [
+            ("assess-drift", "Assessment", "Drift", "folded\n  over lines"),
+            ("assess-long", "Assessment", "Long", long_desc),
+        ],
+    )
+
+    system = configured_fake_llm.calls[0]["messages"][0]["content"]
+    assert "assess-drift | Assessment | Drift | folded over lines\n" in system
+    long_line = next(line for line in system.splitlines() if line.startswith("assess-long"))
+    assert long_line.endswith("...")
+    assert len(long_line) < MAX_DESC_CHARS + 40
+
+
+def test_earlier_turns_are_sent_ahead_of_the_request(configured_fake_llm: FakeCompletion) -> None:
+    history: list[dict[str, str]] = []
+    configured_fake_llm.content = "Which subsystem?"
+    with pytest.raises(LlmMessage):
+        propose_delta("add a function", history=history)
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+
+    propose_delta("the modelling one", history=history)
+
+    assert [(m["role"], m["content"]) for m in configured_fake_llm.calls[1]["messages"][1:]] == [
+        ("user", "add a function"),
+        ("assistant", "Which subsystem?"),
+        ("user", "the modelling one"),
+    ]
+    assert [m["role"] for m in history] == ["user", "assistant", "user", "assistant"]
+
+
+def test_history_keeps_only_the_newest_messages(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": []}'
+    history: list[dict[str, str]] = []
+
+    for turn in range(MAX_HISTORY_MESSAGES):
+        propose_delta(f"turn {turn}", history=history)
+
+    assert len(history) == MAX_HISTORY_MESSAGES
+    assert history[-2]["content"] == f"turn {MAX_HISTORY_MESSAGES - 1}"
+
+
+def test_a_failed_call_or_unusable_reply_is_not_remembered(configured_fake_llm: FakeCompletion) -> None:
+    history: list[dict[str, str]] = []
+    configured_fake_llm.error = RuntimeError("provider down")
+    with pytest.raises(DeltaProposalError):
+        propose_delta("add a function", history=history)
+    configured_fake_llm.error = None
+    configured_fake_llm.content = '{"unexpected": true}'
+    with pytest.raises(DeltaProposalError):
+        propose_delta("add a function", history=history)
+
+    assert history == []
+
+
+def test_the_pending_delta_is_shown_to_the_llm(configured_fake_llm: FakeCompletion) -> None:
+    propose_delta("add a function", pending={"elements": [{"id": "fn-held"}]})
+
+    assert 'Pending delta:\n{"elements": [{"id": "fn-held"}]}' in configured_fake_llm.calls[0]["messages"][0]["content"]

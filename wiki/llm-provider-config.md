@@ -1,7 +1,7 @@
 ---
 title: LLM Provider Configuration
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - docs/adr/0034-shared-packages-and-llm-provider-config.md
 - platform/packages/llm-provider-config/README.md
@@ -33,6 +33,13 @@ subsystem gets its own named sibling package rather than a catch-all `common`
 (`pyproject.toml`; `platform/packages/llm-provider-config/specs/README.md`). Its first consumer is
 [Controls & Compliance Catalog](controls-compliance-catalog.md); see
 [Architecture Overview](architecture.md) for where shared packages sit.
+
+ADR-0034 now records that `litellm` is modelled as `sw-litellm`, wired to
+`sub-llm-provider-config` with `Serving`, because it crosses ADR-0044's "subject of
+its own ADR decision" bar. It also records why no other client was weighed: `litellm`
+was already the choice in spec `001-oscal-ai-conversion` and supports all five day-one
+providers behind one call surface
+(`docs/adr/0034-shared-packages-and-llm-provider-config.md` §Consequences, §Alternatives).
 
 ## Providers
 

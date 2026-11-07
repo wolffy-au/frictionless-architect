@@ -1,7 +1,7 @@
 ---
 title: Architecture Overview
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-04'
+generator: claude-opus-5-5
 sources:
 - ARCHITECTURE.md
 - TECHNICAL.md
@@ -97,7 +97,7 @@ packages under `platform/packages/`, each holding an `api/` and a `ui/`
 |---|---|---|---|---|
 | 1 | Controls & Compliance Catalog | `controls-compliance-catalog` | build, wraps `compliance-trestle` | Policy/standard documents → OSCAL Catalogs and Profiles; consumes the vendored OSCAL content. **First extraction** (§8.1, ADR-0005) |
 | 2 | Reusable Architecture Library | `reusable-architecture-library` | build | Patterns, blueprints, solution designs, candidate options, and threat modelling of them (the user-facing part of old 8) |
-| 3 | Digital Twin & Knowledge Graph | `digital-twin-knowledge-graph` | build, wraps a forked ArchiMate parser | Old 2 + old 6: intent and twin planes, forensic ledger, traceability matrix, NL-to-graph queries; absorbs `schema/manager.py` and `sample_parser.py` |
+| 3 | Architecture Knowledge Graph | `digital-twin-knowledge-graph` | build, wraps a forked ArchiMate parser | Old 2 + old 6: intent and twin planes, forensic ledger, traceability matrix, NL-to-graph queries; absorbs `schema/manager.py` and `sample_parser.py` |
 | 4 | Architecture Governance | `architecture-governance` | build | Old 3: option evaluation, impact assessment, ADR generation, conflict detection, attestation sign-off |
 | 5 | Conformance & Drift Assurance | `conformance-drift-assurance` | build, wraps OPA (ADR-0019, Proposed) | Old 4 + old 5: release-gate enforcement (CPS 230/234), BAU monitoring, drift detection, Break-Glass, remediation tickets |
 | 6 | Modelling & Specification | `modelling-specification` | build | ArchiMate / C4 / UML modelling and executable-spec generation |
@@ -117,6 +117,10 @@ standalone dashboard; `packages/portal` mounts it once for every package
 (ADR-0020). Its first consumer is `controls-compliance-catalog`'s
 `llm_client.py`. See [LLM Provider Configuration](llm-provider-config.md) and
 [Portal](portal.md).
+
+The second shared package is `pii-gateway`, a Presidio-backed PII/PHI scrubbing
+gateway (ADR-0014, ADR-0043). `packages/portal` mounts it, and
+`modelling-specification` calls it before every LLM call (`ARCHITECTURE.md` §3.2, §4).
 
 **Not packages** — parts of the old grouping that ADR-0011 dropped or
 dissolved (`ARCHITECTURE.md` §4):

@@ -41,6 +41,123 @@ def test_decide_apply_writes_the_delta_and_marks_it_applied(
     assert "applicationfunction-decide-apply-test-function" in elements_text
 
 
+def test_decide_apply_writes_a_proposed_view_to_disk(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "views": [{"name": "Context Sweep Decide Test", "context": ["modelling-specification"],'
+        ' "include_types": ["ApplicationFunction"]}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add a view scoped to context modelling-specification"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    views_text = (isolated_model / "views.yaml").read_text()
+    assert "view-context-sweep-decide-test" in views_text
+    assert "context-sweep-decide-test" in views_text
+
+
+def test_decide_apply_writes_a_view_membership_edit_to_disk(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "view_membership_edits": [{"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add stk-regulator to the governed delivery value stream view"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    views_text = (isolated_model / "views.yaml").read_text()
+    assert "- stk-regulator" in views_text
+
+
+def test_decide_apply_renames_an_element_on_disk(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "element_edits": [{"id": "sub-modelling", "name": "Renamed Modelling Package"}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "rename sub-modelling to Renamed Modelling Package"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    elements_text = (isolated_model / "elements.yaml").read_text()
+    assert "Renamed Modelling Package" in elements_text
+
+
+def test_decide_apply_removes_a_relationship_from_disk(
+    configured_fake_llm: FakeCompletion, isolated_model: Path
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "relationship_removals": [{"type": "Serving", "source": "cap-control-catalog",'
+        ' "target": "cap-reusable-architecture"}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove the Serving relationship from cap-control-catalog to cap-reusable-architecture"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    rels_text = (isolated_model / "relationships.yaml").read_text()
+    assert "control mappings" not in rels_text
+
+
+def test_decide_apply_removes_an_element_from_disk(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [], "element_removals": ["const-apra"],'
+        ' "relationship_removals": [{"type": "Influence", "source": "const-apra", "target": "req-pre-deploy-gate"}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    delta_id = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove the const-apra constraint and its influence relationship"},
+    ).json()["delta_id"]
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/deltas/{delta_id}/decide",
+        json={"action": "apply"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "applied"
+    elements_text = (isolated_model / "elements.yaml").read_text()
+    assert "const-apra" not in elements_text
+
+
 def test_decide_against_an_unknown_delta_returns_409(configured_fake_llm: FakeCompletion, isolated_model: Path) -> None:
     session_id = client.post("/authoring/sessions").json()["session_id"]
 

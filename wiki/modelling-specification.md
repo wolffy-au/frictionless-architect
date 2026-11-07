@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-10-31'
+generated: '2026-11-05'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -14,8 +14,10 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py
 - platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py
 - platform/packages/modelling-specification/src/modelling_specification/authoring/state.py
+- platform/packages/modelling-specification/src/modelling_specification/c4.py
 - platform/packages/modelling-specification/src/modelling_specification/cli.py
 - platform/packages/modelling-specification/src/modelling_specification/model_io.py
+- platform/packages/modelling-specification/src/modelling_specification/puml.py
 - platform/packages/modelling-specification/src/modelling_specification/rendering.py
 - platform/packages/modelling-specification/src/modelling_specification/router.py
 - platform/packages/modelling-specification/src/modelling_specification/ui.py
@@ -25,6 +27,7 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/validation/fixes.py
 - platform/packages/modelling-specification/src/modelling_specification/validation/metamodel.py
 - platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py
+- platform/packages/modelling-specification/src/modelling_specification/viewpoints.py
 - scripts/run-modelling_specification.sh
 - specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/checklists/requirements.md
 - specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md
@@ -48,7 +51,7 @@ live-rendered on accept. The package also now holds the deterministic model
 build/render/validate logic that root's scripts and the `model-archimate`
 skill used to carry themselves. See [Architecture Model](architecture-model.md)
 for the model elements this feature adds, and [Decision Log](decision-log-0030-onward.md)
-for ADR-0037, the record of its five load-bearing design decisions.
+for ADR-0037, the record of its eight load-bearing design decisions.
 
 **Renamed, and a sibling distinguished (ADR-0039, GH #68/#138, 2026-10-24).**
 This feature's process and function — originally "Conversational Model
@@ -75,8 +78,8 @@ load-bearing:
   pre-migration flat layout.
 - **One implementation, three callers.** `architecture/model/build.py`'s
   YAML load/merge/validate logic and `render_diagrams.py`'s view-render logic
-  moved into this package as `model_io.py` (934 lines) and `rendering.py`
-  (407 lines). Root's `build.py`, `render_diagrams.py` and the
+  moved into this package as `model_io.py` (1702 lines) and `rendering.py`
+  (461 lines). Root's `build.py`, `render_diagrams.py` and the
   `model-archimate` skill's `validate.py` are now thin wrappers that shell
   into the platform venv's CLI — `poetry run --directory platform python -m
   modelling_specification.cli build|render|validate`
@@ -87,7 +90,7 @@ load-bearing:
 - **Enterprise Convention Rules move to data.** A new
   `architecture/model/conventions.yaml` holds organisation-specific
   authoring rules (naming/altitude conventions, interposed-element shapes)
-  as inspectable, editable YAML, aggregated under `store-frameworks`
+  as inspectable, editable YAML, composed under `store-frameworks`
   alongside `do-metamodel`. The fixed ArchiMate 3.2 metamodel rules
   themselves stay sourced from pyArchimate — only the enterprise/domain
   layer on top is externally configurable
@@ -110,12 +113,18 @@ load-bearing:
 by the unrelated element-id-prefix-scheme ADR during a rebase, so it filed
 as ADR-0037 instead, with both `plan.md` references corrected to match.
 
+A later item 8 (2026-11-01) amends the same still-Proposed record rather than
+filing a new one — add-only was never itself a deliberated decision (no
+clarification session in `spec.md` raised it, no ADR covered it), so there was
+nothing to supersede. See "Candidate-delta pipeline" below for what it changes.
+
 ## Dependencies
 
 `pyproject.toml` declares `fastapi`, `uvicorn`, `pyarchimate (>=2.0.0,<3.0.0)`,
-`rapidfuzz`, `pyyaml`, `litellm`, `defusedxml`, and two sibling path
-dependencies: `llm-provider-config` and, since the knowledge-graph scaffold
-landed, [`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
+`rapidfuzz`, `pyyaml`, `litellm`, `defusedxml`, and three sibling path
+dependencies: `llm-provider-config`, `pii-gateway` (which scrubs requests before
+the LLM call, see "Candidate-delta pipeline" below) and, since the knowledge-graph
+scaffold landed, [`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
 this package is that package's first real, permanent consumer, calling
 `KnowledgeGraphReadPath(GraphSettings()).collect()` as an ordinary function
 call. `pyarchimate` was bumped from the `1.12.3`/`<2.0.0` line to `2.0.0`
@@ -134,20 +143,23 @@ itself.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 934 | Ported YAML load/merge/validate/write logic from root's `build.py` |
-| `ui.py` | 602 | Split-screen authoring UI |
-| `router.py` | 496 | FastAPI router: propose/validate/decide/render/config/state |
-| `rendering.py` | 407 | Ported view-render logic from root's `render_diagrams.py` |
-| `authoring/delta.py` | 185 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `cli.py` | 109 | `build`/`render`/`validate` entry points root's scripts shell into |
+| `model_io.py` | 1746 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
+| `router.py` | 1043 | FastAPI router: propose/validate/decide/render/config/state |
+| `ui.py` | 855 | Split-screen authoring UI |
+| `authoring/delta.py` | 574 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
+| `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
+| `puml.py` | 410 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `viewpoints.py` | 322 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
+| `validation/conventions.py` | 321 | Loads and evaluates `conventions.yaml` rules |
+| `authoring/state.py` | 179 | In-memory Candidate Delta session store |
+| `cli.py` | 118 | `build`/`render`/`validate` entry points root's scripts shell into |
+| `c4.py` | 332 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `validation/patterns.py` | 105 | Interposed-element pattern matching and synthesis |
-| `authoring/state.py` | 83 | In-memory Candidate Delta session store |
-| `platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py` | 82 | Loads and evaluates `conventions.yaml` rules |
 | `validation/fixes.py` | 70 | Deterministic `proposed_fix` generation — never a second LLM call |
-| `authoring/overrides.py` | 60 | Drafts the Override Decision Record ADR stub |
+| `authoring/overrides.py` | 61 | Drafts the Override Decision Record ADR stub |
 | `validation/duplicates.py` | 51 | Fuzzy duplicate detection (`rapidfuzz`) |
-| `validation/metamodel.py` | 25 | Metamodel relationship-matrix + referential-integrity check |
-| `app.py` | 22 | FastAPI entry point, registers the `modelling-specification.conversational-authoring` LLM component |
+| `validation/metamodel.py` | 42 | Metamodel relationship-matrix + referential-integrity check |
+| `app.py` | 23 | FastAPI entry point, registers the `modelling-specification.conversational-authoring` LLM component |
 
 (`platform/packages/modelling-specification/src/modelling_specification/`,
 line counts from the current tree.)
@@ -175,9 +187,10 @@ All endpoints are under `/authoring`; shapes are in
 |---|---|---|
 | `POST` | `/sessions` | Start a session, returns `session_id` |
 | `POST` | `/sessions/{session_id}/propose` | Turn a request into a candidate delta, a clarifying message, or (ADR-0041) 2-3 structured suggestion options |
+| `POST` | `/sessions/{session_id}/propose/resolve-pii` | Resolve a flagged PII/PHI match (`redact`, `allow` or `edit`) so the held call can proceed (ADR-0014) |
 | `POST` | `/sessions/{session_id}/propose/select` | Turn one of the last `propose` call's options into the session's pending candidate delta (ADR-0041) |
 | `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct, or override |
-| `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta, nothing written |
+| `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta of any kind, nothing written; `view_id` may name a view the delta proposes |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
 | `GET` | `/views` | Renderable views for the picker |
 | `GET` | `/render` | Render a view by `object_id` or `description` |
@@ -194,6 +207,31 @@ poetry run --directory platform python -m modelling_specification.cli render [--
 poetry run --directory platform python -m modelling_specification.cli validate <model.xml> [--json]
 ```
 
+## Using it against another model (ADR-0045)
+
+The package no longer assumes it sits beside this repo's model. Every path resolves
+once from `model_io.py` at import, so another repo can install it and run
+`build`, `render` and `validate` over its own YAML. Unset, a checkout uses its own
+`architecture/model/` and an installed copy reads `architecture/model/` under the
+current directory (`platform/packages/modelling-specification/README.md`).
+
+| Variable | Sets | Default when `FRICTIONLESS_MODEL_DIR` is set |
+|---|---|---|
+| `FRICTIONLESS_MODEL_DIR` | Model YAML directory; `diagrams/` is written here | none |
+| `FRICTIONLESS_THIRD_PARTY_DIR` | Vendored models directory | `third_party/` beside the model directory |
+| `FRICTIONLESS_MODEL_NAME` | Model name and built file name | `frictionless-architect` |
+| `FRICTIONLESS_C4_SYSTEM` | Element C4 diagrams are drawn around | none, so C4 diagrams are skipped |
+| `FRICTIONLESS_ADR_DIR` | Where override ADR stubs are written | `docs/adr/` beside the model directory |
+
+Each directory variable must name an existing directory, and the model name must be
+a plain file name; otherwise the package refuses to start
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py`).
+A consumer installs the package as a Poetry git dependency and must also list
+`llm-provider-config`, `digital-twin-knowledge-graph` and `pii-gateway` the same way,
+because they are not on PyPI. The `puml` and `c4` modules only print; `render` places
+their output, and anyone else redirects it
+(`platform/packages/modelling-specification/README.md`).
+
 ## Candidate-delta pipeline
 
 1. **Propose** (`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py`). An architect's natural-language
@@ -201,14 +239,45 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    `llm-provider-config`/`litellm` seam `controls-compliance-catalog`'s own
    LLM client uses, component id
    `modelling-specification.conversational-authoring`) with a system prompt
-   that asks for strict JSON: `{"elements": [...], "relationships": [...]}`.
-   The prompt matches named entities against the existing model by id and
-   refuses to re-declare anything that already exists — the agent can only
-   **add**, never rename/edit/remove via this path. A reply too vague to
-   form a concrete delta comes back as plain-text clarification instead of
-   JSON. A second proposal in the same conversation amends the still-pending
-   delta rather than validating fresh against the last-applied state
+   grounded in the current model: elements as `id | type | name | description`,
+   with descriptions cut to 300 characters so the LLM judges what an element is
+   rather than guessing from its name (FR-019), plus contexts, views, relationships
+   and convention rules. The prompt asks for strict JSON with seven required
+   (possibly-empty) keys:
+   `elements`, `relationships`, `views`, `view_membership_edits`,
+   `element_edits`, `element_removals`, `relationship_removals`. The prompt
+   matches named entities against the existing model by id rather than
+   redeclaring them. **The original scope was add-only** (new elements,
+   relationships and views only); **ADR-0037 item 8 lifted that restriction**
+   (2026-11-01, after auditing the feature against a real authoring
+   transcript that needed rename/remove workflows the carve-out didn't
+   cover) — a request can now also rename an existing element
+   (`element_edits`, name only: `desc`/`type` stay fixed because a folded
+   multi-line `desc:` scalar makes the same precise, comment-preserving text
+   surgery `model_io.py` already does for `view_membership_edits`'
+   `members:` impractical to extend safely), remove an existing element
+   (`element_removals`) or relationship (`relationship_removals`, matched
+   by its `(type, source, target)` triple since relationships carry no
+   stable id), or add/drop an existing element from an existing view's
+   membership (`view_membership_edits`) — via text-surgical edits to
+   `elements.yaml`/`relationships.yaml`/`views.yaml` that preserve
+   hand-authored formatting rather than a full YAML rewrite. Nothing else
+   about an existing element, relationship or view — its type, its
+   description, a relationship's label, or anything about a view besides
+   its membership — can be changed; such a request returns an empty delta
+   rather than guessing. A reply too vague to form a concrete delta comes
+   back as plain-text clarification instead of JSON. A second proposal in
+   the same conversation amends the still-pending delta rather than
+   validating fresh against the last-applied state
    (`specs/EPIC-003-conversational-model-authoring/spec.md` Clarifications, 2026-10-08).
+   Each call also carries the session's earlier turns (FR-018, ADR-0037 item 9):
+   the last 20 messages, in process memory, recording only text the LLM was
+   actually sent, so a flagged request stays out until resolved and then only its
+   resolved form goes in. The prompt also includes the pending delta and tells the
+   LLM to add to it rather than repeat it; anything it restates exactly is dropped.
+   A past proposal found in neither the model nor the pending delta counts as
+   discarded, so decisions need no entry of their own in the history
+   (`specs/EPIC-003-conversational-model-authoring/data-model.md` §Conversation History).
    When the architect asks for a way forward instead ("what should I do
    about X") rather than describing one change, the LLM instead returns
    `{"options": [...]}` — 2-3 independently applicable candidate deltas,
@@ -221,13 +290,40 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    built directly against today's architecture rather than waiting for #142's
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
-   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). If the LLM call itself
+   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). The
+   split-screen UI's `renderProposeResponse` originally had no branch for this
+   `status: "options"` reply — it fell through to the single-delta path, which
+   saw empty top-level `elements`/`relationships` and printed the generic
+   "Looks good -- no objections" text, silently dropping every suggested
+   option. Fixed (2026-11-05): `ui.py`'s `renderOptions` now shows each
+   option's rationale, convention references, proposed elements/relationships
+   and validation caveats, with a "Pick this option" button that calls
+   `propose/select`
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
+   If the LLM call itself
    fails, `propose_delta` logs the provider detail server-side only and
    raises `DeltaProposalError` with a generic "The LLM call failed
    (<model>); see the server log for details." message, because the router
    returns that message in the 502 body and provider text must not leak to
    the client (CWE-209)
    (`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py`).
+   Before any of that, the request is scrubbed by `pii-gateway` under its
+   `conversational-authoring` context. A flagged match raises
+   `PiiReviewRequired`, no LLM call is made, and `propose` returns
+   `pii_review_required` with the matches until the architect resolves them
+   through `POST .../propose/resolve-pii` (ADR-0014 amendment, GH #181;
+   `specs/EPIC-003-conversational-model-authoring/contracts/api.md`).
+   A resolved request gets the same grounding as any other; until 2026-11-05 it
+   lost the contexts, views and relationships.
+   The chat lists every kind of pending change and, until Apply, the render pane
+   previews it in memory (FR-012a): new elements marked `+`, renamed ones `~`,
+   removed ones gone, and a proposed or edited view opened as that view. A view
+   that breaks its viewpoint still previews, but stays flagged and can't be applied.
+   Before
+   2026-11-05 the UI and the preview endpoint only considered `elements` and
+   `relationships`, so a delta that only proposed a view looked empty: nothing was
+   drawn and Apply stayed disabled
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
 2. **Validate** (`validation/metamodel.py`, `platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py`,
    `validation/duplicates.py`, `validation/patterns.py`). The candidate is
    merged into the whole model (`model_io.merge_candidate`) and checked —
@@ -236,7 +332,11 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    - **Metamodel**: pyArchimate's relationship-matrix legality and
      referential integrity; a delta that fails to even assemble (unknown
      type, dangling reference) surfaces as a `build_error` finding rather
-     than raising.
+     than raising. An `element_edits`/`element_removals`/
+     `relationship_removals` entry is applied to the in-memory model the
+     same way before assembly, so an unknown id, or a removal that would
+     leave a dangling relationship end or an orphaned view node, is caught
+     here — never silently cascaded (ADR-0037 item 8).
    - **Conventions**: `conventions.yaml`'s `naming`/`altitude`/
      `allowed-subset` rules (generic), `interposed-pattern` rules
      (pattern-specific, delegated to `patterns.py`), `required-neighbour`
@@ -273,7 +373,14 @@ poetry run --directory platform python -m modelling_specification.cli validate <
    Candidate Delta through `proposed → validated/flagged → applied/
    discarded`, in-process memory only — no database, no resume path. An
    interrupted session's pending delta is simply dropped. Only `applied`
-   writes to `architecture/model/`, through `model_io.py`'s write path.
+   writes to `architecture/model/`, through `model_io.py`'s write path:
+   `append_delta` for new elements/relationships/views (additive-only), and
+   (ADR-0037 item 8) a second, scoped set of text-surgical writers —
+   `apply_view_membership_edits`, `apply_element_edits`,
+   `apply_element_removals`, `apply_relationship_removals` — that locate
+   and rewrite or delete only the exact line range of the entry being
+   changed, so hand-authored comments and formatting elsewhere in
+   `elements.yaml`/`relationships.yaml`/`views.yaml` survive untouched.
    Overriding a flagged objection (`platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py`) drafts the ADR
    stub described above; the rationale is optional and left blank if the
    architect gives none.
@@ -289,7 +396,7 @@ poetry run --directory platform python -m modelling_specification.cli validate <
 `fn-conversational-authoring` is the ApplicationFunction serving this
 feature; it reads `do-metamodel` and `do-convention-rules`, writes
 `do-candidate-arch`, serves `fn-notation-engine` (live rendering), and is
-exposed via `if-modelling-authoring-ui`. It realizes
+exposed via `if-modelling-authoring-ui`. `sw-pyarchimate` and `sw-rapidfuzz` serve it (ADR-0044), and an overridden objection triggers `fn-override-escalation`, which writes the ADR stub to `do-adr`. It realizes
 `process-conversational-authoring` at the business layer. It is scoped not
 by a normal per-stage Artefact Flow view but by its own cross-layer "Feature
 Steel Thread" view, `view-gh108-conversational-authoring` (a `layered`

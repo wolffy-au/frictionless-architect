@@ -26,20 +26,31 @@ stop and report the drift rather than improvising.
 - Optional: a forced bump level or an explicit version, a release-notes draft.
 - Preconditions from `RELEASE.md`: clean tree, on `develop`, synced with origin, CI green,
   commit history Conventional-Commits-clean.
+- The `commit-auditor` report for `develop` since the last tag.
+
+## Other agents
+
+You have no `Agent` tool, so you cannot run another agent, and you must not shell out to
+`claude` to get around that. The session that launched you dispatches them. When a step
+needs one, stop and hand back: the step you reached, every agent needed at that point,
+and why. Naming them together lets the session run independent agents in parallel
+(`RELEASE.md` "Keeping releases fast"). Continue when the session resumes you with their
+results. Never do an agent's work yourself, and never pass a step without its report.
 
 ## Steps
 
-1. **Preflight.** Verify every precondition. Run the `commit-auditor` agent over
-   `develop` since the last tag; if it reports non-conforming commits, stop — `cz bump`
-   needs a clean history to infer the bump.
+1. **Preflight.** Verify every precondition. If the `commit-auditor` report is missing,
+   hand back for it; if it shows non-conforming commits, stop — `cz bump` needs a clean
+   history to infer the bump.
 2. Work through `RELEASE.md` §1–§10 in order:
    - §1 branch sync; the `develop` → `main` merge is made via a PR that a **human** merges
      (see step 4, the human merge gate) — never merge into `main` yourself
    - §2 `bash scripts/pre_merge_checks.sh` — hard gate
    - §3 SonarCloud: no `OPEN` issues — hard gate
    - §4 Snyk + Dependabot: no open high/critical — hard gate
-   - §5 doc/spec refresh: invoke `docs-uplift`, then `spec-alignment` (report); commit
-     regenerated artefacts
+   - §5 doc/spec refresh: hand back for `docs-uplift`, `spec-alignment` and `adr-auditor`;
+     once their results are in, commit regenerated artefacts and re-run §2 if anything
+     landed
    - §6 `poetry run cz bump` on `develop` (`--increment MINOR` for the first release);
      show the `CHANGELOG.md` diff, then delete the develop-side tag
    - §7 push `develop`, open/update the PR, wait for green, then STOP (step 4)
@@ -48,8 +59,10 @@ stop and report the drift rather than improvising.
    - §9 `gh release create v<X.Y.Z> --verify-tag ...` with reviewed notes
    - §10 merge `main` → `develop`, push
 3. On any gate failure: stop at that step, report exactly what failed with the command
-   output, and name the agent that fixes it (`quality-uplift`, `coverage-uplift`,
-   `vulnerability-remediator`). Do not proceed past a red gate.
+   output, and hand back naming the agent that fixes it (`quality-uplift`,
+   `coverage-uplift`, `vulnerability-remediator`). Do not proceed past a red gate. §3 and
+   §4 are read-only checks, so run both before handing back, and name the §5 agents in
+   the same hand-back so everything can be dispatched at once.
 4. **Human merge gate — mandatory, never skipped.** The merge into `main` is always
    reviewed and performed manually by a human. Open (or update) the `develop` → `main`
    PR, then wait until every check on it is resolved and **green** (CI, SonarCloud

@@ -347,6 +347,14 @@ names the intermediary→target type, so synthesis cannot be implemented without
 end-to-end (FR-008, spec.md Clarifications 2026-10-11), with the same validate-before-write
 guarantee every other `apply`-resulting action already has.
 
+## Phase: Conversation Continuity and Whole-Delta Preview (2026-11-05)
+
+- [X] T086 Widen `get_preview`, `model_io.preview_model` and `rendering.render_candidate_view` to every kind of delta change, including a view the delta proposes (FR-012a); tests in `tests/api/test_preview.py`
+- [X] T087 List every kind of proposed change in the chat, enable Apply for non-element deltas, and select a proposed or edited view (FR-012a); scenarios in `tests/features/conversational_authoring_ui.feature`
+- [X] T088 Send and record session history plus the pending delta, and de-duplicate restated changes (FR-018, ADR-0037 item 9); tests in `tests/unit/test_delta.py`, `tests/api/test_propose.py`, `tests/api/test_propose_pii.py`
+- [X] T089 Add element descriptions to the catalogue grounding (FR-019), and give `resolve-pii` the same grounding as `propose`
+- [X] T090 [Model] Add `Realization process-conversational-authoring → vs-intent-to-model`, run `validate.py`, regenerate diagrams
+
 ---
 
 ## Dependencies & Execution Order

@@ -93,7 +93,7 @@ def test_propose_an_empty_delta_says_nothing_was_proposed(configured_fake_llm: F
 
     body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "rename role-ea"}).json()
 
-    assert any("only add" in n for n in body["notes"])
+    assert any("No change was proposed" in n for n in body["notes"])
 
 
 def test_propose_reusing_an_existing_id_explains_that_edits_are_unsupported(
@@ -226,3 +226,165 @@ def test_propose_shows_a_plain_text_llm_reply_as_a_message_and_creates_no_delta(
     assert body["delta_id"] is None
     assert body["elements"] == []
     assert body["relationships"] == []
+
+
+def test_propose_a_view_membership_edit_returns_validated(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "view_membership_edits": [{"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add stk-regulator to the governed delivery value stream view"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (edit,) = body["view_membership_edits"]
+    assert edit == {"view_id": "view-vs-governed-delivery", "add": ["stk-regulator"], "remove": []}
+    assert body["elements"] == []
+    assert body["relationships"] == []
+    assert body["views"] == []
+
+
+def test_propose_an_element_rename_returns_validated(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "element_edits": [{"id": "sub-modelling", "name": "Renamed Modelling Package"}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "rename sub-modelling to Renamed Modelling Package"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (edit,) = body["element_edits"]
+    assert edit == {"id": "sub-modelling", "name": "Renamed Modelling Package"}
+    assert body["elements"] == []
+    assert body["relationships"] == []
+
+
+def test_propose_a_relationship_removal_returns_validated(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "relationship_removals": [{"type": "Serving", "source": "cap-control-catalog",'
+        ' "target": "cap-reusable-architecture"}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove the Serving relationship from cap-control-catalog to cap-reusable-architecture"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (removal,) = body["relationship_removals"]
+    assert removal == {"type": "Serving", "source": "cap-control-catalog", "target": "cap-reusable-architecture"}
+
+
+def test_propose_an_element_removal_that_would_dangle_a_relationship_is_flagged(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = '{"elements": [], "relationships": [], "element_removals": ["cap-spec-engine"]}'
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "remove cap-spec-engine"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "flagged"
+    assert body["validation_result"]["clean"] is False
+
+
+def test_propose_a_context_scoped_view_returns_validated_with_an_assigned_id(
+    configured_fake_llm: FakeCompletion,
+) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [],'
+        ' "views": [{"name": "Context Sweep Propose Test", "context": ["modelling-specification"],'
+        ' "include_types": ["ApplicationFunction"]}]}'
+    )
+    session_id = _new_session()
+
+    response = client.post(
+        f"/authoring/sessions/{session_id}/propose",
+        json={"request": "add a view scoped to context modelling-specification"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "validated"
+    (view,) = body["views"]
+    assert view["id"] == "view-context-sweep-propose-test"
+    assert view["diagram"] == "context-sweep-propose-test"
+    assert view["context"] == ["modelling-specification"]
+    assert body["elements"] == []
+    assert body["relationships"] == []
+
+
+_PROBE = '{"elements": [{"type": "ApplicationFunction", "id": "fn-history-probe", "name": "History Probe"}], "relationships": []}'
+
+
+def test_a_follow_up_is_sent_with_the_earlier_turns_and_the_pending_delta(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = _PROBE
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a probe"})
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "and repeat that"})
+
+    messages = configured_fake_llm.calls[-1]["messages"]
+    assert [(m["role"], m["content"]) for m in messages[1:]] == [
+        ("user", "add a probe"),
+        ("assistant", _PROBE),
+        ("user", "and repeat that"),
+    ]
+    assert (
+        'Pending delta:\n{"elements": [{"type": "ApplicationFunction", "id": "fn-history-probe"'
+        in messages[0]["content"]
+    )
+
+
+def test_restating_part_of_the_pending_delta_does_not_duplicate_it(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = _PROBE
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a probe"})
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "again"}).json()
+
+    assert [e["id"] for e in body["elements"]] == ["fn-history-probe"]
+    assert body["status"] == "validated"
+
+
+def test_catalogue_grounding_includes_element_descriptions(configured_fake_llm: FakeCompletion) -> None:
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+
+    client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "add a function"})
+
+    system = configured_fake_llm.calls[-1]["messages"][0]["content"]
+    line = next(ln for ln in system.splitlines() if ln.startswith("vs-intent-to-model | "))
+    assert "natural-language request" in line
+
+
+def test_a_view_only_delta_is_a_real_change(configured_fake_llm: FakeCompletion) -> None:
+    configured_fake_llm.content = (
+        '{"elements": [], "relationships": [], "views": [{"id": "view-real-change",'
+        ' "name": "Real Change", "members": ["sub-modelling"]}]}'
+    )
+    session_id = client.post("/authoring/sessions").json()["session_id"]
+
+    body = client.post(f"/authoring/sessions/{session_id}/propose", json={"request": "draw it"}).json()
+
+    assert body["status"] == "validated"
+    assert "notes" not in body

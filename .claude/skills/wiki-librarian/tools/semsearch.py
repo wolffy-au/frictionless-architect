@@ -30,6 +30,8 @@ import shutil
 import sqlite3
 import subprocess
 import sys
+from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
 from typing import cast
 
@@ -469,6 +471,53 @@ def load_model():
 # --------------------------------------------------------------------------
 
 
+def _needs_index(path: Path, rel: str, digest: str, known: dict[str, str], chunked: set[str], force: bool) -> bool:
+    """A file needs embedding when forced, new, changed, or recorded with no chunks
+    even though it has content -- what an interrupted run under the old ordering left
+    behind, and which a digest comparison alone would call up to date."""
+    if force or known.get(rel) != digest:
+        return True
+    return rel not in chunked and bool(chunk_file(path))
+
+
+def _clear_for_reindex(db: sqlite3.Connection, todo: list[tuple[Path, str]], all_chunks: list[Chunk]) -> None:
+    """Forget every changed file before embedding starts, so one that an interrupted
+    run leaves incomplete has no digest and is picked up by the next run. A file with
+    no chunks to embed is complete already, so its digest goes straight back in."""
+    has_chunks = {c.path for c in all_chunks}
+    for p, d in todo:
+        rel = p.relative_to(REPO).as_posix()
+        db.execute("DELETE FROM chunks WHERE path = ?", (rel,))
+        db.execute("DELETE FROM files WHERE path = ?", (rel,))
+        if rel not in has_chunks:
+            db.execute("INSERT INTO files(path, digest) VALUES(?, ?)", (rel, d))
+    db.commit()
+
+
+def _store_embedded(
+    db: sqlite3.Connection, chunks: list[Chunk], vectors: Iterable[bytes], digests: dict[str, str]
+) -> None:
+    """Write embedded `chunks`, committing every EMBED_BATCH rows so an interrupted run
+    keeps its progress. A file's digest is recorded only with its last chunk: the digest
+    is what marks a file as done, so it must never exist ahead of the chunks it vouches
+    for. `digests` maps each repo-relative path to its digest."""
+    remaining = Counter(c.path for c in chunks)
+    done = 0
+    for c, vector in zip(chunks, vectors, strict=True):
+        db.execute(
+            "INSERT INTO chunks(path, start_line, end_line, heading, text, vector) VALUES(?,?,?,?,?,?)",
+            (c.path, c.start_line, c.end_line, c.heading, c.text, vector),
+        )
+        remaining[c.path] -= 1
+        if remaining[c.path] == 0:
+            db.execute("INSERT INTO files(path, digest) VALUES(?, ?)", (c.path, digests[c.path]))
+        done += 1
+        if done % EMBED_BATCH == 0:
+            db.commit()
+            print(f"  {done}/{len(chunks)} chunks embedded", file=sys.stderr)
+    db.commit()
+
+
 def cmd_index(args: argparse.Namespace) -> int:
     _ensure_isolated_deps()
     import numpy as np  # isolated venv, see _ensure_isolated_deps
@@ -480,12 +529,13 @@ def cmd_index(args: argparse.Namespace) -> int:
 
     db = connect()
     known = dict(db.execute("SELECT path, digest FROM files").fetchall())
+    chunked = {row[0] for row in db.execute("SELECT DISTINCT path FROM chunks")}
 
     todo: list[tuple[Path, str]] = []
     for p in paths:
         d = digest_of(p)
         rel = p.relative_to(REPO).as_posix()
-        if args.force or known.get(rel) != d:
+        if _needs_index(p, rel, d, known, chunked, args.force):
             todo.append((p, d))
 
     # Drop chunks for files that no longer exist on disk.
@@ -504,17 +554,7 @@ def cmd_index(args: argparse.Namespace) -> int:
     for p, _ in todo:
         all_chunks.extend(chunk_file(p))
 
-    # Clear the old chunks for every changed file and record its new digest up
-    # front, so an interrupted embed just leaves those files un-indexed (picked
-    # up next run) rather than half-indexed.
-    for p, d in todo:
-        rel = p.relative_to(REPO).as_posix()
-        db.execute("DELETE FROM chunks WHERE path = ?", (rel,))
-        db.execute(
-            "INSERT INTO files(path, digest) VALUES(?, ?) ON CONFLICT(path) DO UPDATE SET digest = excluded.digest",
-            (rel, d),
-        )
-    db.commit()
+    _clear_for_reindex(db, todo, all_chunks)
 
     workers = _pick_workers(len(all_chunks))
     # fastembed quirk: parallel=1 still forks one worker (model reload, no gain),
@@ -527,22 +567,16 @@ def cmd_index(args: argparse.Namespace) -> int:
         file=sys.stderr,
     )
     model = load_model()
-    # embed() streams results in input order; commit every EMBED_BATCH rows so an
-    # interrupted run just leaves the tail un-indexed (picked up next run).
-    vectors = model.embed([c.embed_text() for c in all_chunks], batch_size=EMBED_BATCH, parallel=parallel)
-    done = 0
-    for c, v in zip(all_chunks, vectors, strict=True):
-        v = np.asarray(v, dtype=np.float32)
-        v /= np.linalg.norm(v) or 1.0
-        db.execute(
-            "INSERT INTO chunks(path, start_line, end_line, heading, text, vector) VALUES(?,?,?,?,?,?)",
-            (c.path, c.start_line, c.end_line, c.heading, c.text, v.tobytes()),
-        )
-        done += 1
-        if done % EMBED_BATCH == 0:
-            db.commit()
-            print(f"  {done}/{len(all_chunks)} chunks embedded", file=sys.stderr)
-    db.commit()
+    embedded = model.embed([c.embed_text() for c in all_chunks], batch_size=EMBED_BATCH, parallel=parallel)
+
+    def normalized(vectors: Iterable[object]) -> Iterable[bytes]:
+        for raw in vectors:
+            v = np.asarray(raw, dtype=np.float32)
+            v /= np.linalg.norm(v) or 1.0
+            yield v.tobytes()
+
+    digests = {p.relative_to(REPO).as_posix(): d for p, d in todo}
+    _store_embedded(db, all_chunks, normalized(embedded), digests)
 
     total = db.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
     files = db.execute("SELECT COUNT(*) FROM files").fetchone()[0]
