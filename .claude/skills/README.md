@@ -33,7 +33,7 @@ regenerated.
 | `speckit-analyze` | Survey specs, code, and tasks to scope a feature. |
 | `speckit-checklist` | Verify checklist completion and gate entry into implementation. |
 | `speckit-implement` | Execute the implementation phase once design and planning are solid. |
-| `speckit-taskstoissues` | Translate task lists into issue-tracker-friendly format. |
+| `speckit-converge` | Assess the code against a feature's spec, plan and tasks, and append remaining unbuilt work to `tasks.md`. |
 
 ### Repo maintenance
 
