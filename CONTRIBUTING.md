@@ -104,7 +104,7 @@ without a record — running clean against it is part of the release gate.
 4. Update relevant docs (`README.md`, `ARCHITECTURE.md`, wiki pages, ADRs) in
    the same PR as the code change — the `docs-uplift` agent exists to help
    catch what's missed, not to replace doing it.
-5. Open the PR against `main` (or `develop`, per current release state — see
+5. Open the PR against `develop` (`main` only takes the release PR — see
    [`RELEASE.md`](RELEASE.md)) using the relevant issue template's structure
    in the description. Link the issue it closes.
 6. A green CI run and at least one review are required before merge.
