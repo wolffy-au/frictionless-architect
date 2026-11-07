@@ -338,7 +338,8 @@ The order puts each package after the packages it consumes — see the
 [packaging view](architecture/model/diagrams/implementation/packaging.svg) (ADR-0005, #60).
 
 **Status:** steps 1–3 and 6 done (#71, #107). `platform/` has its own `pyproject.toml` and
-`poetry.lock`; `packages/controls-compliance-catalog` is an empty, installable package.
+`poetry.lock`; `packages/controls-compliance-catalog` holds the OSCAL playground (two
+`/catalog` conversion routes and a page), while the pipeline itself (#44) is unbuilt.
 `scripts/platform_checks.sh` gates every package under `platform/packages/` (lock check,
 pyright, mypy, pytest at 90% coverage). The pre-commit and pre-merge scripts, the
 pre-push hook and CI all call it, and Sonar and Codecov pick up its coverage. The repo
