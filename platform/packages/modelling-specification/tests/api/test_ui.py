@@ -27,3 +27,11 @@ def test_authoring_page_links_to_the_llm_settings_page() -> None:
 
 def test_authoring_page_has_no_state_control() -> None:
     assert "state-select" not in client.get("/authoring/").text
+
+
+def test_authoring_page_renders_markdown_messages() -> None:
+    # GH #185: the LLM's free-text "message" reply must render as formatted Markdown,
+    # never as an unstyled pre-wrap block of raw syntax.
+    page = client.get("/authoring/").text
+    assert "renderMarkdown(body.message)" in page
+    assert 'whiteSpace = "pre-wrap"' not in page
