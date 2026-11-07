@@ -5,11 +5,12 @@ pipeline, no JS framework build step. A plain fetch() client over the existing
 `sessions`/`propose`/`propose/select`/`propose/resolve-pii`/`decide`/`render`/`config`
 JSON contract (contracts/api.md); `session_id`/`delta_id` live in page-scoped JS state
 only (R16), nothing new server-side. `renderProposeResponse` branches on `propose`'s
-`status`: a plain-text `"message"`, a set of `"options"` to pick from via
-`propose/select` (ADR-0041), a PII/PHI match flagged for review via
-`propose/resolve-pii` (`"pii_review_required"`, ADR-0014 amendment), or the
-single-delta validated/flagged path, which lists every kind of proposed change in the
-chat and previews it (FR-012a).
+`status`: a `"message"` -- the LLM's free-text reply, which may be Markdown and is
+rendered as sanitised HTML via `renderMarkdown`, never inserted as raw HTML (GH #185) --
+a set of `"options"` to pick from via `propose/select` (ADR-0041), a PII/PHI match
+flagged for review via `propose/resolve-pii` (`"pii_review_required"`, ADR-0014
+amendment), or the single-delta validated/flagged path, which lists every kind of
+proposed change in the chat and previews it (FR-012a).
 """
 
 from __future__ import annotations
@@ -73,6 +74,14 @@ _PAGE = """\
   #messages { padding: 12px 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .msg { font-size: 13px; line-height: 1.5; }
   .msg.user { color: var(--text-muted); }
+  .msg.agent p, .msg.agent ul, .msg.agent ol, .msg.agent pre, .msg.agent h1, .msg.agent h2, .msg.agent h3 { margin: 0 0 8px; }
+  .msg.agent > :last-child { margin-bottom: 0; }
+  .msg.agent ul, .msg.agent ol { padding-left: 20px; }
+  .msg.agent h1, .msg.agent h2, .msg.agent h3 { font-size: 1.05em; }
+  .msg.agent code { background: var(--surface-2); border-radius: 4px; padding: 1px 4px; font-size: .95em; }
+  .msg.agent pre { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; overflow-x: auto; }
+  .msg.agent pre code { background: none; padding: 0; }
+  .msg.agent a { color: var(--accent); }
   .finding, .duplicate, .pattern, .option, .pii { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
   .finding { border-color: var(--err); background: var(--err-soft); }
   .option .sub { margin: 4px 0 0; }
@@ -159,7 +168,101 @@ _PAGE = """\
   };
 
   function escapeHtml(s) {
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // Minimal, dependency-free Markdown -> sanitised HTML (GH #185), safe over untrusted
+  // LLM text: every line is escaped via escapeHtml before any markup is layered on, so
+  // syntax this doesn't recognise -- including a literal "<script>" in the model's own
+  // reply -- renders as text rather than live DOM. Only this fixed, allowlisted set of
+  // tags is ever emitted: headings, paragraphs, lists, code (inline/fenced), bold,
+  // italic, and http(s)/mailto links. Self-contained (only escapeHtml as a dependency)
+  // so another package's chat/LLM UI can copy it as-is, per the issue's suggestion of a
+  // shared rendering helper.
+  function renderMarkdown(text) {
+    const LINK_SCHEME = /^(https?:|mailto:)/i;
+
+    function renderInline(raw) {
+      let out = escapeHtml(raw);
+      out = out.replace(/`([^`]+)`/g, (_, code) => "<code>" + code + "</code>");
+      out = out.replace(/\\*\\*([^*]+)\\*\\*/g, "<strong>$1</strong>");
+      out = out.replace(/\\*([^*\\s][^*]*?)\\*/g, "<em>$1</em>");
+      out = out.replace(/_([^_\\s][^_]*?)_/g, "<em>$1</em>");
+      out = out.replace(/\\[([^\\]]+)\\]\\(([^)\\s]+)\\)/g, (match, label, url) =>
+        LINK_SCHEME.test(url)
+          ? '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + "</a>"
+          : match);
+      return out;
+    }
+
+    const lines = String(text).replace(/\\r\\n/g, "\\n").split("\\n");
+    const blocks = [];
+    let paragraph = [];
+    const flushParagraph = () => {
+      if (paragraph.length) {
+        blocks.push("<p>" + paragraph.join("<br>") + "</p>");
+        paragraph = [];
+      }
+    };
+
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (/^```/.test(line)) {
+        flushParagraph();
+        const codeLines = [];
+        i++;
+        while (i < lines.length && !/^```/.test(lines[i])) {
+          codeLines.push(escapeHtml(lines[i]));
+          i++;
+        }
+        i++; // skip the closing fence, if any
+        blocks.push("<pre><code>" + codeLines.join("\\n") + "</code></pre>");
+        continue;
+      }
+      const heading = line.match(/^(#{1,6})\\s+(.+)$/);
+      if (heading) {
+        flushParagraph();
+        const level = heading[1].length;
+        blocks.push("<h" + level + ">" + renderInline(heading[2]) + "</h" + level + ">");
+        i++;
+        continue;
+      }
+      if (/^[-*]\\s+/.test(line)) {
+        flushParagraph();
+        const items = [];
+        while (i < lines.length && /^[-*]\\s+/.test(lines[i])) {
+          items.push("<li>" + renderInline(lines[i].replace(/^[-*]\\s+/, "")) + "</li>");
+          i++;
+        }
+        blocks.push("<ul>" + items.join("") + "</ul>");
+        continue;
+      }
+      if (/^\\d+\\.\\s+/.test(line)) {
+        flushParagraph();
+        const items = [];
+        while (i < lines.length && /^\\d+\\.\\s+/.test(lines[i])) {
+          items.push("<li>" + renderInline(lines[i].replace(/^\\d+\\.\\s+/, "")) + "</li>");
+          i++;
+        }
+        blocks.push("<ol>" + items.join("") + "</ol>");
+        continue;
+      }
+      if (line.trim() === "") {
+        flushParagraph();
+        i++;
+        continue;
+      }
+      paragraph.push(renderInline(line));
+      i++;
+    }
+    flushParagraph();
+    return blocks.join("");
   }
 
   let sessionId = null;
@@ -688,8 +791,9 @@ _PAGE = """\
   function renderProposeResponse(body) {
     if (body.status === "message") {
       // The LLM asked a question or made a suggestion instead of proposing a delta.
-      const bubble = addMessage("agent", escapeHtml(body.message));
-      bubble.style.whiteSpace = "pre-wrap";
+      // body.message is untrusted LLM output and may be Markdown (GH #185):
+      // render it as formatted HTML via the sanitising renderMarkdown, never as raw HTML.
+      addMessage("agent", renderMarkdown(body.message));
       return body;
     }
     if (body.status === "pii_review_required") {

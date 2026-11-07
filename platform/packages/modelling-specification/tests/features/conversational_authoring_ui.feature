@@ -83,6 +83,13 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Then the chat pane shows the message "Which assessment do you mean?"
     And Apply is still disabled
 
+  Scenario: A Markdown reply from the LLM is rendered as formatted text, not raw syntax (GH #185)
+    Given the LLM answers with the Markdown message "Here is **bold** text:\n\n- one\n- two"
+    When the architect sends that request in the UI
+    Then the chat pane renders "bold" in bold
+    And the chat pane shows a bullet list item "one"
+    And the chat pane does not show the raw Markdown syntax "**bold**"
+
   Scenario: A suggested way forward offers each option to pick (FR-001 "ways forward", GH #68)
     Given the LLM suggests two ways forward
     When the architect sends that request in the UI
