@@ -96,12 +96,12 @@ if `frontend/` exists. Must pass clean.
 ### 3. SonarCloud — no open issues
 
 CI already ran the scan on the last push. Confirm nothing is `OPEN`
-(`TECHNICAL.md` → "SonarCloud Remediation Workflow"; token in `.secrets/`):
+(`TECHNICAL.md` → "SonarCloud Remediation Workflow"; `SONAR_TOKEN` in the gitignored `.env`):
 
 ```bash
 # API check:
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&statuses=OPEN&ps=50&token=<token-from-.secrets>"
-# or: poetry run pysonar --sonar-token=<token-from-.secrets>
+curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&statuses=OPEN&ps=50&token=<token-from-.env>"
+# or: poetry run pysonar --sonar-token=<token-from-.env>
 ```
 
 This should normally come back empty — `quality-uplift` is expected to be running on

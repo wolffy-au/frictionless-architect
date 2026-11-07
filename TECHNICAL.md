@@ -337,13 +337,13 @@ To force a SonarQube check, run:
 
 ```bash
 sudo apt-get update && sudo apt-get install -y default-jre
-pysonar --sonar-token=<token-from-.secrets>
+pysonar --sonar-token=<token-from-.env>
 ```
 
-You can also query SonarCloud's public API for the current critical issues list; the token value is stored in the project `.secrets` directory (look for the Sonar token key there) and should not be committed.
+You can also query SonarCloud's public API for the current critical issues list; the token is `SONAR_TOKEN` in the gitignored `.env` and should not be committed.
 
 ```
-https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&ps=50&p=1&token=<token-from-.secrets>
+https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&ps=50&p=1&token=<token-from-.env>
 ```
 
 ### SonarCloud Remediation Workflow
@@ -365,7 +365,7 @@ snyk auth <token>
 snyk test --command=python3
 ```
 
-The token is `SNYK_TOKEN` in the gitignored `.env` (also kept in `.secrets/`) — never commit it.
+The token is `SNYK_TOKEN` in the gitignored `.env` — never commit it.
 `scripts/pre_merge_checks.sh` loads it from `.env` when it isn't already exported, then runs
 `snyk test` on the root `poetry.lock`, `snyk code test`, and `snyk test` on
 `platform/poetry.lock`; locally these are **blocking**. In CI (`.github/workflows/ci.yml`)

@@ -19,7 +19,7 @@ Poetry only. `poetry run ruff check .`, `poetry run pyright`, `poetry run mypy`,
 ## Inputs
 
 - Optional: a SonarCloud issue payload (from `pysonar` or the SonarCloud API — see
-  `TECHNICAL.md` "SonarCloud Remediation Workflow"; token in `.secrets/`). If given,
+  `TECHNICAL.md` "SonarCloud Remediation Workflow"; `SONAR_TOKEN` in `.env`). If given,
   every `OPEN` issue is a required fix.
 - Always pull open CodeQL code-scanning alerts too, not just when handed a list:
   `gh api repos/:owner/:repo/code-scanning/alerts --paginate -X GET -f state=open`

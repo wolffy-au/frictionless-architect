@@ -33,7 +33,7 @@ scripts/platform_checks.sh --update
 
 # --- Security Checks ---
 echo "Running Snyk security scan..."
-# SNYK_TOKEN lives in the gitignored .env (also in .secrets/); load it if not already exported.
+# SNYK_TOKEN lives in the gitignored .env; load it if not already exported.
 if [ -z "${SNYK_TOKEN:-}" ] && [ -f .env ]; then
   SNYK_TOKEN="$(grep -m1 '^SNYK_TOKEN=' .env | cut -d= -f2- | tr -d "\"'")"
   export SNYK_TOKEN
