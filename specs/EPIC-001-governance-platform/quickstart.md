@@ -6,7 +6,7 @@ This guide provides essential steps to get started with the Frictionless Archite
 
 Ensure you have the following installed:
 
-- **Python**: Version 3.11 or higher (as determined by research).
+- **Python**: 3.12 (supported range `>=3.11,<3.14`).
 - **Poetry**: Dependency management and running build and test commands (ADR-0003).
 - **Git**: For managing code versions and branches.
 - **Podman (Docker)**: For running PostgreSQL and Neo4j databases (if applicable).
@@ -30,14 +30,14 @@ Ensure you have the following installed:
     This installs the project and every dependency group (`dev`, `tests`, `lint`, `docs`).
 
 3. **Initialize Feature Specification (if needed)**:
-    If you are starting a new feature, use the `specify` CLI tool:
+    If you are starting a new feature, run the `speckit-specify` skill with a description of it:
 
-    ```bash
-    # Example: Creating a new feature branch for API authentication
-    specify --create-feature "Implement JWT Authentication for API" --short-name jwt-auth
+    ```text
+    /speckit-specify Implement JWT Authentication for API
     ```
 
-    This command will create a new branch (e.g., `002-jwt-auth`) and the corresponding specification files under `specs/`.
+    Specs live under `platform/packages/<name>/specs/`; only cross-package `EPIC-*` specs go in the
+    root `specs/` (ADR-0004).
 
 ## Running the Platform
 
@@ -45,7 +45,7 @@ To run what is built today (the Neo4j schema visualiser), see `README.md`.
 
 ## Running Specifications and Planning
 
-Use the `specify` CLI commands for managing your architecture specifications. The scripts
+Use the `speckit-*` skills for managing your architecture specifications. The scripts
 under `.specify/scripts/` are Spec Kit scaffolding: they are git-ignored and written by
 `.devcontainer/post-create.sh` (`specify integration upgrade`), so they exist in the dev
 container but not in a bare clone:
@@ -67,7 +67,7 @@ container but not in a bare clone:
 The six stages below are defined in `.specify/memory/constitution.md` §"Development Workflow",
 which is authoritative if they ever differ.
 
-1. **Specify** (`speckit-specify`): Define requirements and user stories in `specs/<feature>/spec.md`.
+1. **Specify** (`speckit-specify`): Define requirements and user stories in the feature's `spec.md`.
 2. **Plan** (`speckit-plan`): Research technical approaches and generate `plan.md`, `research.md`,
    `data-model.md`, `contracts/`, etc.
 3. **Record**: File or update an ADR under `docs/adr/` for every load-bearing choice the plan makes
