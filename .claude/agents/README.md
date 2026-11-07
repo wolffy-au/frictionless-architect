@@ -20,6 +20,7 @@ exposes each by its `name`.
 | `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, constitution. |
 | `adr-auditor` | branch + draft PR | Audit `docs/adr/` against the decision-bearing docs and the code; report missing / stale / misaligned / superseded records, and draft `Status:Proposed` ADR stubs plus status edits. Never fleshes out or attests a decision. |
 | `release-runner` | branch + tag + release | Run `RELEASE.md` end to end: gates, `cz bump`, tag, GitHub release, merge back. Stops on any red gate. Has no `Agent` tool: it hands back the agents it needs for the calling session to dispatch. |
+| `wiki-maintenance` | audit-only by default | Audit the generated wiki: stale pages, unmatched or uncovered `sources.yaml` globs, index links, dead citations, oversized pages. When a session asks, fixes chosen findings through `wiki-librarian`, never by hand-editing pages. |
 
 The write-capable agents push a branch, open a PR against `develop`, then watch CI
 (`.github/workflows/ci.yml`) and iterate on the same branch until every check is green —
