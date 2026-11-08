@@ -31,8 +31,6 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py
 - platform/packages/modelling-specification/src/modelling_specification/viewpoints.py
 - scripts/run-modelling_specification.sh
-- specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/checklists/requirements.md
-- specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md
 - specs/EPIC-003-conversational-model-authoring/checklists/requirements.md
 - specs/EPIC-003-conversational-model-authoring/contracts/api.md
 - specs/EPIC-003-conversational-model-authoring/data-model.md
@@ -451,85 +449,13 @@ full element-level treatment, and
 
 ## Sibling feature: Conversational Solution Design Modelling (GH #139)
 
-A second, Draft spec under the same epic —
-`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/`
-— specifies `fn-solution-modelling`, the Solution Architect's own
-conversational authoring mode (ADR-0039, GH #68/#138/#139). It is a distinct
-feature from the conversational authoring this page otherwise describes, not
-a variant of it:
-
-- **Different target artefact and function.** `fn-solution-modelling` reads
-  and writes `do-solution-design`/`art-solution-design` in `store-patterns`
-  — one Solution Design per session — never `do-candidate-arch`/`store-akg`
-  or `architecture/model/`. `fn-conversational-authoring` (this package)
-  keeps sole ownership of the enterprise knowledge graph; the spec's
-  FR-001–FR-003 make the boundary a hard requirement, not just a naming
-  convention
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Requirements).
-- **Different home.** `fn-solution-modelling` is Assigned to `sub-library`
-  (subsystem 2, `reusable-architecture-library`), not this package; its
-  journey API, UI and agent are planned under
-  `platform/packages/reusable-architecture-library/{ui,api}`.
-  `reusable-architecture-library` itself does not exist yet as an extracted
-  package, unlike `modelling-specification` (this package, GH #108) — the
-  spec is explicit that GH #68's "blocked on the monorepo pattern being
-  proven" framing is now stale, since the pattern is already proven by four
-  other extracted packages: `modelling-specification`,
-  `controls-compliance-catalog`, `digital-twin-knowledge-graph`, and
-  `schema-visualizer-api`; the spec itself does not depend on the extraction
-  having happened, only its eventual implementation does
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Assumptions). It shares this package's render path only: it Serves
-  `fn-notation-engine` — implemented here — for live view rendering,
-  mirroring this feature's own propose/validate/render loop rather than
-  reusing its code.
-- **MVP is free-form, not pattern composition.** Per GH #68's resolved open
-  question, the architect describes changes directly; composing a Solution
-  Design from a pattern/blueprint library and emitting an OSCAL System
-  Security Plan (`fn-solution-compose`) are deferred to a later milestone
-  and explicitly out of scope here (FR-011, same spec §Edge Cases).
-- **Role-scoped journey API with a policy stub.** One journey per role —
-  Solution Architect (propose/accept/apply/render/query) and a read-only
-  Compliance Officer/Auditor (render/query only) — with a stubbed policy
-  check on every call (FR-004–FR-007); the real policy engine (ADR-0019/OPA)
-  lands later, in milestone D (GH #148). The agent always acts under the
-  calling architect's own identity, never with elevated permissions
-  (FR-012).
-- **Streams from day one.** The journey API responds as a sequence of
-  incremental events (SSE or websocket) rather than one blocking reply, with
-  a stub simulating realistic LLM latency before streaming starts
-  (FR-008–FR-009), per GH #68 decision 6 (Principle IV: operations over
-  200ms must be asynchronous or justified).
-- **No promotion path.** A request that would promote a Solution Design
-  change into the enterprise or domain model is refused outright — that is
-  milestone D's job (GH #149), not this feature's (SC-002, same spec §Edge
-  Cases).
-- **Open question carried forward, not resolved here.** Whether
-  `fn-solution-modelling` validates against `do-convention-rules` — the same
-  enterprise/domain convention rules this package's
-  `validation/conventions.py` already applies to `fn-conversational-authoring`
-  — is left for `/speckit-plan` under GH #140/#142, since a bounded Solution
-  Design may not need the same rules unmodified
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Assumptions).
-- **Behave scenarios deferred to implementation, not written at specify
-  time.** Following GH #108/ADR-0037's own precedent — this package's
-  behave scenarios were written during implementation against the real
-  running app, not during `/speckit-specify` — the sibling spec's
-  Acceptance Scenarios are the basis for behave scenarios to be written
-  later, package-scoped under
-  `platform/packages/reusable-architecture-library/tests/features/` once
-  that package exists
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Assumptions; `specs/EPIC-003-conversational-model-authoring/tasks.md`).
-
-As of this spec, the feature is still at the specification stage (`Status:
-Draft`) — no `reusable-architecture-library` package, journey API, or UI
-exists yet. See
-[Architecture Model: Skeleton](architecture-model-skeleton.md) for
-`process-conversational-solution-modelling` and `bfn-solution-design`, and
-[Decision Log](decision-log-0030-onward.md) for ADR-0039 in full.
+A second, Draft spec under the same epic specifies `fn-solution-modelling`,
+the Solution Architect's own conversational authoring mode (ADR-0039, GH
+#68/#138/#139) — a distinct feature from the conversational authoring this
+page otherwise describes, not a variant of it, with its own target artefact,
+home package and journey API. See
+[Conversational Solution Design Modelling](solution-design-modelling.md)
+for the full breakdown, split out once this page passed ~500 lines.
 
 Not covered by current sources: rollout/feature-flag status, since
 ADR-0037 is still **Proposed**, not **Accepted**.
@@ -537,7 +463,6 @@ ADR-0037 is still **Proposed**, not **Accepted**.
 See `specs/EPIC-003-conversational-model-authoring/` (spec.md, plan.md,
 data-model.md, tasks.md) for the full requirements, data model and task
 breakdown behind this package, and
-`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/`
-(spec.md, checklists/requirements.md) for the sibling Solution Design
-Modelling feature above, and [Decision Log](decision-log-0030-onward.md) for ADR-0037
-and ADR-0039 in full.
+[Conversational Solution Design Modelling](solution-design-modelling.md)
+for the sibling feature above, and [Decision Log](decision-log-0030-onward.md)
+for ADR-0037 and ADR-0039 in full.

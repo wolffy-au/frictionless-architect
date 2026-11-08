@@ -1508,12 +1508,6 @@ topics:
         scripts/run-modelling_specification.sh:
           sha256: c21fecdffa55523874f7994e14865520082ae8c3895c103fbeb338d2ae2d6e7c
           lines: 17
-        specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/checklists/requirements.md:
-          sha256: 5191cb95109464d3ea531677f35ea4b259a56209f9c88cb3669e4f73721efbec
-          lines: 35
-        specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md:
-          sha256: f5cda7b9dbbb8c39bf4817f145b4b1730fe809706224bdaa038f0abaf53d00e7
-          lines: 122
         specs/EPIC-003-conversational-model-authoring/checklists/requirements.md:
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
           lines: 77
@@ -1535,6 +1529,22 @@ topics:
         specs/EPIC-003-conversational-model-authoring/spec.md:
           sha256: 77294f752f345571d540cc1c9290d5a14bdf15832d0332e25614c992ba265372
           lines: 293
+        specs/EPIC-003-conversational-model-authoring/tasks.md:
+          sha256: 54050ff4e5706a1fd20f60da5430261d86145010e7b610d4ccb8ae140b76a996
+          lines: 455
+      urls: {}
+  solution-design-modelling:
+    title: 'Conversational Solution Design Modelling (GH #139)'
+    page: wiki/solution-design-modelling.md
+    built: '2026-11-08'
+    sources:
+      files:
+        specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/checklists/requirements.md:
+          sha256: 5191cb95109464d3ea531677f35ea4b259a56209f9c88cb3669e4f73721efbec
+          lines: 35
+        specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md:
+          sha256: f5cda7b9dbbb8c39bf4817f145b4b1730fe809706224bdaa038f0abaf53d00e7
+          lines: 122
         specs/EPIC-003-conversational-model-authoring/tasks.md:
           sha256: 54050ff4e5706a1fd20f60da5430261d86145010e7b610d4ccb8ae140b76a996
           lines: 455
