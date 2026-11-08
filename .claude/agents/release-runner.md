@@ -45,14 +45,17 @@ results. Never do an agent's work yourself, and never pass a step without its re
 2. Work through `RELEASE.md` §1–§10 in order:
    - §1 branch sync; the `develop` → `main` merge is made via a PR that a **human** merges
      (see step 4, the human merge gate) — never merge into `main` yourself
-   - §2 `bash scripts/pre_merge_checks.sh` — hard gate
-   - §3 SonarCloud: no `OPEN` issues — hard gate
-   - §4 Snyk + Dependabot: no open high/critical — hard gate
-   - §5 doc/spec refresh: hand back for `docs-uplift`, `spec-alignment` and `adr-auditor`;
-     once their results are in, commit regenerated artefacts and re-run §2 if anything
-     landed
-   - §6 `poetry run cz bump` on `develop` (`--increment MINOR` for the first release);
+   - §2 SonarCloud: no `OPEN` issues — hard gate
+   - §3 Snyk + Dependabot: no open high/critical — hard gate
+   - §4 doc/spec refresh: hand back for `docs-uplift`, `spec-alignment` and `adr-auditor`;
+     once their results are in, commit regenerated artefacts
+   - §5 `poetry run cz bump` on `develop` (`--increment MINOR` for the first release);
      show the `CHANGELOG.md` diff, then delete the develop-side tag
+   - §6 `bash scripts/pre_merge_checks.sh` — hard gate; runs once, here, after §4 and §5
+     have both landed, so it validates the exact commit §7 pushes and §8 tags, and §7's
+     push doesn't trigger a second, nearly-identical run of the same pyright/mypy/pytest/
+     platform-checks suite via the pre-push hook on a state this step hasn't already
+     verified — never run this before §5, only after
    - §7 push `develop`, open/update the PR, wait for green, then STOP (step 4)
    - §8 after the human merge: create the annotated `v<X.Y.Z>` tag on `origin/main`,
      confirm it matches `^v[0-9]+\.[0-9]+\.[0-9]+$` (rename if necessary), push only the tag
@@ -60,8 +63,8 @@ results. Never do an agent's work yourself, and never pass a step without its re
    - §10 merge `main` → `develop`, push
 3. On any gate failure: stop at that step, report exactly what failed with the command
    output, and hand back naming the agent that fixes it (`quality-uplift`,
-   `coverage-uplift`, `vulnerability-remediator`). Do not proceed past a red gate. §3 and
-   §4 are read-only checks, so run both before handing back, and name the §5 agents in
+   `coverage-uplift`, `vulnerability-remediator`). Do not proceed past a red gate. §2 and
+   §3 are read-only checks, so run both before handing back, and name the §4 agents in
    the same hand-back so everything can be dispatched at once.
 4. **Human merge gate — mandatory, never skipped.** The merge into `main` is always
    reviewed and performed manually by a human. Open (or update) the `develop` → `main`
@@ -93,7 +96,7 @@ results. Never do an agent's work yourself, and never pass a step without its re
 - Never merge into `main` yourself: a human merges the PR after reviewing it (step 4).
   If a step in `RELEASE.md` would push commits straight to `main` (e.g. an old-style `git push origin main`), stop and
   report — `main` only changes via PR (`AGENTS.md`).
-- Never `--force` push, never delete a pushed tag (the only exception: the unpushed develop-side tag `cz bump` creates, §6), never edit `CHANGELOG.md` by hand
+- Never `--force` push, never delete a pushed tag (the only exception: the unpushed develop-side tag `cz bump` creates, §5), never edit `CHANGELOG.md` by hand
   (let `cz bump` own it), never bypass `scripts/pre_merge_checks.sh`.
 - If `RELEASE.md` §"Not yet configured" still lists PyPI publish as absent, do not
   attempt to publish a package — stop after the GitHub release.
