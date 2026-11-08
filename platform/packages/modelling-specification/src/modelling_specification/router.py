@@ -257,7 +257,8 @@ def _resolve_changes(proposed: dict[str, Any], known_names: dict[str, str]) -> t
     """Resolve unknown endpoints/members in `proposed`'s non-element changes.
 
     Returns the cleaned lists keyed by `CandidateDelta` field name, plus the notes
-    describing anything that was dropped or corrected."""
+    describing anything that was dropped or corrected.
+    """
     relationships, rel_notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
     membership_edits, membership_notes = resolve_unknown_members(
         proposed.get("view_membership_edits") or [], known_names
@@ -403,7 +404,8 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
 
 def _resolved_text(session: Session, pending: PendingConfirmation, body: ResolvePiiRequest) -> str | dict[str, Any]:
     """The text to send on once the architect has resolved a PII review, or the
-    `pii_review_required` response when an edited replacement is itself still flagged."""
+    `pii_review_required` response when an edited replacement is itself still flagged.
+    """
     if body.resolution == Resolution.EDIT:
         if not body.edited_text or not body.edited_text.strip():
             raise HTTPException(status_code=400, detail="resolution 'edit' requires non-empty edited_text")
