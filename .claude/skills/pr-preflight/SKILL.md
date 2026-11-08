@@ -139,7 +139,7 @@ gh pr checks --watch
 ```
 
 CI (`.github/workflows/ci.yml`) re-runs ruff/pyright/mypy/behave/pytest+coverage plus
-SonarQube and Snyk/CodeQL — gates §§2 and 6 only spot-checked locally. For any failing
+SonarQube and CodeQL — gates §§2 and 6 only spot-checked locally. For any failing
 check:
 
 ```bash

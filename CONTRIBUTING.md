@@ -36,8 +36,8 @@ By participating in this project you agree to abide by the
 ```bash
 poetry install                       # project + all dependency groups
 poetry run pytest                    # full test suite
-bash scripts/pre_commit_checks.sh    # fast gate: lock refresh, pymarkdown, ruff, pyright, mypy, tests/unit/
-bash scripts/pre_merge_checks.sh     # + behave, coverage-gated pytest, frontend UI harness
+bash scripts/pre_commit_checks.sh    # fast gate: commit messages, pymarkdown, ruff, pyright, mypy, tests/unit/, platform checks
+bash scripts/pre_merge_checks.sh     # + roadmap-layer check, lock refresh, Snyk, behave, coverage-gated pytest, UI harness
 ```
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on
@@ -104,7 +104,7 @@ without a record — running clean against it is part of the release gate.
 4. Update relevant docs (`README.md`, `ARCHITECTURE.md`, wiki pages, ADRs) in
    the same PR as the code change — the `docs-uplift` agent exists to help
    catch what's missed, not to replace doing it.
-5. Open the PR against `main` (or `develop`, per current release state — see
+5. Open the PR against `develop` (`main` only takes the release PR — see
    [`RELEASE.md`](RELEASE.md)) using the relevant issue template's structure
    in the description. Link the issue it closes.
 6. A green CI run and at least one review are required before merge.

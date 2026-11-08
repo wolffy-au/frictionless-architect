@@ -1,7 +1,7 @@
 ---
 title: Architecture Overview
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
 - TECHNICAL.md
@@ -220,7 +220,9 @@ each package after the ones it consumes (`ARCHITECTURE.md` §8). See
 
 **Status (GH #71, #107):** steps 1–3 and 6 are done. `platform/` has its own
 `pyproject.toml` and `poetry.lock`; `packages/controls-compliance-catalog`
-exists as an empty, installable package. Step 6, re-homing specs to the
+holds the OSCAL conversion playground (two `/catalog` conversion routes and
+a page), while the pipeline itself (GH #44) is still unbuilt
+(`ARCHITECTURE.md` §8, "Status"). Step 6, re-homing specs to the
 two-tier scheme, landed 2026-10-24 (ADR-0004): root `specs/` now holds only
 `EPIC-`-prefixed cross-cutting specs (`EPIC-001-governance-platform`,
 `EPIC-002-gh-roadmap-archimate`, `EPIC-003-conversational-model-authoring`),
@@ -268,7 +270,12 @@ today). `schema/manager.py` (the Neo4j write/migrate/audit controller),
 `visualizer/data_loader.py` (the Neo4j read path), and `sample_parser.py` move
 to `packages/digital-twin-knowledge-graph` instead — the visualiser only ever
 needed read access, and `sample_parser.py` has no visualiser-specific coupling
-(dependency-free stdlib ArchiMate-XML parsing). `schema-visualizer-api`
+(dependency-free stdlib ArchiMate-XML parsing). `namespaces.py`, which the
+parser and the validator share, moves with `sample_parser.py` (the package already
+carries its own copy). `sample_validator.py`, the XSD check of ADR-0022, is not
+placed by the plan: whether it moves with the parser or stays with the payload
+service is open before extraction starts (`ARCHITECTURE.md` §8.2 checklist).
+`schema-visualizer-api`
 consumes `digital-twin-knowledge-graph` as a **path-dependency library** (its
 own Neo4j connection), not over HTTP, until a second consumer needs that
 interface to graduate — so the read-path interface stays narrow and
@@ -340,7 +347,9 @@ Coding standards, patterns, and tooling choices live in `TECHNICAL.md` (see
 [Development & Quickstart](development.md) for the practical subset): 4-space
 indent, 120-char lines, `snake_case`/`PascalCase`/`UPPER_CASE`, Google-style
 docstrings, native types over `typing` aliases (`TECHNICAL.md` §"Code Style",
-§"Patterns and Practices"). Architectural patterns called out: MVC, two-/
+§"Patterns and Practices"). `ruff` enforces the pydocstyle `D` rules (Google
+convention) on `src/`, `platform/packages/*/src/` and `scripts/`; tests,
+`architecture/` and `.claude/` are exempt, and `D205` is ignored (`TECHNICAL.md`). Architectural patterns called out: MVC, two-/
 three-tier, and **Finite State Machines** for entities with governed lifecycles,
 with action-based endpoints (`/resource/{id}/action`) preferred over direct
 state updates (`TECHNICAL.md` §"Software Architectural Patterns", §"API Design

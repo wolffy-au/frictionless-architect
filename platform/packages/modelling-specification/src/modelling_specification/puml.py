@@ -200,7 +200,8 @@ def _context_filtered(elements: list[Any], relationships: list[Any], context: st
     `include_neighbours` (step 3) placed on the full view still renders here,
     from whichever context side is being split out. A relationship is kept when
     at least one endpoint belongs to `context`; both its endpoints are then in
-    the returned element list by construction."""
+    the returned element list by construction.
+    """
     own = {e.uuid for e in elements if e.prop("context") == context}
     neighbours: set[str] = set()
     kept_rels: list[Any] = []
@@ -217,7 +218,8 @@ def _context_filtered(elements: list[Any], relationships: list[Any], context: st
 def _pick_parent(parents: list[tuple[str, Any]]) -> tuple[str, Any] | None:
     """Pick a part's single container: the lone candidate, or -- if several
     compete -- the lone Composition one (exclusive ownership per the spec
-    breaks the tie in its own favour). Returns None if neither applies."""
+    breaks the tie in its own favour). Returns None if neither applies.
+    """
     if len(parents) == 1:
         return parents[0]
     compositions = [p for p in parents if p[1].type == "Composition"]
@@ -226,7 +228,8 @@ def _pick_parent(parents: list[tuple[str, Any]]) -> tuple[str, Any] | None:
 
 def _containment_candidates(elements: list[Any], relationships: list[Any]) -> dict[str, list[tuple[str, Any]]]:
     """The legal containment edges, grouped by part, in first-seen order (dict
-    preserves insertion order) so nesting stays deterministic."""
+    preserves insertion order) so nesting stays deterministic.
+    """
     on_diagram = {e.uuid for e in elements}
     candidates_by_part: dict[str, list[tuple[str, Any]]] = {}
     for r in relationships:
@@ -310,7 +313,8 @@ def _element_lines(
 
 def _view_scoped(model: Any, view_name: str, context: str | None) -> tuple[list[Any], list[Any], str]:
     """(elements, relationships, title) for `--view view_name`, optionally
-    further restricted to `--context`'s neighbourhood."""
+    further restricted to `--context`'s neighbourhood.
+    """
     views = [v for v in model.views if v.name == view_name]
     if not views:
         raise KeyError(f"no view named {view_name!r}; have: {[v.name for v in model.views]}")

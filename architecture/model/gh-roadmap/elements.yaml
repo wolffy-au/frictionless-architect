@@ -113,6 +113,13 @@
     gh-tag: v0.8.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.8.0
 - type: Deliverable
+  id: del-release-v0-9-0
+  name: v0.9.0
+  props:
+    gh-published: '2026-11-07T00:31:46Z'
+    gh-tag: v0.9.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.9.0
+- type: Deliverable
   id: del-solution-design-mvp-8-unreleased
   name: solution-design-mvp (unreleased)
   props:
@@ -233,6 +240,20 @@
     gh-number: '140'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/140
+- type: WorkPackage
+  id: wp-add-a-ui-to-load-and-save-an-archimate-gh-192
+  name: GH-192 Add a UI to load and save an ArchiMate model from an arbitrary directory
+  props:
+    gh-number: '192'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/192
+- type: WorkPackage
+  id: wp-add-a-views-admin-panel-for-authoring-gh-193
+  name: GH-193 Add a views-admin panel for authoring views.yaml entries
+  props:
+    gh-number: '193'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/193
 - type: WorkPackage
   id: wp-add-bounded-context-tagging-and-generic-gh-105
   name: GH-105 Add bounded-context tagging and generic ArchiMate viewpoint views
@@ -700,6 +721,13 @@
     gh-number: '45'
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/45
+- type: WorkPackage
+  id: wp-roll-out-split-by-context-package-gh-194
+  name: GH-194 Roll out split_by:context + package_diagrams across the diagram set
+  props:
+    gh-number: '194'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/194
 - type: WorkPackage
   id: wp-sample-simple-implementations-gh-46
   name: GH-46 Sample simple implementations

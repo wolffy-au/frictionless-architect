@@ -132,9 +132,12 @@ target-version = "py312"
 extend-exclude = ["third_party"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "B", "C", "I"]
+select = ["E", "F", "W", "B", "C", "I", "D"]
 ignore = [
     "E501",
+    # D205 (blank line after the summary) is not enforced: ~130 existing docstrings
+    # wrap their summary over two lines and rewording each risks changing meaning.
+    "D205",
 ]
 
 exclude = [
@@ -159,6 +162,16 @@ exclude = [
     "*.json",
     "*.md",
 ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Docstrings are enforced for application code (src/, platform/packages/*/src/) and
+# scripts/. Tests, the architecture model tooling and the agent skill scripts are exempt.
+"**/tests/**" = ["D"]
+"architecture/**" = ["D"]
+".claude/**" = ["D"]
 
 # Without this, ruff's isort auto-detects whether `build` (the
 # architecture/model/build.py script, imported via the pythonpath hack in

@@ -2,8 +2,7 @@
 
 Prerequisites: `poetry install` at repo root (for the skill/`build.py` side); `cd platform &&
 poetry install` for the new package; an LLM provider configured via `llm-provider-config`
-(`poetry run python -m llm_provider_config.cli set ...` or the mounted `/settings/llm` UI,
-ADR-0034) for component `modelling-specification.conversational-authoring`. Contract:
+(the mounted `/settings/llm` UI, ADR-0034) for component `modelling-specification.conversational-authoring`. Contract:
 [api.md](contracts/api.md). Model: [data-model.md](data-model.md).
 
 ## 1. Propose and apply a clean change (US1, SC-001)

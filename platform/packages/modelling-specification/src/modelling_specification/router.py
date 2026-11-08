@@ -10,7 +10,7 @@ from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import JSONResponse
-from pii_gateway import EngineErrorAllowRejected, Resolution
+from pii_gateway import EngineErrorAllowRejected, PendingConfirmation, Resolution
 from pydantic import BaseModel
 
 from modelling_specification import model_io, rendering
@@ -30,6 +30,7 @@ from modelling_specification.authoring.delta import (
     scrub_or_require_review,
 )
 from modelling_specification.authoring.state import CandidateDelta, DeltaStatus, Session, SessionStore
+from modelling_specification.markdown_render import render_message_markdown
 from modelling_specification.validation import conventions
 from modelling_specification.validation.duplicates import find_duplicates
 from modelling_specification.validation.fixes import proposed_fix_for_finding
@@ -196,7 +197,8 @@ def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
     `detection_failed` is true when the flagged "match" is pii-gateway's synthetic
     engine-error match (research.md R6) rather than a real detection -- the
     architect must be told detection failed, not left to infer it from the
-    `_ENGINE_ERROR` category in `matches` (2026-11-05 decision)."""
+    `_ENGINE_ERROR` category in `matches` (2026-11-05 decision).
+    """
     return {
         "delta_id": None,
         "status": "pii_review_required",
@@ -208,9 +210,31 @@ def _pii_review_response(review: PiiReviewRequired) -> dict[str, Any]:
     }
 
 
+def _message_response(text: str) -> dict[str, Any]:
+    """`propose`/`resolve-pii`'s response when the LLM answers in plain text
+    instead of proposing a delta. `message_html` is `text` rendered to sanitised
+    HTML server-side (GH #185) -- the UI inserts it directly, never `message`,
+    which stays the raw LLM text for any other caller.
+    """
+    return {
+        "delta_id": None,
+        "status": "message",
+        "message": text,
+        "message_html": render_message_markdown(text),
+        "elements": [],
+        "relationships": [],
+        "views": [],
+        "view_membership_edits": [],
+        "element_edits": [],
+        "element_removals": [],
+        "relationship_removals": [],
+    }
+
+
 def _pending_grounding(session_id: str) -> dict[str, Any] | None:
     """The session's pending delta as the LLM should see it -- the non-empty change
-    lists only, `None` when nothing is pending."""
+    lists only, `None` when nothing is pending.
+    """
     delta = _store.pending_delta(session_id)
     if delta is None:
         return None
@@ -220,12 +244,48 @@ def _pending_grounding(session_id: str) -> dict[str, Any] | None:
 def _new_only(existing: list[Any], proposed: list[Any]) -> list[Any]:
     """`proposed` minus anything already in `existing` or repeated within itself: with
     earlier turns in view (FR-018) an LLM can restate part of the pending delta, and
-    FR-015's accumulation must not turn that into a duplicate change."""
+    FR-015's accumulation must not turn that into a duplicate change.
+    """
     fresh: list[Any] = []
     for item in proposed:
         if item not in existing and item not in fresh:
             fresh.append(item)
     return fresh
+
+
+def _resolve_changes(proposed: dict[str, Any], known_names: dict[str, str]) -> tuple[dict[str, list[Any]], list[str]]:
+    """Resolve unknown endpoints/members in `proposed`'s non-element changes.
+
+    Returns the cleaned lists keyed by `CandidateDelta` field name, plus the notes
+    describing anything that was dropped or corrected.
+    """
+    relationships, rel_notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
+    membership_edits, membership_notes = resolve_unknown_members(
+        proposed.get("view_membership_edits") or [], known_names
+    )
+    element_edits, element_edit_notes = resolve_unknown_element_edits(proposed.get("element_edits") or [], known_names)
+    element_removals, element_removal_notes = resolve_unknown_element_removals(
+        proposed.get("element_removals") or [], known_names
+    )
+    relationship_removals, relationship_removal_notes = resolve_unknown_endpoints(
+        proposed.get("relationship_removals") or [], known_names
+    )
+    changes: dict[str, list[Any]] = {
+        "relationships": relationships,
+        "view_membership_edits": membership_edits,
+        "element_edits": element_edits,
+        "element_removals": element_removals,
+        "relationship_removals": relationship_removals,
+    }
+    notes = rel_notes + membership_notes + element_edit_notes + element_removal_notes + relationship_removal_notes
+    return changes, notes
+
+
+def _merge_into_delta(delta: CandidateDelta, changes: dict[str, list[Any]]) -> None:
+    """Append each change list to the matching `delta` field, skipping repeats."""
+    for field_name, new_items in changes.items():
+        current: list[Any] = getattr(delta, field_name)
+        setattr(delta, field_name, current + _new_only(current, new_items))
 
 
 def _handle_proposed(
@@ -234,7 +294,8 @@ def _handle_proposed(
     """Turn `propose_delta`/`resume_proposal`'s successful output into the shared
     `propose`/`propose/select`/`propose/resolve-pii` response: accumulate a single
     concrete delta into the session's pending `CandidateDelta`, or stash "ways
-    forward" options for `propose/select` to pick from."""
+    forward" options for `propose/select` to pick from.
+    """
     if "options" in proposed:
         pending = _store.pending_delta(session_id)
         in_flight = pending.elements if pending else []
@@ -248,20 +309,9 @@ def _handle_proposed(
     in_flight = [*(delta.elements if delta else []), *new_elements]
     known_names = {eid: name for eid, _etype, name, _desc in catalogue}
     known_names.update({e["id"]: str(e.get("name", "")) for e in in_flight if e.get("id")})
-    new_relationships, rel_notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
-    new_membership_edits, membership_notes = resolve_unknown_members(
-        proposed.get("view_membership_edits") or [], known_names
-    )
-    new_element_edits, element_edit_notes = resolve_unknown_element_edits(
-        proposed.get("element_edits") or [], known_names
-    )
-    new_element_removals, element_removal_notes = resolve_unknown_element_removals(
-        proposed.get("element_removals") or [], known_names
-    )
-    new_relationship_removals, relationship_removal_notes = resolve_unknown_endpoints(
-        proposed.get("relationship_removals") or [], known_names
-    )
-    notes = rel_notes + membership_notes + element_edit_notes + element_removal_notes + relationship_removal_notes
+    changes, notes = _resolve_changes(proposed, known_names)
+    changes["elements"] = new_elements
+    changes["views"] = new_views
 
     if delta is None:
         delta = CandidateDelta(delta_id=_store.new_delta_id(), session_id=session_id)
@@ -269,17 +319,7 @@ def _handle_proposed(
     # FR-015: a later request touching the pending delta amends/extends it rather
     # than starting an independent one -- one accumulating delta per conversation
     # until it is applied or discarded (data-model.md Candidate Delta lifecycle).
-    delta.elements = delta.elements + _new_only(delta.elements, new_elements)
-    delta.relationships = delta.relationships + _new_only(delta.relationships, new_relationships)
-    delta.views = delta.views + _new_only(delta.views, new_views)
-    delta.view_membership_edits = delta.view_membership_edits + _new_only(
-        delta.view_membership_edits, new_membership_edits
-    )
-    delta.element_edits = delta.element_edits + _new_only(delta.element_edits, new_element_edits)
-    delta.element_removals = delta.element_removals + _new_only(delta.element_removals, new_element_removals)
-    delta.relationship_removals = delta.relationship_removals + _new_only(
-        delta.relationship_removals, new_relationship_removals
-    )
+    _merge_into_delta(delta, changes)
 
     _validate_and_flag(delta)
     response = _delta_response(delta)
@@ -355,22 +395,33 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
         return _pii_review_response(review)
     except LlmMessage as message:
         session.pending_options = []
-        return {
-            "delta_id": None,
-            "status": "message",
-            "message": message.text,
-            "elements": [],
-            "relationships": [],
-            "views": [],
-            "view_membership_edits": [],
-            "element_edits": [],
-            "element_removals": [],
-            "relationship_removals": [],
-        }
+        return _message_response(message.text)
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     return _handle_proposed(session_id, session, catalogue, proposed)
+
+
+def _resolved_text(session: Session, pending: PendingConfirmation, body: ResolvePiiRequest) -> str | dict[str, Any]:
+    """The text to send on once the architect has resolved a PII review, or the
+    `pii_review_required` response when an edited replacement is itself still flagged.
+    """
+    if body.resolution == Resolution.EDIT:
+        if not body.edited_text or not body.edited_text.strip():
+            raise HTTPException(status_code=400, detail="resolution 'edit' requires non-empty edited_text")
+        try:
+            return scrub_or_require_review(body.edited_text)
+        except PiiReviewRequired as review:
+            session.pending_pii_confirmation = review.pending_confirmation
+            session.pending_options = []
+            return _pii_review_response(review)
+    try:
+        return pending.resolve(body.resolution)
+    except EngineErrorAllowRejected as exc:
+        # Pending confirmation is deliberately left in place -- the architect
+        # can still redact or edit; only `allow` on an engine-error match is
+        # rejected (2026-11-05 decision).
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.post(
@@ -428,23 +479,10 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
     if pending is None:
         raise HTTPException(status_code=409, detail="no PII/PHI match is pending review")
 
-    if body.resolution == Resolution.EDIT:
-        if not body.edited_text or not body.edited_text.strip():
-            raise HTTPException(status_code=400, detail="resolution 'edit' requires non-empty edited_text")
-        try:
-            resolved_text = scrub_or_require_review(body.edited_text)
-        except PiiReviewRequired as review:
-            session.pending_pii_confirmation = review.pending_confirmation
-            session.pending_options = []
-            return _pii_review_response(review)
-    else:
-        try:
-            resolved_text = pending.resolve(body.resolution)
-        except EngineErrorAllowRejected as exc:
-            # Pending confirmation is deliberately left in place -- the architect
-            # can still redact or edit; only `allow` on an engine-error match is
-            # rejected (2026-11-05 decision).
-            raise HTTPException(status_code=409, detail=str(exc)) from exc
+    resolved = _resolved_text(session, pending, body)
+    if isinstance(resolved, dict):
+        return resolved
+    resolved_text = resolved
     session.pending_pii_confirmation = None
 
     catalogue, rules, contexts, views, relationships = _catalogue_and_rules()
@@ -461,18 +499,7 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
         )
     except LlmMessage as message:
         session.pending_options = []
-        return {
-            "delta_id": None,
-            "status": "message",
-            "message": message.text,
-            "elements": [],
-            "relationships": [],
-            "views": [],
-            "view_membership_edits": [],
-            "element_edits": [],
-            "element_removals": [],
-            "relationship_removals": [],
-        }
+        return _message_response(message.text)
     except DeltaProposalError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -553,7 +580,8 @@ def _validate(
     run. `element_edits`/`element_removals`/`relationship_removals` (ADR-0037 item 8)
     are applied to the existing model before the same metamodel/referential-integrity
     checks run, so a removal that would leave a dangling relationship endpoint
-    elsewhere surfaces as the usual finding, never silently."""
+    elsewhere surfaces as the usual finding, never silently.
+    """
     metamodel_result = validate_metamodel(
         elements, relationships, views, view_membership_edits, element_edits, element_removals, relationship_removals
     )
@@ -580,7 +608,8 @@ def _validate(
 
 def _validate_and_flag(delta: CandidateDelta) -> None:
     """Run every check against the whole accumulated delta and set
-    `validation_result`/`duplicates`/`pattern_suggestions`/`status`."""
+    `validation_result`/`duplicates`/`pattern_suggestions`/`status`.
+    """
     outcome = _validate(
         delta.elements,
         delta.relationships,
@@ -605,7 +634,8 @@ def _prepare_option(option: dict[str, Any], in_flight: list[dict[str, Any]] | No
     not yet written to disk, so `model_io.existing_element_ids()` alone can't see them.
     Without folding them in too, assigning an id or resolving an endpoint here could
     collide with or misresolve against an element the architect already has pending
-    (same reason `propose()`'s concrete-delta path builds its own `in_flight` list)."""
+    (same reason `propose()`'s concrete-delta path builds its own `in_flight` list).
+    """
     in_flight = in_flight or []
     known_ids = model_io.existing_element_ids() | {e["id"] for e in in_flight if e.get("id")}
     elements = assign_missing_ids(option["elements"], known_ids)
@@ -708,7 +738,8 @@ def _finalize(
     """The Current/Transition/Target classification is optional (2026-10-12: state is
     not needed to author a change). When one is supplied it is still recorded, but an
     unrecognised value is rejected with a 422 shaped `{"needs": "state_classification"}`
-    (contracts/api.md) rather than silently stored."""
+    (contracts/api.md) rather than silently stored.
+    """
     if body.state_classification is not None and body.state_classification not in _VALID_STATES:
         return JSONResponse(status_code=422, content={"needs": "state_classification"})
     return apply_fn(delta, body.state_classification)
@@ -718,7 +749,8 @@ def _check_overridable(delta: CandidateDelta) -> None:
     """Raises `HTTPException` when `override` isn't allowed: nothing flagged, or a
     hard ArchiMate metamodel violation among the findings (Constitution Principle
     VII) -- an override may bypass a convention/duplicate/pattern objection (FR-014),
-    never metamodel legality itself."""
+    never metamodel legality itself.
+    """
     if delta.status is not DeltaStatus.FLAGGED:
         raise HTTPException(status_code=409, detail="nothing is flagged to override")
     findings = (delta.validation_result or {}).get("findings", [])
@@ -737,7 +769,8 @@ def _reject(delta: CandidateDelta) -> dict[str, Any]:
 def _accept_pattern(delta: CandidateDelta) -> None:
     """FR-008 'accept-pattern': splice the synthesized intermediary form in place of
     each matched direct relationship -- the original direct relationships are
-    dropped, never applied alongside the synthesized ones."""
+    dropped, never applied alongside the synthesized ones.
+    """
     if not delta.pattern_suggestions:
         raise HTTPException(status_code=409, detail="nothing to accept-pattern -- no pattern suggestion is flagged")
     existing_elements, _types = model_io.existing_elements_and_types()
@@ -762,7 +795,8 @@ def _accept_pattern(delta: CandidateDelta) -> None:
 def _merge_into_existing(delta: CandidateDelta, target_existing_id: str) -> None:
     """FR-006 'merge': the existing element is the one that stays -- no new element
     is written; any relationship that referenced one of the dropped elements now
-    points at `target_existing_id` instead."""
+    points at `target_existing_id` instead.
+    """
     dropped_ids = {e["id"] for e in delta.elements if e.get("id")}
     delta.elements = []
     for rel in delta.relationships:
@@ -774,7 +808,8 @@ def _merge_into_existing(delta: CandidateDelta, target_existing_id: str) -> None
 
 def _apply_delta_edits_and_removals(delta: CandidateDelta) -> None:
     """The ADR-0037 item 8 write paths: narrow, scoped edits/removals to existing
-    elements/relationships, distinct from `append_delta`'s additive-only writes."""
+    elements/relationships, distinct from `append_delta`'s additive-only writes.
+    """
     if delta.view_membership_edits:
         model_io.apply_view_membership_edits(delta.view_membership_edits)
     if delta.element_edits:
@@ -813,7 +848,8 @@ def _apply_and_respond(delta: CandidateDelta, state_classification: str | None) 
 def _describe_objection(delta: CandidateDelta) -> tuple[str, str]:
     """What FR-014's Override Decision Record calls `overridden_objection` and
     `objection_detail` -- the convention/duplicate/pattern flag the architect is
-    proceeding past (never a metamodel one; `decide()` already blocked those)."""
+    proceeding past (never a metamodel one; `decide()` already blocked those).
+    """
     if delta.validation_result and not delta.validation_result["clean"]:
         return "rejection", "; ".join(f["detail"] for f in delta.validation_result["findings"])
     if delta.duplicates:
@@ -878,7 +914,8 @@ def _first_affected_object_id(delta: CandidateDelta) -> str | None:
     a delta that only touches existing objects still has an affected object to
     render where one still exists on disk (a removal has none, so falls through to
     `None`). `rendering.resolve_view_request` tries `object_id` as an exact view id
-    before an element id, so a view id resolves straight to itself once it's on disk."""
+    before an element id, so a view id resolves straight to itself once it's on disk.
+    """
     if delta.elements:
         return delta.elements[0].get("id")
     if delta.relationships:
@@ -895,7 +932,8 @@ def _first_affected_object_id(delta: CandidateDelta) -> str | None:
 def _resolve_and_render(object_id: str | None, description: str | None) -> dict[str, Any] | None:
     """Resolve+render (FR-013/FR-016); `None` when nothing resolves unambiguously --
     the caller decides what that means (a 404 for an explicit request, silently
-    skipped for an auto-render best-effort)."""
+    skipped for an auto-render best-effort).
+    """
     resolution = rendering.resolve_view_request(object_id, description)
     if resolution["resolved_view_id"] is None:
         return None
@@ -907,7 +945,8 @@ def _resolve_and_render(object_id: str | None, description: str | None) -> dict[
 
 def _known_view_id(view_id: str) -> str | None:
     """The server's own copy of `view_id` if it names a real view, else `None`, so a
-    query-string value never flows into what is rendered or served."""
+    query-string value never flows into what is rendered or served.
+    """
     return next((v["id"] for v in rendering.list_views() if v["id"] == view_id), None)
 
 
@@ -969,7 +1008,8 @@ def get_render(
 def _preview_view_resolution(delta: CandidateDelta) -> dict[str, Any]:
     """Where to preview `delta` when no view was chosen, in `resolve_view_request`'s
     shape: the view it proposes or edits, else a view showing an existing element it
-    touches -- the first such element that resolves, or is ambiguous, wins."""
+    touches -- the first such element that resolves, or is ambiguous, wins.
+    """
     named = [v.get("id") for v in delta.views] + [e.get("view_id") for e in delta.view_membership_edits]
     if named:
         return {"resolved_view_id": named[0], "ambiguous_candidates": []}
@@ -996,7 +1036,8 @@ def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> R
     """Render a pending delta, of any kind, in a view *before* anything is written
     (nothing is persisted). `view_id` may name a view the delta itself proposes. Without
     it the view comes from `_preview_view_resolution`; ambiguity or no match is reported
-    like `GET /render`."""
+    like `GET /render`.
+    """
     delta = _store.get_delta(session_id, delta_id)
     if delta is None or delta.status in (DeltaStatus.APPLIED, DeltaStatus.DISCARDED):
         raise HTTPException(status_code=404, detail=f"no pending delta {delta_id!r}")
@@ -1042,7 +1083,8 @@ def get_preview(session_id: str, delta_id: str, view_id: str | None = None) -> R
 )
 def get_state(session_id: str, delta_id: str) -> dict[str, Any]:
     """FR-010: the classification recorded at apply time, looked up over the applied
-    Candidate Delta itself -- not a separate store (data-model.md)."""
+    Candidate Delta itself -- not a separate store (data-model.md).
+    """
     delta = _store.get_delta(session_id, delta_id)
     if delta is None or delta.status is not DeltaStatus.APPLIED:
         raise HTTPException(status_code=404, detail=f"no applied delta {delta_id!r}")

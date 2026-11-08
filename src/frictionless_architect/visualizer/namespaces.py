@@ -31,7 +31,7 @@ def _split_tag(tag: str) -> tuple[str, str]:
 
 
 def require_archimate_namespace(root: ET.Element, source: Path | str) -> None:
-    """Raise `ArchimateNamespaceError` unless `root` is `{ARCHIMATE_NS}model`.
+    """Raise ``ArchimateNamespaceError`` unless ``root`` is ``{ARCHIMATE_NS}model``.
 
     Namespaced lookups silently match nothing on a document in any other
     namespace, so the mismatch is checked up front and reported explicitly.

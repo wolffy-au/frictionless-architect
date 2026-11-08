@@ -52,7 +52,7 @@ else
 fi
 
 TASK="Follow your Steps 2-3 only: skip Steps 1 and 4-10. Run ruff, pyright and mypy for the baseline (do not use --fix), \
-then hunt for the smells in Step 3. $SONAR_TASK $CODEQL_TASK Do not fetch Sonar yourself or read .secrets/. Instead of fixing, \
+then hunt for the smells in Step 3. $SONAR_TASK $CODEQL_TASK Do not fetch Sonar yourself or read .env. Instead of fixing, \
 list each issue as file:line | rule/smell | suggested fix, ranked by severity, under '## Findings'. $AGENT_BASH_RULE"
 if [ -n "$SCOPE" ]; then
   TASK="$TASK Scope: $SCOPE only."

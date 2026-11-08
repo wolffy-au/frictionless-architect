@@ -27,3 +27,20 @@ def test_authoring_page_links_to_the_llm_settings_page() -> None:
 
 def test_authoring_page_has_no_state_control() -> None:
     assert "state-select" not in client.get("/authoring/").text
+
+
+def test_authoring_page_inserts_the_server_rendered_message_html() -> None:
+    # GH #185: the LLM's free-text "message" reply arrives pre-rendered as sanitised
+    # HTML in `message_html` (router.py); the page inserts it directly rather than
+    # building Markdown client-side or showing an unstyled pre-wrap block of raw syntax.
+    page = client.get("/authoring/").text
+    assert "body.message_html" in page
+    assert 'whiteSpace = "pre-wrap"' not in page
+
+
+def test_authoring_page_wires_a_working_indicator() -> None:
+    # GH #186: a visible "Thinking..." indicator from the moment a request is sent
+    # until the reply or failure is ready, for every path that waits on the LLM.
+    page = client.get("/authoring/").text
+    assert "showThinking" in page
+    assert "Thinking" in page

@@ -138,7 +138,7 @@ Invoke each by its directory name (e.g. `speckit-plan`, `fork-sync`).
 Subagents are cataloged in [`.claude/agents/README.md`](.claude/agents/README.md)
 (e.g. `quality-uplift`, `coverage-uplift`, `acceptance-author`, `docs-uplift`,
 `refactor-analyst`, `spec-alignment`, `adr-auditor`, `vulnerability-remediator`,
-`release-runner`, `commit-auditor`).
+`release-runner`, `commit-auditor`, `wiki-maintenance`).
 
 Architecture decisions are recorded as MADR files under
 [`docs/adr/`](docs/adr/README.md) — `ARCHITECTURE.md` is the narrative, the ADR log

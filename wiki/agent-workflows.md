@@ -1,7 +1,7 @@
 ---
 title: Agent Skills & Workflows
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - .claude/agents/README.md
 - .claude/agents/acceptance-author.md
@@ -63,17 +63,14 @@ source set no longer globs for them for that reason.
 | `speckit-analyze` | Survey specs, code, and tasks to scope a feature |
 | `speckit-checklist` | Verify checklist completion and gate entry into implementation |
 | `speckit-implement` | Execute the implementation phase once design and planning are solid |
-| `speckit-taskstoissues` | Translate task lists into issue-tracker-friendly format |
+| `speckit-converge` | Assess the code against a feature's spec, plan and tasks, and append remaining unbuilt work to `tasks.md` |
 
-`.claude/skills/README.md`'s table above doesn't yet list `speckit-converge`,
-which earlier revisions of this page (built in an environment where the
-generated skill directories existed) described as assessing the codebase
-against a feature's spec/plan/tasks and appending remaining unbuilt work to
-`tasks.md`. That detail, and other per-skill mechanics (prerequisite-script
-calls, the `.specify/extensions.yml` hook convention), lived only in the
-generated `SKILL.md` files themselves, not in any committed source, so this
-rebuild — done from a checkout without that scaffolding — can't verify or
-restate it. Not covered by current sources.
+`speckit-taskstoissues` has been dropped from `.claude/skills/README.md`'s
+table in favour of `speckit-converge` above. Per-skill mechanics beyond the
+one-line purpose (prerequisite-script calls, the `.specify/extensions.yml`
+hook convention) live only in the generated `SKILL.md` files themselves, not
+in any committed source, so a rebuild done from a checkout without that
+scaffolding can't verify or restate them. Not covered by current sources.
 
 These realize the Specify → Plan → Implement → Verify workflow from
 [Governance & Constitution](governance-and-constitution.md).
@@ -127,17 +124,26 @@ readying a branch for a PR instead of tidying up after one has landed.
 
 ## `fork-sync`
 
-Keeps forked GitHub dependencies in sync with upstream: rebases `fix/*` and
-`private/*` branches onto the latest upstream, rebuilds a `dist-candidate`
-branch, runs tests, flags security-relevant upstream changes, and escalates
-conflicts instead of guessing (`.claude/skills/fork-sync/SKILL.md`).
-`.claude/skills/fork-sync/forks.yml` is the single source of truth — each fork
-declares upstream/fork URLs, tracked
-branch, ordered `fix_branches` / `private_branches`, an optional `test_cmd`, and
-`security_paths` globs. Deterministic scripts do the mechanical work and emit
-JSON + exit codes; the skill applies judgement only where a script escalated.
-Runs interactively (`/fork-sync [name]`) or on a timer. This supports the
-`third_party/` submodule strategy in [Architecture Overview](architecture.md).
+**Status: design only, not runnable yet.** Of its scripts, only `scripts/lib.sh`
+exists — `setup.sh`, `sync-all.sh`, `sync-fork.sh`, `check-upstream.sh`,
+`rebuild-dist.sh`, `dist/run-fork-sync.sh`, `dist/README.md` and
+`references/pr-template.md` are not written, and the one manifest entry
+(`it4it`) is authored rather than forked, so there is nothing to sync yet
+(`.claude/skills/fork-sync/SKILL.md`).
+
+As designed, it keeps forked GitHub dependencies in sync with upstream:
+rebases `fix/*` and `private/*` branches onto the latest upstream, rebuilds a
+`dist-candidate` branch, runs tests, flags security-relevant upstream
+changes, and escalates conflicts instead of guessing
+(`.claude/skills/fork-sync/SKILL.md`).
+`.claude/skills/fork-sync/forks.yml` is meant to be the single source of truth
+— each fork declaring upstream/fork URLs, tracked branch, ordered
+`fix_branches` / `private_branches`, an optional `test_cmd`, and
+`security_paths` globs. Deterministic scripts would do the mechanical work
+and emit JSON + exit codes; the skill applies judgement only where a script
+escalates. Runs interactively (`/fork-sync [name]`) or on a timer, once
+built. This is meant to support the `third_party/` submodule strategy in
+[Architecture Overview](architecture.md).
 
 ## `pr-wrapup`
 

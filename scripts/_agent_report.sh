@@ -27,13 +27,13 @@
 #   REF       git ref to check out (default: develop)
 #   STAMP     output basename (default: today's date)
 #   MODE      report-only only: worktree (default) = audit a clean temp checkout of REF; root = run in the current
-#             checkout, for agents that need the Poetry venv / .secrets / wiki/.cache. A root run reports on whatever
+#             checkout, for agents that need the Poetry venv / .env / wiki/.cache. A root run reports on whatever
 #             is checked out, so REF is ignored and a dirty tree only warns.
 #   BRANCH    session only: branch the fixes go on, created from REF if missing (default: detached, review only)
 #   FIX_TASK  session only: how to fix the findings you pick. Empty = the agent cannot edit, so it hands each chosen
 #             finding back as a concrete follow-up instead.
 #   SETUP     session only: space-separated worktree preparation — venv (poetry install), submodules
-#             (third_party/*), secrets (link the main checkout's gitignored .env and .secrets/).
+#             (third_party/*), secrets (link the main checkout's gitignored .env).
 
 set -euo pipefail
 
@@ -183,12 +183,9 @@ _agent_setup_submodules() {
     || sudo chown -R "$(id -u):$(id -g)" "$WT/third_party"
 }
 
-# The scanners and fix gates read tokens from the gitignored .env / .secrets/; share the main checkout's.
+# The scanners and fix gates read tokens from the gitignored .env; share the main checkout's.
 _agent_setup_secrets() {
-  local f
-  for f in .env .secrets; do
-    [ -e "$ROOT/$f" ] && [ ! -e "$WT/$f" ] && ln -s "$ROOT/$f" "$WT/$f"
-  done
+  [ -e "$ROOT/.env" ] && [ ! -e "$WT/.env" ] && ln -s "$ROOT/.env" "$WT/.env"
   return 0
 }
 

@@ -44,6 +44,12 @@ class AuditLogger:
     """
 
     def __init__(self, path: Path | None = None) -> None:
+        """Create a logger.
+
+        Args:
+            path: The audit file; ``None`` resolves ``default_audit_path()`` at each
+                ``record()`` call.
+        """
         self._path = path
 
     def record(self, entry: AuditEntry) -> None:

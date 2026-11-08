@@ -338,7 +338,8 @@ The order puts each package after the packages it consumes — see the
 [packaging view](architecture/model/diagrams/implementation/packaging.svg) (ADR-0005, #60).
 
 **Status:** steps 1–3 and 6 done (#71, #107). `platform/` has its own `pyproject.toml` and
-`poetry.lock`; `packages/controls-compliance-catalog` is an empty, installable package.
+`poetry.lock`; `packages/controls-compliance-catalog` holds the OSCAL playground (two
+`/catalog` conversion routes and a page), while the pipeline itself (#44) is unbuilt.
 `scripts/platform_checks.sh` gates every package under `platform/packages/` (lock check,
 pyright, mypy, pytest at 90% coverage). The pre-commit and pre-merge scripts, the
 pre-push hook and CI all call it, and Sonar and Codecov pick up its coverage. The repo
@@ -379,8 +380,10 @@ skinparam componentStyle rectangle
 
 package "BEFORE  src/frictionless_architect/visualizer/" {
   [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
-  [data_loader.py sample_parser.py\n(+ schema/manager.py)] as before_kg
+  [data_loader.py sample_parser.py\nnamespaces.py (+ schema/manager.py)] as before_kg
+  [sample_validator.py\nXSD check — destination undecided] as before_val
   before_api --> before_kg
+  before_api --> before_val
 }
 
 package "AFTER" {
@@ -405,7 +408,11 @@ Checklist:
 - `data_loader.py` (Neo4j read), `sample_parser.py`, and `schema/manager.py` are
   **not** part of this step — they move to `packages/digital-twin-knowledge-graph`, which
   `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
-  §4).
+  §4). `namespaces.py` is shared by the parser and the validator and moves with
+  `sample_parser.py` (the package already carries its own copy).
+- `sample_validator.py` (XSD validation of the sample, ADR-0022) is not placed by
+  this plan: it needs a decision on whether it moves with the parser or stays with the
+  payload service before the extraction starts.
 - Build the UI as a Vite app that calls `fetch('/schema-payload')`, with a dev proxy.
 - Add CORS config to the API (same-origin today, so none).
 - `tests/api/*` and the visualiser-owned `tests/unit/visualizer/*` move with the

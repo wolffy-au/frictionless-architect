@@ -31,7 +31,8 @@ def validate_metamodel(
     `element_removals`/`relationship_removals` (ADR-0037 item 8) are checked the
     same way: an unknown id/triple is a `build_error`; a removal leaving a dangling
     relationship endpoint elsewhere surfaces as the usual `broken_connection` finding
-    once the resulting elements/relationships are assembled."""
+    once the resulting elements/relationships are assembled.
+    """
     model, build_errors, _warnings = model_io.merge_candidate(
         elements, relationships, views, view_membership_edits, element_edits, element_removals, relationship_removals
     )

@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - README.md
 - specs/EPIC-001-governance-platform/spec.md
@@ -106,7 +106,17 @@ refresh. A failed load is retried in the background every
 `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` (default and maximum 300), and the
 status endpoint reports `retry_pending`. The service is JSON-only; the former
 server-rendered page was dropped ahead of a separate UI extraction
-(`README.md` §"Configuration", §"Running the schema visualiser"). See
+(`README.md` §"Configuration", §"Running the schema visualiser").
+
+Seeding Neo4j is a separate script, `scripts/neo4j_schema.py`, which ignores the
+service's `FRICTIONLESS_ARCHITECT_NEO4J_*` settings. Its `NEO4J_URI`, `NEO4J_USER`
+and `NEO4J_PASSWORD` come, highest first, from the `--uri`/`--user`/`--password`
+flags, the root `.env` (loaded with `override=True`, so it beats an exported
+variable), the exported environment, then the defaults `neo4j://localhost:7687`,
+`neo4j`, `neo4j` (`README.md` §"Operations: seeding Neo4j"). The README's test
+section adds that `tests/unit/architecture/` covers the GitHub-roadmap importer and
+the platform wrapper scripts, and that `tests/tools/` covers the wiki librarian
+(`README.md` §"Running the tests"). See
 [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md) (spec 002).
 

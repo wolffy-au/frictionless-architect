@@ -50,7 +50,7 @@ def _as_catalog(oscal_data: dict[str, Any]) -> Catalog:
 
     try:
         return Catalog.model_validate(catalog_dict)
-    except Exception as exc:  # trestle/pydantic raise various validation error types
+    except Exception as exc:  # noqa: BLE001 - trestle/pydantic raise various validation error types
         raise PlaygroundConversionError(f"Pasted content is not a valid OSCAL control or catalog: {exc}") from exc
 
 

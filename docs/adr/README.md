@@ -166,3 +166,10 @@ not yet re-ratified in a spec).
   `pii-gateway`'s engine-error redaction replaces the whole text (the zero-length
   synthetic span was a no-op redaction, the actual bug); `Resolution.ALLOW` is
   rejected outright for that case, `REDACT`/`EDIT` remain available
+- **P** — [0047](0047-sanitised-markdown-rendering-for-llm-chat-text.md) — Untrusted
+  LLM chat replies are rendered server-side via `markdown` + `nh3` against a fixed
+  tag/attribute/URL-scheme allowlist, not escaped-only text or a hand-rolled client-side
+  parser
+- **P** — [0048](0048-ci-security-scan-topology.md) — CI's security gate is SonarQube
+  plus GitHub's CodeQL default setup; Snyk runs local-only (`pre_merge_checks.sh`), not
+  in `ci.yml`, after repeated test-quota exhaustion

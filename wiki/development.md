@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: '2026-10-31'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - .github/workflows/ci.yml
@@ -25,13 +25,21 @@ There are two quickstarts, both feature-scoped under `specs/`:
 
 - `specs/EPIC-001-governance-platform/quickstart.md` — the governance-platform
   quickstart (moved from the repo root). It now lists Poetry (ADR-0003) and
-  Python 3.11+, and for running what exists today it defers to `README.md`
+  Python 3.12 (supported range `>=3.11,<3.14`), and for running what exists
+  today it defers to `README.md`
   (`specs/EPIC-001-governance-platform/quickstart.md` §"Prerequisites", §"Running
   the Platform"). Its install step is a plain `poetry install`, which brings in every
   dependency group, and it notes that the `.specify/scripts/` helpers are git-ignored Spec
   Kit scaffolding written by `.devcontainer/post-create.sh`, so they exist in the dev
   container but not in a bare clone (`specs/EPIC-001-governance-platform/quickstart.md`
-  §"Running Specifications and Planning"). Its spec-workflow section is still thin — see
+  §"Running Specifications and Planning"). Starting a new feature now runs the
+  `speckit-specify` skill (`/speckit-specify <description>`) rather than the
+  retired `specify --create-feature` CLI command, and notes that specs live
+  under `platform/packages/<name>/specs/`, with only cross-package `EPIC-*`
+  specs in the root `specs/` (ADR-0004) — the stale example referencing a flat
+  `specs/<feature>/spec.md` path is gone
+  (`specs/EPIC-001-governance-platform/quickstart.md` §"Running Specifications
+  and Planning"). Its spec-workflow section is still thin — see
   [Spec-driven workflow](#spec-driven-workflow-speckit) below.
 - `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md` — the accurate guide for running
   the schema visualiser. It was realigned on 2026-10-04 with the JSON-only service: it
@@ -130,7 +138,12 @@ in the background every `RETRY_INTERVAL_SECONDS` until a load succeeds, and
 `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` (or `--uri` / `--user` /
 `--password`) and bootstraps the ArchiMate schema in Neo4j — subcommands
 `constraints`, `ingest`, `version`, `audit`, `all` (`README.md`
-§"Configuration", §"Operations: seeding Neo4j").
+§"Configuration", §"Operations: seeding Neo4j"). A root `.env` is loaded with
+`override=True`, so it beats exported variables. Precedence, highest first, is the
+flags, the `.env`, the exported environment, then the defaults
+`neo4j://localhost:7687`, `neo4j`, `neo4j`. The visualiser quickstart now states the
+same (`README.md` §"Operations: seeding Neo4j";
+`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md`).
 
 ## Tests
 
@@ -167,13 +180,13 @@ The constitution's "Quality Gates" (see
 
 | Tool | Purpose |
 |---|---|
-| `ruff` | lint + format (line length 120) |
+| `ruff` | lint + format (line length 120); also the pydocstyle `D` rules, Google convention, on `src/`, `platform/packages/*/src/` and `scripts/` (`TECHNICAL.md` §"Code Style") |
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
 | `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |
 | `behave` | BDD acceptance — gated on pre-push, in `pre_merge_checks.sh` and (blocking) in CI (see note below the table) |
 | `commitizen` | Conventional Commits + version inference |
-| `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token in `.secrets/`) |
+| `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token is `SONAR_TOKEN` in the gitignored `.env`, replacing the retired `.secrets/` location) |
 | `snyk` | dependency / security scan (`TECHNICAL.md` §"Snyk"). `SNYK_TOKEN` lives in the gitignored `.env`; `pre_merge_checks.sh` loads it and runs `snyk test` on the root lock, `snyk code test`, and `snyk test` on `platform/poetry.lock`. These three independent scans are fanned out in parallel (2026-10-24, same pattern as `platform_checks.sh`'s own per-package fan-out) rather than run serially — `snyk code test` is the long pole at roughly 3× the others, so this turns ~70–90s of serial scanning into about the time of that one scan. CI no longer runs Snyk at all, so these scans run locally only (`AGENTS.md` §"Working on the code"); the script fails without a `SNYK_TOKEN`. |
 | `pip-audit` | Python dependency audit, now a declared dev dependency (`pyproject.toml`) |
 
@@ -228,7 +241,12 @@ because `modelling-specification`'s rendering tests shell out to `plantuml` dire
 CI runs on pushes to `main` and `develop` and on pull requests. Working branches
 (`feature/**`, `bugfix/**`) are covered only through their PRs: listing them under `push`
 as well ran the suite twice for every PR commit (`.github/workflows/ci.yml`;
-`RELEASE.md` §"Branch model").
+`RELEASE.md` §"Branch model"). A `concurrency` group keyed on the source branch
+name (the PR's head ref, falling back to the ref name for a plain push)
+cancels an in-progress run when a newer one for the same branch starts — added
+because a push to `develop` and the `pull_request` run it triggers on the
+`develop` → `main` release PR used to both run the full suite for the same
+commit (`.github/workflows/ci.yml`).
 
 ## Conventions
 
@@ -348,7 +366,9 @@ non-trivial, and the pull-request checklist — tests with every change
 same PR, `pre_commit_checks.sh` before push and `pre_merge_checks.sh` before
 opening the PR if diagrams/frontend/coverage are touched, and a green CI run
 plus at least one review before merge (`CONTRIBUTING.md` §"Before you start",
-§"Submitting a pull request").
+§"Submitting a pull request"). The PR step now targets `develop` —
+`main` only takes the release PR (`CONTRIBUTING.md` §"Submitting a pull
+request"; see "Releases" below).
 
 By contributing, participants agree to the **Contributor Covenant Code of
 Conduct** (`CODE_OF_CONDUCT.md` — standard Contributor Covenant text:
@@ -359,9 +379,9 @@ Security vulnerabilities are **not** filed as public issues. `SECURITY.md`
 routes them through GitHub's private vulnerability reporting (the
 repository's Security tab, or a draft security advisory directly) so a
 report stays private until a fix ships and the advisory is published. The
-repo has not cut a versioned release yet, so only the latest `main` commit
-is currently supported — the supported-versions table is deferred until
-`cz bump` starts producing tags (see "Releases" below). Dependency
+repo is pre-1.0 and now has tagged releases (`v$version`, see "Releases"
+below), but only the latest commit on `main` receives security fixes —
+earlier tags are not patched (`SECURITY.md` §"Supported Versions"). Dependency
 vulnerabilities are also watched automatically via Dependabot and the
 `vulnerability-remediator` agent; an unaddressed Dependabot/`pip-audit`/
 SonarCloud security finding should go through the same private-reporting

@@ -10,7 +10,7 @@ from modelling_specification.router import router
 from modelling_specification.ui import router as ui_router
 
 # Registers the component (T018, R4) so its provider/model/credential can be set
-# per-component via the mounted settings router or the CLI, same pattern as
+# per-component via the mounted settings router, same pattern as
 # controls-compliance-catalog's own component. `COMPONENT_ID` is defined once, in
 # `authoring/delta.py`, which resolves it through `llm_provider_config.resolve_call`
 # for the natural-language-to-delta call.

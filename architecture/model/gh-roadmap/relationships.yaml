@@ -216,6 +216,12 @@
   source: wp-adapt-108-s-chat-live-view-ui-into-gh-140
   target: del-solution-design-mvp-8-unreleased
 - type: Realization
+  source: wp-add-a-ui-to-load-and-save-an-archimate-gh-192
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
+  source: wp-add-a-views-admin-panel-for-authoring-gh-193
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
   source: wp-add-bounded-context-tagging-and-generic-gh-105
   target: del-release-v0-3-0
 - type: Realization
@@ -371,6 +377,9 @@
 - type: Realization
   source: wp-role-journeys-and-ui-ux-gh-45
   target: del-general-tasks-12-unreleased
+- type: Realization
+  source: wp-roll-out-split-by-context-package-gh-194
+  target: del-architecture-strategy-mvp-7-unreleased
 - type: Realization
   source: wp-sample-simple-implementations-gh-46
   target: del-pattern-blueprint-traceability-mvp-6-unreleased

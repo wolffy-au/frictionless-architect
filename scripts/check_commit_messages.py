@@ -128,6 +128,15 @@ def commits_in_range(rev_range: str) -> list[tuple[str, str]]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Check commit messages against the standard.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv``. Exactly one of
+            ``--range`` or ``--message-file`` is required.
+
+    Returns:
+        ``0`` if every message conforms, ``1`` if any breaks the standard.
+    """
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--range", dest="rev_range")

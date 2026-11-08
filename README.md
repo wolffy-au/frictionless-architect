@@ -178,7 +178,7 @@ and serves what it can. The shapes to expect:
     itself is used, not `WARNING_TEXT`; `sample_file_status` reports `invalid`.
   - Two further structural cases appear as a plain warning instead, with
     `sample_file_status` still `loaded`: `Sample XML <path> has no root
-    element` (empty file) and `Schema XSD <path> could not be loaded:
+    element` (empty file) and `Schema XSD at <path> could not be loaded:
     <reason>` / `Schema XSD missing at <path>` (the bundled XSD itself is
     broken or absent). Both come from the XSD-validation pass, which only
     runs once the sample XML has already parsed successfully.
@@ -222,7 +222,7 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
   build/render/validate CLI); run it with `./scripts/run-modelling_specification.sh`.
 - [`pii-gateway`](platform/packages/pii-gateway/README.md) — shared package that
   scrubs PII/PHI from content before it reaches an LLM provider (Presidio-backed,
-  ADR-0014/ADR-0043); called from `modelling-specification`'s spec drafting today.
+  ADR-0014/ADR-0043); called from `modelling-specification`'s conversational authoring today.
 - [`portal`](platform/packages/portal/README.md) — the composition host (ADR-0020)
   that serves every package UI from one app:
 
@@ -264,11 +264,14 @@ visualiser — the visualiser itself is read-only against whatever Neo4j already
 
   Unlike the FastAPI service's `FRICTIONLESS_ARCHITECT_*` settings, this script
   reads its connection details from **unprefixed** `NEO4J_URI`, `NEO4J_USER` and
-  `NEO4J_PASSWORD` — either already exported in the environment, or in the same
+  `NEO4J_PASSWORD` — either exported in the environment, or in the same
   root `.env` file (loaded via `python-dotenv`; see `scripts/neo4j_schema.py`'s
   `load_env`) alongside unrelated names, or via `--uri` / `--user` / `--password`
-  flags. Setting only the `FRICTIONLESS_ARCHITECT_NEO4J_*` variables has no effect
-  on this script.
+  flags. Precedence, highest first: the flags, then the `.env` file (it is loaded
+  with `override=True`, so it beats an exported variable), then the exported
+  environment, then the built-in defaults (`neo4j://localhost:7687`, `neo4j`,
+  `neo4j`). Setting only the `FRICTIONLESS_ARCHITECT_NEO4J_*` variables has no
+  effect on this script.
 
 ## Running the tests
 
@@ -284,7 +287,8 @@ poetry run pytest
   [`tests/api/README.md`](tests/api/README.md) for the fixtures.
 - `tests/integration/` holds tests of the schema manager's graph audits;
   `tests/tools/` tests the repo's tooling (architecture model, commit-message check,
-  wiki librarian).
+  wiki librarian); `tests/unit/architecture/` tests the GitHub-roadmap importer and
+  the platform wrapper scripts.
 - BDD scenarios live under `tests/features/` (behave).
 
 Scope a run with `-k` (e.g. `poetry run pytest tests/api -k schema`) or target one

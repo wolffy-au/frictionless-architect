@@ -53,6 +53,29 @@ def _filter_to_active_categories(
     return [r for r in results if r.entity_type == ENGINE_ERROR_CATEGORY or r.entity_type in active_categories]
 
 
+def _record_audit(context: str, categories: list[str], action: ScrubAction) -> None:
+    _audit_logger.record(AuditEntry(timestamp=datetime.now(UTC), context=context, categories=categories, action=action))
+
+
+def _redact(text: str, results: list[RecognizerResult]) -> str:
+    # The synthetic engine-error match (research.md R6) is a zero-length span --
+    # running it through anonymize() like a real match would redact nothing and
+    # leave the original text intact. Fail-closed means no part of the text the
+    # engine couldn't inspect survives, so replace all of it instead of the span.
+    if any(result.entity_type == ENGINE_ERROR_CATEGORY for result in results):
+        return f"<{ENGINE_ERROR_CATEGORY}>"
+    return anonymize(text, results)
+
+
+def _flag_for_review(text: str, redacted_text: str, matches: list[Match]) -> ScrubResult:
+    def _resolver(resolution: Resolution, *, _original: str = text, _redacted: str = redacted_text) -> str:
+        return _redacted if resolution == Resolution.REDACT else _original
+
+    pending = PendingConfirmation(matches=matches, original_text=text, redacted_text=redacted_text)
+    pending.set_resolver(_resolver)
+    return ScrubResult(text=text, action=ScrubAction.FLAGGED_FOR_REVIEW, matches=matches, pending_confirmation=pending)
+
+
 def scrub(text: str, *, context: str) -> ScrubResult:
     """Scrub `text` of PII/PHI before it reaches an LLM provider.
 
@@ -71,48 +94,15 @@ def scrub(text: str, *, context: str) -> ScrubResult:
     matches = _to_matches(results)
 
     if not matches:
-        _audit_logger.record(
-            AuditEntry(
-                timestamp=datetime.now(UTC), context=context, categories=[], action=ScrubAction.PASSED_THROUGH_UNCHANGED
-            )
-        )
+        _record_audit(context, [], ScrubAction.PASSED_THROUGH_UNCHANGED)
         return ScrubResult(text=text, action=ScrubAction.PASSED_THROUGH_UNCHANGED, matches=[])
 
     categories = sorted({match.category for match in matches})
-    # The synthetic engine-error match (research.md R6) is a zero-length span --
-    # running it through anonymize() like a real match would redact nothing and
-    # leave the original text intact. Fail-closed means no part of the text the
-    # engine couldn't inspect survives, so replace all of it instead of the span.
-    if any(result.entity_type == ENGINE_ERROR_CATEGORY for result in results):
-        redacted_text = f"<{ENGINE_ERROR_CATEGORY}>"
-    else:
-        redacted_text = anonymize(text, results)
+    redacted_text = _redact(text, results)
 
     if config.failure_mode == ScrubAction.FLAGGED_FOR_REVIEW:
-        _audit_logger.record(
-            AuditEntry(
-                timestamp=datetime.now(UTC),
-                context=context,
-                categories=categories,
-                action=ScrubAction.FLAGGED_FOR_REVIEW,
-            )
-        )
+        _record_audit(context, categories, ScrubAction.FLAGGED_FOR_REVIEW)
+        return _flag_for_review(text, redacted_text, matches)
 
-        def _resolver(resolution: Resolution, *, _original: str = text, _redacted: str = redacted_text) -> str:
-            return _redacted if resolution == Resolution.REDACT else _original
-
-        pending = PendingConfirmation(matches=matches, original_text=text, redacted_text=redacted_text)
-        pending.set_resolver(_resolver)
-        return ScrubResult(
-            text=text, action=ScrubAction.FLAGGED_FOR_REVIEW, matches=matches, pending_confirmation=pending
-        )
-
-    _audit_logger.record(
-        AuditEntry(
-            timestamp=datetime.now(UTC),
-            context=context,
-            categories=categories,
-            action=ScrubAction.REDACTED_AND_PROCEEDED,
-        )
-    )
+    _record_audit(context, categories, ScrubAction.REDACTED_AND_PROCEEDED)
     return ScrubResult(text=redacted_text, action=ScrubAction.REDACTED_AND_PROCEEDED, matches=matches)

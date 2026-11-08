@@ -72,6 +72,11 @@ generator: claude-sonnet-5
   how the vision and business views map to ArchiMate viewpoints, the TOGAF
   Phase A vision-view set, the 17 new generic per-viewpoint views (GH #105),
   and the `include_types`/`exclude_elements` platform-only scoping mechanism.
+- [Architecture Views & Diagrams: Application Layer](architecture-diagrams-application.md) —
+  the Application Cooperation bounded-context split (GH #129), the
+  application-usage data-flow slices (GH #105 follow-up), and the
+  Application Structure/Cooperation single-application zoom views. Split
+  out of the page above (2026-11-08) once it passed 500 lines.
 - [Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md) —
   the Implementation & Migration and Technology-layer views (sections E/F),
   the vendored IT4IT reference views, and how to regenerate every
@@ -108,6 +113,12 @@ generator: claude-sonnet-5
   pipeline, Enterprise Convention Rules, and the ported
   `build`/`render`/`validate` CLI that root's scripts and the
   `model-archimate` skill now wrap.
+- [Conversational Solution Design Modelling](solution-design-modelling.md) —
+  the sibling, Draft-stage GH #139 spec for `fn-solution-modelling`, the
+  Solution Architect's own conversational authoring mode over a single
+  Solution Design — a distinct feature from Conversational Model Authoring
+  above, not a variant of it. Split out of that page (2026-11-08) once it
+  passed 500 lines.
 - [Digital Twin Knowledge Graph](digital-twin-knowledge-graph.md) — the
   `platform/packages/digital-twin-knowledge-graph` package (GH #106): the
   intent-plane knowledge-graph read path over the Neo4j-backed ArchiMate

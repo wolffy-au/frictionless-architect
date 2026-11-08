@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-05'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -16,8 +16,10 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/authoring/state.py
 - platform/packages/modelling-specification/src/modelling_specification/c4.py
 - platform/packages/modelling-specification/src/modelling_specification/cli.py
+- platform/packages/modelling-specification/src/modelling_specification/markdown_render.py
 - platform/packages/modelling-specification/src/modelling_specification/model_io.py
 - platform/packages/modelling-specification/src/modelling_specification/puml.py
+- platform/packages/modelling-specification/src/modelling_specification/reference/README.md
 - platform/packages/modelling-specification/src/modelling_specification/rendering.py
 - platform/packages/modelling-specification/src/modelling_specification/router.py
 - platform/packages/modelling-specification/src/modelling_specification/ui.py
@@ -29,8 +31,13 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py
 - platform/packages/modelling-specification/src/modelling_specification/viewpoints.py
 - scripts/run-modelling_specification.sh
-- specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/checklists/requirements.md
-- specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/checklists/requirements.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/data-model.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/quickstart.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md
 - specs/EPIC-003-conversational-model-authoring/checklists/requirements.md
 - specs/EPIC-003-conversational-model-authoring/contracts/api.md
 - specs/EPIC-003-conversational-model-authoring/data-model.md
@@ -54,16 +61,12 @@ for the model elements this feature adds, and [Decision Log](decision-log-0030-o
 for ADR-0037, the record of its eight load-bearing design decisions.
 
 **Renamed, and a sibling distinguished (ADR-0039, GH #68/#138, 2026-10-24).**
-This feature's process and function — originally "Conversational Model
-Authoring", described as jointly performed by the Enterprise and Solution
-Architect — are renamed **"Conversational Candidate Architecture Authoring"**
-(ids unchanged: `process-conversational-authoring` /
-`fn-conversational-authoring`) and scoped to the Enterprise Architect alone,
-editing `do-candidate-arch` in the enterprise knowledge graph. The unused
-Solution Architect `Assignment` is dropped in favour of a new, distinct
-sibling function, `fn-solution-modelling`, which edits a `do-solution-design`
-instead — the Solution Architect's own conversational authoring mode, not a
-variant of this one. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
+The process and function, once shared by the Enterprise and Solution Architect,
+are renamed **"Conversational Candidate Architecture Authoring"** (ids unchanged:
+`process-conversational-authoring` / `fn-conversational-authoring`) and scoped to
+the Enterprise Architect alone, editing `do-candidate-arch`. The unused Solution
+Architect `Assignment` is dropped for a distinct sibling, `fn-solution-modelling`,
+which edits a `do-solution-design` instead. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for both.
 
 ## Why the code lives here
@@ -109,60 +112,85 @@ load-bearing:
   stream-per-outcome shape ADR-0033 set for the other four outcomes. See
   [Architecture Model: Skeleton](architecture-model-skeleton.md).
 
-`plan.md` originally cited this record as "ADR-0036"; that number was taken
-by the unrelated element-id-prefix-scheme ADR during a rebase, so it filed
-as ADR-0037 instead, with both `plan.md` references corrected to match.
-
-A later item 8 (2026-11-01) amends the same still-Proposed record rather than
-filing a new one — add-only was never itself a deliberated decision (no
-clarification session in `spec.md` raised it, no ADR covered it), so there was
-nothing to supersede. See "Candidate-delta pipeline" below for what it changes.
+`plan.md` first cited this record as "ADR-0036"; that number went to the unrelated
+element-id-prefix ADR during a rebase, so it filed as ADR-0037. A later item 8
+(2026-11-01) amends the same still-Proposed record, because add-only was never a
+deliberated decision and there was nothing to supersede. See "Candidate-delta
+pipeline" below.
 
 ## Dependencies
 
 `pyproject.toml` declares `fastapi`, `uvicorn`, `pyarchimate (>=2.0.0,<3.0.0)`,
-`rapidfuzz`, `pyyaml`, `litellm`, `defusedxml`, and three sibling path
-dependencies: `llm-provider-config`, `pii-gateway` (which scrubs requests before
-the LLM call, see "Candidate-delta pipeline" below) and, since the knowledge-graph
-scaffold landed, [`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
+`rapidfuzz`, `pyyaml`, `litellm`, `defusedxml`, `markdown (>=3.7,<4.0)` and
+`nh3 (>=0.2.18,<0.3.0)` (server-side rendering of LLM chat replies to
+sanitised HTML, GH #185 — see "Candidate-delta pipeline" below), and three
+sibling path dependencies: `llm-provider-config`, `pii-gateway` (which scrubs
+requests before the LLM call, see "Candidate-delta pipeline" below) and,
+since the knowledge-graph scaffold landed,
+[`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
 this package is that package's first real, permanent consumer, calling
 `KnowledgeGraphReadPath(GraphSettings()).collect()` as an ordinary function
-call. `pyarchimate` was bumped from the `1.12.3`/`<2.0.0` line to `2.0.0`
-on 2026-10-24 to pull in `pillow` 13.0.0, clearing 36 open Snyk
-Critical/High/Medium findings in the transitively-pinned `pillow` 12.3.0;
-`pyarchimate` 2.0.0's only breaking changes (dropping Python 3.10, an enum
-formatting change) don't affect this codebase's usage. See
+call. `pyarchimate` was bumped from `1.12.3` to `2.0.0` on 2026-10-24 to pull in
+`pillow` 13.0.0, clearing 36 open Snyk findings in the transitively-pinned
+`pillow` 12.3.0; its only breaking changes (dropping Python 3.10, an enum
+formatting change) don't affect this codebase. See
 [Controls & Compliance Catalog](controls-compliance-catalog.md) for a related
-dependency-security fix the same day. An explicit `filelock (>=4.2.1)` floor
-was added on 2026-10-25 for GHSA-v4x8-3wr5-3wq8 and related advisories — the
-lock already resolved a patched version transitively, but Dependabot's
-per-manifest dependency graph only agrees once the manifest states the floor
-itself.
+fix the same day. An explicit `filelock (>=4.2.1)` floor was added on 2026-10-25
+for GHSA-v4x8-3wr5-3wq8 and related advisories, so Dependabot's per-manifest graph
+agrees with the lock. `markdown` and `nh3` (the Rust/Ammonia sanitiser) were added
+2026-11-07 for server-side chat-Markdown rendering (GH #185); the platform root's
+lint group gained `types-markdown` to type-check the `markdown.markdown(...)` call.
+The working indicator (GH #186) adds no dependency.
 
 ## Package layout
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1746 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
-| `router.py` | 1043 | FastAPI router: propose/validate/decide/render/config/state |
-| `ui.py` | 855 | Split-screen authoring UI |
-| `authoring/delta.py` | 574 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
-| `puml.py` | 410 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
-| `viewpoints.py` | 322 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
-| `validation/conventions.py` | 321 | Loads and evaluates `conventions.yaml` rules |
-| `authoring/state.py` | 179 | In-memory Candidate Delta session store |
+| `model_io.py` | 1849 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view` |
+| `router.py` | 1091 | FastAPI router: propose/validate/decide/render/config/state; `_resolve_changes`, `_merge_into_delta` and `_resolved_text` hold the logic once inline in `propose`/`resolve_pii` |
+| `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
+| `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
+| `rendering.py` | 485 | Ported view-render logic from root's `render_diagrams.py` |
+| `puml.py` | 450 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
+| `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
+| `validation/conventions.py` | 329 | Loads and evaluates `conventions.yaml` rules |
+| `authoring/state.py` | 181 | In-memory Candidate Delta session store |
 | `cli.py` | 118 | `build`/`render`/`validate` entry points root's scripts shell into |
-| `c4.py` | 332 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
-| `validation/patterns.py` | 105 | Interposed-element pattern matching and synthesis |
-| `validation/fixes.py` | 70 | Deterministic `proposed_fix` generation — never a second LLM call |
-| `authoring/overrides.py` | 61 | Drafts the Override Decision Record ADR stub |
-| `validation/duplicates.py` | 51 | Fuzzy duplicate detection (`rapidfuzz`) |
-| `validation/metamodel.py` | 42 | Metamodel relationship-matrix + referential-integrity check |
+| `validation/patterns.py` | 107 | Interposed-element pattern matching and synthesis |
+| `validation/fixes.py` | 71 | Deterministic `proposed_fix` generation — never a second LLM call |
+| `authoring/overrides.py` | 62 | Drafts the Override Decision Record ADR stub |
+| `validation/duplicates.py` | 52 | Fuzzy duplicate detection (`rapidfuzz`) |
+| `markdown_render.py` | 52 | Renders an LLM chat reply's Markdown to HTML and sanitises it to an allowlist via `nh3` (GH #185) |
+| `validation/metamodel.py` | 43 | Metamodel relationship-matrix + referential-integrity check |
 | `app.py` | 23 | FastAPI entry point, registers the `modelling-specification.conversational-authoring` LLM component |
 
 (`platform/packages/modelling-specification/src/modelling_specification/`,
-line counts from the current tree.)
+line counts from the current tree.) Most growth since the last build is docstrings,
+since `ruff` now enforces the pydocstyle `D` rules on package `src/` code
+(`TECHNICAL.md`; `pyproject.toml`), plus the helper extractions named above.
+
+`viewpoints.py`'s bundled `reference/` directory is the authority for which
+ArchiMate concepts a view may show once it declares a `viewpoint:`:
+`archi-viewpoints.xml` is a **verbatim copy** of Archi's own viewpoint
+definition file (re-synced by overwriting it from Archi's GitHub raw URL;
+pre-commit whitespace trimming is the only local change), and
+`viewpoints-guidance.yaml` is **advisory** purpose/abstraction/concerns/
+stakeholders/TOGAF-phase metadata per viewpoint slug, transcribed from
+ArchiMate 3.2 §14.2, that plays no part in conformance checking. Per Archi's
+own `ViewpointManager`/`Viewpoint` interpretation: an empty element or
+relationship allow-set on a viewpoint means that half is unrestricted (every
+current viewpoint's relationship set is empty, so relationships are never
+filtered in practice); `Junction` and `Grouping` are always allowed in every
+viewpoint; and a relationship shows on a view only if its type is allowed
+*and* both endpoints are allowed — the same both-endpoints-in-scope rule
+`model_io.py` already applies when deciding what to draw. The `viewpoint:`
+value in `views.yaml` is Archi's own `id` attribute (`strategy`,
+`value_stream`, `capability`, `application_cooperation`,
+`application_structure`, `resource`, …; `viewpoints.py list` prints them
+all); `custom` is this package's own escape hatch for a deliberate
+cross-layer view, never conformance-checked
+(`platform/packages/modelling-specification/src/modelling_specification/reference/README.md`).
 
 ## Running it
 
@@ -224,7 +252,10 @@ current directory (`platform/packages/modelling-specification/README.md`).
 | `FRICTIONLESS_ADR_DIR` | Where override ADR stubs are written | `docs/adr/` beside the model directory |
 
 Each directory variable must name an existing directory, and the model name must be
-a plain file name; otherwise the package refuses to start
+a plain file name; otherwise the package refuses to start. `env_dir` also rejects a
+blank or NUL-bearing value and canonicalises the path with `os.path.realpath`
+(hardened 2026-11-06 against Snyk Code path-traversal findings; Snyk still reports
+them, since it does not treat `env_dir` as a sanitiser)
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py`).
 A consumer installs the package as a Poetry git dependency and must also list
 `llm-provider-config`, `digital-twin-knowledge-graph` and `pii-gateway` the same way,
@@ -266,7 +297,18 @@ their output, and anyone else redirects it
    description, a relationship's label, or anything about a view besides
    its membership — can be changed; such a request returns an empty delta
    rather than guessing. A reply too vague to form a concrete delta comes
-   back as plain-text clarification instead of JSON. A second proposal in
+   back as plain-text clarification instead of JSON: `router.py` returns it
+   as `status: "message"`, with both the raw LLM text (`message`) and a
+   pre-sanitised HTML rendering (`message_html`, via the new
+   `markdown_render.py`) — `render_message_markdown` parses it with the
+   `markdown` package then strips every tag/attribute outside a small
+   allowlist (`p`, `br`, `strong`, `em`, `code`, `pre`, lists, `h1`-`h3`, `a`
+   with `href`/`title` only, `http`/`https`/`mailto` schemes only) via `nh3`
+   (the Ammonia sanitiser), so the untrusted LLM reply is inserted into the
+   chat pane as HTML directly instead of the UI hand-rolling its own
+   Markdown parser and allowlist-based sanitisation (GH #185)
+   (`platform/packages/modelling-specification/src/modelling_specification/markdown_render.py`,
+   `router.py`). A second proposal in
    the same conversation amends the still-pending delta rather than
    validating fresh against the last-applied state
    (`specs/EPIC-003-conversational-model-authoring/spec.md` Clarifications, 2026-10-08).
@@ -291,14 +333,12 @@ their output, and anyone else redirects it
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
    [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). The
-   split-screen UI's `renderProposeResponse` originally had no branch for this
-   `status: "options"` reply — it fell through to the single-delta path, which
-   saw empty top-level `elements`/`relationships` and printed the generic
-   "Looks good -- no objections" text, silently dropping every suggested
-   option. Fixed (2026-11-05): `ui.py`'s `renderOptions` now shows each
-   option's rationale, convention references, proposed elements/relationships
-   and validation caveats, with a "Pick this option" button that calls
-   `propose/select`
+   split-screen UI's `renderProposeResponse` originally had no branch for
+   `status: "options"`, so it printed the generic "Looks good -- no objections"
+   text and silently dropped every option. Fixed (2026-11-05): `ui.py`'s
+   `renderOptions` shows each option's rationale, convention references, proposed
+   elements/relationships and validation caveats, with a "Pick this option" button
+   that calls `propose/select`
    (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
    If the LLM call itself
    fails, `propose_delta` logs the provider detail server-side only and
@@ -315,12 +355,46 @@ their output, and anyone else redirects it
    `specs/EPIC-003-conversational-model-authoring/contracts/api.md`).
    A resolved request gets the same grounding as any other; until 2026-11-05 it
    lost the contexts, views and relationships.
+   A plain-text reply (`status: "message"`) can itself be Markdown, which the chat
+   pane originally showed as literal text (GH #185). A client-side `renderMarkdown`
+   fixed that on 2026-11-07 and was superseded the same day by the server-side
+   `message_html` described above: `_message_response`
+   (`platform/packages/modelling-specification/src/modelling_specification/router.py`)
+   returns it, with `a` forced to `target="_blank"` and `rel="noopener noreferrer"`,
+   and `ui.py` inserts it directly, never building HTML from the raw `message`. This
+   avoids hand-rolling allowlist sanitisation for untrusted LLM output;
+   `render_message_markdown` needs nothing beyond its input text, so another
+   package's chat UI could reuse it, though none does yet
+   (`platform/packages/modelling-specification/src/modelling_specification/markdown_render.py`).
+   **Working indicator (GH #186, spec `003-llm-working-indicator`, Draft, 2026-11-08).**
+   Before it, Send being disabled was the only sign an LLM call was in flight. Now
+   `showThinking()` adds an italic, pulsing "Thinking…" chat message (`.msg.thinking`,
+   animation off under `prefers-reduced-motion`) for the two paths that wait on the
+   LLM: `sendRequest` (`propose`) and the PII-review button handler
+   (`propose/resolve-pii`). Each removes it in a `finally`, so a reply, an error or a
+   thrown exception all clear it, and `sendButton.disabled` is unchanged. It is
+   classed `thinking`, never `agent`, so the `.msg.agent` selectors in the behave
+   steps still mean "a real reply arrived". Choosing an option, applying or rejecting
+   a delta and picking a view show none. It is client-only: no API, session or
+   dependency change, and no new ADR or shared package, since a package needs a real
+   second consumer (ADR-0034) and `controls-compliance-catalog` already has its own
+   indicator. Streaming is out of scope. Tests are a `test_ui.py` markup check and two
+   behave scenarios that set a new `FakeCompletion.delay` to observe the in-flight
+   state; `tasks.md` marks T001-T011 done, T011 being a human check against a real LLM
+   provider
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py:88-90`,
+   `platform/packages/modelling-specification/src/modelling_specification/ui.py:215-217`,
+   `platform/packages/modelling-specification/src/modelling_specification/ui.py:701-714`,
+   `platform/packages/modelling-specification/src/modelling_specification/ui.py:797-816`;
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md`,
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md`,
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md`,
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md`).
    The chat lists every kind of pending change and, until Apply, the render pane
    previews it in memory (FR-012a): new elements marked `+`, renamed ones `~`,
    removed ones gone, and a proposed or edited view opened as that view. A view
    that breaks its viewpoint still previews, but stays flagged and can't be applied.
-   Before
-   2026-11-05 the UI and the preview endpoint only considered `elements` and
+   Before 2026-11-05 the UI and the preview endpoint only considered `elements` and
    `relationships`, so a delta that only proposed a view looked empty: nothing was
    drawn and Apply stayed disabled
    (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
@@ -412,93 +486,17 @@ full element-level treatment, and
 
 ## Sibling feature: Conversational Solution Design Modelling (GH #139)
 
-A second, Draft spec under the same epic —
-`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/`
-— specifies `fn-solution-modelling`, the Solution Architect's own
-conversational authoring mode (ADR-0039, GH #68/#138/#139). It is a distinct
-feature from the conversational authoring this page otherwise describes, not
-a variant of it:
-
-- **Different target artefact and function.** `fn-solution-modelling` reads
-  and writes `do-solution-design`/`art-solution-design` in `store-patterns`
-  — one Solution Design per session — never `do-candidate-arch`/`store-akg`
-  or `architecture/model/`. `fn-conversational-authoring` (this package)
-  keeps sole ownership of the enterprise knowledge graph; the spec's
-  FR-001–FR-003 make the boundary a hard requirement, not just a naming
-  convention
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Requirements).
-- **Different home.** `fn-solution-modelling` is Assigned to `sub-library`
-  (subsystem 2, `reusable-architecture-library`), not this package; its
-  journey API, UI and agent are planned under
-  `platform/packages/reusable-architecture-library/{ui,api}`.
-  `reusable-architecture-library` itself does not exist yet as an extracted
-  package, unlike `modelling-specification` (this package, GH #108) — the
-  spec is explicit that GH #68's "blocked on the monorepo pattern being
-  proven" framing is now stale, since the pattern is already proven by four
-  other extracted packages: `modelling-specification`,
-  `controls-compliance-catalog`, `digital-twin-knowledge-graph`, and
-  `schema-visualizer-api`; the spec itself does not depend on the extraction
-  having happened, only its eventual implementation does
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Assumptions). It shares this package's render path only: it Serves
-  `fn-notation-engine` — implemented here — for live view rendering,
-  mirroring this feature's own propose/validate/render loop rather than
-  reusing its code.
-- **MVP is free-form, not pattern composition.** Per GH #68's resolved open
-  question, the architect describes changes directly; composing a Solution
-  Design from a pattern/blueprint library and emitting an OSCAL System
-  Security Plan (`fn-solution-compose`) are deferred to a later milestone
-  and explicitly out of scope here (FR-011, same spec §Edge Cases).
-- **Role-scoped journey API with a policy stub.** One journey per role —
-  Solution Architect (propose/accept/apply/render/query) and a read-only
-  Compliance Officer/Auditor (render/query only) — with a stubbed policy
-  check on every call (FR-004–FR-007); the real policy engine (ADR-0019/OPA)
-  lands later, in milestone D (GH #148). The agent always acts under the
-  calling architect's own identity, never with elevated permissions
-  (FR-012).
-- **Streams from day one.** The journey API responds as a sequence of
-  incremental events (SSE or websocket) rather than one blocking reply, with
-  a stub simulating realistic LLM latency before streaming starts
-  (FR-008–FR-009), per GH #68 decision 6 (Principle IV: operations over
-  200ms must be asynchronous or justified).
-- **No promotion path.** A request that would promote a Solution Design
-  change into the enterprise or domain model is refused outright — that is
-  milestone D's job (GH #149), not this feature's (SC-002, same spec §Edge
-  Cases).
-- **Open question carried forward, not resolved here.** Whether
-  `fn-solution-modelling` validates against `do-convention-rules` — the same
-  enterprise/domain convention rules this package's
-  `validation/conventions.py` already applies to `fn-conversational-authoring`
-  — is left for `/speckit-plan` under GH #140/#142, since a bounded Solution
-  Design may not need the same rules unmodified
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Assumptions).
-- **Behave scenarios deferred to implementation, not written at specify
-  time.** Following GH #108/ADR-0037's own precedent — this package's
-  behave scenarios were written during implementation against the real
-  running app, not during `/speckit-specify` — the sibling spec's
-  Acceptance Scenarios are the basis for behave scenarios to be written
-  later, package-scoped under
-  `platform/packages/reusable-architecture-library/tests/features/` once
-  that package exists
-  (`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md`
-  §Assumptions; `specs/EPIC-003-conversational-model-authoring/tasks.md`).
-
-As of this spec, the feature is still at the specification stage (`Status:
-Draft`) — no `reusable-architecture-library` package, journey API, or UI
-exists yet. See
-[Architecture Model: Skeleton](architecture-model-skeleton.md) for
-`process-conversational-solution-modelling` and `bfn-solution-design`, and
-[Decision Log](decision-log-0030-onward.md) for ADR-0039 in full.
+A second, Draft spec under the same epic specifies `fn-solution-modelling`,
+the Solution Architect's own conversational authoring mode (ADR-0039, GH
+#68/#138/#139) — a distinct feature from the conversational authoring this
+page otherwise describes, not a variant of it, with its own target artefact,
+home package and journey API. See
+[Conversational Solution Design Modelling](solution-design-modelling.md)
+for the full breakdown, split out once this page passed ~500 lines.
 
 Not covered by current sources: rollout/feature-flag status, since
 ADR-0037 is still **Proposed**, not **Accepted**.
 
 See `specs/EPIC-003-conversational-model-authoring/` (spec.md, plan.md,
-data-model.md, tasks.md) for the full requirements, data model and task
-breakdown behind this package, and
-`specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/`
-(spec.md, checklists/requirements.md) for the sibling Solution Design
-Modelling feature above, and [Decision Log](decision-log-0030-onward.md) for ADR-0037
-and ADR-0039 in full.
+data-model.md, tasks.md) for the full requirements and task breakdown, and the
+[Decision Log](decision-log-0030-onward.md) for ADR-0037 and ADR-0039 in full.

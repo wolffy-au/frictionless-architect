@@ -149,11 +149,19 @@ topics:
       - path: architecture/model/views-viewpoints.yaml
       - path: architecture/model/diagrams/vision/**
       - path: architecture/model/diagrams/business/**
-      - path: architecture/model/diagrams/application/**
       - path: architecture/model/diagrams/layered/**
       - path: architecture/model/diagrams/c4/**
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+
+  - name: architecture-diagrams-application
+    title: "Architecture Views & Diagrams: Application Layer"
+    description: The application-layer ArchiMate views — bounded-context views (GH #129) and application-usage slices (GH #105 follow-up) — split out once Architecture Views & Diagrams passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: architecture/model/diagrams/application/**
 
   - name: architecture-diagrams-platform
     title: "Architecture Views & Diagrams: Platform, Migration & Rendering"
@@ -253,13 +261,24 @@ topics:
       - path: platform/packages/modelling-specification/README.md
       - path: platform/packages/modelling-specification/pyproject.toml
       - path: platform/packages/modelling-specification/specs/README.md
-      - path: specs/EPIC-003-conversational-model-authoring/**/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/checklists/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/contracts/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/**/*.md
       - path: platform/packages/modelling-specification/src/modelling_specification/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/reference/README.md
       - path: docs/adr/0037-conversational-model-authoring-architecture.md
       - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
       - path: scripts/run-modelling_specification.sh
+
+  - name: solution-design-modelling
+    title: "Conversational Solution Design Modelling (GH #139)"
+    description: The sibling, Draft-stage spec for the Solution Architect's own conversational authoring mode (fn-solution-modelling) — a distinct feature from Conversational Model Authoring, split out once that page passed ~500 lines.
+    sources:
+      - path: specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/**/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/tasks.md
 
   - name: portal
     title: Portal

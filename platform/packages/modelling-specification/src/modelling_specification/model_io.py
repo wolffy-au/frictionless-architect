@@ -199,7 +199,8 @@ def canon(raw: str, errors: list[str], ctx: str) -> str | None:
 
     On an unknown name: append a contextual message to `errors` and return None,
     so the caller can skip the offending item and the build still reports every
-    problem in one pass (rather than aborting on the first)."""
+    problem in one pass (rather than aborting on the first).
+    """
     key = str(raw).strip().replace("_", "").replace("-", "").lower()
     name = _CANON.get(key)
     if name is None:
@@ -209,7 +210,8 @@ def canon(raw: str, errors: list[str], ctx: str) -> str | None:
 
 def project_relative(path: Path) -> str:
     """`path` relative to `PROJECT_ROOT` for display, or whole if it lies outside it
-    (a `FRICTIONLESS_THIRD_PARTY_DIR` may point anywhere)."""
+    (a `FRICTIONLESS_THIRD_PARTY_DIR` may point anywhere).
+    """
     return str(path.relative_to(PROJECT_ROOT)) if path.is_relative_to(PROJECT_ROOT) else str(path)
 
 
@@ -251,7 +253,8 @@ def load_path(path: Path, errors: list[str], optional: bool = False) -> list[dic
 
 def _null_key_context(node: dict[str, Any], where: str) -> str:
     """`where: id` (or `where: src->tgt`) for an error label, if `node` carries an id
-    or both relationship endpoints -- else just `where` unchanged."""
+    or both relationship endpoints -- else just `where` unchanged.
+    """
     ident = node.get("id") or (f"{node['source']}->{node['target']}" if "source" in node and "target" in node else None)
     return f"{where}: {ident}" if ident else where
 
@@ -296,7 +299,8 @@ def load_layers(filename: str, errors: list[str]) -> list[dict[str, Any]]:
     """Load `filename` from every optional model layer: the vendored models
     (ADR-0029) and the generated gh-roadmap dir. A missing dir (a submodule never
     initialized, or the importer never run) is silently skipped, same as any
-    other optional input -- `git submodule update --init` fixes the former."""
+    other optional input -- `git submodule update --init` fixes the former.
+    """
     merged: list[dict[str, Any]] = []
     for model_dir in MODEL_LAYERS:
         merged += load_path(model_dir / filename, errors, optional=True)
@@ -325,7 +329,8 @@ def add_elements(
     """Add every valid element and return (element-by-yaml-id, canon-type-by-yaml-id).
 
     The type map is returned so `add_views` can test element types without
-    re-running `canon()` for every (view, element) pair."""
+    re-running `canon()` for every (view, element) pair.
+    """
     by_id: dict[str, Element] = {}
     types: dict[str, str] = {}
     for e in elements:
@@ -394,7 +399,8 @@ def view_element_ids(v: dict[str, Any], elements: list[dict[str, Any]], types_by
     """Element ids in scope for a view -- same members/include_types/exclude_elements
     rule as `add_views`. Public: `rendering.py`'s `resolve_view_request` (FR-016)
     reuses this to resolve an `object_id` named directly, rather than re-deriving
-    "what's on a view" with a narrower members-only rule."""
+    "what's on a view" with a narrower members-only rule.
+    """
     want = set(v.get("members") or [])
     types = {
         _CANON.get(str(t).strip().replace("_", "").replace("-", "").lower()) for t in (v.get("include_types") or [])
@@ -418,7 +424,8 @@ def view_split_contexts(v: dict[str, Any], elements: list[dict[str, Any]], types
     excluded, same convention `generate_context_groupings` uses for which
     contexts are "real" ones. Used by `rendering.py` to fan a `split_by:
     context` view (GH #129 step 4) out into one `.puml` per context, skipping
-    any context this particular view has nothing in."""
+    any context this particular view has nothing in.
+    """
     by_id = {e["id"]: e for e in elements}
     ids = view_element_ids(v, elements, types_by_id)
     contexts = {by_id[eid].get("context", DEFAULT_CONTEXT) for eid in ids if eid in by_id}
@@ -450,7 +457,8 @@ def _check_derived_goal_edges(
     only covers Goal-targeted edges and only the two kinds (Realization,
     Influence) this layer uses; `check_derived.py` is the generic sweep
     across every relationship type and both Application/Strategy and
-    Motivation layers."""
+    Motivation layers.
+    """
     warnings: list[str] = []
     targets_of: dict[str, set[str]] = {}
     for r in rels:
@@ -487,7 +495,8 @@ def check_motivation_conventions(
     rules: list[dict[str, Any]] | None = None,
 ) -> list[str]:
     """Apply configured whole-model relationship conventions, the derived-edge note,
-    and the GH #129 tag-coverage warning -- despite the name, not motivation-only."""
+    and the GH #129 tag-coverage warning -- despite the name, not motivation-only.
+    """
     from modelling_specification.validation import conventions
 
     if rules is None:
@@ -513,7 +522,8 @@ def check_view_coverage(
     `gh-roadmap`) is excluded: those are bulk imports with their own coverage story,
     not a first-party authoring gap. Generated Groupings/Aggregations are never in
     `elements` here (`_assemble` keeps them out of what this function sees), so they
-    need no exemption."""
+    need no exemption.
+    """
     shown = {eid for v in views if "id" in v for eid in view_element_ids(v, elements, types_by_id)}
     return [
         f"warning: {element['type']} {element['id']!r} is on no view"
@@ -601,7 +611,8 @@ def check_context_coverage() -> list[str]:
     originally-untagged element is indistinguishable from one explicitly tagged
     `platform`. Only first-party `elements.yaml` is in scope; a vendored layer
     (`it4it-*`, `gh-roadmap`) already carries its own layer-name context from its
-    own `tag_contexts()` pass, not a first-party package decision."""
+    own `tag_contexts()` pass, not a first-party package decision.
+    """
     warnings: list[str] = []
     for element in load(ELEMENTS_FILENAME, []):
         element_id = str(element.get("id", ""))
@@ -619,7 +630,8 @@ def check_context_coverage() -> list[str]:
 def _context_display_name(context: str, elements: list[dict[str, Any]]) -> str:
     """The context's subsystem `ApplicationComponent`'s own `name` (every current
     context has exactly one `sub-*` element carrying it) -- falls back to a
-    title-cased slug for a context with no such component."""
+    title-cased slug for a context with no such component.
+    """
     for element in elements:
         if element.get("context") == context and str(element.get("id", "")).startswith("sub-"):
             name = element.get("name")
@@ -644,7 +656,8 @@ def generate_context_groupings(
     `context` -- it is a cross-cutting device describing a boundary, not a member
     inside one, and leaving it unset also keeps this function idempotent-safe: were
     its output ever fed back in, an untagged element defaults to `platform` and is
-    skipped rather than re-aggregating the Grouping under itself."""
+    skipped rather than re-aggregating the Grouping under itself.
+    """
     members_by_context: dict[str, list[str]] = {}
     for element in elements:
         element_id = element.get("id")
@@ -690,7 +703,8 @@ def generate_context_map_relationships(
     `DEFAULT_CONTEXT` ("platform") and `LAYER_CONTEXTS` (vendored layers) are excluded
     on either end, same as `generate_context_groupings` -- an edge touching the shared
     kernel or a vendored import is not a bounded-context coupling. Call on the raw,
-    pre-generation `elements`/`rels`, same convention as `generate_context_groupings`."""
+    pre-generation `elements`/`rels`, same convention as `generate_context_groupings`.
+    """
     context_by_id = {e["id"]: e.get("context", DEFAULT_CONTEXT) for e in elements if e.get("id")}
     pairs: set[tuple[str, str]] = set()
     for r in rels:
@@ -740,7 +754,8 @@ def _pattern_matches_relationship(
     p: dict[str, str | None], rel_type: str, stype: str | None, ttype: str | None, sid: str | None, tid: str | None
 ) -> bool:
     """Whether every key an exclude_elements pattern gives (others are wildcards)
-    matches this relationship's type, endpoint types and endpoint ids."""
+    matches this relationship's type, endpoint types and endpoint ids.
+    """
     return (
         (not p["type"] or p["type"] == rel_type)
         and (not p["source_type"] or p["source_type"] == stype)
@@ -768,7 +783,8 @@ def _view_scope(v: dict[str, Any], known_contexts: set[str], errors: list[str]) 
 
     `platform` stands for the whole first-party family — `platform` itself (the
     shared kernel) plus every package context — i.e. every context that is not
-    a layer's."""
+    a layer's.
+    """
     raw = v.get("context") or [DEFAULT_CONTEXT]
     scope = {raw} if isinstance(raw, str) else set(raw)
     if unknown := scope - known_contexts:
@@ -880,61 +896,74 @@ def add_views(
     neighbour of *any* layer otherwise erases the one thing that
     distinguishes it from a cross-layer viewpoint like Application Usage.
 
-    The richer view schema (auto-membership rules) is still deferred."""
+    The richer view schema (auto-membership rules) is still deferred.
+    """
     uuid_to_id = {el.uuid: eid for eid, el in by_id.items()}
     known_contexts = {e.get("context", DEFAULT_CONTEXT) for e in elements}
     for v in views:
         if "id" not in v or "name" not in v:
             errors.append(f"view missing id/name: {v!r}")
             continue
-        want = set(v.get("members") or [])
-        types = {
-            c
-            for t in (v.get("include_types") or [])
-            if (c := canon(t, errors, f"view {v['id']} include_types")) is not None
-        }
-        # Deterministic view/node/connection uuids (via det_id) so the <views>
-        # block of the generated XML does not churn on every build. add() below
-        # bypasses get_or_create_view() only because that wrapper has no uuid arg.
-        view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
-        scope = _view_scope(v, known_contexts, errors)
-        exclude_element_patterns = _compile_exclude_element_patterns(v, errors)
-        on_view, view_el_types = _select_view_elements(
-            view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
+        _build_view(m, v, elements, by_id, types_by_id, known_contexts, uuid_to_id, errors)
+
+
+def _build_view(
+    m: Model,
+    v: dict[str, Any],
+    elements: list[dict[str, Any]],
+    by_id: dict[str, Element],
+    types_by_id: dict[str, str],
+    known_contexts: set[str],
+    uuid_to_id: dict[str, str],
+    errors: list[str],
+) -> None:
+    """Build one view (see `add_views`): nodes, neighbours, connections, viewpoint check, layout."""
+    want = set(v.get("members") or [])
+    types = {
+        c
+        for t in (v.get("include_types") or [])
+        if (c := canon(t, errors, f"view {v['id']} include_types")) is not None
+    }
+    # Deterministic view/node/connection uuids (via det_id) so the <views>
+    # block of the generated XML does not churn on every build. add() below
+    # bypasses get_or_create_view() only because that wrapper has no uuid arg.
+    view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
+    scope = _view_scope(v, known_contexts, errors)
+    exclude_element_patterns = _compile_exclude_element_patterns(v, errors)
+    on_view, view_el_types = _select_view_elements(
+        view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
+    )
+    if v.get("include_neighbours"):
+        # Neighbours are incidental boundary-crossing context, not part of
+        # what the view's own `viewpoint:` is declared to be about -- they
+        # are deliberately NOT folded into view_el_types, so a neighbour of
+        # a type the viewpoint doesn't allow (e.g. a Capability one hop
+        # from an Application Usage view) doesn't fail check_view_viewpoint
+        # below (GH #129 step 4 fallout). `include_neighbours: same_layer`
+        # (as opposed to `true`) additionally restricts the pull to
+        # neighbours in the same ArchiMate layer as the on-view element
+        # they are one hop from -- for a single-layer viewpoint like
+        # Application Cooperation, an unrestricted pull otherwise erases
+        # the one thing that distinguishes it from a cross-layer viewpoint
+        # like Application Usage.
+        _add_neighbour_elements(
+            view,
+            m,
+            on_view,
+            uuid_to_id,
+            types_by_id,
+            exclude_element_patterns,
+            v["id"],
+            same_layer_only=v.get("include_neighbours") == "same_layer",
         )
-        if v.get("include_neighbours"):
-            # Neighbours are incidental boundary-crossing context, not part of
-            # what the view's own `viewpoint:` is declared to be about -- they
-            # are deliberately NOT folded into view_el_types, so a neighbour of
-            # a type the viewpoint doesn't allow (e.g. a Capability one hop
-            # from an Application Usage view) doesn't fail check_view_viewpoint
-            # below (GH #129 step 4 fallout). `include_neighbours: same_layer`
-            # (as opposed to `true`) additionally restricts the pull to
-            # neighbours in the same ArchiMate layer as the on-view element
-            # they are one hop from -- for a single-layer viewpoint like
-            # Application Cooperation, an unrestricted pull otherwise erases
-            # the one thing that distinguishes it from a cross-layer viewpoint
-            # like Application Usage.
-            _add_neighbour_elements(
-                view,
-                m,
-                on_view,
-                uuid_to_id,
-                types_by_id,
-                exclude_element_patterns,
-                v["id"],
-                same_layer_only=v.get("include_neighbours") == "same_layer",
-            )
-        exclude_patterns = _compile_exclude_patterns(v, errors)
-        view_rel_types = _connect_view_relationships(
-            view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
-        )
-        missing = [mid for mid in want if mid not in by_id]
-        if missing:
-            errors.append(f"view {v['id']} references unknown ids: {missing}")
-            continue
-        check_view_viewpoint(v, view_el_types, view_rel_types, errors)
-        _apply_view_layout(view, v, errors)
+    exclude_patterns = _compile_exclude_patterns(v, errors)
+    view_rel_types = _connect_view_relationships(view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"])
+    missing = [mid for mid in want if mid not in by_id]
+    if missing:
+        errors.append(f"view {v['id']} references unknown ids: {missing}")
+        return
+    check_view_viewpoint(v, view_el_types, view_rel_types, errors)
+    _apply_view_layout(view, v, errors)
 
 
 def _select_view_elements(
@@ -950,7 +979,8 @@ def _select_view_elements(
 ) -> tuple[set[str], set[str]]:
     """Add a node to `view` for every element in scope (via `want`/`types`, less
     `exclude_element_patterns`); returns the node uuids and ArchiMate types placed,
-    for `add_views`'s relationship/viewpoint passes."""
+    for `add_views`'s relationship/viewpoint passes.
+    """
     on_view: set[str] = set()  # element uuids with a node on this view
     view_el_types: set[str] = set()
     for e in elements:
@@ -996,7 +1026,8 @@ def _add_neighbour_elements(
     same_layer_only: a Grouping is a structural container (e.g. sys-platform,
     Composition-parent of nearly every ApplicationComponent), not a thing one
     relationship hop away in the sense GH #129 means -- pulling it in would
-    wrap almost every per-context split in the same content-free outer box."""
+    wrap almost every per-context split in the same content-free outer box.
+    """
     base = frozenset(on_view)
     added_types: set[str] = set()
     for rel in m.relationships:
@@ -1024,7 +1055,8 @@ def _neighbour_admissible(
 ) -> bool:
     """Whether the element `far_id`, one hop from `near`, may be pulled in by
     `_add_neighbour_elements`: not excluded, not a Grouping, and (if
-    `same_layer_only`) not in a different known ArchiMate layer from `near`."""
+    `same_layer_only`) not in a different known ArchiMate layer from `near`.
+    """
     if _element_excluded(far_id, exclude_element_patterns, types_by_id) or types_by_id[far_id] == "Grouping":
         return False
     if not same_layer_only:
@@ -1046,7 +1078,8 @@ def _connect_view_relationships(
 ) -> set[str]:
     """Add a connection to `view` for every model relationship whose endpoints are
     both on it (less `exclude_patterns`); returns the ArchiMate relationship types
-    connected, for `add_views`'s viewpoint check."""
+    connected, for `add_views`'s viewpoint check.
+    """
     view_rel_types: set[str] = set()
     for rel in m.relationships:
         if (
@@ -1061,7 +1094,8 @@ def _connect_view_relationships(
 
 def _apply_view_layout(view: Any, v: dict[str, Any], errors: list[str]) -> None:
     """Grid layout is deterministic (layer-ordered row-major placement);
-    apply_format then applies the ArchiMate per-category node sizes."""
+    apply_format then applies the ArchiMate per-category node sizes.
+    """
     cfg = LayoutConfig(alignment="grid", layer_direction="vertical")
     for res in (apply_layout(view, cfg), apply_format(view, cfg)):
         if not res.success:
@@ -1103,7 +1137,8 @@ def _assemble(
     sweep `[Grouping]`), but not to what `check_motivation_conventions` below sees:
     those conventions are about first-party content, and a generated
     Grouping/Aggregation/Serving edge has no `desc` worth altitude-checking and no
-    motivation-chain role."""
+    motivation-chain role.
+    """
     groupings, aggregations = generate_context_groupings(elements)
     context_map_rels = generate_context_map_relationships(elements, rels)
     m = Model(name)
@@ -1128,7 +1163,8 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
 
     Returns `(model, errors, motivation_warnings)`. `model` is `None` when
     `errors` is non-empty -- the caller never writes/validates a model built
-    from invalid YAML."""
+    from invalid YAML.
+    """
     errors: list[str] = []
     elements = load_all_elements(errors)
     rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
@@ -1139,7 +1175,8 @@ def build_model() -> tuple[Model | None, list[str], list[str]]:
 def existing_element_ids() -> set[str]:
     """Every first-party + layer element id currently on disk -- used to de-duplicate
     an id the router synthesizes for a delta element the LLM left blank (data-model.md:
-    "id absent until the LLM proposes one or validation assigns one")."""
+    "id absent until the LLM proposes one or validation assigns one").
+    """
     errors: list[str] = []
     elements = load_all_elements(errors)
     return {e["id"] for e in elements if e.get("id")}
@@ -1149,7 +1186,8 @@ def existing_view_ids() -> set[str]:
     """Every view id currently on disk (`views.yaml`, `views-viewpoints.yaml`, and
     every layer's) -- used to de-duplicate an id the router synthesizes for a
     proposed view the LLM left blank, same reason `existing_element_ids()` exists
-    for elements."""
+    for elements.
+    """
     errors: list[str] = []
     views = load_all_views(errors)
     return {v["id"] for v in views if v.get("id")}
@@ -1158,7 +1196,8 @@ def existing_view_ids() -> set[str]:
 def existing_elements_and_types() -> tuple[list[dict[str, Any]], dict[str, str]]:
     """`(elements, types_by_id)` loaded once -- `rendering.py`'s `resolve_view_request`
     uses this with `view_element_ids` to resolve an `object_id` against every view in
-    one pass, rather than reloading `elements.yaml` per view."""
+    one pass, rather than reloading `elements.yaml` per view.
+    """
     errors: list[str] = []
     elements = load_all_elements(errors)
     types_by_id: dict[str, str] = {}
@@ -1173,7 +1212,8 @@ def existing_elements_and_types() -> tuple[list[dict[str, Any]], dict[str, str]]
 def existing_element_types() -> dict[str, str]:
     """Every first-party + layer element id mapped to its canonical ArchiMate type --
     used by `patterns.py` to type-check a proposed relationship's endpoints without
-    re-loading/parsing the YAML itself."""
+    re-loading/parsing the YAML itself.
+    """
     return existing_elements_and_types()[1]
 
 
@@ -1181,7 +1221,8 @@ def existing_relationships() -> list[tuple[str, str, str, str]]:
     """Every first-party + layer relationship as ``(type, source, target, label)`` --
     grounds a factual question that needs the connection graph itself (what connects
     to an element, what it realizes, a motivation chain up to a stakeholder), not just
-    the element catalogue `propose_delta` was already given."""
+    the element catalogue `propose_delta` was already given.
+    """
     errors: list[str] = []
     rels = load(RELATIONSHIPS_FILENAME, errors) + load_layers(RELATIONSHIPS_FILENAME, errors)
     return [
@@ -1199,7 +1240,8 @@ def _append_yaml_flow_entries(path: Path, entries: list[dict[str, Any]], field_o
     """Append `entries` to `path` as single-line flow-style YAML, under a banner
     comment -- never a full `yaml.safe_dump` rewrite of the file, so none of its
     existing hand-authored comments/grouping/formatting are disturbed (plan.md: an
-    applied delta is additive only, FR-001)."""
+    applied delta is additive only, FR-001).
+    """
     lines = ["\n# --- Conversational authoring: applied via POST /authoring/.../decide (GH #108) ---\n"]
     for entry in entries:
         ordered = {k: entry[k] for k in field_order if entry.get(k) not in (None, {})}
@@ -1214,7 +1256,8 @@ def append_delta(
     """Append an applied Candidate Delta's elements/relationships/views to
     `elements.yaml`/`relationships.yaml`/`views.yaml` (FR-001's apply step, R9) --
     additive only; no existing entry is edited, retired or reordered (plan.md Model
-    impact)."""
+    impact).
+    """
     if elements:
         _append_yaml_flow_entries(HERE / ELEMENTS_FILENAME, elements, _ELEMENT_FIELD_ORDER)
     if relationships:
@@ -1232,7 +1275,8 @@ def _view_block_bounds(lines: list[str], view_id: str) -> tuple[int, int] | None
     """`[start, end)` line range of the `views.yaml` top-level entry whose first line
     is `- id: <view_id>`, through the line just before the next such line (or EOF) --
     relies on every entry in this file starting with its own `id:` first, which is
-    this file's one established convention (no entry starts with another key)."""
+    this file's one established convention (no entry starts with another key).
+    """
     start = next(
         (i for i, line in enumerate(lines) if (m := _VIEW_START_RE.match(line.rstrip("\n"))) and m.group(1) == view_id),
         None,
@@ -1246,7 +1290,8 @@ def _view_block_bounds(lines: list[str], view_id: str) -> tuple[int, int] | None
 def _members_block_bounds(lines: list[str], start: int, end: int) -> tuple[int, int] | None:
     """`[members_key_idx, items_end)` -- the `  members:` key line through its last
     `    - id` item line, within `[start, end)`. `None` if the view has no
-    `members:` key at all."""
+    `members:` key at all.
+    """
     key_idx = next((i for i in range(start, end) if _MEMBERS_KEY_RE.match(lines[i].rstrip("\n"))), None)
     if key_idx is None:
         return None
@@ -1278,7 +1323,8 @@ def apply_view_membership_edits(edits: list[dict[str, Any]]) -> None:
     rewrite it can't do precisely; a Candidate Delta that would hit either case is
     expected to have already been rejected by `merge_candidate`'s own check for the
     first, and this function raising for the second surfaces as the apply-step 500
-    FR-002 already treats any other post-write validation failure as."""
+    FR-002 already treats any other post-write validation failure as.
+    """
     path = HERE / VIEWS_FILENAME
     lines = path.read_text().splitlines(keepends=True)
     for edit in edits:
@@ -1327,7 +1373,8 @@ _BLOCK_START_FIELD_RE = re.compile(r"^- (\w+):\s*(\S.*+)\s*+$")
 def _strip_inline_comment(raw: str) -> str:
     """`raw` without a trailing whitespace-then-`#` comment, in linear time. Only the
     last line can hold one (a final newline is kept), but the whitespace before the
-    `#` may run back across earlier lines. A regex here backtracks on whitespace runs."""
+    `#` may run back across earlier lines. A regex here backtracks on whitespace runs.
+    """
     body = raw.removesuffix("\n")
     pos = body.find("#", body.rfind("\n") + 1)
     while pos != -1 and (pos == 0 or not body[pos - 1].isspace()):
@@ -1338,7 +1385,8 @@ def _strip_inline_comment(raw: str) -> str:
 def _block_field_value(raw: str) -> str:
     """`raw` with a trailing ` # inline comment` stripped, same convention
     `relationships.yaml` already uses on a `source:`/`target:` line -- left alone for
-    a quoted scalar, where a `#` is just a character, not a comment start."""
+    a quoted scalar, where a `#` is just a character, not a comment start.
+    """
     return raw if raw.startswith(('"', "'")) else _strip_inline_comment(raw)
 
 
@@ -1354,7 +1402,8 @@ def _find_top_level_entry(lines: list[str], matches: Callable[[dict[str, Any]], 
     """`(start, end, is_flow)` of the first top-level entry for which `matches` its
     fields is true -- a flow one-liner's own parsed dict, or a block entry's fields
     collected from its `  key: value` lines (multi-line values like a folded `desc:`
-    are not collected, since nothing here ever needs to match on one)."""
+    are not collected, since nothing here ever needs to match on one).
+    """
     i = 0
     while i < len(lines):
         line = lines[i].rstrip("\n")
@@ -1384,7 +1433,8 @@ def _block_entry_end(lines: list[str], start: int) -> int:
 
 def _block_entry_fields(lines: list[str], start: int, end: int) -> dict[str, Any]:
     """A block entry's `key: value` fields over `lines[start:end]`; the first line
-    carries its field inline after the dash."""
+    carries its field inline after the dash.
+    """
     return {
         m.group(1): _block_field_value(m.group(2))
         for j in range(start, end)
@@ -1399,7 +1449,8 @@ def apply_element_edits(edits: list[dict[str, Any]]) -> None:
     membership_edits` does for `members:` impractical to extend to them safely).
 
     Raises `ValueError` for an element id not found in `elements.yaml` (merge_candidate
-    is expected to have already rejected an unknown id before apply is reached)."""
+    is expected to have already rejected an unknown id before apply is reached).
+    """
     path = HERE / ELEMENTS_FILENAME
     lines = path.read_text().splitlines(keepends=True)
     for edit in edits:
@@ -1435,7 +1486,8 @@ def apply_element_removals(element_ids: list[str]) -> None:
     as a `broken_connection`/`orphan_view_node` finding by `merge_candidate`'s
     validation path before apply is ever reached (never silently cascaded).
 
-    Raises `ValueError` for an element id not found in `elements.yaml`."""
+    Raises `ValueError` for an element id not found in `elements.yaml`.
+    """
     path = HERE / ELEMENTS_FILENAME
     lines = path.read_text().splitlines(keepends=True)
     for element_id in element_ids:
@@ -1455,7 +1507,8 @@ def apply_relationship_removals(removals: list[dict[str, Any]]) -> None:
     """Delete an existing relationship's whole entry from `relationships.yaml`, in
     place (ADR-0037 item 8), matched by its `(type, source, target)` triple -- a
     relationship has no id of its own. Raises `ValueError` for a removal matching no
-    entry in `relationships.yaml`."""
+    entry in `relationships.yaml`.
+    """
     path = HERE / RELATIONSHIPS_FILENAME
     lines = path.read_text().splitlines(keepends=True)
     for removal in removals:
@@ -1475,7 +1528,8 @@ def apply_relationship_removals(removals: list[dict[str, Any]]) -> None:
 
 def _membership_edited_view(view: dict[str, Any], edit: dict[str, Any]) -> dict[str, Any]:
     """`view` with `edit`'s `add`/`remove` element ids applied to its `members:` list
-    -- order preserved for survivors, added ids appended, never duplicated."""
+    -- order preserved for survivors, added ids appended, never duplicated.
+    """
     members = [m for m in (view.get("members") or []) if m not in edit.get("remove", [])]
     for eid in edit.get("add", []):
         if eid not in members:
@@ -1495,7 +1549,8 @@ def _apply_membership_edits_for_validation(
     `views.yaml` -- collapsing them to only the last would validate a different
     membership than the one actually written. An edit naming a view id that doesn't
     exist is reported the same way `add_views` reports any other unknown reference,
-    rather than silently ignored."""
+    rather than silently ignored.
+    """
     named_ids = {e["view_id"] for e in edits}
     edited = []
     for v in views:
@@ -1513,7 +1568,8 @@ def _apply_element_edits_for_validation(
 ) -> list[dict[str, Any]]:
     """`elements` with each of `edits`' `name` applied to the element it names (ADR-0037
     item 8: rename only -- `desc`/`type` are not editable this way). An edit naming an
-    element id that doesn't exist is reported the same way any other unknown reference is."""
+    element id that doesn't exist is reported the same way any other unknown reference is.
+    """
     edits_by_id = {e["id"]: e for e in edits}
     edited = [{**e, "name": edits_by_id[e["id"]]["name"]} if e.get("id") in edits_by_id else e for e in elements]
     for element_id in edits_by_id.keys() - {e.get("id") for e in elements}:
@@ -1534,7 +1590,8 @@ def _apply_element_removals_for_validation(
     unknown id is reported; a removal leaving a dangling relationship endpoint
     elsewhere is not caught here -- it surfaces as `validate_model`'s usual
     `broken_connection` finding once the resulting elements/relationships are
-    assembled into a `Model` (ADR-0037 item 8: never silently cascaded)."""
+    assembled into a `Model` (ADR-0037 item 8: never silently cascaded).
+    """
     remaining = list(elements)
     for element_id in removals:
         present_ids = {e.get("id") for e in remaining}
@@ -1548,7 +1605,8 @@ def _apply_element_removals_for_validation(
 def _type_key(raw: str) -> str:
     """Case/separator-insensitive key for an ArchiMate type name, for comparing a
     removal's `type` against a loaded relationship's -- same normalization `canon` uses,
-    without `canon`'s side effect of appending to an errors list for an unknown name."""
+    without `canon`'s side effect of appending to an errors list for an unknown name.
+    """
     return str(raw).strip().replace("_", "").replace("-", "").lower()
 
 
@@ -1557,7 +1615,8 @@ def _apply_relationship_removals_for_validation(
 ) -> list[dict[str, Any]]:
     """`relationships` with the first relationship matching each of `removals`' (type,
     source, target) triple dropped. A removal matching nothing is reported rather than
-    silently ignored."""
+    silently ignored.
+    """
     remaining = list(relationships)
     for removal in removals:
         wanted_type = _type_key(str(removal.get("type", "")))
@@ -1593,7 +1652,8 @@ def _merged_candidate_parts(
     """The on-disk model with every part of a Candidate Delta applied, as
     `(elements, relationships, views, errors)` ready for `_assemble` -- shared by
     `merge_candidate` (validation) and `preview_model` (rendering) so a preview shows
-    exactly what validation checked."""
+    exactly what validation checked.
+    """
     errors: list[str] = []
     elements = load_all_elements(errors) + list(delta_elements)
     if delta_element_edits:
@@ -1630,7 +1690,8 @@ def merge_candidate(
     existing view a `delta_view_membership_edits` entry would add to/remove from, and
     for a renamed/removed existing element or a removed existing relationship,
     ADR-0037 item 8). Nothing is written to disk; the delta is additive-plus-these-
-    narrow-edits only, same as `build_model()` otherwise."""
+    narrow-edits only, same as `build_model()` otherwise.
+    """
     parts = _merged_candidate_parts(
         delta_elements,
         delta_relationships,
@@ -1660,7 +1721,8 @@ def preview_model(
     members, with any relationship still touching it, so it disappears from the preview
     instead of failing it, and a proposed view is drawn without its `viewpoint` tag, so
     a viewpoint it doesn't conform to doesn't hide it. Whether either may be applied is
-    `merge_candidate`'s call, reported as findings."""
+    `merge_candidate`'s call, reported as findings.
+    """
     marked = [{**e, "name": f"+ {e.get('name', e.get('id', ''))}"} for e in delta_elements]
     marked_edits = [{**e, "name": f"~ {e.get('name', '')}"} for e in delta_element_edits or []]
     elements, rels, views, errors = _merged_candidate_parts(
@@ -1687,7 +1749,8 @@ def preview_model(
 
 def _load_model_for_validation(path_or_model: str | Path | Model) -> tuple[Model, str]:
     """The `Model` to validate plus its display label -- as-is if already loaded,
-    else read from disk (see `validate_model`'s docstring for the two contracts)."""
+    else read from disk (see `validate_model`'s docstring for the two contracts).
+    """
     if isinstance(path_or_model, Model):
         return path_or_model, "<in-memory>"
     model = Model("validate")
@@ -1740,7 +1803,8 @@ def validate_model(path_or_model: str | Path | Model) -> dict[str, Any]:
     either a path to an Open Group Exchange Format XML file (the skill script's
     original contract, still used by the CLI `validate` subcommand) or an
     already-loaded `Model` (used by the in-memory validate-before-write path,
-    R9), so the same checks run identically from a live Model as from disk."""
+    R9), so the same checks run identically from a live Model as from disk.
+    """
     model, path_label = _load_model_for_validation(path_or_model)
     findings = _relationship_matrix_findings(model)
 
@@ -1774,7 +1838,8 @@ def write_and_validate() -> tuple[int, list[str], list[str], dict[str, Any] | No
     `exit_code` is 2 on a build error (nothing written), else the validator's
     own exit convention (0 clean, 1 invalid). Mirrors `build.py`'s previous
     `main()` exactly, just returning data instead of printing/exiting, so the
-    CLI `build` subcommand owns all user-facing output."""
+    CLI `build` subcommand owns all user-facing output.
+    """
     model, errors, warnings = build_model()
     if model is None:
         return 2, errors, warnings, None

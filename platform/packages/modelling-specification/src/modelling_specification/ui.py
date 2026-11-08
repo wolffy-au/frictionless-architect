@@ -5,11 +5,13 @@ pipeline, no JS framework build step. A plain fetch() client over the existing
 `sessions`/`propose`/`propose/select`/`propose/resolve-pii`/`decide`/`render`/`config`
 JSON contract (contracts/api.md); `session_id`/`delta_id` live in page-scoped JS state
 only (R16), nothing new server-side. `renderProposeResponse` branches on `propose`'s
-`status`: a plain-text `"message"`, a set of `"options"` to pick from via
-`propose/select` (ADR-0041), a PII/PHI match flagged for review via
-`propose/resolve-pii` (`"pii_review_required"`, ADR-0014 amendment), or the
-single-delta validated/flagged path, which lists every kind of proposed change in the
-chat and previews it (FR-012a).
+`status`: a `"message"` -- the LLM's free-text reply, which may be Markdown and arrives
+pre-rendered as sanitised HTML in `message_html` (router.py's `render_message_markdown`,
+GH #185) -- inserted directly, never built from raw `message` client-side --
+a set of `"options"` to pick from via `propose/select` (ADR-0041), a PII/PHI match
+flagged for review via `propose/resolve-pii` (`"pii_review_required"`, ADR-0014
+amendment), or the single-delta validated/flagged path, which lists every kind of
+proposed change in the chat and previews it (FR-012a).
 """
 
 from __future__ import annotations
@@ -73,8 +75,19 @@ _PAGE = """\
   #messages { padding: 12px 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .msg { font-size: 13px; line-height: 1.5; }
   .msg.user { color: var(--text-muted); }
+  .msg.agent p, .msg.agent ul, .msg.agent ol, .msg.agent pre, .msg.agent h1, .msg.agent h2, .msg.agent h3 { margin: 0 0 8px; }
+  .msg.agent > :last-child { margin-bottom: 0; }
+  .msg.agent ul, .msg.agent ol { padding-left: 20px; }
+  .msg.agent h1, .msg.agent h2, .msg.agent h3 { font-size: 1.05em; }
+  .msg.agent code { background: var(--surface-2); border-radius: 4px; padding: 1px 4px; font-size: .95em; }
+  .msg.agent pre { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; overflow-x: auto; }
+  .msg.agent pre code { background: none; padding: 0; }
+  .msg.agent a { color: var(--accent); }
   .finding, .duplicate, .pattern, .option, .pii { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
   .finding { border-color: var(--err); background: var(--err-soft); }
+  .msg.thinking { color: var(--text-muted); font-style: italic; animation: thinking-pulse 1.4s ease-in-out infinite; }
+  @keyframes thinking-pulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .msg.thinking { animation: none; } }
   .option .sub { margin: 4px 0 0; }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   button { font: inherit; font-size: 12.5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
@@ -159,7 +172,12 @@ _PAGE = """\
   };
 
   function escapeHtml(s) {
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   let sessionId = null;
@@ -188,6 +206,14 @@ _PAGE = """\
     messagesEl.appendChild(div);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return div;
+  }
+
+  // A visible "working" indicator shown from the moment a request is sent until its
+  // reply or failure is ready (GH #186). Deliberately not classed "agent" -- it must
+  // never match the `.msg.agent` selector the behave/Playwright steps use to mean
+  // "the real reply arrived". Callers remove the returned div themselves once done.
+  function showThinking() {
+    return addMessage("thinking", "Thinking&hellip;");
   }
 
   // Apply needs a validated delta; nothing is written until it is clicked.
@@ -672,14 +698,19 @@ _PAGE = """\
           if (!editedText || !editedText.trim()) return;
         }
         div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = true; });
-        const result = await resolvePii(action, editedText);
-        if (result) {
-          renderProposeResponse(result);
-        } else {
-          // resolvePii() already showed the error (e.g. "allow" rejected after a
-          // detector-engine error, ADR-0046) -- re-enable so redact/edit, which the
-          // pending confirmation is still open for, remain reachable.
-          div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = false; });
+        const thinking = showThinking();
+        try {
+          const result = await resolvePii(action, editedText);
+          if (result) {
+            renderProposeResponse(result);
+          } else {
+            // resolvePii() already showed the error (e.g. "allow" rejected after a
+            // detector-engine error, ADR-0046) -- re-enable so redact/edit, which the
+            // pending confirmation is still open for, remain reachable.
+            div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = false; });
+          }
+        } finally {
+          thinking.remove();
         }
       });
     });
@@ -688,8 +719,10 @@ _PAGE = """\
   function renderProposeResponse(body) {
     if (body.status === "message") {
       // The LLM asked a question or made a suggestion instead of proposing a delta.
-      const bubble = addMessage("agent", escapeHtml(body.message));
-      bubble.style.whiteSpace = "pre-wrap";
+      // body.message_html is body.message (untrusted LLM output, may be Markdown)
+      // already rendered to sanitised HTML server-side (router.py, GH #185) -- inserted
+      // directly, never built from the raw message client-side.
+      addMessage("agent", body.message_html);
       return body;
     }
     if (body.status === "pii_review_required") {
@@ -767,6 +800,7 @@ _PAGE = """\
     addMessage("user", escapeHtml(request));
     chatInput.value = "";
     sendButton.disabled = true;
+    const thinking = showThinking();
     try {
       const response = await postPropose(request);
       const body = await response.json();
@@ -776,6 +810,7 @@ _PAGE = """\
       }
       renderProposeResponse(body);
     } finally {
+      thinking.remove();
       sendButton.disabled = false;
     }
   }

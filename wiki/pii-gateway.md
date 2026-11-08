@@ -1,6 +1,6 @@
 ---
 title: PII Gateway
-generated: '2026-11-05'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0014-pii-anonymization-gateway.md
@@ -63,7 +63,10 @@ so the model has no per-consumer Serving edge
 
 `scrub(text, *, context) -> ScrubResult` is the one call surface. Each call loads the
 config, runs the detectors, drops matches in inactive categories, and then takes one of
-three outcomes (`platform/packages/pii-gateway/src/pii_gateway/scrub.py:56-118`):
+three outcomes (`platform/packages/pii-gateway/src/pii_gateway/scrub.py:79-108`). The audit
+write, the redaction and the flag-for-review branch are small private helpers
+(`_record_audit`, `_redact`, `_flag_for_review`) that `scrub()` calls
+(`platform/packages/pii-gateway/src/pii_gateway/scrub.py:56-76`):
 
 | Outcome | When | `text` returned |
 | --- | --- | --- |
@@ -103,12 +106,13 @@ context gets the global auto-redact default
 `PendingConfirmation.resolve()` returns the redacted text for `REDACT` and the original
 for `ALLOW` and `EDIT` -- except `ALLOW` on the synthetic engine-error match (see
 [Failing closed](#failing-closed) below), which it refuses instead
-(`platform/packages/pii-gateway/src/pii_gateway/models.py:93-113`). So `EDIT` is not a
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:94-114`). So `EDIT` is not a
 complete operation in the gateway: the caller has to supply the replacement.
 `modelling-specification` does that by re-scrubbing the architect's `edited_text` under
-the same context, so a still-sensitive edit is flagged again rather than sent
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:431-439`;
-`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:318-334`).
+the same context, so a still-sensitive edit is flagged again rather than sent; its
+router now keeps that choice in a `_resolved_text` helper
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:405-417`;
+`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:334-351`).
 
 The confirmation has no timeout and no stored form. An abandoned turn just discards it
 (`platform/packages/pii-gateway/specs/001-pii-gateway/spec.md` §Clarifications). In
@@ -116,8 +120,8 @@ The confirmation has no timeout and no stored form. An abandoned turn just disca
 `propose/resolve-pii`, which is the one place it outlives a single `scrub()` call
 (`platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:94-99`).
 A flagged response carries the matches and makes no LLM call
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:191-208`,
-`platform/packages/modelling-specification/src/modelling_specification/router.py:337-340`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:192-209`,
+`platform/packages/modelling-specification/src/modelling_specification/router.py:392-395`).
 
 ## Detection
 
@@ -161,7 +165,7 @@ no-op -- `anonymize()` has nothing to replace at a zero-width location -- so `sc
 instead detects the synthetic match and replaces the **entire** input with
 `<_ENGINE_ERROR>`, for both `redacted_and_proceeded` and flag-for-review's `REDACT`
 resolution
-(`platform/packages/pii-gateway/src/pii_gateway/scrub.py:81-89`). This is a 2026-11-05
+(`platform/packages/pii-gateway/src/pii_gateway/scrub.py:60-67`). This is a 2026-11-05
 bug fix: before it, a forced `RuntimeError` showed `"Contact Jane Doe"` under
 `spec-generator` coming back as `<_ENGINE_ERROR>Contact Jane Doe` -- action
 `redacted_and_proceeded`, content unredacted -- and the flag-for-review path's `REDACT`
@@ -175,15 +179,15 @@ unexamined text via `ALLOW`. Nothing inspected the text, so there is no real det
 for the architect to judge and allow -- unlike `ALLOW` on a real match, which is
 unaffected
 (`platform/packages/pii-gateway/src/pii_gateway/models.py:20-30`,
-`platform/packages/pii-gateway/src/pii_gateway/models.py:87-113`).
+`platform/packages/pii-gateway/src/pii_gateway/models.py:87-114`).
 `modelling-specification`'s `resolve_pii` maps the exception to `409` and leaves the
 pending confirmation in place, so `REDACT`/`EDIT` still resolve it and no LLM call is
 made
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:440-447`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:418-424`).
 The flag-for-review response also carries `detection_failed: bool` so a caller is told
 detection failed outright, rather than left to infer it from the `_ENGINE_ERROR`
 category string in `matches`
-(`platform/packages/modelling-specification/src/modelling_specification/router.py:191-205`).
+(`platform/packages/modelling-specification/src/modelling_specification/router.py:197-206`).
 
 Both are recorded in ADR-0046, filed because the spec's fail-closed guarantee itself
 was (and still is) a spec-level default with no ADR of its own -- this record covers
@@ -194,8 +198,11 @@ the redaction shape and the `ALLOW` question it exposed, not that wider gap
 The browser authoring UI has a related, separately-tracked rough edge: its three
 PII-review buttons (Redact/Allow/Edit) disable on click and only re-enable on a
 successful `resolve-pii` response, so an `ALLOW` rejected under this path needed its
-own re-enable path to stay usable
-(`platform/packages/modelling-specification/src/modelling_specification/ui.py:666-683`).
+own re-enable path to stay usable. Since GH #186 (2026-11-08) the same click handler
+also shows a "Thinking…" chat message while `resolve-pii` waits on the LLM, and
+removes it in a `finally` whether the call returns, errors or throws
+(`platform/packages/modelling-specification/src/modelling_specification/ui.py:692-716`).
+See [Conversational Model Authoring](modelling-specification.md).
 
 ## Configuration and audit
 
@@ -216,15 +223,19 @@ Code flags (`platform/packages/pii-gateway/src/pii_gateway/_paths.py:1-45`).
 
 Every call appends one JSON line holding the timestamp, context, distinct matched
 categories and action. It never holds the matched text, locations or confidence
-(`platform/packages/pii-gateway/src/pii_gateway/models.py:116-129`;
-`platform/packages/pii-gateway/src/pii_gateway/audit.py:49-57`).
+(`platform/packages/pii-gateway/src/pii_gateway/models.py:117-130`;
+`platform/packages/pii-gateway/src/pii_gateway/audit.py:55-63`).
 
 ### Settings page
 
 `create_settings_router(contexts)` serves an HTML page at `/settings/pii-gateway`, with
 `GET .../state` and `PUT .../contexts/{context_id}` beneath it; an unknown context
 returns 404
-(`platform/packages/pii-gateway/src/pii_gateway/router.py:53-76`). It deliberately copies
+(`platform/packages/pii-gateway/src/pii_gateway/router.py:53-76`). The README now
+tabulates this JSON API relative to the prefix: `GET ` (empty path) is the HTML page,
+`GET /state` returns `available_categories` plus each registered context's active
+categories and failure-mode, and `PUT /contexts/{context_id}` updates one context
+(`platform/packages/pii-gateway/README.md`). It deliberately copies
 the `llm-provider-config` router's shape
 (`platform/packages/pii-gateway/specs/001-pii-gateway/research.md` R5).
 [Portal](portal.md) mounts it for all three known contexts
@@ -242,7 +253,7 @@ to localhost (`platform/packages/pii-gateway/README.md:63-65`).
 | `fn-spec-generator` | `spec-generator` | Registered; no implementation calls it |
 | `fn-ai-markdown-conversion`, `fn-policy-quality-feedback` | None | Exempt (ADR-0031) |
 
-(`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:329`;
+(`platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:346`;
 `docs/adr/0014-pii-anonymization-gateway.md` §Amendment;
 `platform/packages/pii-gateway/specs/001-pii-gateway/spec.md` §Assumptions)
 
@@ -260,16 +271,6 @@ Those paths have no call site in these sources
 
 ## Where the sources disagree
 
-- **Which path is wired.** The README, `plan.md` and the older parts of `spec.md` say
-  `fn-spec-generator` is the wired caller and `fn-conversational-authoring` is deferred,
-  and `tasks.md` still calls `conversational-authoring` a context with no caller. The
-  ADR-0014 amendment (GH #181), the update notes in `spec.md` and the code all say the
-  reverse: `propose_delta()` uses `conversational-authoring`, and `spec-generator` has
-  no real caller. The code settles it, and the table above follows the code
-  (`platform/packages/pii-gateway/README.md:11-15`;
-  `platform/packages/pii-gateway/specs/001-pii-gateway/plan.md` §Technical Context;
-  `platform/packages/pii-gateway/specs/001-pii-gateway/tasks.md` header;
-  `docs/adr/0014-pii-anonymization-gateway.md` §Amendment).
 - **PHI recognizer scope.** ADR-0043 expects custom recognizers for medical record
   numbers and provider/patient identifiers. The research and the code cover medical
   record and diagnosis codes, with no provider or patient identifier recognizer

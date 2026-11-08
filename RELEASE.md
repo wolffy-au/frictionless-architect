@@ -89,19 +89,22 @@ Never merge or fast-forward `main` locally.
 bash scripts/pre_merge_checks.sh
 ```
 
-This runs `scripts/pre_commit_checks.sh` (pymarkdown, ruff, pyright, mypy, unit tests),
-then `behave`, then `pytest --cov-fail-under=90 --cov=src`, then the frontend UI harness
-if `frontend/` exists. Must pass clean.
+This runs `scripts/pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy,
+unit tests), the roadmap drift check (`import_gh_roadmap.py --check`), `poetry update`
+(fails if `poetry.lock` changes), `scripts/platform_checks.sh --update`, the three Snyk
+scans, `behave`, then `pytest --cov-fail-under=90 --cov=src --cov=architecture/model`, then
+the frontend UI harness if `frontend/` exists (it currently doesn't, so that step is
+skipped). Must pass clean.
 
 ### 3. SonarCloud — no open issues
 
 CI already ran the scan on the last push. Confirm nothing is `OPEN`
-(`TECHNICAL.md` → "SonarCloud Remediation Workflow"; token in `.secrets/`):
+(`TECHNICAL.md` → "SonarCloud Remediation Workflow"; `SONAR_TOKEN` in the gitignored `.env`):
 
 ```bash
 # API check:
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&statuses=OPEN&ps=50&token=<token-from-.secrets>"
-# or: poetry run pysonar --sonar-token=<token-from-.secrets>
+curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&statuses=OPEN&ps=50&token=<token-from-.env>"
+# or: poetry run pysonar --sonar-token=<token-from-.env>
 ```
 
 This should normally come back empty — `quality-uplift` is expected to be running on
@@ -167,13 +170,14 @@ git push origin develop          # fast-forward only, never force
 gh pr create --base main --head develop    # or update the existing PR
 ```
 
-Wait until every check is resolved and green (CI, SonarCloud quality gate, Snyk), then
+Wait until every check is resolved and green (CI, CodeQL, SonarCloud quality gate), then
 **stop**. A human reviews the PR and merges it manually, using a merge commit (not squash
 or rebase, so the bump commit stays reachable from `main`). Do not use `gh pr merge`,
 a local merge, or a push to `main`.
 
-If Snyk fails on account quota ("Code test limit reached", "used your limit of private
-tests") rather than on findings, the human decides whether to accept that.
+Snyk is not a PR check; it runs locally in §2 and §4. If those scans fail on account quota
+("Code test limit reached", "used your limit of private tests") rather than on findings,
+the human decides whether to accept that.
 
 ### 8. Tag `main` after the merge
 

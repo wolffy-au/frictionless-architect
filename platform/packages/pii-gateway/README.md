@@ -8,11 +8,11 @@ before it reaches an LLM provider. Backed by Presidio
   (mandatory scope and default failure-mode) and
   [ADR-0043](../../../docs/adr/0043-pii-gateway-detector-library-presidio.md)
   (detector/anonymization engine).
-- Required callers: `modelling-specification`'s spec drafting (`fn-spec-generator`,
-  wired in this feature). `architecture-governance`'s ADR/evaluation drafting
-  (`fn-governance-eval`) and the conversational-modelling agent's prompts
-  (`fn-conversational-authoring`, GH #68) are registered contexts with the contract
-  ready, but not wired yet — deferred to those packages' own build-out.
+- Required callers: `modelling-specification`'s conversational authoring
+  (`fn-conversational-authoring`, GH #68; `authoring/delta.py`) is the only one wired
+  today. Spec drafting (`fn-spec-generator`) and `architecture-governance`'s
+  ADR/evaluation drafting (`fn-governance-eval`) are registered contexts with the
+  contract ready, but nothing calls them yet — deferred to their own build-out.
 - Exempt: policy/regulatory-standard document conversion
   (`fn-ai-markdown-conversion`, `fn-policy-quality-feedback`) continues to call the
   LLM provider directly (ADR-0031).
@@ -59,6 +59,14 @@ subsystem UI, or standalone:
 ```python
 app.include_router(create_settings_router(["spec-generator", "governance-eval", "conversational-authoring"]))
 ```
+
+The JSON API, relative to the prefix (`/settings/pii-gateway` by default):
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `` (empty) | The settings page (HTML) |
+| `GET` | `/state` | `available_categories`, plus each registered context's active categories and failure-mode |
+| `PUT` | `/contexts/{context_id}` | Update one context's active categories and failure-mode; `404` for an unregistered context |
 
 The page toggles which detector categories are active and the failure-mode, per
 context, taking effect on the next `scrub()` call with no redeploy. There is no

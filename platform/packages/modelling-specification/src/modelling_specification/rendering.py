@@ -124,7 +124,8 @@ def _view_diagram_jobs(
     context actually present on it (`model_io.view_split_contexts`), writing
     `<diagram-slug>/<context>.puml` instead of a single `<diagram-slug>.puml` --
     this is how the six oversized views stay readable without hand-splitting
-    their `views.yaml` entries."""
+    their `views.yaml` entries.
+    """
     if not views_file.exists():
         return []
     jobs: list[tuple[Path, list[str]]] = []
@@ -171,7 +172,8 @@ def _c4_diagram_jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
 def _jobs(diagram_root: Path) -> list[tuple[Path, list[str]]]:
     """(puml output path, generator command without `-o`) for every diagram,
     view-derived plus the fixed C4 pair. `diagram_root` is DIAGRAMS or a
-    vendored model's diagrams dir."""
+    vendored model's diagrams dir.
+    """
     views_files = (
         [VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS]
         if diagram_root == DIAGRAMS
@@ -205,7 +207,8 @@ def _orphans(root: Path, wanted: set[Path], *, write: bool) -> list[str]:
 def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path], set[Path]]:
     """Generate every job's `.puml` for `root`; returns (stale, changed, wanted) as
     project-relative stale paths, the changed `.puml` paths, and every path `_jobs`
-    produced (stale or not, for `_orphans` to compare against)."""
+    produced (stale or not, for `_orphans` to compare against).
+    """
     jobs = _jobs(root)
     # Each _capture() is a separate `python -m modelling_specification.puml`/`.c4` process
     # that reparses the whole model XML -- dozens of these in sequence is the slow part
@@ -234,7 +237,8 @@ def _render_root_pumls(root: Path, *, write: bool) -> tuple[list[str], list[Path
 
 def _normalize_rendered_svgs(changed_pumls: list[Path]) -> None:
     """PlantUML's SVG output has no trailing newline; normalise to one so
-    re-renders don't churn on it."""
+    re-renders don't churn on it.
+    """
     # `p` always comes from `_jobs()` via `render()`/`render_diagrams()` (CLI-only, see
     # cli.py), whose `slug` is a `diagram:` key read out of committed views.yaml/
     # views-viewpoints.yaml/gh-roadmap files, never from an HTTP request; the taint path
@@ -280,7 +284,8 @@ def render_diagrams(*, check: bool, svg: bool) -> tuple[int, list[str], list[str
     """Batch-regenerate (or `--check`) every diagram. Returns (exit_code, stale, orphan).
 
     0 = up to date / written, 1 = stale (`check`), 2 = the built model
-    (`OUT`) is missing (run `model_io.write_and_validate()` first)."""
+    (`OUT`) is missing (run `model_io.write_and_validate()` first).
+    """
     if not OUT.exists():
         return 2, [], []
 
@@ -292,7 +297,8 @@ def render_diagrams(*, check: bool, svg: bool) -> tuple[int, list[str], list[str
 
 def _find_view(view_id: str) -> dict[str, Any]:
     """Look up a `views.yaml` entry by `id` across every views file (first-party,
-    gh-roadmap, vendored). Raises `ViewNotFoundError` if none match."""
+    gh-roadmap, vendored). Raises `ViewNotFoundError` if none match.
+    """
     for views_file in (VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
         if not views_file.exists():
             continue
@@ -305,7 +311,8 @@ def _find_view(view_id: str) -> dict[str, Any]:
 
 def _all_views() -> list[dict[str, Any]]:
     """Every view across the first-party, gh-roadmap and vendored sources, same
-    precedence order `_find_view` uses."""
+    precedence order `_find_view` uses.
+    """
     views: list[dict[str, Any]] = []
     for views_file in (VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
         if views_file.exists():
@@ -323,7 +330,8 @@ def view_catalogue() -> list[tuple[str, str, str]]:
     conversational-authoring request like "what views/viewpoints are available" is
     answered from (delta.py's `_views_text`). `viewpoint` is `""` for a hand-curated
     `views.yaml` view that has none (the tag is only checked, never required, by
-    `build.py`)."""
+    `build.py`).
+    """
     return [(v["id"], str(v.get("name", v["id"])), str(v.get("viewpoint", ""))) for v in _all_views() if "id" in v]
 
 
@@ -370,7 +378,8 @@ def resolve_view_request(object_id: str | None, description: str | None) -> dict
     id -- every view it's actually in scope for, via `model_io.view_element_ids`'s
     `members`/`include_types`/`exclude_elements` rule (the same rule `add_views` uses
     to build the view for real, not a `members`-only subset of it); `description`
-    matches case-insensitively against each view's `name` as a substring."""
+    matches case-insensitively against each view's `name` as a substring.
+    """
     views = _all_views()
     if object_id:
         exact = [v["id"] for v in views if v.get("id") == object_id]
@@ -396,7 +405,8 @@ _ACTIVE_ELEMENTS = {"script", "foreignobject", "iframe", "object", "embed", "aud
 def sanitize_svg(svg: str) -> str:
     """Strip anything active from a rendered SVG before it is served or inlined into
     the page: script-like elements, `on*` event attributes and `javascript:` links.
-    Element names in a preview come from the LLM, so the SVG is not trusted markup."""
+    Element names in a preview come from the LLM, so the SVG is not trusted markup.
+    """
     ET.register_namespace("", _SVG_NS)
     ET.register_namespace("xlink", _XLINK_NS)
     root = SafeET.fromstring(svg)
@@ -437,7 +447,8 @@ def render_single_view(view_id: str) -> str:
     `.puml`/`.svg` file (FR-013) -- used by `GET /authoring/render`'s unambiguous-resolve
     path. Reads the already-built model (`OUT`); raises `ViewNotFoundError`
     if `view_id` matches nothing in `views.yaml` (the fuzzy/ambiguous-candidates resolution
-    FR-016 adds sits in front of this, in the router)."""
+    FR-016 adds sits in front of this, in the router).
+    """
     if not OUT.exists():
         raise ViewNotFoundError(f"{MODEL_REL} is missing — build the model first")
     _refresh_model_if_sources_changed()
@@ -460,7 +471,8 @@ def render_candidate_view(
 ) -> str:
     """Render `view_id` as it would look with the delta applied -- built in memory and
     written only to a throwaway temp file, never to the model directory. `view_id` may
-    name a view the delta itself proposes."""
+    name a view the delta itself proposes.
+    """
     v = next((d for d in views or [] if d.get("id") == view_id), None) or _find_view(view_id)
     model, errors = model_io.preview_model(
         elements, relationships, v, views, view_membership_edits, element_edits, element_removals, relationship_removals

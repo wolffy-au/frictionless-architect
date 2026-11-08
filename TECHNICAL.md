@@ -38,7 +38,10 @@ This document consolidates technical specifications, patterns, utilities, and pr
   - Document all public functions with docstrings.
   - Include type hints where appropriate.
   - Keep documentation up-to-date with code changes.
-  - Use Google-style docstrings.
+  - Use Google-style docstrings. `ruff` enforces the pydocstyle `D` rules (google
+    convention) on `src/`, `platform/packages/*/src/` and `scripts/`; tests,
+    `architecture/` and `.claude/` are exempt, and `D205` (blank line after the
+    summary) is ignored.
 - **Version Control**:
   - Commit frequently with meaningful messages.
   - Use present tense in commit messages.
@@ -337,13 +340,13 @@ To force a SonarQube check, run:
 
 ```bash
 sudo apt-get update && sudo apt-get install -y default-jre
-pysonar --sonar-token=<token-from-.secrets>
+pysonar --sonar-token=<token-from-.env>
 ```
 
-You can also query SonarCloud's public API for the current critical issues list; the token value is stored in the project `.secrets` directory (look for the Sonar token key there) and should not be committed.
+You can also query SonarCloud's public API for the current critical issues list; the token is `SONAR_TOKEN` in the gitignored `.env` and should not be committed.
 
 ```
-https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&ps=50&p=1&token=<token-from-.secrets>
+https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictionless-architect&branch=main&ps=50&p=1&token=<token-from-.env>
 ```
 
 ### SonarCloud Remediation Workflow
@@ -351,7 +354,7 @@ When new SonarCloud issues appear on `main`, follow this sequence:
 
 1. Pull the latest `main` and request the open issues via the API (same URL as above); review the payload for every problem marked `OPEN`.
 2. Implement fixes in the repo so each rule is satisfied (document FastAPI exceptions, tighten validators, simplify routers, adjust services, etc.).
-3. Run the full pre-commit suite via `scripts/pre_commit_checks.sh` (this already executes markdown/ruff/pyright/mypy/snyk/behave/pytest).
+3. Run the full pre-commit suite via `scripts/pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy, `tests/unit/`, platform checks); `scripts/pre_merge_checks.sh` adds Snyk, behave and the coverage-gated `pytest`.
 4. Stage the modified files and commit with a conventional summary such as `fix: resolve SonarCloud issues`.
 5. Push the updated commit to `origin/main` so SonarCloud can re-scan.
 
@@ -362,14 +365,14 @@ To force a Snyk check, run:
 ```bash
 npm install -g snyk@latest
 snyk auth <token>
-snyk test --command=python3
+snyk test --package-manager=poetry --org=wolffy-au
 ```
 
-The token is `SNYK_TOKEN` in the gitignored `.env` (also kept in `.secrets/`) — never commit it.
+The token is `SNYK_TOKEN` in the gitignored `.env` — never commit it.
 `scripts/pre_merge_checks.sh` loads it from `.env` when it isn't already exported, then runs
 `snyk test` on the root `poetry.lock`, `snyk code test`, and `snyk test` on
-`platform/poetry.lock`; locally these are **blocking**. In CI (`.github/workflows/ci.yml`)
-the same three scans run but are `continue-on-error` (advisory).
+`platform/poetry.lock`. All three are **blocking**, and they run locally only: CI
+(`.github/workflows/ci.yml`) does not run Snyk.
 
 ## Specification and Requirements Management
 

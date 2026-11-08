@@ -133,7 +133,8 @@ def contained_by_system(model: Model, system_uuid: str) -> set[str]:
 @dataclass
 class _Diagram:
     """What one generation is drawing: the system in focus, the elements inside
-    it, and the C4 kind of each element emitted so far."""
+    it, and the C4 kind of each element emitted so far.
+    """
 
     system: Any
     inside: set[str]
@@ -285,7 +286,8 @@ def _merged_rel_lines(raw: list[_RawRel]) -> list[str]:
     system box, so many container-level relationships collapse onto the same
     (source, target) pair. Merge each pair into a single Rel (or BiRel/Rel_<dir>
     if any contributing relationship asked for one) that lists its distinct labels
-    one per line, rather than drawing a fan of near-duplicate arrows."""
+    one per line, rather than drawing a fan of near-duplicate arrows.
+    """
     merged: dict[tuple[str, str], tuple[list[str], str, str]] = {}
     for s, t, label, tech, macro in raw:
         labels, kept_tech, kept_macro = merged.setdefault((s, t), ([], tech, "Rel"))

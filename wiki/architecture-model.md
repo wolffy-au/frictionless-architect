@@ -1,7 +1,7 @@
 ---
 title: Architecture Model
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
 - architecture/model/build.py
@@ -44,7 +44,7 @@ validation and rendering live there
 `platform/packages/modelling-specification/src/modelling_specification/cli.py:89-113`).
 The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:466-499`; see
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:435-515`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
 current merged model is 556 elements, 1271 relationships and 74 views
 (re-counted 2026-11-04 against a clean `build.py` run; the model validates
@@ -84,7 +84,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
   `BusinessProcess`, `ApplicationComponent`, `ApplicationFunction`,
   `DataObject`, `Grouping`, …). Case-insensitive; the model loader
   canonicalises against the supported ArchiMate types
-  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:195-212`).
+  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:194-209`).
 - **`id`** — a stable kebab id, hashed to a deterministic UUID so regeneration
   never churns identifiers or diagrams. *Never renumber a live id.*
 - **`name` / `desc`** — top-level keys, not inside `props`. Double-quote any
@@ -151,7 +151,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
   and AND-combined per entry) matched against each in-scope relationship
   before it's drawn as a view connection; a relationship is suppressed when
   every key given in an entry matches, and omitted keys are wildcards
-  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:500-540,586-730`, GH #20). Added
+  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:736-780`, GH #20). Added
   because the renderer draws any relationship whose both
   endpoints are in scope, so a mesh that is core to one view's story (e.g.
   the 8-edge capability-to-capability `Serving` mesh on `view-capability`)
@@ -190,7 +190,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
 
 The model loader accumulates invalid model entries and reports collected
 build errors before writing or validating the exchange-format model
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:226-246,753-790,1017-1035`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:230-283,1834-1849`).
 
 ## Model contents — per-layer pages
 

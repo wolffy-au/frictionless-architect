@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 from types import SimpleNamespace
 from typing import Any
 
@@ -21,10 +22,13 @@ class FakeCompletion:
     def __init__(self, content: str | None = None, error: Exception | None = None) -> None:
         self.content = content
         self.error = error
+        self.delay: float = 0.0
         self.calls: list[dict[str, Any]] = []
 
     def __call__(self, **kwargs: Any) -> Any:
         self.calls.append(kwargs)
+        if self.delay:
+            time.sleep(self.delay)
         if self.error is not None:
             raise self.error
         content = self.content

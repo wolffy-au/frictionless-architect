@@ -30,6 +30,12 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     When the architect sends that request by pressing Enter
     Then the chat pane shows no objections
 
+  Scenario: A working indicator is shown while the LLM is proposing a change (GH #186)
+    Given the LLM call is slow to respond
+    When the architect sends that request in the UI without waiting for a reply
+    Then the chat pane shows a working indicator
+    And the working indicator is gone and the reply is shown
+
   Scenario: The diagram can be zoomed, panned and reset
     When the architect picks the view "view-stakeholder" from the list
     And the architect zooms in on the diagram
@@ -83,6 +89,13 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Then the chat pane shows the message "Which assessment do you mean?"
     And Apply is still disabled
 
+  Scenario: A Markdown reply from the LLM is rendered as formatted text, not raw syntax (GH #185)
+    Given the LLM answers with the Markdown message "Here is **bold** text:\n\n- one\n- two"
+    When the architect sends that request in the UI
+    Then the chat pane renders "bold" in bold
+    And the chat pane shows a bullet list item "one"
+    And the chat pane does not show the raw Markdown syntax "**bold**"
+
   Scenario: A suggested way forward offers each option to pick (FR-001 "ways forward", GH #68)
     Given the LLM suggests two ways forward
     When the architect sends that request in the UI
@@ -104,3 +117,11 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Then the chat pane shows that detection failed and it cannot be sent as-is
     When the architect chooses to redact and continue
     Then the chat pane shows no objections
+
+  Scenario: A working indicator is shown while a resolved PII/PHI request is proposed (GH #186)
+    Given the LLM call is slow to respond
+    When the architect sends a request containing personal information in the UI
+    Then the chat pane flags it as personal information
+    When the architect chooses to redact and continue
+    Then the chat pane shows a working indicator
+    And the working indicator is gone and the reply is shown

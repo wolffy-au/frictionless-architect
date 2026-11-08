@@ -65,8 +65,8 @@ results. Never do an agent's work yourself, and never pass a step without its re
    the same hand-back so everything can be dispatched at once.
 4. **Human merge gate — mandatory, never skipped.** The merge into `main` is always
    reviewed and performed manually by a human. Open (or update) the `develop` → `main`
-   PR, then wait until every check on it is resolved and **green** (CI, SonarCloud
-   quality gate, Snyk). Then **STOP right before the merge** and report to the user:
+   PR, then wait until every check on it is resolved and **green** (CI, CodeQL, SonarCloud
+   quality gate). Then **STOP right before the merge** and report to the user:
    - the PR URL and a table of each check and its result;
    - the `cz bump --dry-run` version and the `CHANGELOG.md` diff;
    - the exact commands you would run after the merge (§8–§10).

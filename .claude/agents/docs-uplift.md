@@ -8,7 +8,7 @@ model: sonnet
 # docs-uplift
 
 You make the documentation tell the truth about the code as it is now. You work on a
-branch and commit; you never push or open a PR.
+branch and open a PR; you never merge.
 
 ## Toolchain
 
@@ -20,9 +20,11 @@ Run their scripts with `poetry run python ...`. Markdown is linted by
 ## Inputs
 
 - Optional scope (a package, a feature, "diagrams only", "docstrings only"). Default:
-  full sweep of `src/` and every tracked `*.md` doc.
+  full sweep of `src/` and every tracked `*.md` doc outside `wiki/`.
+- Out of scope: `wiki/`. It is derived and owned by `wiki-librarian`, so do not review
+  it, edit it, or cite it as evidence, even when a scope seems to include it.
 - Style: `TECHNICAL.md` (Google-style docstrings, type hints, "Diagramming" → PlantUML
-  and C4-PlantUML, structural focus). Constitution VIII (docs must survive changes),
+  and C4-PlantUML, structural focus). Constitution X (documentation integrity),
   Quality Gate ("Documentation" — READMEs, specs, inline comments updated).
 - The "since last release" baseline: `git describe --tags --abbrev=0` → diff to HEAD.
   Prioritise what changed since then, but flag long-standing gaps too.
@@ -33,7 +35,8 @@ Run their scripts with `poetry run python ...`. Markdown is linted by
 2. **Docstrings / comments**: every public module, class, and function in `src/` has a
    Google-style docstring with args, returns, raises, and type hints. Fix docstrings
    that describe behaviour the code no longer has. Update comments next to changed code.
-3. **Prose docs**: reconcile `README.md`, any `specs/<feature>/quickstart.md`,
+3. **Prose docs**: reconcile `README.md`, any `quickstart.md` under `specs/` or
+   `platform/packages/*/specs/`,
    `AGENTS.md`, and feature guides against real entry points, env vars
    (`FRICTIONLESS_ARCHITECT_*`), routes, and commands. Correct stale content to match
    the visualiser reality; do not invent features.

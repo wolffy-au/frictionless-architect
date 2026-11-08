@@ -6,6 +6,8 @@ title Roadmap: architecture-strategy-mvp
 Implementation_Deliverable(e_id891b59559d2954, "architecture-strategy-mvp (unreleased)")
 Implementation_Deliverable(e_idde8114d7bf8a5a, "v0.7.0")
 Implementation_Plateau(e_id726fa9a2d0835f, "architecture-strategy-mvp")
+Implementation_WorkPackage(e_id83e30f31be7255, "GH-192 Add a UI to load and save an ArchiMate model from an arbitrary directory")
+Implementation_WorkPackage(e_id0329048df9a15b, "GH-193 Add a views-admin panel for authoring views.yaml entries")
 Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational architecture modelling with live ArchiMate views") {
   Implementation_WorkPackage(e_id040c3046139b52, " --GH-108 feat(modelling): conversational AI agent for interactive ArchiMate model authoring--")
   Implementation_WorkPackage(e_id41b9cdd73c3b5c, " --GH-69 Make section-B roles canonical: split spec 001 Architect, model #45 roles as specialisations--")
@@ -14,12 +16,16 @@ Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational archi
 }
 Implementation_WorkPackage(e_id266c7cb7c31c56, "GH-73 Epic: multi-specification modelling (ArchiMate + UML + OSCAL types per element)")
 Implementation_WorkPackage(e_id975839b5e2f95f, " --GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)--")
+Implementation_WorkPackage(e_id1c323297e58c5c, "GH-194 Roll out split_by:context + package_diagrams across the diagram set")
 
 Rel_Realization_Up(e_id891b59559d2954, e_id726fa9a2d0835f, "")
 Rel_Realization_Up(e_idde8114d7bf8a5a, e_id726fa9a2d0835f, "")
+Rel_Realization_Up(e_id83e30f31be7255, e_id891b59559d2954, "")
+Rel_Realization_Up(e_id0329048df9a15b, e_id891b59559d2954, "")
 Rel_Realization_Up(e_ide39528d3a91552, e_id891b59559d2954, "")
 Rel_Realization_Up(e_id266c7cb7c31c56, e_id891b59559d2954, "")
 Rel_Realization_Up(e_id975839b5e2f95f, e_idde8114d7bf8a5a, "")
+Rel_Realization_Up(e_id1c323297e58c5c, e_id891b59559d2954, "")
 Rel_Triggering_Right(e_id41b9cdd73c3b5c, e_idf087fe9d7e175a, "")
 Rel_Triggering_Right(e_idf087fe9d7e175a, e_id4b747e3b75815e, "")
 

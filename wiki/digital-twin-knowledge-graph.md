@@ -1,6 +1,6 @@
 ---
 title: Digital Twin Knowledge Graph
-generated: '2026-10-31'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0017-knowledge-graph-on-standard-ontology.md

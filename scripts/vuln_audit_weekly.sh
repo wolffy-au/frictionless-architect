@@ -1,7 +1,7 @@
 #!/bin/bash
 # Weekly run of the vulnerability-remediator agent (.claude/agents/vulnerability-remediator.md).
 # By default: an interactive session in worktree ../<repo>-vuln-audit on bugfix/vuln-remediation-<date> (opened in
-# Herdr when run inside it), with its own Poetry venv and the main checkout's .env/.secrets linked in for Snyk. The
+# Herdr when run inside it), with its own Poetry venv and the main checkout's .env linked in for Snyk. The
 # agent gathers the advisories, asks which to remediate, then bumps/patches those, runs the full gate and commits.
 # --report-only: the unattended advisory table in .cache/vuln-audit/<date>.md; bumps no dependency, edits no lock file,
 # opens no PR. It runs in the CURRENT checkout, not a temp worktree: the scanners need the Poetry venv and gh/Snyk auth.
@@ -47,7 +47,7 @@ take them from there (flag any expiring within 14 days or already expired), and 
 ignores absent from those files are Snyk-UI-managed; say 'not shown' for those. Known, expected caveats: pip-audit skips the editable local packages (controls-compliance-catalog, llm-provider-config) because \
 they are not on PyPI, so note it in one line without treating it as a gap; Snyk may warn about missing lockfile metadata for \
 jaraco.classes/context/functools (keyring dependencies, which ARE in the platform graph: Snyk cannot match the dotted names to \
-the lock's dashed ones), so say Snyk cannot check them and pip-audit covers them. Report which dependency set and scanner each finding came from. Do not read .secrets/, run poetry add/lock/update, or install anything. Instead of remediating, give the Output \
+the lock's dashed ones), so say Snyk cannot check them and pip-audit covers them. Report which dependency set and scanner each finding came from. Do not read .env, run poetry add/lock/update, or install anything. Instead of remediating, give the Output \
 advisory table (advisory ID | package/file | severity | current -> fixed | recommended action) plus the unresolved \
 list, under '## Findings'."
 
