@@ -140,7 +140,12 @@ dependency-security fix the same day. An explicit `filelock (>=4.2.1)` floor
 was added on 2026-10-25 for GHSA-v4x8-3wr5-3wq8 and related advisories — the
 lock already resolved a patched version transitively, but Dependabot's
 per-manifest dependency graph only agrees once the manifest states the floor
-itself.
+itself. `markdown (>=3.7,<4.0)` and `nh3 (>=0.2.18,<0.3.0)` (the Rust/Ammonia
+HTML sanitiser) were added 2026-11-07 for server-side chat-Markdown rendering
+(GH #185, see "Candidate-delta pipeline" below); the platform root's
+`pyproject.toml` lint group correspondingly gained `types-markdown` so
+`mypy`/`pyright` can type-check the `markdown.markdown(...)` call in
+`markdown_render.py`.
 
 ## Package layout
 
@@ -151,8 +156,8 @@ itself.
 | `ui.py` | 872 | Split-screen authoring UI |
 | `authoring/delta.py` | 576 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
 | `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
-| `c4.py` | 377 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `puml.py` | 446 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `c4.py` | 377 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
 | `validation/conventions.py` | 321 | Loads and evaluates `conventions.yaml` rules |
 | `authoring/state.py` | 179 | In-memory Candidate Delta session store |
@@ -161,7 +166,7 @@ itself.
 | `validation/fixes.py` | 70 | Deterministic `proposed_fix` generation — never a second LLM call |
 | `authoring/overrides.py` | 61 | Drafts the Override Decision Record ADR stub |
 | `validation/duplicates.py` | 51 | Fuzzy duplicate detection (`rapidfuzz`) |
-| `markdown_render.py` | 44 | Server-side Markdown→sanitised-HTML rendering of LLM chat replies (GH #185) |
+| `markdown_render.py` | 44 | Renders an LLM chat reply's Markdown to HTML and sanitises it to an allowlist via `nh3` (GH #185) |
 | `validation/metamodel.py` | 42 | Metamodel relationship-matrix + referential-integrity check |
 | `app.py` | 23 | FastAPI entry point, registers the `modelling-specification.conversational-authoring` LLM component |
 
@@ -250,7 +255,10 @@ current directory (`platform/packages/modelling-specification/README.md`).
 | `FRICTIONLESS_ADR_DIR` | Where override ADR stubs are written | `docs/adr/` beside the model directory |
 
 Each directory variable must name an existing directory, and the model name must be
-a plain file name; otherwise the package refuses to start
+a plain file name; otherwise the package refuses to start. `env_dir` also rejects a
+blank or NUL-bearing value and canonicalises the path with `os.path.realpath`
+(hardened 2026-11-06 against Snyk Code path-traversal findings; Snyk still reports
+them, since it does not treat `env_dir` as a sanitiser)
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py`).
 A consumer installs the package as a Poetry git dependency and must also list
 `llm-provider-config`, `digital-twin-knowledge-graph` and `pii-gateway` the same way,
@@ -352,12 +360,31 @@ their output, and anyone else redirects it
    `specs/EPIC-003-conversational-model-authoring/contracts/api.md`).
    A resolved request gets the same grounding as any other; until 2026-11-05 it
    lost the contexts, views and relationships.
+   A plain-text reply (`status: "message"`) can itself be Markdown — bold, lists,
+   headings — which the chat pane originally escaped and showed as literal
+   `white-space: pre-wrap` text (GH #185). First fixed (2026-11-07) with a
+   dependency-free, allowlisted client-side `renderMarkdown(text)` added to
+   `ui.py`'s embedded script, every line passed through `escapeHtml` before any
+   markup was layered on; superseded the same day by server-side rendering:
+   `_message_response`
+   (`platform/packages/modelling-specification/src/modelling_specification/router.py`)
+   now also returns `message_html`, `text` run
+   through `markdown_render.render_message_markdown` — `markdown` parses it,
+   `nh3` (Ammonia) then strips every tag/attribute outside a fixed allowlist
+   (`p`, `br`, `strong`, `em`, `code`, `pre`, `ul`/`ol`/`li`, `h1`-`h3`, and `a`
+   restricted to `href`/`title` with `http`/`https`/`mailto` schemes, forced
+   `target="_blank"` and `rel="noopener noreferrer"`) — and `ui.py` inserts
+   `message_html` directly, never building HTML from the raw `message` text
+   client-side any more. The move avoids re-implementing allowlist HTML
+   sanitisation by hand for security-sensitive untrusted LLM output;
+   `render_message_markdown` takes no dependency beyond its input text so
+   another package's chat/LLM UI could reuse it as-is, though none currently
+   does (`platform/packages/modelling-specification/src/modelling_specification/markdown_render.py`).
    The chat lists every kind of pending change and, until Apply, the render pane
    previews it in memory (FR-012a): new elements marked `+`, renamed ones `~`,
    removed ones gone, and a proposed or edited view opened as that view. A view
    that breaks its viewpoint still previews, but stays flagged and can't be applied.
-   Before
-   2026-11-05 the UI and the preview endpoint only considered `elements` and
+   Before 2026-11-05 the UI and the preview endpoint only considered `elements` and
    `relationships`, so a delta that only proposed a view looked empty: nothing was
    drawn and Apply stayed disabled
    (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
