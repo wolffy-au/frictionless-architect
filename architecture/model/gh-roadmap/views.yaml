@@ -38,6 +38,7 @@
   - wp-feat-modelling-conversational-ai-agent-gh-108
   - wp-make-section-b-roles-canonical-split-gh-69
   - wp-model-architect-role-journeys-add-gh-138
+  - wp-roll-out-split-by-context-package-gh-194
   - wp-spec-specs-003-conversational-modelling-gh-139
 - id: view-plat-drift-management-mvp-5
   name: 'Roadmap: drift-management-mvp'

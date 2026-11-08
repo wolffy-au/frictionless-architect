@@ -378,6 +378,9 @@
   source: wp-role-journeys-and-ui-ux-gh-45
   target: del-general-tasks-12-unreleased
 - type: Realization
+  source: wp-roll-out-split-by-context-package-gh-194
+  target: del-architecture-strategy-mvp-7-unreleased
+- type: Realization
   source: wp-sample-simple-implementations-gh-46
   target: del-pattern-blueprint-traceability-mvp-6-unreleased
 - type: Realization

@@ -722,6 +722,13 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/45
 - type: WorkPackage
+  id: wp-roll-out-split-by-context-package-gh-194
+  name: GH-194 Roll out split_by:context + package_diagrams across the diagram set
+  props:
+    gh-number: '194'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/194
+- type: WorkPackage
   id: wp-sample-simple-implementations-gh-46
   name: GH-46 Sample simple implementations
   props:

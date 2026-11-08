@@ -87,6 +87,7 @@ Implementation_WorkPackage(e_iddbd759dae8f252, " --GH-5 Reorganize architecture/
 Implementation_WorkPackage(e_id24e4227880f657, " --GH-60 Resolve migration-order gap: schema-visualizer-api split depends on digital-twin-knowledge-graph scaffolded later--")
 Implementation_WorkPackage(e_idcef2d648a7715d, " --GH-43 Review vision and business diagrams to resolve orphans--")
 Implementation_WorkPackage(e_idc1aee8778ad250, "GH-45 Role journeys and UI/UX")
+Implementation_WorkPackage(e_id1c323297e58c5c, "GH-194 Roll out split_by:context + package_diagrams across the diagram set")
 Implementation_WorkPackage(e_id0d0b37c2136c51, "GH-46 Sample simple implementations")
 Implementation_WorkPackage(e_id2c5c9f25a9c15a, " --GH-106 Scaffold digital-twin-knowledge-graph package (ADR-0006, migration step 4)--")
 Implementation_WorkPackage(e_id4eb86cc3b03c53, "GH-163 Scaffold platform/packages/conformance-drift-assurance (sub-assurance; no spec, no package)")
