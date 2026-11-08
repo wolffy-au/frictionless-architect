@@ -194,8 +194,11 @@ the redaction shape and the `ALLOW` question it exposed, not that wider gap
 The browser authoring UI has a related, separately-tracked rough edge: its three
 PII-review buttons (Redact/Allow/Edit) disable on click and only re-enable on a
 successful `resolve-pii` response, so an `ALLOW` rejected under this path needed its
-own re-enable path to stay usable
-(`platform/packages/modelling-specification/src/modelling_specification/ui.py:676-697`).
+own re-enable path to stay usable. Since GH #186 (2026-11-08) the same click handler
+also shows a "Thinking…" chat message while `resolve-pii` waits on the LLM, and
+removes it in a `finally` whether the call returns, errors or throws
+(`platform/packages/modelling-specification/src/modelling_specification/ui.py:692-716`).
+See [Conversational Model Authoring](modelling-specification.md).
 
 ## Configuration and audit
 

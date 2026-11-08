@@ -108,7 +108,7 @@ topics:
           lines: 168
       urls: {}
   decision-log-ui-visualiser-model:
-    title: "Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020\u20130029)"
+    title: 'Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)'
     page: wiki/decision-log-ui-visualiser-model.md
     built: '2026-10-31'
     sources:
@@ -145,7 +145,8 @@ topics:
           lines: 93
       urls: {}
   decision-log-0030-onward:
-    title: 'Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)'
+    title: 'Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030
+      onward)'
     page: wiki/decision-log-0030-onward.md
     built: '2026-11-05'
     sources:
@@ -1482,8 +1483,8 @@ topics:
           sha256: ea6f79380fa35345e3fb8c071d3ba02d6416691e1061df05da4d44fae78d5611
           lines: 1048
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: ab4cb90b4edbc49ae1e079a1760b7b97808861eba2c54de2dd05e948f332ebaf
-          lines: 872
+          sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
+          lines: 890
         platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
           sha256: 31526e2b1389e35ab771eb7115ac944cb9b60455ee56d0c0de1d6982b0dbd270
           lines: 1
@@ -1508,6 +1509,27 @@ topics:
         scripts/run-modelling_specification.sh:
           sha256: c21fecdffa55523874f7994e14865520082ae8c3895c103fbeb338d2ae2d6e7c
           lines: 17
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/checklists/requirements.md:
+          sha256: 3f18db9658a2d51c3c3e32f1eee720ffb9178898dc5005ba21794cfaba50f0fb
+          lines: 37
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/data-model.md:
+          sha256: 167553c7d227485b4a3aead719eaffcc594a1bf72f7f4b02f1d47b44be61c66a
+          lines: 21
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md:
+          sha256: 4facda3037111e304f59258906aebcbf8809de028fc292306a8d20710de96e4c
+          lines: 118
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/quickstart.md:
+          sha256: 840b69f8e1cf39efcde55c78854195074a26fde32d7655264141a325fe7de63c
+          lines: 44
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md:
+          sha256: bc7f91ab87164ca0def816abf945db5a91506b7582109dd1a238fd1f42a1bb05
+          lines: 91
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md:
+          sha256: b34dc1aee1846523012e003a4adaaa3842be07cbeba518caaf3b4f07dc0d85e7
+          lines: 115
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md:
+          sha256: f2863d929511a9b52c992e90f54c7320152ea342e899b21204bbb5309890dc09
+          lines: 112
         specs/EPIC-003-conversational-model-authoring/checklists/requirements.md:
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
           lines: 77
@@ -1737,8 +1759,8 @@ topics:
           sha256: ea6f79380fa35345e3fb8c071d3ba02d6416691e1061df05da4d44fae78d5611
           lines: 1048
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: ab4cb90b4edbc49ae1e079a1760b7b97808861eba2c54de2dd05e948f332ebaf
-          lines: 872
+          sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
+          lines: 890
         platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py:
           sha256: f1c8f836135f5fb3bdeb25e56853d558475fd66804e363e55072bf24c926939b
           lines: 58

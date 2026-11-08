@@ -31,6 +31,13 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py
 - platform/packages/modelling-specification/src/modelling_specification/viewpoints.py
 - scripts/run-modelling_specification.sh
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/checklists/requirements.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/data-model.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/quickstart.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md
+- specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md
 - specs/EPIC-003-conversational-model-authoring/checklists/requirements.md
 - specs/EPIC-003-conversational-model-authoring/contracts/api.md
 - specs/EPIC-003-conversational-model-authoring/data-model.md
@@ -109,14 +116,11 @@ load-bearing:
   stream-per-outcome shape ADR-0033 set for the other four outcomes. See
   [Architecture Model: Skeleton](architecture-model-skeleton.md).
 
-`plan.md` originally cited this record as "ADR-0036"; that number was taken
-by the unrelated element-id-prefix-scheme ADR during a rebase, so it filed
-as ADR-0037 instead, with both `plan.md` references corrected to match.
-
-A later item 8 (2026-11-01) amends the same still-Proposed record rather than
-filing a new one — add-only was never itself a deliberated decision (no
-clarification session in `spec.md` raised it, no ADR covered it), so there was
-nothing to supersede. See "Candidate-delta pipeline" below for what it changes.
+`plan.md` first cited this record as "ADR-0036"; that number went to the unrelated
+element-id-prefix ADR during a rebase, so it filed as ADR-0037. A later item 8
+(2026-11-01) amends the same still-Proposed record, because add-only was never a
+deliberated decision and there was nothing to supersede. See "Candidate-delta
+pipeline" below.
 
 ## Dependencies
 
@@ -130,22 +134,17 @@ since the knowledge-graph scaffold landed,
 [`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
 this package is that package's first real, permanent consumer, calling
 `KnowledgeGraphReadPath(GraphSettings()).collect()` as an ordinary function
-call. `pyarchimate` was bumped from the `1.12.3`/`<2.0.0` line to `2.0.0`
-on 2026-10-24 to pull in `pillow` 13.0.0, clearing 36 open Snyk
-Critical/High/Medium findings in the transitively-pinned `pillow` 12.3.0;
-`pyarchimate` 2.0.0's only breaking changes (dropping Python 3.10, an enum
-formatting change) don't affect this codebase's usage. See
+call. `pyarchimate` was bumped from `1.12.3` to `2.0.0` on 2026-10-24 to pull in
+`pillow` 13.0.0, clearing 36 open Snyk findings in the transitively-pinned
+`pillow` 12.3.0; its only breaking changes (dropping Python 3.10, an enum
+formatting change) don't affect this codebase. See
 [Controls & Compliance Catalog](controls-compliance-catalog.md) for a related
-dependency-security fix the same day. An explicit `filelock (>=4.2.1)` floor
-was added on 2026-10-25 for GHSA-v4x8-3wr5-3wq8 and related advisories — the
-lock already resolved a patched version transitively, but Dependabot's
-per-manifest dependency graph only agrees once the manifest states the floor
-itself. `markdown (>=3.7,<4.0)` and `nh3 (>=0.2.18,<0.3.0)` (the Rust/Ammonia
-HTML sanitiser) were added 2026-11-07 for server-side chat-Markdown rendering
-(GH #185, see "Candidate-delta pipeline" below); the platform root's
-`pyproject.toml` lint group correspondingly gained `types-markdown` so
-`mypy`/`pyright` can type-check the `markdown.markdown(...)` call in
-`markdown_render.py`.
+fix the same day. An explicit `filelock (>=4.2.1)` floor was added on 2026-10-25
+for GHSA-v4x8-3wr5-3wq8 and related advisories, so Dependabot's per-manifest graph
+agrees with the lock. `markdown` and `nh3` (the Rust/Ammonia sanitiser) were added
+2026-11-07 for server-side chat-Markdown rendering (GH #185); the platform root's
+lint group gained `types-markdown` to type-check the `markdown.markdown(...)` call.
+The working indicator (GH #186) adds no dependency.
 
 ## Package layout
 
@@ -153,7 +152,7 @@ HTML sanitiser) were added 2026-11-07 for server-side chat-Markdown rendering
 |---|---|---|
 | `model_io.py` | 1784 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
 | `router.py` | 1048 | FastAPI router: propose/validate/decide/render/config/state |
-| `ui.py` | 872 | Split-screen authoring UI |
+| `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
 | `authoring/delta.py` | 576 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
 | `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
 | `puml.py` | 446 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
@@ -336,14 +335,12 @@ their output, and anyone else redirects it
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
    [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). The
-   split-screen UI's `renderProposeResponse` originally had no branch for this
-   `status: "options"` reply — it fell through to the single-delta path, which
-   saw empty top-level `elements`/`relationships` and printed the generic
-   "Looks good -- no objections" text, silently dropping every suggested
-   option. Fixed (2026-11-05): `ui.py`'s `renderOptions` now shows each
-   option's rationale, convention references, proposed elements/relationships
-   and validation caveats, with a "Pick this option" button that calls
-   `propose/select`
+   split-screen UI's `renderProposeResponse` originally had no branch for
+   `status: "options"`, so it printed the generic "Looks good -- no objections"
+   text and silently dropped every option. Fixed (2026-11-05): `ui.py`'s
+   `renderOptions` shows each option's rationale, convention references, proposed
+   elements/relationships and validation caveats, with a "Pick this option" button
+   that calls `propose/select`
    (`platform/packages/modelling-specification/src/modelling_specification/ui.py`).
    If the LLM call itself
    fails, `propose_delta` logs the provider detail server-side only and
@@ -360,26 +357,41 @@ their output, and anyone else redirects it
    `specs/EPIC-003-conversational-model-authoring/contracts/api.md`).
    A resolved request gets the same grounding as any other; until 2026-11-05 it
    lost the contexts, views and relationships.
-   A plain-text reply (`status: "message"`) can itself be Markdown — bold, lists,
-   headings — which the chat pane originally escaped and showed as literal
-   `white-space: pre-wrap` text (GH #185). First fixed (2026-11-07) with a
-   dependency-free, allowlisted client-side `renderMarkdown(text)` added to
-   `ui.py`'s embedded script, every line passed through `escapeHtml` before any
-   markup was layered on; superseded the same day by server-side rendering:
-   `_message_response`
+   A plain-text reply (`status: "message"`) can itself be Markdown, which the chat
+   pane originally showed as literal text (GH #185). A client-side `renderMarkdown`
+   fixed that on 2026-11-07 and was superseded the same day by the server-side
+   `message_html` described above: `_message_response`
    (`platform/packages/modelling-specification/src/modelling_specification/router.py`)
-   now also returns `message_html`, `text` run
-   through `markdown_render.render_message_markdown` — `markdown` parses it,
-   `nh3` (Ammonia) then strips every tag/attribute outside a fixed allowlist
-   (`p`, `br`, `strong`, `em`, `code`, `pre`, `ul`/`ol`/`li`, `h1`-`h3`, and `a`
-   restricted to `href`/`title` with `http`/`https`/`mailto` schemes, forced
-   `target="_blank"` and `rel="noopener noreferrer"`) — and `ui.py` inserts
-   `message_html` directly, never building HTML from the raw `message` text
-   client-side any more. The move avoids re-implementing allowlist HTML
-   sanitisation by hand for security-sensitive untrusted LLM output;
-   `render_message_markdown` takes no dependency beyond its input text so
-   another package's chat/LLM UI could reuse it as-is, though none currently
-   does (`platform/packages/modelling-specification/src/modelling_specification/markdown_render.py`).
+   returns it, with `a` forced to `target="_blank"` and `rel="noopener noreferrer"`,
+   and `ui.py` inserts it directly, never building HTML from the raw `message`. This
+   avoids hand-rolling allowlist sanitisation for untrusted LLM output;
+   `render_message_markdown` needs nothing beyond its input text, so another
+   package's chat UI could reuse it, though none does yet
+   (`platform/packages/modelling-specification/src/modelling_specification/markdown_render.py`).
+   **Working indicator (GH #186, spec `003-llm-working-indicator`, Draft, 2026-11-08).**
+   Before it, Send being disabled was the only sign an LLM call was in flight. Now
+   `showThinking()` adds an italic, pulsing "Thinking…" chat message (`.msg.thinking`,
+   animation off under `prefers-reduced-motion`) for the two paths that wait on the
+   LLM: `sendRequest` (`propose`) and the PII-review button handler
+   (`propose/resolve-pii`). Each removes it in a `finally`, so a reply, an error or a
+   thrown exception all clear it, and `sendButton.disabled` is unchanged. It is
+   classed `thinking`, never `agent`, so the `.msg.agent` selectors in the behave
+   steps still mean "a real reply arrived". Choosing an option, applying or rejecting
+   a delta and picking a view show none. It is client-only: no API, session or
+   dependency change, and no new ADR or shared package, since a package needs a real
+   second consumer (ADR-0034) and `controls-compliance-catalog` already has its own
+   indicator. Streaming is out of scope. Tests are a `test_ui.py` markup check and two
+   behave scenarios that set a new `FakeCompletion.delay` to observe the in-flight
+   state; `tasks.md` marks T001-T011 done, T011 being a human check against a real LLM
+   provider
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py:88-90`,
+   `platform/packages/modelling-specification/src/modelling_specification/ui.py:215-217`,
+   `platform/packages/modelling-specification/src/modelling_specification/ui.py:701-714`,
+   `platform/packages/modelling-specification/src/modelling_specification/ui.py:797-816`;
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md`,
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md`,
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md`,
+   `specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md`).
    The chat lists every kind of pending change and, until Apply, the render pane
    previews it in memory (FR-012a): new elements marked `+`, renamed ones `~`,
    removed ones gone, and a proposed or edited view opened as that view. A view
@@ -488,8 +500,5 @@ Not covered by current sources: rollout/feature-flag status, since
 ADR-0037 is still **Proposed**, not **Accepted**.
 
 See `specs/EPIC-003-conversational-model-authoring/` (spec.md, plan.md,
-data-model.md, tasks.md) for the full requirements, data model and task
-breakdown behind this package, and
-[Conversational Solution Design Modelling](solution-design-modelling.md)
-for the sibling feature above, and [Decision Log](decision-log-0030-onward.md)
-for ADR-0037 and ADR-0039 in full.
+data-model.md, tasks.md) for the full requirements and task breakdown, and the
+[Decision Log](decision-log-0030-onward.md) for ADR-0037 and ADR-0039 in full.
