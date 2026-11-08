@@ -887,54 +887,66 @@ def add_views(
         if "id" not in v or "name" not in v:
             errors.append(f"view missing id/name: {v!r}")
             continue
-        want = set(v.get("members") or [])
-        types = {
-            c
-            for t in (v.get("include_types") or [])
-            if (c := canon(t, errors, f"view {v['id']} include_types")) is not None
-        }
-        # Deterministic view/node/connection uuids (via det_id) so the <views>
-        # block of the generated XML does not churn on every build. add() below
-        # bypasses get_or_create_view() only because that wrapper has no uuid arg.
-        view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
-        scope = _view_scope(v, known_contexts, errors)
-        exclude_element_patterns = _compile_exclude_element_patterns(v, errors)
-        on_view, view_el_types = _select_view_elements(
-            view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
+        _build_view(m, v, elements, by_id, types_by_id, known_contexts, uuid_to_id, errors)
+
+
+def _build_view(
+    m: Model,
+    v: dict[str, Any],
+    elements: list[dict[str, Any]],
+    by_id: dict[str, Element],
+    types_by_id: dict[str, str],
+    known_contexts: set[str],
+    uuid_to_id: dict[str, str],
+    errors: list[str],
+) -> None:
+    """Build one view (see `add_views`): nodes, neighbours, connections, viewpoint check, layout."""
+    want = set(v.get("members") or [])
+    types = {
+        c
+        for t in (v.get("include_types") or [])
+        if (c := canon(t, errors, f"view {v['id']} include_types")) is not None
+    }
+    # Deterministic view/node/connection uuids (via det_id) so the <views>
+    # block of the generated XML does not churn on every build. add() below
+    # bypasses get_or_create_view() only because that wrapper has no uuid arg.
+    view: Any = m.add(ArchiType.View, name=v["name"], uuid=det_id(v["id"]))
+    scope = _view_scope(v, known_contexts, errors)
+    exclude_element_patterns = _compile_exclude_element_patterns(v, errors)
+    on_view, view_el_types = _select_view_elements(
+        view, elements, by_id, types_by_id, want, types, scope, exclude_element_patterns, v["id"]
+    )
+    if v.get("include_neighbours"):
+        # Neighbours are incidental boundary-crossing context, not part of
+        # what the view's own `viewpoint:` is declared to be about -- they
+        # are deliberately NOT folded into view_el_types, so a neighbour of
+        # a type the viewpoint doesn't allow (e.g. a Capability one hop
+        # from an Application Usage view) doesn't fail check_view_viewpoint
+        # below (GH #129 step 4 fallout). `include_neighbours: same_layer`
+        # (as opposed to `true`) additionally restricts the pull to
+        # neighbours in the same ArchiMate layer as the on-view element
+        # they are one hop from -- for a single-layer viewpoint like
+        # Application Cooperation, an unrestricted pull otherwise erases
+        # the one thing that distinguishes it from a cross-layer viewpoint
+        # like Application Usage.
+        _add_neighbour_elements(
+            view,
+            m,
+            on_view,
+            uuid_to_id,
+            types_by_id,
+            exclude_element_patterns,
+            v["id"],
+            same_layer_only=v.get("include_neighbours") == "same_layer",
         )
-        if v.get("include_neighbours"):
-            # Neighbours are incidental boundary-crossing context, not part of
-            # what the view's own `viewpoint:` is declared to be about -- they
-            # are deliberately NOT folded into view_el_types, so a neighbour of
-            # a type the viewpoint doesn't allow (e.g. a Capability one hop
-            # from an Application Usage view) doesn't fail check_view_viewpoint
-            # below (GH #129 step 4 fallout). `include_neighbours: same_layer`
-            # (as opposed to `true`) additionally restricts the pull to
-            # neighbours in the same ArchiMate layer as the on-view element
-            # they are one hop from -- for a single-layer viewpoint like
-            # Application Cooperation, an unrestricted pull otherwise erases
-            # the one thing that distinguishes it from a cross-layer viewpoint
-            # like Application Usage.
-            _add_neighbour_elements(
-                view,
-                m,
-                on_view,
-                uuid_to_id,
-                types_by_id,
-                exclude_element_patterns,
-                v["id"],
-                same_layer_only=v.get("include_neighbours") == "same_layer",
-            )
-        exclude_patterns = _compile_exclude_patterns(v, errors)
-        view_rel_types = _connect_view_relationships(
-            view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"]
-        )
-        missing = [mid for mid in want if mid not in by_id]
-        if missing:
-            errors.append(f"view {v['id']} references unknown ids: {missing}")
-            continue
-        check_view_viewpoint(v, view_el_types, view_rel_types, errors)
-        _apply_view_layout(view, v, errors)
+    exclude_patterns = _compile_exclude_patterns(v, errors)
+    view_rel_types = _connect_view_relationships(view, m, on_view, exclude_patterns, uuid_to_id, types_by_id, v["id"])
+    missing = [mid for mid in want if mid not in by_id]
+    if missing:
+        errors.append(f"view {v['id']} references unknown ids: {missing}")
+        return
+    check_view_viewpoint(v, view_el_types, view_rel_types, errors)
+    _apply_view_layout(view, v, errors)
 
 
 def _select_view_elements(
