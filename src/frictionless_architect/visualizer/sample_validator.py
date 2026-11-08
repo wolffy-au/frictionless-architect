@@ -1,7 +1,7 @@
 """Validate sample XML against the bundled ArchiMate exchange-format XSDs (ADR-0022).
 
-The sample is parsed with `defusedxml` and checked for the ArchiMate namespace
-(ADR-0032), then validated against the XSDs with `xmlschema` (which re-reads the
+The sample is parsed with ``defusedxml`` and checked for the ArchiMate namespace
+(ADR-0032), then validated against the XSDs with ``xmlschema`` (which re-reads the
 file, equally hardened, so it keeps the document's own prefix map). The hand-written
 relationship/view reference checks run as well: they name the dangling
 identifier, which the XSD's key/keyref errors do not.
@@ -119,9 +119,10 @@ def validate_sample_against_schema(sample_path: Path, schema_path: Path) -> list
     `schema_path` is the entry XSD; for a model with diagrams that is
     `archimate3_Diagram.xsd`, which includes the View and Model schemas.
 
-    This function never raises: missing files, namespace mismatches, schema
-    load failures and XSD validation errors are all reported as strings in
-    the returned list instead of propagating as exceptions.
+    Missing files, namespace mismatches, schema load failures and XSD
+    validation errors are reported as strings in the returned list instead
+    of propagating as exceptions. Malformed sample XML is not: it is parsed
+    up front, before any of those checks, so it raises.
 
     Args:
         sample_path: Path to the sample ArchiMate exchange-format XML.
@@ -131,6 +132,11 @@ def validate_sample_against_schema(sample_path: Path, schema_path: Path) -> list
         A list of human-readable issue strings; empty when the sample is
         valid. XSD-schema issues are prefixed ``"XSD: "``, and reporting
         stops (with a final summary entry) after ``MAX_XSD_ISSUES`` of them.
+
+    Raises:
+        xml.etree.ElementTree.ParseError: If the sample XML is malformed.
+        defusedxml.DefusedXmlException: If the sample uses an XML construct
+            ``defusedxml`` forbids (entity declarations, external references).
     """
     if not sample_path.exists():
         return [f"Sample XML missing at {sample_path}"]
