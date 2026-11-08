@@ -74,6 +74,19 @@ DIAGRAMS = HERE / "diagrams"
 # model_io.py's VENDORED_MODELS.
 VENDORED_VIEW_SOURCES = [(d / VIEWS_FILENAME, d / "diagrams") for d in VENDORED_MODELS]
 
+# GH #183 spike prototype only -- not a general mechanism. Redirects one
+# split_by: context view's output, for one context, into that package's own
+# specs/diagrams/ instead of architecture/model/diagrams/<slug>/<context>.puml,
+# to test whether package-scoped diagrams can live beside the code that owns
+# them without a package-local model/views file. _orphans() only ever scans
+# DIAGRAMS/VENDORED roots, so a file redirected here is never auto-cleaned if
+# the redirect is later removed -- fine for a spike, not for anything that ships.
+SPIKE_PACKAGE_DIAGRAM_REDIRECTS: dict[tuple[str, str], Path] = {
+    ("view-business-process-cooperation", "controls-compliance-catalog"): (
+        PROJECT_ROOT / "platform" / "packages" / "controls-compliance-catalog" / "specs" / "diagrams"
+    ),
+}
+
 # Resolved via Python's module system (ADR-0045), not a repo-relative file path, so
 # this works identically whether `modelling_specification` is this checkout's own
 # `platform/` package or an installed dependency in a different repo.
@@ -160,7 +173,12 @@ def _view_diagram_jobs(
         ]
         if v.get("split_by") == "context":
             for context in model_io.view_split_contexts(v, elements, types_by_id):
-                jobs.append((diagram_root / slug / f"{context}.puml", [*base_cmd, "--context", context]))
+                cmd = [*base_cmd, "--context", context]
+                redirect = SPIKE_PACKAGE_DIAGRAM_REDIRECTS.get((v.get("id"), context))
+                if redirect is not None:
+                    jobs.append((redirect / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
+                else:
+                    jobs.append((diagram_root / slug / f"{context}.puml", cmd))
         else:
             jobs.append((diagram_root / f"{slug}.puml", base_cmd))
     return jobs
