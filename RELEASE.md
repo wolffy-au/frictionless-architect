@@ -195,7 +195,8 @@ The name must match `tag_format = "v$version"` (and `poetry-dynamic-versioning`)
 ### 9. Create the GitHub release
 
 Draft notes from the previous release as a template (subject line + summary of all
-commits since the last tag), review, then:
+commits since the last tag), then create the release — no human sign-off needed on the
+notes themselves, only the §7 merge gate is a required pause:
 
 ```bash
 gh release create v<X.Y.Z> --verify-tag --title "v<X.Y.Z>" --notes "<release notes>"
