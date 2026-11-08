@@ -74,18 +74,38 @@ DIAGRAMS = HERE / "diagrams"
 # model_io.py's VENDORED_MODELS.
 VENDORED_VIEW_SOURCES = [(d / VIEWS_FILENAME, d / "diagrams") for d in VENDORED_MODELS]
 
-# GH #183 spike prototype only -- not a general mechanism. Redirects one
-# split_by: context view's output, for one context, into that package's own
-# specs/diagrams/ instead of architecture/model/diagrams/<slug>/<context>.puml,
-# to test whether package-scoped diagrams can live beside the code that owns
-# them without a package-local model/views file. _orphans() only ever scans
-# DIAGRAMS/VENDORED roots, so a file redirected here is never auto-cleaned if
-# the redirect is later removed -- fine for a spike, not for anything that ships.
-SPIKE_PACKAGE_DIAGRAM_REDIRECTS: dict[tuple[str, str], Path] = {
-    ("view-business-process-cooperation", "controls-compliance-catalog"): (
-        PROJECT_ROOT / "platform" / "packages" / "controls-compliance-catalog" / "specs" / "diagrams"
-    ),
-}
+
+def _package_diagram_dir(context: str) -> Path | None:
+    """`platform/packages/<context>/specs/diagrams/` if it already exists, else `None`.
+
+    GH #183: a `split_by: context` view that also sets `package_diagrams: true`
+    routes each context's slice here instead of under
+    `architecture/model/diagrams/<slug>/<context>.puml` -- but only for a
+    context whose package already has this directory. Nothing is created
+    automatically, and a package with no such directory keeps the old path.
+    This directory is reserved for generator-owned output, exactly like
+    `DIAGRAMS` itself -- a package's own hand-authored diagrams live under
+    `specs/<NNN-slug>/diagrams/` instead, never here, so `_orphans()` sweeping
+    this directory can never delete something hand-authored.
+    """
+    candidate = PROJECT_ROOT / "platform" / "packages" / context / "specs" / "diagrams"
+    return candidate if candidate.is_dir() else None
+
+
+def _package_diagram_dirs() -> list[Path]:
+    """Every `platform/packages/*/specs/diagrams/` that exists, regardless of
+    whether any current view redirects into it. GH #183: this directory is
+    reserved for generator-owned output (see `_package_diagram_dir`), so it's
+    always safe to orphan-sweep -- this is what lets removing a view's
+    `package_diagrams: true` (or a package losing the directory) clean up a
+    now-stale file, even though that file is no longer in any job's `wanted`
+    set for `_orphans` to compare against.
+    """
+    packages_dir = PROJECT_ROOT / "platform" / "packages"
+    if not packages_dir.is_dir():
+        return []
+    return sorted(d for d in packages_dir.glob("*/specs/diagrams") if d.is_dir())
+
 
 # Resolved via Python's module system (ADR-0045), not a repo-relative file path, so
 # this works identically whether `modelling_specification` is this checkout's own
@@ -174,9 +194,9 @@ def _view_diagram_jobs(
         if v.get("split_by") == "context":
             for context in model_io.view_split_contexts(v, elements, types_by_id):
                 cmd = [*base_cmd, "--context", context]
-                redirect = SPIKE_PACKAGE_DIAGRAM_REDIRECTS.get((v.get("id"), context))
-                if redirect is not None:
-                    jobs.append((redirect / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
+                package_dir = _package_diagram_dir(context) if v.get("package_diagrams") else None
+                if package_dir is not None:
+                    jobs.append((package_dir / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
                 else:
                     jobs.append((diagram_root / slug / f"{context}.puml", cmd))
         else:
@@ -299,7 +319,6 @@ def render(diagram_roots: list[Path], svg: bool, *, write: bool) -> tuple[list[s
     true they're deleted.
     """
     stale: list[str] = []
-    orphan: list[str] = []
     changed_pumls: list[Path] = []
     wanted: set[Path] = set()
 
@@ -308,6 +327,16 @@ def render(diagram_roots: list[Path], svg: bool, *, write: bool) -> tuple[list[s
         stale += root_stale
         changed_pumls += root_changed
         wanted |= root_wanted
+
+    # GH #183: a `package_diagrams: true` view can route some jobs to a
+    # package's own specs/diagrams/, outside every diagram_root above. Those
+    # directories are swept unconditionally (not just the ones a live job
+    # currently targets) -- an orphan is by definition absent from `wanted`,
+    # so turning the flag off, or a package losing its directory, leaves
+    # nothing for a "does any job still want this directory" check to find;
+    # only an unconditional sweep of every such directory catches it.
+    orphan: list[str] = []
+    for root in [*diagram_roots, *_package_diagram_dirs()]:
         orphan += _orphans(root, wanted, write=write)
 
     if write and svg and changed_pumls:
