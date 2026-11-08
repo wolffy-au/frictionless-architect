@@ -30,13 +30,15 @@ CONVENTIONS_PATH = model_io.HERE / "conventions.yaml"
 
 class ConventionRuleError(Exception):
     """A malformed `conventions.yaml` entry -- never silently skipped (FR-007's
-    "never silently" posture)."""
+    "never silently" posture).
+    """
 
 
 def load_rules(path: Path | None = None) -> list[dict[str, Any]]:
     """Load and validate every rule's shape. Raises `ConventionRuleError` naming the
     offending `id` (or the whole entry, if even `id` is missing) rather than skipping
-    a malformed entry."""
+    a malformed entry.
+    """
     path = path if path is not None else CONVENTIONS_PATH
     if not path.exists():
         return []
@@ -87,7 +89,8 @@ def _validate_min_shared_words(rule: dict[str, Any]) -> None:
 
 def _validate_scoped_neighbour_rule(rule: dict[str, Any], kind: str) -> None:
     """Shared shape check for `required-neighbour` and `no-restatement`: both need a
-    scope list and a `{relationship_type, direction, neighbour_type}` params mapping."""
+    scope list and a `{relationship_type, direction, neighbour_type}` params mapping.
+    """
     params = rule.get("params")
     if (
         not isinstance(rule.get("scope"), list)
@@ -130,7 +133,8 @@ def _violation(rule: dict[str, Any], element: dict[str, Any]) -> str | None:
 def check_elements(elements: list[dict[str, Any]], rules: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     """Return a `validation_result.findings[]`-shaped entry (FR-004) per violated
     `naming`/`altitude`/`allowed-subset` rule. `rules` defaults to the real
-    `conventions.yaml`; tests inject an explicit rule list."""
+    `conventions.yaml`; tests inject an explicit rule list.
+    """
     rules = rules if rules is not None else load_rules()
     findings: list[dict[str, Any]] = []
     for rule in rules:
@@ -236,7 +240,8 @@ def _tokenize(text: str) -> list[str]:
 
 def _longest_shared_run(a: list[str], b: list[str]) -> list[str]:
     """The longest contiguous word run common to both token lists (order-preserving,
-    not just a shared vocabulary) -- a word-level longest-common-substring."""
+    not just a shared vocabulary) -- a word-level longest-common-substring.
+    """
     matcher = difflib.SequenceMatcher(None, a, b, autojunk=False)
     match = matcher.find_longest_match(0, len(a), 0, len(b))
     return a[match.a : match.a + match.size]
@@ -251,7 +256,8 @@ def _matching_neighbour_ids(
     types_by_id: dict[str, str],
 ) -> Iterator[str]:
     """Ids of neighbours related to `element_id` by a `relationship_type` relationship
-    matching `direction`/`neighbour_type` (the generator form of `_has_neighbour`)."""
+    matching `direction`/`neighbour_type` (the generator form of `_has_neighbour`).
+    """
     for rel in relationships:
         if rel["type"] == relationship_type and _has_neighbour(rel, element_id, direction, neighbour_type, types_by_id):
             yield rel["target"] if direction == "outgoing" else rel["source"]
@@ -267,7 +273,8 @@ def _neighbour_restatement(
     min_shared_words: int,
 ) -> str | None:
     """A finding string if `neighbour`'s `desc` shares `min_shared_words`+ verbatim
-    words with `element_words`, else `None`."""
+    words with `element_words`, else `None`.
+    """
     shared = _longest_shared_run(element_words, _tokenize(str(neighbour.get("desc", ""))))
     if len(shared) < min_shared_words:
         return None
@@ -285,7 +292,8 @@ def _check_no_restatement(
 ) -> list[str]:
     """Flag an element whose `desc` shares a long verbatim run with the `desc` of a
     neighbour it's related to (e.g. a Requirement restating the Outcome it realizes
-    instead of stating the capability-level contract that delivers it)."""
+    instead of stating the capability-level contract that delivers it).
+    """
     params = rule["params"]
     direction = params["direction"]
     min_shared_words = params.get("min_shared_words", _DEFAULT_MIN_SHARED_WORDS)

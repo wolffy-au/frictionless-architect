@@ -1,5 +1,6 @@
 """XML namespaces for ArchiMate exchange-format parsing (ported from flat-`src/`'s
-`frictionless_architect.visualizer.namespaces`, FR-011 — behaviorally identical)."""
+`frictionless_architect.visualizer.namespaces`, FR-011 — behaviorally identical).
+"""
 
 from __future__ import annotations
 

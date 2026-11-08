@@ -59,7 +59,8 @@ def find_pattern_suggestions(
 
 def _humanize_type(archimate_type: str) -> str:
     """`ApplicationService` -> `Application Service`, for a synthesized element's
-    auto-generated name."""
+    auto-generated name.
+    """
     return re.sub(r"(?<!^)(?=[A-Z])", " ", archimate_type)
 
 
@@ -76,7 +77,8 @@ def synthesize_intermediaries(
     final, intermediary-to-target leg gets the rule's own `target_relationship_type`
     (`...--Realization--> store-akg` in that precedent). Returns new elements/
     relationships only -- the caller splices them into the Candidate Delta in place
-    of the matched direct relationship (FR-008, 2026-10-11 clarify)."""
+    of the matched direct relationship (FR-008, 2026-10-11 clarify).
+    """
     proposed = suggestion["proposed_relationship"]
     established = suggestion["established_pattern"]
     direct_type = proposed["type"]

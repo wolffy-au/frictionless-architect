@@ -113,6 +113,7 @@ class SessionStore:
     """Process-memory session/delta registry. No persistence (R8)."""
 
     def __init__(self) -> None:
+        """Create an empty store."""
         self._sessions: dict[str, Session] = {}
 
     def create_session(self) -> str:
@@ -169,7 +170,8 @@ class SessionStore:
 
     def pending_delta(self, session_id: str) -> CandidateDelta | None:
         """The session's most recent non-terminal delta -- the FR-015 amend target, if
-        any. `None` once every delta in the session is `applied`/`discarded`."""
+        any. `None` once every delta in the session is `applied`/`discarded`.
+        """
         session = self._sessions.get(session_id)
         if session is None:
             return None

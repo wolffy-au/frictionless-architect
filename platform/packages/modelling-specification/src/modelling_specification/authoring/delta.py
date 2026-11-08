@@ -148,9 +148,15 @@ class DeltaProposalError(Exception):
 class LlmMessage(Exception):
     """The LLM answered in plain text instead of a delta -- a clarifying question or a
     suggestion (FR-001: ask, don't guess). Carries the text to show the architect; no
-    Candidate Delta is created."""
+    Candidate Delta is created.
+    """
 
     def __init__(self, text: str) -> None:
+        """Record the LLM's reply.
+
+        Args:
+            text: The plain-text reply to show the architect.
+        """
         super().__init__(text)
         self.text = text
 
@@ -160,9 +166,16 @@ class PiiReviewRequired(Exception):
     (ADR-0014 amendment, `conversational-authoring` context) rather than
     auto-redacting -- the LLM call must NOT proceed yet. Carries the
     `PendingConfirmation` the caller resolves (via `pii_gateway.Resolution`) before
-    retrying with `resume_proposal()`. No Candidate Delta is created."""
+    retrying with `resume_proposal()`. No Candidate Delta is created.
+    """
 
     def __init__(self, pending_confirmation: PendingConfirmation) -> None:
+        """Carry the confirmation the architect must resolve.
+
+        Args:
+            pending_confirmation: The unresolved ``scrub()`` result; its ``matches``
+                are exposed as ``matches``.
+        """
         super().__init__("a PII/PHI match in the request needs the architect's review before the LLM call proceeds")
         self.pending_confirmation = pending_confirmation
         self.matches = pending_confirmation.matches
@@ -177,7 +190,8 @@ def _message_content(response: Any) -> str:
 
 def _short_description(desc: str) -> str:
     """`desc` on one line, cut to `MAX_DESC_CHARS` -- a folded YAML description would
-    otherwise break the catalogue's one-element-per-line shape."""
+    otherwise break the catalogue's one-element-per-line shape.
+    """
     flat = " ".join(desc.split())
     return flat if len(flat) <= MAX_DESC_CHARS else f"{flat[:MAX_DESC_CHARS].rstrip()}..."
 
@@ -217,7 +231,8 @@ def _grounded_system_prompt(
     """`SYSTEM_PROMPT` plus one labelled block per non-empty grounding input, in a
     fixed order -- factored out of `propose_delta` to keep its own branching under
     the complexity gate; each block is independently optional, so a caller can pass
-    only the data it has."""
+    only the data it has.
+    """
     blocks: list[tuple[str, list[Any] | dict[str, Any] | None, Callable[[Any], str]]] = [
         ("Existing elements", catalogue, _catalogue_text),
         ("Existing contexts", contexts, _contexts_text),
@@ -298,7 +313,8 @@ def propose_delta(
     Raises `PiiReviewRequired` when `scrub()` flags a PII/PHI match in `request` for
     the architect's review (ADR-0014 amendment) -- the LLM call is NOT made; the
     caller must resolve the flagged match (via `pii_gateway.Resolution`) and retry
-    with `resume_proposal()`."""
+    with `resume_proposal()`.
+    """
     stripped = request.strip()
     if not stripped:
         raise DeltaProposalError("Cannot propose a delta from an empty request.")
@@ -325,7 +341,8 @@ def scrub_or_require_review(text: str) -> str:
     assumed clean -- it is re-scrubbed exactly like any other request text, so a
     still-sensitive edit is re-flagged rather than ever reaching the LLM call
     unscrubbed (never auto-escalated to a different behaviour; the caller sees
-    the same `pii_review_required` shape as a fresh `propose` would)."""
+    the same `pii_review_required` shape as a fresh `propose` would).
+    """
     result = scrub(text, context="conversational-authoring")
     if result.action == ScrubAction.FLAGGED_FOR_REVIEW:
         if result.pending_confirmation is None:  # pragma: no cover - scrub() always sets this when flagged
@@ -337,7 +354,8 @@ def scrub_or_require_review(text: str) -> str:
 def _remember(history: list[dict[str, str]] | None, request: str, reply: str) -> None:
     """Record one completed exchange (FR-018), keeping only the newest
     `MAX_HISTORY_MESSAGES` messages. `request` must be the text the LLM was actually
-    sent -- a flagged or unscrubbed original never reaches this point."""
+    sent -- a flagged or unscrubbed original never reaches this point.
+    """
     if history is None:
         return
     history += [{"role": "user", "content": request}, {"role": "assistant", "content": reply}]
@@ -363,7 +381,8 @@ def resume_proposal(
 
     `history` holds the session's earlier turns (FR-018): they are sent ahead of this
     request, and this exchange is appended once it succeeds. `pending` is the session's
-    not-yet-applied delta, shown to the LLM so it doesn't repeat it."""
+    not-yet-applied delta, shown to the LLM so it doesn't repeat it.
+    """
     try:
         call = resolve_call(COMPONENT_ID)
     except (NotConfiguredError, MissingCredentialError) as exc:
@@ -402,7 +421,8 @@ def resume_proposal(
 
 def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:
     """`payload` must be a single delta or an "options" list (see `propose_delta`);
-    anything else is a `DeltaProposalError` naming the model that returned it."""
+    anything else is a `DeltaProposalError` naming the model that returned it.
+    """
     if isinstance(payload, dict) and _is_single_delta(payload):
         return {
             "elements": payload["elements"],
@@ -422,7 +442,8 @@ def _parsed_proposal(payload: Any, model: str) -> dict[str, Any]:
 
 def _closest_known_id(wanted: str, names_by_id: dict[str, str]) -> str | None:
     """The one known element whose id or name is clearly closest to `wanted`, else
-    `None` -- ambiguous or weak matches are left alone for validation to reject."""
+    `None` -- ambiguous or weak matches are left alone for validation to reject.
+    """
     needle = wanted.lower()
     scored = sorted(
         (
@@ -448,7 +469,8 @@ def resolve_unknown_endpoints(
     """Repoint a relationship endpoint that names no known element (a misspelt or
     half-remembered id from the LLM) at its unambiguous nearest match, returning the
     corrected relationships and one human-readable note per correction. Nothing is
-    written until the architect applies the delta, so every correction is reviewable."""
+    written until the architect applies the delta, so every correction is reviewable.
+    """
     notes: list[str] = []
     resolved: list[dict[str, Any]] = []
     for rel in relationships:
@@ -480,7 +502,8 @@ def resolve_unknown_members(
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """Same repointing as `resolve_unknown_endpoints`, but for a view membership
     edit's `add`/`remove` element id lists rather than a relationship's two named
-    endpoints."""
+    endpoints.
+    """
     notes: list[str] = []
     resolved: list[dict[str, Any]] = []
     for edit in edits:
@@ -495,7 +518,8 @@ def resolve_unknown_element_edits(
     edits: list[dict[str, Any]], names_by_id: dict[str, str]
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """Same repointing as `resolve_unknown_endpoints`, but for an element edit's own
-    `id` field -- the element being renamed, rather than a relationship endpoint."""
+    `id` field -- the element being renamed, rather than a relationship endpoint.
+    """
     notes: list[str] = []
     resolved: list[dict[str, Any]] = []
     for edit in edits:
@@ -512,7 +536,8 @@ def resolve_unknown_element_edits(
 
 def resolve_unknown_element_removals(removals: list[str], names_by_id: dict[str, str]) -> tuple[list[str], list[str]]:
     """Same repointing as `resolve_unknown_endpoints`, but for a flat list of element
-    ids to remove rather than a relationship's two named endpoints."""
+    ids to remove rather than a relationship's two named endpoints.
+    """
     notes: list[str] = []
     resolved: list[str] = []
     for wanted in removals:
@@ -535,7 +560,8 @@ def assign_missing_ids(elements: list[dict[str, Any]], existing_ids: set[str]) -
     until the LLM proposes one or validation assigns one") -- `<type>-<slugified
     name>`, de-duplicated against `existing_ids` (ids already on disk) and ids already
     assigned earlier in this same call. Elements that already carry an id pass through
-    unchanged."""
+    unchanged.
+    """
     used = set(existing_ids)
     assigned: list[dict[str, Any]] = []
     for e in elements:
@@ -558,7 +584,8 @@ def assign_missing_view_ids(views: list[dict[str, Any]], existing_ids: set[str])
     de-duplicated against `existing_ids` (view ids already on disk) and ids already
     assigned earlier in this same call. A view missing `diagram:` gets one derived
     from its id (`<id without the "view-" prefix>`) so it actually renders -- a view
-    with no `diagram:` key is silently skipped by `render_diagrams.py`."""
+    with no `diagram:` key is silently skipped by `render_diagrams.py`.
+    """
     used = set(existing_ids)
     assigned: list[dict[str, Any]] = []
     for v in views:

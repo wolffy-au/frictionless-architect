@@ -38,7 +38,8 @@ def find_duplicates(
 ) -> list[dict[str, Any]]:
     """Return a Duplicate Candidate dict per `(proposed, existing)` pair matching on
     >=2 of name/type/description (FR-005, data-model.md). `existing` defaults to the
-    real model on disk; tests inject it directly."""
+    real model on disk; tests inject it directly.
+    """
     existing = existing if existing is not None else _existing_elements()
     duplicates: list[dict[str, Any]] = []
     for proposed in elements:

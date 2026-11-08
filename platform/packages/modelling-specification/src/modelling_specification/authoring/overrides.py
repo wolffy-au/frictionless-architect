@@ -30,7 +30,8 @@ def draft_override(
 ) -> dict[str, Any]:
     """Write the ADR stub and return the Override Decision Record's fields
     (data-model.md), `id` being the ADR number just assigned. Rationale is optional
-    (R11, Edge Case 7) -- recorded as `null`/"(none given)", never blocking the write."""
+    (R11, Edge Case 7) -- recorded as `null`/"(none given)", never blocking the write.
+    """
     adr_id = _next_adr_number()
     timestamp = datetime.datetime.now(datetime.UTC).isoformat()
     title = f"Conversational authoring override: {overridden_objection}"

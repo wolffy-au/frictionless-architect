@@ -47,7 +47,6 @@ def sanitize_label(value: str | None) -> str:
         The sanitized label, or ``""`` if ``value`` is ``None``, empty, or
         reduces to nothing after cleaning.
     """
-
     if not value:
         return ""
 

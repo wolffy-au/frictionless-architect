@@ -87,7 +87,8 @@ class PendingConfirmation(BaseModel):
     @property
     def detection_failed(self) -> bool:
         """True when this pending confirmation is the synthetic engine-error match
-        (research.md R6) rather than a real detection."""
+        (research.md R6) rather than a real detection.
+        """
         return any(match.category == ENGINE_ERROR_CATEGORY for match in self.matches)
 
     def resolve(self, resolution: Resolution) -> str:
