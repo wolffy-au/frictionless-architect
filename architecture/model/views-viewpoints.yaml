@@ -264,6 +264,12 @@
   # modelled.
   viewpoint: business_process_cooperation
   diagram: business/process-cooperation
+  # GH #183 spike: testing whether the existing per-context split (used by
+  # view-application-cooperation-standard/view-application-usage/view-product)
+  # also makes this oversized, cross-layer sweep legible per package, instead
+  # of hand-curating package-local views like view-business-controls-catalog.
+  split_by: context
+  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
