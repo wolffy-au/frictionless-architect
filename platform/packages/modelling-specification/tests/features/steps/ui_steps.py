@@ -29,6 +29,32 @@ def step_send_request(context: Context) -> None:
     context.page.wait_for_selector("#messages .msg.agent")
 
 
+@given("the LLM call is slow to respond")
+def step_llm_slow(context: Context) -> None:
+    # GH #186: long enough that Playwright reliably observes the working indicator
+    # before the fake LLM's (otherwise instant) reply arrives.
+    context.fake_llm.delay = 0.5
+
+
+@when("the architect sends that request in the UI without waiting for a reply")
+def step_send_request_no_wait(context: Context) -> None:
+    context.message_count_before = context.page.locator("#messages .msg.agent").count()
+    context.page.fill("#chat-input", "the architect's request")
+    context.page.click("#send")
+
+
+@then("the chat pane shows a working indicator")
+def step_chat_shows_working_indicator(context: Context) -> None:
+    context.page.locator("#messages .msg.thinking").get_by_text("Thinking", exact=False).wait_for()
+
+
+@then("the working indicator is gone and the reply is shown")
+def step_working_indicator_gone(context: Context) -> None:
+    before = context.message_count_before
+    context.page.wait_for_function(f"document.querySelectorAll('#messages .msg.agent').length > {before}")
+    assert context.page.locator("#messages .msg.thinking").count() == 0
+
+
 @then("the chat pane shows no objections")
 def step_chat_shows_no_objections(context: Context) -> None:
     context.page.locator("#messages").get_by_text("no objections", exact=False).wait_for()
@@ -279,6 +305,7 @@ def step_chat_flags_pii(context: Context) -> None:
 
 @when("the architect chooses to redact and continue")
 def step_pii_redact(context: Context) -> None:
+    context.message_count_before = context.page.locator("#messages .msg.agent").count()
     context.page.get_by_role("button", name="Redact and continue").click()
 
 

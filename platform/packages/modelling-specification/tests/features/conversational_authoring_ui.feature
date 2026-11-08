@@ -30,6 +30,12 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     When the architect sends that request by pressing Enter
     Then the chat pane shows no objections
 
+  Scenario: A working indicator is shown while the LLM is proposing a change (GH #186)
+    Given the LLM call is slow to respond
+    When the architect sends that request in the UI without waiting for a reply
+    Then the chat pane shows a working indicator
+    And the working indicator is gone and the reply is shown
+
   Scenario: The diagram can be zoomed, panned and reset
     When the architect picks the view "view-stakeholder" from the list
     And the architect zooms in on the diagram
@@ -111,3 +117,11 @@ Feature: Split-screen conversational authoring UI (R15, plan.md UI Phase)
     Then the chat pane shows that detection failed and it cannot be sent as-is
     When the architect chooses to redact and continue
     Then the chat pane shows no objections
+
+  Scenario: A working indicator is shown while a resolved PII/PHI request is proposed (GH #186)
+    Given the LLM call is slow to respond
+    When the architect sends a request containing personal information in the UI
+    Then the chat pane flags it as personal information
+    When the architect chooses to redact and continue
+    Then the chat pane shows a working indicator
+    And the working indicator is gone and the reply is shown
