@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - README.md
 - specs/EPIC-001-governance-platform/spec.md

@@ -1,14 +1,14 @@
-generated: '2026-11-05'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 topics:
   project-overview:
     title: Project Overview
     page: wiki/project-overview.md
-    built: '2026-11-04'
+    built: '2026-11-08'
     sources:
       files:
         README.md:
-          sha256: 636fa299a2420ff0f1d9525a351dc1877b553ee11cfb59c6243e4a65dbebd949
+          sha256: 1aa33b1fcdf1f474468c2d8de7e3de55db6f33f3e4c6a108fa89e3fb88ee9c5e
           lines: 295
         specs/EPIC-001-governance-platform/spec.md:
           sha256: b565f4aa7e587a92754c6d1009eac5b2efc4cf91a6a0bea15094872a51b6094c
@@ -27,14 +27,14 @@ topics:
   architecture:
     title: Architecture Overview
     page: wiki/architecture.md
-    built: '2026-11-04'
+    built: '2026-11-08'
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: 8ce61578959284561da9e8a9be1e0440b58303a6bc206ac95d293f2e37353363
-          lines: 486
+          sha256: 574da0504c08b7a23fa732717612ba41ef82ab4e8c0adf8f91a9bb47d170eab2
+          lines: 487
         TECHNICAL.md:
-          sha256: 2393c337587725cc70bb8987ec379f6dc13ebd26cea2eb75de74042924a0a318
+          sha256: cf77a16add7d67c465fb4185e5563e49832131ef7237ff206d987de2f0e72f8e
           lines: 429
       urls: {}
   decision-log:
@@ -205,7 +205,7 @@ topics:
   architecture-model:
     title: Architecture Model
     page: wiki/architecture-model.md
-    built: '2026-11-05'
+    built: '2026-11-08'
     sources:
       files:
         architecture/model/README.md:
@@ -230,8 +230,8 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: a7d73e36fe688e00124e19986d2f7b5ae680f37461e5b67f034ae99d925dd7c5
-          lines: 1746
+          sha256: 6fb2d4a6db088d6c13981b166c8049e37a488097401df2ef7c33af5e5e42854e
+          lines: 1784
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
           sha256: f20de9a1a8963c78c0f696820b35360d709c468e04fc69540065c04a37520bfa
           lines: 473
@@ -264,7 +264,7 @@ topics:
   architecture-model-build-it4it:
     title: 'Architecture Model: Build Pipeline & IT4IT Merge'
     page: wiki/architecture-model-build-it4it.md
-    built: '2026-11-05'
+    built: '2026-11-08'
     sources:
       files:
         architecture/model/README.md:
@@ -292,8 +292,8 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: a7d73e36fe688e00124e19986d2f7b5ae680f37461e5b67f034ae99d925dd7c5
-          lines: 1746
+          sha256: 6fb2d4a6db088d6c13981b166c8049e37a488097401df2ef7c33af5e5e42854e
+          lines: 1784
         third_party/it4it/elements.yaml:
           sha256: 60002f1ce238f396a46f24bdca2f562c21075fdeead9583261659c838cc4cd4e
           lines: 1127
@@ -1674,7 +1674,7 @@ topics:
   pii-gateway:
     title: PII Gateway
     page: wiki/pii-gateway.md
-    built: '2026-11-05'
+    built: '2026-11-08'
     sources:
       files:
         docs/adr/0014-pii-anonymization-gateway.md:
@@ -1693,25 +1693,25 @@ topics:
           sha256: adcba41b27d5dae3d3a57f22dfeccc66156128c6debeb3dac20d3727e0f30f01
           lines: 43
         platform/packages/modelling-specification/pyproject.toml:
-          sha256: e2681e33e7b808c3ea52b06c01ce56fd830a031d92715c09292f29f9bcdb7f2b
-          lines: 35
+          sha256: 7ed00485fa7578d784106f76d9dc0144653892c369626dbb59665eba563495ca
+          lines: 38
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: 1e4f6690b601a833440008113911230157cd3a69aedcf533ca06757a1bae091c
-          lines: 574
+          sha256: 71e6cc092dd325b1b9f574da4b5fc77431b277d4f0d4de48db2de2d4d66d0296
+          lines: 576
         platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
           sha256: c183a1ce283b1a12f3adc005ec8a64b222acd4db6ad913ced189acad158146ab
           lines: 179
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: 8c58d0d422efcc27186ea1efc03aad5a0131e5342175a40e283c71e636b5de5a
-          lines: 1043
+          sha256: ea6f79380fa35345e3fb8c071d3ba02d6416691e1061df05da4d44fae78d5611
+          lines: 1048
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: f19d73347fb3ff172258ceffb9fec66ee55e7ff0fc48bccf4f4a295d12b30581
-          lines: 855
+          sha256: ab4cb90b4edbc49ae1e079a1760b7b97808861eba2c54de2dd05e948f332ebaf
+          lines: 872
         platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py:
           sha256: f1c8f836135f5fb3bdeb25e56853d558475fd66804e363e55072bf24c926939b
           lines: 58
         platform/packages/pii-gateway/README.md:
-          sha256: 52b7af1abe3f107e524f01a729040fc884be2709cf131ba4f37e8d308dc423c4
+          sha256: 9b3705c65085ae3f0b85f4620252b304a314e2dd1c072bea90d4431d1fc57ee5
           lines: 82
         platform/packages/pii-gateway/pyproject.toml:
           sha256: 9ec7b22ec0b8efb9c91d5abf80da157060962e38f6e5b1966c87ed3f6d4112a5
@@ -1726,8 +1726,8 @@ topics:
           sha256: 3d917f2e45087db42490865f3cdd03377800ccf04ea5fc37b33eb62b9929422d
           lines: 121
         platform/packages/pii-gateway/specs/001-pii-gateway/plan.md:
-          sha256: d0d846761fca90bb68bebf772a68ec8cbd7150f5db02b0872814fb386a562ee7
-          lines: 169
+          sha256: 370567e7ec483afcfa80e4383173bb9e8326c57a205b9f19006462aada211d69
+          lines: 170
         platform/packages/pii-gateway/specs/001-pii-gateway/quickstart.md:
           sha256: d5d7796a65c77d938e176371a16e15bf231d979cdbd949aceabf53a0959274e1
           lines: 98
@@ -1735,8 +1735,8 @@ topics:
           sha256: e38a75f63f59655d1fc15714bfbd601b886d0616e9c11a293d569490dab90136
           lines: 15
         platform/packages/pii-gateway/specs/001-pii-gateway/spec.md:
-          sha256: 5d29c48ba45f75f6a5bb4c09a0db7197f0071a6fd7230aaaebfa98bc0c37dc5b
-          lines: 283
+          sha256: 02543877a87a2f7513ae5deab2182669a03074ac62d23194c530e13e60f942bb
+          lines: 286
         platform/packages/pii-gateway/specs/001-pii-gateway/tasks.md:
           sha256: f033d056d2a5eb2bb4731418a91cd174e4ad98ed2263c4268ba4e93802266ac1
           lines: 304
@@ -1827,38 +1827,38 @@ topics:
   development:
     title: Development & Quickstart
     page: wiki/development.md
-    built: '2026-11-05'
+    built: '2026-11-08'
     sources:
       files:
         .github/workflows/ci.yml:
-          sha256: 9ad40b6378cd07fe393e1ab8a66826138ab18532bf5940fb5aa522b7489931ba
-          lines: 191
+          sha256: 0b3e192532222feaa835717d579df850f18651eaed0077dbcb47feb6a3451d34
+          lines: 198
         .pre-commit-config.yaml:
           sha256: b4d6f98fd1b08cb8d13379c92b386b10ac25cb81de20c13bdb2e0e70057cc074
           lines: 135
         AGENTS.md:
-          sha256: 816ba7d6ac0638c545a0c87ce8db5b58bed8b84419c9d77ca5570715f87fecab
+          sha256: 93e81670efec517a80b8adf712b8224156239b0c8502298f1d3c4b0b6ddda237
           lines: 147
         CODE_OF_CONDUCT.md:
           sha256: c135627b08b25735d88156b519d9daacf42c3ce3e7ec08b6b4bc56b1a5c19df7
           lines: 128
         CONTRIBUTING.md:
-          sha256: 5df8531fc489256afb9c91275f1e891c39b78ac9a971cd1739c1e465895ce8e0
+          sha256: bcbc5cf3ed7aabee525c5cf9d692af56903ddb75cf88e01d26db4374a475cc69
           lines: 122
         RELEASE.md:
-          sha256: dfe57d2efa1f7057d0154c0339fd53f51fa73a12b5817516a8f073b987675038
-          lines: 283
+          sha256: d69011f6f80b0d28c848eb266545e189085e9e5dce7fb711efc4b0b1c80e47f4
+          lines: 287
         SECURITY.md:
-          sha256: 31571f7297e96f97630abc338a44ac2e24c292c5ab94bcba5505037debe8faaa
-          lines: 54
+          sha256: 111aef5523b0d54882cc75ee7635b77f5c4fde14d095ca6de8f5454b33efb8fc
+          lines: 52
         platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md:
           sha256: db6253848cf46e3fdf7d6e071829e0dfa865f415b59f4a5aef5d2338eefdd193
           lines: 82
         scripts/pre_merge_checks.sh:
-          sha256: 2a6c60c2deeb3a61779472d6e8da6dd6724ec2b4785c4ccac738fd2f54e326a9
+          sha256: 192a5dcac9af3f388c5738667480b60b733e2d1862a280946365deaabd431ae0
           lines: 96
         specs/EPIC-001-governance-platform/quickstart.md:
-          sha256: 762a2925f1b3124c45c55426f2631c528cd75a2d85c01d31ecba65f5c8e579c1
+          sha256: 611137846f3d15d8be7cff43b7c1aaaa7c2b0b89040dacd7e2c093f54327abe6
           lines: 80
         tests/api/README.md:
           sha256: 7d3f7b50315465aebf0143a81b5fa27e29240609cfc633487f995cbf4079e296
@@ -1910,12 +1910,12 @@ topics:
   agent-workflows:
     title: Agent Skills & Workflows
     page: wiki/agent-workflows.md
-    built: '2026-11-05'
+    built: '2026-11-08'
     sources:
       files:
         .claude/agents/README.md:
-          sha256: a180c426b76be3d09f835e7891604eba646cffdafbf9a8af275f546010077f8a
-          lines: 39
+          sha256: a22b3adbd41f3d182d8fcfa3b4314bb63ace8d068993754ce770e2daad0beb2c
+          lines: 40
         .claude/agents/acceptance-author.md:
           sha256: 0dfe679f953201c94ca6b8c7c5f3e76d31a3647a6c023b79d274d19facc8082f
           lines: 77
@@ -1929,28 +1929,28 @@ topics:
           sha256: adb67534bc4d7aa538ae2e8b7f524e5b25fe342679f3963d0ba5e632f3e54b78
           lines: 72
         .claude/agents/docs-uplift.md:
-          sha256: 16ae1714dcd7a9affa7c25365fba927f3a46c13a461a85bff57721ccf0291370
-          lines: 63
+          sha256: 39f6c7318a2e36ce1340d03b1151ff46c081b6719a8a6238a65c9f90f133c484
+          lines: 66
         .claude/agents/quality-uplift.md:
-          sha256: 0eb6935981b8f1557ac2406c864b03485d6fb75d5c266a3e1e33d5126ecb497e
+          sha256: 18f645b3a76c87bbc4cfd20dca2907a4e74288ca4fe2a88bd32188432e43b9a0
           lines: 76
         .claude/agents/refactor-analyst.md:
           sha256: ebaa2b5f69b30f254628fe3552db51cc6a26a2346ceeba9df5804f9cadf79e2b
           lines: 57
         .claude/agents/release-runner.md:
-          sha256: 87d09f67ca8d9c9e17cb4393c40d231074ce928bbfa5a4bf30eb3d29df33891e
+          sha256: 0d301e9037d498b97c7f352af6b2c15e61fbc8d4d645d791f59d3b5df3fd145f
           lines: 97
         .claude/agents/spec-alignment.md:
           sha256: 35a342d2a4650dcae339191f3756ca1dbadc390e86f66ea6777e590042ecae98
           lines: 92
         .claude/agents/vulnerability-remediator.md:
-          sha256: b503b197f327d151eaa03693e916029bff3ea3d41ec6ee652a904223a87c76e3
+          sha256: df6a95a4935cd91e796a030c61978cce11701b8307f2c341cc284ead4b409fe3
           lines: 70
         .claude/agents/wiki-maintenance.md:
           sha256: 7ee5458233db0448184319e3fbfaba2031e930017dfe8e81e05d32c8ac1232c5
           lines: 83
         .claude/skills/README.md:
-          sha256: 560c77adfcdd2caa6f488bda48a4ec5b215ad9cc917d165843b8692fe485bfa9
+          sha256: 6e9cee1c09c7e88be6262d31dd8f75f76628b4e167f0431bea8fbf86d8231903
           lines: 77
         .claude/skills/commit-message/SKILL.md:
           sha256: 4dc191c20403f330b4c923231e019e12cb95b7d986b00043b0e6fc64fe6f6a21
@@ -1965,8 +1965,8 @@ topics:
           sha256: 90976eefaf24d4a7d4899dd4ff47d650d03226a76d1af0e262cb74736887cf25
           lines: 68
         .claude/skills/fork-sync/SKILL.md:
-          sha256: cafd25948d559cf328c0d6bf87a6f1d543bf9fc3cca4dca1a84ea652fd5231ae
-          lines: 103
+          sha256: 22b31e10e576598f0b2e968e6e221778a8025820de11a15e077f0d67271090d0
+          lines: 109
         .claude/skills/model-archimate/SKILL.md:
           sha256: 61e34f26d684df7ff896f09efb77e8f9d8d4e3214bf212dd617f818dacc054dd
           lines: 180

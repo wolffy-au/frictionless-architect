@@ -1,7 +1,7 @@
 ---
 title: Architecture Overview
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
 - TECHNICAL.md
@@ -220,7 +220,9 @@ each package after the ones it consumes (`ARCHITECTURE.md` §8). See
 
 **Status (GH #71, #107):** steps 1–3 and 6 are done. `platform/` has its own
 `pyproject.toml` and `poetry.lock`; `packages/controls-compliance-catalog`
-exists as an empty, installable package. Step 6, re-homing specs to the
+holds the OSCAL conversion playground (two `/catalog` conversion routes and
+a page), while the pipeline itself (GH #44) is still unbuilt
+(`ARCHITECTURE.md` §8, "Status"). Step 6, re-homing specs to the
 two-tier scheme, landed 2026-10-24 (ADR-0004): root `specs/` now holds only
 `EPIC-`-prefixed cross-cutting specs (`EPIC-001-governance-platform`,
 `EPIC-002-gh-roadmap-archimate`, `EPIC-003-conversational-model-authoring`),

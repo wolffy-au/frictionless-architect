@@ -1,6 +1,6 @@
 ---
 title: PII Gateway
-generated: '2026-11-05'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0014-pii-anonymization-gateway.md
@@ -195,7 +195,7 @@ The browser authoring UI has a related, separately-tracked rough edge: its three
 PII-review buttons (Redact/Allow/Edit) disable on click and only re-enable on a
 successful `resolve-pii` response, so an `ALLOW` rejected under this path needed its
 own re-enable path to stay usable
-(`platform/packages/modelling-specification/src/modelling_specification/ui.py:666-683`).
+(`platform/packages/modelling-specification/src/modelling_specification/ui.py:676-697`).
 
 ## Configuration and audit
 
@@ -260,16 +260,6 @@ Those paths have no call site in these sources
 
 ## Where the sources disagree
 
-- **Which path is wired.** The README, `plan.md` and the older parts of `spec.md` say
-  `fn-spec-generator` is the wired caller and `fn-conversational-authoring` is deferred,
-  and `tasks.md` still calls `conversational-authoring` a context with no caller. The
-  ADR-0014 amendment (GH #181), the update notes in `spec.md` and the code all say the
-  reverse: `propose_delta()` uses `conversational-authoring`, and `spec-generator` has
-  no real caller. The code settles it, and the table above follows the code
-  (`platform/packages/pii-gateway/README.md:11-15`;
-  `platform/packages/pii-gateway/specs/001-pii-gateway/plan.md` §Technical Context;
-  `platform/packages/pii-gateway/specs/001-pii-gateway/tasks.md` header;
-  `docs/adr/0014-pii-anonymization-gateway.md` §Amendment).
 - **PHI recognizer scope.** ADR-0043 expects custom recognizers for medical record
   numbers and provider/patient identifiers. The research and the code cover medical
   record and diagnosis codes, with no provider or patient identifier recognizer
