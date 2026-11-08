@@ -1,3 +1,22 @@
+## v0.10.0 (2026-11-08)
+
+### Feat
+
+- **modelling-specification**: add a working indicator for the LLM call
+
+### Fix
+
+- drop the router.py Snyk Code path exclude
+- **modelling-specification**: render chat Markdown server-side
+- **modelling-specification**: sanitise and render chat Markdown
+- **agents**: keep docs-uplift out of the generated wiki
+
+### Refactor
+
+- **modelling-specification**: extract per-view builder in model_io
+- **modelling-specification**: extract router delta and PII helpers
+- **pii-gateway**: split scrub into audit, redact and review helpers
+
 ## v0.9.0 (2026-11-06)
 
 ### Feat
