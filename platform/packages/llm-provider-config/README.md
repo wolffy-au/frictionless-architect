@@ -43,6 +43,19 @@ The page edits the global default, per-component overrides, and API keys (writte
 keychain, never returned), and has a "Test connection" button. There is no authentication
 (single-user local MVP, ADR-0024), so bind to localhost.
 
+The JSON API, relative to the prefix (`/settings/llm` by default):
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `` (empty) | The settings page (HTML) |
+| `GET` | `/state` | Config path, providers (`needs_key`, `env_var`), global default and each component's override, with the `key_source` of each |
+| `PUT` | `/default` | Save the global default provider settings |
+| `PUT` | `/components/{component_id}` | Save a per-component override; `404` for an unknown component |
+| `DELETE` | `/components/{component_id}` | Remove the override so the component inherits the default; `404` if unknown |
+| `PUT` | `/keys/{provider}` | Store an API key in the OS keychain; `422` for keyless providers or an `os.environ/...` reference, `503` without a keychain |
+| `DELETE` | `/keys/{provider}` | Remove the stored key; `404` if there is none |
+| `POST` | `/test` | One-word completion with the resolved settings (body `component`, or omit it to test the global default); returns `{ok, message}`, failures are reported in the message, not as HTTP errors |
+
 Status: settings model, storage, credential resolution, `resolve_call` and the settings
 router are in.
 

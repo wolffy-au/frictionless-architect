@@ -60,6 +60,14 @@ subsystem UI, or standalone:
 app.include_router(create_settings_router(["spec-generator", "governance-eval", "conversational-authoring"]))
 ```
 
+The JSON API, relative to the prefix (`/settings/pii-gateway` by default):
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `` (empty) | The settings page (HTML) |
+| `GET` | `/state` | `available_categories`, plus each registered context's active categories and failure-mode |
+| `PUT` | `/contexts/{context_id}` | Update one context's active categories and failure-mode; `404` for an unregistered context |
+
 The page toggles which detector categories are active and the failure-mode, per
 context, taking effect on the next `scrub()` call with no redeploy. There is no
 authentication (single-user local MVP, ADR-0024), so bind to localhost.
