@@ -264,6 +264,7 @@ topics:
       - path: specs/EPIC-003-conversational-model-authoring/*.md
       - path: specs/EPIC-003-conversational-model-authoring/checklists/*.md
       - path: specs/EPIC-003-conversational-model-authoring/contracts/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/**/*.md
       - path: platform/packages/modelling-specification/src/modelling_specification/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
