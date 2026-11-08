@@ -10,7 +10,7 @@ from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import JSONResponse
-from pii_gateway import EngineErrorAllowRejected, Resolution
+from pii_gateway import EngineErrorAllowRejected, PendingConfirmation, Resolution
 from pydantic import BaseModel
 
 from modelling_specification import model_io, rendering
@@ -249,6 +249,40 @@ def _new_only(existing: list[Any], proposed: list[Any]) -> list[Any]:
     return fresh
 
 
+def _resolve_changes(proposed: dict[str, Any], known_names: dict[str, str]) -> tuple[dict[str, list[Any]], list[str]]:
+    """Resolve unknown endpoints/members in `proposed`'s non-element changes.
+
+    Returns the cleaned lists keyed by `CandidateDelta` field name, plus the notes
+    describing anything that was dropped or corrected."""
+    relationships, rel_notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
+    membership_edits, membership_notes = resolve_unknown_members(
+        proposed.get("view_membership_edits") or [], known_names
+    )
+    element_edits, element_edit_notes = resolve_unknown_element_edits(proposed.get("element_edits") or [], known_names)
+    element_removals, element_removal_notes = resolve_unknown_element_removals(
+        proposed.get("element_removals") or [], known_names
+    )
+    relationship_removals, relationship_removal_notes = resolve_unknown_endpoints(
+        proposed.get("relationship_removals") or [], known_names
+    )
+    changes: dict[str, list[Any]] = {
+        "relationships": relationships,
+        "view_membership_edits": membership_edits,
+        "element_edits": element_edits,
+        "element_removals": element_removals,
+        "relationship_removals": relationship_removals,
+    }
+    notes = rel_notes + membership_notes + element_edit_notes + element_removal_notes + relationship_removal_notes
+    return changes, notes
+
+
+def _merge_into_delta(delta: CandidateDelta, changes: dict[str, list[Any]]) -> None:
+    """Append each change list to the matching `delta` field, skipping repeats."""
+    for field_name, new_items in changes.items():
+        current: list[Any] = getattr(delta, field_name)
+        setattr(delta, field_name, current + _new_only(current, new_items))
+
+
 def _handle_proposed(
     session_id: str, session: Session, catalogue: list[tuple[str, str, str, str]], proposed: dict[str, Any]
 ) -> dict[str, Any]:
@@ -269,20 +303,9 @@ def _handle_proposed(
     in_flight = [*(delta.elements if delta else []), *new_elements]
     known_names = {eid: name for eid, _etype, name, _desc in catalogue}
     known_names.update({e["id"]: str(e.get("name", "")) for e in in_flight if e.get("id")})
-    new_relationships, rel_notes = resolve_unknown_endpoints(proposed["relationships"], known_names)
-    new_membership_edits, membership_notes = resolve_unknown_members(
-        proposed.get("view_membership_edits") or [], known_names
-    )
-    new_element_edits, element_edit_notes = resolve_unknown_element_edits(
-        proposed.get("element_edits") or [], known_names
-    )
-    new_element_removals, element_removal_notes = resolve_unknown_element_removals(
-        proposed.get("element_removals") or [], known_names
-    )
-    new_relationship_removals, relationship_removal_notes = resolve_unknown_endpoints(
-        proposed.get("relationship_removals") or [], known_names
-    )
-    notes = rel_notes + membership_notes + element_edit_notes + element_removal_notes + relationship_removal_notes
+    changes, notes = _resolve_changes(proposed, known_names)
+    changes["elements"] = new_elements
+    changes["views"] = new_views
 
     if delta is None:
         delta = CandidateDelta(delta_id=_store.new_delta_id(), session_id=session_id)
@@ -290,17 +313,7 @@ def _handle_proposed(
     # FR-015: a later request touching the pending delta amends/extends it rather
     # than starting an independent one -- one accumulating delta per conversation
     # until it is applied or discarded (data-model.md Candidate Delta lifecycle).
-    delta.elements = delta.elements + _new_only(delta.elements, new_elements)
-    delta.relationships = delta.relationships + _new_only(delta.relationships, new_relationships)
-    delta.views = delta.views + _new_only(delta.views, new_views)
-    delta.view_membership_edits = delta.view_membership_edits + _new_only(
-        delta.view_membership_edits, new_membership_edits
-    )
-    delta.element_edits = delta.element_edits + _new_only(delta.element_edits, new_element_edits)
-    delta.element_removals = delta.element_removals + _new_only(delta.element_removals, new_element_removals)
-    delta.relationship_removals = delta.relationship_removals + _new_only(
-        delta.relationship_removals, new_relationship_removals
-    )
+    _merge_into_delta(delta, changes)
 
     _validate_and_flag(delta)
     response = _delta_response(delta)
@@ -383,6 +396,27 @@ def propose(session_id: str, body: ProposeRequest) -> dict[str, Any]:
     return _handle_proposed(session_id, session, catalogue, proposed)
 
 
+def _resolved_text(session: Session, pending: PendingConfirmation, body: ResolvePiiRequest) -> str | dict[str, Any]:
+    """The text to send on once the architect has resolved a PII review, or the
+    `pii_review_required` response when an edited replacement is itself still flagged."""
+    if body.resolution == Resolution.EDIT:
+        if not body.edited_text or not body.edited_text.strip():
+            raise HTTPException(status_code=400, detail="resolution 'edit' requires non-empty edited_text")
+        try:
+            return scrub_or_require_review(body.edited_text)
+        except PiiReviewRequired as review:
+            session.pending_pii_confirmation = review.pending_confirmation
+            session.pending_options = []
+            return _pii_review_response(review)
+    try:
+        return pending.resolve(body.resolution)
+    except EngineErrorAllowRejected as exc:
+        # Pending confirmation is deliberately left in place -- the architect
+        # can still redact or edit; only `allow` on an engine-error match is
+        # rejected (2026-11-05 decision).
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
 @router.post(
     "/sessions/{session_id}/propose/resolve-pii",
     responses={
@@ -438,23 +472,10 @@ def resolve_pii(session_id: str, body: ResolvePiiRequest) -> dict[str, Any]:
     if pending is None:
         raise HTTPException(status_code=409, detail="no PII/PHI match is pending review")
 
-    if body.resolution == Resolution.EDIT:
-        if not body.edited_text or not body.edited_text.strip():
-            raise HTTPException(status_code=400, detail="resolution 'edit' requires non-empty edited_text")
-        try:
-            resolved_text = scrub_or_require_review(body.edited_text)
-        except PiiReviewRequired as review:
-            session.pending_pii_confirmation = review.pending_confirmation
-            session.pending_options = []
-            return _pii_review_response(review)
-    else:
-        try:
-            resolved_text = pending.resolve(body.resolution)
-        except EngineErrorAllowRejected as exc:
-            # Pending confirmation is deliberately left in place -- the architect
-            # can still redact or edit; only `allow` on an engine-error match is
-            # rejected (2026-11-05 decision).
-            raise HTTPException(status_code=409, detail=str(exc)) from exc
+    resolved = _resolved_text(session, pending, body)
+    if isinstance(resolved, dict):
+        return resolved
+    resolved_text = resolved
     session.pending_pii_confirmation = None
 
     catalogue, rules, contexts, views, relationships = _catalogue_and_rules()
