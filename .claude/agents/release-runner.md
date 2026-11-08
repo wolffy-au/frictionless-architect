@@ -56,7 +56,7 @@ results. Never do an agent's work yourself, and never pass a step without its re
    - §7 push `develop`, open/update the PR, wait for green, then STOP (step 4)
    - §8 after the human merge: create the annotated `v<X.Y.Z>` tag on `origin/main`,
      confirm it matches `^v[0-9]+\.[0-9]+\.[0-9]+$` (rename if necessary), push only the tag
-   - §9 `gh release create v<X.Y.Z> --verify-tag ...` with reviewed notes
+   - §9 `gh release create v<X.Y.Z> --verify-tag ...` with notes drafted from `CHANGELOG.md`
    - §10 merge `main` → `develop`, push
 3. On any gate failure: stop at that step, report exactly what failed with the command
    output, and hand back naming the agent that fixes it (`quality-uplift`,
@@ -76,8 +76,10 @@ results. Never do an agent's work yourself, and never pass a step without its re
    check is red, pending or missing, stop and report that instead — "green" is never
    assumed. Resume only after the user tells you they have merged the PR; then confirm
    with `gh pr view --json state,mergedAt` that it is `MERGED` before starting §8.
-5. Before the other irreversible steps (§8 push tag, §9 create release), pause again and
-   present the version, the changelog entry, and the release notes for explicit go-ahead.
+5. Once the human merge gate (step 4) is confirmed `MERGED`, proceed through §8 (tag) and
+   §9 (release) without pausing for go-ahead on the version, changelog, or release notes —
+   the only mandatory pause in the whole process is step 4. Report what was tagged and
+   published in the output log once done.
 
 ## Output
 
