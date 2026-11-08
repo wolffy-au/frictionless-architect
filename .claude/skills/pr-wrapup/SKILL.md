@@ -93,6 +93,24 @@ from here on.
 ```bash
 git worktree list                        # find the worktree for <headRefName>
 git -C <worktree> status --porcelain     # must be empty; otherwise stop and show it
+```
+
+Poetry venvs live outside the worktree, in `{cache-dir}/virtualenvs` (check with
+`poetry config virtualenvs.path`), keyed by a hash of the worktree's absolute path — so a
+venv created by `poetry install` inside this worktree is never cleaned up by deleting the
+directory; it just becomes an orphaned entry in that cache. Remove it **before** the
+directory goes, since Poetry needs to read the worktree's `pyproject.toml` to resolve
+which venv(s) belong to it:
+
+```bash
+poetry -C <worktree> env remove --all              # root project, if it has its own venv
+poetry -C <worktree>/platform env remove --all      # platform/ monorepo has its own lock + venv (ADR-0002) — skip if the worktree has no platform/ dir
+```
+
+Skip either command with no error if `poetry env list -C <path>` shows nothing — not
+every worktree had `poetry install` run in it.
+
+```bash
 git worktree remove <worktree>
 ```
 
