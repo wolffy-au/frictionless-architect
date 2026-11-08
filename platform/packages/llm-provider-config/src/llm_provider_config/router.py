@@ -201,7 +201,7 @@ def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
                 max_tokens=16,
                 **call.completion_kwargs(),
             )
-        except Exception:  # litellm raises many provider-specific error types
+        except Exception:  # noqa: BLE001 - litellm raises many provider-specific error types
             # Details stay in the server log; provider errors can carry internals (CWE-209).
             logger.warning("LLM connection test to %s failed", call.model, exc_info=True)
             return {"ok": False, "message": f"The call to {call.model} failed; see the server log for details."}
