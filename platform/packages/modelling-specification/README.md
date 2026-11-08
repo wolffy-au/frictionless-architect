@@ -32,8 +32,11 @@ does not mount it yet.
 
 `renderProposeResponse` (in `ui.py`'s embedded JS) branches on the response `status`:
 
-- `"message"` -- the LLM's plain-text question or remark, shown verbatim; Apply stays
-  disabled, there is no delta.
+- `"message"` -- the LLM's question or remark. The response carries the raw `message`
+  and `message_html`, the same text rendered from Markdown and sanitised server-side
+  (GH #185); the chat pane shows `message_html`. Apply stays disabled, there is no delta.
+- While a `propose` or `propose/resolve-pii` call is in flight, the chat pane shows a
+  "Thinking..." message that clears on reply or failure (GH #186).
 - `"options"` -- a "what should I do about X" request (ADR-0041): each of the 2-3
   suggested ways forward renders with its rationale, `convention_refs`, the elements/
   relationships it would add and any validation findings/duplicates/pattern suggestions
