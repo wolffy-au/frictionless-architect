@@ -79,7 +79,7 @@ description: "Task list for the LLM working indicator (GH #186)"
 ## Phase 5: Polish & Cross-Cutting Concerns
 
 - [X] T010 [P] Run `poetry run pytest packages/modelling-specification/tests` and `poetry run behave packages/modelling-specification/tests/features` from `platform/`, confirming the whole package suite (not just the tasks above) still passes.
-- [ ] T011 Walk through `quickstart.md`'s four manual steps against a locally running `./scripts/run-modelling_specification.sh` instance. **Not run**: this sandbox has no configured LLM provider/credentials; the equivalent flow against a stubbed LLM is already covered end-to-end by T006/T008's behave scenarios (T010), which is this test suite's sanctioned way of validating UI behaviour without a real provider. Left for a human to spot-check against a real provider before merge.
+- [X] T011 Walk through `quickstart.md`'s four manual steps against a locally running `./scripts/run-modelling_specification.sh` instance. Spot-checked by a human against a real LLM provider after merge (the authoring sandbox that implemented this feature had no provider credentials configured); passed cleanly.
 
 ---
 
