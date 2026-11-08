@@ -1,87 +1,9 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
-- architecture/model/diagrams/application/1-policy-conversion.puml
-- architecture/model/diagrams/application/1-policy-conversion.svg
-- architecture/model/diagrams/application/2-pattern-solution-design.puml
-- architecture/model/diagrams/application/2-pattern-solution-design.svg
-- architecture/model/diagrams/application/3-control-assurance.puml
-- architecture/model/diagrams/application/3-control-assurance.svg
-- architecture/model/diagrams/application/catalog-structure.puml
-- architecture/model/diagrams/application/catalog-structure.svg
-- architecture/model/diagrams/application/cooperation-standard/architecture-governance.puml
-- architecture/model/diagrams/application/cooperation-standard/architecture-governance.svg
-- architecture/model/diagrams/application/cooperation-standard/conformance-drift-assurance.puml
-- architecture/model/diagrams/application/cooperation-standard/conformance-drift-assurance.svg
-- architecture/model/diagrams/application/cooperation-standard/controls-compliance-catalog.puml
-- architecture/model/diagrams/application/cooperation-standard/controls-compliance-catalog.svg
-- architecture/model/diagrams/application/cooperation-standard/digital-twin-knowledge-graph.puml
-- architecture/model/diagrams/application/cooperation-standard/digital-twin-knowledge-graph.svg
-- architecture/model/diagrams/application/cooperation-standard/llm-provider-config.puml
-- architecture/model/diagrams/application/cooperation-standard/llm-provider-config.svg
-- architecture/model/diagrams/application/cooperation-standard/modelling-specification.puml
-- architecture/model/diagrams/application/cooperation-standard/modelling-specification.svg
-- architecture/model/diagrams/application/cooperation-standard/pii-gateway.puml
-- architecture/model/diagrams/application/cooperation-standard/pii-gateway.svg
-- architecture/model/diagrams/application/cooperation-standard/reusable-architecture-library.puml
-- architecture/model/diagrams/application/cooperation-standard/reusable-architecture-library.svg
-- architecture/model/diagrams/application/cooperation-standard/schema-visualizer-api.puml
-- architecture/model/diagrams/application/cooperation-standard/schema-visualizer-api.svg
-- architecture/model/diagrams/application/cooperation/architecture-governance.puml
-- architecture/model/diagrams/application/cooperation/architecture-governance.svg
-- architecture/model/diagrams/application/cooperation/conformance-drift-assurance.puml
-- architecture/model/diagrams/application/cooperation/conformance-drift-assurance.svg
-- architecture/model/diagrams/application/cooperation/controls-compliance-catalog.puml
-- architecture/model/diagrams/application/cooperation/controls-compliance-catalog.svg
-- architecture/model/diagrams/application/cooperation/digital-twin-knowledge-graph.puml
-- architecture/model/diagrams/application/cooperation/digital-twin-knowledge-graph.svg
-- architecture/model/diagrams/application/cooperation/llm-provider-config.puml
-- architecture/model/diagrams/application/cooperation/llm-provider-config.svg
-- architecture/model/diagrams/application/cooperation/modelling-specification.puml
-- architecture/model/diagrams/application/cooperation/modelling-specification.svg
-- architecture/model/diagrams/application/cooperation/pii-gateway.puml
-- architecture/model/diagrams/application/cooperation/pii-gateway.svg
-- architecture/model/diagrams/application/cooperation/reusable-architecture-library.puml
-- architecture/model/diagrams/application/cooperation/reusable-architecture-library.svg
-- architecture/model/diagrams/application/cooperation/schema-visualizer-api.puml
-- architecture/model/diagrams/application/cooperation/schema-visualizer-api.svg
-- architecture/model/diagrams/application/dataflow-assurance-spec.puml
-- architecture/model/diagrams/application/dataflow-assurance-spec.svg
-- architecture/model/diagrams/application/dataflow-library.puml
-- architecture/model/diagrams/application/dataflow-library.svg
-- architecture/model/diagrams/application/dataflow-oscal-resolve.puml
-- architecture/model/diagrams/application/dataflow-oscal-resolve.svg
-- architecture/model/diagrams/application/dataflow-oscal.puml
-- architecture/model/diagrams/application/dataflow-oscal.svg
-- architecture/model/diagrams/application/dataflow-twin-governance.puml
-- architecture/model/diagrams/application/dataflow-twin-governance.svg
-- architecture/model/diagrams/application/modelling-specification-cooperation.puml
-- architecture/model/diagrams/application/modelling-specification-cooperation.svg
-- architecture/model/diagrams/application/strategy-drift.puml
-- architecture/model/diagrams/application/strategy-drift.svg
-- architecture/model/diagrams/application/structure.puml
-- architecture/model/diagrams/application/structure.svg
-- architecture/model/diagrams/application/usage/architecture-governance.puml
-- architecture/model/diagrams/application/usage/architecture-governance.svg
-- architecture/model/diagrams/application/usage/conformance-drift-assurance.puml
-- architecture/model/diagrams/application/usage/conformance-drift-assurance.svg
-- architecture/model/diagrams/application/usage/controls-compliance-catalog.puml
-- architecture/model/diagrams/application/usage/controls-compliance-catalog.svg
-- architecture/model/diagrams/application/usage/digital-twin-knowledge-graph.puml
-- architecture/model/diagrams/application/usage/digital-twin-knowledge-graph.svg
-- architecture/model/diagrams/application/usage/llm-provider-config.puml
-- architecture/model/diagrams/application/usage/llm-provider-config.svg
-- architecture/model/diagrams/application/usage/modelling-specification.puml
-- architecture/model/diagrams/application/usage/modelling-specification.svg
-- architecture/model/diagrams/application/usage/pii-gateway.puml
-- architecture/model/diagrams/application/usage/pii-gateway.svg
-- architecture/model/diagrams/application/usage/reusable-architecture-library.puml
-- architecture/model/diagrams/application/usage/reusable-architecture-library.svg
-- architecture/model/diagrams/application/usage/schema-visualizer-api.puml
-- architecture/model/diagrams/application/usage/schema-visualizer-api.svg
 - architecture/model/diagrams/business/1-policy-conversion.puml
 - architecture/model/diagrams/business/1-policy-conversion.svg
 - architecture/model/diagrams/business/2-pattern-solution-design.puml
@@ -182,11 +104,15 @@ sources:
 This topic covers how the canonical model's **vision and business** views map
 to ArchiMate viewpoints, the new GH #105 generic per-viewpoint views, and the
 `include_types`/`exclude_elements` scoping mechanism that keeps platform-only
-views free of vendored IT4IT elements. For the Implementation & Migration and
-Technology-layer views, the IT4IT reference views, and how to regenerate
-every `.puml`/`.svg` diagram, see [Architecture Views & Diagrams: Platform,
-Migration & Rendering](architecture-diagrams-platform.md). For what the model
-itself *means* (its elements, relationships and content sections), see
+views free of vendored IT4IT elements. For the application-layer views
+(bounded-context Application Cooperation, the application-usage slices, and
+the Controls & OSCAL data-flow views), see [Architecture Views & Diagrams:
+Application Layer](architecture-diagrams-application.md). For the
+Implementation & Migration and Technology-layer views, the IT4IT reference
+views, and how to regenerate every `.puml`/`.svg` diagram, see
+[Architecture Views & Diagrams: Platform, Migration &
+Rendering](architecture-diagrams-platform.md). For what the model itself
+*means* (its elements, relationships and content sections), see
 [Architecture Model](architecture-model.md).
 
 ## Views and diagrams
@@ -393,12 +319,9 @@ re-added by request as a per-context sweep. The model still has no Product,
 Contract, Value or Material elements, so it duplicates what Application Usage and
 Service Realization show until some exist (`architecture/model/views-viewpoints.yaml`).
 
-**Application Cooperation** is now two views. `view-application-cooperation`
-(`application/cooperation/<context>`, in `views.yaml`) pulls same-layer neighbours
-only, so each per-context diagram stays Application-layer. It is the one to read.
-`view-application-cooperation-standard` keeps the literal viewpoint with unrestricted
-neighbours, for comparison (`architecture/model/views.yaml`;
-`architecture/model/views-viewpoints.yaml`).
+**Application Cooperation** is now two views, covered with the rest of the
+application-layer diagrams on [Architecture Views & Diagrams: Application
+Layer](architecture-diagrams-application.md).
 
 The new **Context Map** view (`view-context-map`, `overview/context-map`,
 `architecture/model/views.yaml`) is entirely generated: the context
@@ -408,35 +331,19 @@ hand-authored, so a new context appears as soon as an element carries the tag
 (`sys-` Groupings, the C4 whole-system box, are excluded). See
 [Architecture Model](architecture-model.md) for the tagging itself.
 
-### Application-usage slices (GH #105 follow-up, 2026-10-18)
+### Application-layer views
 
-Four more capability-scoped diagrams render under `diagrams/application/`,
-mirroring the business-layer numbered-slice pattern above but cut from the
-`application_usage` viewpoint instead:
-
-| View | Diagram | Covers |
-|---|---|---|
-| Application — 1. Policy-to-OSCAL Conversion | `application/1-policy-conversion` | Application-layer slice 1 |
-| Application — 2. Pattern, Blueprint & Solution Design | `application/2-pattern-solution-design` | Application-layer slice 2 |
-| Application — 3. Control Assurance | `application/3-control-assurance` | Application-layer slice 3 |
-| Application — Strategy & Drift | `application/strategy-drift` | Application-layer strategy/drift slice |
-
-They were first generated as three identical variants each (also under
-`diagrams/product/` and `diagrams/service-realization/`), but the Product and
-Service Realization copies were byte-for-byte identical to the
-`application_usage` ones — only the title differed — because the model has
-no `Product`/`Contract`/`Value`/`Service` elements yet to make those
-viewpoints actually render differently. The duplicate copies were dropped,
-keeping only the `application/` slices
-(`architecture/model/diagrams/application/`; git history: "decompose usage/
-product/service-realization views" followed by "drop duplicate product/
-service-realization view slices"). The same change closed a business-layer
-gap surfaced while investigating this: `role-sec` and `role-dev` had no
-business-layer presence, closed by the new `bfn-security-assurance`/
+The application-layer diagrams under `diagrams/application/` — the
+bounded-context Application Cooperation views, the application-usage slices,
+and the two Controls & OSCAL data-flow views — are covered on
+[Architecture Views & Diagrams: Application Layer](architecture-diagrams-application.md).
+The same change that produced the application-usage slices closed a
+business-layer gap surfaced while investigating it: `role-sec` and `role-dev`
+had no business-layer presence, closed by the new `bfn-security-assurance`/
 `process-security-assessment` and `bfn-implementation`/`process-implementation`
 — see [Architecture Model: Skeleton](architecture-model-skeleton.md).
 
-### The remaining vision/business/application views
+### The remaining vision/business views
 
 - **Subsystems & Capabilities** (`layered/subsystem-capabilities`) uses the
   standard `layered` viewpoint. `ApplicationComponent → Capability`
@@ -453,32 +360,10 @@ business-layer presence, closed by the new `bfn-security-assurance`/
   only edges that already exist elsewhere in the model, rather than a new
   cross-layer relationship. See [Conversational Model
   Authoring](modelling-specification.md).
-- **The five `Data Flow — …` views** use `application_cooperation`.
+- **The five `Data Flow — …` views** use `application_cooperation`; the
+  Controls & OSCAL stage's two data-flow views are covered on
+  [Architecture Views & Diagrams: Application Layer](architecture-diagrams-application.md).
 - **IT4IT: Capability Bridges** uses `capability`.
-
-The Controls & OSCAL stage is drawn as **two** application-layer views
-(`architecture/model/views.yaml:484-529`):
-
-- `Data Flow — Controls & OSCAL` (`application/dataflow-oscal`, renamed from
-  `artefact-oscal` 2026-10-08, GH #109 / ADR-0036). The LLM
-  Provider serves AI-assisted Markdown conversion, and Trestle serves the
-  round-trip into an OSCAL Catalog. The view is conversion only: its one
-  golden-dataset object is the baseline catalog, the expected output for the
-  Regulatory Standard Document it converts. Since ADR-0034 the view also shows the
-  shared LLM Provider Configuration component, associated with the LLM Provider
-  ("configures provider/model & resolves credentials for calls to"), and the
-  container view carries the same edge (`architecture/model/diagrams/application/dataflow-oscal.puml`,
-  `c4/container.puml`).
-- `Data Flow — OSCAL Profile Resolution`
-  (`application/dataflow-oscal-resolve`, renamed from `artefact-oscal-resolve`). OSCAL Baseline Tailoring reads the
-  OSCAL Catalog and writes the OSCAL Profile, and Trestle's `profile-resolve`
-  turns the profile and its catalog into the **Resolved OSCAL Profile
-  Catalog**. OSCAL Catalog Generation is repeated from the first view as the
-  Catalog's writer. Trestle's round-trip `Serving` of that function is excluded
-  here, because the first view already shows it. The golden-dataset baseline
-  profile and FedRAMP's pre-resolved baselines sit alongside as validation
-  data. The split follows GH #61 decision A: each OSCAL object appears with
-  its writer and every reader (`architecture/model/views.yaml` comments).
 
 **C4 diagrams.** The C4 context diagram draws the business objects as external data stores
 (`SystemDb_Ext`). These include "Resolved OSCAL Profile Catalog" and the new

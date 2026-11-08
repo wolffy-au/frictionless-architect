@@ -149,11 +149,19 @@ topics:
       - path: architecture/model/views-viewpoints.yaml
       - path: architecture/model/diagrams/vision/**
       - path: architecture/model/diagrams/business/**
-      - path: architecture/model/diagrams/application/**
       - path: architecture/model/diagrams/layered/**
       - path: architecture/model/diagrams/c4/**
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+
+  - name: architecture-diagrams-application
+    title: "Architecture Views & Diagrams: Application Layer"
+    description: The application-layer ArchiMate views — bounded-context views (GH #129) and application-usage slices (GH #105 follow-up) — split out once Architecture Views & Diagrams passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: architecture/model/diagrams/application/**
 
   - name: architecture-diagrams-platform
     title: "Architecture Views & Diagrams: Platform, Migration & Rendering"

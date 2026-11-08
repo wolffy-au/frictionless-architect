@@ -72,6 +72,11 @@ generator: claude-sonnet-5
   how the vision and business views map to ArchiMate viewpoints, the TOGAF
   Phase A vision-view set, the 17 new generic per-viewpoint views (GH #105),
   and the `include_types`/`exclude_elements` platform-only scoping mechanism.
+- [Architecture Views & Diagrams: Application Layer](architecture-diagrams-application.md) —
+  the Application Cooperation bounded-context split (GH #129), the
+  application-usage data-flow slices (GH #105 follow-up), and the
+  Application Structure/Cooperation single-application zoom views. Split
+  out of the page above (2026-11-08) once it passed 500 lines.
 - [Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md) —
   the Implementation & Migration and Technology-layer views (sections E/F),
   the vendored IT4IT reference views, and how to regenerate every
