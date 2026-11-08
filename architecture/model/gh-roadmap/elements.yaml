@@ -241,6 +241,20 @@
     gh-state: open
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/140
 - type: WorkPackage
+  id: wp-add-a-ui-to-load-and-save-an-archimate-gh-192
+  name: GH-192 Add a UI to load and save an ArchiMate model from an arbitrary directory
+  props:
+    gh-number: '192'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/192
+- type: WorkPackage
+  id: wp-add-a-views-admin-panel-for-authoring-gh-193
+  name: GH-193 Add a views-admin panel for authoring views.yaml entries
+  props:
+    gh-number: '193'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/193
+- type: WorkPackage
   id: wp-add-bounded-context-tagging-and-generic-gh-105
   name: GH-105 Add bounded-context tagging and generic ArchiMate viewpoint views
   props:
