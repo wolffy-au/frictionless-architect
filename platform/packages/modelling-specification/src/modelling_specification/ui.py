@@ -85,6 +85,9 @@ _PAGE = """\
   .msg.agent a { color: var(--accent); }
   .finding, .duplicate, .pattern, .option, .pii { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 6px; background: var(--surface-2); }
   .finding { border-color: var(--err); background: var(--err-soft); }
+  .msg.thinking { color: var(--text-muted); font-style: italic; animation: thinking-pulse 1.4s ease-in-out infinite; }
+  @keyframes thinking-pulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .msg.thinking { animation: none; } }
   .option .sub { margin: 4px 0 0; }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   button { font: inherit; font-size: 12.5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
@@ -203,6 +206,14 @@ _PAGE = """\
     messagesEl.appendChild(div);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return div;
+  }
+
+  // A visible "working" indicator shown from the moment a request is sent until its
+  // reply or failure is ready (GH #186). Deliberately not classed "agent" -- it must
+  // never match the `.msg.agent` selector the behave/Playwright steps use to mean
+  // "the real reply arrived". Callers remove the returned div themselves once done.
+  function showThinking() {
+    return addMessage("thinking", "Thinking&hellip;");
   }
 
   // Apply needs a validated delta; nothing is written until it is clicked.
@@ -687,14 +698,19 @@ _PAGE = """\
           if (!editedText || !editedText.trim()) return;
         }
         div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = true; });
-        const result = await resolvePii(action, editedText);
-        if (result) {
-          renderProposeResponse(result);
-        } else {
-          // resolvePii() already showed the error (e.g. "allow" rejected after a
-          // detector-engine error, ADR-0046) -- re-enable so redact/edit, which the
-          // pending confirmation is still open for, remain reachable.
-          div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = false; });
+        const thinking = showThinking();
+        try {
+          const result = await resolvePii(action, editedText);
+          if (result) {
+            renderProposeResponse(result);
+          } else {
+            // resolvePii() already showed the error (e.g. "allow" rejected after a
+            // detector-engine error, ADR-0046) -- re-enable so redact/edit, which the
+            // pending confirmation is still open for, remain reachable.
+            div.querySelectorAll("button[data-pii-action]").forEach((b) => { b.disabled = false; });
+          }
+        } finally {
+          thinking.remove();
         }
       });
     });
@@ -784,6 +800,7 @@ _PAGE = """\
     addMessage("user", escapeHtml(request));
     chatInput.value = "";
     sendButton.disabled = true;
+    const thinking = showThinking();
     try {
       const response = await postPropose(request);
       const body = await response.json();
@@ -793,6 +810,7 @@ _PAGE = """\
       }
       renderProposeResponse(body);
     } finally {
+      thinking.remove();
       sendButton.disabled = false;
     }
   }

@@ -36,3 +36,11 @@ def test_authoring_page_inserts_the_server_rendered_message_html() -> None:
     page = client.get("/authoring/").text
     assert "body.message_html" in page
     assert 'whiteSpace = "pre-wrap"' not in page
+
+
+def test_authoring_page_wires_a_working_indicator() -> None:
+    # GH #186: a visible "Thinking..." indicator from the moment a request is sent
+    # until the reply or failure is ready, for every path that waits on the LLM.
+    page = client.get("/authoring/").text
+    assert "showThinking" in page
+    assert "Thinking" in page
