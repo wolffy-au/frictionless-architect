@@ -8,8 +8,8 @@ topics:
     sources:
       files:
         README.md:
-          sha256: 1aa33b1fcdf1f474468c2d8de7e3de55db6f33f3e4c6a108fa89e3fb88ee9c5e
-          lines: 295
+          sha256: 3750f620dff0dd49e4f60129b29cfb3da7118ca41d7635ca1fb9ba3ee1181e22
+          lines: 299
         specs/EPIC-001-governance-platform/spec.md:
           sha256: b565f4aa7e587a92754c6d1009eac5b2efc4cf91a6a0bea15094872a51b6094c
           lines: 219
@@ -31,11 +31,11 @@ topics:
     sources:
       files:
         ARCHITECTURE.md:
-          sha256: 574da0504c08b7a23fa732717612ba41ef82ab4e8c0adf8f91a9bb47d170eab2
-          lines: 487
+          sha256: b90d34eff6ad05cc98c3f1c682f50805ac129e769ece77b5e427f5e144b2e3f0
+          lines: 493
         TECHNICAL.md:
-          sha256: cf77a16add7d67c465fb4185e5563e49832131ef7237ff206d987de2f0e72f8e
-          lines: 429
+          sha256: 5ecf8b9f62a403a1ec005cae7a1e3b123377716f7668c6d91bbc6bd00c023776
+          lines: 432
       urls: {}
   decision-log:
     title: Architecture Decision Log
@@ -231,11 +231,11 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: 6fb2d4a6db088d6c13981b166c8049e37a488097401df2ef7c33af5e5e42854e
-          lines: 1784
+          sha256: 894b8fcc79edebe27e557532d42b536a9931840cca821eddc6489630994e2493
+          lines: 1849
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          sha256: f20de9a1a8963c78c0f696820b35360d709c468e04fc69540065c04a37520bfa
-          lines: 473
+          sha256: d42793fb47c7dd2dbe7d6c62d2795277bdeb8312aa8aa0bc30a5a61c20150829
+          lines: 485
       urls: {}
   architecture-model-contexts:
     title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
@@ -293,8 +293,8 @@ topics:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: 6fb2d4a6db088d6c13981b166c8049e37a488097401df2ef7c33af5e5e42854e
-          lines: 1784
+          sha256: 894b8fcc79edebe27e557532d42b536a9931840cca821eddc6489630994e2493
+          lines: 1849
         third_party/it4it/elements.yaml:
           sha256: 60002f1ce238f396a46f24bdca2f562c21075fdeead9583261659c838cc4cd4e
           lines: 1127
@@ -961,7 +961,7 @@ topics:
   architecture-diagrams-platform:
     title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
     page: wiki/architecture-diagrams-platform.md
-    built: '2026-11-04'
+    built: '2026-11-08'
     sources:
       files:
         architecture/model/README.md:
@@ -1058,10 +1058,10 @@ topics:
           sha256: dd7bfb0ae4a1acb615d2e54b2c0afa708882ff781d09fda7610f4b9e97334d81
           lines: 1
         architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml:
-          sha256: 0d9de3d6700b4bd6a74bc9cbdda9532931dd5524046152cdd659cb0017cc3b10
-          lines: 26
+          sha256: 7c5ef13cf9d5e6fc37e541e8df22f10bd0de98fe1553f5b01b23583dbad86e53
+          lines: 30
         architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.svg:
-          sha256: c967f365b8b5b61c1e20fee94b13e98714d2da78452a76c752aabd5922bf6b50
+          sha256: a48506e7c76b7309d4beb2c4abc03946708ca74d9ea2a23e2ce89f6781414477
           lines: 1
         architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml:
           sha256: 747ee1c75c05ee200de1bdd0804706c394418ede4d1d0923bc8900bea2dd6f88
@@ -1136,10 +1136,10 @@ topics:
           sha256: 0c1a88da4464e541a21eabcfb23fcd88214d4c2947e95c71279d62134dd9678e
           lines: 1
         architecture/model/diagrams/migration/work-package-dependencies.puml:
-          sha256: 955bdfbfac08f3099a1e799fb1fa84f6428c488a904d414ca1e64fadbbe89e06
-          lines: 157
+          sha256: 6c8db5003fdd162234d8abba381ac8fa5f5b6605b1b68c7c5d3b6decb32026d9
+          lines: 159
         architecture/model/diagrams/migration/work-package-dependencies.svg:
-          sha256: 24521ac76fbb9dabf6f4f7c16e73406e9d0b011339b112b3bb2368d8304926fd
+          sha256: 376a116ab18a7ace0ac532cae0f56d0647322ad78d535d28b3f14637f0dee274
           lines: 1
         architecture/model/diagrams/technology/landscape.puml:
           sha256: ec032487030ffa012c5ec192a0f57693889c2ce0a1f7ade0e5e7db6eb38395e4
@@ -1217,15 +1217,15 @@ topics:
   oscal-compliance:
     title: OSCAL Compliance Content
     page: wiki/oscal-compliance.md
-    built: '2026-11-04'
+    built: '2026-11-08'
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
           sha256: 3375c290f8123368ced68aadf92d22e8640da701d2daf247182592beb4c6b6d4
           lines: 236
         pyproject.toml:
-          sha256: aa1211df2322da365a8d7aa9d9332e38864f7981bff28ba7735216e2e21450e9
-          lines: 228
+          sha256: b4cadb74e0262e56a6af02bd2638bf2202295639ea970a620a3e25a343edb72e
+          lines: 241
         sample-data/oscal/01-nist-baseline-resolution.puml:
           sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
           lines: 53
@@ -1331,7 +1331,7 @@ topics:
   controls-compliance-catalog:
     title: Controls & Compliance Catalog
     page: wiki/controls-compliance-catalog.md
-    built: '2026-10-31'
+    built: '2026-11-08'
     sources:
       files:
         platform/packages/controls-compliance-catalog/README.md:
@@ -1398,7 +1398,7 @@ topics:
           sha256: c12bd939a308c6aedecb55ec543867b0aaaa756b01ae4730488e45073c0e7526
           lines: 1007
         platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/convert.py:
-          sha256: f551f93259d2cf2c1fae0516ee301cffe76527f1b9ac173df84a6a58a6ac1ada
+          sha256: d9aaf34011012faf62bfc4e24353b15eca81040d462968e83d63e481e44e0315
           lines: 100
         platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/prompts.py:
           sha256: 986aad98d38460829e0b71ac0373134db659eb1c0c7f04328b5d584693b4f427
@@ -1432,8 +1432,8 @@ topics:
           sha256: 68cdb36ca73438463e78365dcfb0bad8c2e55e85e41ac3f701d8a4c8a0648e07
           lines: 68
         platform/packages/modelling-specification/README.md:
-          sha256: 04216a6c73932284d998bb66f0af786f222bf4856e43a2d67fc25b322f406521
-          lines: 156
+          sha256: 1005379f7f71b85c6c35c5eebed54acdb39d2d798d805289d6bd7ff89efd7145
+          lines: 159
         platform/packages/modelling-specification/pyproject.toml:
           sha256: 7ed00485fa7578d784106f76d9dc0144653892c369626dbb59665eba563495ca
           lines: 38
@@ -1450,38 +1450,38 @@ topics:
           sha256: 39abd98b5f03137d7c8968fb531e3e9c2cdf13c4be3fbdb791fe45d6fecc2392
           lines: 1
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: 71e6cc092dd325b1b9f574da4b5fc77431b277d4f0d4de48db2de2d4d66d0296
-          lines: 576
+          sha256: f42109fa623219f428be049d2f292903f3a65e4ffc74c6c1ececa7cbab7108ff
+          lines: 603
         platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py:
-          sha256: 5cdaa9680c524209714102d7fb02ff0e21f56077cc1cb9d52256d9410c67e13d
-          lines: 61
+          sha256: c5d7733872f66d524479fae2219568b329594f14c20f3ea8a99eaaf5a519a54e
+          lines: 62
         platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
-          sha256: c183a1ce283b1a12f3adc005ec8a64b222acd4db6ad913ced189acad158146ab
-          lines: 179
+          sha256: 2929e65d9ae6c6eaa9fd010aead2470929ca2a02cd7f9c964f25c4f84076a34b
+          lines: 181
         platform/packages/modelling-specification/src/modelling_specification/c4.py:
-          sha256: 93bdc120972b2fccf1919fb25d3f34ce1fcfbb942e7f75c3b2305d13871778cc
-          lines: 377
+          sha256: 41d046d064b205e3a7e4399d03c272877df6d3edc5934b89e8f2e018a5360626
+          lines: 379
         platform/packages/modelling-specification/src/modelling_specification/cli.py:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
         platform/packages/modelling-specification/src/modelling_specification/markdown_render.py:
-          sha256: 11a967cda7dc963f7773d5c3755c9b8f30b15fdd9ba27f3a3a70e88cedadf4f4
-          lines: 44
+          sha256: 707a1252d57d5915a2bacb795c48cbef2a4e1c60b66101d9cf9f7dcb9a7d2073
+          lines: 52
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: 6fb2d4a6db088d6c13981b166c8049e37a488097401df2ef7c33af5e5e42854e
-          lines: 1784
+          sha256: 894b8fcc79edebe27e557532d42b536a9931840cca821eddc6489630994e2493
+          lines: 1849
         platform/packages/modelling-specification/src/modelling_specification/puml.py:
-          sha256: b0fd3c90ec1a877c855894a2e64c0bcb3bfcd722a5484fe0e744d3ca0cd035ef
-          lines: 446
+          sha256: 119755fcac021ec48dc8edc4bb0ccd36484de6528b521557e8166fd59c449d07
+          lines: 450
         platform/packages/modelling-specification/src/modelling_specification/reference/README.md:
           sha256: 1c5740ae4ebe91c6e34123b521071361b258e86e489315179adfb6987fe72b16
           lines: 53
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          sha256: f20de9a1a8963c78c0f696820b35360d709c468e04fc69540065c04a37520bfa
-          lines: 473
+          sha256: d42793fb47c7dd2dbe7d6c62d2795277bdeb8312aa8aa0bc30a5a61c20150829
+          lines: 485
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: ea6f79380fa35345e3fb8c071d3ba02d6416691e1061df05da4d44fae78d5611
-          lines: 1048
+          sha256: f44cc55508701ff76e1124883c4dceadd8875cb4c4e8778fd793538aaec97285
+          lines: 1091
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
           sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
           lines: 890
@@ -1489,20 +1489,20 @@ topics:
           sha256: 31526e2b1389e35ab771eb7115ac944cb9b60455ee56d0c0de1d6982b0dbd270
           lines: 1
         platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py:
-          sha256: 9b511f618286c634214222aa9906363a8133609155db2e97da929aa175c4d145
-          lines: 321
+          sha256: edc7471d9a18cb63248ef0c21345c316586f7d1588feb52629ddf96799b8e3a7
+          lines: 329
         platform/packages/modelling-specification/src/modelling_specification/validation/duplicates.py:
-          sha256: a8017d6645824d5d98470c2fa40a85fe269b52c7de0c5f5eaf2dd67da20e8c1c
-          lines: 51
+          sha256: cb851a7e6beebec6eab6c6da7eccd6f055b641551ce32a0c57d436bffa6b0a37
+          lines: 52
         platform/packages/modelling-specification/src/modelling_specification/validation/fixes.py:
-          sha256: 933bc84d0356a717617e0dd2c2b95a32b5c50a24f6683ef8725c122937f7e822
-          lines: 70
+          sha256: 55a9512519891e1aa30223cb8d10d055d897fc909bcfb8d875a4a8e6113f444b
+          lines: 71
         platform/packages/modelling-specification/src/modelling_specification/validation/metamodel.py:
-          sha256: 4da96946312ffefd81a289101e887ea79fd65ab8e3e861dc3f64ff7f18b7e23e
-          lines: 42
+          sha256: 68231772ed27818a85e8c8190a28573366f0ee31ec2be8d11ec5e81c53a5afb4
+          lines: 43
         platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py:
-          sha256: 7f37346b9bbab4ae4a5b01df5041a7bf2848c50d795750445054767aa8128021
-          lines: 105
+          sha256: 67ef53666b0bf09538125b4795569bfeb0785e4d99bba62576fa6165e279e3b7
+          lines: 107
         platform/packages/modelling-specification/src/modelling_specification/viewpoints.py:
           sha256: 945591208c282480c4ba54d85f9c6450a286641ca2f3c8a350e2c2e614e0efc8
           lines: 344
@@ -1534,7 +1534,7 @@ topics:
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
           lines: 77
         specs/EPIC-003-conversational-model-authoring/contracts/api.md:
-          sha256: 72253dea43cec32cfe1844aa49d670a79a34f154bd267c850e28cbd92b6d727d
+          sha256: bf93b37947248ec6df6c9632f9bbf49f93900aa3f09fcae5d6c15575e5f0957d
           lines: 170
         specs/EPIC-003-conversational-model-authoring/data-model.md:
           sha256: 65ea63e4f8a8868fd5f810645c329a97d4543b2621d501155741f303827cfbcf
@@ -1599,7 +1599,7 @@ topics:
   digital-twin-knowledge-graph:
     title: Digital Twin Knowledge Graph
     page: wiki/digital-twin-knowledge-graph.md
-    built: '2026-10-31'
+    built: '2026-11-08'
     sources:
       files:
         docs/adr/0017-knowledge-graph-on-standard-ontology.md:
@@ -1645,8 +1645,8 @@ topics:
           sha256: e86f970833e2abc2aaa171be38bbac2efb21e1d975ee9de981ce7b5e34c75b5e
           lines: 30
         platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/namespaces.py:
-          sha256: 4e819f5ec0fbaccb5a582ec62bdb0cd7f0c0408eaeb702e836338d411a4d5a64
-          lines: 66
+          sha256: 251f178d6e2808bdcec51492e70d59d67591ecc5dcbc63bcbd3fc3b1400332ed
+          lines: 67
         platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/read_path.py:
           sha256: ca9bf1f3a0c81528657b807fc48edaa49419550d2c6029c7142e4df5af901e6c
           lines: 114
@@ -1654,8 +1654,8 @@ topics:
           sha256: fab33723e99c00e2aeb4ab1bcb27384bb04e96057095cde7e4d6e984c5e268f6
           lines: 208
         platform/packages/digital-twin-knowledge-graph/src/digital_twin_knowledge_graph/schema_manager.py:
-          sha256: 4f27dbb68326b20ec3fb49ce789685f4ac4e7e6adc66c24cd9790e5b8f1c9b87
-          lines: 339
+          sha256: a7121d8facbf00161719b69ba52378a03c350020f2aacf1970d1e7a4b37f5016
+          lines: 338
       urls: {}
   schema-visualizer-api:
     title: Schema Visualizer API
@@ -1685,15 +1685,15 @@ topics:
   llm-provider-config:
     title: LLM Provider Configuration
     page: wiki/llm-provider-config.md
-    built: '2026-11-04'
+    built: '2026-11-08'
     sources:
       files:
         docs/adr/0034-shared-packages-and-llm-provider-config.md:
           sha256: a6fce6bf0e5a9939c382df985210bef0f95844a662c064ba794730c0363aab32
           lines: 158
         platform/packages/llm-provider-config/README.md:
-          sha256: 8fe4154732478640aa54a7c44dde38593a31ab9c28efa20a10e2e9388bdc2f51
-          lines: 64
+          sha256: f0c2bc06b2c1bbeb88cf2d1ea0b84e95e12bca6f559c9fba1ef71e3000e32492
+          lines: 77
         platform/packages/llm-provider-config/pyproject.toml:
           sha256: eedbb69cc49b0a8b2dc41fe6f58ff1660e0a2bc92121f62b9be5bc711ce57887
           lines: 28
@@ -1716,7 +1716,7 @@ topics:
           sha256: 229a443324714912614ec51fe20217be406d45cd2ecc9becd835654fac6d12f3
           lines: 69
         platform/packages/llm-provider-config/src/llm_provider_config/router.py:
-          sha256: e3ce83932a40e7de8cd402c2b648fbdb9a6d77798f25a81dbb86d0ea3a002ea2
+          sha256: a30280a8df48ccaa3a35cd99d0d79c766efd656098f2cdc2eb942a31bd0ce203
           lines: 344
         platform/packages/llm-provider-config/src/llm_provider_config/settings.py:
           sha256: 193d18441ee40988cc5940fb93dfc0893e0a862c3953331cff40e5ecfc878c0b
@@ -1750,14 +1750,14 @@ topics:
           sha256: 7ed00485fa7578d784106f76d9dc0144653892c369626dbb59665eba563495ca
           lines: 38
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: 71e6cc092dd325b1b9f574da4b5fc77431b277d4f0d4de48db2de2d4d66d0296
-          lines: 576
+          sha256: f42109fa623219f428be049d2f292903f3a65e4ffc74c6c1ececa7cbab7108ff
+          lines: 603
         platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
-          sha256: c183a1ce283b1a12f3adc005ec8a64b222acd4db6ad913ced189acad158146ab
-          lines: 179
+          sha256: 2929e65d9ae6c6eaa9fd010aead2470929ca2a02cd7f9c964f25c4f84076a34b
+          lines: 181
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: ea6f79380fa35345e3fb8c071d3ba02d6416691e1061df05da4d44fae78d5611
-          lines: 1048
+          sha256: f44cc55508701ff76e1124883c4dceadd8875cb4c4e8778fd793538aaec97285
+          lines: 1091
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
           sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
           lines: 890
@@ -1765,8 +1765,8 @@ topics:
           sha256: f1c8f836135f5fb3bdeb25e56853d558475fd66804e363e55072bf24c926939b
           lines: 58
         platform/packages/pii-gateway/README.md:
-          sha256: 9b3705c65085ae3f0b85f4620252b304a314e2dd1c072bea90d4431d1fc57ee5
-          lines: 82
+          sha256: 9c6bc647f67a5ebe1a35fec74f5f75860c86f1636e7b2089d126ccc2000e4b2a
+          lines: 90
         platform/packages/pii-gateway/pyproject.toml:
           sha256: 9ec7b22ec0b8efb9c91d5abf80da157060962e38f6e5b1966c87ed3f6d4112a5
           lines: 22
@@ -1801,8 +1801,8 @@ topics:
           sha256: 0a6afe233a3ecc0613dc96c0ce44430fa6b00a51c553926ab557d837f44d8c07
           lines: 45
         platform/packages/pii-gateway/src/pii_gateway/audit.py:
-          sha256: 2e07cd1fd561a9f482b19fed79c4d469f5df97ce90cf9fb8bd29864e56c116b1
-          lines: 57
+          sha256: bfb26905ce271412b625a0d9e023511930d9be71f1bfa8b110a07b03c9c1451f
+          lines: 63
         platform/packages/pii-gateway/src/pii_gateway/config.py:
           sha256: fbfac8aa1bb2a583efe8b7e098528fd193734ba373f10a409fa6a431c72c418d
           lines: 117
@@ -1810,14 +1810,14 @@ topics:
           sha256: 0bf2fe4b449c7b56ad88d19b284eaa0dc49101bc68c65915d808a824775aa729
           lines: 93
         platform/packages/pii-gateway/src/pii_gateway/models.py:
-          sha256: e5fea70641424b1061d1bfb5266c6d0201c761884d3e2e9fafe3ebeab353ba62
-          lines: 155
+          sha256: e4ed12529b8bdbfbc9b00a8ff31d287b84cad2b6ae4ec6a0baf56111e0250897
+          lines: 156
         platform/packages/pii-gateway/src/pii_gateway/router.py:
           sha256: 11163677058de714cd81d9bc4864aa6f5b44ba49a8d24b868e4a76b32f67c4f5
           lines: 144
         platform/packages/pii-gateway/src/pii_gateway/scrub.py:
-          sha256: 97cb00660ee0e53b50cb65fcca607fb3a9e0858739f9091f887a09eb2e697a45
-          lines: 118
+          sha256: a3a483daf476f2c1f6ae7db7722c6635da9c52265409b2af6ba887b14d27816c
+          lines: 108
         platform/packages/pii-gateway/tests/unit/test_scrub.py:
           sha256: 83586f4bb11d11dec24925dad7d1d3a22ffe409c9daddae9ff3a787d48ff7d86
           lines: 185
@@ -1838,7 +1838,7 @@ topics:
   visualizer-service:
     title: Visualizer Service
     page: wiki/visualizer-service.md
-    built: '2026-10-24'
+    built: '2026-11-08'
     sources:
       files:
         src/frictionless_architect/__init__.py:
@@ -1851,8 +1851,8 @@ topics:
           sha256: dfbfb90822e85df88dc25050b6972d3d445d14ea719fd9dae550c9a872690113
           lines: 5
         src/frictionless_architect/schema/manager.py:
-          sha256: 1ff803de92b6eeb811b791ea63c30ef7b9d669a289996ddba0d328894debbe17
-          lines: 332
+          sha256: 0f67058204719651d5085c9bbec848183309cd8ad6d783732af1fd7a7067851e
+          lines: 331
         src/frictionless_architect/visualizer/__init__.py:
           sha256: 3e98d3ef453e703987240680bc09250ba02ea808b9d4dd85e3a816f5248e370d
           lines: 1
@@ -1869,14 +1869,14 @@ topics:
           sha256: 370ed5ee628c3b15ab0793099dd7b63362c2f564c9cf1e1f50bb3d05b3fcbe6f
           lines: 107
         src/frictionless_architect/visualizer/namespaces.py:
-          sha256: 55bcc1a1a0bdcc27c843419dd0141b5f54b648270b40733656b1abe8ab9b98e9
+          sha256: d302ab1a25368c2c24f3de6eabe5bb3e76809e3de1b506581d52eb221d1bfcf6
           lines: 65
         src/frictionless_architect/visualizer/sample_parser.py:
           sha256: 53bb12910b13a4dbe74e8a24c3268e4093f08d50c5b19055c8cdd817f3c63fc2
           lines: 202
         src/frictionless_architect/visualizer/sample_validator.py:
-          sha256: 1a0f605d8653f1c12c82f7a20a50ee0d2097a04f690cc7f832ca2c9e2402450d
-          lines: 151
+          sha256: e67401a094986f8c75132035b8f821f16de75cb9adec6144796e027199b44471
+          lines: 157
       urls: {}
   development:
     title: Development & Quickstart
@@ -1906,8 +1906,8 @@ topics:
           sha256: 111aef5523b0d54882cc75ee7635b77f5c4fde14d095ca6de8f5454b33efb8fc
           lines: 52
         platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md:
-          sha256: db6253848cf46e3fdf7d6e071829e0dfa865f415b59f4a5aef5d2338eefdd193
-          lines: 82
+          sha256: af4450560f5916f091b12646d214a22c5acfc2897ee2ee12b5f505262c6d71da
+          lines: 83
         scripts/pre_merge_checks.sh:
           sha256: 192a5dcac9af3f388c5738667480b60b733e2d1862a280946365deaabd431ae0
           lines: 96

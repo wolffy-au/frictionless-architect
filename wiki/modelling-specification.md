@@ -61,16 +61,12 @@ for the model elements this feature adds, and [Decision Log](decision-log-0030-o
 for ADR-0037, the record of its eight load-bearing design decisions.
 
 **Renamed, and a sibling distinguished (ADR-0039, GH #68/#138, 2026-10-24).**
-This feature's process and function — originally "Conversational Model
-Authoring", described as jointly performed by the Enterprise and Solution
-Architect — are renamed **"Conversational Candidate Architecture Authoring"**
-(ids unchanged: `process-conversational-authoring` /
-`fn-conversational-authoring`) and scoped to the Enterprise Architect alone,
-editing `do-candidate-arch` in the enterprise knowledge graph. The unused
-Solution Architect `Assignment` is dropped in favour of a new, distinct
-sibling function, `fn-solution-modelling`, which edits a `do-solution-design`
-instead — the Solution Architect's own conversational authoring mode, not a
-variant of this one. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
+The process and function, once shared by the Enterprise and Solution Architect,
+are renamed **"Conversational Candidate Architecture Authoring"** (ids unchanged:
+`process-conversational-authoring` / `fn-conversational-authoring`) and scoped to
+the Enterprise Architect alone, editing `do-candidate-arch`. The unused Solution
+Architect `Assignment` is dropped for a distinct sibling, `fn-solution-modelling`,
+which edits a `do-solution-design` instead. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for both.
 
 ## Why the code lives here
@@ -150,27 +146,29 @@ The working indicator (GH #186) adds no dependency.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1784 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
-| `router.py` | 1048 | FastAPI router: propose/validate/decide/render/config/state |
+| `model_io.py` | 1849 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view` |
+| `router.py` | 1091 | FastAPI router: propose/validate/decide/render/config/state; `_resolve_changes`, `_merge_into_delta` and `_resolved_text` hold the logic once inline in `propose`/`resolve_pii` |
 | `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
-| `authoring/delta.py` | 576 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
-| `puml.py` | 446 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
-| `c4.py` | 377 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
+| `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
+| `rendering.py` | 485 | Ported view-render logic from root's `render_diagrams.py` |
+| `puml.py` | 450 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
-| `validation/conventions.py` | 321 | Loads and evaluates `conventions.yaml` rules |
-| `authoring/state.py` | 179 | In-memory Candidate Delta session store |
+| `validation/conventions.py` | 329 | Loads and evaluates `conventions.yaml` rules |
+| `authoring/state.py` | 181 | In-memory Candidate Delta session store |
 | `cli.py` | 118 | `build`/`render`/`validate` entry points root's scripts shell into |
-| `validation/patterns.py` | 105 | Interposed-element pattern matching and synthesis |
-| `validation/fixes.py` | 70 | Deterministic `proposed_fix` generation — never a second LLM call |
-| `authoring/overrides.py` | 61 | Drafts the Override Decision Record ADR stub |
-| `validation/duplicates.py` | 51 | Fuzzy duplicate detection (`rapidfuzz`) |
-| `markdown_render.py` | 44 | Renders an LLM chat reply's Markdown to HTML and sanitises it to an allowlist via `nh3` (GH #185) |
-| `validation/metamodel.py` | 42 | Metamodel relationship-matrix + referential-integrity check |
+| `validation/patterns.py` | 107 | Interposed-element pattern matching and synthesis |
+| `validation/fixes.py` | 71 | Deterministic `proposed_fix` generation — never a second LLM call |
+| `authoring/overrides.py` | 62 | Drafts the Override Decision Record ADR stub |
+| `validation/duplicates.py` | 52 | Fuzzy duplicate detection (`rapidfuzz`) |
+| `markdown_render.py` | 52 | Renders an LLM chat reply's Markdown to HTML and sanitises it to an allowlist via `nh3` (GH #185) |
+| `validation/metamodel.py` | 43 | Metamodel relationship-matrix + referential-integrity check |
 | `app.py` | 23 | FastAPI entry point, registers the `modelling-specification.conversational-authoring` LLM component |
 
 (`platform/packages/modelling-specification/src/modelling_specification/`,
-line counts from the current tree.)
+line counts from the current tree.) Most growth since the last build is docstrings,
+since `ruff` now enforces the pydocstyle `D` rules on package `src/` code
+(`TECHNICAL.md`; `pyproject.toml`), plus the helper extractions named above.
 
 `viewpoints.py`'s bundled `reference/` directory is the authority for which
 ArchiMate concepts a view may show once it declares a `viewpoint:`:

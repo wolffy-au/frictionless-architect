@@ -138,7 +138,12 @@ in the background every `RETRY_INTERVAL_SECONDS` until a load succeeds, and
 `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` (or `--uri` / `--user` /
 `--password`) and bootstraps the ArchiMate schema in Neo4j — subcommands
 `constraints`, `ingest`, `version`, `audit`, `all` (`README.md`
-§"Configuration", §"Operations: seeding Neo4j").
+§"Configuration", §"Operations: seeding Neo4j"). A root `.env` is loaded with
+`override=True`, so it beats exported variables. Precedence, highest first, is the
+flags, the `.env`, the exported environment, then the defaults
+`neo4j://localhost:7687`, `neo4j`, `neo4j`. The visualiser quickstart now states the
+same (`README.md` §"Operations: seeding Neo4j";
+`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md`).
 
 ## Tests
 
@@ -175,7 +180,7 @@ The constitution's "Quality Gates" (see
 
 | Tool | Purpose |
 |---|---|
-| `ruff` | lint + format (line length 120) |
+| `ruff` | lint + format (line length 120); also the pydocstyle `D` rules, Google convention, on `src/`, `platform/packages/*/src/` and `scripts/` (`TECHNICAL.md` §"Code Style") |
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
 | `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |

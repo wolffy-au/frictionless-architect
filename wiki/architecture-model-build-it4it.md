@@ -38,24 +38,27 @@ build path (`architecture/model/README.md` §"Architecture model";
 1. The CLI loads and merges first-party YAML with optional vendored and
    generated layers (`build_model`), then assembles and validates the model
    (`_assemble`)
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:1085-1138`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:1119-1173`).
 2. Stable identifiers are derived from element ids and relationship fields via
    `det_id`, so repeated builds do not churn the exchange model
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:216-227,322-388`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:218-227,326-397`).
 3. Motivation and viewpoint conventions are checked during model assembly
    (`check_motivation_conventions`, `check_view_coverage`)
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:481-530`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:489-540`).
+   `add_views` now hands each view to a `_build_view` helper (nodes, neighbours,
+   connections, viewpoint check, layout), with no change in behaviour
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:824-968`).
 
 The loader rejects null YAML values rather than allowing truncated flow-style
 entries through (`_check_null_keys`), and writes the XML only after
 successful assembly (`write_and_validate`)
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:259-280,1770-1784`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:262-283,1834-1849`).
 `env_dir`, which resolves `FRICTIONLESS_MODEL_DIR` below, now also rejects a
 blank or NUL-bearing value and canonicalises the path with
 `os.path.realpath` rather than `Path.resolve()` — hardening against Snyk's
 Path Traversal findings, though Snyk does not treat `env_dir` itself as a
 sanitiser and still reports them
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:54-62`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:54-64`).
 
 ## IT4IT alignment — vendored as its own repo, imported at build time
 
@@ -70,7 +73,7 @@ The model loader loads it alongside the first-party YAML and merges both into th
 separate `.xml`, and no ID-reconciliation machinery. Every IT4IT element and
 relationship keeps the `it4it-` id prefix it always had, and that prefix
 alone is what keeps the merged id space collision-free
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:81-105,192,216-227`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:81-105,192,218-227`).
 
 This is a decision about *packaging*, not content — nothing about the IT4IT
 data itself changed:

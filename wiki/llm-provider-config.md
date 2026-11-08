@@ -1,7 +1,7 @@
 ---
 title: LLM Provider Configuration
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-08'
+generator: claude-sonnet-5
 sources:
 - docs/adr/0034-shared-packages-and-llm-provider-config.md
 - platform/packages/llm-provider-config/README.md
@@ -129,6 +129,14 @@ prefix and a JSON API under it (`platform/packages/llm-provider-config/src/llm_p
   than falling back to whichever component happens to be registered first —
   that earlier fallback could silently test an *overridden* component's
   settings instead of the actual global default.
+
+The README now lists this API in a table, relative to the prefix: `GET ` (empty path)
+is the page, `GET /state` also reports each setting's `key_source` and each provider's
+`env_var`, and `POST /test` omits `component` to test the global default
+(`platform/packages/llm-provider-config/README.md`). The broad `except Exception` in
+the test route carries a `noqa: BLE001` marker, since `litellm` raises many
+provider-specific error types
+(`platform/packages/llm-provider-config/src/llm_provider_config/router.py`).
 
 Each of these non-2xx outcomes is declared in the route's `responses=`, so the
 mounted app's OpenAPI document lists them (`router.py:108`, `116`, `129-133`, `148`, `159`).

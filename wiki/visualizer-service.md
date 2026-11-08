@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: '2026-10-24'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - src/frictionless_architect/__init__.py
@@ -228,8 +228,14 @@ not flagged. `_load_sample()` forwards these into the payload `warnings`
 sample XML against the ArchiMate exchange-format XSDs with `xmlschema`, per
 ADR-0022. It returns a list of issue strings, which is empty when the sample is
 valid. `schema_path` is the entry XSD: for a model with diagrams that is
-`archimate3_Diagram.xsd`, which includes the View and Model schemas
-(`src/frictionless_architect/visualizer/sample_validator.py:116-138`).
+`archimate3_Diagram.xsd`, which includes the View and Model schemas. Missing
+files, namespace mismatches, schema-load failures and XSD errors come back as
+issue strings. Malformed sample XML does not: the function parses the sample up
+front, so it raises `ParseError`, or `DefusedXmlException` for a construct
+`defusedxml` forbids (entity declarations, external references). The caller only
+reaches it once the sample has already parsed
+(`src/frictionless_architect/visualizer/sample_validator.py:116-157`;
+`src/frictionless_architect/visualizer/api.py:252-261`).
 
 The checks run in this order:
 
@@ -243,8 +249,8 @@ The checks run in this order:
    `defuse="always"` and `allow="local"`, so the remote `xml.xsd` import in
    `archimate3_Model.xsd` resolves from `xmlschema`'s bundled copy rather than
    the network. It is `lru_cache`d per path. A load failure is reported as an
-   issue (`src/frictionless_architect/visualizer/sample_validator.py:32-39`,
-   `134-137`).
+   issue (`src/frictionless_architect/visualizer/sample_validator.py:33-39`,
+   `153-156`).
 4. **Declared types.** `xsi:type` values on elements and relationships that
    the schema doesn't declare are reported as one "Types not defined in
    schema" issue. `xmlschema` raises on such types rather than reporting
@@ -262,7 +268,7 @@ The checks run in this order:
    refs pointing at a missing element or relationship. They are kept
    alongside the XSD's key/keyref constraints because they name the dangling
    identifier (`src/frictionless_architect/visualizer/sample_validator.py:1-7`,
-   `81-100`).
+   `81-101`).
 
 Called from `_build_payload()` above — every returned issue surfaces as a
 payload `warning`, it never raises from that call site.
@@ -288,21 +294,21 @@ dirs on save; `age_seconds()` is `now - mtime` (`src/frictionless_architect/visu
 ## `SchemaManager` (`src/frictionless_architect/schema/manager.py`)
 
 Not wired into the FastAPI app — a standalone controller for Neo4j
-constraints, ingestion, migrations, and audits (`src/frictionless_architect/schema/manager.py:52-53`).
+constraints, ingestion, migrations, and audits (`src/frictionless_architect/schema/manager.py:63-64`).
 
-- **`apply_constraints()`** — creates 6 uniqueness constraints and 5 indexes
+- **`apply_constraints()`** — creates 5 uniqueness constraints and 6 indexes
   (`src/frictionless_architect/schema/manager.py:12-27`, applied by
   `apply_constraints()`). See [Data Model](data-model.md) for the graph shape.
 - **`ingest_payload(payload)`** — MERGEs `elements`, `relationships`, `views`,
   `diagrams`. A sanitised element-type string is added as a second node label
-  (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:36-49`). Relationship ingestion
+  (`sanitize_label()`, `src/frictionless_architect/schema/manager.py:36-60`). Relationship ingestion
   **raises `ValueError`** if either endpoint `Element` is missing
-  (`src/frictionless_architect/schema/manager.py:134-140`) and writes **only**
+  (`src/frictionless_architect/schema/manager.py:170-176`) and writes **only**
   a direct `[:ARCHIMATE_RELATIONSHIP {identifier, type, ...}]` edge — as of
   [ADR-0028](decision-log-ui-visualiser-model.md), a `View`/`Diagram` no longer gets a
   `(:RelationshipFact)` node; instead `_ingest_views`/`_ingest_diagrams` set
   `v.relationshipIds`/`d.connectionIds` as a plain identifier-list property
-  (`src/frictionless_architect/schema/manager.py:154-220`). This drops
+  (`src/frictionless_architect/schema/manager.py:192-257`). This drops
   relationship ingestion from three write statements (existence check, edge
   `MERGE`, node `MERGE`) to two (existence check, edge `MERGE`).
 - **`record_schema_version(name)`** — MERGEs a `(:SchemaVersion {name})` with
@@ -315,7 +321,7 @@ constraints, ingestion, migrations, and audits (`src/frictionless_architect/sche
   which is a plain string list, not a graph edge, so it can silently reference
   a non-existent relationship); `_find_orphan_views` flags a `View` with zero
   `INCLUDES`-linked elements or an empty `relationshipIds` list
-  (`src/frictionless_architect/schema/manager.py:240-293`, docstring on
+  (`src/frictionless_architect/schema/manager.py:278-331`, docstring on
   `_find_missing_relationship_targets`).
 
 Cypher statements are passed through `_run_literal()` which casts to
