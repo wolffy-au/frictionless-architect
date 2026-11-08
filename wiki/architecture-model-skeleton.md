@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Skeleton'
-generated: '2026-11-12'
+generated: '2026-11-13'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -355,7 +355,13 @@ Several processes are new or have been renamed:
   `fn-threat-model`) and **Implementation**
   (`bfn-implementation`/`process-implementation`, the Developer building
   against a generated specification, distinct from the automated
-  `bfn-agentic-delivery` pipeline).
+  `bfn-agentic-delivery` pipeline). Business-layer presence alone left both
+  processes without a `Realization` edge up into the Strategy layer, unlike
+  the other five #45 roles — a **GH #45 follow-on (2026-11-08)** closed it:
+  `process-security-assessment` → `cap-reusable-architecture` and
+  `process-implementation` → `cap-control-plane` (see
+  [Architecture Model](architecture-model.md) for the full rationale and
+  [Strategy](architecture-model-strategy.md) for the capabilities).
 - **Renamed:** Current State Discovery is now **Architecture Reconciliation**,
   and the drift gate is now **Drift Review & Triage**. In Drift Review & Triage,
   an Enterprise Architect approves architectural drift.

@@ -46,10 +46,10 @@ The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:435-515`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 561 elements, 1275 relationships and 75 views
-(re-counted 2026-11-12 against a clean `build.py` run; the model validates
+current merged model is 561 elements, 1277 relationships and 75 views
+(re-counted 2026-11-13 against a clean `build.py` run; the model validates
 with no metamodel or referential-integrity violations). Of those, 287
-elements and 673 relationships are hand-authored in this repo's own
+elements and 675 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
 view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 123
@@ -493,7 +493,20 @@ Architecture Strategy transition view and a new, generated
 `plat-architecture-strategy-future-13` milestone Plateau were also added (see
 [Architecture Views & Diagrams: Platform, Migration &
 Rendering](architecture-diagrams-platform.md)). That brought the model to 515 elements, 1029 relationships and 66 views on
-2026-10-24; see the top of this page for the current count.
+2026-10-24.
+
+A GH #45 follow-on (2026-11-08) closed a gap ADR-0038's GH #69 follow-on had
+left open: `process-security-assessment` and `process-implementation` (the
+Security assessor and Implementation contributor role journeys) had no
+`Realization` edge to any `cap-*` capability, so — unlike the other five
+#45 roles — their journeys didn't trace up to a `ValueStream`. Two edges
+closed it: `process-security-assessment` → `cap-reusable-architecture`
+(matching `bfn-security-assurance`'s "before they are reused or shipped",
+the same capability `process-pattern-traceability`, `process-blueprint-traceability`
+and `process-solution-design` already realize) and `process-implementation`
+→ `cap-control-plane` (matching `vss-build`'s "within enforced architectural
+and regulatory boundaries", the same capability `process-cicd-pipeline` and
+`process-agentic-crew` already realize).
 
 A 2026-11-11 fix (`model_io.py`'s `VENDORED_MODELS` sweep) excluded
 `third_party/sample-azure` from the default vendored-model sweep: that
@@ -506,4 +519,5 @@ gained the `derived: true` overlay flag and an exploratory
 above and [Architecture Views & Diagrams: Vision, Business &
 Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true).
 Neither pass changed first-party element or relationship counts; the new
-view brought the total from 74 to 75.
+view brought the total from 74 to 75. See the top of this page for the
+current count.
