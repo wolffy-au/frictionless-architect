@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-11-14'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -34,8 +34,22 @@ sources:
 - architecture/model/diagrams/business/information-structure/schema-visualizer-api.svg
 - architecture/model/diagrams/business/organization.puml
 - architecture/model/diagrams/business/organization.svg
-- architecture/model/diagrams/business/process-cooperation.puml
-- architecture/model/diagrams/business/process-cooperation.svg
+- architecture/model/diagrams/business/process-cooperation/architecture-governance.puml
+- architecture/model/diagrams/business/process-cooperation/architecture-governance.svg
+- architecture/model/diagrams/business/process-cooperation/conformance-drift-assurance.puml
+- architecture/model/diagrams/business/process-cooperation/conformance-drift-assurance.svg
+- architecture/model/diagrams/business/process-cooperation/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/business/process-cooperation/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/business/process-cooperation/llm-provider-config.puml
+- architecture/model/diagrams/business/process-cooperation/llm-provider-config.svg
+- architecture/model/diagrams/business/process-cooperation/modelling-specification.puml
+- architecture/model/diagrams/business/process-cooperation/modelling-specification.svg
+- architecture/model/diagrams/business/process-cooperation/pii-gateway.puml
+- architecture/model/diagrams/business/process-cooperation/pii-gateway.svg
+- architecture/model/diagrams/business/process-cooperation/reusable-architecture-library.puml
+- architecture/model/diagrams/business/process-cooperation/reusable-architecture-library.svg
+- architecture/model/diagrams/business/process-cooperation/schema-visualizer-api.puml
+- architecture/model/diagrams/business/process-cooperation/schema-visualizer-api.svg
 - architecture/model/diagrams/business/product/architecture-governance.puml
 - architecture/model/diagrams/business/product/architecture-governance.svg
 - architecture/model/diagrams/business/product/conformance-drift-assurance.puml
@@ -179,7 +193,7 @@ kind of view:
 | Folder | Contents |
 |---|---|
 | `vision/` | TOGAF Phase A views (9 hand-curated in `views.yaml` plus 4 generic ones now in `views-viewpoints.yaml`) |
-| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`, `product`). `information-structure`, `service-realization` and `product` each render as one file per context |
+| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`, `product`). `information-structure`, `service-realization`, `product` and, since GH #183, `process-cooperation` each render as one file per context — `process-cooperation`'s `controls-compliance-catalog` slice redirects to `platform/packages/controls-compliance-catalog/specs/diagrams/` instead (see "Bounded-context views" below) |
 | `layered/` | the cross-layer Subsystems & Capabilities view, the Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`), the generated per-context split of the Subsystems & Capabilities sweep (`context-modelling-specification` and its siblings), and the exploratory Derived Relationship Overlay Probe view (`derived-overlay-probe`, see "Derived relationship overlay" below) |
 | `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` render as `usage/<context>.puml` and `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml` |
 | `c4/` | the C4 context and container diagrams |
@@ -303,7 +317,7 @@ switch. Thirteen are brand new:
 | Physical | `technology/physical` | `physical` |
 | Application Usage | `application/usage/<context>` | `application_usage` |
 | Technology Usage | `technology/usage` | `technology_usage` |
-| Business Process Cooperation | `business/process-cooperation` | `business_process_cooperation` |
+| Business Process Cooperation | `business/process-cooperation/<context>` (GH #183: `controls-compliance-catalog`'s slice redirects to `platform/packages/controls-compliance-catalog/specs/diagrams/` instead) | `business_process_cooperation` |
 | Application Cooperation (Standard) | `application/cooperation-standard/<context>` | `application_cooperation` |
 | Product | `business/product/<context>` | `product` |
 | Service Realization | `business/service-realization/<context>` | `service_realization` |
@@ -377,7 +391,9 @@ to all six: Application Cooperation, Service Realization, the
 Implementation & Migration overview, Implementation Deployment, Product and
 Application Usage, so each has a subfolder of per-context files (nine
 contexts for most, only `controls-compliance-catalog` and
-`digital-twin-knowledge-graph` for the migration overview). The
+`digital-twin-knowledge-graph` for the migration overview). Business Process
+Cooperation (a prior 491-line monolith) gained the same split later, as a
+GH #183 spike, bringing the total to seven. The
 ~60-element target is met for most contexts, but a few come out larger
 because the context genuinely owns that much cross-layer content —
 `view-service-realization` and `view-implementation-deployment` on
@@ -385,6 +401,24 @@ because the context genuinely owns that much cross-layer content —
 `BusinessFunction` realization edges and real Technology-layer
 Artifact/TechnologyFunction mapping, not a rendering artefact); a second
 split axis is left as a follow-up.
+
+Business Process Cooperation also prototypes a second axis orthogonal to the
+split itself: a view flag `package_diagrams: true` additionally redirects
+one context's slice from `architecture/model/diagrams/<slug>/<context>.puml`
+into that context's own `platform/packages/<context>/specs/diagrams/`
+directory, when that directory already exists
+(`_package_diagram_dir`/`_package_diagram_dirs` in
+`modelling_specification.rendering`) — today only
+`platform/packages/controls-compliance-catalog/specs/diagrams/`. Nothing is
+created automatically, and a context without that directory keeps the old
+path. `render()`'s orphan sweep covers every such package diagram directory
+unconditionally, independent of which views currently target it, so turning
+the flag off (or a package losing the directory) still cleans up the stale
+file. A GH #183 spike compared this auto-split/redirect approach against
+hand-curating a package-local view and recommended adopting it as the
+standard mechanism; the repo-wide rollout — applying `package_diagrams: true`
+to the other split views and giving every package a `specs/diagrams/`
+directory — is tracked separately (#194).
 
 `include_neighbours: true` originally pulled in any element one relationship
 hop away too, so a cross-context edge kept both endpoints visible, but was
