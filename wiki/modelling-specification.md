@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-05'
+generated: '2026-11-08'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -16,8 +16,10 @@ sources:
 - platform/packages/modelling-specification/src/modelling_specification/authoring/state.py
 - platform/packages/modelling-specification/src/modelling_specification/c4.py
 - platform/packages/modelling-specification/src/modelling_specification/cli.py
+- platform/packages/modelling-specification/src/modelling_specification/markdown_render.py
 - platform/packages/modelling-specification/src/modelling_specification/model_io.py
 - platform/packages/modelling-specification/src/modelling_specification/puml.py
+- platform/packages/modelling-specification/src/modelling_specification/reference/README.md
 - platform/packages/modelling-specification/src/modelling_specification/rendering.py
 - platform/packages/modelling-specification/src/modelling_specification/router.py
 - platform/packages/modelling-specification/src/modelling_specification/ui.py
@@ -121,10 +123,13 @@ nothing to supersede. See "Candidate-delta pipeline" below for what it changes.
 ## Dependencies
 
 `pyproject.toml` declares `fastapi`, `uvicorn`, `pyarchimate (>=2.0.0,<3.0.0)`,
-`rapidfuzz`, `pyyaml`, `litellm`, `defusedxml`, and three sibling path
-dependencies: `llm-provider-config`, `pii-gateway` (which scrubs requests before
-the LLM call, see "Candidate-delta pipeline" below) and, since the knowledge-graph
-scaffold landed, [`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
+`rapidfuzz`, `pyyaml`, `litellm`, `defusedxml`, `markdown (>=3.7,<4.0)` and
+`nh3 (>=0.2.18,<0.3.0)` (server-side rendering of LLM chat replies to
+sanitised HTML, GH #185 — see "Candidate-delta pipeline" below), and three
+sibling path dependencies: `llm-provider-config`, `pii-gateway` (which scrubs
+requests before the LLM call, see "Candidate-delta pipeline" below) and,
+since the knowledge-graph scaffold landed,
+[`digital-twin-knowledge-graph`](digital-twin-knowledge-graph.md) —
 this package is that package's first real, permanent consumer, calling
 `KnowledgeGraphReadPath(GraphSettings()).collect()` as an ordinary function
 call. `pyarchimate` was bumped from the `1.12.3`/`<2.0.0` line to `2.0.0`
@@ -143,26 +148,49 @@ itself.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1746 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
-| `router.py` | 1043 | FastAPI router: propose/validate/decide/render/config/state |
-| `ui.py` | 855 | Split-screen authoring UI |
-| `authoring/delta.py` | 574 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
+| `model_io.py` | 1784 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers |
+| `router.py` | 1048 | FastAPI router: propose/validate/decide/render/config/state |
+| `ui.py` | 872 | Split-screen authoring UI |
+| `authoring/delta.py` | 576 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
 | `rendering.py` | 473 | Ported view-render logic from root's `render_diagrams.py` |
-| `puml.py` | 410 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
-| `viewpoints.py` | 322 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
+| `c4.py` | 377 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
+| `puml.py` | 446 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
 | `validation/conventions.py` | 321 | Loads and evaluates `conventions.yaml` rules |
 | `authoring/state.py` | 179 | In-memory Candidate Delta session store |
 | `cli.py` | 118 | `build`/`render`/`validate` entry points root's scripts shell into |
-| `c4.py` | 332 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `validation/patterns.py` | 105 | Interposed-element pattern matching and synthesis |
 | `validation/fixes.py` | 70 | Deterministic `proposed_fix` generation — never a second LLM call |
 | `authoring/overrides.py` | 61 | Drafts the Override Decision Record ADR stub |
 | `validation/duplicates.py` | 51 | Fuzzy duplicate detection (`rapidfuzz`) |
+| `markdown_render.py` | 44 | Server-side Markdown→sanitised-HTML rendering of LLM chat replies (GH #185) |
 | `validation/metamodel.py` | 42 | Metamodel relationship-matrix + referential-integrity check |
 | `app.py` | 23 | FastAPI entry point, registers the `modelling-specification.conversational-authoring` LLM component |
 
 (`platform/packages/modelling-specification/src/modelling_specification/`,
 line counts from the current tree.)
+
+`viewpoints.py`'s bundled `reference/` directory is the authority for which
+ArchiMate concepts a view may show once it declares a `viewpoint:`:
+`archi-viewpoints.xml` is a **verbatim copy** of Archi's own viewpoint
+definition file (re-synced by overwriting it from Archi's GitHub raw URL;
+pre-commit whitespace trimming is the only local change), and
+`viewpoints-guidance.yaml` is **advisory** purpose/abstraction/concerns/
+stakeholders/TOGAF-phase metadata per viewpoint slug, transcribed from
+ArchiMate 3.2 §14.2, that plays no part in conformance checking. Per Archi's
+own `ViewpointManager`/`Viewpoint` interpretation: an empty element or
+relationship allow-set on a viewpoint means that half is unrestricted (every
+current viewpoint's relationship set is empty, so relationships are never
+filtered in practice); `Junction` and `Grouping` are always allowed in every
+viewpoint; and a relationship shows on a view only if its type is allowed
+*and* both endpoints are allowed — the same both-endpoints-in-scope rule
+`model_io.py` already applies when deciding what to draw. The `viewpoint:`
+value in `views.yaml` is Archi's own `id` attribute (`strategy`,
+`value_stream`, `capability`, `application_cooperation`,
+`application_structure`, `resource`, …; `viewpoints.py list` prints them
+all); `custom` is this package's own escape hatch for a deliberate
+cross-layer view, never conformance-checked
+(`platform/packages/modelling-specification/src/modelling_specification/reference/README.md`).
 
 ## Running it
 
@@ -266,7 +294,18 @@ their output, and anyone else redirects it
    description, a relationship's label, or anything about a view besides
    its membership — can be changed; such a request returns an empty delta
    rather than guessing. A reply too vague to form a concrete delta comes
-   back as plain-text clarification instead of JSON. A second proposal in
+   back as plain-text clarification instead of JSON: `router.py` returns it
+   as `status: "message"`, with both the raw LLM text (`message`) and a
+   pre-sanitised HTML rendering (`message_html`, via the new
+   `markdown_render.py`) — `render_message_markdown` parses it with the
+   `markdown` package then strips every tag/attribute outside a small
+   allowlist (`p`, `br`, `strong`, `em`, `code`, `pre`, lists, `h1`-`h3`, `a`
+   with `href`/`title` only, `http`/`https`/`mailto` schemes only) via `nh3`
+   (the Ammonia sanitiser), so the untrusted LLM reply is inserted into the
+   chat pane as HTML directly instead of the UI hand-rolling its own
+   Markdown parser and allowlist-based sanitisation (GH #185)
+   (`platform/packages/modelling-specification/src/modelling_specification/markdown_render.py`,
+   `router.py`). A second proposal in
    the same conversation amends the still-pending delta rather than
    validating fresh against the last-applied state
    (`specs/EPIC-003-conversational-model-authoring/spec.md` Clarifications, 2026-10-08).

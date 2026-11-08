@@ -1405,7 +1405,7 @@ topics:
   modelling-specification:
     title: Conversational Model Authoring
     page: wiki/modelling-specification.md
-    built: '2026-11-05'
+    built: '2026-11-08'
     sources:
       files:
         docs/adr/0037-conversational-model-authoring-architecture.md:
@@ -1418,23 +1418,23 @@ topics:
           sha256: 04216a6c73932284d998bb66f0af786f222bf4856e43a2d67fc25b322f406521
           lines: 156
         platform/packages/modelling-specification/pyproject.toml:
-          sha256: e2681e33e7b808c3ea52b06c01ce56fd830a031d92715c09292f29f9bcdb7f2b
-          lines: 35
+          sha256: 7ed00485fa7578d784106f76d9dc0144653892c369626dbb59665eba563495ca
+          lines: 38
         platform/packages/modelling-specification/specs/README.md:
           sha256: f6209429db4eb3a3a3fddbf29246c5697fa86dd83b6e974689ea94e6822a377d
           lines: 8
         platform/packages/modelling-specification/src/modelling_specification/__init__.py:
-          sha256: 8eea9df4f6d7b38ca0e39ccc27b04700e3d08dbeec8046d613d22706d19985fa
-          lines: 1
+          sha256: 722508d0c40539a5bc4cf196df165137f41b9097fb063271da67ca75ce961ba3
+          lines: 3
         platform/packages/modelling-specification/src/modelling_specification/app.py:
-          sha256: 7502132793c3f0bbde3dff54b3babb6fc9692232420b21482f840442a01f2abb
+          sha256: 6478cbccc5918f8d5616f5b6f58aa7cfc4bee7b777bfaad28ecdcb147bce4bc3
           lines: 23
         platform/packages/modelling-specification/src/modelling_specification/authoring/__init__.py:
-          sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-          lines: 0
+          sha256: 39abd98b5f03137d7c8968fb531e3e9c2cdf13c4be3fbdb791fe45d6fecc2392
+          lines: 1
         platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
-          sha256: 1e4f6690b601a833440008113911230157cd3a69aedcf533ca06757a1bae091c
-          lines: 574
+          sha256: 71e6cc092dd325b1b9f574da4b5fc77431b277d4f0d4de48db2de2d4d66d0296
+          lines: 576
         platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py:
           sha256: 5cdaa9680c524209714102d7fb02ff0e21f56077cc1cb9d52256d9410c67e13d
           lines: 61
@@ -1442,29 +1442,35 @@ topics:
           sha256: c183a1ce283b1a12f3adc005ec8a64b222acd4db6ad913ced189acad158146ab
           lines: 179
         platform/packages/modelling-specification/src/modelling_specification/c4.py:
-          sha256: 57960968502ba3c322a60223153f25728bc809ea243b448bc41fbac2e82907eb
-          lines: 332
+          sha256: 93bdc120972b2fccf1919fb25d3f34ce1fcfbb942e7f75c3b2305d13871778cc
+          lines: 377
         platform/packages/modelling-specification/src/modelling_specification/cli.py:
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
           lines: 118
+        platform/packages/modelling-specification/src/modelling_specification/markdown_render.py:
+          sha256: 11a967cda7dc963f7773d5c3755c9b8f30b15fdd9ba27f3a3a70e88cedadf4f4
+          lines: 44
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          sha256: a7d73e36fe688e00124e19986d2f7b5ae680f37461e5b67f034ae99d925dd7c5
-          lines: 1746
+          sha256: 6fb2d4a6db088d6c13981b166c8049e37a488097401df2ef7c33af5e5e42854e
+          lines: 1784
         platform/packages/modelling-specification/src/modelling_specification/puml.py:
-          sha256: 7f75ee0543c56c6136b5b5544c2241051ea893e645bbd95cbca749982a655efe
-          lines: 410
+          sha256: b0fd3c90ec1a877c855894a2e64c0bcb3bfcd722a5484fe0e744d3ca0cd035ef
+          lines: 446
+        platform/packages/modelling-specification/src/modelling_specification/reference/README.md:
+          sha256: 1c5740ae4ebe91c6e34123b521071361b258e86e489315179adfb6987fe72b16
+          lines: 53
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
           sha256: f20de9a1a8963c78c0f696820b35360d709c468e04fc69540065c04a37520bfa
           lines: 473
         platform/packages/modelling-specification/src/modelling_specification/router.py:
-          sha256: 8c58d0d422efcc27186ea1efc03aad5a0131e5342175a40e283c71e636b5de5a
-          lines: 1043
+          sha256: ea6f79380fa35345e3fb8c071d3ba02d6416691e1061df05da4d44fae78d5611
+          lines: 1048
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          sha256: f19d73347fb3ff172258ceffb9fec66ee55e7ff0fc48bccf4f4a295d12b30581
-          lines: 855
+          sha256: ab4cb90b4edbc49ae1e079a1760b7b97808861eba2c54de2dd05e948f332ebaf
+          lines: 872
         platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
-          sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-          lines: 0
+          sha256: 31526e2b1389e35ab771eb7115ac944cb9b60455ee56d0c0de1d6982b0dbd270
+          lines: 1
         platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py:
           sha256: 9b511f618286c634214222aa9906363a8133609155db2e97da929aa175c4d145
           lines: 321
@@ -1481,8 +1487,8 @@ topics:
           sha256: 7f37346b9bbab4ae4a5b01df5041a7bf2848c50d795750445054767aa8128021
           lines: 105
         platform/packages/modelling-specification/src/modelling_specification/viewpoints.py:
-          sha256: 00296d5cd92c9b88fe382608b52d44c0bcdd7c55947581d381d0300cba827a2b
-          lines: 322
+          sha256: 945591208c282480c4ba54d85f9c6450a286641ca2f3c8a350e2c2e614e0efc8
+          lines: 344
         scripts/run-modelling_specification.sh:
           sha256: c21fecdffa55523874f7994e14865520082ae8c3895c103fbeb338d2ae2d6e7c
           lines: 17
@@ -1505,8 +1511,8 @@ topics:
           sha256: b516a8b4cd0b0d172d43292ea6c314148b7421908ec9c301b39d28751abf53e9
           lines: 236
         specs/EPIC-003-conversational-model-authoring/quickstart.md:
-          sha256: 97cb366d5dafff5f723e8999c04915777da3b203dc1ef891046c98b5c75a75e1
-          lines: 106
+          sha256: 04299aeb378f10465cd1cf4d20acb5eab3827d7c5e2c98f1f79f116e38ecc86d
+          lines: 105
         specs/EPIC-003-conversational-model-authoring/research.md:
           sha256: 70bc67f17319a4e8935540fa9fac7ded73e0623737f5cc5c3e9049aa3358fcc4
           lines: 25
