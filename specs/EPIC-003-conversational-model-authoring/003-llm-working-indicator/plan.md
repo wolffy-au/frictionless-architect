@@ -90,18 +90,23 @@ No `contracts/` directory: no API shape changes (see Summary). The parent epic's
 
 ### Source Code (repository root)
 
-```text
-platform/packages/modelling-specification/
-├── src/modelling_specification/
-│   └── ui.py                              # Adds the indicator: CSS rule, show/remove
-│                                           # JS helpers, wired into sendRequest() and
-│                                           # the PII-resolution click handler.
-└── tests/
-    ├── api/test_ui.py                     # New markup/class assertions.
-    ├── support/fake_llm.py                 # Adds FakeCompletion.delay.
-    └── features/
-        ├── conversational_authoring_ui.feature   # New scenario.
-        └── steps/ui_steps.py               # New step(s) for that scenario.
+```plantuml
+@startuml
+skinparam componentStyle rectangle
+package "platform/packages/modelling-specification" {
+  [ui.py\n(showThinking, sendRequest,\nPII-resolution click handler)] as Ui
+}
+package "platform/packages/modelling-specification/tests" {
+  [api/test_ui.py] as TestUi
+  [support/fake_llm.py\n(FakeCompletion.delay)] as FakeLlm
+  [features/conversational_authoring_ui.feature] as Feature
+  [features/steps/ui_steps.py] as Steps
+}
+TestUi ..> Ui : asserts markup
+Steps ..> Ui : drives via Playwright
+Steps ..> FakeLlm : controls reply timing
+Feature ..> Steps : scenario steps
+@enduml
 ```
 
 **Structure Decision**: Everything lives inside the existing `modelling-specification`

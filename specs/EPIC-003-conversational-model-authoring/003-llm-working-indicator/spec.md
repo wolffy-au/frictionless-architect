@@ -22,6 +22,23 @@ An architect types a request and presses Send. A visible "working" indicator app
 
 **Independent Test**: Send a request, observe an indicator appears right away, and confirm it is replaced by the agent's reply once it arrives.
 
+```plantuml
+@startuml
+left to right direction
+actor Architect
+rectangle "LLM Working Indicator" {
+  usecase "Send Request" as UC1
+  usecase "Show Working Indicator" as UC2
+  usecase "Receive Reply or Failure" as UC3
+  usecase "Clear Working Indicator" as UC4
+}
+Architect --> UC1
+UC1 .> UC2 : <<include>>
+Architect --> UC3
+UC3 .> UC4 : <<include>>
+@enduml
+```
+
 **Acceptance Scenarios**:
 
 1. **Given** the architect has typed a request and the chat is idle, **When** they press Send, **Then** a visible working indicator appears in the chat before any reply is received.
@@ -38,6 +55,23 @@ A request the architect sent was flagged for containing PII/PHI and paused for r
 **Why this priority**: GH #186 calls this path out explicitly as a second place today's UI goes idle with no feedback; missing it would leave the complaint half-fixed.
 
 **Independent Test**: Trigger a PII/PHI review, resolve it, and confirm the same working indicator appears for the resulting LLM call and clears the same way.
+
+```plantuml
+@startuml
+left to right direction
+actor Architect
+rectangle "LLM Working Indicator" {
+  usecase "Resolve PII/PHI Flag" as UC1
+  usecase "Show Working Indicator" as UC2
+  usecase "Receive Reply or Failure" as UC3
+  usecase "Clear Working Indicator" as UC4
+}
+Architect --> UC1
+UC1 .> UC2 : <<include>>
+Architect --> UC3
+UC3 .> UC4 : <<include>>
+@enduml
+```
 
 **Acceptance Scenarios**:
 
