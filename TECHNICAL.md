@@ -38,7 +38,10 @@ This document consolidates technical specifications, patterns, utilities, and pr
   - Document all public functions with docstrings.
   - Include type hints where appropriate.
   - Keep documentation up-to-date with code changes.
-  - Use Google-style docstrings.
+  - Use Google-style docstrings. `ruff` enforces the pydocstyle `D` rules (google
+    convention) on `src/`, `platform/packages/*/src/` and `scripts/`; tests,
+    `architecture/` and `.claude/` are exempt, and `D205` (blank line after the
+    summary) is ignored.
 - **Version Control**:
   - Commit frequently with meaningful messages.
   - Use present tense in commit messages.
