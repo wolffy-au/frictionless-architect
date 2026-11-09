@@ -164,6 +164,13 @@ This plan covers the package's Python side, the `api/` half of ADR-0020's per-su
 layout. The `ui/` half, which #44 builds first with stubs, is not planned here; its build
 tooling is still open (#55).
 
+## Model Impact
+
+**None** — `ext-llm`, `store-ledger`, `fn-oscal-conversion`, `fn-oscal-validation` and
+`fn-oscal-profile-resolve` already exist in `architecture/model/` as vision elements for
+`controls-compliance-catalog` (subsystem 1); this plan gives them their first code-backed
+implementation without adding, changing, or retiring any element, relationship, or view id.
+
 ## Complexity Tracking
 
 *No unjustified Constitution violations — see Constitution Check above (the one FR-016
