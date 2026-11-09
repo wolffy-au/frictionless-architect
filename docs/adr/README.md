@@ -173,3 +173,9 @@ not yet re-ratified in a spec).
 - **P** — [0048](0048-ci-security-scan-topology.md) — CI's security gate is SonarQube
   plus GitHub's CodeQL default setup; Snyk runs local-only (`pre_merge_checks.sh`), not
   in `ci.yml`, after repeated test-quota exhaustion
+- **A** — [0049](0049-pluggable-adr-attestation-gpg-first.md) — ADR attestation is a
+  pluggable, admin-configurable method registry (FR-006); GPG/OpenPGP detached signatures
+  are the first implemented method
+- **A** — [0050](0050-adr-conflict-detection-triple-trigger.md) — FR-014 ADR-conflict
+  detection runs on three triggers: automatic on submission, on demand, and a weekly
+  scheduled audit sweep over the accepted log
