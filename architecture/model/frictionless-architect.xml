@@ -4512,6 +4512,23 @@
         </property>
       </properties>
     </element>
+    <element identifier="id-ba7982cdbdee5fbdad2996038aba8353" xsi:type="Deliverable">
+      <name>v0.10.0</name>
+      <properties>
+        <property propertyDefinitionRef="propid-8">
+          <value>2026-11-08T22:01:17Z</value>
+        </property>
+        <property propertyDefinitionRef="propid-9">
+          <value>v0.10.0</value>
+        </property>
+        <property propertyDefinitionRef="propid-10">
+          <value>https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.10.0</value>
+        </property>
+        <property propertyDefinitionRef="propid-1">
+          <value>gh-roadmap</value>
+        </property>
+      </properties>
+    </element>
     <element identifier="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Deliverable">
       <name>v0.2.0</name>
       <properties>
@@ -10659,6 +10676,7 @@
       <item identifierRef="id-de43819bbb1952b18515b8fbcd9adb0e"/>
       <item identifierRef="id-314ed2487dd05b87a163b03013662d2f"/>
       <item identifierRef="id-2e464c827cef55fb93ec70d9a82a6eff"/>
+      <item identifierRef="id-ba7982cdbdee5fbdad2996038aba8353"/>
       <item identifierRef="id-d0d06b4c05ff554c9adfb585c8bb0ffd"/>
       <item identifierRef="id-3383a505adda5f62b975b077fb58db89"/>
       <item identifierRef="id-7352675b8f3e5fbd8a2dffd7b2439bbc"/>
@@ -53200,161 +53218,168 @@
             </font>
           </style>
         </node>
-        <node identifier="id-3c4d6509808a569c94fc477b324bda6c" elementRef="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Element" x="960" y="1920" w="100" h="80">
+        <node identifier="id-0dc4ddf067295c3a8c2acda9d4d89324" elementRef="id-ba7982cdbdee5fbdad2996038aba8353" xsi:type="Element" x="720" y="1920" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-3f7bc55e7b2850598028d578a1db895f" elementRef="id-3383a505adda5f62b975b077fb58db89" xsi:type="Element" x="1440" y="1920" w="100" h="80">
+        <node identifier="id-3c4d6509808a569c94fc477b324bda6c" elementRef="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Element" x="1200" y="1920" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-21de8e13383f54ec8215c4f18e550b92" elementRef="id-7352675b8f3e5fbd8a2dffd7b2439bbc" xsi:type="Element" x="1680" y="1920" w="100" h="80">
+        <node identifier="id-3f7bc55e7b2850598028d578a1db895f" elementRef="id-3383a505adda5f62b975b077fb58db89" xsi:type="Element" x="1680" y="1920" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-18041217f7c350fd8e3aa56dd296c1b0" elementRef="id-dbc122391d5f56febc9f023d8f879f02" xsi:type="Element" x="0" y="2160" w="100" h="80">
+        <node identifier="id-21de8e13383f54ec8215c4f18e550b92" elementRef="id-7352675b8f3e5fbd8a2dffd7b2439bbc" xsi:type="Element" x="0" y="2160" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-7e76a702a7a8565d9cd0b15837ba82d3" elementRef="id-dcd890a525f05b828c04aa374829299d" xsi:type="Element" x="480" y="2160" w="100" h="80">
+        <node identifier="id-18041217f7c350fd8e3aa56dd296c1b0" elementRef="id-dbc122391d5f56febc9f023d8f879f02" xsi:type="Element" x="480" y="2160" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-800300aa3ece559986c944ba1751dc22" elementRef="id-de8114d7bf8a5acbb96a40a5ea082027" xsi:type="Element" x="720" y="2160" w="100" h="80">
+        <node identifier="id-7e76a702a7a8565d9cd0b15837ba82d3" elementRef="id-dcd890a525f05b828c04aa374829299d" xsi:type="Element" x="960" y="2160" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-684098774e2052dc9b3031a71eb44f61" elementRef="id-ba9568ec861f5cfc9091212af13d81cf" xsi:type="Element" x="960" y="2160" w="100" h="80">
+        <node identifier="id-800300aa3ece559986c944ba1751dc22" elementRef="id-de8114d7bf8a5acbb96a40a5ea082027" xsi:type="Element" x="1200" y="2160" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-789538065b6c5c5a8e26246214c8e9df" elementRef="id-000b7be4beb95857b52c9f48cfe0bcd4" xsi:type="Element" x="1200" y="2160" w="100" h="80">
+        <node identifier="id-684098774e2052dc9b3031a71eb44f61" elementRef="id-ba9568ec861f5cfc9091212af13d81cf" xsi:type="Element" x="1440" y="2160" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-f2ee44da71b7564dbe779b4ab6907d92" elementRef="id-664b1e75548f5b208c5ac5b788e9f84a" xsi:type="Element" x="1680" y="2160" w="100" h="80">
+        <node identifier="id-789538065b6c5c5a8e26246214c8e9df" elementRef="id-000b7be4beb95857b52c9f48cfe0bcd4" xsi:type="Element" x="1680" y="2160" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-1b7617d0c7f150f5948b956a1330ac7f" elementRef="id-c934b8585682555aab9477e000f3db99" xsi:type="Element" x="0" y="2400" w="100" h="80">
+        <node identifier="id-f2ee44da71b7564dbe779b4ab6907d92" elementRef="id-664b1e75548f5b208c5ac5b788e9f84a" xsi:type="Element" x="0" y="2400" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-7b98e382a2ff59cc8c1fb1b1c4237375" elementRef="id-29b6db45badb5cdc97f4f7f7ad17d334" xsi:type="Element" x="480" y="2400" w="100" h="80">
+        <node identifier="id-1b7617d0c7f150f5948b956a1330ac7f" elementRef="id-c934b8585682555aab9477e000f3db99" xsi:type="Element" x="480" y="2400" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-8d4488a965a45c4fb54101280702b40d" elementRef="id-726fa9a2d0835f95bef94ddf530d1c81" xsi:type="Element" x="1200" y="2400" w="100" h="80">
+        <node identifier="id-7b98e382a2ff59cc8c1fb1b1c4237375" elementRef="id-29b6db45badb5cdc97f4f7f7ad17d334" xsi:type="Element" x="960" y="2400" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-d44cff3b2b4f5f2699f27b592990047e" elementRef="id-5e6e2234873251b7b8a0e8a447bdc879" xsi:type="Element" x="1680" y="2400" w="100" h="80">
+        <node identifier="id-8d4488a965a45c4fb54101280702b40d" elementRef="id-726fa9a2d0835f95bef94ddf530d1c81" xsi:type="Element" x="1680" y="2400" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-f67713b45a8e5bc4af1430ba540c0ba9" elementRef="id-4f676e80353d5761b3088d6247de7803" xsi:type="Element" x="0" y="2640" w="100" h="80">
+        <node identifier="id-d44cff3b2b4f5f2699f27b592990047e" elementRef="id-5e6e2234873251b7b8a0e8a447bdc879" xsi:type="Element" x="0" y="2640" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-ab30d60f92ea5835a1ae400921a49273" elementRef="id-22bf5f935a2e5713962c286d421fc80d" xsi:type="Element" x="240" y="2640" w="100" h="80">
+        <node identifier="id-f67713b45a8e5bc4af1430ba540c0ba9" elementRef="id-4f676e80353d5761b3088d6247de7803" xsi:type="Element" x="240" y="2640" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-5194110c8b7158ec8fc6c95ca3fde835" elementRef="id-3f6523f8eb5a5a3594bae80993cb23bc" xsi:type="Element" x="480" y="2640" w="100" h="80">
+        <node identifier="id-ab30d60f92ea5835a1ae400921a49273" elementRef="id-22bf5f935a2e5713962c286d421fc80d" xsi:type="Element" x="480" y="2640" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-32dd490943eb52eca5d597f0240edc27" elementRef="id-5024d2087dac51fd824d41223dabae5b" xsi:type="Element" x="960" y="2640" w="100" h="80">
+        <node identifier="id-5194110c8b7158ec8fc6c95ca3fde835" elementRef="id-3f6523f8eb5a5a3594bae80993cb23bc" xsi:type="Element" x="720" y="2640" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-48b45d79a31e5e47a883307e87b0c9fb" elementRef="id-c33d8de46a545203a366c69f963a46ac" xsi:type="Element" x="1440" y="2640" w="100" h="80">
+        <node identifier="id-32dd490943eb52eca5d597f0240edc27" elementRef="id-5024d2087dac51fd824d41223dabae5b" xsi:type="Element" x="1200" y="2640" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-1109465139095e3ab293a3afa123bf4b" elementRef="id-b94c55ad2a0756268227ab699eb39c0d" xsi:type="Element" x="720" y="2640" w="100" h="80">
+        <node identifier="id-48b45d79a31e5e47a883307e87b0c9fb" elementRef="id-c33d8de46a545203a366c69f963a46ac" xsi:type="Element" x="1680" y="2640" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-439094764a945d248edd265822573b85" elementRef="id-d283bf08a9795b679fe154b26cf73af5" xsi:type="Element" x="1680" y="2640" w="100" h="80">
+        <node identifier="id-1109465139095e3ab293a3afa123bf4b" elementRef="id-b94c55ad2a0756268227ab699eb39c0d" xsi:type="Element" x="0" y="2880" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-e77490ffe5ca5733a108e7bda6dd172c" elementRef="id-9cbb33d0e5b359758e2b2d855729a6fc" xsi:type="Element" x="0" y="2880" w="100" h="80">
+        <node identifier="id-439094764a945d248edd265822573b85" elementRef="id-d283bf08a9795b679fe154b26cf73af5" xsi:type="Element" x="480" y="2880" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-d179fe9dcf58576abe082be3710dcb31" elementRef="id-2465dc90ecdc5f7cadb705567717fb76" xsi:type="Element" x="480" y="2880" w="100" h="80">
+        <node identifier="id-e77490ffe5ca5733a108e7bda6dd172c" elementRef="id-9cbb33d0e5b359758e2b2d855729a6fc" xsi:type="Element" x="720" y="2880" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-9766dddf2dff5c60ad318a2fab234317" elementRef="id-ae6bb83b08155645a7a650019310f77f" xsi:type="Element" x="1200" y="2880" w="100" h="80">
+        <node identifier="id-d179fe9dcf58576abe082be3710dcb31" elementRef="id-2465dc90ecdc5f7cadb705567717fb76" xsi:type="Element" x="1200" y="2880" w="100" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+        <node identifier="id-9766dddf2dff5c60ad318a2fab234317" elementRef="id-ae6bb83b08155645a7a650019310f77f" xsi:type="Element" x="960" y="2880" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
