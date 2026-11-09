@@ -263,6 +263,32 @@ async def test_schema_payload_warns_on_foreign_sample_namespace(tmp_path: Path) 
     assert service.get_status()["sample_file_status"] == "invalid"
 
 
+@pytest.mark.asyncio
+async def test_schema_payload_reports_invalid_namespace_even_when_nothing_else_supplies_data(
+    tmp_path: Path,
+) -> None:
+    """T027: a foreign-namespace sample must report "invalid", not the "missing" default,
+    even when Neo4j is not configured and nothing else supplies data."""
+    settings = VisualizerSettings(cache_dir=tmp_path / "cache", sample_data_dir=tmp_path)
+    sample_path = settings.sample_model_path
+    sample_path.parent.mkdir(parents=True)
+    sample_path.write_text('<model xmlns="http://www.opengroup.org/xsd/archimate/3.1/"/>', encoding="utf-8")
+    parser = SampleParser(sample_path)
+    loader = StubLoader(settings)
+    cache = SchemaCache(settings.cache_path)
+    service = SchemaPayloadService(settings, parser, loader, cache)
+    with pytest.raises(PayloadUnavailable) as excinfo:
+        await service.get_payload(force_reload=True)
+    payload = excinfo.value.payload
+    assert payload is not None
+    assert payload["elements"] == []
+    assert payload["relationships"] == []
+    assert any("archimate/3.1/" in warning for warning in payload["warnings"])
+    status = service.get_status()
+    assert status["sample_file_status"] == "invalid", status
+    assert status["neo4j_status"] == "disabled"
+
+
 def _backoff_service(tmp_path: Path, backoff_seconds: int = 300) -> SchemaPayloadService:
     settings = VisualizerSettings(
         cache_dir=tmp_path / "cache", sample_data_dir=tmp_path, refresh_backoff_seconds=backoff_seconds

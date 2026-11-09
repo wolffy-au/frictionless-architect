@@ -71,13 +71,15 @@ Feature: Schema visualiser API
     When the schema payload is requested
     Then the warning "Sample data unavailable" appears and the schema element list stays accessible
 
-  @edge @FR-006 @needs-clarification
+  @edge @FR-006
   Scenario: Sample cannot be loaded and Neo4j is not configured
     Given "sample-data/sample-00/Test Model Full.xml" cannot be loaded and no Neo4j is configured
     When the schema payload is requested
     Then the schema summary stays accessible
-    # NOTE: the service returns 503 with the warning only on /schema-payload/status; FR-006
-    # says the summary stays accessible. Decide whether a type-system-only payload is wanted.
+    # RESOLVED (T026/T027): the minimal fix ships here — 200 with an empty-but-valid
+    # payload (empty elements/relationships, a warning, correct status fields) instead of
+    # the former 503. A richer type-system-only payload for this case is deferred to GH #73
+    # alongside T020 (sourcing displayed types from architecture/model/).
 
   @SC-005
   Scenario: Schema visualisation responds within 2 seconds
