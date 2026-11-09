@@ -29,7 +29,9 @@ Poetry only for any inspection commands.
     there is a GitHub milestone/issue problem, not a model-authoring one).
     `docs/adr/` records every load-bearing model decision (ADR-0010 skeleton,
     ADR-0011 subsystems, ADR-0028 relationship/view shape, ADR-0032 exchange
-    namespace, ADR-0036 id-prefix scheme) — read the ADR log, not just the YAML.
+    namespace, ADR-0036 id-prefix scheme) — read the ADR log, not just the YAML. Use it as
+    input for judging model alignment; auditing the ADR log itself (staleness, conflicts,
+    un-recorded decisions) is `adr-auditor`'s remit, not yours.
 - The code: `src/`, `tests/`, routes, CLI entry points, `scripts/`.
 
 ## Steps
@@ -66,9 +68,11 @@ Poetry only for any inspection commands.
      Exchange XML) to confirm the model itself is currently clean before trusting it as a
      baseline — a model that fails its own metamodel validation is not a reliable source of
      truth to compare specs against.
-5. Flag spec-vs-spec and spec-vs-model contradictions you hit (e.g. `uv` in `TECHNICAL.md`
-   vs Poetry in practice; a spec's scope boundary that the model doesn't reflect, or vice
-   versa).
+5. Flag spec-vs-spec and spec-vs-model contradictions you hit (e.g. two specs claiming
+   conflicting ownership of the same capability; a spec's scope boundary that the model
+   doesn't reflect, or vice versa). General prose-accuracy drift in governance docs
+   (`README.md`, `TECHNICAL.md`, `ARCHITECTURE.md`, `AGENTS.md`) against actual practice is
+   `docs-uplift`'s remit — don't re-derive it here, even if you notice it in passing.
 6. Rank gaps CRITICAL / HIGH / MEDIUM / LOW (constitution violations and unbuilt
    success-criteria first).
 
@@ -86,7 +90,7 @@ A markdown report:
 - **Model alignment** — Model element/relationship | direction (spec→model /
   model→spec) | status (Done / Partial / Missing / Diverged / Undocumented) | notes;
   include the `build.py` validation verdict used as the baseline.
-- **Spec inconsistencies** — contradictions between governance docs, and between a spec
-  and the model.
+- **Spec inconsistencies** — contradictions between specs, and between a spec and the
+  model (not general governance-doc prose drift — that's `docs-uplift`'s report).
 
 Then stop. Report only — no spec, code, or model edits.
