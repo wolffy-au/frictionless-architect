@@ -15,7 +15,7 @@ async def test_shutdown_cancels_a_pending_retry_and_closes_the_loader(schema_cli
     """Fail the first load so a retry is pending, with an interval long enough that it cannot finish."""
     service = api_mod.get_schema_service()
     service.settings.retry_interval_seconds = 300
-    assert (await schema_client_recovering_sample.get("/schema-payload")).status_code == 503
+    assert (await schema_client_recovering_sample.get("/schema-payload")).status_code == 200
     retry = service._retry_task
     assert retry is not None
     assert not retry.done()

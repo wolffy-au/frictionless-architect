@@ -244,6 +244,22 @@ def step_warning_and_list(context: Any) -> None:
     assert status["sample_file_status"] == "missing"
 
 
+@given('"sample-data/sample-00/Test Model Full.xml" cannot be loaded and no Neo4j is configured')
+def step_sample_unloadable_no_neo4j(context: Any) -> None:
+    (_copy_sample_data(context) / SAMPLE_REL).unlink()
+
+
+@then("the schema summary stays accessible")
+def step_summary_stays_accessible(context: Any) -> None:
+    assert context.response.status_code == 200
+    assert context.payload["elements"] == []
+    assert context.payload["relationships"] == []
+    assert "Sample data unavailable" in context.payload["warnings"]
+    status = _call(context, "GET", "/schema-payload/status").json()
+    assert status["sample_file_status"] == "missing"
+    assert status["neo4j_status"] == "disabled"
+
+
 @when("the schema payload is requested with the cache bypassed")
 def step_request_cold(context: Any) -> None:
     started = time.perf_counter()

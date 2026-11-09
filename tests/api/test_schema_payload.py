@@ -23,7 +23,11 @@ async def test_schema_payload_returns_elements_and_relationships(schema_client):
 @pytest.mark.asyncio
 async def test_schema_payload_warns_when_sample_missing(schema_client_without_sample):
     response = await schema_client_without_sample.get("/schema-payload")
-    assert response.status_code == 503
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["elements"] == []
+    assert payload["relationships"] == []
+    assert "Sample data unavailable" in payload["warnings"]
     status = (await schema_client_without_sample.get("/schema-payload/status")).json()
     assert status["sample_file_status"] == "missing"
     assert status["last_warning"] == "Sample data unavailable"
