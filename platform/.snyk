@@ -3,7 +3,7 @@
 # The four permanent ignores below (no `expires`) share one basis: the researcher reports
 # Snyk cites (gists published 2026-03-21) and the matching GitHub advisories state the
 # flaw affects litellm <= 1.82.2 ("latest at time of discovery"). Snyk records the range
-# as [0,] with no fix, so it flags the locked 1.103.x anyway. Also, the flaws are in the
+# as [0,] with no fix, so it flags the locked 1.108.3 anyway. Also, the flaws are in the
 # litellm proxy server (litellm/proxy/...), which this repo never runs (client library
 # only: llm-provider-config / controls-compliance-catalog). Decided 2026-10-31.
 version: v1.25.0
@@ -41,8 +41,8 @@ ignore:
         reason: >-
           litellm is used only as a client library (completion calls via
           llm-provider-config / controls-compliance-catalog); the litellm proxy
-          server these advisories concern is never run. No fixed release exists
-          (1.105.0, the locked version, is still affected as of 2026-10-12).
+          server these advisories concern is never run. No fixed release exists;
+          the locked version (1.108.3) is still flagged by Snyk.
           Re-review on expiry.
         expires: 2026-11-30T00:00:00.000Z
         created: 2026-10-31T00:00:00.000Z
