@@ -1,0 +1,12 @@
+@startuml
+!include <archimate/Archimate>
+
+title Derived Relationship Overlay Probe
+
+Business_Process(e_id65467a0befb959, "Deterministic Spec Generation")
+Business_Process(e_id5959dd7c3bbe59, "Conversational Candidate Architecture Authoring")
+Application_Component(e_id82f04fecbdd85e, "Modelling & Specification")
+
+e_id82f04fecbdd85e ..> e_id5959dd7c3bbe59 : <<derived>>\nRealization
+
+@enduml

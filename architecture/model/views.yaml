@@ -1236,3 +1236,21 @@
     - ApplicationInterface
     - ApplicationFunction
     - DataObject
+
+- id: view-derived-overlay-probe
+  name: "Derived Relationship Overlay Probe"
+  # Exploratory view for the `derived: true` overlay feature -- not a
+  # narrated viewpoint, so viewpoint: custom (the same escape hatch
+  # view-technology-ci-check/-persistence-boundary use for mixing layers).
+  # Deliberately a wide, same-element-type-across-layers sweep (every
+  # BusinessProcess/ApplicationComponent/Node in the modelling-specification
+  # context) to see what the overlay looks like against a realistically busy
+  # view before deciding whether any production view should turn it on.
+  viewpoint: custom
+  context: [modelling-specification]
+  diagram: layered/derived-overlay-probe
+  derived: true
+  include_types:
+    - BusinessProcess
+    - ApplicationComponent
+    - Node

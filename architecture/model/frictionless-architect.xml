@@ -27038,6 +27038,30 @@
           </style>
         </connection>
       </view>
+      <view identifier="id-77f0f8ec622b5f9aa8f76d822a3e74b8" xsi:type="Diagram">
+        <name>Derived Relationship Overlay Probe</name>
+        <node identifier="id-6aa3617c9d635dbe8e7de2f3de556dc1" elementRef="id-65467a0befb959c8b8fbe8b8ed32a70d" xsi:type="Element" x="0" y="0" w="120" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+        <node identifier="id-f01146aadae255efb27538968d550144" elementRef="id-5959dd7c3bbe594e9397a0d725db7a95" xsi:type="Element" x="240" y="0" w="120" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+        <node identifier="id-a8c9b552a2c45373ac27bd2b9b6fac0b" elementRef="id-82f04fecbdd85e4c9b0f83e8538b0382" xsi:type="Element" x="0" y="480" w="100" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+      </view>
       <view identifier="id-b91677a7e46b5f938ec53be038fa455c" xsi:type="Diagram">
         <name>Organization</name>
         <node identifier="id-ead80d20476b5f97938aad6616e5afbf" elementRef="id-2b5394f913985a9abbe30c4e36b3cd3d" xsi:type="Element" x="0" y="0" w="100" h="70">
