@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-08'
+generated: '2026-11-11'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -378,7 +378,11 @@ their output, and anyone else redirects it
    a delta and picking a view show none. It is client-only: no API, session or
    dependency change, and no new ADR or shared package, since a package needs a real
    second consumer (ADR-0034) and `controls-compliance-catalog` already has its own
-   indicator. Streaming is out of scope. Tests are a `test_ui.py` markup check and two
+   indicator. `plan.md` gained a **Model Impact** section (2026-11-09, satisfying
+   constitution Principle X for a plan predating it) confirming this directly:
+   **none** — additive UI behaviour inside an existing package, with no
+   `architecture/model/` element, relationship or view id added, changed or retired.
+   Streaming is out of scope. Tests are a `test_ui.py` markup check and two
    behave scenarios that set a new `FakeCompletion.delay` to observe the in-flight
    state; `tasks.md` marks T001-T011 done, T011 being a human check against a real LLM
    provider

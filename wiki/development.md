@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: '2026-11-08'
+generated: '2026-11-11'
 generator: claude-sonnet-5
 sources:
 - .github/workflows/ci.yml
@@ -183,7 +183,7 @@ The constitution's "Quality Gates" (see
 | `ruff` | lint + format (line length 120); also the pydocstyle `D` rules, Google convention, on `src/`, `platform/packages/*/src/` and `scripts/` (`TECHNICAL.md` §"Code Style") |
 | `mypy` / `pyright` | type checking |
 | `pymarkdownlnt` | markdown lint — dash bullets, 4-space list indent, 120 cols / 120-col headings (`pyproject.toml` `[tool.pymarkdown]`) |
-| `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §2) |
+| `pytest` (+ `pytest-cov`) | tests; the merge gate is `--cov-fail-under=90` (`RELEASE.md` §6) |
 | `behave` | BDD acceptance — gated on pre-push, in `pre_merge_checks.sh` and (blocking) in CI (see note below the table) |
 | `commitizen` | Conventional Commits + version inference |
 | `pysonar` / SonarCloud | static analysis (`TECHNICAL.md` §"SonarQube"; token is `SONAR_TOKEN` in the gitignored `.env`, replacing the retired `.secrets/` location) |
@@ -212,7 +212,7 @@ merge-gate invocation wasted the time for no extra coverage.
 payload, refresh, unavailable-sample warnings, the 2-second target and the load retry), so
 `poetry run behave tests/features/` runs as a pre-push hook (`.pre-commit-config.yaml`), as a
 step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
-step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §2 already lists it.
+step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §6 already lists it.
 The scenarios now also cover the GitHub roadmap importer (`tests/features/gh_roadmap_import.feature`).
 
 `pre_merge_checks.sh` also fails (exit 1) if the generated GitHub roadmap layer (see
@@ -280,22 +280,30 @@ step by step). `main` only changes via PR, so the merge into `main` is a **human
 gate**: the agent opens the PR, waits for green checks, and stops.
 
 **Keeping releases fast.** Release day should only *verify* a clean state, never
-*produce* one. §3–§5 of the steps below (`quality-uplift`, `vulnerability-remediator`,
+*produce* one. §2–§4 of the steps below (`quality-uplift`, `vulnerability-remediator`,
 `docs-uplift`, `spec-alignment`, `adr-auditor`) do real remediation work when they find
 drift, and running that serially at release time is what makes a release take hours
 instead of minutes — so these agents are expected to run continuously against `develop`
-(cron / `/loop` / a CI job on merge), not for the first time at release. If §3–§5 do
+(cron / `/loop` / a CI job on merge), not for the first time at release. If §2–§4 do
 find something at release time anyway, dispatch the independent agents **in parallel**
 (one message, multiple `Agent` calls) — `quality-uplift` + `vulnerability-remediator`
-are independent of each other and of `docs-uplift` + `spec-alignment` + `adr-auditor` —
-and re-run `pre_merge_checks.sh` only once, after they all land, not after each one. A
-release that needed remediation is a signal to fix the schedule, not the new normal
-(`RELEASE.md` §"Keeping releases fast"). The session driving the release does the
-dispatching, not `release-runner`, which has no `Agent` tool: it stops and hands back
-the agents it needs, including `commit-auditor` at preflight, then resumes with their
-results (`RELEASE.md` §"Keeping releases fast"; `.claude/agents/release-runner.md`).
+are independent of each other and of `docs-uplift` + `spec-alignment` + `adr-auditor`.
+The full quality gate (§6) is not re-run per remediation; it runs exactly once, last,
+after both the doc/spec refresh (§4) and the version bump (§5) have landed — not before
+them, since a pre-bump run would validate a commit that isn't the one actually pushed
+and tagged (`RELEASE.md` §"Keeping releases fast", reordered 2026-11-08).
+Running it after the bump also means the pre-push hook's automatic
+pyright/mypy/pytest/platform-checks re-check (triggered by `git push` in step 7) lands
+on a tree that hasn't changed since §6 ran — a fast confirmation, not a second
+deliberate wait for an overlapping suite. A release that needed remediation is a signal
+to fix the schedule, not the new normal (`RELEASE.md` §"Keeping releases fast"). The
+session driving the release does the dispatching, not `release-runner`, which has no
+`Agent` tool: it stops and hands back the agents it needs, including `commit-auditor`
+at preflight, then resumes with their results (`RELEASE.md` §"Keeping releases fast";
+`.claude/agents/release-runner.md`).
 
-Summary (`RELEASE.md` §"Steps"):
+Summary (`RELEASE.md` §"Steps"; renumbered 2026-11-08 so the quality gate runs once,
+last, against the exact tree that gets pushed and tagged):
 
 1. Sync `develop` with `main` with `git merge --ff-only origin/main` —
    prefer a fast-forward over a sync merge commit, so `develop` and `main`
@@ -305,20 +313,29 @@ Summary (`RELEASE.md` §"Steps"):
    deliberate one-off exception; `develop`'s standing push rule stays
    fast-forward-only, never force. Never merge or fast-forward `main` locally
    (`RELEASE.md` §1).
-2. Full quality gate — `bash scripts/pre_merge_checks.sh` must pass clean.
-3. SonarCloud — nothing `OPEN` (resolve with `quality-uplift`).
-4. Security — no open Snyk findings **at any severity** (the release gate drops
+2. SonarCloud — nothing `OPEN` (resolve with `quality-uplift`).
+3. Security — no open Snyk findings **at any severity** (the release gate drops
    `--severity-threshold` entirely, unlike CI's `medium` threshold — `RELEASE.md`
-   §4) or open Dependabot findings (resolve with `vulnerability-remediator`).
-5. Refresh docs/specs/diagrams against the code — run `docs-uplift`,
-   `spec-alignment`, and `adr-auditor`; commit regenerated artefacts.
-6. `poetry run cz bump` **on `develop`** — updates `CHANGELOG.md`, adds a bump commit
+   §3) or open Dependabot findings (resolve with `vulnerability-remediator`).
+4. Refresh docs/specs/diagrams against the code — run `docs-uplift`,
+   `spec-alignment`, and `adr-auditor`; commit regenerated artefacts. The full
+   quality gate does **not** run here — it runs once, in step 6, after the version
+   bump.
+5. `poetry run cz bump` **on `develop`** — updates `CHANGELOG.md`, adds a bump commit
    and the `v<X.Y.Z>` tag (commitizen infers the bump from the commit history;
    `major_version_zero = true`, so pre-1.0 breaking changes bump the minor). The
    first release needs `--increment MINOR`. The develop-side tag is then deleted,
    to be re-created on `main`.
+6. Full quality gate — `bash scripts/pre_merge_checks.sh` must pass clean. Runs here,
+   once, against the post-bump tree (not before step 4's refresh or step 5's bump): this
+   runs `pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy, unit
+   tests), the roadmap drift check, `poetry update` (fails if `poetry.lock` changes),
+   `platform_checks.sh --update`, the three Snyk scans, `behave`, then
+   `pytest --cov-fail-under=90`, then the frontend UI harness if `frontend/` exists.
 7. Push `develop`, open or update the `develop` → `main` PR, wait for CI, SonarCloud
-   to be green (Snyk is a local `pre_merge_checks.sh` gate, not a CI one), then **stop**. A human merges it with a merge commit
+   to be green (Snyk is a local §3/§6 gate, not a CI one — the pre-push hook's own
+   pyright/mypy/pytest/platform-checks re-check fires here too, but against an
+   already-validated tree), then **stop**. A human merges it with a merge commit
    (not squash or rebase). Never use `gh pr merge`, a local merge, or a push to
    `main`. If Snyk fails on account quota rather than findings, the human decides.
 8. After the merge, tag `origin/main` with an annotated `v<X.Y.Z>`, check the name

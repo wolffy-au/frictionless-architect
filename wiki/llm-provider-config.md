@@ -1,13 +1,19 @@
 ---
 title: LLM Provider Configuration
-generated: '2026-11-08'
+generated: '2026-11-11'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0034-shared-packages-and-llm-provider-config.md
 - platform/packages/llm-provider-config/README.md
 - platform/packages/llm-provider-config/pyproject.toml
 - platform/packages/llm-provider-config/specs/001-llm-provider-config/checklists/requirements.md
+- platform/packages/llm-provider-config/specs/001-llm-provider-config/contracts/api.md
+- platform/packages/llm-provider-config/specs/001-llm-provider-config/data-model.md
+- platform/packages/llm-provider-config/specs/001-llm-provider-config/plan.md
+- platform/packages/llm-provider-config/specs/001-llm-provider-config/quickstart.md
+- platform/packages/llm-provider-config/specs/001-llm-provider-config/research.md
 - platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md
+- platform/packages/llm-provider-config/specs/001-llm-provider-config/tasks.md
 - platform/packages/llm-provider-config/specs/README.md
 - platform/packages/llm-provider-config/src/llm_provider_config/__init__.py
 - platform/packages/llm-provider-config/src/llm_provider_config/credentials.py
@@ -188,6 +194,36 @@ and has not been checked against it by a convergence run, so a requirement may b
 than what is built; its own assumptions say such a disagreement is raised as a finding
 (`platform/packages/llm-provider-config/specs/001-llm-provider-config/spec.md` §Assumptions).
 
+### Plan, research, data model and tasks (added 2026-11-09)
+
+The spec gained its plan, research, data model, API contract, quickstart and task list
+(GH #108-adjacent housekeeping), retroactively documenting the already-built, already-tested
+package rather than designing new work — `plan.md`'s own header states this, and restates
+`spec.md`'s requirements only where Technical Context/Constitution Check needs them rather
+than re-deriving them, per constitution Principle XI
+(`platform/packages/llm-provider-config/specs/001-llm-provider-config/plan.md`).
+
+The plan's Constitution Check passes on all nine applicable principles with no violations —
+one module per concern (`settings`/`credentials`/`resolve`/`store`/`router`), real `keyring`
+backends (in-memory and a `FailKeyring` that simulates no usable keychain) instead of mocking
+the credential layer, and the same Principle V guarantees already described above (no key in
+a file/response/log; every plaintext fallback logged; secret-reference values rejected on
+both store and read, closing CVE-2026-108575; provider error detail logged, never returned,
+CWE-209) (`platform/packages/llm-provider-config/specs/001-llm-provider-config/plan.md`
+§Constitution Check). It gains a **Model Impact** section: **none** — `sub-llm-provider-config`
+and `sw-litellm` already exist in `architecture/model/elements.yaml`, added for this exact
+package by ADR-0034 and ADR-0044, and the plan documents the existing implementation without
+adding, changing or retiring any element, relationship or view id
+(`platform/packages/llm-provider-config/specs/001-llm-provider-config/plan.md` §Model Impact).
+
+The task list (T001–T023 across Setup, one Foundational phase, and Phases 3–7 for US1–US5) marks
+every task done except one real, explicitly flagged gap: **T023 (US5)** — no test mounts
+`create_settings_router` with more than one declared component, so US5's own stated guarantee
+("lists only those components") is not actually exercised by the test suite, even though the
+list-comprehension implementation looks correct by inspection. The task is left open rather than
+marked done on inspection alone
+(`platform/packages/llm-provider-config/specs/001-llm-provider-config/tasks.md` §Phase 7).
+
 ## Development
 
 From `platform/`: `poetry install`, then `poetry run pytest
@@ -199,9 +235,10 @@ opt-in live check against a local Ollama is gated by `RUN_OLLAMA_TESTS=1` (ADR-0
 ## Not covered by current sources
 
 Real hosted-provider calls with live keys and the real OS keychain are not exercised
-by the tests described in these sources. The spec has no plan or task list yet
-(`platform/packages/llm-provider-config/specs/README.md`), and has not been converged
-against the code.
+by the tests described in these sources, beyond the opt-in `RUN_OLLAMA_TESTS=1` live check.
+The spec, now with its plan/research/data-model/tasks, has not been converged against the
+code by a formal `speckit-converge` run — T023 above is the one gap anyone has actually
+flagged.
 `architecture/model/elements.yaml` is not a source of this page, but its
 `sub-llm-provider-config` entry now also names GitHub Copilot as a keyless provider, so the
 earlier mismatch is closed.
