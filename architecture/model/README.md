@@ -28,7 +28,7 @@ and point it at its own model instead (ADR-0045) -- see that package's README.
 |---|---|
 | `elements.yaml` | Every element. `type` / `id` / `name` / `desc?` / `props?` |
 | `relationships.yaml` | Every relationship. `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` (optionally narrowed by `exclude_elements`) / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) |
+| `views.yaml` | View scoping (`id` / `name` / `members` and/or `include_types` (optionally narrowed by `exclude_elements`) / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?` / `derived?`) |
 | `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`). Same schema as `views.yaml`; ids unique across both |
 | `conventions.yaml` | Enterprise Convention Rules (for example `interposed-pattern`) that the conversational authoring validation applies to proposed changes (spec 004) |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` (see below) |
@@ -106,6 +106,18 @@ holds the **whole** model to the ArchiMate 3.2 relationship matrix.
   diagram is rendered with PlantUML's `scale max <px> width`, so a wider
   layout is scaled down to fit (a narrower one is left at its natural size).
   Use it for long chains that would otherwise need horizontal scrolling.
+- **`derived: true`** on a view (optional) — overlay ArchiMate 3.2 Appendix
+  B.2 derived relationships (DR2/DR3/DR5/DR7/DR8, via `pyArchimate.derivation`)
+  between two elements already on the view whose implying two-hop chain runs
+  through a third element that is *not* on it. Drawn as a dashed arrow with a
+  `<<derived>>` stereotype, never one of the modeled-relationship arrowheads,
+  and never written back into `relationships.yaml` or the generated XML — it
+  is a render-time-only overlay, computed fresh on every build. Scoped to the
+  strict B.2 rule set (no Access/Influence/Association chaining) to keep the
+  overlay sparse; see the model-archimate skill's "Avoiding derived
+  relationships" section for the rationale and the companion rule that an
+  *explicit* relationship should never duplicate what a chain already
+  implies.
 
 ## Model contents
 

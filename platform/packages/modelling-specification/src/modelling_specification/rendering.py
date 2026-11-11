@@ -139,6 +139,8 @@ def _view_diagram_jobs(
             base_cmd += ["--no-direction", rel_type]
         if v.get("max_width"):
             base_cmd += ["--max-width", str(v["max_width"])]
+        if v.get("derived"):
+            base_cmd += ["--derived"]
         if v.get("split_by") == "context":
             for context in model_io.view_split_contexts(v, elements, types_by_id):
                 jobs.append((diagram_root / slug / f"{context}.puml", [*base_cmd, "--context", context]))
@@ -435,6 +437,8 @@ def _render_svg(v: dict[str, Any], model_path: str) -> str:
         cmd += ["--no-direction", rel_type]
     if v.get("max_width"):
         cmd += ["--max-width", str(v["max_width"])]
+    if v.get("derived"):
+        cmd += ["--derived"]
     puml_text = _capture(cmd)
     result = subprocess.run(["plantuml", "-tsvg", "-pipe"], input=puml_text, capture_output=True, text=True)
     if result.returncode != 0:

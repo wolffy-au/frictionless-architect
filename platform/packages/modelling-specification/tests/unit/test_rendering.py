@@ -497,6 +497,44 @@ def test_view_diagram_jobs_without_split_by_is_a_single_job(tmp_path: Path) -> N
     assert "--context" not in cmd
 
 
+def test_view_diagram_jobs_passes_derived_flag(tmp_path: Path) -> None:
+    views_file = tmp_path / "views.yaml"
+    views_file.write_text("- {id: v1, name: V1, diagram: biz/plain, derived: true}\n")
+
+    import modelling_specification.rendering as rendering_mod
+
+    jobs = rendering_mod._view_diagram_jobs(views_file, rendering_mod.DIAGRAMS, [], {})
+
+    assert "--derived" in jobs[0][1]
+
+
+def test_view_diagram_jobs_omits_derived_flag_by_default(tmp_path: Path) -> None:
+    views_file = tmp_path / "views.yaml"
+    views_file.write_text("- {id: v1, name: V1, diagram: biz/plain}\n")
+
+    import modelling_specification.rendering as rendering_mod
+
+    jobs = rendering_mod._view_diagram_jobs(views_file, rendering_mod.DIAGRAMS, [], {})
+
+    assert "--derived" not in jobs[0][1]
+
+
+def test_render_svg_passes_derived_flag(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, list[str]] = {}
+
+    def fake_capture(cmd: list[str]) -> str:
+        captured["cmd"] = cmd
+        return "@startuml\n@enduml\n"
+
+    monkeypatch.setattr(rendering, "_capture", fake_capture)
+    fake = subprocess.CompletedProcess(args=["plantuml"], returncode=0, stdout="<svg></svg>", stderr="")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+
+    rendering._render_svg({"id": "v1", "name": "V1", "derived": True}, "model.xml")
+
+    assert "--derived" in captured["cmd"]
+
+
 _DIRTY_SVG = (
     '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="alert(1)">'
     "<script>alert(1)</script><foreignObject><div>x</div></foreignObject>"

@@ -2,12 +2,19 @@
 """Generate an ArchiMate PlantUML diagram from a validated ArchiMate model.
 
     python -m modelling_specification.puml MODEL[.archimate|.xml] [--view NAME]
-        [--no-direction TYPE ...]
+        [--no-direction TYPE ...] [--derived]
 
 Emits PlantUML using the bundled `<archimate/Archimate>` stdlib. With
 --view, only the elements/relationships shown on that ArchiMate view are
 included; without it, the whole model. Unmapped element types fall back to
 a plain `rectangle` and are reported on stderr.
+
+--derived (requires --view) additionally overlays derived relationships
+(ArchiMate 3.2 Appendix B.2, computed via `pyArchimate.derivation`) between
+two elements already on the view whose implying chain runs through a third
+element that is *not* on it. Drawn as a dashed `<<derived>>`-stereotyped
+arrow, never one of the modeled-relationship notations, and never written
+back to the model -- see `_compute_derived_edges`.
 
 --no-direction TYPE (repeatable) drops the default Up/Right layout hint
 (REL_DIRECTION) for that relationship type on this view, letting graphviz
@@ -33,6 +40,7 @@ import sys
 from typing import Any
 
 from pyArchimate import Model
+from pyArchimate.derivation import derive_pair_type, find_chains
 
 # ArchiMate element type (pyArchimate bare name) -> <archimate/Archimate> macro.
 # Verified against PlantUML 1.2026.7's bundled stdlib.
@@ -354,12 +362,66 @@ def _rel_line(r: Any, no_direction: set[str] | None, warnings: list[str]) -> str
     return f"{s} --> {t}"
 
 
+def _compute_derived_edges(model: Any, elements: list[Any], relationships: list[Any]) -> list[tuple[Any, Any, str]]:
+    """Derived relationships (ArchiMate 3.2 Appendix B.2, via `pyArchimate.derivation`)
+    between two elements already on this view, inferred through an intermediate
+    element that is *not* on the view -- the one case the view's own explicit
+    connections can never show, since the chain that implies the edge isn't
+    visible here. Transient and display-only: nothing is written back to the
+    model, matching `DerivedRelationship`'s own contract (never persisted, never
+    mistaken for a modeled relationship).
+
+    Scoped to the strict B.2 "certain" rules (`include_dependency=False`,
+    i.e. DR2/DR3/DR5/DR7/DR8 only) rather than the wider issue #146 scope
+    `check_derived.py` defaults to -- a view-wide overlay is read by someone
+    other than the model's author, so it stays on the narrower, less noisy
+    rule set. See the model-archimate skill's "Avoiding derived relationships"
+    section for why a derived edge should stay an occasional, intentional
+    callout rather than a dense overlay (a hub element shared by many
+    view members would otherwise synthesise an edge between every pair of
+    them).
+
+    An already-modeled explicit relationship with the same (source, target,
+    type) on this view is never duplicated by a derived one.
+    """
+    on_view = {e.uuid for e in elements}
+    existing = {(r.source.uuid, r.target.uuid, r.type) for r in relationships}
+    found: dict[tuple[str, str, str], tuple[Any, Any, str]] = {}
+    for chain in find_chains(model):
+        src, mid, tgt = chain.leg1.source, chain.leg1.target, chain.leg2.target
+        # Invariant guaranteed by find_chains(): every leg's source/target was
+        # confirmed present in model.elems_dict before the chain was built
+        # (see RelationshipChain.intermediate's own assert in derivation.py).
+        assert src is not None
+        assert mid is not None
+        assert tgt is not None
+        if src.uuid not in on_view or tgt.uuid not in on_view or mid.uuid in on_view:
+            continue
+        derived_type = derive_pair_type(chain.leg1.type, chain.leg2.type)
+        if derived_type is None:
+            continue
+        key = (src.uuid, tgt.uuid, derived_type)
+        if key not in existing and key not in found:
+            found[key] = (src, tgt, derived_type)
+    return list(found.values())
+
+
+def _derived_rel_line(source: Any, target: Any, derived_type: str) -> str:
+    """A derived relationship, drawn as a plain dashed arrow carrying a
+    `<<derived>>` stereotype -- deliberately not one of the `REL_MACRO`
+    notations (whose arrowheads assert a specific *modeled* relationship),
+    so it can never be mistaken for one on the rendered diagram.
+    """
+    return f"{alias(source.uuid)} ..> {alias(target.uuid)} : <<derived>>\\n{derived_type}"
+
+
 def generate(
     path: str,
     view_name: str | None,
     no_direction: set[str] | None = None,
     max_width: int | None = None,
     context: str | None = None,
+    derived: bool = False,
 ) -> tuple[str, list[str]]:
     """Generate ArchiMate PlantUML from a model file.
 
@@ -369,6 +431,9 @@ def generate(
         no_direction: Relationship types drawn without a direction hint.
         max_width: Optional layout width limit.
         context: With `view_name`, restrict to one context neighbourhood.
+        derived: Overlay derived relationships (views.yaml's `derived: true`)
+            between on-view elements whose implying chain runs through an
+            element not on this view. Ignored without `view_name`.
 
     Returns:
         The PlantUML source and a list of warnings.
@@ -401,6 +466,9 @@ def generate(
 
     lines += [_rel_line(r, no_direction, warnings) for r in relationships if id(r) not in nested]
 
+    if derived and view_name:
+        lines += [_derived_rel_line(s, t, dt) for s, t, dt in _compute_derived_edges(model, elements, relationships)]
+
     lines += ["", "@enduml", ""]
     return "\n".join(lines), warnings
 
@@ -431,10 +499,17 @@ def main() -> int:
         metavar="PX",
         help="cap the rendered width in pixels (PlantUML `scale max PX width`); smaller diagrams are untouched",
     )
+    ap.add_argument(
+        "--derived",
+        action="store_true",
+        help="overlay derived relationships (views.yaml's `derived: true`) between on-view elements",
+    )
     args = ap.parse_args()
 
     try:
-        puml, warnings = generate(args.model, args.view, set(args.no_direction), args.max_width, args.context)
+        puml, warnings = generate(
+            args.model, args.view, set(args.no_direction), args.max_width, args.context, args.derived
+        )
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"error: {exc}\n")
         return 2
