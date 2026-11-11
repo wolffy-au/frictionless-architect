@@ -1,3 +1,6 @@
 [submodule "third_party/it4it"]
 	path = third_party/it4it
 	url = https://github.com/wolffy-au/frictionless-it4it.git
+[submodule "third_party/sample-azure"]
+	path = third_party/sample-azure
+	url = https://github.com/wolffy-au/frictionless-sample-azure.git
