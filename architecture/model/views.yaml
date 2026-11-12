@@ -9,8 +9,10 @@
 # allow lists:
 #   .claude/skills/model-archimate/reference/archi-viewpoints.xml
 #   (list them: poetry run python .claude/skills/model-archimate/scripts/viewpoints.py list)
-# `viewpoint: custom` = a deliberate cross-layer view; omitting the key skips
-# the check.
+# `viewpoint: custom` = a deliberate escape hatch for when no standard
+# viewpoint's allowed-concept list matches the shape a view needs — whether
+# that's mixing layers or sweeping a single layer wider than any standard
+# viewpoint covers; omitting the key skips the check.
 #
 # `exclude:` (optional) suppresses relationships that would otherwise render
 # (both endpoints in scope) but are incidental to this view's own story —
