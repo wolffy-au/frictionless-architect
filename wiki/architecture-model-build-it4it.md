@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Build Pipeline & IT4IT Merge'
-generated: '2026-11-08'
+generated: '2026-11-12'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -60,6 +60,27 @@ Path Traversal findings, though Snyk does not treat `env_dir` itself as a
 sanitiser and still reports them
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:54-64`).
 
+## The vendored-model sweep, and why `sample-azure` is excluded from it
+
+The merge step does not hardcode `third_party/it4it` by name: `VENDORED_MODELS`
+globs every `third_party/*/elements.yaml` and merges each match in, so a
+second vendored reference model needs no code change to join the merge
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:92,111-117`).
+A 2026-11-11 fix (GH follow-up) carved out one exception:
+`third_party/sample-azure` also carries its own `elements.yaml`, but for the
+opposite reason IT4IT does — [ADR-0045](decision-log-0030-onward.md) lets a
+*different* repo install this package and point `FRICTIONLESS_MODEL_DIR`
+straight at its own model directory, and `sample-azure` is exactly that: a
+standalone demo Azure app meant to be built by pointing at it directly, not
+swept into this repo's own root model. The generic glob couldn't tell the two
+cases apart, so it pulled `sample-azure`'s elements into the platform model
+(and its `diagrams/`) whenever the submodule happened to be checked out
+locally. `_STANDALONE_THIRD_PARTY_MODELS = {"sample-azure"}` now excludes it
+from the default sweep by name; it is still buildable/renderable on its own
+by `cd`-ing into it, or reachable here by pointing
+`FRICTIONLESS_THIRD_PARTY_DIR` at a directory that includes it under another
+name.
+
 ## IT4IT alignment — vendored as its own repo, imported at build time
 
 The IT4IT 3.0 value-stream skeleton used to live inline in this repo's own
@@ -91,6 +112,13 @@ data itself changed:
   single **derived** `Capability --Serving--> Stage` edge per reachable pair
   (tagged `props: {derived: "true"}`, labelled `<<derived>>`), plus 18 more
   capabilities the derivation chain doesn't reach, carried for completeness.
+  This is an *explicit* relationship pre-computed once in the vendored YAML
+  and merged in like any other — not the same mechanism as `views.yaml`'s
+  2026-11-11 **view-level** `derived: true` flag, which overlays
+  relationships at render time, from nothing stored in YAML at all. Both use
+  `<<derived>>` because both represent an ArchiMate derived relationship; see
+  [Architecture Model](architecture-model.md) §"Schema rules" for the newer
+  one.
 - **Bridge to the platform's own capabilities** — 9 `Association` edges,
   tagged `props: {source: it4it-alignment}`, are the one piece of IT4IT-
   referencing content that **stays first-party**, in this repo's own

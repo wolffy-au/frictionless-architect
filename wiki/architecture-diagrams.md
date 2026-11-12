@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-11-08'
+generated: '2026-11-12'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -66,6 +66,8 @@ sources:
 - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
 - architecture/model/diagrams/layered/context-modelling-specification.puml
 - architecture/model/diagrams/layered/context-modelling-specification.svg
+- architecture/model/diagrams/layered/derived-overlay-probe.puml
+- architecture/model/diagrams/layered/derived-overlay-probe.svg
 - architecture/model/diagrams/layered/fn-conversational-authoring.puml
 - architecture/model/diagrams/layered/fn-conversational-authoring.svg
 - architecture/model/diagrams/layered/subsystem-capabilities.puml
@@ -117,9 +119,11 @@ Rendering](architecture-diagrams-platform.md). For what the model itself
 
 ## Views and diagrams
 
-The merged model has 70 ArchiMate views:
+The merged model has 75 ArchiMate views:
 
-- 37 are declared in this repo's own hand-curated `views.yaml`, including the generated-only Context Map (see "Bounded-context views" below). They cover
+- 41 are declared in this repo's own hand-curated `views.yaml`, including the generated-only Context Map (see "Bounded-context views" below) and the
+  exploratory Derived Relationship Overlay Probe view (see "Derived
+  relationship overlay" below). They cover
   sections A–C, the IT4IT touchpoint bridge, section E (since 2026-09-26,
   GH #65) — the platform's own packaging and migration — and (since
   2026-09-27, GH #55 follow-up) section F, the first Technology-layer cut.
@@ -127,7 +131,7 @@ The merged model has 70 ArchiMate views:
   Stakeholder, Motivation, Goal Realization and Requirements Realization
   views) moved to `views-viewpoints.yaml` below as part of the GH #105
   change.
-- 16 more are declared in the new `architecture/model/views-viewpoints.yaml`
+- 17 more are declared in the new `architecture/model/views-viewpoints.yaml`
   (GH #105, 2026-10-08–2026-10-14) — one generic view per standard ArchiMate
   3.2 §14 viewpoint, swept entirely by `include_types` rather than
   hand-curated `members`, so a new element of a covered type appears
@@ -154,7 +158,7 @@ kind of view:
 |---|---|
 | `vision/` | TOGAF Phase A views (9 hand-curated in `views.yaml` plus 4 generic ones now in `views-viewpoints.yaml`) |
 | `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`; `product`, dropped at GH #129 step 6 and since re-added, renders as `product/<context>.puml`). `service-realization` now renders as one file per context |
-| `layered/` | the cross-layer Subsystems & Capabilities view, plus the new Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`) |
+| `layered/` | the cross-layer Subsystems & Capabilities view, the Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`), the generated per-context split of the Subsystems & Capabilities sweep (`context-modelling-specification` and its siblings), and the exploratory Derived Relationship Overlay Probe view (`derived-overlay-probe`, see "Derived relationship overlay" below) |
 | `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` now render as `usage/<context>.puml` and `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml` |
 | `c4/` | the C4 context and container diagrams |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
@@ -169,11 +173,49 @@ The old `cross-layer/` folder is **gone** (PR #62):
 - Subsystems & Capabilities moved to `layered/`.
 - The `Architecture Skeleton` view was removed outright.
 
-After this change, no view uses `viewpoint: custom`. Every platform view is
-held to a standard ArchiMate viewpoint (`architecture/model/views.yaml`). The
-header comment in `views.yaml` and the README schema still document
-`custom` as an option (`architecture/model/views.yaml:6-13`;
-`architecture/model/README.md` §"Schema").
+After this change, no view used `viewpoint: custom` until 2026-11-11, when the
+exploratory Derived Relationship Overlay Probe view adopted it (see "Derived
+relationship overlay" below) — every other platform view is still held to a
+standard ArchiMate viewpoint (`architecture/model/views.yaml`). The header
+comment in `views.yaml` and the README schema document `custom` as an option
+(`architecture/model/views.yaml:6-13`; `architecture/model/README.md`
+§"Schema").
+
+### Derived relationship overlay (`derived: true`)
+
+A view may set `derived: true` to overlay ArchiMate 3.2 Appendix B.2 derived
+relationships at render time — nothing is written to `relationships.yaml` or
+the generated XML; the overlay is computed fresh on every render, from
+`pyArchimate.derivation.find_chains()`, and drawn as a dashed arrow with a
+`<<derived>>` stereotype, never one of the modeled-relationship arrowheads
+(`architecture/model/README.md` §"Schema"). It only draws a relationship
+between two elements already on the view whose implying two-hop chain runs
+through a third element that is *not* on the view — the one case a view's
+own explicit connections can never show, since the chain that implies the
+edge isn't visible there. Scoped to the strict B.2 "certain" rule set
+(DR2/DR3/DR5/DR7/DR8, no Access/Influence/Association chaining) to keep the
+overlay sparse, and an already-modeled relationship with the same
+source/target/type is never duplicated by a derived one.
+
+`view-derived-overlay-probe` ("Derived Relationship Overlay Probe",
+`layered/derived-overlay-probe`) is the exploratory first use: a deliberately
+wide, same-element-type-across-layers sweep (every `BusinessProcess`/
+`ApplicationComponent`/`Node` in the `modelling-specification` context),
+added to see what the overlay looks like against a realistically busy view
+before any production view turns it on — hence `viewpoint: custom`, the
+first use of that escape hatch since PR #62 (see "The old `cross-layer/`
+folder" above). On the current model it renders two `BusinessProcess`
+elements ("Deterministic Spec Generation", "Conversational Candidate
+Architecture Authoring") and one `ApplicationComponent` ("Modelling &
+Specification"), with a single derived edge: `Modelling & Specification`
+`<<derived>>`→ `Conversational Candidate Architecture Authoring`, typed
+`Realization` (`architecture/model/diagrams/layered/derived-overlay-probe.puml`).
+No `Node` appears because the `modelling-specification` context has none in
+scope. The implementation (`_compute_derived_edges`, `_derived_rel_line` in
+`puml.py`, wired into all three render paths in `rendering.py`) is covered in
+[Conversational Model Authoring](modelling-specification.md); the schema key
+itself is covered in [Architecture Model](architecture-model.md) §"Schema
+rules".
 
 ### The TOGAF Phase A vision set
 

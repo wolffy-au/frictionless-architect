@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Application Layer'
-generated: '2026-11-08'
+generated: '2026-11-12'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md

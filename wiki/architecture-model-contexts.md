@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-12'
+generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -20,7 +20,7 @@ generated bounded-context Groupings, split views and context map. Part of the
 
 ## Context-level viewpoints (GH #105)
 
-`views-viewpoints.yaml` adds 16 generic views, one per standard ArchiMate
+`views-viewpoints.yaml` adds 17 generic views, one per standard ArchiMate
 3.2 §14 viewpoint (Organization, Application Structure, Information
 Structure, Technology, …), swept entirely by `include_types` — never
 `members` — so a new element of a covered type appears on the right view

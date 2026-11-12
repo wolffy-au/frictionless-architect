@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Skeleton'
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-12'
+generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml

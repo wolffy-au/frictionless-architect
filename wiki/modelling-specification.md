@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-11'
+generated: '2026-11-12'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -146,12 +146,12 @@ The working indicator (GH #186) adds no dependency.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1849 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view` |
+| `model_io.py` | 1861 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view`; `VENDORED_MODELS` excludes `third_party/sample-azure` from the default merge sweep (ADR-0045 standalone-repo model, not reference content) |
 | `router.py` | 1091 | FastAPI router: propose/validate/decide/render/config/state; `_resolve_changes`, `_merge_into_delta` and `_resolved_text` hold the logic once inline in `propose`/`resolve_pii` |
 | `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
 | `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 485 | Ported view-render logic from root's `render_diagrams.py` |
-| `puml.py` | 450 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `rendering.py` | 489 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths |
+| `puml.py` | 525 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout. `--derived` (requires `--view`) overlays ArchiMate derived relationships via `_compute_derived_edges`/`pyArchimate.derivation.find_chains` — see [Architecture Views & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true) |
 | `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
 | `validation/conventions.py` | 329 | Loads and evaluates `conventions.yaml` rules |
