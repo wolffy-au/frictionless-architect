@@ -992,6 +992,7 @@ develop = true
 
 [package.dependencies]
 compliance-trestle = ">=5.1.0,<6.0.0"
+dnspython = ">=2.9.2"
 fastapi = ">=0.141.0,<0.142.0"
 filelock = ">=4.2.1,<5.0"
 litellm = ">=1.0.0,<2.0.0"
@@ -4004,6 +4005,7 @@ develop = true
 [package.dependencies]
 certifi = ">=2026.10.19"
 controls-compliance-catalog = "*"
+dnspython = ">=2.9.2"
 fastapi = ">=0.141.0,<0.142.0"
 filelock = ">=4.2.1"
 llm-provider-config = "*"
