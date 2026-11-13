@@ -17,6 +17,10 @@ dependencies = [
     # with it.
     "certifi (>=2026.10.19)",
     "filelock (>=4.2.1)",
+    # Transitive floor for GHSA-vvf4-9x63-8xvv (dnspython excessive memory/CPU use,
+    # CVE-2026-128089), pulled in via email-validator — already satisfied by the lock,
+    # pinned here so Dependabot's per-manifest graph agrees with it.
+    "dnspython (>=2.9.2)",
 ]
 
 [tool.poetry]
