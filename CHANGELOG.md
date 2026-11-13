@@ -1,3 +1,18 @@
+## v0.11.0 (2026-11-13)
+
+### Feat
+
+- **model**: trace security/implementation journeys to a capability
+- **model**: add a derived-relationship overlay probe view
+- **modelling-specification**: overlay derived relationships on views
+
+### Fix
+
+- **modelling-specification**: drop sample-azure from vendored sweep
+- **schema-visualizer-api**: keep schema summary accessible (T026/T027)
+- **agents**: narrow spec-alignment's doc checks to specs/model
+- **agents**: skip the go-ahead pause after the release merge gate
+
 ## v0.10.0 (2026-11-08)
 
 ### Feat
