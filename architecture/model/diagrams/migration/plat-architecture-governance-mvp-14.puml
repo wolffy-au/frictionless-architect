@@ -1,0 +1,21 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: architecture-governance-mvp
+
+Implementation_Deliverable(e_idad2f68e0eed354, "architecture-governance-mvp (unreleased)")
+Implementation_Plateau(e_id9a4ea130888954, "architecture-governance-mvp")
+Implementation_WorkPackage(e_id2091f517660f52, " --GH-199 ADR: decide how ADR-conflict detection (FR-014) is triggered and scoped--")
+Implementation_WorkPackage(e_idc9716efa418d58, " --GH-198 ADR: decide the cryptographic attestation scheme and identity/certificate model for AI-drafted ADR sign-off--")
+Implementation_WorkPackage(e_idd076779aefa35f, "GH-196 Epic: architecture-governance subsystem (ADR drafting, attestation, conflict detection)")
+Implementation_WorkPackage(e_idd5ad8aebff5457, "GH-200 Scaffold platform/packages/architecture-governance (mirrors #162/#163)")
+Implementation_WorkPackage(e_idf2ecb4385a2254, "GH-201 speckit-specify: package-level spec.md for architecture-governance")
+
+Rel_Realization_Up(e_idad2f68e0eed354, e_id9a4ea130888954, "")
+Rel_Realization_Up(e_id2091f517660f52, e_idad2f68e0eed354, "")
+Rel_Realization_Up(e_idc9716efa418d58, e_idad2f68e0eed354, "")
+Rel_Realization_Up(e_idd076779aefa35f, e_idad2f68e0eed354, "")
+Rel_Realization_Up(e_idd5ad8aebff5457, e_idad2f68e0eed354, "")
+Rel_Realization_Up(e_idf2ecb4385a2254, e_idad2f68e0eed354, "")
+
+@enduml

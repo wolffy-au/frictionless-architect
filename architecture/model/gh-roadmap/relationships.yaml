@@ -102,11 +102,17 @@
   source: wp-markdown-catalogue-converter-gh-44
   target: wp-stubbed-oscal-conversion-ui-validated-gh-164
 - type: Realization
+  source: del-architecture-governance-mvp-14-unreleased
+  target: plat-architecture-governance-mvp-14
+- type: Realization
   source: del-architecture-strategy-future-13-unreleased
   target: plat-architecture-strategy-future-13
 - type: Realization
   source: del-architecture-strategy-mvp-7-unreleased
   target: plat-architecture-strategy-mvp-7
+- type: Realization
+  source: del-compliance-pack-export-mvp-15-unreleased
+  target: plat-compliance-pack-export-mvp-15
 - type: Realization
   source: del-drift-management-mvp-5-unreleased
   target: plat-drift-management-mvp-5
@@ -231,6 +237,15 @@
   source: wp-adr-0022-claims-xmlschema-validation-but-gh-53
   target: del-release-v0-1-0
 - type: Realization
+  source: wp-adr-decide-how-adr-conflict-detection-fr-gh-199
+  target: del-architecture-governance-mvp-14-unreleased
+- type: Realization
+  source: wp-adr-decide-the-compliance-pack-export-gh-203
+  target: del-compliance-pack-export-mvp-15-unreleased
+- type: Realization
+  source: wp-adr-decide-the-cryptographic-attestation-gh-198
+  target: del-architecture-governance-mvp-14-unreleased
+- type: Realization
   source: wp-adr-decide-the-oscal-trestle-vendoring-gh-19
   target: del-release-v0-1-0
 - type: Realization
@@ -281,6 +296,12 @@
 - type: Realization
   source: wp-enterprise-domain-model-relationship-gh-149
   target: del-architecture-strategy-future-13-unreleased
+- type: Realization
+  source: wp-epic-architecture-governance-subsystem-gh-196
+  target: del-architecture-governance-mvp-14-unreleased
+- type: Realization
+  source: wp-epic-audit-ready-compliance-pack-export-gh-197
+  target: del-compliance-pack-export-mvp-15-unreleased
 - type: Realization
   source: wp-epic-conversational-architecture-gh-68
   target: del-architecture-strategy-mvp-7-unreleased
@@ -387,6 +408,9 @@
   source: wp-scaffold-digital-twin-knowledge-graph-gh-106
   target: del-release-v0-5-0
 - type: Realization
+  source: wp-scaffold-platform-packages-architecture-gh-200
+  target: del-architecture-governance-mvp-14-unreleased
+- type: Realization
   source: wp-scaffold-platform-packages-conformance-gh-163
   target: del-drift-management-mvp-5-unreleased
 - type: Realization
@@ -399,8 +423,17 @@
   source: wp-scope-the-archimate-modelling-ide-gh-59
   target: del-release-v0-5-0
 - type: Realization
+  source: wp-scoping-decision-which-subsystem-owns-gh-202
+  target: del-compliance-pack-export-mvp-15-unreleased
+- type: Realization
   source: wp-spec-specs-003-conversational-modelling-gh-139
   target: del-release-v0-5-0
+- type: Realization
+  source: wp-speckit-specify-package-level-spec-md-gh-201
+  target: del-architecture-governance-mvp-14-unreleased
+- type: Realization
+  source: wp-speckit-specify-spec-md-for-compliance-gh-204
+  target: del-compliance-pack-export-mvp-15-unreleased
 - type: Realization
   source: wp-spike-restructure-architecture-model-gh-183
   target: del-policy-to-oscal-mvp-1-unreleased
