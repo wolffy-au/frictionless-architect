@@ -1,6 +1,6 @@
 # ADR-0051: Derived-relationship overlay is a render-time-only, never-persisted view annotation
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-13
 - **Sources:** `platform/packages/modelling-specification/src/modelling_specification/puml.py`
   (`_compute_derived_edges`, `_derived_rel_line`, `derived` parameter); `architecture/model/views.yaml`
@@ -31,22 +31,22 @@ exists anywhere in `specs/` or `platform/packages/*/specs/`. The extended-scope 
 
 ## Decision
 
-> DRAFT — confirm: the overlay is render-time-only and one-way: it is wired into all three render
-> paths (`render_diagrams`, `render_single_view`, `render_candidate_view`), draws a dashed
-> `<<derived>>`-stereotyped arrow carrying the derived relationship type, and is never written back
-> into `relationships.yaml` or the generated `.archimate`/XML — the model's YAML source stays the
-> only authoritative record of modelled relationships, exactly as `check_derived.py`'s existing
-> guidance already described but had not yet implemented.
+The overlay is render-time-only and one-way: it is wired into all three render
+paths (`render_diagrams`, `render_single_view`, `render_candidate_view`), draws a dashed
+`<<derived>>`-stereotyped arrow carrying the derived relationship type, and is never written back
+into `relationships.yaml` or the generated `.archimate`/XML — the model's YAML source stays the
+only authoritative record of modelled relationships, exactly as `check_derived.py`'s existing
+guidance already described but had not yet implemented. Confirmed as the intended permanent
+design, not an interim step toward auto-promoting derived relationships into the model.
 
 ## Consequences
 
-> DRAFT — confirm:
-
 - A view's derived overlay can change silently as the underlying chain changes (an intermediate
   element or hop relationship is added/removed), with no diff in `relationships.yaml` to review —
-  intentional, per the design note, but worth stating as a tradeoff a human should confirm.
-- `check_derived.py`'s own docstring citations (GH #140, GH #146) are wrong and should be corrected
-  or removed as part of ratifying this ADR — they currently point at unrelated issues.
-- Interacts with `check_derived.py`'s existing advisory check (the opposite failure mode); both
-  should probably be cross-referenced from whichever of the two is authoritative once this is
-  Accepted.
+  intentional, per the design note, and accepted as a tradeoff: visibility of implied structure
+  is worth more here than a reviewable diff trail for it.
+- `check_derived.py`'s own docstring citations (GH #140, GH #146) were wrong (pointing at unrelated
+  issues) and have been corrected as part of ratifying this ADR — see
+  `.claude/skills/model-archimate/scripts/check_derived.py`.
+- Interacts with `check_derived.py`'s existing advisory check (the opposite failure mode): this
+  ADR is the cross-reference for both going forward.

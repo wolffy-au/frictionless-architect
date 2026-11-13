@@ -1,6 +1,6 @@
 # ADR-0052: `sample-azure` is vendored as a standalone reference model, excluded from the vendored-model merge sweep
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-13
 - **Sources:** commits `24f75bd` (chore: add third_party/sample-azure as a git submodule), `37dd065`
   (fix(modelling-specification): drop sample-azure from vendored sweep), `b14ec53`/`03c0fbb`
@@ -26,15 +26,15 @@ ADR-0029's general pattern) and currently exists only in commit messages; no ADR
 
 ## Decision
 
-> DRAFT — confirm: `sample-azure` is vendored as a **standalone demonstration/reference model**
-> for the multi-tenant `FRICTIONLESS_MODEL_DIR` use case (ADR-0045), not a touchpoint model to
-> merge (unlike IT4IT, ADR-0029). The vendored-model sweep that feeds `build.py` excludes it by
-> name rather than by a generic `third_party/*/elements.yaml` glob, so a future third standalone
-> reference submodule needs the same explicit exclusion rather than being caught automatically.
+`sample-azure` is vendored as a **standalone demonstration/reference model**
+for the multi-tenant `FRICTIONLESS_MODEL_DIR` use case (ADR-0045), not a touchpoint model to
+merge (unlike IT4IT, ADR-0029). The vendored-model sweep that feeds `build.py` excludes it by
+name rather than by a generic `third_party/*/elements.yaml` glob, so a future third standalone
+reference submodule needs the same explicit exclusion rather than being caught automatically.
+Confirmed as the intended permanent pattern; ADR-0029's merge-in behaviour is not generalized to
+every `third_party/*` submodule.
 
 ## Consequences
-
-> DRAFT — confirm:
 
 - Adding a third `third_party/` submodule requires deciding, and recording, which pattern it
   follows (merged like IT4IT, or standalone like `sample-azure`) rather than assuming the glob
@@ -42,6 +42,6 @@ ADR-0029's general pattern) and currently exists only in commit messages; no ADR
 - `sample-azure`'s own commits (modelling the Demo Item business object, Information Structure
   and Technology Usage views, etc.) land via routine submodule bumps and are never expected to
   appear in this repo's own `architecture/model/` build output.
-- No narrative doc currently explains why two vendored submodules behave differently; once this
-  ADR is Accepted, `ARCHITECTURE.md` §4 ("Forks to vendor") should probably note the distinction
-  — tracked as a follow-up, not done by this ADR.
+- No narrative doc currently explains why two vendored submodules behave differently —
+  `ARCHITECTURE.md` §4 ("Forks to vendor") noting the distinction is tracked as a follow-up,
+  not done by this ADR.

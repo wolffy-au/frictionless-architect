@@ -9,14 +9,18 @@ explicit direct relationship that duplicates what the chain already implies.
 This script looks for that duplication so it can be flagged instead of
 silently kept.
 
-Computation is delegated to ``pyArchimate.derivation`` (spec
-015-derived-relationships, GitHub issue #140), which implements DR2/DR3/DR5/
-DR7/DR8 for the seven "certain" relationship types (Composition, Aggregation,
-Assignment, Realization, Serving, Triggering, Flow) chained through a single
-intermediate element.
+Computation is delegated to ``pyArchimate.derivation``, which implements
+DR2/DR3/DR5/DR7/DR8 for the seven "certain" relationship types (Composition,
+Aggregation, Assignment, Realization, Serving, Triggering, Flow) chained
+through a single intermediate element. (Earlier revisions of this docstring
+cited "spec 015-derived-relationships, GitHub issue #140" for this and issue
+#146 for the extended scope below; neither reference is correct — no such
+spec exists and both issue numbers point at unrelated work — so they've been
+dropped rather than replaced with a guess. See ADR-0051 for the overlay
+feature this check complements.)
 
-Extended scope (GitHub issue #146, ``include_dependency=True``) is enabled
-by default here: Access, Influence, and Association also become eligible to
+Extended scope (``include_dependency=True``) is enabled by default here:
+Access, Influence, and Association also become eligible to
 participate in chains, plus one additional best-effort rule from Appendix
 B.3 (Influence-then-structural, forward, in-line, derives Influence). Access
 and Association remain chainable but yield no derivation of their own —
