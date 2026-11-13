@@ -1,0 +1,19 @@
+@startuml
+!include <archimate/Archimate>
+
+title Roadmap: compliance-pack-export-mvp
+
+Implementation_Deliverable(e_id8058515dde3358, "compliance-pack-export-mvp (unreleased)")
+Implementation_Plateau(e_ida047d3692e9252, "compliance-pack-export-mvp")
+Implementation_WorkPackage(e_idaf91f8ae39065f, "GH-203 ADR: decide the compliance-pack export format and content scope")
+Implementation_WorkPackage(e_id7f0a1d5d22cf54, "GH-197 Epic: audit-ready compliance pack export (FR-023)")
+Implementation_WorkPackage(e_id844a1cfdbe0d54, " --GH-202 Scoping decision: which subsystem owns compliance-pack export (FR-023)--")
+Implementation_WorkPackage(e_ida6ae0631776453, "GH-204 speckit-specify: spec.md for compliance-pack export (FR-023)")
+
+Rel_Realization_Up(e_id8058515dde3358, e_ida047d3692e9252, "")
+Rel_Realization_Up(e_idaf91f8ae39065f, e_id8058515dde3358, "")
+Rel_Realization_Up(e_id7f0a1d5d22cf54, e_id8058515dde3358, "")
+Rel_Realization_Up(e_id844a1cfdbe0d54, e_id8058515dde3358, "")
+Rel_Realization_Up(e_ida6ae0631776453, e_id8058515dde3358, "")
+
+@enduml

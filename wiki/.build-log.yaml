@@ -719,6 +719,12 @@ topics:
         architecture/model/diagrams/migration/plat-agentic-delivery-mvp-3.svg:
           sha256: 2d346b1924ad639931ac4d74a3e8a5468bddf373167bd636328c96161240862b
           lines: 1
+        architecture/model/diagrams/migration/plat-architecture-governance-mvp-14.puml:
+          sha256: 5b45b8a1d027ebac4e2e447f170e91b9e3cc825e59568d131649e9e4badb9629
+          lines: 21
+        architecture/model/diagrams/migration/plat-architecture-governance-mvp-14.svg:
+          sha256: ba2959924c41708750bf47312827319811b617818b371c155c7a1c883bef1750
+          lines: 1
         architecture/model/diagrams/migration/plat-architecture-strategy-future-13.puml:
           sha256: 506f59aa8bdd74db991e96c45d91ac19a55ed256532f4ba85dc71bc9ca018ac5
           lines: 31
@@ -730,6 +736,12 @@ topics:
           lines: 32
         architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.svg:
           sha256: aefa6e60e4be3f6fee89daaf5c37606440ae1ebe09b00fc571dd3826c750a52e
+          lines: 1
+        architecture/model/diagrams/migration/plat-compliance-pack-export-mvp-15.puml:
+          sha256: 559e1aeabfd760744792c94f1dba10dae53dda4dd7bcd729f774f4c2002a6c86
+          lines: 19
+        architecture/model/diagrams/migration/plat-compliance-pack-export-mvp-15.svg:
+          sha256: 38b61052713d4541602209f3560a5a318c04271b0d4cfee4ad5705dd47bf0edd
           lines: 1
         architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml:
           sha256: 747ee1c75c05ee200de1bdd0804706c394418ede4d1d0923bc8900bea2dd6f88
@@ -804,10 +816,10 @@ topics:
           sha256: 0c1a88da4464e541a21eabcfb23fcd88214d4c2947e95c71279d62134dd9678e
           lines: 1
         architecture/model/diagrams/migration/work-package-dependencies.puml:
-          sha256: 5eb1ed03fe05468c77c78a6a7bbf0a072ab7e2b6619deb6b6a9ac0f94c88461b
-          lines: 160
+          sha256: 0a3d63cc3d96f5adaacecd1ce7639a4126b5770e51127e5e2252de6980fd72c4
+          lines: 169
         architecture/model/diagrams/migration/work-package-dependencies.svg:
-          sha256: b7422dd1ffc229d9169817d723083fcc80fa767602e30fbc3c184f87778051ce
+          sha256: 0bce85cb37dbffd9fc03fbde4835a01999c1e3a71ea8243c749e46c153659408
           lines: 1
         architecture/model/diagrams/technology/landscape.puml:
           sha256: ec032487030ffa012c5ec192a0f57693889c2ce0a1f7ade0e5e7db6eb38395e4

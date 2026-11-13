@@ -46,14 +46,14 @@ The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:435-515`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 561 elements, 1277 relationships and 75 views
+current merged model is 574 elements, 1288 relationships and 77 views
 (re-counted 2026-11-13 against a clean `build.py` run; the model validates
 with no metamodel or referential-integrity violations). Of those, 287
 elements and 675 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
-view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 123
-elements and 200 relationships are generated into
+view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 136
+elements and 211 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
 roadmap layer" below); 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
