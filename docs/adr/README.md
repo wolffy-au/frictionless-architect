@@ -179,3 +179,9 @@ not yet re-ratified in a spec).
 - **A** — [0050](0050-adr-conflict-detection-triple-trigger.md) — FR-014 ADR-conflict
   detection runs on three triggers: automatic on submission, on demand, and a weekly
   scheduled audit sweep over the accepted log
+- **P** — [0051](0051-derived-relationship-overlay-rendering.md) — Derived-relationship
+  overlay (`views.yaml`'s `derived: true`) is render-time-only, drawn as a dashed
+  `<<derived>>` arrow, never written back to the model
+- **P** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` is
+  vendored as a standalone reference model for the multi-tenant case, excluded from the
+  merge sweep that pulls IT4IT in (ADR-0029)
