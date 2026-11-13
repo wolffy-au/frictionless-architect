@@ -73,8 +73,9 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
   is already running; `429` with `Retry-After` for `REFRESH_BACKOFF_SECONDS` after a successful one) while `/schema-payload` keeps serving the cached payload.
 - `GET /schema-payload?force_reload=true` rebuilds instead of serving the cache, but if
   that rebuild fails and a payload is already cached, it still returns the cached payload
-  (HTTP 200) rather than a `503` — a `503` only happens when the rebuild fails with nothing
-  cached to fall back on.
+  (HTTP 200). If the rebuild fails with nothing cached to fall back on, the response is
+  still `200` — an empty-but-valid payload with a warning explaining why (FR-006) — rather
+  than an error.
 - When `neo4j_status` is `unavailable`, the service automatically retries the load every
   `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` seconds (default and maximum `300`) until
   it succeeds; watch `retry_pending` on `GET /schema-payload/status` to see it in flight.

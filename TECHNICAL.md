@@ -143,7 +143,7 @@ The following patterns and practices have been established for API-level integra
 - **Test Naming Convention**: Use explicit, action-oriented names:
   - `test_schema_payload_returns_model` (setup + verify)
   - `test_force_reload_bypasses_cache` (feature-specific)
-  - `test_payload_unavailable_returns_503` (error case)
+  - `test_payload_unavailable_returns_empty_payload` (error case)
 - **Parallel Execution**: Organize tests so they can run concurrently:
   - Tests should not share mutable state
   - Use per-test `tmp_path` directories for any generated artifacts

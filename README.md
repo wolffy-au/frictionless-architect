@@ -93,16 +93,17 @@ package exists.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`; includes duplicate-identifier warnings from the sample); `?force_reload=true` rebuilds instead of serving the cache; `503` only if nothing reachable *and* nothing cached |
+| `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`; includes duplicate-identifier warnings from the sample); `?force_reload=true` rebuilds instead of serving the cache; always `200` — if nothing is reachable *and* nothing is cached, the response is an empty-but-valid payload with a warning explaining why (FR-006) |
 | `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy; `429` during backoff |
 | `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, `retry_pending`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
 
 `?force_reload=true` tries to rebuild the payload from Neo4j and the sample file.
 If that rebuild fails (e.g. Neo4j is down and the sample is missing) but a payload
 was cached from an earlier successful build, `/schema-payload` still returns that
-cached payload (HTTP 200) instead of a `503` — the forced reload is best-effort, not
-all-or-nothing. A `503` only happens when the rebuild fails *and* there is no cache
-to fall back on.
+cached payload (HTTP 200) — the forced reload is best-effort, not all-or-nothing. If
+the rebuild fails *and* there is no cache to fall back on, the response is still `200`,
+but with an empty-but-valid payload and a warning explaining why (FR-006) rather than
+an error.
 
 `GET /schema-payload/status` fields that take a small set of values:
 
