@@ -1155,14 +1155,14 @@ files = [
 
 [[package]]
 name = "cucumber-tag-expressions"
-version = "11.0.1"
+version = "11.1.0"
 description = "Provides a tag-expression parser and evaluation logic for cucumber/behave"
 optional = false
 python-versions = ">=3.10"
 groups = ["tests"]
 files = [
-    {file = "cucumber_tag_expressions-11.0.1-py3-none-any.whl", hash = "sha256:8ee5433a3b1ad16ca607c905fa3bb6d85d57f087ba119b14ea5e82cd35ea98c5"},
-    {file = "cucumber_tag_expressions-11.0.1.tar.gz", hash = "sha256:f8304dd16e546517816e62ace6c486575023812f42e8a60526fcec1694016146"},
+    {file = "cucumber_tag_expressions-11.1.0-py3-none-any.whl", hash = "sha256:270e0be10bd60eeada581525c233cbc4d447c308e78ab404ab4fd09b44d20409"},
+    {file = "cucumber_tag_expressions-11.1.0.tar.gz", hash = "sha256:37b1e5006907a9e622581f956c969c5cb814e25ebff3e8e3b887ab46c73a37a9"},
 ]
 
 [[package]]
