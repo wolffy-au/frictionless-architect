@@ -240,6 +240,7 @@ topics:
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/checklists/requirements.md
       - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md
+      - path: platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/tasks.md
       - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md
       - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md
       - path: platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/research.md

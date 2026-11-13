@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
-generated: '2026-11-12'
+generated: '2026-11-13'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md

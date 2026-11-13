@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-11-12'
+generated: '2026-11-13'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -173,11 +173,19 @@ The old `cross-layer/` folder is **gone** (PR #62):
 - Subsystems & Capabilities moved to `layered/`.
 - The `Architecture Skeleton` view was removed outright.
 
-After this change, no view used `viewpoint: custom` until 2026-11-11, when the
-exploratory Derived Relationship Overlay Probe view adopted it (see "Derived
-relationship overlay" below) — every other platform view is still held to a
-standard ArchiMate viewpoint (`architecture/model/views.yaml`). The header
-comment in `views.yaml` and the README schema document `custom` as an option
+After this change, no vision/business/application-layer view used
+`viewpoint: custom` until 2026-11-11, when the exploratory Derived
+Relationship Overlay Probe view adopted it (see "Derived relationship
+overlay" below) for the cross-layer case — every other view outside the
+Technology layer is held to a standard ArchiMate viewpoint
+(`architecture/model/views.yaml`). The header comment in `views.yaml`
+describes `viewpoint: custom` as an escape hatch for either case — mixing
+layers, or sweeping a single layer wider than any standard viewpoint
+covers — and the latter use predates this page's scope:
+`view-technology-ci-check` and `view-technology-persistence-boundary` use it
+to mix Technology with Application-layer members (see
+[Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md)).
+The README schema also documents `custom` as an option
 (`architecture/model/views.yaml:6-13`; `architecture/model/README.md`
 §"Schema").
 
@@ -203,8 +211,9 @@ wide, same-element-type-across-layers sweep (every `BusinessProcess`/
 `ApplicationComponent`/`Node` in the `modelling-specification` context),
 added to see what the overlay looks like against a realistically busy view
 before any production view turns it on — hence `viewpoint: custom`, the
-first use of that escape hatch since PR #62 (see "The old `cross-layer/`
-folder" above). On the current model it renders two `BusinessProcess`
+first cross-layer use of that escape hatch since PR #62 (see "The old
+`cross-layer/` folder" above; the Technology-layer views noted there use it
+for a different reason). On the current model it renders two `BusinessProcess`
 elements ("Deterministic Spec Generation", "Conversational Candidate
 Architecture Authoring") and one `ApplicationComponent` ("Modelling &
 Specification"), with a single derived edge: `Modelling & Specification`

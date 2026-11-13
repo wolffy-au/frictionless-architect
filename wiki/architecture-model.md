@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: '2026-11-12'
+generated: '2026-11-13'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -176,12 +176,19 @@ Schema rules (`architecture/model/README.md` §"Schema";
   from the `modelling-specification` package's `reference/archi-viewpoints.xml` (ADR-0045)
   (`poetry run python .claude/skills/model-archimate/scripts/viewpoints.py
   list`). `build.py` holds that view to the viewpoint's allowed concepts and
-  fails on a stray one. `viewpoint: custom` marks a deliberate cross-layer view
-  (not checked), and omitting the key also skips the check
-  (`architecture/model/README.md` §"Schema"). The tag lives only in
-  `views.yaml`, because the exchange format does not preserve it in the
-  generated XML. Since PR #62, **no view uses `custom`**: every platform view is
-  held to a standard viewpoint. The schema still documents the option.
+  fails on a stray one. `viewpoint: custom` is an escape hatch for when no
+  standard viewpoint's allowed-concept list matches the shape a view needs —
+  whether that's mixing layers or sweeping a single layer wider than any
+  standard viewpoint covers (not checked either way); omitting the key also
+  skips the check (`architecture/model/README.md` §"Schema"). The tag lives
+  only in `views.yaml`, because the exchange format does not preserve it in
+  the generated XML. No view used `custom` from PR #62 until 2026-11-11, when
+  the exploratory Derived Relationship Overlay Probe view adopted it (see
+  [Architecture Views & Diagrams](architecture-diagrams.md)); the migration
+  section's two Technology/Application views (`view-technology-ci-check`,
+  `view-technology-persistence-boundary`, see
+  [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md))
+  also use it, for the single-layer-wider case.
 - **`no_direction`** on a view (optional) — relationship types to draw
   undirected on that view only, instead of `diagram-archimate`'s default
   `Up`/`Right` layout hint. It is for graphs that aren't a one-way sequence,
