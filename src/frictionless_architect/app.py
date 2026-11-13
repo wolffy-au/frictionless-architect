@@ -20,10 +20,12 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     Yields:
         Control to the running application.
     """
-    yield
-    service = get_schema_service()
-    await service.stop_retry()
-    service.loader.close()
+    try:
+        yield
+    finally:
+        service = get_schema_service()
+        await service.stop_retry()
+        service.loader.close()
 
 
 app = FastAPI(title="Frictionless Architect", lifespan=lifespan)
