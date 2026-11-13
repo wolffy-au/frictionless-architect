@@ -787,7 +787,8 @@
   name: GH-45 Role journeys and UI/UX
   props:
     gh-number: '45'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/45
 - type: WorkPackage
   id: wp-roll-out-split-by-context-package-gh-194

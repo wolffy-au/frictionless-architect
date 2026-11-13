@@ -6266,7 +6266,10 @@
           <value>45</value>
         </property>
         <property propertyDefinitionRef="propid-11">
-          <value>open</value>
+          <value>closed</value>
+        </property>
+        <property propertyDefinitionRef="propid-12">
+          <value>completed</value>
         </property>
         <property propertyDefinitionRef="propid-10">
           <value>https://github.com/wolffy-au/frictionless-architect/issues/45</value>
