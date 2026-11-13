@@ -1,7 +1,7 @@
 ---
 title: Platform Specification & API
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-11'
+generator: claude-sonnet-5
 sources:
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/checklists/requirements.md
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md
@@ -204,7 +204,7 @@ From `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contract
 
 | Method & path | Purpose | Responses |
 |---|---|---|
-| `GET /schema-payload` | Aggregated model/element/relationship/view payload for both views. Query param `force_reload` (boolean, default `false`) bypasses the cache. | `200` with `{model, elements, relationships, views, warnings[], latency_ms}`; `503` when neither Neo4j nor sample data is available and no cache exists |
+| `GET /schema-payload` | Aggregated model/element/relationship/view payload for both views. Query param `force_reload` (boolean, default `false`) bypasses the cache. | `200` with `{model, elements, relationships, views, warnings[], latency_ms}`, always — when neither Neo4j nor sample data is available and no cache exists, `elements`/`relationships`/`views` come back empty with a warning explaining why (FR-006) rather than a `503` |
 | `POST /schema-payload/refresh` | Kicks off an async cache rebuild; returns immediately. Optional body `{source}`. | `202` `{status: "refresh_started", estimated_completion_ms}`; `409` if a refresh is already running; `429` + `Retry-After` within `REFRESH_BACKOFF_SECONDS` (default 300) of the last *successful* refresh (failed refreshes are never delayed, so the 5-minute retry holds) |
 | `GET /schema-payload/status` | Cache freshness + connection state for the warning banner | `200` `{cache_age_seconds, neo4j_status, sample_file_status, last_warning, refresh_in_progress, ...}` |
 
@@ -220,9 +220,10 @@ contract lists only the three JSON endpoints. The server-rendered
 
 `warnings` is always present (empty array when clean); `latency_ms` supports
 the < 2s goal. The contract no longer documents `401/403` (updated 2026-10-04):
-access is the single service credential (ADR-0024), a Neo4j read failure becomes a
-warning and falls back to the cache or sample, and `503` is the only error. The
-status response also lists `refresh_in_progress`, `retry_pending` and the refresh
+access is the single service credential (ADR-0024), and a Neo4j read failure becomes
+a warning and falls back to the cache, the sample, or (since the T026/T027 fix below)
+an empty-but-accessible payload — `GET /schema-payload` has no error response at all.
+The status response also lists `refresh_in_progress`, `retry_pending` and the refresh
 timestamps (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md`).
 
 ### Success criteria
@@ -283,11 +284,26 @@ from the type system (open, waiting on GH #73), and T021, removing the
 unimplemented `401/403` (done). Phase 8 (Convergence) added T022 (a 2-second test,
 SC-005), T023 (warn on duplicate identifiers), T024 and T025 (align `plan.md` and
 `spec.md` with the #55 split), all done. Phase 9 records two gaps found by the
-behave scenarios and still open: T026, where a missing sample with no Neo4j makes
+behave scenarios: T026, where a missing sample with no Neo4j made
 `GET /schema-payload` answer `503` although FR-006 keeps the schema summary
 accessible, and T027, where a sample in another namespace should report
-`sample_file_status: "invalid"` but stays `missing` when nothing else supplies data.
-Both share one code path and were decided (2026-10-11) to be **deferred past
-v0.2.0** — that release ships them as documented known limitations rather
-than blocking on the fix
-(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/tasks.md` §Phases 7–9).
+`sample_file_status: "invalid"` but stayed `missing` when nothing else supplied data.
+Both shared one code path and were decided (2026-10-11) to be **deferred past
+v0.2.0**, shipping that release as documented known limitations; both are now
+**fixed** (T026/T027, done): `_build_payload` builds the empty-but-valid payload
+instead of raising, and the "nothing at all" check (and its retry-triggering raise)
+moved to `_build_and_cache_once`, after the sample/Neo4j status fields are already
+assigned, so `GET /schema-payload` returns `200` on that empty-but-valid payload and
+the attempt's status is recorded. `get_payload`'s own raise-when-nothing-cached
+contract, and the service-level retry/caching behaviour, are unchanged. The richer
+type-system-only payload for this case stays deferred to GH #73 alongside T020
+(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/tasks.md` §Phases
+7–9; see [Visualizer Service](visualizer-service.md)).
+
+`plan.md` gained a **Model Impact** section (2026-11-09, satisfying constitution
+Principle X for a plan predating it): **none** to add, change or retire —
+`sub-schema-visualizer`, `art-pkg-schema-visualizer-api` and `gap-neo4j-schema-ui`
+already model this feature in `architecture/model/`, and the plan implements the
+already-modeled capability as-is
+(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md` §Model
+Impact).

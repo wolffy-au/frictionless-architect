@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-08'
+generated: '2026-11-12'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -146,12 +146,12 @@ The working indicator (GH #186) adds no dependency.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1849 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view` |
+| `model_io.py` | 1861 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view`; `VENDORED_MODELS` excludes `third_party/sample-azure` from the default merge sweep (ADR-0045 standalone-repo model, not reference content) |
 | `router.py` | 1091 | FastAPI router: propose/validate/decide/render/config/state; `_resolve_changes`, `_merge_into_delta` and `_resolved_text` hold the logic once inline in `propose`/`resolve_pii` |
 | `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
 | `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 485 | Ported view-render logic from root's `render_diagrams.py` |
-| `puml.py` | 450 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout |
+| `rendering.py` | 489 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths |
+| `puml.py` | 525 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout. `--derived` (requires `--view`) overlays ArchiMate derived relationships via `_compute_derived_edges`/`pyArchimate.derivation.find_chains` — see [Architecture Views & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true) |
 | `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
 | `validation/conventions.py` | 329 | Loads and evaluates `conventions.yaml` rules |
@@ -378,7 +378,11 @@ their output, and anyone else redirects it
    a delta and picking a view show none. It is client-only: no API, session or
    dependency change, and no new ADR or shared package, since a package needs a real
    second consumer (ADR-0034) and `controls-compliance-catalog` already has its own
-   indicator. Streaming is out of scope. Tests are a `test_ui.py` markup check and two
+   indicator. `plan.md` gained a **Model Impact** section (2026-11-09, satisfying
+   constitution Principle X for a plan predating it) confirming this directly:
+   **none** — additive UI behaviour inside an existing package, with no
+   `architecture/model/` element, relationship or view id added, changed or retired.
+   Streaming is out of scope. Tests are a `test_ui.py` markup check and two
    behave scenarios that set a new `FakeCompletion.delay` to observe the in-flight
    state; `tasks.md` marks T001-T011 done, T011 being a human check against a real LLM
    provider

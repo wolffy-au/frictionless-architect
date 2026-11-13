@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: '2026-11-08'
+generated: '2026-11-13'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -46,18 +46,22 @@ The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:435-515`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 556 elements, 1271 relationships and 74 views
-(re-counted 2026-11-04 against a clean `build.py` run; the model validates
+current merged model is 574 elements, 1288 relationships and 77 views
+(re-counted 2026-11-13 against a clean `build.py` run; the model validates
 with no metamodel or referential-integrity violations). Of those, 287
-elements and 672 relationships are hand-authored in this repo's own
+elements and 675 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
-view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 118
-elements and 197 relationships are generated into
+view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 136
+elements and 211 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
 roadmap layer" below); 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
-([ADR-0029](decision-log-ui-visualiser-model.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The generated
+([ADR-0029](decision-log-ui-visualiser-model.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The remaining 9 elements and
+167 relationships are generated purely in-memory at build time — the
+per-context Groupings and their Aggregation edges, plus the Context Map's
+`Serving` edges (ADR-0040 — see [Architecture Model: Context-Level Viewpoints
+& Bounded Contexts](architecture-model-contexts.md)). The generated
 `frictionless-architect.xml` is committed but never hand-edited — same status
 as the `.puml` / `.svg` diagrams.
 
@@ -67,7 +71,7 @@ as the `.puml` / `.svg` diagrams.
 |---|---|
 | `elements.yaml` | Every element: `type` / `id` / `name` / `desc?` / `props?` (`architecture/model/README.md` §"Files") |
 | `relationships.yaml` | Every relationship: `type` / `source` / `target` / `label?` / `props?` |
-| `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`, optionally narrowed by `exclude_elements` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?`) (`architecture/model/README.md` §"Files") |
+| `views.yaml` | View scoping for `diagram-archimate` (`id` / `name` / `members` and/or `include_types`, optionally narrowed by `exclude_elements` / `context?` / `viewpoint?` / `diagram` / `no_direction?` / `max_width?` / `derived?`) (`architecture/model/README.md` §"Files") |
 | `views-viewpoints.yaml` | Generic views, one per standard ArchiMate viewpoint, `include_types` only (no `members`); same schema as `views.yaml`, ids unique across both (see "Context-level viewpoints" below) |
 | `import_gh_roadmap.py` | GitHub milestones / issues / releases → `gh-roadmap/` |
 | `gh-roadmap/` | **Generated** Plateaus, Work Packages, Deliverables, links and per-milestone views, merged by `build.py`, never hand-edited |
@@ -172,12 +176,19 @@ Schema rules (`architecture/model/README.md` §"Schema";
   from the `modelling-specification` package's `reference/archi-viewpoints.xml` (ADR-0045)
   (`poetry run python .claude/skills/model-archimate/scripts/viewpoints.py
   list`). `build.py` holds that view to the viewpoint's allowed concepts and
-  fails on a stray one. `viewpoint: custom` marks a deliberate cross-layer view
-  (not checked), and omitting the key also skips the check
-  (`architecture/model/README.md` §"Schema"). The tag lives only in
-  `views.yaml`, because the exchange format does not preserve it in the
-  generated XML. Since PR #62, **no view uses `custom`**: every platform view is
-  held to a standard viewpoint. The schema still documents the option.
+  fails on a stray one. `viewpoint: custom` is an escape hatch for when no
+  standard viewpoint's allowed-concept list matches the shape a view needs —
+  whether that's mixing layers or sweeping a single layer wider than any
+  standard viewpoint covers (not checked either way); omitting the key also
+  skips the check (`architecture/model/README.md` §"Schema"). The tag lives
+  only in `views.yaml`, because the exchange format does not preserve it in
+  the generated XML. No view used `custom` from PR #62 until 2026-11-11, when
+  the exploratory Derived Relationship Overlay Probe view adopted it (see
+  [Architecture Views & Diagrams](architecture-diagrams.md)); the migration
+  section's two Technology/Application views (`view-technology-ci-check`,
+  `view-technology-persistence-boundary`, see
+  [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md))
+  also use it, for the single-layer-wider case.
 - **`no_direction`** on a view (optional) — relationship types to draw
   undirected on that view only, instead of `diagram-archimate`'s default
   `Up`/`Right` layout hint. It is for graphs that aren't a one-way sequence,
@@ -187,6 +198,20 @@ Schema rules (`architecture/model/README.md` §"Schema";
   PlantUML's `scale max <px> width`. It is for long chains that would
   otherwise scroll horizontally, and is used by Delivery Choreography
   (`architecture/model/README.md` §"Schema").
+- **`derived: true`** on a view (optional, added 2026-11-11) — overlay
+  ArchiMate 3.2 Appendix B.2 derived relationships (the strict
+  DR2/DR3/DR5/DR7/DR8 rule set, no Access/Influence/Association chaining)
+  between two elements already on the view whose implying two-hop chain
+  runs through a third element that is *not* on the view. Rendered as a
+  dashed `<<derived>>`-stereotyped arrow — never one of the modeled
+  relationship arrowheads — and never written back to `relationships.yaml`
+  or the generated XML: it is computed fresh at render time, on every
+  batch/single/candidate render path (`architecture/model/README.md`
+  §"Schema"). Not to be confused with the IT4IT bridge's unrelated,
+  element-level `props: {derived: "true"}` tag — see [Architecture Model:
+  Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md). The
+  narrative and a worked example are on [Architecture Views & Diagrams:
+  Vision, Business & Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true).
 
 The model loader accumulates invalid model entries and reports collected
 build errors before writing or validating the exchange-format model
@@ -243,10 +268,11 @@ page once this one passed ~500 lines: see
 
 ## Views and diagrams
 
-70 ArchiMate views cover the merged model: 37 declared in this repo's own
+75 ArchiMate views cover the merged model: 41 declared in this repo's own
 `views.yaml` (sections A–C, the IT4IT touchpoint bridge, sections E/F — see
 [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) —
-and the generated Context Map), 16 generic views in `views-viewpoints.yaml`
+the generated Context Map, and the exploratory Derived Relationship Overlay
+Probe view), 17 generic views in `views-viewpoints.yaml`
 (see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)),
 13 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
 "GitHub roadmap layer" above), and 4 declared in `third_party/it4it/views.yaml`
@@ -467,4 +493,31 @@ Architecture Strategy transition view and a new, generated
 `plat-architecture-strategy-future-13` milestone Plateau were also added (see
 [Architecture Views & Diagrams: Platform, Migration &
 Rendering](architecture-diagrams-platform.md)). That brought the model to 515 elements, 1029 relationships and 66 views on
-2026-10-24; see the top of this page for the current count.
+2026-10-24.
+
+A GH #45 follow-on (2026-11-08) closed a gap ADR-0038's GH #69 follow-on had
+left open: `process-security-assessment` and `process-implementation` (the
+Security assessor and Implementation contributor role journeys) had no
+`Realization` edge to any `cap-*` capability, so — unlike the other five
+#45 roles — their journeys didn't trace up to a `ValueStream`. Two edges
+closed it: `process-security-assessment` → `cap-reusable-architecture`
+(matching `bfn-security-assurance`'s "before they are reused or shipped",
+the same capability `process-pattern-traceability`, `process-blueprint-traceability`
+and `process-solution-design` already realize) and `process-implementation`
+→ `cap-control-plane` (matching `vss-build`'s "within enforced architectural
+and regulatory boundaries", the same capability `process-cicd-pipeline` and
+`process-agentic-crew` already realize).
+
+A 2026-11-11 fix (`model_io.py`'s `VENDORED_MODELS` sweep) excluded
+`third_party/sample-azure` from the default vendored-model sweep: that
+submodule carries its own `elements.yaml` for standalone use under
+ADR-0045, not reference content meant to merge into this repo's own model
+the way `third_party/it4it` is — see [Architecture Model: Build Pipeline &
+IT4IT Merge](architecture-model-build-it4it.md). The same day, `views.yaml`
+gained the `derived: true` overlay flag and an exploratory
+`view-derived-overlay-probe` view exercising it — see the schema bullet
+above and [Architecture Views & Diagrams: Vision, Business &
+Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true).
+Neither pass changed first-party element or relationship counts; the new
+view brought the total from 74 to 75. See the top of this page for the
+current count.

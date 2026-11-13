@@ -1,6 +1,6 @@
 ---
 title: Schema Visualizer API
-generated: '2026-10-31'
+generated: '2026-11-11'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0005-visualiser-api-ui-split-first-extraction.md
@@ -57,6 +57,14 @@ is covered on [Visualizer Service](visualizer-service.md) and
 [Project Overview](project-overview.md). Until step 7's extraction, that is
 where the running code and its README live; `schema-visualizer-api` is purely
 the future home this spec is staged for.
+
+The re-homed spec's `plan.md` gained a **Model Impact** section (2026-11-09,
+satisfying constitution Principle X for a plan predating it): **none** to add,
+change or retire — `sub-schema-visualizer`, `art-pkg-schema-visualizer-api` and
+`gap-neo4j-schema-ui` already model this feature in `architecture/model/`, and the
+plan implements the already-modeled capability as-is
+(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md` §Model
+Impact).
 
 ## Not covered by current sources
 

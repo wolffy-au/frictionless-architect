@@ -9,9 +9,9 @@ identifier, which the XSD's key/keyref errors do not.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 from functools import lru_cache
 from pathlib import Path
-from typing import Iterable, Iterator
 from xml.etree import ElementTree as ET
 
 from defusedxml.ElementTree import parse as _safe_parse

@@ -1,7 +1,7 @@
 ---
 title: Architecture Decision Log
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-11'
+generator: claude-sonnet-5
 sources:
 - docs/adr/0000-adr-template.md
 - docs/adr/0001-root-is-governance-only.md

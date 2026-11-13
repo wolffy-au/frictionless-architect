@@ -114,7 +114,9 @@ under the current directory. These env vars override that:
 
 - `FRICTIONLESS_MODEL_DIR` holds `elements.yaml`, `relationships.yaml`, `views.yaml`;
   `diagrams/` is written here.
-- `FRICTIONLESS_THIRD_PARTY_DIR`: each subdirectory with an `elements.yaml` is merged in.
+- `FRICTIONLESS_THIRD_PARTY_DIR`: each subdirectory with an `elements.yaml` is merged in,
+  except ones named as a standalone model meant to be pointed at directly instead
+  (e.g. `sample-azure`) -- see `model_io.py`'s `_STANDALONE_THIRD_PARTY_MODELS`.
 - `FRICTIONLESS_MODEL_NAME`: path separators and a leading dot are rejected.
 
 Each directory variable must name an existing directory, or the package refuses to start.

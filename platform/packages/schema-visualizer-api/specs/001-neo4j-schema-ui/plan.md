@@ -186,5 +186,12 @@ Service --> Client : {neo4j_status, sample_file_status,\nrefresh_in_progress, re
 @enduml
 ```
 
+## Model Impact
+
+**None** — `sub-schema-visualizer`, `art-pkg-schema-visualizer-api`, and
+`gap-neo4j-schema-ui` already model this feature in `architecture/model/`; this plan
+implements the already-modeled capability without adding, changing, or retiring any
+element, relationship, or view id.
+
 ## Complexity Tracking
 No constitution violations detected; table omitted.

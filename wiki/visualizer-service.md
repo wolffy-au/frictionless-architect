@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: '2026-11-08'
+generated: '2026-11-11'
 generator: claude-sonnet-5
 sources:
 - src/frictionless_architect/__init__.py
@@ -93,11 +93,12 @@ Derived: `sample_model_path` = `<sample_data_dir>/sample-00/Test Model Full.xml`
 (`src/frictionless_architect/visualizer/config.py:39-53`). `get_visualizer_settings()` is `lru_cache`d.
 
 The public classes and methods in these modules now carry Google-style docstrings
-(commit `44f1b8e`), and the three routes document their `503`, `202`, `409` and `429`
-responses. The refresh route declares only `409` and `429`: the rebuild runs after the `202`
-is sent, and a failed rebuild is logged with the cached payload kept, so it never answers
-`503` (`src/frictionless_architect/visualizer/api.py:456-468`); the OpenAPI docs are served at `/docs` (`README.md` §"Running the
-schema visualiser").
+(commit `44f1b8e`). `GET /schema-payload` declares no error response at all (T026/T027,
+below): it always answers `200`. Only the refresh and status routes document error
+responses — refresh declares `409` and `429` (the rebuild runs after the `202` is
+sent, and a failed rebuild is logged with the cached payload kept, so it never answers
+an error itself) (`src/frictionless_architect/visualizer/api.py:462-468`); the OpenAPI
+docs are served at `/docs` (`README.md` §"Running the schema visualiser").
 
 ## Request flow
 
@@ -110,14 +111,14 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
 1. **`get_payload(force_reload)`** — returns the cached payload unless
    `force_reload` or no cache exists, in which case it builds. If a build
    fails with `PayloadUnavailable` but a cache exists, the stale cache is
-   returned (`src/frictionless_architect/visualizer/api.py:102-127`). A failed
+   returned (`src/frictionless_architect/visualizer/api.py:111-127`). A failed
    build, or one where Neo4j reported `unavailable`, also schedules the
    background retry described under step 5.
 2. **`_build_payload()`** (run in a thread) delegates sample/schema loading to
    two helpers, split out from a single larger method to cut its cognitive
    complexity (`e0c70ea refactor: reduce cognitive complexity of
    SchemaPayloadService._build_payload`):
-   - **`_load_sample()`** (`src/frictionless_architect/visualizer/api.py:239-257`)
+   - **`_load_sample()`** (`src/frictionless_architect/visualizer/api.py:263-281`)
      parses the sample XML. A missing or malformed file adds the generic
      `warning_text` and leaves `sample_status` as `missing`; an
      `ArchimateNamespaceError` sets `sample_status = "invalid"` and adds the
@@ -127,32 +128,42 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
      warnings (see `SampleParser` below), then runs `validate_sample_against_schema()`
      against `schema_diagram_xsd_path` and adds each returned issue as a
      `warning`.
-   - **`_load_schema()`** (`src/frictionless_architect/visualizer/api.py:258-266`)
+   - **`_load_schema()`** (`src/frictionless_architect/visualizer/api.py:282-290`)
      queries Neo4j via `DataLoader` when `neo4j_uri` is set, returning
      `"disabled"` with empty lists otherwise, or `"unavailable"` with the
      `DataLoaderError` added as a warning.
 
-   `_build_payload()` itself (`src/frictionless_architect/visualizer/api.py:267-318`)
-   then raises `PayloadUnavailable` only if **both** Neo4j and sample yield
-   nothing; otherwise it builds the set of relationship identifiers from the
-   schema side (`src/frictionless_architect/visualizer/api.py:290-300`) so
-   `_merge_elements()` can exclude them —
-   a relationship isn't double-listed as an element — and merges schema
-   entries with sample entries per identifier, emitting a `warning` for every
-   schema type with no sample instance
-   (`src/frictionless_architect/visualizer/api.py:319-387`).
+   `_build_payload()` itself (`src/frictionless_architect/visualizer/api.py:291-387`)
+   no longer raises when both Neo4j and sample yield nothing (T026/T027 fix,
+   2026-11-09): it builds the set of relationship identifiers from the
+   schema side so `_merge_elements()` can exclude them — a relationship isn't
+   double-listed as an element — and merges schema entries with sample entries
+   per identifier, emitting a `warning` for every schema type with no sample
+   instance, returning an empty-but-structurally-valid payload either way. The
+   "nothing at all" check moved to `_build_and_cache_once()`
+   (`src/frictionless_architect/visualizer/api.py:211-237`), which now raises
+   `PayloadUnavailable` — carrying that same empty payload as `exc.payload` — only
+   *after* `_neo4j_status`/`_sample_status`/`_last_warning` are already assigned,
+   fixing the earlier bug where an attempt that found nothing never recorded its
+   own status fields. `GET /schema-payload` (`schema_payload`,
+   `src/frictionless_architect/visualizer/api.py:436-456`) catches that exception
+   and returns `exc.payload` on `200` instead of raising `HTTPException(503, ...)` —
+   FR-006's "schema summary stays accessible" guarantee. `get_payload`'s own
+   raise-when-nothing-cached contract and the retry/caching behaviour below are
+   unchanged; a richer type-system-only payload for this case stays deferred to
+   GH #73 alongside T020 (see [Platform Specification & API](platform-spec.md)).
 3. **`request_refresh()`** — spawns a background `asyncio` task that rebuilds
    and re-caches; raises `RefreshInProgress` (→ HTTP 409) if one is already
    running, and `RefreshBackoff` (→ HTTP 429 with `Retry-After`, the whole seconds
    left) if the last successful refresh completed less than
    `refresh_backoff_seconds` ago
-   (`src/frictionless_architect/visualizer/api.py:43-58,129-152,446`); the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
-   (`src/frictionless_architect/visualizer/api.py:129-152`).
+   (`src/frictionless_architect/visualizer/api.py:139-167`); the estimate returned is `max(500, (last_latency_ms or 1200) * 2)`
+   (`src/frictionless_architect/visualizer/api.py:163`).
 4. **`get_status()`** — reports `cache_age_seconds`, `neo4j_status`
    (`disabled`/`available`/`unavailable`), `sample_file_status`
    (`missing`/`loaded`/`invalid`), `last_warning`, `refresh_in_progress`,
    `retry_pending` (true while a background retry task is alive), and refresh
-   timestamps (`src/frictionless_architect/visualizer/api.py:216-237`).
+   timestamps (`src/frictionless_architect/visualizer/api.py:240-261`).
    The contract defines `invalid` as "root is not an ArchiMate `<model>` in
    the 3.0 namespace", with details in `last_warning`
    (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md` §"`/schema-payload/status`").
@@ -164,12 +175,12 @@ Routes are in `src/frictionless_architect/visualizer/api.py`; see
    sleeps `retry_interval_seconds` and rebuilds, swallowing `PayloadUnavailable`,
    until Neo4j is no longer unavailable. It clears `_retry_task` on exit,
    including cancellation. `stop_retry()` cancels and awaits it on shutdown
-   (`src/frictionless_architect/visualizer/api.py:153-206`). Failures of the
+   (`src/frictionless_architect/visualizer/api.py:169-209`). Failures of the
    explicit background refresh are logged as a warning and keep the cached
-   payload (`src/frictionless_architect/visualizer/api.py:207-215`).
+   payload (`src/frictionless_architect/visualizer/api.py:229-238`).
 
 `get_schema_service()` is `lru_cache(maxsize=1)` — one service instance per
-process (`src/frictionless_architect/visualizer/api.py:389-400`).
+process (`src/frictionless_architect/visualizer/api.py:406-414`).
 
 ## Components
 

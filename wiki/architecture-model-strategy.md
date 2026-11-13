@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Strategy'
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-13'
+generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -42,6 +42,20 @@ from the resource that equips it (`architecture/model/relationships.yaml:47-57`)
 `cap-reusable-architecture` as well, so reuse has a conversational path from
 `role-sa` alongside the pattern and blueprint processes
 (`architecture/model/relationships.yaml`).
+
+A **GH #45 follow-on (2026-11-08)** added two more `Realization` edges so
+every #45 role's journey traces up to a value stream, not just five of
+seven: `process-security-assessment` (Security assessor) now also realizes
+`cap-reusable-architecture`, alongside the pattern, blueprint and solution-design
+processes above — it assesses the same patterns/blueprints/solution designs
+"before they are reused or shipped" (`bfn-security-assurance` desc); and
+`process-implementation` (Implementation contributor) now realizes
+`cap-control-plane`, alongside `process-cicd-pipeline` and
+`process-agentic-crew` — the Developer's own build work sits upstream of
+the same enforcement capability the pipeline realizes
+(`architecture/model/relationships.yaml`; see [Architecture
+Model](architecture-model.md) and [Skeleton](architecture-model-skeleton.md)
+for the full rationale).
 
 `cap-conversational-governance` sits between spec generation and the digital
 twin it validates proposals against: it `Serving`s `cap-spec-engine`

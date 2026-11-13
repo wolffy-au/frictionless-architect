@@ -128,9 +128,10 @@ git push origin HEAD
 gh pr create --base develop --fill --draft   # or update the existing PR
 ```
 
-If `pre_merge_checks.sh` fails, fix and re-run — don't push a red branch. Open as a
-**draft**: the PR exists so CI runs against it, but it isn't yet asking anyone for
-review — that only happens once §8 is clean.
+If `pre_merge_checks.sh` fails, fix and re-run — don't push a red branch. This is the
+only point in this skill that runs the full gate locally. Open as a **draft**: the PR
+exists so CI runs against it, but it isn't yet asking anyone for review — that only
+happens once §8 is clean.
 
 ## 8. Watch CI and fix before requesting review
 
@@ -138,16 +139,21 @@ review — that only happens once §8 is clean.
 gh pr checks --watch
 ```
 
-CI (`.github/workflows/ci.yml`) re-runs ruff/pyright/mypy/behave/pytest+coverage plus
-SonarQube and CodeQL — gates §§2 and 6 only spot-checked locally. For any failing
-check:
+CI (`.github/workflows/ci.yml`) re-runs the same suite `pre_merge_checks.sh` just ran
+locally, plus SonarQube and CodeQL. Don't re-run `pre_merge_checks.sh` (or
+`pre_commit_checks.sh`) again in this loop — it's slow (behave, coverage pytest, Snyk,
+platform checks) and CI is about to tell you the same thing. For any failing check:
 
 ```bash
 gh run view --log-failed
 ```
 
-Fix the cause on this branch, commit (small, focused — same Conventional Commits
-discipline as everywhere else in this skill), push, and re-watch. Repeat until green.
+Fix the cause on this branch with the narrowest tool that confirms the fix — re-run just
+the specific failing check locally (e.g. `poetry run pytest <failing test file>`,
+`poetry run ruff check <file>`) rather than the whole gate — then commit (small, focused
+— same Conventional Commits discipline as everywhere else in this skill), push, and
+re-watch CI. Repeat until green. Only fall back to a full local `pre_merge_checks.sh` run
+if CI itself is flaking in a way that makes watching it unproductive.
 
 Stop and hand back instead of looping forever if a failure is genuinely outside this
 skill's remit (unrelated flake, missing secret, a fix that would need a major/breaking
@@ -173,6 +179,9 @@ nothing here requests review.
   structural refactor idea, a vulnerability in an unrelated dependency), note it as a
   follow-up rather than pulling it into this PR.
 - Don't push and open the PR (§7) until §§2-6 are clean.
+- `pre_merge_checks.sh` runs once, in §7, before the first push. The §8 fix/push/re-watch
+  loop checks only the specific thing that failed, not the whole gate again — CI already
+  reruns it in full.
 - The PR opens as a **draft** and only gets marked ready (§8) once CI is green — never
   call `gh pr ready` while a check is still red or hasn't run yet.
 - Never merge; `pr-preflight`'s job ends at `gh pr ready` — the merge decision stays human.

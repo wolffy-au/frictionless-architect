@@ -71,6 +71,11 @@ No violations. Complexity Tracking table omitted (nothing to justify).
 *Post-Phase-1 re-check*: unchanged — Phase 1 (below) introduced no new entities, contracts,
 or dependencies that would shift any assessment above.
 
+## Model Impact
+
+**None** — this is additive UI behaviour inside an existing package (see Summary); no
+element, relationship, or view id in `architecture/model/` is added, changed, or retired.
+
 ## Project Structure
 
 ### Documentation (this feature)

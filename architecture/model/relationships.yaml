@@ -279,12 +279,14 @@
 - {type: Realization, source: process-baseline-tailoring, target: cap-control-catalog}
 - {type: Realization, source: process-profile-resolution, target: cap-control-catalog}
 - {type: Realization, source: process-agentic-crew, target: cap-control-plane}
+- {type: Realization, source: process-implementation, target: cap-control-plane}
 - {type: Realization, source: process-release, target: cap-forensic-ledger}
 - {type: Realization, source: process-drift-review, target: cap-human-approval-workflow}
 - {type: Realization, source: process-pattern-traceability, target: cap-reusable-architecture}
 - {type: Realization, source: process-blueprint-traceability, target: cap-reusable-architecture}
 - {type: Realization, source: process-solution-design, target: cap-reusable-architecture}
 - {type: Realization, source: process-conversational-solution-modelling, target: cap-reusable-architecture}
+- {type: Realization, source: process-security-assessment, target: cap-reusable-architecture}
 - {type: Realization, source: process-target-state-definition, target: cap-digital-twin}
 - {type: Realization, source: process-conversational-authoring, target: cap-conversational-governance}
 

@@ -115,6 +115,21 @@ def _run(cmd: list[str]) -> None:
         sys.stderr.write(r.stderr)
 
 
+def _rendering_flags(v: dict[str, Any]) -> list[str]:
+    """The `--no-direction`/`--max-width`/`--derived` CLI flags a view's own
+    `views.yaml` entry asks for, shared between batch (`_view_diagram_jobs`) and
+    on-demand (`_render_svg`) rendering so the two paths can't drift apart.
+    """
+    flags: list[str] = []
+    for rel_type in v.get("no_direction", []):
+        flags += ["--no-direction", rel_type]
+    if v.get("max_width"):
+        flags += ["--max-width", str(v["max_width"])]
+    if v.get("derived"):
+        flags += ["--derived"]
+    return flags
+
+
 def _view_diagram_jobs(
     views_file: Path, diagram_root: Path, elements: list[dict[str, Any]], types_by_id: dict[str, str]
 ) -> list[tuple[Path, list[str]]]:
@@ -134,11 +149,15 @@ def _view_diagram_jobs(
         if not slug:
             sys.stderr.write(f"note: view {v.get('id')} has no `diagram:` key — skipped\n")
             continue
-        base_cmd = [sys.executable, "-m", ARCHIMATE_PUML_MODULE, MODEL_REL, "--view", v["name"]]
-        for rel_type in v.get("no_direction", []):
-            base_cmd += ["--no-direction", rel_type]
-        if v.get("max_width"):
-            base_cmd += ["--max-width", str(v["max_width"])]
+        base_cmd = [
+            sys.executable,
+            "-m",
+            ARCHIMATE_PUML_MODULE,
+            MODEL_REL,
+            "--view",
+            v["name"],
+            *_rendering_flags(v),
+        ]
         if v.get("split_by") == "context":
             for context in model_io.view_split_contexts(v, elements, types_by_id):
                 jobs.append((diagram_root / slug / f"{context}.puml", [*base_cmd, "--context", context]))
@@ -430,11 +449,7 @@ def sanitize_svg(svg: str) -> str:
 
 
 def _render_svg(v: dict[str, Any], model_path: str) -> str:
-    cmd = [sys.executable, "-m", ARCHIMATE_PUML_MODULE, model_path, "--view", v["name"]]
-    for rel_type in v.get("no_direction", []):
-        cmd += ["--no-direction", rel_type]
-    if v.get("max_width"):
-        cmd += ["--max-width", str(v["max_width"])]
+    cmd = [sys.executable, "-m", ARCHIMATE_PUML_MODULE, model_path, "--view", v["name"], *_rendering_flags(v)]
     puml_text = _capture(cmd)
     result = subprocess.run(["plantuml", "-tsvg", "-pipe"], input=puml_text, capture_output=True, text=True)
     if result.returncode != 0:

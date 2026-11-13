@@ -7,6 +7,18 @@
   - del-release-v0-1-0
   - plat-agentic-delivery-mvp-3
   - wp-model-group-the-remaining-5-ungrouped-gh-25
+- id: view-plat-architecture-governance-mvp-14
+  name: 'Roadmap: architecture-governance-mvp'
+  viewpoint: implementation_migration
+  diagram: migration/plat-architecture-governance-mvp-14
+  members:
+  - del-architecture-governance-mvp-14-unreleased
+  - plat-architecture-governance-mvp-14
+  - wp-adr-decide-how-adr-conflict-detection-fr-gh-199
+  - wp-adr-decide-the-cryptographic-attestation-gh-198
+  - wp-epic-architecture-governance-subsystem-gh-196
+  - wp-scaffold-platform-packages-architecture-gh-200
+  - wp-speckit-specify-package-level-spec-md-gh-201
 - id: view-plat-architecture-strategy-future-13
   name: 'Roadmap: architecture-strategy-future'
   viewpoint: implementation_migration
@@ -40,6 +52,17 @@
   - wp-model-architect-role-journeys-add-gh-138
   - wp-roll-out-split-by-context-package-gh-194
   - wp-spec-specs-003-conversational-modelling-gh-139
+- id: view-plat-compliance-pack-export-mvp-15
+  name: 'Roadmap: compliance-pack-export-mvp'
+  viewpoint: implementation_migration
+  diagram: migration/plat-compliance-pack-export-mvp-15
+  members:
+  - del-compliance-pack-export-mvp-15-unreleased
+  - plat-compliance-pack-export-mvp-15
+  - wp-adr-decide-the-compliance-pack-export-gh-203
+  - wp-epic-audit-ready-compliance-pack-export-gh-197
+  - wp-scoping-decision-which-subsystem-owns-gh-202
+  - wp-speckit-specify-spec-md-for-compliance-gh-204
 - id: view-plat-drift-management-mvp-5
   name: 'Roadmap: drift-management-mvp'
   viewpoint: implementation_migration

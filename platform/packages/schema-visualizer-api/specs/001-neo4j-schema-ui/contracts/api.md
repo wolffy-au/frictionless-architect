@@ -17,9 +17,9 @@
   ```  
   - `warnings` is always present (empty array when there are no issues).  
   - `latency_ms` supports the <2s load goal and can be surfaced in UI logs.  
+  - When Neo4j/sample data both fail and no cache exists, the response is still `200`, with `elements`/`relationships`/`views` empty and a warning explaining why (FR-006: the schema summary stays accessible rather than erroring). A richer type-system-only payload for this case is deferred to GH #73 alongside T020 (sourcing displayed types from `architecture/model/`).  
 - **Errors**:  
-  - `503` when Neo4j/sample data both fail and no cache exists (UI should show a fatal error).  
-  - No `401/403`: access is the single service credential (ADR-0024). A Neo4j read failure becomes a warning and falls back to the cache or sample; `503` is the only error.
+  - No `401/403`: access is the single service credential (ADR-0024). A Neo4j read failure becomes a warning and falls back to the cache, the sample, or an empty-but-accessible payload — this endpoint has no error response.
 
 ## POST /schema-payload/refresh
 - **Purpose**: Triggers an asynchronous rebuild of the cached payload from Neo4j + `Test Model Full.xml`; returns immediately to keep the UI responsive while a background job runs.  

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
@@ -20,10 +20,12 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     Yields:
         Control to the running application.
     """
-    yield
-    service = get_schema_service()
-    await service.stop_retry()
-    service.loader.close()
+    try:
+        yield
+    finally:
+        service = get_schema_service()
+        await service.stop_retry()
+        service.loader.close()
 
 
 app = FastAPI(title="Frictionless Architect", lifespan=lifespan)

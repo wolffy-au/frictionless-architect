@@ -64,10 +64,8 @@ necessarily edited — research R3); four spec artefacts in `001-oscal-ai-conver
   summarized.
 - **Principle X (Decision Traceability & Documentation Integrity)** — PASS. The load-bearing
   choice (submodule → selective-file-vendoring) gets a dated implementation note amending
-  ADR-0030 (research R4), landing in the same PR as the files it describes. **Model
-  impact: none** — `architecture/model/` is untouched; none of `oscal`, `oscal-content`, or
-  `fedramp-automation` is merged by `build.py` (unlike `it4it`, ADR-0029), so there is no
-  element, relationship, or view to add, change, or retire.
+  ADR-0030 (research R4), landing in the same PR as the files it describes. See Model
+  Impact below.
 - **Principle XI (Concise, Non-Duplicative Spec Artefacts)** — PASS. Facts are edited in
   their one owning artefact: `third_party/README.md` for the per-vendor narrative,
   `PROVENANCE.md` for per-set provenance, ADR-0030 for the decision, `001-oscal-ai-
@@ -185,6 +183,12 @@ is unchanged. Touched files outside `third_party/` are existing documents edited
 `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/{plan,data-model,quickstart,research}.md`,
 `tests/fixtures/golden-oscal/**/*.provenance.yaml` (verification pass), and four `wiki/`
 pages (regenerated via `wiki-librarian`, never hand-edited).
+
+## Model Impact
+
+**None** — `architecture/model/` is untouched; none of `oscal`, `oscal-content`, or
+`fedramp-automation` is merged by `build.py` (unlike `it4it`, ADR-0029), so there is no
+element, relationship, or view to add, change, or retire.
 
 ## Complexity Tracking
 

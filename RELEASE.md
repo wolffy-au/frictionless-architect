@@ -20,7 +20,7 @@ repo's tooling (`commitizen`, `poetry-dynamic-versioning`, `.github/workflows/ci
   `annotated_tag = true`, `update_changelog_on_bump = true`.
 - **`CHANGELOG.md`** is generated/updated by `cz bump`. `cz bump` writes only
   `CHANGELOG.md`, a bump commit and a tag. The tag it creates sits on `develop`, so it is
-  deleted and re-created on `main` after the PR merge (§6, §8).
+  deleted and re-created on `main` after the PR merge (§5, §8).
 
 ## Branch model
 
@@ -32,7 +32,7 @@ repo's tooling (`commitizen`, `poetry-dynamic-versioning`, `.github/workflows/ci
 ## Keeping releases fast
 
 Release day should only **verify** a clean state, never **produce** one. The agents in
-§3–§5 (`quality-uplift`, `vulnerability-remediator`, `docs-uplift`, `spec-alignment`,
+§2–§4 (`quality-uplift`, `vulnerability-remediator`, `docs-uplift`, `spec-alignment`,
 `adr-auditor`) do real remediation work when they find drift, and running that
 serially at release time — scan, fix, re-gate, scan, fix, re-gate — is what makes a
 release take hours instead of minutes.
@@ -40,17 +40,24 @@ release take hours instead of minutes.
 - **Run these agents continuously on `develop`, not at release time.** Schedule them
   (cron / `/loop` / a CI job triggered on merge to `develop`) so SonarCloud/Snyk findings
   and doc/spec/ADR drift get fixed as they appear, days before anyone cuts a release.
-  §3–§5 below should then be a quick read of already-green status, not a remediation
+  §2–§4 below should then be a quick read of already-green status, not a remediation
   pass.
 - **The session driving the release dispatches these agents, not `release-runner`.** It
   has no `Agent` tool, so it stops and hands back the agents it needs, including
   `commit-auditor` at preflight. The session runs them and resumes it with the results.
-- **If §3–§5 do find something at release time** (continuous maintenance lapsed, or
+- **If §2–§4 do find something at release time** (continuous maintenance lapsed, or
   new findings landed since the last scheduled run), dispatch the independent agents
   **in parallel** (one message, multiple `Agent` calls) rather than one after another:
   `quality-uplift` + `vulnerability-remediator` are independent of each other and of
-  `docs-uplift` + `spec-alignment` + `adr-auditor`. Only re-run `pre_merge_checks.sh`
-  once, after all of them land, not after each one.
+  `docs-uplift` + `spec-alignment` + `adr-auditor`.
+- **The full quality gate (§6) runs exactly once, last** — after the doc/spec refresh
+  (§4) and the version bump (§5) have both landed, not before and not again after.
+  Running it before the bump validates a commit that is not the one that ends up
+  pushed and tagged; running it again after `git push` happens anyway, for free,
+  because the pre-push hook re-checks pyright/mypy/pytest/platform-checks on every
+  push — put the gate after the bump instead of before it, and that automatic
+  re-check lands on a tree that has not changed since §6 ran, so it is a fast
+  confirmation rather than a second deliberate wait.
 - **Treat a release that required remediation as a signal to fix the schedule**, not as
   the new normal — the next release should go back to a verify-only pass.
 
@@ -83,20 +90,7 @@ by hand, not standing policy).
 
 Never merge or fast-forward `main` locally.
 
-### 2. Run the full quality gate
-
-```bash
-bash scripts/pre_merge_checks.sh
-```
-
-This runs `scripts/pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy,
-unit tests), the roadmap drift check (`import_gh_roadmap.py --check`), `poetry update`
-(fails if `poetry.lock` changes), `scripts/platform_checks.sh --update`, the three Snyk
-scans, `behave`, then `pytest --cov-fail-under=90 --cov=src --cov=architecture/model`, then
-the frontend UI harness if `frontend/` exists (it currently doesn't, so that step is
-skipped). Must pass clean.
-
-### 3. SonarCloud — no open issues
+### 2. SonarCloud — no open issues
 
 CI already ran the scan on the last push. Confirm nothing is `OPEN`
 (`TECHNICAL.md` → "SonarCloud Remediation Workflow"; `SONAR_TOKEN` in the gitignored `.env`):
@@ -109,21 +103,21 @@ curl -s "https://sonarcloud.io/api/issues/search?componentKeys=wolffy-au_frictio
 
 This should normally come back empty — `quality-uplift` is expected to be running on
 a schedule against `develop` (see "Keeping releases fast"), not invoked here for the
-first time. If it does find something, finish the step 4 check before dispatching
+first time. If it does find something, finish the step 3 check before dispatching
 `quality-uplift`, so both remediators go out in parallel.
 
-### 4. Security — no unresolved high/critical vulnerabilities
+### 3. Security — no unresolved high/critical vulnerabilities
 
 ```bash
 poetry run snyk test --package-manager=poetry
 gh api repos/wolffy-au/frictionless-architect/dependabot/alerts --jq '[.[] | select(.state=="open")]'
 ```
 
-As with step 3, this should come back clean if `vulnerability-remediator` has been
+As with step 2, this should come back clean if `vulnerability-remediator` has been
 running continuously. If not, dispatch it alongside `quality-uplift` (parallel `Agent`
-calls, not sequential) rather than blocking step 3 on it first.
+calls, not sequential) rather than blocking step 2 on it first.
 
-### 5. Refresh documentation and specs against the code
+### 4. Refresh documentation and specs against the code
 
 ```bash
 # docstrings, README/quickstart, feature guides, diagrams, and the agent-orientation
@@ -136,12 +130,13 @@ calls, not sequential) rather than blocking step 3 on it first.
 #   adr-auditor
 ```
 
-These three are independent of each other and of §3–§4 — dispatch all five agents
+These three are independent of each other and of §2–§3 — dispatch all five agents
 (`quality-uplift`, `vulnerability-remediator`, `docs-uplift`, `spec-alignment`,
 `adr-auditor`) that turn out to have work in a single batch of parallel `Agent` calls,
-not one after another, and run `pre_merge_checks.sh` (step 2) once more only after they
-all land. As with §3–§4, a clean run of these should be the common case because they
-run on a schedule against `develop`, not something release day discovers.
+not one after another. As with §2–§3, a clean run of these should be the common case
+because they run on a schedule against `develop`, not something release day discovers.
+The full quality gate doesn't run here — it runs once, in step 6, after the version
+bump below.
 
 Commit any regenerated artefacts:
 
@@ -150,7 +145,7 @@ git status --porcelain
 git add -A && git commit -m "docs: refresh docs, diagrams, and specs pre-release"
 ```
 
-### 6. Bump the version and update the changelog (on `develop`)
+### 5. Bump the version and update the changelog (on `develop`)
 
 ```bash
 poetry run cz bump --dry-run     # confirm the computed version
@@ -162,6 +157,26 @@ Review the generated `CHANGELOG.md` entry first.
 
 *First release only:* with no existing `v*` tag, plain `cz bump` fails ("No tag matching
 configuration could be found"). Use `poetry run cz bump --increment MINOR` (0.0.0 → 0.1.0).
+
+### 6. Run the full quality gate
+
+```bash
+bash scripts/pre_merge_checks.sh
+```
+
+Run this once, here — after the doc/spec refresh (step 4) and the version bump
+(step 5), not before them. This way it validates the exact commit that step 7 pushes
+and step 8 tags, rather than a pre-bump snapshot of it. It also means the pre-push
+hook's pyright/mypy/pytest/platform-checks, which fire automatically on `git push` in
+step 7, re-check a tree that hasn't changed since this step ran — a fast confirmation,
+not a second deliberate wait for an overlapping suite.
+
+This runs `scripts/pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy,
+unit tests), the roadmap drift check (`import_gh_roadmap.py --check`), `poetry update`
+(fails if `poetry.lock` changes), `scripts/platform_checks.sh --update`, the three Snyk
+scans, `behave`, then `pytest --cov-fail-under=90 --cov=src --cov=architecture/model`, then
+the frontend UI harness if `frontend/` exists (it currently doesn't, so that step is
+skipped). Must pass clean.
 
 ### 7. Open the `develop` → `main` PR (human merge gate)
 
@@ -175,7 +190,7 @@ Wait until every check is resolved and green (CI, CodeQL, SonarCloud quality gat
 or rebase, so the bump commit stays reachable from `main`). Do not use `gh pr merge`,
 a local merge, or a push to `main`.
 
-Snyk is not a PR check; it runs locally in §2 and §4. If those scans fail on account quota
+Snyk is not a PR check; it runs locally in §3 and §6. If those scans fail on account quota
 ("Code test limit reached", "used your limit of private tests") rather than on findings,
 the human decides whether to accept that.
 
@@ -195,7 +210,8 @@ The name must match `tag_format = "v$version"` (and `poetry-dynamic-versioning`)
 ### 9. Create the GitHub release
 
 Draft notes from the previous release as a template (subject line + summary of all
-commits since the last tag), review, then:
+commits since the last tag), then create the release — no human sign-off needed on the
+notes themselves, only the §7 merge gate is a required pause:
 
 ```bash
 gh release create v<X.Y.Z> --verify-tag --title "v<X.Y.Z>" --notes "<release notes>"

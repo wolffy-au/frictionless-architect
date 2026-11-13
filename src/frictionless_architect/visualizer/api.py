@@ -24,17 +24,24 @@ from frictionless_architect.visualizer.sample_validator import validate_sample_a
 
 
 class PayloadUnavailable(Exception):
-    """Raised when neither Neo4j nor the sample model yields any schema data."""
+    """Raised when neither Neo4j nor the sample model yields any schema data.
 
-    def __init__(self, message: str, warnings: list[str] | None = None) -> None:
+    Carries the empty-but-structurally-valid payload that was built anyway, so a caller
+    with no cache to fall back on can still answer with it (FR-006: the summary stays
+    accessible) instead of surfacing this as an error.
+    """
+
+    def __init__(self, message: str, warnings: list[str] | None = None, payload: dict[str, Any] | None = None) -> None:
         """Create the error.
 
         Args:
             message: Human-readable reason.
             warnings: Warnings collected while trying to build the payload.
+            payload: The empty-but-valid payload built during this attempt, if any.
         """
         super().__init__(message)
         self.warnings = warnings or []
+        self.payload = payload
 
 
 class RefreshInProgress(Exception):
@@ -114,15 +121,16 @@ class SchemaPayloadService:
             ``warnings`` and ``latency_ms``.
 
         Raises:
-            PayloadUnavailable: If the build fails and nothing is cached.
+            PayloadUnavailable: If the build finds no data at all and nothing is
+                cached. The exception carries the empty-but-valid payload built during
+                the attempt (``exc.payload``), which a caller with no better fallback
+                (e.g. the HTTP route, FR-006) can still answer with.
         """
         cached = self.cache.load()
         if force_reload or cached is None:
             try:
                 return await self._build_and_cache()
             except PayloadUnavailable as exc:
-                if exc.warnings:
-                    self._last_warning = exc.warnings[-1]
                 if cached is not None:
                     return cached
                 raise exc
@@ -208,6 +216,12 @@ class SchemaPayloadService:
             self._neo4j_status = neo4j_status
             self._sample_status = sample_status
             self._last_warning = warnings[-1] if warnings else ""
+            if not payload["elements"] and not payload["relationships"]:
+                raise PayloadUnavailable(
+                    "Schema data unavailable; no Neo4j connection or sample data.",
+                    warnings=warnings,
+                    payload=payload,
+                )
             await asyncio.to_thread(self.cache.save, payload)
             self._last_refresh_completed = datetime.now(timezone.utc)
             return payload
@@ -287,12 +301,6 @@ class SchemaPayloadService:
 
         sample_status, sample_result = self._load_sample(add_warning)
         schema_status, schema_payload = self._load_schema(add_warning)
-
-        if not schema_payload["elements"] and not sample_result.elements:
-            raise PayloadUnavailable(
-                "Schema data unavailable; no Neo4j connection or sample data.",
-                warnings=list(warnings),
-            )
 
         model_payload = sample_result.model or {
             "identifier": "schema",
@@ -425,31 +433,27 @@ ForceReloadQuery = Annotated[bool, Query(alias="force_reload")]
 RefreshRequestBody = Annotated[RefreshRequest, Body()]
 
 
-@router.get(
-    "/schema-payload",
-    responses={503: {"description": "Schema payload unavailable when both sample data and Neo4j are unreachable"}},
-)
+@router.get("/schema-payload")
 async def schema_payload(force_reload: ForceReloadQuery = False) -> dict[str, Any]:
-    """``GET /schema-payload``: return the schema payload (503 if unavailable).
+    """``GET /schema-payload``: return the schema payload.
 
     Args:
         force_reload: Rebuild instead of serving the cache. If the rebuild
             fails but a cached payload exists, the cached payload is
-            returned instead of a 503.
+            returned instead.
 
     Returns:
         The payload with ``model``, ``elements``, ``relationships``, ``views``,
-        ``warnings`` and ``latency_ms``.
-
-    Raises:
-        HTTPException: 503 if the payload cannot be built and nothing is
-            cached (neither Neo4j nor the sample model is reachable).
+        ``warnings`` and ``latency_ms``. When neither Neo4j nor the sample model
+        is reachable and nothing is cached, this is an empty-but-valid payload
+        with a warning (FR-006: the summary stays accessible) rather than an error.
     """
     service = get_schema_service()
     try:
         return await service.get_payload(force_reload)
     except PayloadUnavailable as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        assert exc.payload is not None
+        return exc.payload
 
 
 @router.post(

@@ -1,6 +1,6 @@
 ---
 title: Controls & Compliance Catalog
-generated: '2026-11-08'
+generated: '2026-11-13'
 generator: claude-sonnet-5
 sources:
 - platform/packages/controls-compliance-catalog/README.md
@@ -337,6 +337,16 @@ Structure Decision): the forensic ledger conceptually belongs to subsystem 3
 (`digital-twin-knowledge-graph`), so `ledger.py` stays a narrow,
 package-local ledger until that package exists to take it over.
 
+`plan.md` gained a **Model Impact** section (2026-11-09, satisfying constitution
+Principle X for a plan predating it): **none** to add, change or retire —
+`ext-llm`, `store-ledger`, `fn-oscal-conversion`, `fn-oscal-validation` and
+`fn-oscal-profile-resolve` already exist in `architecture/model/` as vision
+elements for `controls-compliance-catalog` (subsystem 1), and this plan gives
+them their first code-backed implementation without touching any element,
+relationship or view id
+(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/plan.md`
+§Model Impact).
+
 ### Running it
 
 From `platform/`: `poetry install`, then `poetry run uvicorn
@@ -418,7 +428,12 @@ source moves `Submodule → Deinitialized → VendoredFileSet` once, with no par
 state committed (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/data-model.md`). The plan exposes no API, so it has no
 `contracts/` directory, and records no Constitution violations: the
 `architecture/model/` graph is untouched because `build.py` merges none of the
-three (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md` Constitution Check, Project Structure).
+three (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md` Constitution Check, Project Structure). That same
+"untouched" fact was moved out of the Principle X Constitution-Check paragraph and
+into its own **Model Impact** section (2026-11-09) — **none** to add, change or
+retire, since none of `oscal`, `oscal-content` or `fedramp-automation` is merged by
+`build.py` (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/plan.md`
+§Model Impact).
 
 ### Validation and status
 

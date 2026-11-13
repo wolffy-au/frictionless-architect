@@ -146,6 +146,13 @@ not "must remove."
 
 Run it whenever adding relationships, alongside `validate.py`.
 
+If what's wanted is to *see* a derived relationship rather than capture it,
+give the view `derived: true` in `views.yaml` instead of adding the explicit
+edge — it overlays the same derivation rules live at render time (dashed
+`<<derived>>`-stereotyped arrow), with nothing written back to the model, so
+it can't go stale the way a hand-added shortcut can. See
+`architecture/model/README.md`'s `derived: true` entry.
+
 ## Validation (always run before handing back, and before any diagram)
 
 Run `scripts/validate.py`:

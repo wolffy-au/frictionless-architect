@@ -170,6 +170,89 @@ def test_context_requires_a_view(tmp_path: Path) -> None:
         puml.generate(str(tmp_path / "unused.xml"), None, context="billing")
 
 
+def _chain_model(tmp_path: Path, *, mid_on_view: bool, explicit_rel: bool = False) -> str:
+    """A -Realization-> Mid -Serving-> C (DR3: implies A -Serving-> C), with
+    A and C on a view and Mid included only when `mid_on_view`.
+    """
+    model = Model("m")
+    a = model.add(ArchiType.ApplicationComponent, "A")
+    mid = model.add(ArchiType.ApplicationComponent, "Mid")
+    c = model.add(ArchiType.ApplicationComponent, "C")
+    model.add_relationship(ArchiType.Realization, a, mid)
+    model.add_relationship(ArchiType.Serving, mid, c)
+    on_view = [a, mid, c] if mid_on_view else [a, c]
+    view, nodes = _on_view(model, "Chain", *on_view)
+    if explicit_rel:
+        existing = model.add_relationship(ArchiType.Serving, a, c)
+        view.add_connection(ref=existing.uuid, source=nodes[0], target=nodes[-1])
+    return _write(model, tmp_path)
+
+
+def test_derived_overlays_a_chain_through_an_off_view_intermediate(tmp_path: Path) -> None:
+    text, _ = puml.generate(_chain_model(tmp_path, mid_on_view=False), "Chain", derived=True)
+    assert "<<derived>>\\nServing" in text
+    assert "Mid" not in text
+
+
+def test_derived_is_off_by_default(tmp_path: Path) -> None:
+    text, _ = puml.generate(_chain_model(tmp_path, mid_on_view=False), "Chain")
+    assert "<<derived>>" not in text
+
+
+def test_derived_skips_a_chain_whose_intermediate_is_on_view(tmp_path: Path) -> None:
+    text, _ = puml.generate(_chain_model(tmp_path, mid_on_view=True), "Chain", derived=True)
+    assert "<<derived>>" not in text
+
+
+def test_derived_does_not_duplicate_an_existing_explicit_relationship(tmp_path: Path) -> None:
+    text, _ = puml.generate(_chain_model(tmp_path, mid_on_view=False, explicit_rel=True), "Chain", derived=True)
+    assert "<<derived>>" not in text
+    assert text.count("Rel_Serving") == 1
+
+
+def test_derived_without_a_view_is_a_no_op(tmp_path: Path) -> None:
+    model = Model("m")
+    model.add(ArchiType.Goal, "G")
+    text, _ = puml.generate(_write(model, tmp_path), None, derived=True)
+    assert "<<derived>>" not in text
+
+
+def test_derived_skips_a_chain_with_no_defined_derivation(tmp_path: Path) -> None:
+    """A -Flow-> Mid -Realization-> C: Flow-then-structural has no DR6-equivalent
+    "certain" rule (see pyArchimate.derivation's module docstring), so
+    derive_pair_type returns None and the chain contributes no overlay edge.
+    """
+    model = Model("m")
+    a = model.add(ArchiType.ApplicationComponent, "A")
+    mid = model.add(ArchiType.ApplicationComponent, "Mid")
+    c = model.add(ArchiType.ApplicationComponent, "C")
+    model.add_relationship(ArchiType.Flow, a, mid)
+    model.add_relationship(ArchiType.Realization, mid, c)
+    _on_view(model, "Chain", a, c)
+    text, _ = puml.generate(_write(model, tmp_path), "Chain", derived=True)
+    assert "<<derived>>" not in text
+
+
+def test_derived_dedupes_two_chains_implying_the_same_edge(tmp_path: Path) -> None:
+    """A -Realization-> Mid1 -Serving-> C and A -Composition-> Mid2 -Serving-> C both
+    derive A -Serving-> C (DR3), via two independent off-view intermediates: the
+    second chain's result must not duplicate the first's in the overlay.
+    """
+    model = Model("m")
+    a = model.add(ArchiType.ApplicationComponent, "A")
+    mid1 = model.add(ArchiType.ApplicationComponent, "Mid1")
+    mid2 = model.add(ArchiType.ApplicationComponent, "Mid2")
+    c = model.add(ArchiType.ApplicationComponent, "C")
+    model.add_relationship(ArchiType.Realization, a, mid1)
+    model.add_relationship(ArchiType.Serving, mid1, c)
+    model.add_relationship(ArchiType.Composition, a, mid2)
+    model.add_relationship(ArchiType.Serving, mid2, c)
+    _on_view(model, "Chain", a, c)
+    text, _ = puml.generate(_write(model, tmp_path), "Chain", derived=True)
+    assert text.count("<<derived>>") == 1
+    assert "<<derived>>\\nServing" in text
+
+
 def _cli(monkeypatch: pytest.MonkeyPatch, *argv: str) -> int:
     monkeypatch.setattr(sys, "argv", ["puml", *argv])
     return puml.main()
