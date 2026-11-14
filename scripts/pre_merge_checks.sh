@@ -77,20 +77,11 @@ if [[ $snyk_status -ne 0 ]]; then
   exit 1
 fi
 
+echo "Installing Playwright Chromium..."
+poetry run playwright install --with-deps chromium
+
 echo "Running behave acceptance scenarios..."
 poetry run behave tests/features/
 
 echo "Running pytest suites..."
 poetry run pytest -n auto --cov-fail-under=90 --cov=src --cov=architecture/model --cov-report=term-missing
-
-echo "Running frontend UI harness..."
-if [ -d frontend ]; then
-  cd frontend
-  npm config set bin-links false
-  npm install
-  node ./node_modules/playwright/cli.js install chromium
-  npm run test:ui
-  cd ..
-else
-  echo "Skipping frontend UI harness because frontend directory is missing."
-fi

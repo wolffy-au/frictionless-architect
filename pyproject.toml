@@ -54,6 +54,7 @@ tests = [
     "pytest-httpx>=0.24.0,<1.0.0",
     "httpx>=0.27.0,<0.32.0",
     "pytest-xdist (>=3.8.0,<4.0.0)",
+    "playwright>=1.49.0,<2.0.0",
 ]
 
 lint = [
