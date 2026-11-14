@@ -12,16 +12,26 @@ from html import escape
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from frictionless_architect.visualizer.api import get_schema_service
+from frictionless_architect.visualizer.api import PayloadUnavailable, get_schema_service
 
 router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse)
 async def placeholder_page() -> HTMLResponse:
-    """``GET /``: render the placeholder page with a live schema summary."""
+    """``GET /``: render the placeholder page with a live schema summary.
+
+    Mirrors ``GET /schema-payload``'s fallback: when neither Neo4j nor the
+    sample model is reachable and nothing is cached, ``get_payload`` raises
+    ``PayloadUnavailable`` carrying an empty-but-valid payload (FR-006) —
+    render that instead of letting the page 500.
+    """
     service = get_schema_service()
-    payload = await service.get_payload()
+    try:
+        payload = await service.get_payload()
+    except PayloadUnavailable as exc:
+        assert exc.payload is not None
+        payload = exc.payload
     element_count = len(payload.get("elements", []))
 
     return HTMLResponse(

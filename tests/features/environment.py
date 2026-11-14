@@ -13,8 +13,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+import behave.model  # type: ignore[import-untyped]
 import pytest
-from behave.model_core import Status  # type: ignore[import-untyped]
 
 _SRC = str(Path(__file__).resolve().parents[2] / "src")
 if _SRC not in sys.path:
@@ -44,7 +44,12 @@ def _ensure_ui_harness() -> None:
     server = uvicorn.Server(config)
     thread = threading.Thread(target=lambda: server.run(sockets=[sock]), daemon=True)
     thread.start()
+    deadline = time.monotonic() + 10
     while not server.started:
+        if not thread.is_alive() or time.monotonic() > deadline:
+            raise RuntimeError(
+                "@ui harness: uvicorn did not report started within 10s (server thread may have raised during startup)"
+            )
         time.sleep(0.05)
 
     playwright = sync_playwright().start()
@@ -69,19 +74,33 @@ def _teardown_ui_harness() -> None:
     _ui_harness.clear()
 
 
-def _retry_failed_ui_scenario_once(context: Any, scenario: Any) -> None:
+_original_scenario_run = behave.model.Scenario.run
+
+
+def _run_with_ui_retry(self: Any, runner: Any) -> bool:
     """FR-008: a failed @ui scenario gets exactly one automatic retry.
 
-    Re-invokes Scenario.run() directly rather than looping behave's CLI,
-    since that's the only way to redrive a single scenario's hooks/steps
-    from inside this same process. The `_retried` flag stops it recursing
-    past one retry when the retry itself fails again.
+    Patches ``Scenario.run`` itself rather than retrying from inside
+    ``after_scenario``: ``Feature.run``/``Runner.run_model`` decide the
+    suite's pass/fail (and therefore the process exit code) from this
+    method's *return value*, which is computed before the `after_scenario`
+    hook runs. Retrying only inside that hook would update
+    ``scenario.status`` (fixing the printed summary) while leaving the
+    outer call still returning the original failure — the gate would still
+    exit non-zero even though the retry passed. Looping here instead means
+    the return value reflects the retry's real outcome. The `_ui_retried`
+    flag stops it recursing past one retry when the retry itself fails
+    again.
     """
-    if scenario.status != Status.failed or getattr(scenario, "_retried", False):
-        return
-    scenario._retried = True
-    scenario.reset()
-    scenario.run(context._runner)  # noqa: SLF001
+    failed: bool = _original_scenario_run(self, runner)
+    if failed and UI_TAG in self.effective_tags and not getattr(self, "_ui_retried", False):
+        self._ui_retried = True
+        self.reset()
+        failed = _original_scenario_run(self, runner)
+    return failed
+
+
+behave.model.Scenario.run = _run_with_ui_retry
 
 
 def before_scenario(context: Any, scenario: Any) -> None:
@@ -103,11 +122,10 @@ def before_scenario(context: Any, scenario: Any) -> None:
 
 
 def after_scenario(context: Any, scenario: Any) -> None:
-    """Stop background retries, close the client and undo every patch."""
+    """Close the client/browser context and undo every patch."""
     if UI_TAG in scenario.effective_tags:
         context.page.close()
         context.browser_context.close()
-        _retry_failed_ui_scenario_once(context, scenario)
         return
     loop = getattr(context, "loop", None)
     if loop is None:
