@@ -957,8 +957,16 @@
   name: 'GH-119 test(ui): establish Playwright browser tests for the HTML UIs'
   props:
     gh-number: '119'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/119
+- type: WorkPackage
+  id: wp-tighten-dev-workflow-gates-merge-gh-213
+  name: 'GH-213 Tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing'
+  props:
+    gh-number: '213'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/213
 - type: WorkPackage
   id: wp-ui-changes-user-role-management-and-per-gh-92
   name: 'GH-92 UI changes: user/role management and per-model sharing in the visualiser'

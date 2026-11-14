@@ -1449,7 +1449,7 @@
     </element>
     <element identifier="id-989d401ffdae559d8a5088de25690c51" xsi:type="DataObject">
       <name>Architecture Knowledge Graph</name>
-      <documentation>One graph store, two planes: Architecture Intent and Current-State Digital Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054): every model belongs to exactly one workspace, and fn-authz-policy's RBAC check is keyed on (user, workspace, model, action) before a query against this store is allowed to run.</documentation>
+      <documentation>One graph store, two planes: Architecture Intent and Current-State Digital Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054); distinct from art-tech-oscal-workspace's unrelated Trestle filesystem directory, which is a per-model OSCAL round-trip detail, not a tenancy concept. Every model belongs to exactly one workspace, and fn-authz-policy's RBAC check is keyed on (user, workspace, model, action) before a query against this store is allowed to run.</documentation>
       <properties>
         <property propertyDefinitionRef="propid-1">
           <value>platform</value>
@@ -6702,10 +6702,30 @@
           <value>119</value>
         </property>
         <property propertyDefinitionRef="propid-11">
-          <value>open</value>
+          <value>closed</value>
+        </property>
+        <property propertyDefinitionRef="propid-12">
+          <value>completed</value>
         </property>
         <property propertyDefinitionRef="propid-10">
           <value>https://github.com/wolffy-au/frictionless-architect/issues/119</value>
+        </property>
+        <property propertyDefinitionRef="propid-1">
+          <value>gh-roadmap</value>
+        </property>
+      </properties>
+    </element>
+    <element identifier="id-6a4e8fab15d05d0289ba0002eb8ef068" xsi:type="WorkPackage">
+      <name>GH-213 Tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing</name>
+      <properties>
+        <property propertyDefinitionRef="propid-7">
+          <value>213</value>
+        </property>
+        <property propertyDefinitionRef="propid-11">
+          <value>open</value>
+        </property>
+        <property propertyDefinitionRef="propid-10">
+          <value>https://github.com/wolffy-au/frictionless-architect/issues/213</value>
         </property>
         <property propertyDefinitionRef="propid-1">
           <value>gh-roadmap</value>
@@ -10533,6 +10553,7 @@
     <relationship identifier="id-9bb87120787a527d920c179aa30ba33d" source="id-f0376def52fa5a148e504772c9c60bb1" target="id-de43819bbb1952b18515b8fbcd9adb0e" xsi:type="Realization"/>
     <relationship identifier="id-cf75b48f1fa35c6d8796dff30bd5bae4" source="id-86bfb9c548ad566cb4315951a3ba096c" target="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Realization"/>
     <relationship identifier="id-9472d38a276e5ae5a265b65e60bcf7e4" source="id-0c73670e085f56e69c87dfb4a70385e4" target="id-60afdf6ad57851cc8afa6ea9a3aa3f3b" xsi:type="Realization"/>
+    <relationship identifier="id-82d579c4456a56daace025904678b684" source="id-6a4e8fab15d05d0289ba0002eb8ef068" target="id-60afdf6ad57851cc8afa6ea9a3aa3f3b" xsi:type="Realization"/>
     <relationship identifier="id-e22409291f29583392cb57ba8c9b99aa" source="id-ec4726c59a8c5173a74be6b14baa894d" target="id-314ed2487dd05b87a163b03013662d2f" xsi:type="Realization"/>
     <relationship identifier="id-ad8083df5b6e5752b08a7725d4c619b0" source="id-aab1c82c5fbc509e8a304074d09e4ec4" target="id-664b1e75548f5b208c5ac5b788e9f84a" xsi:type="Realization"/>
     <relationship identifier="id-7875cbddc6be5c4bab7b42077a82126d" source="id-8683212dafbd5bad96ec7d62406bd4ff" target="id-314ed2487dd05b87a163b03013662d2f" xsi:type="Realization"/>
@@ -11083,6 +11104,7 @@
       <item identifierRef="id-cff8c9b5ccf155a794c7bcc43d24a784"/>
       <item identifierRef="id-86bfb9c548ad566cb4315951a3ba096c"/>
       <item identifierRef="id-0c73670e085f56e69c87dfb4a70385e4"/>
+      <item identifierRef="id-6a4e8fab15d05d0289ba0002eb8ef068"/>
       <item identifierRef="id-b6c3aa5bb1e8533c98689370bf007089"/>
       <item identifierRef="id-ec4726c59a8c5173a74be6b14baa894d"/>
       <item identifierRef="id-aab1c82c5fbc509e8a304074d09e4ec4"/>
@@ -26393,28 +26415,35 @@
             </font>
           </style>
         </node>
-        <node identifier="id-a73b4e4a07355ffcaea9f2405c7a7c46" elementRef="id-b6c3aa5bb1e8533c98689370bf007089" xsi:type="Element" x="720" y="3120" w="100" h="80">
+        <node identifier="id-461c1cbad8f556d4b1fa179040900193" elementRef="id-6a4e8fab15d05d0289ba0002eb8ef068" xsi:type="Element" x="720" y="3120" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-e7a8af652c9459c9a3facb626b8e3ada" elementRef="id-ec4726c59a8c5173a74be6b14baa894d" xsi:type="Element" x="960" y="3120" w="100" h="80">
+        <node identifier="id-a73b4e4a07355ffcaea9f2405c7a7c46" elementRef="id-b6c3aa5bb1e8533c98689370bf007089" xsi:type="Element" x="960" y="3120" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-da891dbc9cf358e3b8e16cbb26794fbc" elementRef="id-aab1c82c5fbc509e8a304074d09e4ec4" xsi:type="Element" x="1200" y="3120" w="100" h="80">
+        <node identifier="id-e7a8af652c9459c9a3facb626b8e3ada" elementRef="id-ec4726c59a8c5173a74be6b14baa894d" xsi:type="Element" x="1200" y="3120" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-0ecf3757b15d59dd9d8145ec198d7b09" elementRef="id-8683212dafbd5bad96ec7d62406bd4ff" xsi:type="Element" x="1440" y="3120" w="100" h="80">
+        <node identifier="id-da891dbc9cf358e3b8e16cbb26794fbc" elementRef="id-aab1c82c5fbc509e8a304074d09e4ec4" xsi:type="Element" x="1440" y="3120" w="100" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+        <node identifier="id-0ecf3757b15d59dd9d8145ec198d7b09" elementRef="id-8683212dafbd5bad96ec7d62406bd4ff" xsi:type="Element" x="1680" y="3120" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
@@ -42371,28 +42400,35 @@
             </font>
           </style>
         </node>
-        <node identifier="id-72bb9f87305f5ce0afb689dd4ed864a0" elementRef="id-b6c3aa5bb1e8533c98689370bf007089" xsi:type="Element" x="240" y="5280" w="100" h="80">
+        <node identifier="id-526979ec41d853f4810aae4794225d13" elementRef="id-6a4e8fab15d05d0289ba0002eb8ef068" xsi:type="Element" x="240" y="5280" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-e2c0f41b2b7a53d39b7fbed8badd0242" elementRef="id-ec4726c59a8c5173a74be6b14baa894d" xsi:type="Element" x="480" y="5280" w="100" h="80">
+        <node identifier="id-72bb9f87305f5ce0afb689dd4ed864a0" elementRef="id-b6c3aa5bb1e8533c98689370bf007089" xsi:type="Element" x="480" y="5280" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-844a11b7aba65e23850ff65a60291918" elementRef="id-aab1c82c5fbc509e8a304074d09e4ec4" xsi:type="Element" x="960" y="5280" w="100" h="80">
+        <node identifier="id-e2c0f41b2b7a53d39b7fbed8badd0242" elementRef="id-ec4726c59a8c5173a74be6b14baa894d" xsi:type="Element" x="720" y="5280" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
             </font>
           </style>
         </node>
-        <node identifier="id-7cc47b1bdc085557bf949f1ea3605af6" elementRef="id-8683212dafbd5bad96ec7d62406bd4ff" xsi:type="Element" x="1440" y="5280" w="100" h="80">
+        <node identifier="id-844a11b7aba65e23850ff65a60291918" elementRef="id-aab1c82c5fbc509e8a304074d09e4ec4" xsi:type="Element" x="1200" y="5280" w="100" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+        <node identifier="id-7cc47b1bdc085557bf949f1ea3605af6" elementRef="id-8683212dafbd5bad96ec7d62406bd4ff" xsi:type="Element" x="1680" y="5280" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>
@@ -43534,6 +43570,13 @@
           </style>
         </connection>
         <connection identifier="id-86af287a1c2b5f18977789bab9ab5d3c" relationshipRef="id-9472d38a276e5ae5a265b65e60bcf7e4" xsi:type="Relationship" source="id-3c4983f18ee25a6baf2f840423ac85bf" target="id-7c24285aa6375ecdb23806733077bc1f">
+          <style lineWidth="1">
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </connection>
+        <connection identifier="id-cf46ccbd108351e58920ad219c050347" relationshipRef="id-82d579c4456a56daace025904678b684" xsi:type="Relationship" source="id-526979ec41d853f4810aae4794225d13" target="id-7c24285aa6375ecdb23806733077bc1f">
           <style lineWidth="1">
             <font name="Segoe UI" size="9">
               <color r="0" g="0" b="0"/>
@@ -52551,6 +52594,13 @@
             </font>
           </style>
         </node>
+        <node identifier="id-114d2c194c7d58348b662f94d2c40d26" elementRef="id-6a4e8fab15d05d0289ba0002eb8ef068" xsi:type="Element" x="240" y="240" w="100" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
         <connection identifier="id-8b32e24549345af69e9d65a195848b19" relationshipRef="id-65909af973185d3b8b1393aaf6fdc8ac" xsi:type="Relationship" source="id-944c4bf0dbe85493ac2d0f2331caa35f" target="id-4ece825ee3265480934e76316c4b45ae">
           <style lineWidth="1">
             <font name="Segoe UI" size="9">
@@ -52594,6 +52644,13 @@
           </style>
         </connection>
         <connection identifier="id-a473aae114b85e4aa8d1cae9825a8453" relationshipRef="id-9472d38a276e5ae5a265b65e60bcf7e4" xsi:type="Relationship" source="id-6e2dd22fff3153d693f458a20a64b222" target="id-944c4bf0dbe85493ac2d0f2331caa35f">
+          <style lineWidth="1">
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </connection>
+        <connection identifier="id-8d9de81e76df526ba969831c8a50b758" relationshipRef="id-82d579c4456a56daace025904678b684" xsi:type="Relationship" source="id-114d2c194c7d58348b662f94d2c40d26" target="id-944c4bf0dbe85493ac2d0f2331caa35f">
           <style lineWidth="1">
             <font name="Segoe UI" size="9">
               <color r="0" g="0" b="0"/>

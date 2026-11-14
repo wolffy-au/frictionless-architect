@@ -106,7 +106,8 @@ Implementation_WorkPackage(e_ida6ae0631776453, "GH-204 speckit-specify: spec.md 
 Implementation_WorkPackage(e_id6d792a77f2a259, "GH-183 Spike: restructure architecture/model/diagrams/ for legibility")
 Implementation_WorkPackage(e_idf0376def52fa5a, "GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform")
 Implementation_WorkPackage(e_id86bfb9c548ad56, " --GH-104 test(model): set a performance and scale criterion for the GH roadmap importer--")
-Implementation_WorkPackage(e_id0c73670e085f56, "GH-119 test(ui): establish Playwright browser tests for the HTML UIs")
+Implementation_WorkPackage(e_id0c73670e085f56, " --GH-119 test(ui): establish Playwright browser tests for the HTML UIs--")
+Implementation_WorkPackage(e_id6a4e8fab15d05d, "GH-213 Tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing")
 Implementation_WorkPackage(e_idec4726c59a8c51, " --GH-22 Vendor NIST/FedRAMP OSCAL content as third_party submodules--")
 Implementation_WorkPackage(e_id8683212dafbd5b, " --GH-7 Vision: single high-level ArchiMate diagram for the policy-to-runtime controls lifecycle--")
 
