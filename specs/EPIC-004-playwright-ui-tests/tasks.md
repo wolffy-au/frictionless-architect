@@ -25,12 +25,12 @@ implementation and testing.
 
 **Purpose**: Make `playwright` available to the toolchain this feature extends (ADR-0053).
 
-- [ ] T001 Add `playwright` to the root `pyproject.toml`'s `tests` dependency group
+- [X] T001 Add `playwright` to the root `pyproject.toml`'s `tests` dependency group
   (`[dependency-groups]` → `tests`), mirroring `platform/pyproject.toml`'s existing `tests`
   group entry (research.md → "Reuse the existing behave + Playwright pattern").
-- [ ] T002 Refresh the root `poetry.lock` for the `pyproject.toml` change in T001 (depends on
+- [X] T002 Refresh the root `poetry.lock` for the `pyproject.toml` change in T001 (depends on
   T001).
-- [ ] T003 [P] In `scripts/pre_merge_checks.sh`, delete the dead `frontend/` stub block (the
+- [X] T003 [P] In `scripts/pre_merge_checks.sh`, delete the dead `frontend/` stub block (the
   one that checks for a nonexistent `frontend/` directory and always prints "Skipping…") and
   add a `poetry run playwright install --with-deps chromium` step immediately before the
   existing root `poetry run behave tests/features/` call (ADR-0053 Decision and
@@ -50,7 +50,7 @@ somewhere to run.
 
 **⚠️ CRITICAL**: No user story task below can run until this phase is complete.
 
-- [ ] T004 Extend `tests/features/environment.py` (root) to add a conditional live-`uvicorn`
+- [X] T004 Extend `tests/features/environment.py` (root) to add a conditional live-`uvicorn`
   + Playwright Chromium setup/teardown for `@ui`-tagged scenarios only, mirroring
   `platform/packages/controls-compliance-catalog/tests/features/environment.py`'s pattern
   (background-thread `uvicorn.Server` on an OS-assigned free port, `sync_playwright()`
@@ -97,7 +97,7 @@ revert and confirm it passes (`spec.md` US1 Independent Test).
   the rendered status text / schema-summary value matches the sample-data fallback. Rely on
   Playwright's default action/navigation timeout (no custom override) so a stuck page fails
   with a clear error rather than hanging indefinitely. Depends on T007.
-- [ ] T009 [US1] Implement the one-retry-before-failure policy (FR-008, Clarifications
+- [X] T009 [US1] Implement the one-retry-before-failure policy (FR-008, Clarifications
   Session 2026-11-14 Option B) in `tests/features/environment.py`'s `@ui` scenario hook: on
   first failure, retry the scenario exactly once before reporting it; a second consecutive
   failure is reported as a real failure, never retried further. Depends on T004.
