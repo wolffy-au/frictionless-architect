@@ -64,6 +64,24 @@ sources:
 - architecture/model/diagrams/application/strategy-drift.svg
 - architecture/model/diagrams/application/structure.puml
 - architecture/model/diagrams/application/structure.svg
+- architecture/model/diagrams/application/usage/architecture-governance.puml
+- architecture/model/diagrams/application/usage/architecture-governance.svg
+- architecture/model/diagrams/application/usage/conformance-drift-assurance.puml
+- architecture/model/diagrams/application/usage/conformance-drift-assurance.svg
+- architecture/model/diagrams/application/usage/controls-compliance-catalog.puml
+- architecture/model/diagrams/application/usage/controls-compliance-catalog.svg
+- architecture/model/diagrams/application/usage/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/application/usage/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/application/usage/llm-provider-config.puml
+- architecture/model/diagrams/application/usage/llm-provider-config.svg
+- architecture/model/diagrams/application/usage/modelling-specification.puml
+- architecture/model/diagrams/application/usage/modelling-specification.svg
+- architecture/model/diagrams/application/usage/pii-gateway.puml
+- architecture/model/diagrams/application/usage/pii-gateway.svg
+- architecture/model/diagrams/application/usage/reusable-architecture-library.puml
+- architecture/model/diagrams/application/usage/reusable-architecture-library.svg
+- architecture/model/diagrams/application/usage/schema-visualizer-api.puml
+- architecture/model/diagrams/application/usage/schema-visualizer-api.svg
 - architecture/model/views-viewpoints.yaml
 - architecture/model/views.yaml
 ---
@@ -104,7 +122,12 @@ inflated data-heavy contexts without a consistent size benefit.
 Four more capability-scoped diagrams render under `diagrams/application/`,
 mirroring the business-layer numbered-slice pattern (see [Architecture Views
 & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md)) but cut
-from the `application_usage` viewpoint instead:
+from the `application_usage` viewpoint instead. These are distinct from the
+generic, whole-platform `view-application-usage` (`application/usage/<context>`,
+covered on [Architecture Views & Diagrams: Vision, Business &
+Viewpoints](architecture-diagrams.md) §"Generic per-viewpoint views (GH
+#105)"): that one sweeps by `include_types` across every context, these are
+hand-curated per-capability cuts.
 
 | View | Diagram | Covers |
 |---|---|---|

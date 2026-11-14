@@ -20,7 +20,7 @@ generated bounded-context Groupings, split views and context map. Part of the
 
 ## Context-level viewpoints (GH #105)
 
-`views-viewpoints.yaml` adds 15 generic views, one per standard ArchiMate
+`views-viewpoints.yaml` adds 17 generic views, one per standard ArchiMate
 3.2 §14 viewpoint (Organization, Application Structure, Information
 Structure, Technology, …), swept entirely by `include_types` — never
 `members` — so a new element of a covered type appears on the right view
@@ -60,11 +60,13 @@ hand-authored Grouping or boundary view:
   the subset of cross-context edges a two-hop derivation chain through an
   out-of-context element still implies, without pulling that element's whole
   type back onto the diagram (`architecture/model/README.md` §"`derived:
-  true`"). `view-product` and `view-application-usage` are dropped entirely
-  rather than split: the model still has no `Product`/`Contract`/`Value`/
-  `Material`/`*Service` element to give either viewpoint its own shape, so
-  both rendered as a duplicate dump of content already on
-  `view-service-realization`/`view-application-cooperation`
+  true`"). `view-product` and `view-application-usage` keep their
+  `split_by: context` sweep despite each still rendering as a duplicate
+  dump of content already on `view-service-realization`/
+  `view-application-cooperation`: the model still has no `Product`/
+  `Contract`/`Value`/`Material`/`*Service` element to give either viewpoint
+  its own shape, but both are standard ArchiMate 3.2 §14 viewpoints, so the
+  duplication is accepted rather than treated as grounds to drop the view
   (`architecture/model/views-viewpoints.yaml`, file header). Application
   Cooperation stays two views: the curated `view-application-cooperation` in
   `views.yaml` uses `include_neighbours: same_layer` so it stays

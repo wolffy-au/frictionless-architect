@@ -53,7 +53,7 @@ Status: **A** accepted, **P** proposed (`docs/adr/README.md` §Index). ADR-0037,
 | 0037 | Conversational model authoring (GH #108) lives in a new `platform/packages/modelling-specification` package; root's `build.py`/`render_diagrams.py` and the `model-archimate` skill's `validate.py` become thin wrappers shelling into its CLI; Enterprise Convention Rules move to `architecture/model/conventions.yaml`; an overridden objection auto-drafts a `Status: Proposed` ADR stub rather than an `store-ledger` entry; the feature gets its own `vs-intent-to-model` stream and `process-conversational-authoring` process | P |
 | 0038 | Section B's six `BusinessRole`s are canonical; spec 001's single "Architect" persona and GH #45's role-journey list are `Specialization`s of them, not a parallel role set | A |
 | 0039 | Conversational solution modelling (GH #68/#138) gets its own `fn-solution-modelling` function, distinct from ADR-0037's `fn-conversational-authoring`; assigned to `sub-library`, composed into the existing `bfn-solution-design` alongside structured composition | P |
-| 0040 | Bounded contexts (GH #129) are generated `Grouping`s + Aggregations from each element's `context:` tag; oversized views split per-context (now without blanket `include_neighbours`, which blew up data-heavy contexts — `view-information-structure` uses `derived: true` instead); `view-product` and `view-application-usage` dropped entirely as duplicate dumps; a generated context map derives Serving edges between contexts from element-level crossings | A |
+| 0040 | Bounded contexts (GH #129) are generated `Grouping`s + Aggregations from each element's `context:` tag; oversized views split per-context (now without blanket `include_neighbours`, which blew up data-heavy contexts — `view-information-structure` uses `derived: true` instead); `view-product` and `view-application-usage` kept and split despite each still rendering as a duplicate dump, since both are standard §14 viewpoints; a generated context map derives Serving edges between contexts from element-level crossings | A |
 | 0041 | `delta.py` gains structured, pre-validated suggestion options ("ways forward") built against today's ADR-0037 agent — a deliberate, documented deviation from GH #68's filed #140-#151 breakdown rather than waiting for #142's journey-API rework | A |
 | 0042 | Repo upkeep is done by tracked single-purpose subagents (read-only ones report, write-capable ones open PRs and never merge); the wiki is derived output with `wiki/sources.yaml` as its only hand-edited input; platform package manifests pin lower bounds for transitive dependencies that have security advisories | P |
 | 0043 | Presidio (`presidio-analyzer` + `presidio-anonymizer`) is `pii-gateway`'s detection and anonymization engine; `sether`, `scrubadub`, cloud DLP APIs and regex-only were rejected | A |
@@ -259,14 +259,16 @@ boundary can't drift out of sync with its membership. A view can declare
 monolith. `include_neighbours: true` originally pulled in any element one
 hop away too (but deliberately excluded from the view's own
 viewpoint-conformance check) so a cross-context edge kept both endpoints
-visible; applied to five of the six oversized views, with the sixth,
-`view-product`, dropped outright instead — the model has no
+visible; applied to all six oversized views, including `view-product`,
+which was briefly dropped entirely — the model has no
 Product/Contract/Value/Material/`*Service` element to give that viewpoint
-its own shape. `view-product` was later re-added by request, then dropped
-again alongside `view-application-usage` once both kept rendering as
-oversized duplicate dumps for the same reason; `include_neighbours: true`
-was also removed from every remaining split view, since it inflated
-data-heavy contexts without a consistent size benefit on the
+its own shape, so it rendered as a duplicate of content already on the
+usage/service-realization views — before being kept after all: both it
+and `view-application-usage` stay on the strength of being standard
+ArchiMate 3.2 §14 viewpoints, the duplication accepted rather than
+treated as grounds to drop the view. `include_neighbours: true` was
+later removed from every split view (including these two), since it
+inflated data-heavy contexts without a consistent size benefit on the
 layer-spanning sweeps, and `view-information-structure` now uses
 `derived: true` instead to recover cross-context edges without pulling
 the inflating element set back in (see

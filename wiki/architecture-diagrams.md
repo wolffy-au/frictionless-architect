@@ -36,6 +36,24 @@ sources:
 - architecture/model/diagrams/business/organization.svg
 - architecture/model/diagrams/business/process-cooperation.puml
 - architecture/model/diagrams/business/process-cooperation.svg
+- architecture/model/diagrams/business/product/architecture-governance.puml
+- architecture/model/diagrams/business/product/architecture-governance.svg
+- architecture/model/diagrams/business/product/conformance-drift-assurance.puml
+- architecture/model/diagrams/business/product/conformance-drift-assurance.svg
+- architecture/model/diagrams/business/product/controls-compliance-catalog.puml
+- architecture/model/diagrams/business/product/controls-compliance-catalog.svg
+- architecture/model/diagrams/business/product/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/business/product/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/business/product/llm-provider-config.puml
+- architecture/model/diagrams/business/product/llm-provider-config.svg
+- architecture/model/diagrams/business/product/modelling-specification.puml
+- architecture/model/diagrams/business/product/modelling-specification.svg
+- architecture/model/diagrams/business/product/pii-gateway.puml
+- architecture/model/diagrams/business/product/pii-gateway.svg
+- architecture/model/diagrams/business/product/reusable-architecture-library.puml
+- architecture/model/diagrams/business/product/reusable-architecture-library.svg
+- architecture/model/diagrams/business/product/schema-visualizer-api.puml
+- architecture/model/diagrams/business/product/schema-visualizer-api.svg
 - architecture/model/diagrams/business/service-realization/architecture-governance.puml
 - architecture/model/diagrams/business/service-realization/architecture-governance.svg
 - architecture/model/diagrams/business/service-realization/conformance-drift-assurance.puml
@@ -129,17 +147,18 @@ The merged model has 75 ArchiMate views:
   Stakeholder, Motivation, Goal Realization and Requirements Realization
   views) moved to `views-viewpoints.yaml` below as part of the GH #105
   change.
-- 15 more are declared in the new `architecture/model/views-viewpoints.yaml`
+- 17 more are declared in the new `architecture/model/views-viewpoints.yaml`
   (GH #105, 2026-10-08–2026-10-14) — one generic view per standard ArchiMate
   3.2 §14 viewpoint, swept entirely by `include_types` rather than
   hand-curated `members`, so a new element of a covered type appears
   automatically. Same schema and loader as `views.yaml`; view ids are unique
-  across both files. `view-product` and `view-application-usage` were
-  dropped entirely (ADR-0040, GH #129): the model has no `Product`/
-  `Contract`/`Value`/`Material`/`*Service` element to give either viewpoint
-  its own shape, so both rendered as a duplicate dump of
-  `view-service-realization`/`view-application-cooperation` content. See
-  "Generic per-viewpoint views (GH #105)" below.
+  across both files. `view-product` and `view-application-usage` each
+  render as a duplicate dump of `view-service-realization`/
+  `view-application-cooperation` content, since the model has no
+  `Product`/`Contract`/`Value`/`Material`/`*Service` element to give either
+  viewpoint its own shape, but both are kept: they are standard §14
+  viewpoints (ADR-0040, GH #129). See "Generic per-viewpoint views (GH
+  #105)" below.
 - 13 are generated into `architecture/model/gh-roadmap/views.yaml` by
   `import_gh_roadmap.py`, one per GitHub milestone (including
   `plat-github-importer-11`, `plat-general-tasks-12` and `plat-architecture-strategy-future-13`) — see
@@ -160,9 +179,9 @@ kind of view:
 | Folder | Contents |
 |---|---|
 | `vision/` | TOGAF Phase A views (9 hand-curated in `views.yaml` plus 4 generic ones now in `views-viewpoints.yaml`) |
-| `business/` | Phase B business-layer views, plus four generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`; `product` was dropped entirely, ADR-0040). `information-structure` and `service-realization` each render as one file per context |
+| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`, `product`). `information-structure`, `service-realization` and `product` each render as one file per context |
 | `layered/` | the cross-layer Subsystems & Capabilities view, the Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`), the generated per-context split of the Subsystems & Capabilities sweep (`context-modelling-specification` and its siblings), and the exploratory Derived Relationship Overlay Probe view (`derived-overlay-probe`, see "Derived relationship overlay" below) |
-| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus two generic application-layer views added for GH #105 (`structure`, `cooperation`); `cooperation` renders as `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml`. `usage` (`view-application-usage`) was dropped entirely, ADR-0040 |
+| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` render as `usage/<context>.puml` and `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml` |
 | `c4/` | the C4 context and container diagrams |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
@@ -267,14 +286,13 @@ repo (`1-stakeholder` … `4-outcome-realization`). See
 
 ### Generic per-viewpoint views (GH #105)
 
-`architecture/model/views-viewpoints.yaml` adds 15 views total, one per
+`architecture/model/views-viewpoints.yaml` adds 17 views total, one per
 standard ArchiMate 3.2 §14 viewpoint not already covered by a hand-curated
 view, plus the four vision views promoted from `views.yaml` above. Every one
 is scoped by `include_types` alone — never `members` — so new elements of a
 covered type appear without anyone remembering to add them, the same GH #117
 motivation behind `view-strategy`/`view-capability`'s own `include_types`
-switch. Eleven are brand new (the Product and Application Usage views were
-both dropped entirely — see "Bounded-context views (GH #129)" below):
+switch. Thirteen are brand new:
 
 | View | Diagram | Viewpoint |
 |---|---|---|
@@ -283,9 +301,11 @@ both dropped entirely — see "Bounded-context views (GH #129)" below):
 | Information Structure | `business/information-structure` | `information_structure` |
 | Technology | `technology/overview` | `technology` |
 | Physical | `technology/physical` | `physical` |
+| Application Usage | `application/usage/<context>` | `application_usage` |
 | Technology Usage | `technology/usage` | `technology_usage` |
 | Business Process Cooperation | `business/process-cooperation` | `business_process_cooperation` |
 | Application Cooperation (Standard) | `application/cooperation-standard/<context>` | `application_cooperation` |
+| Product | `business/product/<context>` | `product` |
 | Service Realization | `business/service-realization/<context>` | `service_realization` |
 | Implementation & Migration overview | `migration/overview/<context>` | `implementation_migration` |
 | Implementation Deployment | `implementation/deployment/<context>` | `implementation_deployment` |
@@ -353,10 +373,11 @@ because all of them are projections of the same model
 Six whole-platform sweeps were too large to read as one diagram. A view can
 add `split_by: context`: instead of one `<diagram>.puml` it renders one
 `<diagram>/<context>.puml` per bounded context actually on it. It is applied
-to Application Cooperation, Service Realization, the Implementation &
-Migration overview and Implementation Deployment, so each has a subfolder of
-per-context files (nine contexts for most, only `controls-compliance-catalog`
-and `digital-twin-knowledge-graph` for the migration overview). The
+to all six: Application Cooperation, Service Realization, the
+Implementation & Migration overview, Implementation Deployment, Product and
+Application Usage, so each has a subfolder of per-context files (nine
+contexts for most, only `controls-compliance-catalog` and
+`digital-twin-knowledge-graph` for the migration overview). The
 ~60-element target is met for most contexts, but a few come out larger
 because the context genuinely owns that much cross-layer content —
 `view-service-realization` and `view-implementation-deployment` on
@@ -376,10 +397,13 @@ their own `include_types`. `view-information-structure` instead sets
 derivation chain through an out-of-context element still implies, without
 pulling that element's whole type back onto the diagram (see "Derived
 relationship overlay" above). `view-product` and `view-application-usage`
-are dropped entirely rather than split, and stay dropped: the model still
-has no `Product`/`Contract`/`Value`/`Material`/`*Service` element to give
-either viewpoint its own shape, so both rendered as a duplicate dump of
-content already on `view-service-realization`/`view-application-cooperation`
+each still render as a duplicate dump of content already on
+`view-service-realization`/`view-application-cooperation`, since the model
+still has no `Product`/`Contract`/`Value`/`Material`/`*Service` element to
+give either viewpoint its own shape — but both stay in
+`views-viewpoints.yaml` on the strength of being standard ArchiMate 3.2
+§14 viewpoints, the duplication accepted rather than treated as grounds to
+drop the view
 (`architecture/model/views-viewpoints.yaml` header comment;
 [ADR-0040](decision-log-0030-onward.md)).
 
