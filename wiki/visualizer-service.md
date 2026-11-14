@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: '2026-11-11'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - src/frictionless_architect/__init__.py
@@ -13,6 +13,7 @@ sources:
 - src/frictionless_architect/visualizer/config.py
 - src/frictionless_architect/visualizer/data_loader.py
 - src/frictionless_architect/visualizer/namespaces.py
+- src/frictionless_architect/visualizer/placeholder_page.py
 - src/frictionless_architect/visualizer/sample_parser.py
 - src/frictionless_architect/visualizer/sample_validator.py
 ---
@@ -27,13 +28,21 @@ server-rendered HTML page (`GET /schema-visualizer`, Jinja templates +
 mounted `static/`) that ADR-0005 called for dropping as part of the
 visualiser API/UI split was actually removed on 2026-09-13, standalone,
 ahead of the rest of that extraction: it was the only browser UI in the app,
-so there is none again until `schema-visualizer-ui` is built
+so there was none again until `schema-visualizer-ui` is built
 (`docs/adr/0005-visualiser-api-ui-split-first-extraction.md`
-§"Implementation status", revised 2026-09-13). Its spec is
-`002-neo4j-schema-ui` — see [Platform Specification & API](platform-spec.md);
-the graph shape it reads is in [Data Model](data-model.md). `ARCHITECTURE.md`
-§8.1 plans to split it into a JSON-only `schema-visualizer-api` package plus a
-separate Vite UI.
+§"Implementation status", revised 2026-09-13). GH #119's browser-level UI
+test work (ADR-0053) has since added one minimal placeholder route back,
+`GET /` in `placeholder_page.py` — a fixed title, status text and a
+schema-element count read from the existing `/schema-payload` service (with
+the same `PayloadUnavailable` fallback `/schema-payload` itself uses) — just
+enough surface for a Playwright smoke test. It is deliberately not the real
+`schema-visualizer-ui`: the module's own docstring and ADR-0053's
+Consequences both flag it as superseded once GH #74 ships the actual
+subsystem UI, not a page meant to accrete features in the meantime. Its spec
+is `002-neo4j-schema-ui` — see
+[Platform Specification & API](platform-spec.md); the graph shape it reads
+is in [Data Model](data-model.md). `ARCHITECTURE.md` §8.1 plans to split it
+into a JSON-only `schema-visualizer-api` package plus a separate Vite UI.
 
 ## Entry point
 
@@ -41,7 +50,8 @@ separate Vite UI.
 docstring. The FastAPI app moved to the shared platform entry point
 `frictionless_architect.app`, which builds
 `app = FastAPI(title="Frictionless Architect", lifespan=lifespan)` and
-includes the visualiser's API router; its `lifespan` does nothing at startup. On
+includes both the visualiser's API router and, since ADR-0053, the new
+placeholder-page router; its `lifespan` does nothing at startup. On
 shutdown it first awaits `stop_retry()` to cancel any pending background load
 retry, then closes the Neo4j driver (`src/frictionless_architect/app.py:14-26`).
 `get_schema_service()` builds the service lazily

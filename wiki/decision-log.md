@@ -1,6 +1,6 @@
 ---
 title: Architecture Decision Log
-generated: '2026-11-11'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0000-adr-template.md

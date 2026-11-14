@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
-generated: '2026-11-13'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
