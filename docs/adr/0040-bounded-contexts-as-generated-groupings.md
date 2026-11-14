@@ -55,7 +55,17 @@ diagrams' membership by hand (which would re-create the maintenance burden
    six oversized views; the sixth, `view-product`, is dropped entirely
    (the model has no `Product`/`Contract`/`Value`/`Material`/`*Service`
    element to give that viewpoint its own shape, so it was a duplicate of
-   content already on the usage/service-realization views).
+   content already on the usage/service-realization views). `view-product`
+   was later re-added per request, then dropped again alongside
+   `view-application-usage` once the per-context splits showed both still
+   rendering as oversized duplicate dumps for the same reason — the missing
+   `*Service`/`Product`/`Contract`/`Value` elements never materialized; see
+   `views-viewpoints.yaml`'s file header. `include_neighbours: true` was
+   also later removed from every split view (including the four
+   remaining here): it inflated data-heavy contexts without a consistent
+   size benefit on the layer-spanning sweeps, so `view-information-structure`
+   uses `derived: true` instead to recover cross-context edges without
+   pulling in the element set that caused the blow-up.
 
 4. **A generated context map** (`generate_context_map_relationships`,
    `view-context-map`) derives one directed `Serving` edge between two
