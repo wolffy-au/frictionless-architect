@@ -76,7 +76,7 @@ revert and confirm it passes (`spec.md` US1 Independent Test).
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Add a minimal placeholder HTML route to
+- [X] T005 [P] [US1] Add a minimal placeholder HTML route to
   `src/frictionless_architect/visualizer/` (new module, e.g. `placeholder_page.py`) per
   `contracts/visualiser-placeholder-page.md` and `data-model.md`: a `GET /` response with
   (a) a fixed page title, e.g. "Schema Visualiser", (b) visible status text confirming the
@@ -84,7 +84,7 @@ revert and confirm it passes (`spec.md` US1 Independent Test).
   (using the sample-data fallback per `VisualizerSettings.neo4j_uri`'s existing default, no
   live Neo4j required — FR-004). Include a short comment noting the page is superseded once
   GH #74 ships (ADR-0053 Consequences) and is not meant to accrete features.
-- [ ] T006 [US1] Mount the new placeholder route in `src/frictionless_architect/app.py`
+- [X] T006 [US1] Mount the new placeholder route in `src/frictionless_architect/app.py`
   (depends on T005).
 - [ ] T007 [US1] Add `tests/features/visualiser_ui.feature` (root, tagged `@ui`) with
   scenarios covering: the placeholder page loads with no JavaScript console error (FR-001,
