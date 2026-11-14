@@ -101,13 +101,13 @@ revert and confirm it passes (`spec.md` US1 Independent Test).
   Session 2026-11-14 Option B) in `tests/features/environment.py`'s `@ui` scenario hook: on
   first failure, retry the scenario exactly once before reporting it; a second consecutive
   failure is reported as a real failure, never retried further. Depends on T004.
-- [ ] T010 [US1] Confirm (no code change expected) that
+- [X] T010 [US1] Confirm (no code change expected) that
   `platform/packages/controls-compliance-catalog/tests/features/` and
   `platform/packages/modelling-specification/tests/features/`'s existing `@ui`-tagged
   scenarios already satisfy FR-001/FR-002 for the playground and LLM provider config page —
   run `poetry run behave` in `platform/` and confirm both pass, completing SC-001 for all
   three in-scope surfaces end to end.
-- [ ] T011 [US1] Deliberately break the visualiser placeholder's rendered interaction
+- [X] T011 [US1] Deliberately break the visualiser placeholder's rendered interaction
   (e.g. make the schema-summary value render a hardcoded wrong string), run `poetry run
   behave tests/features/ --tags=@ui`, confirm it fails naming the page and the broken
   value, then revert the breakage and confirm it passes (SC-002). Depends on T007-T009.
