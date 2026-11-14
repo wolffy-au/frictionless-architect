@@ -329,7 +329,8 @@
   name: 'GH-84 ADR: decide the authn/authz approach for multi-user access'
   props:
     gh-number: '84'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/84
 - type: WorkPackage
   id: wp-adr-decide-the-compliance-pack-export-gh-203
