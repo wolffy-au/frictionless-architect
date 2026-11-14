@@ -128,13 +128,13 @@ Independent Test).
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Run `scripts/pre_merge_checks.sh` end to end and confirm: the dead
+- [X] T012 [US2] Run `scripts/pre_merge_checks.sh` end to end and confirm: the dead
   `frontend/` block from T003 is gone, the new Playwright install step runs before `behave`,
   the root `behave tests/features/` call now executes `visualiser_ui.feature` (T007-T009),
   and `scripts/platform_checks.sh`'s existing fan-out still executes the platform packages'
   `@ui` scenarios (T010) — confirm no step in the script prints "Skipping…" for UI tests
   (FR-006, SC-003). Depends on T003, T009, T010.
-- [ ] T013 [US2] Run `scripts/pre_commit_checks.sh` and confirm it invokes neither `behave`
+- [X] T013 [US2] Run `scripts/pre_commit_checks.sh` and confirm it invokes neither `behave`
   nor any `@ui`-tagged scenario, so the fast gate's typical runtime is unaffected by this
   feature (FR-005, SC-005).
 
@@ -154,13 +154,13 @@ Independent Test).
 
 ### Implementation for User Story 3
 
-- [ ] T014 [P] [US3] Update `TECHNICAL.md`'s "Testing Layout" section to document the
+- [X] T014 [P] [US3] Update `TECHNICAL.md`'s "Testing Layout" section to document the
   one-time Playwright setup (`poetry run playwright install --with-deps chromium`, run once
   for root and once inside `platform/`) and how `@ui`-tagged scenarios fit into the existing
   `behave` layout, linking to `specs/EPIC-004-playwright-ui-tests/quickstart.md` for the
   exact run commands rather than duplicating them (FR-007, Principle XI — no restated
   content).
-- [ ] T015 [US3] Validate `quickstart.md` end to end on a shell with no prior Playwright
+- [X] T015 [US3] Validate `quickstart.md` end to end on a shell with no prior Playwright
   setup: follow its "One-time setup" and "Run the tests" sections exactly as written, confirm
   the suite completes with no undocumented manual step (SC-004), and confirm a deliberately
   broken interaction (quickstart.md → "Verifying the merge gate actually catches a

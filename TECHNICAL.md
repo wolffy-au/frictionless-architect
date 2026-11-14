@@ -307,6 +307,13 @@ Packages in the `platform/` monorepo follow the same rule within each package:
 `platform/packages/<name>/src/<module>/…` is tested under
 `platform/packages/<name>/tests/unit/…`. `scripts/platform_checks.sh` runs them.
 
+Scenarios tagged `@ui` drive a live `uvicorn` instance of the real app with a `playwright`
+Chromium browser (root: `tests/features/environment.py`; per-package: each package's own
+`tests/features/environment.py`), rather than a static HTML fixture. They're excluded from
+`scripts/pre_commit_checks.sh` (the fast, every-commit gate) and run only as part of
+`scripts/pre_merge_checks.sh`. One-time local setup and the exact run commands are in
+[`specs/EPIC-004-playwright-ui-tests/quickstart.md`](specs/EPIC-004-playwright-ui-tests/quickstart.md).
+
 ## Dependency Installation
 
 Package manager is **Poetry**, not `uv` — `uv sync` has failed repeatedly in this
