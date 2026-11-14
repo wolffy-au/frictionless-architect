@@ -165,8 +165,8 @@ UC1 ..> UC2 : <<precedes>>
   run? The tests must exercise the page against a deterministic stand-in for that
   dependency, not the live service.
 - How does a test behave when a page never reaches the expected state (e.g. broken
-  JavaScript leaves an element stuck loading)? It must fail with a clear, bounded-time
-  error rather than hanging indefinitely.
+  JavaScript leaves an element stuck loading)? It must fail with a clear error within
+  Playwright's default action/navigation timeout, rather than hanging indefinitely.
 - What happens when a UI surface is added later that isn't one of the three listed in
   scope? Out of scope for this feature — covering a future UI surface is separate,
   follow-on work.
@@ -176,7 +176,7 @@ UC1 ..> UC2 : <<precedes>>
 ### Functional Requirements
 
 - **FR-001**: The system MUST provide an automated browser-level test for each of the
-  three in-scope UI surfaces — the control-conversion playground, the LLM provider
+  three in-scope UI surfaces — the control conversion playground, the LLM provider
   config page, and the visualiser UI — that verifies the page loads without a
   JavaScript console error.
 - **FR-002**: The system MUST provide an automated browser-level test for each
