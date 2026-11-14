@@ -70,8 +70,24 @@ sources:
 - architecture/model/diagrams/technology/landscape.svg
 - architecture/model/diagrams/technology/oscal-golden-check.puml
 - architecture/model/diagrams/technology/oscal-golden-check.svg
-- architecture/model/diagrams/technology/overview.puml
-- architecture/model/diagrams/technology/overview.svg
+- architecture/model/diagrams/technology/overview/architecture-governance.puml
+- architecture/model/diagrams/technology/overview/architecture-governance.svg
+- architecture/model/diagrams/technology/overview/conformance-drift-assurance.puml
+- architecture/model/diagrams/technology/overview/conformance-drift-assurance.svg
+- architecture/model/diagrams/technology/overview/controls-compliance-catalog.puml
+- architecture/model/diagrams/technology/overview/controls-compliance-catalog.svg
+- architecture/model/diagrams/technology/overview/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/technology/overview/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/technology/overview/llm-provider-config.puml
+- architecture/model/diagrams/technology/overview/llm-provider-config.svg
+- architecture/model/diagrams/technology/overview/modelling-specification.puml
+- architecture/model/diagrams/technology/overview/modelling-specification.svg
+- architecture/model/diagrams/technology/overview/pii-gateway.puml
+- architecture/model/diagrams/technology/overview/pii-gateway.svg
+- architecture/model/diagrams/technology/overview/reusable-architecture-library.puml
+- architecture/model/diagrams/technology/overview/reusable-architecture-library.svg
+- architecture/model/diagrams/technology/overview/schema-visualizer-api.puml
+- architecture/model/diagrams/technology/overview/schema-visualizer-api.svg
 - architecture/model/diagrams/technology/persistence-boundary.puml
 - architecture/model/diagrams/technology/persistence-boundary.svg
 - architecture/model/diagrams/technology/physical.puml
@@ -182,9 +198,14 @@ viewpoint's allow-list covers that combination — the same constraint
 These five remain `catalog`-slice-scoped hand-curated views. The three
 *generic* Technology-layer views added by GH #105 (Technology, Physical,
 Technology Usage — `technology/overview`, `technology/physical`,
-`technology/usage`) are a separate, type-wide sweep with no slice scoping;
-see [Architecture Views & Diagrams: Vision, Business &
-Viewpoints](architecture-diagrams.md) §"Generic per-viewpoint views (GH #105)".
+`technology/usage`) are a separate, type-wide sweep with no slice scoping.
+`technology/overview` additionally has `split_by: context` (GH #129), so it
+renders one `technology/overview/<context>.puml` per bounded context rather
+than a single sweep, like the other bounded-context split views covered on
+[Architecture Views & Diagrams: Vision, Business &
+Viewpoints](architecture-diagrams.md) §"Bounded-context views (GH #129)";
+`technology/physical` and `technology/usage` stay unsplit. See that page's
+§"Generic per-viewpoint views (GH #105)" for the viewpoint itself.
 
 **Why this isn't folded into `view-migration`.** `view-migration`'s
 Plateaus/Gaps are the packaging restructure (`ARCHITECTURE.md` §8); the
@@ -219,12 +240,16 @@ viewpoint.
   see [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 - `c4/context` and `c4/container` picked up small edge changes reflecting the
   same additions.
-- GH #129 split the Implementation Deployment and Implementation & Migration
-  overview sweeps into per-context files (`implementation/deployment/<context>`,
-  `migration/overview/<context>`) with directly-connected neighbours pulled in
-  so cross-context edges stay visible. See [Architecture Views & Diagrams:
-  Vision, Business & Viewpoints](architecture-diagrams.md) §"Bounded-context
-  views".
+- GH #129 split the Implementation Deployment, Implementation & Migration
+  overview, and Technology overview sweeps into per-context files
+  (`implementation/deployment/<context>`, `migration/overview/<context>`,
+  `technology/overview/<context>`). `include_neighbours: true`, which
+  originally pulled in any directly-connected element from another context
+  so a cross-context edge kept both endpoints visible, was later removed
+  from every default viewpoint view in favour of `derived: true` on
+  `view-information-structure` alone (`architecture/model/views-viewpoints.yaml`
+  header comment). See [Architecture Views & Diagrams: Vision, Business &
+  Viewpoints](architecture-diagrams.md) §"Bounded-context views".
 - ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
   Configuration component and its package Artifact to the Packaging, Migration
   Sequence and Data Flow — Controls & OSCAL diagrams, and the OS credential store

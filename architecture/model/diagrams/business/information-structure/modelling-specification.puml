@@ -1,0 +1,15 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — modelling-specification
+
+Application_DataObject(e_ide155670d2bae58, "Framework Pack Library") {
+  Application_DataObject(e_idd52b11acc8ff53, "Notation Metamodel")
+  Application_DataObject(e_id9f5c9c73328255, "Enterprise Convention Rules")
+}
+Application_DataObject(e_id2b20e366d6f854, "Development Specification")
+Technology_Artifact(e_id42d611ba8e6759, "packages/modelling-specification")
+
+
+@enduml

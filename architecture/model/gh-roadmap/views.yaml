@@ -95,6 +95,7 @@
   - wp-perf-scripts-cut-redundant-work-in-pre-gh-126
   - wp-role-journeys-and-ui-ux-gh-45
   - wp-test-ui-establish-playwright-browser-gh-119
+  - wp-tighten-dev-workflow-gates-merge-gh-213
 - id: view-plat-github-importer-11
   name: 'Roadmap: github-importer'
   viewpoint: implementation_migration

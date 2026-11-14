@@ -1,0 +1,16 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — architecture-governance
+
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_idc6a20aaf9c5950, "Architecture Decision Record")
+  Application_DataObject(e_ideb3e3dd87f3c5c, "Impact Assessment")
+  Application_DataObject(e_id0f0ef898faa15b, "Archived Rejected Option")
+}
+Application_DataObject(e_ide2af72ef094852, "Collaboration Transcript")
+Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+
+
+@enduml

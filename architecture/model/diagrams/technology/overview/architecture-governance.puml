@@ -1,0 +1,11 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — architecture-governance
+
+Technology_Artifact(e_id880eb98a22b15c, "packages/architecture-governance")
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Realization_Up(e_id880eb98a22b15c, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

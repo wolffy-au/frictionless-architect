@@ -1,0 +1,10 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — pii-gateway
+
+Technology_Artifact(e_id8b34f5f03beb50, "packages/pii-gateway")
+Technology_SystemSoftware(e_idd46328fd3f165d, "Presidio (presidio-analyzer / presidio-anonymizer)")
+
+
+@enduml

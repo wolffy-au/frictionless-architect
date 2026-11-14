@@ -51,11 +51,22 @@ diagrams' membership by hand (which would re-create the maintenance burden
    deliberately **not** folded into the view's own `viewpoint:`
    conformance check: it is incidental boundary context, not part of what
    the view's declared viewpoint is about, and several of the split views
-   require exactly the type their neighbours add. Applied to five of the
-   six oversized views; the sixth, `view-product`, is dropped entirely
-   (the model has no `Product`/`Contract`/`Value`/`Material`/`*Service`
-   element to give that viewpoint its own shape, so it was a duplicate of
-   content already on the usage/service-realization views).
+   require exactly the type their neighbours add. Applied to all six
+   oversized views, including `view-product`, which was briefly dropped
+   entirely (the model has no `Product`/`Contract`/`Value`/`Material`/
+   `*Service` element to give that viewpoint its own shape, so it rendered
+   as a duplicate of content already on the usage/service-realization
+   views) before being kept after all: both it and `view-application-usage`
+   stay in `views-viewpoints.yaml` on the strength of being standard
+   ArchiMate 3.2 §14 viewpoints, the duplication accepted as a consequence
+   of the model not yet having those element types rather than grounds for
+   dropping the view; see `views-viewpoints.yaml`'s file header.
+   `include_neighbours: true` was later removed from every split view
+   (including these two): it inflated data-heavy contexts without a
+   consistent size benefit on the layer-spanning sweeps, so
+   `view-information-structure` uses `derived: true` instead to recover
+   cross-context edges without pulling in the element set that caused the
+   blow-up.
 
 4. **A generated context map** (`generate_context_map_relationships`,
    `view-context-map`) derives one directed `Serving` edge between two
