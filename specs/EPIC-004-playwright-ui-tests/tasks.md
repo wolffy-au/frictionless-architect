@@ -176,9 +176,9 @@ reproducible from documentation alone.
 
 **Purpose**: Final whole-feature verification, not new behaviour.
 
-- [ ] T016 Run `bash scripts/pre_commit_checks.sh` and fix any lint/type issues introduced by
+- [X] T016 Run `bash scripts/pre_commit_checks.sh` and fix any lint/type issues introduced by
   T005-T009 and T014.
-- [ ] T017 Run `bash scripts/pre_merge_checks.sh` in full (including Snyk, coverage-gated
+- [X] T017 Run `bash scripts/pre_merge_checks.sh` in full (including Snyk, coverage-gated
   pytest, and behave) and confirm a clean pass with all three in-scope UI surfaces reporting
   a real result.
 
