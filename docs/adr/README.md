@@ -189,3 +189,6 @@ not yet re-ratified in a spec).
   tests (GH #119) extend the existing `behave` + Playwright harness already shipped for
   the playground and LLM provider config page, not a new `pytest-playwright` toolchain;
   the visualiser gets a minimal placeholder page pending GH #74
+- **A** — [0053](0053-authn-authz-and-tenancy-approach.md) — OIDC token-based
+  authentication; RBAC authorization expressed as OPA/Rego policies (ADR-0019);
+  Workspace is the tenancy boundary, one owning workspace per model

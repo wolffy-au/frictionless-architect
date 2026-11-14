@@ -872,6 +872,7 @@
     - fn-enforcement-gate
     - fn-effectiveness-monitor
     - fn-drift-engine
+    - fn-authz-policy
     - fn-ledger-record
     - ext-cicd
     - ext-scm
