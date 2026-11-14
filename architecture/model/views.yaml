@@ -663,16 +663,14 @@
     - bo-drift-finding
     - bo-oscal-poam
 
-# --- Capability-scoped slices filling the gap left by the now-dropped
-#     application_usage / service_realization whole-platform sweeps
-#     (views-viewpoints.yaml: view-application-usage and view-product were
-#     both dropped entirely, not split -- see that file's header comment;
-#     view-service-realization remains, split_by: context, as
-#     view-business-process-cooperation's counterpart). These four groups
-#     (the same ones the view-business-* slices above use) add the
-#     directly-connected Application-layer elements so a reader can see
-#     business + app for one capability at a time without the full-model
-#     dump that view-application-usage used to be. view-business-process-cooperation
+# --- Capability-scoped slices of the whole-platform application_usage /
+#     service_realization sweeps (views-viewpoints.yaml: view-application-usage,
+#     view-service-realization's counterpart; both split_by: context -- see
+#     that file's header comment). Those sweep the whole model by include_types
+#     and are reference diagrams by design; these four groups (the same ones
+#     the view-business-* slices above use) add the directly-connected
+#     Application-layer elements so a reader can see business + app for one
+#     capability at a time without the full-model dump. view-business-process-cooperation
 #     already has its own narrower business-only slices (view-business-policy-conversion etc.),
 #     so it is not repeated here.
 - id: view-application-usage-policy-conversion

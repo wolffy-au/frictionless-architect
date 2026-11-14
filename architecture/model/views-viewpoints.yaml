@@ -13,13 +13,12 @@
 # every default viewpoint view below: it blew up data-heavy contexts without
 # a consistent size benefit on the layer-spanning sweeps (see
 # view-information-structure's own comment, which uses `derived: true`
-# instead). `view-product` and `view-application-usage` are dropped
-# entirely (not split): the model still has no `Product`/`Contract`/
-# `Value`/`Material`/`BusinessService`/`ApplicationService` element to give
-# either viewpoint its own shape, so each rendered as a duplicate dump of
-# content already on view-service-realization/view-application-cooperation
-# -- same rationale ADR-0040 already gave for dropping view-product the
-# first time, now extended to view-application-usage too.
+# instead). `view-product` and `view-application-usage` stay in this file
+# even though each currently renders as a duplicate dump of content already
+# on view-service-realization/view-application-cooperation -- both are
+# standard ArchiMate 3.2 §14 viewpoints, and the model simply has no
+# Product/Contract/Value/Material/ApplicationService element yet to give
+# either its own shape; see their own comments below.
 #
 # #129's ~60-element-per-diagram target is met for most contexts this way,
 # but a handful of per-context splits still come out larger -- the context
@@ -140,6 +139,83 @@
     - CommunicationNetwork
     - DistributionNetwork
     - Material
+
+- id: view-product
+  name: Product
+  context: platform
+  # Generic Product viewpoint (ArchiMate 3.2 §14): the composition of a
+  # product from the services and contracts that make it up, the value it
+  # offers, and the actors/processes that deliver it. Swept by type, not
+  # members. Kept despite currently duplicating view-application-usage/
+  # view-service-realization: it is one of the standard §14 viewpoints, and
+  # the model still has no Product, Contract, Value or Material element --
+  # the only things that would give it its own shape -- so it renders as a
+  # dump of the same Business/Application elements until some exist.
+  viewpoint: product
+  diagram: business/product
+  split_by: context
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - BusinessInterface
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessService
+    - BusinessObject
+    - Contract
+    - Product
+    - Value
+    - Material
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+    - TechnologyService
+    - Artifact
+  no_direction: [Flow, Triggering]
+  max_width: 3800
+
+- id: view-application-usage
+  name: Application Usage
+  context: platform
+  # Generic Application Usage viewpoint (ArchiMate 3.2 §14): how applications
+  # support business processes and each other — the dependencies of business
+  # behaviour on application components, services and data. Swept by type,
+  # not members. Kept despite currently duplicating view-service-realization/
+  # view-application-cooperation, for the same reason as view-product above:
+  # it is a standard §14 viewpoint, and the model has no ApplicationService
+  # elements yet, which is what normally links the two layers.
+  viewpoint: application_usage
+  diagram: application/usage
+  split_by: context
+  include_types:
+    - BusinessActor
+    - BusinessRole
+    - BusinessCollaboration
+    - BusinessProcess
+    - BusinessFunction
+    - BusinessInteraction
+    - BusinessEvent
+    - BusinessObject
+    - ApplicationComponent
+    - ApplicationCollaboration
+    - ApplicationInterface
+    - ApplicationProcess
+    - ApplicationFunction
+    - ApplicationInteraction
+    - ApplicationEvent
+    - ApplicationService
+    - DataObject
+  no_direction: [Flow, Triggering]
+  max_width: 3800
 
 - id: view-technology-usage
   name: Technology Usage
