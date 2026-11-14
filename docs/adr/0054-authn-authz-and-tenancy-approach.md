@@ -1,4 +1,4 @@
-# ADR-0053: OIDC token-based authentication, RBAC-via-OPA authorization, workspace-scoped tenancy
+# ADR-0054: OIDC token-based authentication, RBAC-via-OPA authorization, workspace-scoped tenancy
 
 - **Status:** Accepted
 - **Date:** 2026-11-14

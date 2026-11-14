@@ -1260,7 +1260,7 @@
     never feature logic (ADR-0020, update 2026-10-11, GH #120). Not one of the
     six subsystems and not a central dashboard. Also carries the one shared
     OIDC authentication check every mounted package's routes depend on
-    (fn-authn-oidc, ADR-0053) — infrastructure at the mounting surface, not
+    (fn-authn-oidc, ADR-0054) — infrastructure at the mounting surface, not
     package feature logic.
 - type: ApplicationInterface
   id: if-twin-read-path
@@ -1329,7 +1329,7 @@
   name: Architecture Knowledge Graph
   desc: >-
     One graph store, two planes: Architecture Intent and Current-State Digital
-    Twin. Access is scoped by workspace — the tenancy boundary (ADR-0053):
+    Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054):
     every model belongs to exactly one workspace, and fn-authz-policy's RBAC
     check is keyed on (user, workspace, model, action) before a query against
     this store is allowed to run.
@@ -1637,7 +1637,7 @@
     Evaluate RBAC rules, authored as Rego and run by the wrapped OPA engine
     (ADR-0019), against a verified identity's workspace role to decide
     whether an action on a model is allowed — the dedicated policy component
-    ADR-0013 requires, kept separate from authentication (ADR-0053).
+    ADR-0013 requires, kept separate from authentication (ADR-0054).
 
 # --- C. Functions: Portal ---
 - type: ApplicationFunction
@@ -1647,7 +1647,7 @@
     Validate an OIDC bearer token (JWKS signature check) on every mounted
     package's routes and attach the verified identity attributes to the
     request — the single authentication check every subsystem's API depends
-    on, not re-implemented per package (ADR-0053).
+    on, not re-implemented per package (ADR-0054).
 
 # --- C. Functions: Modelling & Specification ---
 - type: ApplicationFunction

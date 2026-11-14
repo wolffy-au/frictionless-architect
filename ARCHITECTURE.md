@@ -208,7 +208,7 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
   subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
   own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
   formerly FR-018); threat modelling as an output is subsystem 2. The concrete authn/authz/
-  tenancy approach is [ADR-0053](docs/adr/0053-authn-authz-and-tenancy-approach.md): OIDC
+  tenancy approach is [ADR-0054](docs/adr/0054-authn-authz-and-tenancy-approach.md): OIDC
   token-based authentication (`fn-authn-oidc`, carried by the Portal host package); RBAC
   authorization evaluated as OPA/Rego policy (`fn-authz-policy`, owned by Conformance &
   Drift Assurance, ADR-0019); Workspace as the tenancy boundary scoping the Architecture

@@ -1368,7 +1368,7 @@
     </element>
     <element identifier="id-6c2233bb09755daab2253b66ac4f2768" xsi:type="ApplicationComponent">
       <name>Portal</name>
-      <documentation>Hosts the platform packages' UIs from one app: mounts each package's router and owns only page chrome, navigation and the role landing page, never feature logic (ADR-0020, update 2026-10-11, GH #120). Not one of the six subsystems and not a central dashboard. Also carries the one shared OIDC authentication check every mounted package's routes depend on (fn-authn-oidc, ADR-0053) — infrastructure at the mounting surface, not package feature logic.</documentation>
+      <documentation>Hosts the platform packages' UIs from one app: mounts each package's router and owns only page chrome, navigation and the role landing page, never feature logic (ADR-0020, update 2026-10-11, GH #120). Not one of the six subsystems and not a central dashboard. Also carries the one shared OIDC authentication check every mounted package's routes depend on (fn-authn-oidc, ADR-0054) — infrastructure at the mounting surface, not package feature logic.</documentation>
       <properties>
         <property propertyDefinitionRef="propid-1">
           <value>platform</value>
@@ -1449,7 +1449,7 @@
     </element>
     <element identifier="id-989d401ffdae559d8a5088de25690c51" xsi:type="DataObject">
       <name>Architecture Knowledge Graph</name>
-      <documentation>One graph store, two planes: Architecture Intent and Current-State Digital Twin. Access is scoped by workspace — the tenancy boundary (ADR-0053): every model belongs to exactly one workspace, and fn-authz-policy's RBAC check is keyed on (user, workspace, model, action) before a query against this store is allowed to run.</documentation>
+      <documentation>One graph store, two planes: Architecture Intent and Current-State Digital Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054): every model belongs to exactly one workspace, and fn-authz-policy's RBAC check is keyed on (user, workspace, model, action) before a query against this store is allowed to run.</documentation>
       <properties>
         <property propertyDefinitionRef="propid-1">
           <value>platform</value>
@@ -1854,7 +1854,7 @@
     </element>
     <element identifier="id-3d2207b76bc25273974a6d7985f273a3" xsi:type="ApplicationFunction">
       <name>Authorization Policy Evaluation</name>
-      <documentation>Evaluate RBAC rules, authored as Rego and run by the wrapped OPA engine (ADR-0019), against a verified identity's workspace role to decide whether an action on a model is allowed — the dedicated policy component ADR-0013 requires, kept separate from authentication (ADR-0053).</documentation>
+      <documentation>Evaluate RBAC rules, authored as Rego and run by the wrapped OPA engine (ADR-0019), against a verified identity's workspace role to decide whether an action on a model is allowed — the dedicated policy component ADR-0013 requires, kept separate from authentication (ADR-0054).</documentation>
       <properties>
         <property propertyDefinitionRef="propid-1">
           <value>conformance-drift-assurance</value>
@@ -1863,7 +1863,7 @@
     </element>
     <element identifier="id-c91a9cfd3e0c5e4b8d7b28d4ac34dbb4" xsi:type="ApplicationFunction">
       <name>OIDC Authentication</name>
-      <documentation>Validate an OIDC bearer token (JWKS signature check) on every mounted package's routes and attach the verified identity attributes to the request — the single authentication check every subsystem's API depends on, not re-implemented per package (ADR-0053).</documentation>
+      <documentation>Validate an OIDC bearer token (JWKS signature check) on every mounted package's routes and attach the verified identity attributes to the request — the single authentication check every subsystem's API depends on, not re-implemented per package (ADR-0054).</documentation>
       <properties>
         <property propertyDefinitionRef="propid-1">
           <value>platform</value>
