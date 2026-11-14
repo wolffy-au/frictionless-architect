@@ -57,7 +57,9 @@ matrix; `ADR-0019` already commits (Proposed) to OPA/Rego as the policy engine.
   `sub-assurance`, which `ADR-0019` already places the OPA wrapper in), linked
   by a `Flow` carrying ADR-0013's "identity attributes supply authorization"
   rule; `store-akg`'s description now records that access to it is scoped by
-  workspace. No new top-level Workspace element: at this model's granularity
+  workspace (not to be confused with `art-tech-oscal-workspace`, the
+  unrelated Trestle round-trip filesystem directory). No new top-level
+  Workspace element: at this model's granularity
   (the platform's own architecture, not customer model instances) tenancy is
   a data-shape fact about `store-akg`, not a separate ArchiMate concept — same
   footing as how elements/relationships/views inside a customer model aren't

@@ -1329,10 +1329,12 @@
   name: Architecture Knowledge Graph
   desc: >-
     One graph store, two planes: Architecture Intent and Current-State Digital
-    Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054):
-    every model belongs to exactly one workspace, and fn-authz-policy's RBAC
-    check is keyed on (user, workspace, model, action) before a query against
-    this store is allowed to run.
+    Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054);
+    distinct from art-tech-oscal-workspace's unrelated Trestle filesystem
+    directory, which is a per-model OSCAL round-trip detail, not a tenancy
+    concept. Every model belongs to exactly one workspace, and
+    fn-authz-policy's RBAC check is keyed on (user, workspace, model, action)
+    before a query against this store is allowed to run.
 - type: DataObject
   id: store-frameworks
   name: Framework Pack Library
