@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Application Layer'
-generated: '2026-11-13'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -64,24 +64,6 @@ sources:
 - architecture/model/diagrams/application/strategy-drift.svg
 - architecture/model/diagrams/application/structure.puml
 - architecture/model/diagrams/application/structure.svg
-- architecture/model/diagrams/application/usage/architecture-governance.puml
-- architecture/model/diagrams/application/usage/architecture-governance.svg
-- architecture/model/diagrams/application/usage/conformance-drift-assurance.puml
-- architecture/model/diagrams/application/usage/conformance-drift-assurance.svg
-- architecture/model/diagrams/application/usage/controls-compliance-catalog.puml
-- architecture/model/diagrams/application/usage/controls-compliance-catalog.svg
-- architecture/model/diagrams/application/usage/digital-twin-knowledge-graph.puml
-- architecture/model/diagrams/application/usage/digital-twin-knowledge-graph.svg
-- architecture/model/diagrams/application/usage/llm-provider-config.puml
-- architecture/model/diagrams/application/usage/llm-provider-config.svg
-- architecture/model/diagrams/application/usage/modelling-specification.puml
-- architecture/model/diagrams/application/usage/modelling-specification.svg
-- architecture/model/diagrams/application/usage/pii-gateway.puml
-- architecture/model/diagrams/application/usage/pii-gateway.svg
-- architecture/model/diagrams/application/usage/reusable-architecture-library.puml
-- architecture/model/diagrams/application/usage/reusable-architecture-library.svg
-- architecture/model/diagrams/application/usage/schema-visualizer-api.puml
-- architecture/model/diagrams/application/usage/schema-visualizer-api.svg
 - architecture/model/views-viewpoints.yaml
 - architecture/model/views.yaml
 ---
@@ -109,12 +91,13 @@ stays Application-layer. It is the one to read.
 `view-application-cooperation-standard` keeps the literal viewpoint with
 unrestricted neighbours, for comparison
 (`architecture/model/views.yaml`; `architecture/model/views-viewpoints.yaml`).
-Both use the general `split_by: context` / `include_neighbours: true`
-mechanism described on [Architecture Views & Diagrams: Vision, Business &
+Both use the general `split_by: context` mechanism described on
+[Architecture Views & Diagrams: Vision, Business &
 Viewpoints](architecture-diagrams.md#bounded-context-views-gh-129): each
-renders one `<diagram>/<context>.puml` per bounded context actually on it,
-pulling in any directly-connected element from another context so a
-cross-context edge still has both endpoints on the page.
+renders one `<diagram>/<context>.puml` per bounded context actually on it.
+`include_neighbours: true` is no longer used here — it was removed from
+every default viewpoint view, since on `conformance-drift-assurance` it
+inflated data-heavy contexts without a consistent size benefit.
 
 ## Application-usage slices (GH #105 follow-up, 2026-10-18)
 

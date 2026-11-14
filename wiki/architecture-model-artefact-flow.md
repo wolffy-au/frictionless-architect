@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Artefact Flow'
-generated: '2026-11-12'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -129,6 +129,25 @@ evidence (`architecture/model/elements.yaml`;
 `architecture/model/relationships.yaml`). The authoring function's write edge to
 `do-candidate-arch` now reads as proposing and applying deltas, and its prompt is
 scrubbed by `sub-pii-gateway` before the LLM call.
+
+## Authentication and authorization (ADR-0054)
+
+Two new functions model GH #84's authn/authz decision. **`fn-authn-oidc`**
+("OIDC Authentication"), assigned to `sub-portal`, validates an OIDC bearer
+token's JWKS signature on every mounted package's routes and attaches the
+verified identity attributes to the request — the one authentication check
+every subsystem's API depends on, not re-implemented per package.
+**`fn-authz-policy`** ("Authorization Policy Evaluation"), assigned to
+`sub-assurance` (context `conformance-drift-assurance`, since ADR-0019
+already places the wrapped OPA engine there), evaluates RBAC rules authored
+as Rego against a verified identity's workspace role to decide whether an
+action on a model is allowed — the dedicated policy component ADR-0013
+requires, kept separate from authentication. A `Flow` from `fn-authn-oidc`
+to `fn-authz-policy`, labelled "verified identity attributes feed", carries
+ADR-0013's "identity attributes supply authorization" rule
+(`architecture/model/elements.yaml`, `architecture/model/relationships.yaml`
+§C). See [Ecosystem](architecture-model-ecosystem.md) for `sub-portal`'s and
+`store-akg`'s own description updates.
 
 ## Controls & OSCAL — how policy becomes OSCAL
 
