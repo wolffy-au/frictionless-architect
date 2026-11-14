@@ -86,12 +86,12 @@ revert and confirm it passes (`spec.md` US1 Independent Test).
   GH #74 ships (ADR-0053 Consequences) and is not meant to accrete features.
 - [X] T006 [US1] Mount the new placeholder route in `src/frictionless_architect/app.py`
   (depends on T005).
-- [ ] T007 [US1] Add `tests/features/visualiser_ui.feature` (root, tagged `@ui`) with
+- [X] T007 [US1] Add `tests/features/visualiser_ui.feature` (root, tagged `@ui`) with
   scenarios covering: the placeholder page loads with no JavaScript console error (FR-001,
   Acceptance Scenario 1) and its schema-summary value renders correctly from the sample-data
   fallback (FR-002, Acceptance Scenario 2). Depends on T004 (harness) and T006 (route
   mounted).
-- [ ] T008 [US1] Implement the step definitions for `visualiser_ui.feature` in
+- [X] T008 [US1] Implement the step definitions for `visualiser_ui.feature` in
   `tests/features/steps/visualiser_ui_steps.py`: launch the live app + Playwright browser via
   the T004 harness, navigate to the placeholder page, assert zero console errors, and assert
   the rendered status text / schema-summary value matches the sample-data fallback. Rely on
