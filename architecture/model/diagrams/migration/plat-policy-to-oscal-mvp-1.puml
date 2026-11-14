@@ -8,7 +8,7 @@ Implementation_Deliverable(e_idd0d06b4c05ff55, "v0.2.0")
 Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
 Implementation_WorkPackage(e_id340c952eaee456, "GH-61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams")
 Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue converter") {
-  Implementation_WorkPackage(e_id3b113120236658, "GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)")
+  Implementation_WorkPackage(e_id3b113120236658, " --GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)--")
   Implementation_WorkPackage(e_id5d51f859e99754, " --GH-47 Create UML diagrams for the Markdown catalogue converter--")
   Implementation_WorkPackage(e_idd0542e6c93e658, "GH-48 Find source and target files for converter testing")
   Implementation_WorkPackage(e_id77d970dbed965a, "GH-166 OSCAL conversion backend: endpoints, approval gate, Trestle assemble/resolve, forensic ledger")

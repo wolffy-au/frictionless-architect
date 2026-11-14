@@ -153,6 +153,15 @@
   source: del-release-v0-1-1
   target: plat-policy-to-oscal-mvp-1
 - type: Realization
+  source: del-release-v0-11-0
+  target: plat-architecture-governance-mvp-14
+- type: Realization
+  source: del-release-v0-11-0
+  target: plat-compliance-pack-export-mvp-15
+- type: Realization
+  source: del-release-v0-11-0
+  target: plat-general-tasks-12
+- type: Realization
   source: del-release-v0-2-0
   target: plat-architecture-strategy-mvp-7
 - type: Realization
@@ -238,13 +247,13 @@
   target: del-release-v0-1-0
 - type: Realization
   source: wp-adr-decide-how-adr-conflict-detection-fr-gh-199
-  target: del-architecture-governance-mvp-14-unreleased
+  target: del-release-v0-11-0
 - type: Realization
   source: wp-adr-decide-the-compliance-pack-export-gh-203
   target: del-compliance-pack-export-mvp-15-unreleased
 - type: Realization
   source: wp-adr-decide-the-cryptographic-attestation-gh-198
-  target: del-architecture-governance-mvp-14-unreleased
+  target: del-release-v0-11-0
 - type: Realization
   source: wp-adr-decide-the-oscal-trestle-vendoring-gh-19
   target: del-release-v0-1-0
@@ -397,7 +406,7 @@
   target: del-release-v0-1-0
 - type: Realization
   source: wp-role-journeys-and-ui-ux-gh-45
-  target: del-general-tasks-12-unreleased
+  target: del-release-v0-11-0
 - type: Realization
   source: wp-roll-out-split-by-context-package-gh-194
   target: del-architecture-strategy-mvp-7-unreleased
@@ -424,7 +433,7 @@
   target: del-release-v0-5-0
 - type: Realization
   source: wp-scoping-decision-which-subsystem-owns-gh-202
-  target: del-compliance-pack-export-mvp-15-unreleased
+  target: del-release-v0-11-0
 - type: Realization
   source: wp-spec-specs-003-conversational-modelling-gh-139
   target: del-release-v0-5-0
