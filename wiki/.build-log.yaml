@@ -1,4 +1,4 @@
-generated: '2026-11-13'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 topics:
   agent-workflows:
@@ -72,7 +72,7 @@ topics:
       urls: {}
     title: Agent Skills & Workflows
   architecture:
-    built: '2026-11-08'
+    built: '2026-11-14'
     page: wiki/architecture.md
     sources:
       files:
@@ -80,8 +80,8 @@ topics:
           lines: 493
           sha256: b90d34eff6ad05cc98c3f1c682f50805ac129e769ece77b5e427f5e144b2e3f0
         TECHNICAL.md:
-          lines: 432
-          sha256: 5ecf8b9f62a403a1ec005cae7a1e3b123377716f7668c6d91bbc6bd00c023776
+          lines: 439
+          sha256: a9cc5c952b025937614d89bf9c78e62b519e04294e2fa440eab30eca71c1340e
       urls: {}
     title: Architecture Overview
   architecture-diagrams:
@@ -629,7 +629,7 @@ topics:
   architecture-diagrams-platform:
     title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
     page: wiki/architecture-diagrams-platform.md
-    built: '2026-11-13'
+    built: '2026-11-14'
     sources:
       files:
         architecture/model/README.md:
@@ -720,10 +720,10 @@ topics:
           sha256: 2d346b1924ad639931ac4d74a3e8a5468bddf373167bd636328c96161240862b
           lines: 1
         architecture/model/diagrams/migration/plat-architecture-governance-mvp-14.puml:
-          sha256: 5b45b8a1d027ebac4e2e447f170e91b9e3cc825e59568d131649e9e4badb9629
-          lines: 21
+          sha256: 742b0286c3f3a5e4f1b8c063f9a2e6e5b64f58c7dea5cf66c8e4ea09317d0fa9
+          lines: 23
         architecture/model/diagrams/migration/plat-architecture-governance-mvp-14.svg:
-          sha256: ba2959924c41708750bf47312827319811b617818b371c155c7a1c883bef1750
+          sha256: ae501c0636734bfeadb05392c9e20f0f75899dc572e8f5fd727ddb508554fa2c
           lines: 1
         architecture/model/diagrams/migration/plat-architecture-strategy-future-13.puml:
           sha256: 506f59aa8bdd74db991e96c45d91ac19a55ed256532f4ba85dc71bc9ca018ac5
@@ -738,10 +738,10 @@ topics:
           sha256: aefa6e60e4be3f6fee89daaf5c37606440ae1ebe09b00fc571dd3826c750a52e
           lines: 1
         architecture/model/diagrams/migration/plat-compliance-pack-export-mvp-15.puml:
-          sha256: 559e1aeabfd760744792c94f1dba10dae53dda4dd7bcd729f774f4c2002a6c86
-          lines: 19
+          sha256: 9d2dc2d61a6c9842524bf5158278769235e67699b7fdcb13011bfe6086344c21
+          lines: 21
         architecture/model/diagrams/migration/plat-compliance-pack-export-mvp-15.svg:
-          sha256: 38b61052713d4541602209f3560a5a318c04271b0d4cfee4ad5705dd47bf0edd
+          sha256: aa0241e352cfc004eca32a0c706140663734a330d384912d19440ea00b62f595
           lines: 1
         architecture/model/diagrams/migration/plat-drift-management-mvp-5.puml:
           sha256: 747ee1c75c05ee200de1bdd0804706c394418ede4d1d0923bc8900bea2dd6f88
@@ -756,10 +756,10 @@ topics:
           sha256: cd82a6bec0547b8bd81beb51fc3eb4c8a5083c3f1675d373e8c04ade075b0b0e
           lines: 1
         architecture/model/diagrams/migration/plat-general-tasks-12.puml:
-          sha256: ed32c8aeee3150d63f703c7814de09d4543f5145ab6677d1521bc5d9c5e8eb39
-          lines: 27
+          sha256: 31bb8ebeb381df188c98af9cb978b52c64976e93ce094ab3aa7cbfecc91c36cb
+          lines: 23
         architecture/model/diagrams/migration/plat-general-tasks-12.svg:
-          sha256: 316c2242314726e332cd6db2c00acdb133a8d36a996341650cfb242beda49b97
+          sha256: 069b9aff32eaf03bfe965a7e7003df394ca41df29fee5ce1ee09f91ef1169a2f
           lines: 1
         architecture/model/diagrams/migration/plat-github-importer-11.puml:
           sha256: f4963012db376dd1c94ba00683dcfcee9a61b8c4fdfa7e3d29504d029dae02bc
@@ -780,10 +780,10 @@ topics:
           sha256: ec933b6914dcac307057e97f0fdcf99be41a6d6c788234430ef6f1d01e1d42ad
           lines: 1
         architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.puml:
-          sha256: f4aab45d48401e4236cd6af2caa72c098793c177e5332d5644bb2e6b1b3bb0ba
+          sha256: 23c924f637b71eae451efe536f8255b5e93e451dd89eb0941f42f29a77767ec3
           lines: 31
         architecture/model/diagrams/migration/plat-policy-to-oscal-mvp-1.svg:
-          sha256: 19f7ea27ba8de37aa6c17bae298463ec7b12a0f8dc6650e9a874f7b3d2944384
+          sha256: 024b385aa2837353a6662f9914358e8de6d88bd8edeed62d87f556f88a219174
           lines: 1
         architecture/model/diagrams/migration/plat-release-enforcement-mvp-9.puml:
           sha256: df6a10d3de2dc48ae8e4774de4c092cca0b3d592556b8af2df592d0d031ad966
@@ -816,10 +816,10 @@ topics:
           sha256: 0c1a88da4464e541a21eabcfb23fcd88214d4c2947e95c71279d62134dd9678e
           lines: 1
         architecture/model/diagrams/migration/work-package-dependencies.puml:
-          sha256: 0a3d63cc3d96f5adaacecd1ce7639a4126b5770e51127e5e2252de6980fd72c4
+          sha256: 0c2b5f1569ec1d1a65ca6dec954f2bbcfef653c953dd3b3886fdb4e9d7ef6aaa
           lines: 169
         architecture/model/diagrams/migration/work-package-dependencies.svg:
-          sha256: 0bce85cb37dbffd9fc03fbde4835a01999c1e3a71ea8243c749e46c153659408
+          sha256: 98634e1b28ae55292a476da5642701ed4f621db859e83f1957c37357d6cb51ef
           lines: 1
         architecture/model/diagrams/technology/landscape.puml:
           sha256: ec032487030ffa012c5ec192a0f57693889c2ce0a1f7ade0e5e7db6eb38395e4
@@ -1175,7 +1175,7 @@ topics:
       urls: {}
     title: Data Model
   decision-log:
-    built: '2026-11-11'
+    built: '2026-11-14'
     page: wiki/decision-log.md
     sources:
       files:
@@ -1240,12 +1240,12 @@ topics:
           lines: 25
           sha256: 0f92f59961924fe76df3d630a6536cce784eee2921a1b27c38ce0f9d7241838f
         docs/adr/README.md:
-          lines: 181
-          sha256: 7c8023497aed1f8c27cecda1f7d0c66493b10c4accc4c266ea4a2a91bbb67a09
+          lines: 191
+          sha256: 15901c95bba18383256137a8230d161ce60ffd95ae195097c4e9cbcdf848d82f
       urls: {}
     title: Architecture Decision Log
   decision-log-0030-onward:
-    built: '2026-11-11'
+    built: '2026-11-14'
     page: wiki/decision-log-0030-onward.md
     sources:
       files:
@@ -1312,6 +1312,15 @@ topics:
         docs/adr/0050-adr-conflict-detection-triple-trigger.md:
           lines: 49
           sha256: bf6554b4862e0f6d566169be249049733ccca113383e5c1385e37bae462bc9b7
+        docs/adr/0051-derived-relationship-overlay-rendering.md:
+          lines: 52
+          sha256: a5b7000d7c718b6bc2b9759a6da409b5c122a48c2c1dc9469224a16cfb8a88a1
+        docs/adr/0052-sample-azure-as-standalone-reference-model.md:
+          lines: 47
+          sha256: 4b0c8d9daf2cd35b7d7db8965435d3358307bf2c4e921c092a8da33cc9b5e7ba
+        docs/adr/0053-browser-ui-tests-extend-behave-playwright.md:
+          lines: 73
+          sha256: 9eba1b280ce00a8efbf6f29f0b171f82abef572cbcb53e1aad82b863ced5f088
       urls: {}
     title: 'Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030
       onward)'
@@ -1353,7 +1362,7 @@ topics:
       urls: {}
     title: 'Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)'
   development:
-    built: '2026-11-11'
+    built: '2026-11-14'
     page: wiki/development.md
     sources:
       files:
@@ -1382,8 +1391,8 @@ topics:
           lines: 83
           sha256: af4450560f5916f091b12646d214a22c5acfc2897ee2ee12b5f505262c6d71da
         scripts/pre_merge_checks.sh:
-          lines: 96
-          sha256: 192a5dcac9af3f388c5738667480b60b733e2d1862a280946365deaabd431ae0
+          lines: 87
+          sha256: f891912af475f1e8f044f757d4ac82c4570b34d4114069cfe9ef4feb6cdbf54e
         specs/EPIC-001-governance-platform/quickstart.md:
           lines: 80
           sha256: 611137846f3d15d8be7cff43b7c1aaaa7c2b0b89040dacd7e2c093f54327abe6
@@ -1725,7 +1734,7 @@ topics:
       urls: {}
     title: Non-Functional Requirements
   oscal-compliance:
-    built: '2026-11-08'
+    built: '2026-11-14'
     page: wiki/oscal-compliance.md
     sources:
       files:
@@ -1733,8 +1742,8 @@ topics:
           lines: 236
           sha256: 3375c290f8123368ced68aadf92d22e8640da701d2daf247182592beb4c6b6d4
         pyproject.toml:
-          lines: 241
-          sha256: b4cadb74e0262e56a6af02bd2638bf2202295639ea970a620a3e25a343edb72e
+          lines: 242
+          sha256: 4955049d9cc0430ef67110a5173dbd39c85ea354838df6ec8bba33b7c0cb4419
         sample-data/oscal/01-nist-baseline-resolution.puml:
           lines: 53
           sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
@@ -2039,7 +2048,7 @@ topics:
       urls: {}
     title: 'Conversational Solution Design Modelling (GH #139)'
   visualizer-service:
-    built: '2026-11-11'
+    built: '2026-11-14'
     page: wiki/visualizer-service.md
     sources:
       files:
@@ -2047,8 +2056,8 @@ topics:
           lines: 3
           sha256: 48dced7090a65d75210823fe82969b7d6a6a264288b53d11d6fa6ad86848d777
         src/frictionless_architect/app.py:
-          lines: 30
-          sha256: 1295cbfbfdce87301bf8c3b7bc04ca13ccb36cb8c0163b0e6058c30fbb4fc31d
+          lines: 34
+          sha256: a0c5bfa7e67c8acb5ff1bfe6eff670a73417e5cd22bc296d090396324cdf5ee9
         src/frictionless_architect/schema/__init__.py:
           lines: 5
           sha256: dfbfb90822e85df88dc25050b6972d3d445d14ea719fd9dae550c9a872690113
@@ -2073,6 +2082,9 @@ topics:
         src/frictionless_architect/visualizer/namespaces.py:
           lines: 65
           sha256: d302ab1a25368c2c24f3de6eabe5bb3e76809e3de1b506581d52eb221d1bfcf6
+        src/frictionless_architect/visualizer/placeholder_page.py:
+          lines: 47
+          sha256: e59b53eaec68f040293b18165ce9e69a766078607a113a68e2698f9e7c775e87
         src/frictionless_architect/visualizer/sample_parser.py:
           lines: 202
           sha256: 53bb12910b13a4dbe74e8a24c3268e4093f08d50c5b19055c8cdd817f3c63fc2

@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: '2026-11-08'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
@@ -366,3 +366,12 @@ one sentence is intentional (`TECHNICAL.md` §"Domain-Driven Design (DDD)";
 `TECHNICAL.md` §"Dependency Installation" / §"Utilities and Frameworks" name
 **Poetry** as the package manager (`poetry install`, `poetry.lock`,
 `poetry run`), explicitly "do not use `uv`", pointing at `ARCHITECTURE.md` §5.
+
+`TECHNICAL.md` §"Testing Layout" also now documents browser-level `@ui`-tagged
+scenarios: they drive a live `uvicorn` instance with a `playwright` Chromium
+browser (root `tests/features/environment.py`, and each platform package's
+own) rather than a static HTML fixture, run only in `scripts/pre_merge_checks.sh`
+(excluded from the fast `pre_commit_checks.sh` gate), with setup and run
+commands kept in `specs/EPIC-004-playwright-ui-tests/quickstart.md` rather than
+duplicated (`docs/adr/0053-browser-ui-tests-extend-behave-playwright.md`). See
+[Development & Quickstart](development.md).

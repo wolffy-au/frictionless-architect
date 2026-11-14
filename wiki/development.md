@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: '2026-11-11'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - .github/workflows/ci.yml
@@ -330,8 +330,9 @@ last, against the exact tree that gets pushed and tagged):
    once, against the post-bump tree (not before step 4's refresh or step 5's bump): this
    runs `pre_commit_checks.sh` (commit messages, pymarkdown, ruff, pyright, mypy, unit
    tests), the roadmap drift check, `poetry update` (fails if `poetry.lock` changes),
-   `platform_checks.sh --update`, the three Snyk scans, `behave`, then
-   `pytest --cov-fail-under=90`, then the frontend UI harness if `frontend/` exists.
+   `platform_checks.sh --update`, the three Snyk scans, a Playwright Chromium
+   install, `behave` (now including the `@ui` browser-level scenarios — see
+   below), then `pytest --cov-fail-under=90`.
 7. Push `develop`, open or update the `develop` → `main` PR, wait for CI, SonarCloud
    to be green (Snyk is a local §3/§6 gate, not a CI one — the pre-push hook's own
    pyright/mypy/pytest/platform-checks re-check fires here too, but against an
