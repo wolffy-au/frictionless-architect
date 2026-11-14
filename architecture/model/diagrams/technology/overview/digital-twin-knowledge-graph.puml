@@ -1,0 +1,20 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — digital-twin-knowledge-graph
+
+Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+}
+Technology_SystemSoftware(e_id625e631f1f715e, "Neo4j 5.x") {
+  Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
+}
+Technology_Node(e_id77a3094245ca50, "Hosted Cluster (target runtime, shape deferred)")
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Assignment(e_id87c8b07cea4751, e_id625e631f1f715e, "hosts (MVP)")
+Rel_Assignment(e_id77a3094245ca50, e_id625e631f1f715e, "hosts (target)")
+Rel_Realization_Up(e_id69891242354858, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

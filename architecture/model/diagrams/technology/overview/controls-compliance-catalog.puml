@@ -1,0 +1,19 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — controls-compliance-catalog
+
+Technology_SystemSoftware(e_id32ef66e0cc7a59, "pytest") {
+  Technology_Process(e_id2f83bc5585b95c, "OSCAL Golden-Dataset Regression Check")
+}
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_Artifact(e_id1ae7a35dbecd59, "Trestle Workspace Directory")
+}
+Technology_SystemSoftware(e_ida1d9ee28fe8258, "Python 3.12 / FastAPI (uvicorn)") {
+  Technology_Artifact(e_idfcb391a9833b5b, "packages/controls-compliance-catalog")
+}
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Realization_Up(e_idfcb391a9833b5b, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — schema-visualizer-api
+
+Technology_Artifact(e_id11f06faa9d2d5d, "packages/schema-visualizer-api")
+
+
+@enduml

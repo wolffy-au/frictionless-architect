@@ -1,0 +1,50 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — conformance-drift-assurance
+
+Business_Object(e_idb990615e712f57, "OSCAL Assessment Plan")
+Business_Object(e_id9f8a83bba77b50, "OSCAL Assessment Results")
+Business_Object(e_id8a58348ab4605a, "Release Gate Decision")
+Business_Object(e_idca68dd43dc1854, "Control Effectiveness Evidence")
+Business_Object(e_id2532acbff6cc51, "Target State Architecture")
+Business_Object(e_idb23da624fbab57, "Architecture Roadmap") {
+  Business_Object(e_id469a5e18ea9c57, "Transition State Architecture")
+}
+Business_Object(e_idd18d048900f05b, "OSCAL Plan of Action & Milestones")
+Business_Object(e_id195b0ade075454, "Architecture Conformance Register") {
+  Business_Object(e_id4819673b912051, "Drift Finding")
+}
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
+  Application_DataObject(e_id1d885b26074d5f, "OSCAL Assessment Plan")
+  Application_DataObject(e_id54ef3a7ba52853, "OSCAL Assessment Results")
+  Application_DataObject(e_id90ba20c8d63655, "OSCAL Plan of Action & Milestones")
+}
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_id3feb2ef83d975c, "Architecture Roadmap")
+  Application_DataObject(e_idc0645293cd9156, "Classified Drift Finding")
+  Application_DataObject(e_id1cec8e0c65ff5c, "Control Effectiveness Evidence")
+}
+Application_DataObject(e_idba85a2c1b90d5c, "Gate Decision")
+Application_DataObject(e_id02b46c82d75c5e, "Remediation Backlog Item")
+Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
+
+Rel_Association(e_idb23da624fbab57, e_id2532acbff6cc51, "sequences the transition to")
+Rel_Realization_Up(e_id90ba20c8d63655, e_idd18d048900f05b, "")
+Rel_Realization_Up(e_id3feb2ef83d975c, e_idb23da624fbab57, "")
+Rel_Association(e_idd18d048900f05b, e_id9f8a83bba77b50, "tracks remediation of")
+Rel_Realization_Up(e_idc0645293cd9156, e_id4819673b912051, "")
+Rel_Association(e_id195b0ade075454, e_id02b46c82d75c5e, "approved findings raised as")
+Rel_Association(e_id9f8a83bba77b50, e_idb990615e712f57, "imports (per OSCAL's required import-ap)")
+Rel_Specialization_Up(e_id8a58348ab4605a, e_id9f8a83bba77b50, "pre-release instance")
+Rel_Specialization_Up(e_idca68dd43dc1854, e_id9f8a83bba77b50, "continuous-monitoring instance")
+Rel_Realization_Up(e_id1cec8e0c65ff5c, e_idca68dd43dc1854, "")
+Rel_Realization_Up(e_id1d885b26074d5f, e_idb990615e712f57, "")
+Rel_Realization_Up(e_id54ef3a7ba52853, e_id9f8a83bba77b50, "")
+Rel_Association(e_id54ef3a7ba52853, e_id1d885b26074d5f, "imports (per OSCAL's required import-ap)")
+Rel_Specialization_Up(e_idba85a2c1b90d5c, e_id54ef3a7ba52853, "pre-release instance")
+Rel_Specialization_Up(e_id1cec8e0c65ff5c, e_id54ef3a7ba52853, "continuous-monitoring instance")
+e_id989d401ffdae55 ..> e_id2532acbff6cc51 : <<derived>>\nRealization
+
+@enduml

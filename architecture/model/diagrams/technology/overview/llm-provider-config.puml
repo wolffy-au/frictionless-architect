@@ -1,0 +1,13 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — llm-provider-config
+
+Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+Technology_Node(e_id87c8b07cea4751, "Linux Application Server") {
+  Technology_SystemSoftware(e_id35bf5bb401c95c, "OS Credential Store (keyring)")
+}
+Technology_SystemSoftware(e_ida94fafd401dd5f, "litellm")
+
+
+@enduml

@@ -61,8 +61,23 @@
   # that persist those. Swept by type, not members, so new elements of these
   # types appear automatically. Representation and Meaning are not yet
   # modelled, so only BusinessObject, DataObject and Artifact appear for now.
+  # split_by: context (GH #129 step 4) gives each package its own small,
+  # single-facet diagram of just its own data shape, legible on its own
+  # before a reader opens that package's denser Application Cooperation view.
+  # No include_neighbours here, unlike the other split views: a DataObject's
+  # normal one-hop neighbour is every ApplicationFunction that Accesses it,
+  # which is the whole function set the split exists to leave out -- measured
+  # on conformance-drift-assurance, include_neighbours produced a diagram
+  # *larger* than its own Application Cooperation view. Cross-context
+  # Business/DataObject edges are dropped as a result; derived: true overlays
+  # the subset of them a DR2/DR3/DR5/DR7/DR8 chain through an out-of-context
+  # ApplicationFunction still implies, without pulling that function set back
+  # in; view-context-map also covers cross-context dependency at the
+  # boundary level.
   viewpoint: information_structure
   diagram: business/information-structure
+  split_by: context
+  derived: true
   include_types: [BusinessObject, Representation, DataObject, Artifact, Meaning]
   # No Flow/Triggering here to undirect; Realization/Specialization already
   # default Up, which is what keeps this flowing top to bottom. Just cap the
@@ -76,8 +91,12 @@
   # and hardware technology supporting the application layer. Swept by type,
   # not members, so new technology elements appear automatically;
   # view-technology-landscape is the hand-curated infrastructure-topology cut.
+  # split_by: context (GH #129 step 4), same rationale as
+  # view-information-structure above: one small per-package technology
+  # footprint diagram instead of only the whole-platform sweep.
   viewpoint: technology
   diagram: technology/overview
+  split_by: context
   include_types:
     - Location
     - Node
@@ -129,7 +148,6 @@
   viewpoint: product
   diagram: business/product
   split_by: context
-  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -171,7 +189,6 @@
   viewpoint: application_usage
   diagram: application/usage
   split_by: context
-  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -280,7 +297,6 @@
   viewpoint: application_cooperation
   diagram: application/cooperation-standard
   split_by: context
-  include_neighbours: true
   include_types:
     - Location
     - ApplicationComponent
@@ -308,7 +324,6 @@
   viewpoint: service_realization
   diagram: business/service-realization
   split_by: context
-  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -349,7 +364,6 @@
   # types automatically rather than needing to be hand-maintained.
   viewpoint: implementation_migration
   split_by: context
-  include_neighbours: true
   include_types: [Plateau, Gap, WorkPackage, Deliverable]
   # Triggering joins no_direction so the WorkPackage sequence reads
   # top-to-bottom: graphviz's own default rank direction is top-to-bottom,
@@ -373,7 +387,6 @@
   viewpoint: implementation_deployment
   diagram: implementation/deployment
   split_by: context
-  include_neighbours: true
   include_types:
     - ApplicationComponent
     - ApplicationCollaboration
