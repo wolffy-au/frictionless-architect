@@ -185,3 +185,7 @@ not yet re-ratified in a spec).
 - **P** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` is
   vendored as a standalone reference model for the multi-tenant case, excluded from the
   merge sweep that pulls IT4IT in (ADR-0029)
+- **A** — [0053](0053-browser-ui-tests-extend-behave-playwright.md) — Browser-level UI
+  tests (GH #119) extend the existing `behave` + Playwright harness already shipped for
+  the playground and LLM provider config page, not a new `pytest-playwright` toolchain;
+  the visualiser gets a minimal placeholder page pending GH #74

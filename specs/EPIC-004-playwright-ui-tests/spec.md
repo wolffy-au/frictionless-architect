@@ -13,6 +13,8 @@
 ### Session 2026-11-14
 
 - Q: When a browser-level test fails, should the test runner automatically retry it before the merge gate reports a failure, or should every failure be reported on the first attempt? → A: One automatic retry on failure before reporting (Option B) — reduces flaky false positives at some risk of masking an intermittent real bug.
+- Q: The visualiser currently serves no HTML page (only a JSON API; its UI composition/build tooling is tracked separately, still open, in GH #74) — how should this feature treat that third surface? → A: Build a minimal placeholder HTML page for the visualiser as part of this feature, so there is a real page to test.
+- Q: The playground and LLM provider config page already have working, committed `behave` + Playwright browser-test coverage, already excluded from the fast gate and already run by the merge gate. Should this feature extend that existing pattern, or add the issue's originally proposed `pytest-playwright` harness as a second toolchain? → A: Extend the existing `behave` + Playwright pattern; no second toolchain.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -197,6 +199,9 @@ UC1 ..> UC2 : <<precedes>>
 - **FR-008**: A browser-level test that fails MUST be automatically retried exactly
   once before the merge gate reports it as a failure; a test that fails twice in a row
   MUST be reported as a real failure, not silently retried further.
+- **FR-009**: Because the visualiser currently serves no HTML page, the system MUST add
+  a minimal placeholder HTML page for it, so FR-001 and FR-002's browser-level smoke
+  coverage has a real page to exercise.
 
 ## Success Criteria *(mandatory)*
 
@@ -232,3 +237,6 @@ UC1 ..> UC2 : <<precedes>>
 - Which specific tooling implements these tests, and any load-bearing choice between
   candidate approaches, is recorded as an ADR during planning, per the project's
   decision-traceability principle — not decided in this spec.
+- The visualiser's placeholder page (FR-009) is a minimal landing page sufficient for
+  smoke testing only. It is not the subsystem UI composition work tracked separately
+  in GH #74, which remains unblocked, separate, follow-on work.
