@@ -9,6 +9,7 @@
 
 ### Fix
 
+- **llm-provider-config**: confine env path override to a base dir
 - guarantee UI harness cleanup
 - **model**: reinstate view-product and view-application-usage
 - **model**: disambiguate workspace tenancy from oscal-workspace artifact
