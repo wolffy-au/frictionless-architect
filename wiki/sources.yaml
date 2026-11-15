@@ -45,11 +45,17 @@ topics:
     sources:
       - path: docs/adr/002*.md
 
-  - name: decision-log-0030-onward
-    title: "Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)"
-    description: ADR-0030 onward — vendored OSCAL content, ArchiMate namespace, value streams, shared packages, the GitHub-roadmap layer, element-id prefixes, conversational authoring, canonical roles, bounded contexts and maintenance agents.
+  - name: decision-log-0030-0039
+    title: "Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)"
+    description: ADR-0030–0039 — vendored OSCAL content, ArchiMate namespace, value streams, shared packages, the GitHub-roadmap layer, element-id prefixes and conversational authoring.
     sources:
-      - path: docs/adr/00[3-9]*.md
+      - path: docs/adr/003*.md
+
+  - name: decision-log-0040-onward
+    title: "Architecture Decision Log: Contexts, Agents & Access (ADR-0040 onward)"
+    description: ADR-0040 onward — bounded contexts, structured suggestion options, PII-gateway semantics, canonical roles, maintenance agents and the authn/authz approach.
+    sources:
+      - path: docs/adr/00[4-9]*.md
 
   - name: architecture-model
     title: Architecture Model
@@ -149,10 +155,18 @@ topics:
       - path: architecture/model/views-viewpoints.yaml
       - path: architecture/model/diagrams/vision/**
       - path: architecture/model/diagrams/business/**
-      - path: architecture/model/diagrams/layered/**
-      - path: architecture/model/diagrams/c4/**
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+
+  - name: architecture-diagrams-layered-c4
+    title: "Architecture Views & Diagrams: Layered & C4"
+    description: The layered-viewpoint ArchiMate views and the generated C4 context/container diagrams — split out once Architecture Views & Diagrams passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: architecture/model/diagrams/layered/**
+      - path: architecture/model/diagrams/c4/**
 
   - name: architecture-diagrams-application
     title: "Architecture Views & Diagrams: Application Layer"
@@ -379,6 +393,12 @@ topics:
       - path: CODE_OF_CONDUCT.md
       - path: SECURITY.md
       - path: tests/api/README.md
+
+  - name: ui-testing-epic-004
+    title: "Playwright UI Tests (EPIC-004)"
+    description: EPIC-004 — the @ui behave/Playwright live-server harness and the visualiser placeholder landing page it exercises.
+    sources:
+      - path: specs/EPIC-004-playwright-ui-tests/**/*.md
 
   - name: sample-data
     title: Sample Data

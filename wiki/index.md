@@ -1,6 +1,6 @@
 ---
 title: Frictionless Architect Wiki
-generated: '2026-11-12'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 ---
 
@@ -29,10 +29,15 @@ generator: claude-sonnet-5
   — ADR-0020–0029: per-subsystem UIs, the schema visualiser stack, the
   single-user MVP, commit conventions, governed-entity FSMs, the capability
   value stream, relationship storage and the vendored IT4IT model.
-- [Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts](decision-log-0030-onward.md)
-  — ADR-0030 onward: vendored OSCAL content, ArchiMate namespace, value streams,
-  shared packages, the GitHub-roadmap layer, conversational authoring, roles,
-  bounded contexts and maintenance agents.
+- [Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)](decision-log-0030-0039.md)
+  — ADR-0030–0039: vendored OSCAL content, ArchiMate namespace, value streams,
+  shared packages, the GitHub-roadmap layer, element-id prefixes,
+  conversational authoring, canonical roles and solution modelling.
+- [Architecture Decision Log: Contexts, Agents & Access (ADR-0040 onward)](decision-log-0040-onward.md)
+  — ADR-0040 onward: bounded contexts, suggestion options, maintenance agents,
+  PII-gateway semantics, multi-tenancy, CI scan topology, ADR attestation and
+  conflict detection, derived-relationship overlays, browser UI tests and the
+  authn/authz/tenancy approach.
 - [Architecture Model](architecture-model.md) — the canonical graph-loadable
   YAML model in `architecture/model/` from which every ArchiMate/C4 diagram is
   generated: files, schema, the content sections and the generated GitHub
@@ -72,6 +77,10 @@ generator: claude-sonnet-5
   how the vision and business views map to ArchiMate viewpoints, the TOGAF
   Phase A vision-view set, the 17 new generic per-viewpoint views (GH #105),
   and the `include_types`/`exclude_elements` platform-only scoping mechanism.
+- [Architecture Views & Diagrams: Layered & C4](architecture-diagrams-layered-c4.md) —
+  the cross-layer `layered` views, the derived-relationship overlay and its
+  probe view, and the generated C4 context/container diagrams. Split out of
+  the page above (2026-11-15) once it passed 500 lines.
 - [Architecture Views & Diagrams: Application Layer](architecture-diagrams-application.md) —
   the Application Cooperation bounded-context split (GH #129), the
   application-usage data-flow slices (GH #105 follow-up), and the
@@ -106,9 +115,9 @@ generator: claude-sonnet-5
   surface, and golden-dataset validation.
 - [Conversational Model Authoring](modelling-specification.md) — the
   `platform/packages/modelling-specification` package (GH #108,
-  [ADR-0037](decision-log-0030-onward.md); renamed "Conversational Candidate Architecture
+  [ADR-0037](decision-log-0030-0039.md); renamed "Conversational Candidate Architecture
   Authoring" and scoped to Enterprise Architects only per
-  [ADR-0039](decision-log-0030-onward.md), 2026-10-24): the conversational ArchiMate
+  [ADR-0039](decision-log-0030-0039.md), 2026-10-24): the conversational ArchiMate
   authoring agent, its candidate-delta propose/validate/decide/render
   pipeline, Enterprise Convention Rules, and the ported
   `build`/`render`/`validate` CLI that root's scripts and the
@@ -149,6 +158,9 @@ generator: claude-sonnet-5
 - [Development & Quickstart](development.md) — prerequisites, setup, running the
   visualiser, tests, the quality-gate toolchain, the SpecKit workflow, and what
   `AGENTS.md` covers.
+- [Playwright UI Tests (EPIC-004)](ui-testing-epic-004.md) — the `@ui`
+  behave/Playwright live-server harness, its one-retry policy and merge-gate
+  wiring, and the visualiser placeholder landing page it exercises (ADR-0053).
 - [Sample Data](sample-data.md) — the bundled ArchiMate/C4 sample models, the
   Archi CSV exports, and the OSCAL profile-resolution diagrams.
 - [Agent Skills & Workflows](agent-workflows.md) — the repo's committed
