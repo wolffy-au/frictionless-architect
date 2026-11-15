@@ -22,6 +22,8 @@ from frictionless_architect.visualizer.namespaces import ArchimateNamespaceError
 from frictionless_architect.visualizer.sample_parser import SampleParser, SampleParseResult
 from frictionless_architect.visualizer.sample_validator import validate_sample_against_schema
 
+logger = logging.getLogger(__name__)
+
 
 class PayloadUnavailable(Exception):
     """Raised when neither Neo4j nor the sample model yields any schema data.
@@ -29,6 +31,10 @@ class PayloadUnavailable(Exception):
     Carries the empty-but-structurally-valid payload that was built anyway, so a caller
     with no cache to fall back on can still answer with it (FR-006: the summary stays
     accessible) instead of surfacing this as an error.
+
+    Attributes:
+        warnings: Warnings collected while trying to build the payload.
+        payload: The empty-but-valid payload built during this attempt, if any.
     """
 
     def __init__(self, message: str, warnings: list[str] | None = None, payload: dict[str, Any] | None = None) -> None:
@@ -77,11 +83,20 @@ class RefreshRequest(BaseModel):
 
 
 MODEL_SCHEMA_FILE = "archimate3_Model.xsd"
+"""``source_file`` tag stamped on merged elements/relationships and the model payload."""
 VIEW_SCHEMA_FILE = "archimate3_View.xsd"
+"""``source_file`` tag stamped on merged views."""
 
 
 class SchemaPayloadService:
-    """Builds, caches and refreshes the merged Neo4j + sample schema payload."""
+    """Builds, caches and refreshes the merged Neo4j + sample schema payload.
+
+    Attributes:
+        settings: Visualiser settings.
+        parser: Parser for the sample model.
+        loader: Neo4j reader.
+        cache: File cache for the payload.
+    """
 
     def __init__(
         self, settings: VisualizerSettings, parser: SampleParser, loader: DataLoader, cache: SchemaCache
@@ -398,9 +413,6 @@ class SchemaPayloadService:
                 add_warning(f"Missing sample entry for {rel_type} {identifier}")
             result.append(entry)
         return result
-
-
-logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
