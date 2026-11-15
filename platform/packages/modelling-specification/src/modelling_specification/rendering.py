@@ -163,6 +163,28 @@ def _rendering_flags(v: dict[str, Any]) -> list[str]:
     return flags
 
 
+def _context_split_jobs(
+    v: dict[str, Any],
+    slug: str,
+    base_cmd: list[str],
+    diagram_root: Path,
+    elements: list[dict[str, Any]],
+    types_by_id: dict[str, str],
+) -> list[tuple[Path, list[str]]]:
+    """One job per context actually present on `v` (GH #129 step 4), for a
+    `split_by: context` view -- the fan-out `_view_diagram_jobs` delegates to.
+    """
+    jobs: list[tuple[Path, list[str]]] = []
+    for context in model_io.view_split_contexts(v, elements, types_by_id):
+        cmd = [*base_cmd, "--context", context]
+        package_dir = _package_diagram_dir(context) if v.get("package_diagrams") else None
+        if package_dir is not None:
+            jobs.append((package_dir / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
+        else:
+            jobs.append((diagram_root / slug / f"{context}.puml", cmd))
+    return jobs
+
+
 def _view_diagram_jobs(
     views_file: Path, diagram_root: Path, elements: list[dict[str, Any]], types_by_id: dict[str, str]
 ) -> list[tuple[Path, list[str]]]:
@@ -192,13 +214,7 @@ def _view_diagram_jobs(
             *_rendering_flags(v),
         ]
         if v.get("split_by") == "context":
-            for context in model_io.view_split_contexts(v, elements, types_by_id):
-                cmd = [*base_cmd, "--context", context]
-                package_dir = _package_diagram_dir(context) if v.get("package_diagrams") else None
-                if package_dir is not None:
-                    jobs.append((package_dir / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
-                else:
-                    jobs.append((diagram_root / slug / f"{context}.puml", cmd))
+            jobs += _context_split_jobs(v, slug, base_cmd, diagram_root, elements, types_by_id)
         else:
             jobs.append((diagram_root / f"{slug}.puml", base_cmd))
     return jobs
