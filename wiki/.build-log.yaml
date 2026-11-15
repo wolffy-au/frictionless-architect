@@ -1147,6 +1147,26 @@ topics:
           sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
       urls: {}
     title: 'Architecture Model: Ecosystem'
+  architecture-model-history:
+    built: '2026-11-15'
+    page: wiki/architecture-model-history.md
+    sources:
+      files:
+        architecture/model/README.md:
+          lines: 192
+          sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
+        architecture/model/elements.yaml:
+          lines: 2200
+          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+        architecture/model/relationships.yaml:
+          lines: 1091
+          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+        architecture/model/views-viewpoints.yaml:
+          lines: 475
+          sha256: 4fff10768b38e7601cd9a9ffffe341555842153545b502b10a59776aafbbafa3
+        architecture/model/views.yaml:
+          lines: 1259
+          sha256: 15d88d6d82e74f123d87f9eba0db547df8d678339a2e3ab69d2838787659501a
   architecture-model-migration:
     built: '2026-11-15'
     page: wiki/architecture-model-migration.md
@@ -1729,9 +1749,6 @@ topics:
         docs/adr/0037-conversational-model-authoring-architecture.md:
           lines: 182
           sha256: a12a42e6bb3c15b6e0ff0af51ea632f42e3cf2d6f03944a28352624f3c79d243
-        docs/adr/0041-structured-suggestion-options-in-delta-py.md:
-          lines: 68
-          sha256: 68cdb36ca73438463e78365dcfb0bad8c2e55e85e41ac3f701d8a4c8a0648e07
         platform/packages/modelling-specification/README.md:
           lines: 161
           sha256: 851d326f7f37a2cf113df664a5a777bf1b1ca3efd309833e42283bd88cecd6d6
@@ -1810,27 +1827,6 @@ topics:
         scripts/run-modelling_specification.sh:
           lines: 17
           sha256: c21fecdffa55523874f7994e14865520082ae8c3895c103fbeb338d2ae2d6e7c
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/checklists/requirements.md:
-          lines: 37
-          sha256: 3f18db9658a2d51c3c3e32f1eee720ffb9178898dc5005ba21794cfaba50f0fb
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/data-model.md:
-          lines: 21
-          sha256: 167553c7d227485b4a3aead719eaffcc594a1bf72f7f4b02f1d47b44be61c66a
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md:
-          lines: 123
-          sha256: 07feacece93988c9bb4d195a52fd0613796ceb24749a5e3cbe411a34b08134ae
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/quickstart.md:
-          lines: 44
-          sha256: 840b69f8e1cf39efcde55c78854195074a26fde32d7655264141a325fe7de63c
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md:
-          lines: 91
-          sha256: bc7f91ab87164ca0def816abf945db5a91506b7582109dd1a238fd1f42a1bb05
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md:
-          lines: 115
-          sha256: b34dc1aee1846523012e003a4adaaa3842be07cbeba518caaf3b4f07dc0d85e7
-        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md:
-          lines: 112
-          sha256: f2863d929511a9b52c992e90f54c7320152ea342e899b21204bbb5309890dc09
         specs/EPIC-003-conversational-model-authoring/checklists/requirements.md:
           lines: 77
           sha256: f6536e85b7fc8ac57dca2acc4ec5172bf4afa2ef30dbf98943a3f9903fcc4015
@@ -1855,7 +1851,86 @@ topics:
         specs/EPIC-003-conversational-model-authoring/tasks.md:
           lines: 455
           sha256: 54050ff4e5706a1fd20f60da5430261d86145010e7b610d4ccb8ae140b76a996
-    title: Conversational Model Authoring
+  modelling-specification-pipeline:
+    built: '2026-11-15'
+    page: wiki/modelling-specification-pipeline.md
+    sources:
+      files:
+        docs/adr/0041-structured-suggestion-options-in-delta-py.md:
+          lines: 68
+          sha256: 68cdb36ca73438463e78365dcfb0bad8c2e55e85e41ac3f701d8a4c8a0648e07
+        platform/packages/modelling-specification/README.md:
+          lines: 161
+          sha256: 851d326f7f37a2cf113df664a5a777bf1b1ca3efd309833e42283bd88cecd6d6
+        platform/packages/modelling-specification/src/modelling_specification/authoring/__init__.py:
+          lines: 1
+          sha256: 39abd98b5f03137d7c8968fb531e3e9c2cdf13c4be3fbdb791fe45d6fecc2392
+        platform/packages/modelling-specification/src/modelling_specification/authoring/delta.py:
+          lines: 603
+          sha256: f42109fa623219f428be049d2f292903f3a65e4ffc74c6c1ececa7cbab7108ff
+        platform/packages/modelling-specification/src/modelling_specification/authoring/overrides.py:
+          lines: 62
+          sha256: c5d7733872f66d524479fae2219568b329594f14c20f3ea8a99eaaf5a519a54e
+        platform/packages/modelling-specification/src/modelling_specification/authoring/state.py:
+          lines: 181
+          sha256: 2929e65d9ae6c6eaa9fd010aead2470929ca2a02cd7f9c964f25c4f84076a34b
+        platform/packages/modelling-specification/src/modelling_specification/markdown_render.py:
+          lines: 52
+          sha256: 707a1252d57d5915a2bacb795c48cbef2a4e1c60b66101d9cf9f7dcb9a7d2073
+        platform/packages/modelling-specification/src/modelling_specification/router.py:
+          lines: 1091
+          sha256: f44cc55508701ff76e1124883c4dceadd8875cb4c4e8778fd793538aaec97285
+        platform/packages/modelling-specification/src/modelling_specification/ui.py:
+          lines: 890
+          sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
+        platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
+          lines: 1
+          sha256: 31526e2b1389e35ab771eb7115ac944cb9b60455ee56d0c0de1d6982b0dbd270
+        platform/packages/modelling-specification/src/modelling_specification/validation/conventions.py:
+          lines: 329
+          sha256: edc7471d9a18cb63248ef0c21345c316586f7d1588feb52629ddf96799b8e3a7
+        platform/packages/modelling-specification/src/modelling_specification/validation/duplicates.py:
+          lines: 52
+          sha256: cb851a7e6beebec6eab6c6da7eccd6f055b641551ce32a0c57d436bffa6b0a37
+        platform/packages/modelling-specification/src/modelling_specification/validation/fixes.py:
+          lines: 71
+          sha256: 55a9512519891e1aa30223cb8d10d055d897fc909bcfb8d875a4a8e6113f444b
+        platform/packages/modelling-specification/src/modelling_specification/validation/metamodel.py:
+          lines: 43
+          sha256: 68231772ed27818a85e8c8190a28573366f0ee31ec2be8d11ec5e81c53a5afb4
+        platform/packages/modelling-specification/src/modelling_specification/validation/patterns.py:
+          lines: 107
+          sha256: 67ef53666b0bf09538125b4795569bfeb0785e4d99bba62576fa6165e279e3b7
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/checklists/requirements.md:
+          lines: 37
+          sha256: 3f18db9658a2d51c3c3e32f1eee720ffb9178898dc5005ba21794cfaba50f0fb
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/data-model.md:
+          lines: 21
+          sha256: 167553c7d227485b4a3aead719eaffcc594a1bf72f7f4b02f1d47b44be61c66a
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/plan.md:
+          lines: 123
+          sha256: 07feacece93988c9bb4d195a52fd0613796ceb24749a5e3cbe411a34b08134ae
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/quickstart.md:
+          lines: 44
+          sha256: 840b69f8e1cf39efcde55c78854195074a26fde32d7655264141a325fe7de63c
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/research.md:
+          lines: 91
+          sha256: bc7f91ab87164ca0def816abf945db5a91506b7582109dd1a238fd1f42a1bb05
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/spec.md:
+          lines: 115
+          sha256: b34dc1aee1846523012e003a4adaaa3842be07cbeba518caaf3b4f07dc0d85e7
+        specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md:
+          lines: 112
+          sha256: f2863d929511a9b52c992e90f54c7320152ea342e899b21204bbb5309890dc09
+        specs/EPIC-003-conversational-model-authoring/contracts/api.md:
+          lines: 170
+          sha256: bf93b37947248ec6df6c9632f9bbf49f93900aa3f09fcae5d6c15575e5f0957d
+        specs/EPIC-003-conversational-model-authoring/data-model.md:
+          lines: 206
+          sha256: 65ea63e4f8a8868fd5f810645c329a97d4543b2621d501155741f303827cfbcf
+        specs/EPIC-003-conversational-model-authoring/spec.md:
+          lines: 293
+          sha256: 77294f752f345571d540cc1c9290d5a14bdf15832d0332e25614c992ba265372
   non-functionals:
     built: '2026-10-24'
     page: wiki/non-functionals.md

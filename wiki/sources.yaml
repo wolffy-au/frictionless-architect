@@ -71,6 +71,16 @@ topics:
       - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
       - path: platform/packages/modelling-specification/src/modelling_specification/rendering.py
 
+  - name: architecture-model-history
+    title: "Architecture Model: Provenance & Change History"
+    description: How the canonical model got to its current shape — where each section came from and the dated passes that changed it — split out once Architecture Model passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+
   - name: architecture-model-contexts
     title: "Architecture Model: Context-Level Viewpoints & Bounded Contexts"
     description: The generic per-viewpoint views and the context tag that scopes them — generated bounded-context Groupings, split views and the context map (GH #105, GH #129, ADR-0040).
@@ -279,14 +289,28 @@ topics:
       - path: specs/EPIC-003-conversational-model-authoring/*.md
       - path: specs/EPIC-003-conversational-model-authoring/checklists/*.md
       - path: specs/EPIC-003-conversational-model-authoring/contracts/*.md
-      - path: specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/**/*.md
       - path: platform/packages/modelling-specification/src/modelling_specification/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/reference/README.md
       - path: docs/adr/0037-conversational-model-authoring-architecture.md
-      - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
       - path: scripts/run-modelling_specification.sh
+
+  - name: modelling-specification-pipeline
+    title: "Conversational Model Authoring: Candidate-Delta Pipeline"
+    description: The propose → validate → review → accept → render pipeline of the conversational authoring agent, its LLM contract, validation checks and structured suggestions (ADR-0037, ADR-0041) — split out once Conversational Model Authoring passed ~500 lines.
+    sources:
+      - path: platform/packages/modelling-specification/README.md
+      - path: specs/EPIC-003-conversational-model-authoring/spec.md
+      - path: specs/EPIC-003-conversational-model-authoring/data-model.md
+      - path: specs/EPIC-003-conversational-model-authoring/contracts/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/**/*.md
+      - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/markdown_render.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/router.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/ui.py
+      - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
 
   - name: solution-design-modelling
     title: "Conversational Solution Design Modelling (GH #139)"

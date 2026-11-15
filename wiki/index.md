@@ -43,6 +43,10 @@ generator: claude-sonnet-5
   generated: files, schema, the content sections and the generated GitHub
   roadmap layer. Contexts and viewpoints, and the build pipeline with the
   IT4IT merge, have their own pages below.
+- [Architecture Model: Provenance & Change History](architecture-model-history.md) —
+  where each section of the model came from and the dated passes that
+  reshaped it. Split out of the page above (2026-11-15) once it passed 500
+  lines.
 - [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) —
   the generic per-viewpoint views and the `context:` tag that scopes them:
   generated bounded-context Groupings, split views and the context map
@@ -122,6 +126,11 @@ generator: claude-sonnet-5
   pipeline, Enterprise Convention Rules, and the ported
   `build`/`render`/`validate` CLI that root's scripts and the
   `model-archimate` skill now wrap.
+- [Conversational Model Authoring: Candidate-Delta Pipeline](modelling-specification-pipeline.md) —
+  the propose → validate → fix → decide → render pipeline in detail: the LLM
+  contract, validation checks, structured suggestions (ADR-0041), Markdown
+  sanitisation and the working indicator (GH #186). Split out of the page above
+  (2026-11-15) once it passed 500 lines.
 - [Conversational Solution Design Modelling](solution-design-modelling.md) —
   the sibling, Draft-stage GH #139 spec for `fn-solution-modelling`, the
   Solution Architect's own conversational authoring mode over a single
