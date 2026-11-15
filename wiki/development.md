@@ -1,6 +1,6 @@
 ---
 title: Development & Quickstart
-generated: '2026-11-14'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - .github/workflows/ci.yml
@@ -45,8 +45,10 @@ There are two quickstarts, both feature-scoped under `specs/`:
   the schema visualiser. It was realigned on 2026-10-04 with the JSON-only service: it
   now uses `poetry install` / `poetry run uvicorn`, the full
   `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` name, and tells you to fetch
-  `/schema-payload` (docs at `/docs`; `POST /schema-payload/refresh` returns `429` with `Retry-After` during the backoff after a successful refresh) because there is no browser UI yet — the old
-  `/schema-visualizer` page, polling and **Refresh sample** button are gone
+  `/schema-payload` (docs at `/docs`; `POST /schema-payload/refresh` returns `429` with `Retry-After` during the backoff after a successful refresh) because the data API is JSON-only and there is no real browser UI yet — the old
+  `/schema-visualizer` page, polling and **Refresh sample** button are gone. `GET /` serves only
+  a minimal placeholder page (status text plus the schema's element count, ADR-0053) used by the
+  browser-level tests
   (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/quickstart.md` §"Start the visualiser", §"Workflow tips").
 
 ## Prerequisites
@@ -123,8 +125,8 @@ FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS=300    # seconds between automatic
 
 poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 # then fetch http://127.0.0.1:8100/schema-payload — JSON-only for now, the
-# server-rendered /schema-visualizer HTML page was dropped 2026-09-13
-# (see Visualizer Service)
+# server-rendered /schema-visualizer HTML page was dropped 2026-09-13;
+# GET / is only a minimal placeholder page (see Visualizer Service)
 ```
 
 If a load fails (nothing reachable, or Neo4j `unavailable`), the service retries
@@ -162,9 +164,10 @@ poetry run pytest tests/api/test_schema_payload.py::<test_name>
   §"API Testing Patterns" documents the deterministic fixtures: a fixed sample
   ArchiMate `.xml`, per-test `tmp_path` cache isolation, and clearing the
   `lru_cache`d accessors (`get_visualizer_settings`, `get_schema_service`)
-  between tests. `tests/api/README.md` lists the four modules
+  between tests. `tests/api/README.md` lists the five modules
   (`test_schema_payload.py`, `test_schema_status.py`,
-  `test_schema_view_consistency.py`, `test_app_lifespan.py`) and the
+  `test_schema_view_consistency.py`, `test_placeholder_page.py` — the `GET /`
+  placeholder page and its empty-payload fallback — and `test_app_lifespan.py`) and the
   `conftest.py` client fixtures: `schema_client` uses the real sample model, and
   the variants cover a missing sample, a slow refresh, an XSD violation and a
   first-load failure that later recovers. New fixtures should go through the
@@ -214,6 +217,10 @@ payload, refresh, unavailable-sample warnings, the 2-second target and the load 
 step in `scripts/pre_merge_checks.sh` before the coverage-gated pytest run, and as a blocking
 step in CI (`.github/workflows/ci.yml`, no longer `|| true`). `RELEASE.md` §6 already lists it.
 The scenarios now also cover the GitHub roadmap importer (`tests/features/gh_roadmap_import.feature`).
+Because the `@ui` scenarios drive a real browser (`tests/features/environment.py`), CI runs
+`poetry run playwright install --with-deps chromium` immediately before the behave step
+(`.github/workflows/ci.yml`). See [Playwright UI Tests (EPIC-004)](ui-testing-epic-004.md) for the
+harness and its one-retry policy.
 
 `pre_merge_checks.sh` also fails (exit 1) if the generated GitHub roadmap layer (see
 [GitHub Roadmap Layer](gh-roadmap-layer.md)) has fallen behind GitHub — it runs

@@ -82,7 +82,7 @@ systems (`architecture/model/elements.yaml:1018-1054`) are Source Control, CI/CD
 (which now "runs the controls enforcement gate inline"),
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, LLM
 Provider, RFP / Vendor Submissions, and `ext-trestle`
-("compliance-trestle"), added per [ADR-0030](decision-log-0030-onward.md). Trestle's
+("compliance-trestle"), added per [ADR-0030](decision-log-0030-0039.md). Trestle's
 `desc` calls it a "third-party Python library/CLI dependency, not vendored
 source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
 fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data

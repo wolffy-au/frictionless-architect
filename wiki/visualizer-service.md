@@ -1,6 +1,6 @@
 ---
 title: Visualizer Service
-generated: '2026-11-14'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - src/frictionless_architect/__init__.py
@@ -47,19 +47,21 @@ into a JSON-only `schema-visualizer-api` package plus a separate Vite UI.
 ## Entry point
 
 `src/frictionless_architect/visualizer/__init__.py` is now only a package
-docstring. The FastAPI app moved to the shared platform entry point
+docstring, which describes the package as the JSON payload API plus a
+placeholder landing page. The FastAPI app moved to the shared platform entry point
 `frictionless_architect.app`, which builds
 `app = FastAPI(title="Frictionless Architect", lifespan=lifespan)` and
 includes both the visualiser's API router and, since ADR-0053, the new
 placeholder-page router; its `lifespan` does nothing at startup. On
 shutdown it first awaits `stop_retry()` to cancel any pending background load
-retry, then closes the Neo4j driver (`src/frictionless_architect/app.py:14-26`).
+retry, then closes the Neo4j driver (`src/frictionless_architect/app.py:17-32`).
 `get_schema_service()` builds the service lazily
 and memoises it with `@lru_cache(maxsize=1)`, so shutdown stops and closes the one
 shared service. If no request ever arrived, it builds the service just to
 close it (`src/frictionless_architect/visualizer/api.py:389-400`). The module
-docstring anticipates the OSCAL service joining the same app
-(`src/frictionless_architect/app.py:1`). The root package
+docstring says the app "currently" serves the schema visualiser JSON API and
+its placeholder landing page (`GET /`), leaving room for other services to
+join the same app (`src/frictionless_architect/app.py:1-4`). The root package
 `frictionless_architect/__init__.py` is only a docstring with an empty
 `__all__` (`src/frictionless_architect/__init__.py:1-3`). Run it with
 `poetry run uvicorn frictionless_architect.app:app --reload --port 8100`

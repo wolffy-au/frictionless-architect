@@ -113,4 +113,4 @@ Interfaces as the boundary contract between contexts (deferred as a GH #129
 follow-up, since the context map already gives a coarse-grained version of
 the same dependency story)
 (`docs/adr/0040-bounded-contexts-as-generated-groupings.md` §Decision,
-§Consequences). See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md).
+§Consequences). See [Architecture Decision Log: ADR-0040 onward](decision-log-0040-onward.md).

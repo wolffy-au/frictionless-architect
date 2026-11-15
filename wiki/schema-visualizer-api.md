@@ -1,6 +1,6 @@
 ---
 title: Schema Visualizer API
-generated: '2026-11-11'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0005-visualiser-api-ui-split-first-extraction.md
@@ -56,7 +56,12 @@ The *implemented* schema visualiser — the FastAPI service at
 is covered on [Visualizer Service](visualizer-service.md) and
 [Project Overview](project-overview.md). Until step 7's extraction, that is
 where the running code and its README live; `schema-visualizer-api` is purely
-the future home this spec is staged for.
+the future home this spec is staged for. The plan's Target Platform and
+Research Context note that the running service still has no static assets or
+templates and serves only a minimal HTML placeholder at `GET /`, for smoke
+tests rather than as the UI that `schema-visualizer-ui` (#55) will provide
+(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md`
+§"Technical Context", §"Research Context").
 
 The re-homed spec's `plan.md` gained a **Model Impact** section (2026-11-09,
 satisfying constitution Principle X for a plan predating it): **none** to add,

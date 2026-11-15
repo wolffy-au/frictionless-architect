@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Application Layer'
-generated: '2026-11-14'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -127,7 +127,14 @@ generic, whole-platform `view-application-usage` (`application/usage/<context>`,
 covered on [Architecture Views & Diagrams: Vision, Business &
 Viewpoints](architecture-diagrams.md) §"Generic per-viewpoint views (GH
 #105)"): that one sweeps by `include_types` across every context, these are
-hand-curated per-capability cuts.
+hand-curated per-capability cuts. The generic view was briefly dropped, then
+reinstated (with `view-product`): both are standard ArchiMate 3.2 §14
+viewpoints, kept even though the model has no `Product`/`Contract`/`Value`/
+`Material`/`ApplicationService` element yet, so each currently renders as a
+duplicate dump of content already on `view-service-realization` and
+`view-application-cooperation`
+(`architecture/model/views-viewpoints.yaml`, comments on `view-product` and
+`view-application-usage`).
 
 | View | Diagram | Covers |
 |---|---|---|

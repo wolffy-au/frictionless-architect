@@ -57,7 +57,7 @@ Enterprise Architect into a validated candidate-architecture delta,
 live-rendered on accept. The package also now holds the deterministic model
 build/render/validate logic that root's scripts and the `model-archimate`
 skill used to carry themselves. See [Architecture Model](architecture-model.md)
-for the model elements this feature adds, and [Decision Log](decision-log-0030-onward.md)
+for the model elements this feature adds, and [Decision Log: ADR-0030–0039](decision-log-0030-0039.md)
 for ADR-0037, the record of its eight load-bearing design decisions.
 
 **Renamed, and a sibling distinguished (ADR-0039, GH #68/#138, 2026-10-24).**
@@ -66,12 +66,13 @@ are renamed **"Conversational Candidate Architecture Authoring"** (ids unchanged
 `process-conversational-authoring` / `fn-conversational-authoring`) and scoped to
 the Enterprise Architect alone, editing `do-candidate-arch`. The unused Solution
 Architect `Assignment` is dropped for a distinct sibling, `fn-solution-modelling`,
-which edits a `do-solution-design` instead. See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
+which edits a `do-solution-design` instead. See the Architecture Decision Log ([ADR-0030–0039](decision-log-0030-0039.md),
+[ADR-0040 onward](decision-log-0040-onward.md)) and
 [Architecture Model: Skeleton](architecture-model-skeleton.md) for both.
 
 ## Why the code lives here
 
-[ADR-0037](decision-log-0030-onward.md) (Proposed 2026-10-10) decided the package's
+[ADR-0037](decision-log-0030-0039.md) (Proposed 2026-10-10) decided the package's
 shape and three related questions `plan.md`'s Constitution Check flagged as
 load-bearing:
 
@@ -151,7 +152,7 @@ The working indicator (GH #186) adds no dependency.
 | `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
 | `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
 | `rendering.py` | 547 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths; gained the GH #183 `package_diagrams: true` redirect (`_package_diagram_dir`/`_package_diagram_dirs`) — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) |
-| `puml.py` | 525 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout. `--derived` (requires `--view`) overlays ArchiMate derived relationships via `_compute_derived_edges`/`pyArchimate.derivation.find_chains` — see [Architecture Views & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true) |
+| `puml.py` | 525 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout. `--derived` (requires `--view`) overlays ArchiMate derived relationships via `_compute_derived_edges`/`pyArchimate.derivation.find_chains` — see [Architecture Views & Diagrams: Layered & C4](architecture-diagrams-layered-c4.md#derived-relationship-overlay-derived-true) |
 | `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
 | `validation/conventions.py` | 329 | Loads and evaluates `conventions.yaml` rules |
@@ -332,7 +333,7 @@ their output, and anyone else redirects it
    built directly against today's architecture rather than waiting for #142's
    future journey-API rework, for demo priority
    (`docs/adr/0041-structured-suggestion-options-in-delta-py.md`). See
-   [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md). The
+   [Architecture Decision Log: ADR-0040 onward](decision-log-0040-onward.md). The
    split-screen UI's `renderProposeResponse` originally had no branch for
    `status: "options"`, so it printed the generic "Looks good -- no objections"
    text and silently dropped every option. Fixed (2026-11-05): `ui.py`'s
@@ -503,4 +504,4 @@ ADR-0037 is still **Proposed**, not **Accepted**.
 
 See `specs/EPIC-003-conversational-model-authoring/` (spec.md, plan.md,
 data-model.md, tasks.md) for the full requirements and task breakdown, and the
-[Decision Log](decision-log-0030-onward.md) for ADR-0037 and ADR-0039 in full.
+[Decision Log: ADR-0030–0039](decision-log-0030-0039.md) for ADR-0037 and ADR-0039 in full.

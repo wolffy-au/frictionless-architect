@@ -1,6 +1,6 @@
 ---
 title: Controls & Compliance Catalog
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - platform/packages/controls-compliance-catalog/README.md
@@ -67,6 +67,10 @@ round-trip (ADR-0030). It also depends on the shared
 [`llm-provider-config`](llm-provider-config.md) package for provider, model and
 credential resolution (ADR-0034), and on `pyyaml` for the playground's YAML
 input (`pyproject.toml`, `platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/playground/convert.py`).
+It also carries a `dnspython (>=2.9.2)` floor — a transitive dependency pulled in via
+`email-validator`, pinned for GHSA-vvf4-9x63-8xvv (excessive memory/CPU use). The lock
+already satisfied it; the pin exists so Dependabot's per-manifest graph agrees with it
+(`platform/packages/controls-compliance-catalog/pyproject.toml`; ADR-0042's lower-bound policy).
 
 `pyproject.toml` also pins `filelock (>=4.0,<5.0)` directly (2026-10-24): the
 package's own `litellm>=1.0.0,<2.0.0` floor otherwise resolves to a `litellm`

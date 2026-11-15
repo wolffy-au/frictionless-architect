@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: '2026-11-14'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
@@ -31,8 +31,9 @@ One flat repo with a single narrow slice built: the Neo4j Schema Visualiser
 governance docs, `.specify/` SpecKit machinery, `sample-data/`, and tests
 (`ARCHITECTURE.md` §2). See [Visualizer Service](visualizer-service.md).
 
-What is built today (`ARCHITECTURE.md` §2, "What is built today"): the JSON-only
-schema visualiser and the Neo4j schema manager and seeding CLI in `src/`, plus
+What is built today (`ARCHITECTURE.md` §2, "What is built today"): the schema
+visualiser (a JSON API plus a minimal placeholder HTML page at `GET /`, ADR-0053,
+mounted by a separate `placeholder_page.py` router) and the Neo4j schema manager and seeding CLI in `src/`, plus
 the `platform/` packages `controls-compliance-catalog`, `modelling-specification`,
 `llm-provider-config` and `portal`. `digital-twin-knowledge-graph` is a library
 the visualiser does not consume yet, and `schema-visualizer-api` is a specs-only
@@ -133,7 +134,12 @@ dissolved (`ARCHITECTURE.md` §4):
   requirements every subsystem meets (`specs/EPIC-001-governance-platform/spec.md` FR-016/017,
   `NONFUNCTIONALS.md`); scanning the platform's own deployment is operational
   (`NONFUNCTIONALS.md` "Security Assessments", formerly FR-018); threat
-  modelling as a user-facing output belongs to subsystem 2.
+  modelling as a user-facing output belongs to subsystem 2. The concrete approach is
+  [ADR-0054](decision-log-0040-onward.md): OIDC token-based authentication
+  (`fn-authn-oidc`, carried by the Portal host package); RBAC authorization evaluated as
+  OPA/Rego policy (`fn-authz-policy`, owned by Conformance & Drift Assurance, ADR-0019);
+  Workspace as the tenancy boundary scoping the Architecture Knowledge Graph (`store-akg`),
+  one owning workspace per model (`ARCHITECTURE.md` §"Security foundations").
 - **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
 
 ADR-0011 is now fully **Accepted** (no longer A\*): it records that #50 applied
@@ -284,8 +290,11 @@ The target `packages/schema-visualizer-ui` Vite app no longer folds into a
 dashboard; its home is open (#55).
 
 §8.2 also reflects what has already landed ahead of the split itself: the
-visualiser is JSON only, its router served from the shared app in
-`frictionless_architect/app.py`. The HTML route was dropped on 2026-09-13, and
+visualiser's data API is JSON only, its router served from the shared app in
+`frictionless_architect/app.py`. A separate `placeholder_page.py` router serves a
+minimal HTML smoke-test page at `GET /` (ADR-0053); it is not the subsystem UI,
+and the extraction checklist says not to carry it into the API package, since the
+real UI supersedes it. The server-rendered HTML route was dropped on 2026-09-13, and
 the orphaned `visualizer/static/` and `templates/` it left behind were
 deleted outright on 2026-10-10 rather than kept as a Vite-app starting point;
 the remaining UI step is simply to build the Vite app from scratch. The
@@ -339,7 +348,7 @@ build tooling for each `ui/` tree itself remains the open part of #55.
 ## Decision log
 
 The load-bearing decisions are recorded as MADR-lite files under `docs/adr/` (`docs/adr/README.md`).
-The ADR index, statuses and per-decision summaries are on the [Architecture Decision Log](decision-log.md) page (ADR-0000–0019), continued on [ADR-0020–0029](decision-log-ui-visualiser-model.md) and [ADR-0030 onward](decision-log-0030-onward.md).
+The ADR index, statuses and per-decision summaries are on the [Architecture Decision Log](decision-log.md) page (ADR-0000–0019), continued on [ADR-0020–0029](decision-log-ui-visualiser-model.md) and [ADR-0030–0039](decision-log-0030-0039.md) and [ADR-0040 onward](decision-log-0040-onward.md).
 
 ## Technical standards
 
