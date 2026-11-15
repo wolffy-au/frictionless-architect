@@ -16,6 +16,7 @@ CONSTRAINTS = [
     "CREATE CONSTRAINT viewpoint_identifier IF NOT EXISTS FOR (vp:Viewpoint) REQUIRE vp.identifier IS UNIQUE",
     "CREATE CONSTRAINT schema_version_name IF NOT EXISTS FOR (sv:SchemaVersion) REQUIRE sv.name IS UNIQUE",
 ]
+"""Idempotent uniqueness-constraint statements applied by ``apply_constraints``."""
 
 INDEXES = [
     "CREATE INDEX element_type_index IF NOT EXISTS FOR (e:Element) ON (e.type)",
@@ -25,6 +26,7 @@ INDEXES = [
     "CREATE INDEX view_name_index IF NOT EXISTS FOR (v:View) ON (v.name)",
     "CREATE INDEX diagram_name_index IF NOT EXISTS FOR (d:Diagram) ON (d.name)",
 ]
+"""Idempotent index statements applied by ``apply_constraints`` alongside ``CONSTRAINTS``."""
 
 _LABEL_SANITIZER = re.compile(r"\W")
 
@@ -61,7 +63,12 @@ def sanitize_label(value: str | None) -> str:
 
 
 class SchemaManager:
-    """Controller for Neo4j constraints, ingestion, migrations, and audits."""
+    """Controller for Neo4j constraints, ingestion, migrations, and audits.
+
+    Attributes:
+        driver: The underlying Neo4j driver, opened eagerly in ``__init__``;
+            callers own its lifecycle and must call ``close`` when done.
+    """
 
     def __init__(self, uri: str, user: str, password: str) -> None:
         """Open a Neo4j driver connection for schema management operations.
