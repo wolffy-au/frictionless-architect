@@ -192,3 +192,7 @@ not yet re-ratified in a spec).
 - **A** — [0054](0054-authn-authz-and-tenancy-approach.md) — OIDC token-based
   authentication; RBAC authorization expressed as OPA/Rego policies (ADR-0019);
   Workspace is the tenancy boundary, one owning workspace per model
+- **P** — [0055](0055-package-local-diagram-output-path.md) — A context-split view may
+  redirect a context's diagram slice into that package's own `specs/diagrams/`, when the
+  directory already exists, instead of the central `architecture/model/diagrams/` (draft
+  stub, decision unconfirmed)
