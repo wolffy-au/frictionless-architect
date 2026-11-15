@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -47,23 +47,52 @@ hand-authored Grouping or boundary view:
   out of sync with membership. `platform` and the vendored layers get no
   Grouping: they are the shared kernel and bulk imports, not bounded
   contexts in the DDD sense.
-- **Per-context split views.** A view may add `split_by: context` +
-  `include_neighbours: true` to render one `.puml`/`.svg` per context
-  actually on it instead of one monolithic sweep, with any element one
-  relationship hop away pulled in too (so a cross-context edge keeps both
-  endpoints visible) — but deliberately left out of the view's own
-  `viewpoint:` conformance check, since a neighbour's type is often outside
-  that viewpoint's allow-set by construction. Applied to five of the six
-  oversized views. The sixth, `view-product`, was dropped because the model
-  has no Product/Contract/Value/Material element to give that viewpoint its
-  own shape, then re-added by request as a per-context sweep. It still has
-  none of those elements, so it renders the same Business and Application
-  elements as the usage and service-realization views
-  (`architecture/model/views-viewpoints.yaml`). Application Cooperation also
-  became two views: the curated `view-application-cooperation` in `views.yaml`
-  uses `include_neighbours: same_layer` so it stays Application-layer only, and
-  `view-application-cooperation-standard` keeps the unrestricted sweep for
-  comparison (`architecture/model/views.yaml`).
+- **Per-context split views.** A view may add `split_by: context` to render
+  one `.puml`/`.svg` per context actually on it instead of one monolithic
+  sweep. `include_neighbours: true` originally pulled in any element one
+  relationship hop away too (so a cross-context edge kept both endpoints
+  visible), but was removed from every default viewpoint view: measured on
+  `conformance-drift-assurance`, it inflated data-heavy contexts — a
+  `DataObject`'s one-hop neighbour is every `ApplicationFunction` that
+  accesses it — without a consistent size benefit on the views that already
+  span the Business and Application layers by their own `include_types`.
+  `view-information-structure` instead sets `derived: true`, which overlays
+  the subset of cross-context edges a two-hop derivation chain through an
+  out-of-context element still implies, without pulling that element's whole
+  type back onto the diagram (`architecture/model/README.md` §"`derived:
+  true`"). `view-product` and `view-application-usage` keep their
+  `split_by: context` sweep despite each still rendering as a duplicate
+  dump of content already on `view-service-realization`/
+  `view-application-cooperation`: the model still has no `Product`/
+  `Contract`/`Value`/`Material`/`*Service` element to give either viewpoint
+  its own shape, but both are standard ArchiMate 3.2 §14 viewpoints, so the
+  duplication is accepted rather than treated as grounds to drop the view
+  (`architecture/model/views-viewpoints.yaml`, file header). Application
+  Cooperation stays two views: the curated `view-application-cooperation` in
+  `views.yaml` uses `include_neighbours: same_layer` so it stays
+  Application-layer only, and `view-application-cooperation-standard` keeps
+  the unrestricted, split-by-context sweep for comparison
+  (`architecture/model/views.yaml`). Business Process Cooperation (491 lines
+  as one file) gained the same split later, as a GH #183 spike — a seventh
+  split view.
+- **Package-local diagram redirect (GH #183).** A split view may additionally
+  set `package_diagrams: true`: for a context whose extracted package already
+  has a `platform/packages/<context>/specs/diagrams/` directory,
+  `_package_diagram_dir` routes that context's slice there instead of under
+  `architecture/model/diagrams/<slug>/<context>.puml` — no package-local
+  model or views file needed, since the redirect reuses the shared model's
+  `context:` tag exactly like the split itself. Today only
+  `controls-compliance-catalog` has that directory, and only
+  `view-business-process-cooperation` sets the flag. `render()`'s orphan
+  sweep (`_package_diagram_dirs`) covers every such directory unconditionally
+  rather than only ones a live job currently targets, because an orphaned
+  file is by definition missing from the render's `wanted` set — otherwise
+  turning the flag off, or a package losing the directory, would leave stale
+  output behind. The GH #183 spike compared this auto-split/redirect
+  approach against the pre-existing hand-curated `view-business-controls-catalog`
+  for the same package and recommended adopting it as the standard mechanism
+  for package-scoped diagram legibility; the repo-wide rollout is tracked
+  separately (#194).
 - **A generated context map** (`generate_context_map_relationships`,
   `view-context-map`) derives one directed `Serving` edge per ordered
   context pair with at least one element-level relationship crossing
@@ -74,11 +103,14 @@ hand-authored Grouping or boundary view:
   alongside it under the same GH #129 acceptance item.
 
 Left open past this ADR: several per-context splits still exceed the
-~60-element target (the context owns a lot, or —
-`conformance-drift-assurance` — is by design connected to almost every
-other context, being the compliance cross-cutting concern); and formal
+~60-element target — e.g. `conformance-drift-assurance`'s
+`view-service-realization` and `view-implementation-deployment` stay large
+even after the `include_neighbours` removal, because the context genuinely
+owns that much cross-layer content (real `BusinessProcess`/`BusinessFunction`
+realization edges, not a rendering artefact), not because anything is left
+to drop; and formal
 Interfaces as the boundary contract between contexts (deferred as a GH #129
 follow-up, since the context map already gives a coarse-grained version of
 the same dependency story)
 (`docs/adr/0040-bounded-contexts-as-generated-groupings.md` §Decision,
-§Consequences). See [Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md).
+§Consequences). See [Architecture Decision Log: ADR-0040 onward](decision-log-0040-onward.md).

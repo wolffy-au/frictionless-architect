@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Packaging, Migration & Technology'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -214,7 +214,7 @@ with the two Nodes, `sw-neo4j` and `sw-keyring`.
 `sub-pii-gateway`, and `sw-pyarchimate` and `sw-rapidfuzz` to
 `fn-conversational-authoring` (`architecture/model/elements.yaml` §F;
 `architecture/model/relationships.yaml`). The modelling rule is
-[ADR-0044](decision-log-0030-onward.md) and the Presidio choice is ADR-0043. `sw-litellm`,
+[ADR-0044](decision-log-0040-onward.md) and the Presidio choice is ADR-0043. `sw-litellm`,
 `sw-presidio`, `sw-pyarchimate` and `sw-rapidfuzz` carry the context of what they serve.
 
 **Neo4j persistence (GH #108).** A new technology Artifact,

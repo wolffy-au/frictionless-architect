@@ -21,8 +21,9 @@ topology is described in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 One slice is implemented and runnable: the **Neo4j schema visualiser** — a FastAPI
 service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
 bundled sample model and serves it as JSON (elements, relationships, views,
-warnings). It is JSON-only for now — there is no browser UI; see "Running the
-schema visualiser" below. When Neo4j is unreachable it falls back to the sample
+warnings). The API is JSON-only; the one HTML page is a minimal placeholder
+landing page at `GET /` (ADR-0053), not a real UI — see "Running the schema
+visualiser" below. When Neo4j is unreachable it falls back to the sample
 data under `sample-data/`, so the service is useful with no infrastructure at all.
 
 ## Prerequisites
@@ -83,16 +84,21 @@ The visualiser is the FastAPI app `frictionless_architect.app:app` (title
 poetry run uvicorn frictionless_architect.app:app --reload --port 8100
 ```
 
-The service is JSON-only for now — fetch `http://127.0.0.1:8100/schema-payload`
+The data API is JSON-only — fetch `http://127.0.0.1:8100/schema-payload`
 for the aggregated schema data. The server-rendered HTML page
 (`/schema-visualizer`) described in ADR-0005 has been dropped ahead of the
-planned `schema-visualizer-ui` extraction; there is no browser UI until that
-package exists.
+planned `schema-visualizer-ui` extraction. In its place, `GET /` serves a
+minimal placeholder page (title, a "Page loaded." status line and the number
+of elements in the schema) so the browser-level `@ui` tests have something to
+drive (ADR-0053). It will be superseded once a real UI ships (GH #74) and is
+not meant to grow features. If neither Neo4j nor the sample model is reachable
+and nothing is cached, it still renders, showing zero elements.
 
 ### Endpoints
 
 | Method | Path | Purpose |
 |---|---|---|
+| `GET` | `/` | HTML placeholder landing page (not part of the JSON API): fixed title, `data-testid="status"` text and a `data-testid="schema-summary"` element count |
 | `GET` | `/schema-payload` | JSON payload (`model`, `elements`, `relationships`, `views`, `warnings`, `latency_ms`; includes duplicate-identifier warnings from the sample); `?force_reload=true` rebuilds instead of serving the cache; always `200` — if nothing is reachable *and* nothing is cached, the response is an empty-but-valid payload with a warning explaining why (FR-006) |
 | `POST` | `/schema-payload/refresh` | Start async refresh: `202` + `{status, estimated_completion_ms}`; `409` if busy; `429` during backoff |
 | `GET` | `/schema-payload/status` | `cache_age_seconds`, `neo4j_status`, `sample_file_status`, `last_warning`, `refresh_in_progress`, `retry_pending`, plus `last_refresh_started` / `last_refresh_completed` once a refresh has run |
@@ -251,7 +257,7 @@ visualiser — the visualiser itself is read-only against whatever Neo4j already
   - `version [--version-name <name>]` — stamp a `SchemaVersion` node with the
     current time (default name: `initial-constraints`).
   - `audit` — report dangling view/diagram relationship references and views
-    with no members.
+    with no included elements or no relationship references.
   - `all` — run `constraints`, `ingest`, `version` and `audit` in sequence (the
     whole bootstrap in one command; still needs `--data-file`).
 
@@ -290,7 +296,11 @@ poetry run pytest
   `tests/tools/` tests the repo's tooling (architecture model, commit-message check,
   wiki librarian); `tests/unit/architecture/` tests the GitHub-roadmap importer and
   the platform wrapper scripts.
-- BDD scenarios live under `tests/features/` (behave).
+- BDD scenarios live under `tests/features/` (behave). Scenarios tagged `@ui` drive
+  the live app with a Playwright Chromium browser (e.g. the placeholder page); run
+  `poetry run playwright install --with-deps chromium` once, then
+  `poetry run behave tests/features/ --tags=@ui`. Details:
+  [`specs/EPIC-004-playwright-ui-tests/quickstart.md`](specs/EPIC-004-playwright-ui-tests/quickstart.md).
 
 Scope a run with `-k` (e.g. `poetry run pytest tests/api -k schema`) or target one
 test (`poetry run pytest tests/api/test_schema_payload.py::<test_name>`).

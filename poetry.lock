@@ -1270,14 +1270,14 @@ docs = ["readthedocs-sphinx-search", "sphinx"]
 
 [[package]]
 name = "email-validator"
-version = "2.3.0"
+version = "2.4.0"
 description = "A robust email address syntax and deliverability validation library."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "email_validator-2.3.0-py3-none-any.whl", hash = "sha256:80f13f623413e6b197ae73bb10bf4eb0908faf509ad8362c5edeb0be7fd450b4"},
-    {file = "email_validator-2.3.0.tar.gz", hash = "sha256:9fc05c37f2f6cf439ff414f8fc46d917929974a82244c20eb10231ba60c54426"},
+    {file = "email_validator-2.4.0-py3-none-any.whl", hash = "sha256:4454e41c4e1c6b6caee34a1dc71d5e736791562be8fd179b02e298f796522684"},
+    {file = "email_validator-2.4.0.tar.gz", hash = "sha256:be487bc50bc3bd832a98515a55a15649d9bec06d954fa178663190714b6c4ee1"},
 ]
 
 [package.dependencies]
@@ -1570,8 +1570,7 @@ version = "3.5.6"
 description = "Lightweight in-process concurrent programming"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
-markers = "platform_python_implementation == \"CPython\""
+groups = ["dev", "tests"]
 files = [
     {file = "greenlet-3.5.6-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:95e7c44d072db623a1aab04ce488cf9533294a77ed9d072cd503a3596f4106ac"},
     {file = "greenlet-3.5.6-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b7d501d5eb5d4f67207df364752ad697465b834268744be7581c18d81d35d41d"},
@@ -1653,6 +1652,7 @@ files = [
     {file = "greenlet-3.5.6-cp315-cp315t-win_arm64.whl", hash = "sha256:f9fe868463ec7e1363733af77e38a5fda3e9b63940337048c945d69e0c80ff24"},
     {file = "greenlet-3.5.6.tar.gz", hash = "sha256:8e67c43bdfc88d5fee6db0d3e40175b362fc95fb85f0412d233b9b203c53a575"},
 ]
+markers = {dev = "platform_python_implementation == \"CPython\""}
 
 [package.extras]
 docs = ["Sphinx", "furo"]
@@ -3163,6 +3163,28 @@ files = [
 ]
 
 [[package]]
+name = "playwright"
+version = "1.65.2"
+description = "A high-level API to automate web browsers"
+optional = false
+python-versions = ">=3.10"
+groups = ["tests"]
+files = [
+    {file = "playwright-1.65.2-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:99dd0de21173375cded45f4e26a9e19b862d748b06cbb11376313758cedc220e"},
+    {file = "playwright-1.65.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:2e03da7fd7cd6ea92d22524be147e5803649ab0ae9b362b9a78efa869c2f57c7"},
+    {file = "playwright-1.65.2-py3-none-macosx_11_0_universal2.whl", hash = "sha256:3bb758e12b963bf32f7fba5c4b86994f060126feb32d47f236589f53fe09746f"},
+    {file = "playwright-1.65.2-py3-none-manylinux1_x86_64.whl", hash = "sha256:58932d35f56767ab7ebcdd3d4a733bfb3e62a1a5bc43c08e28b9fa9b3e61cf33"},
+    {file = "playwright-1.65.2-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:dd3e54b6a926fc6510f272797eec0707dc34ae04d564e74a7056c4a813e53270"},
+    {file = "playwright-1.65.2-py3-none-win32.whl", hash = "sha256:4476703bcdd1a2db06f5db5136af7c02552b1bb519d5fa4b94a8eead2a6a41ba"},
+    {file = "playwright-1.65.2-py3-none-win_amd64.whl", hash = "sha256:d0aec9e1c97b6f497f3d9f2ad6e1b7f299968e61239d71f100298b0690f3c776"},
+    {file = "playwright-1.65.2-py3-none-win_arm64.whl", hash = "sha256:33a224fba3fb72c5fa7eda49535b265c292f1fb87949c769754f9fcd0f5be2de"},
+    {file = "playwright-1.65.2.tar.gz", hash = "sha256:8b031f81de9cdbe8550d8fe8b58dba47d96239e53177ee4cd47dab0fff07a87e"},
+]
+
+[package.dependencies]
+greenlet = ">=3.1.1,<4.0.0"
+
+[[package]]
 name = "pluggy"
 version = "1.7.0"
 description = "plugin and hook calling mechanisms for python"
@@ -3263,14 +3285,14 @@ type-checks = ["mypy", "types-pyyaml"]
 
 [[package]]
 name = "pyarchimate"
-version = "2.0.2"
+version = "2.1.0"
 description = "A library to create & manage Archimate files"
 optional = false
 python-versions = "<3.15,>=3.11"
 groups = ["dev"]
 files = [
-    {file = "pyarchimate-2.0.2-py3-none-any.whl", hash = "sha256:ce7f30456835573015b25cbf09348be7c8112fc425f6080d4b73e60eb0d8532e"},
-    {file = "pyarchimate-2.0.2.tar.gz", hash = "sha256:b727344adb3b8ccb079ebc9dee7aa16d4331fb05df07aae7db83f949cd1903ce"},
+    {file = "pyarchimate-2.1.0-py3-none-any.whl", hash = "sha256:284c5902b2e5cdb3db5f1a04068b2dfb9b89d3e5344ceedea7a58f3de2d854b2"},
+    {file = "pyarchimate-2.1.0.tar.gz", hash = "sha256:6a46af83f83f9b936e7bc6ca90f12e6348ac335529c293b9306b4bce53a2f9f7"},
 ]
 
 [package.dependencies]
@@ -5068,4 +5090,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "860703b8419a31d98009698907f12e94da5dc7306d9bd54119a4707feb810975"
+content-hash = "659fa37ef9e9079d0274f2d1fe3db47f9b4f799840fb1264f453a0cef3378430"

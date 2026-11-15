@@ -13,6 +13,7 @@ from pathlib import Path
 
 import tomli_w
 
+from llm_provider_config._paths import resolve_override
 from llm_provider_config.settings import LlmSettings
 
 PATH_ENV_VAR = "LLM_PROVIDER_CONFIG_PATH"
@@ -24,10 +25,14 @@ def default_config_path() -> Path:
     Returns:
         ``$LLM_PROVIDER_CONFIG_PATH`` if set, else
         ``~/.config/frictionless-architect/llm.toml``.
+
+    Raises:
+        ValueError: If the env var is set to a path outside the user's home or the
+            system temp directory (see `llm_provider_config._paths`).
     """
     override = os.environ.get(PATH_ENV_VAR)
     if override:
-        return Path(override)
+        return resolve_override(override, env_var=PATH_ENV_VAR)
     return Path.home() / ".config" / "frictionless-architect" / "llm.toml"
 
 

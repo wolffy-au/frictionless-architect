@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -70,8 +70,24 @@ sources:
 - architecture/model/diagrams/technology/landscape.svg
 - architecture/model/diagrams/technology/oscal-golden-check.puml
 - architecture/model/diagrams/technology/oscal-golden-check.svg
-- architecture/model/diagrams/technology/overview.puml
-- architecture/model/diagrams/technology/overview.svg
+- architecture/model/diagrams/technology/overview/architecture-governance.puml
+- architecture/model/diagrams/technology/overview/architecture-governance.svg
+- architecture/model/diagrams/technology/overview/conformance-drift-assurance.puml
+- architecture/model/diagrams/technology/overview/conformance-drift-assurance.svg
+- architecture/model/diagrams/technology/overview/controls-compliance-catalog.puml
+- architecture/model/diagrams/technology/overview/controls-compliance-catalog.svg
+- architecture/model/diagrams/technology/overview/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/technology/overview/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/technology/overview/llm-provider-config.puml
+- architecture/model/diagrams/technology/overview/llm-provider-config.svg
+- architecture/model/diagrams/technology/overview/modelling-specification.puml
+- architecture/model/diagrams/technology/overview/modelling-specification.svg
+- architecture/model/diagrams/technology/overview/pii-gateway.puml
+- architecture/model/diagrams/technology/overview/pii-gateway.svg
+- architecture/model/diagrams/technology/overview/reusable-architecture-library.puml
+- architecture/model/diagrams/technology/overview/reusable-architecture-library.svg
+- architecture/model/diagrams/technology/overview/schema-visualizer-api.puml
+- architecture/model/diagrams/technology/overview/schema-visualizer-api.svg
 - architecture/model/diagrams/technology/persistence-boundary.puml
 - architecture/model/diagrams/technology/persistence-boundary.svg
 - architecture/model/diagrams/technology/physical.puml
@@ -130,8 +146,8 @@ under `migration/`:
 | Migration Sequence | `migration/sequence` | `implementation_migration` | `views.yaml` | The four hand-authored `WorkPackage`s (`wp-71-migration-steps-1-3`, `wp-106-scaffold-twin`, `wp-vendor-it4it`, `wp-107-rehome-specs`), the Artifacts/Plateaus they realize directly (no `Deliverable` element any more), and the `Plateau`s and `Gap`s between them (the baseline plus the roadmap-generated `plat-policy-to-oscal-mvp-1`; `gap-oscal-ai-conversion`) |
 | Runtime Migration: Local Compose to Hosted Cluster | `migration/runtime` | `implementation_migration` | `views.yaml` | `plat-baseline`, `plat-policy-to-oscal-mvp-1` and `plat-multi-user-collaboration-2`, their Gaps (`gap-neo4j-schema-ui`, `gap-policy-to-oscal-mvp-to-multi-user-collaboration`), `node-app-server`, `node-hosted-cluster`, `sw-neo4j`, `sw-keyring`, and the Model Collaboration business collaboration, interaction and roles (ADR-0018, ADR-0034); moved here from `technology/runtime-migration` |
 | Implementation & Migration: All Plateaus, Gaps, Work Packages, Deliverables | `migration/overview/<context>` | `implementation_migration` | `views-viewpoints.yaml` (moved here 2026-10-08, GH #105; split per context, GH #129) | Every Plateau, Gap, WorkPackage and Deliverable, selected by `include_types` so new elements appear without hand-maintenance; Course of Action is not admitted by the viewpoint |
-| Work Package Dependencies (new, GH #105) | `migration/work-package-dependencies` | `implementation_migration` | `views.yaml`, `context: [platform, gh-roadmap]` | Only the `WorkPackage`s and the `Triggering` edges between them — the dependency order on its own, not buried among Plateaus/Gaps/Deliverables the way the overview has it; `include_types: [WorkPackage]` so a new (including GH-roadmap-imported) Work Package appears automatically — GH-192, GH-193 and GH-194 are the latest to do so (`architecture/model/diagrams/migration/work-package-dependencies.puml`) |
-| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now fifteen, including two newly imported MVP milestones: `plat-architecture-governance-mvp-14` (epic GH-196, work packages GH-198 "cryptographic attestation" / GH-199 "ADR conflict detection" / GH-200 "scaffold platform packages" / GH-201 "speckit-specify spec.md") and `plat-compliance-pack-export-mvp-15` (epic GH-197, work packages GH-202 "scoping decision" / GH-203 "ADR: compliance pack export" / GH-204 "speckit-specify spec.md") — alongside `plat-architecture-strategy-future-13` (GH #59's deferred scope: the drag-and-drop ArchiMate IDE, #68's live-view epic, #73's multi-specification modelling), `plat-github-importer-11`/`plat-general-tasks-12`, and the original business-function MVPs. A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s). An open milestone shows all of its Work Packages, open or closed, but only for its two *live* Deliverables — the unreleased one plus whichever release most recently shipped something for this Plateau — so a long-lived open milestone's diagram does not keep accumulating one "done" cluster per past release; earlier releases stay in the data, just undrawn. `migration/overview` is unaffected by that rule and still sweeps everything regardless of state or release (`specs/EPIC-002-gh-roadmap-archimate/spec.md` Clarifications, sessions 2026-10-17 and 2026-10-31; see [GitHub Roadmap Layer](gh-roadmap-layer.md)). `plat-architecture-strategy-mvp-7` now also draws three newly imported open Work Packages realizing the milestone's unreleased Deliverable: GH-192 (a UI to load and save an ArchiMate model from an arbitrary directory), GH-193 (a views-admin panel for authoring `views.yaml` entries), and GH-194 (rolling `split_by: context` + per-package diagram generation out across the rest of the diagram set) (`architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml`) |
+| Work Package Dependencies (new, GH #105) | `migration/work-package-dependencies` | `implementation_migration` | `views.yaml`, `context: [platform, gh-roadmap]` | Only the `WorkPackage`s and the `Triggering` edges between them — the dependency order on its own, not buried among Plateaus/Gaps/Deliverables the way the overview has it; `include_types: [WorkPackage]` so a new (including GH-roadmap-imported) Work Package appears automatically — GH-192, GH-193, GH-194 and, newly, GH-213 ("Tighten dev-workflow gates") are the latest to do so, while GH-119 (Playwright browser tests) now renders as closed (`architecture/model/diagrams/migration/work-package-dependencies.puml`) |
+| Per-milestone views | `migration/plat-<slug>-<n>` | `implementation_migration` | `gh-roadmap/views.yaml` (generated) | One per milestone — now fifteen, including two newly imported MVP milestones: `plat-architecture-governance-mvp-14` (epic GH-196, work packages GH-198 "cryptographic attestation" / GH-199 "ADR conflict detection" / GH-200 "scaffold platform packages" / GH-201 "speckit-specify spec.md") and `plat-compliance-pack-export-mvp-15` (epic GH-197, work packages GH-202 "scoping decision" / GH-203 "ADR: compliance pack export" / GH-204 "speckit-specify spec.md") — alongside `plat-architecture-strategy-future-13` (GH #59's deferred scope: the drag-and-drop ArchiMate IDE, #68's live-view epic, #73's multi-specification modelling), `plat-github-importer-11`/`plat-general-tasks-12`, and the original business-function MVPs. A closed milestone's view no longer draws its closed Work Packages, so it settles to its Plateau and Deliverable(s). An open milestone shows all of its Work Packages, open or closed, but only for its two *live* Deliverables — the unreleased one plus whichever release most recently shipped something for this Plateau — so a long-lived open milestone's diagram does not keep accumulating one "done" cluster per past release; earlier releases stay in the data, just undrawn. `migration/overview` is unaffected by that rule and still sweeps everything regardless of state or release (`specs/EPIC-002-gh-roadmap-archimate/spec.md` Clarifications, sessions 2026-10-17 and 2026-10-31; see [GitHub Roadmap Layer](gh-roadmap-layer.md)). `plat-architecture-strategy-mvp-7` now also draws three newly imported open Work Packages realizing the milestone's unreleased Deliverable: GH-192 (a UI to load and save an ArchiMate model from an arbitrary directory), GH-193 (a views-admin panel for authoring `views.yaml` entries), and GH-194 (rolling `split_by: context` + per-package diagram generation out across the rest of the diagram set) (`architecture/model/diagrams/migration/plat-architecture-strategy-mvp-7.puml`). `plat-general-tasks-12` now also draws the open GH-213 (tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing) and shows GH-119 (Playwright browser tests, see [Playwright UI Tests (EPIC-004)](ui-testing-epic-004.md)) as closed (`architecture/model/diagrams/migration/plat-general-tasks-12.puml`) |
 | Architecture Strategy: Baseline to MVP to Future (new, hand-authored 2026-10-18) | `migration/architecture-strategy-transition` | `implementation_migration` | `views.yaml` | `plat-baseline` → `plat-architecture-strategy-mvp-7` → `plat-architecture-strategy-future-13`, their Gaps (`gap-neo4j-schema-ui`, `gap-architecture-strategy-mvp-to-future`) and the MVP's unreleased Deliverable — hand-authored because the generated per-milestone views never carry Gaps; Work Packages are deliberately left out to keep the transition readable |
 
 **Packaging** excludes the subsystem-to-subsystem `Serving`/`Flow`/`Association`
@@ -182,9 +198,14 @@ viewpoint's allow-list covers that combination — the same constraint
 These five remain `catalog`-slice-scoped hand-curated views. The three
 *generic* Technology-layer views added by GH #105 (Technology, Physical,
 Technology Usage — `technology/overview`, `technology/physical`,
-`technology/usage`) are a separate, type-wide sweep with no slice scoping;
-see [Architecture Views & Diagrams: Vision, Business &
-Viewpoints](architecture-diagrams.md) §"Generic per-viewpoint views (GH #105)".
+`technology/usage`) are a separate, type-wide sweep with no slice scoping.
+`technology/overview` additionally has `split_by: context` (GH #129), so it
+renders one `technology/overview/<context>.puml` per bounded context rather
+than a single sweep, like the other bounded-context split views covered on
+[Architecture Views & Diagrams: Vision, Business &
+Viewpoints](architecture-diagrams.md) §"Bounded-context views (GH #129)";
+`technology/physical` and `technology/usage` stay unsplit. See that page's
+§"Generic per-viewpoint views (GH #105)" for the viewpoint itself.
 
 **Why this isn't folded into `view-migration`.** `view-migration`'s
 Plateaus/Gaps are the packaging restructure (`ARCHITECTURE.md` §8); the
@@ -219,12 +240,16 @@ viewpoint.
   see [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 - `c4/context` and `c4/container` picked up small edge changes reflecting the
   same additions.
-- GH #129 split the Implementation Deployment and Implementation & Migration
-  overview sweeps into per-context files (`implementation/deployment/<context>`,
-  `migration/overview/<context>`) with directly-connected neighbours pulled in
-  so cross-context edges stay visible. See [Architecture Views & Diagrams:
-  Vision, Business & Viewpoints](architecture-diagrams.md) §"Bounded-context
-  views".
+- GH #129 split the Implementation Deployment, Implementation & Migration
+  overview, and Technology overview sweeps into per-context files
+  (`implementation/deployment/<context>`, `migration/overview/<context>`,
+  `technology/overview/<context>`). `include_neighbours: true`, which
+  originally pulled in any directly-connected element from another context
+  so a cross-context edge kept both endpoints visible, was later removed
+  from every default viewpoint view in favour of `derived: true` on
+  `view-information-structure` alone (`architecture/model/views-viewpoints.yaml`
+  header comment). See [Architecture Views & Diagrams: Vision, Business &
+  Viewpoints](architecture-diagrams.md) §"Bounded-context views".
 - ADR-0034 (the shared `llm-provider-config` package) added the LLM Provider
   Configuration component and its package Artifact to the Packaging, Migration
   Sequence and Data Flow — Controls & OSCAL diagrams, and the OS credential store
@@ -284,14 +309,14 @@ renderer reads each view's `diagram:` key, a path under `diagrams/`
 with no extension, and emits one `.puml`/`.svg` pair per view. A view with no
 `diagram:` key is skipped with a note. The two C4 diagrams are a fixed list in the
 script: `c4/context` with a legend, and `c4/container` laid out left to right
-(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:76-82`).
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:169-190`).
 
 Views declared in `third_party/it4it/views.yaml` render into the vendored model's
 own `third_party/it4it/diagrams/`. Every view in this repo's `views.yaml` renders
 under `architecture/model/diagrams/`.
 
 Two per-view keys pass extra options to `puml.py`
-(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:113-129`):
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py:118-131`, shared by batch and single-view rendering via `_rendering_flags`):
 
 - `no_direction:` lists relationship types that are passed as `--no-direction`.
   This switches off the layout-direction hint described below for that view.
@@ -315,11 +340,11 @@ Options and exit codes:
 - `--no-svg` emits `.puml` only.
 - The script reads the generated XML and does not rebuild it, so run `build.py`
   first. If the XML is missing, the script exits `2`
-  (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:252-258`).
+  (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:302-309`).
 
 Changed `.puml` files are rendered in a single `plantuml -tsvg` call. Each
 resulting `.svg` gets a trailing newline, so re-renders don't churn on
-PlantUML's missing one (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:214-220`, `244-247`).
+PlantUML's missing one (`platform/packages/modelling-specification/src/modelling_specification/rendering.py:257-270`, `295-297`).
 
 **Layout direction.** `diagram-archimate` fixes the layout direction for two
 groups of relationship types:

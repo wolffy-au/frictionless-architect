@@ -12,8 +12,6 @@ exclude:
     # Dev tooling, not shipped: --root comes from the developer's own command line
     # (same class as the other wiki-librarian tool findings ignored as "By design").
     - .claude/skills/wiki-librarian/tools/build_status.py
-    # LLM_PROVIDER_CONFIG_PATH is an operator-set config location by design, not user input.
-    - platform/packages/llm-provider-config/src/llm_provider_config/store.py
     # Third-party numpy/fastembed stack semsearch.py installs here on first use; gitignored,
     # never shipped, and not this repo's code. Snyk Code scans it anyway (121 findings).
     - .claude/skills/wiki-librarian/tools/.venv/**

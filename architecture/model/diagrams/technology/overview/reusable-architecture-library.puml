@@ -1,0 +1,11 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — reusable-architecture-library
+
+Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Realization_Up(e_id3ac7123fc98d52, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

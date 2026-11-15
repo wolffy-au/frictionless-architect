@@ -1,0 +1,44 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — reusable-architecture-library
+
+Business_Object(e_id2df79965778556, "Resolved OSCAL Profile Catalog")
+Business_Object(e_idcd45bf9b5cfe51, "Architecture Pattern")
+Business_Object(e_id41a01cbfc25b5a, "Implementation Blueprint")
+Business_Object(e_id0bb22ba44cfa50, "OSCAL Component Definition")
+Business_Object(e_id4b5ad5a2100656, "Solution Design") {
+  Business_Object(e_id42defa6a190855, "Solution Component")
+}
+Business_Object(e_ide1231d147af05e, "OSCAL System Security Plan")
+Application_DataObject(e_idb18c37abc9ff51, "OSCAL Repository") {
+  Application_DataObject(e_id4280feeeea6f5e, "OSCAL Component Definition")
+  Application_DataObject(e_idf90f9775c86754, "OSCAL System Security Plan")
+}
+Application_DataObject(e_idb9264b9a2b5a50, "Pattern & Blueprint Repository") {
+  Application_DataObject(e_id7a69ab81170653, "Architecture Pattern")
+  Application_DataObject(e_id45483f0cd05c50, "Implementation Blueprint")
+  Application_DataObject(e_idf91aecdf564a55, "Solution Design")
+  Application_DataObject(e_ida8296d4757a355, "Threat Model")
+}
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_ide500d303f47455, "Candidate Architecture Option")
+}
+Application_DataObject(e_id3d03c0f847fc57, "Resolved OSCAL Profile Catalog")
+Technology_Artifact(e_id3ac7123fc98d52, "packages/reusable-architecture-library")
+
+Rel_Realization_Up(e_id7a69ab81170653, e_idcd45bf9b5cfe51, "")
+Rel_Association(e_idcd45bf9b5cfe51, e_id2df79965778556, "maps to")
+Rel_Specialization_Up(e_id41a01cbfc25b5a, e_idcd45bf9b5cfe51, "specializes for a technology")
+Rel_Realization_Up(e_id45483f0cd05c50, e_id41a01cbfc25b5a, "")
+Rel_Realization_Up(e_id4280feeeea6f5e, e_id0bb22ba44cfa50, "")
+Rel_Association(e_id41a01cbfc25b5a, e_id0bb22ba44cfa50, "maps enablement & gaps to")
+Rel_Specialization_Up(e_id42defa6a190855, e_id41a01cbfc25b5a, "instance of")
+Rel_Association(e_ide1231d147af05e, e_id4b5ad5a2100656, "derived from")
+Rel_Realization_Up(e_idf91aecdf564a55, e_id4b5ad5a2100656, "")
+Rel_Realization_Up(e_idf90f9775c86754, e_ide1231d147af05e, "")
+Rel_Association(e_id7a69ab81170653, e_id3d03c0f847fc57, "maps to")
+Rel_Association(e_idf90f9775c86754, e_idf91aecdf564a55, "derived from")
+
+@enduml

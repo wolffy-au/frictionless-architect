@@ -1,0 +1,10 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — llm-provider-config
+
+Technology_Artifact(e_id2b059f9c51b053, "packages/llm-provider-config")
+
+
+@enduml

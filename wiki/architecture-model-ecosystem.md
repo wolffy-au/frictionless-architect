@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Ecosystem'
-generated: '2026-11-12'
+generated: '2026-11-14'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -36,6 +36,11 @@ It appears in the Artefact Flow — Controls & OSCAL and Packaging views
 package's router and owns only page chrome, navigation and the role landing
 page, never feature logic" — explicitly not one of the six subsystems and not
 a central dashboard (`architecture/model/elements.yaml` — `sub-portal` desc).
+It also now carries the one shared OIDC authentication check every mounted
+package's routes depend on — a new `fn-authn-oidc` ApplicationFunction,
+`Assignment`-linked from `sub-portal` (ADR-0054) — infrastructure at the
+mounting surface, not package feature logic; see
+[Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 Its interface, **Portal UI** (`if-portal-ui`), is "a landing page listing
 each mounted package UI by the role it serves, and the shared navigation
 into them". It is realised by the `art-pkg-portal` Artifact. See
@@ -67,13 +72,17 @@ view back to the skeleton (`architecture/model/relationships.yaml:424-433`).
 Shared stores (`architecture/model/elements.yaml:967-991`): OSCAL Repository
 (`store-oscal`), Pattern & Blueprint Repository (`store-patterns`),
 Architecture Knowledge Graph (`store-akg`, "one graph store, two planes:
-Architecture Intent and Current-State Digital Twin"), Framework Pack Library
+Architecture Intent and Current-State Digital Twin"; access to it is now
+described as scoped by workspace — ADR-0054's tenancy boundary, with every
+model belonging to exactly one workspace and `fn-authz-policy`'s RBAC check
+keyed on `(user, workspace, model, action)` before a query against it
+runs), Framework Pack Library
 (`store-frameworks`), Forensic Audit Ledger (`store-ledger`). The seven external
 systems (`architecture/model/elements.yaml:1018-1054`) are Source Control, CI/CD Pipeline
 (which now "runs the controls enforcement gate inline"),
 Cloud & Infrastructure Platforms, IT Service Management / Backlog, LLM
 Provider, RFP / Vendor Submissions, and `ext-trestle`
-("compliance-trestle"), added per [ADR-0030](decision-log-0030-onward.md). Trestle's
+("compliance-trestle"), added per [ADR-0030](decision-log-0030-0039.md). Trestle's
 `desc` calls it a "third-party Python library/CLI dependency, not vendored
 source" that "Performs the Trestle Markdown <-> OSCAL round-trip behind
 fn-oscal-conversion". The platform invokes Trestle rather than passively exchanging data

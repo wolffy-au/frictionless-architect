@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Application Layer'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -109,19 +109,32 @@ stays Application-layer. It is the one to read.
 `view-application-cooperation-standard` keeps the literal viewpoint with
 unrestricted neighbours, for comparison
 (`architecture/model/views.yaml`; `architecture/model/views-viewpoints.yaml`).
-Both use the general `split_by: context` / `include_neighbours: true`
-mechanism described on [Architecture Views & Diagrams: Vision, Business &
+Both use the general `split_by: context` mechanism described on
+[Architecture Views & Diagrams: Vision, Business &
 Viewpoints](architecture-diagrams.md#bounded-context-views-gh-129): each
-renders one `<diagram>/<context>.puml` per bounded context actually on it,
-pulling in any directly-connected element from another context so a
-cross-context edge still has both endpoints on the page.
+renders one `<diagram>/<context>.puml` per bounded context actually on it.
+`include_neighbours: true` is no longer used here — it was removed from
+every default viewpoint view, since on `conformance-drift-assurance` it
+inflated data-heavy contexts without a consistent size benefit.
 
 ## Application-usage slices (GH #105 follow-up, 2026-10-18)
 
 Four more capability-scoped diagrams render under `diagrams/application/`,
 mirroring the business-layer numbered-slice pattern (see [Architecture Views
 & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md)) but cut
-from the `application_usage` viewpoint instead:
+from the `application_usage` viewpoint instead. These are distinct from the
+generic, whole-platform `view-application-usage` (`application/usage/<context>`,
+covered on [Architecture Views & Diagrams: Vision, Business &
+Viewpoints](architecture-diagrams.md) §"Generic per-viewpoint views (GH
+#105)"): that one sweeps by `include_types` across every context, these are
+hand-curated per-capability cuts. The generic view was briefly dropped, then
+reinstated (with `view-product`): both are standard ArchiMate 3.2 §14
+viewpoints, kept even though the model has no `Product`/`Contract`/`Value`/
+`Material`/`ApplicationService` element yet, so each currently renders as a
+duplicate dump of content already on `view-service-realization` and
+`view-application-cooperation`
+(`architecture/model/views-viewpoints.yaml`, comments on `view-product` and
+`view-application-usage`).
 
 | View | Diagram | Covers |
 |---|---|---|

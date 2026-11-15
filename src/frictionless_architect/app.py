@@ -1,4 +1,7 @@
-"""FastAPI entry point for the platform app (currently serves the schema visualiser API)."""
+"""FastAPI entry point for the platform app.
+
+Currently serves the schema visualiser JSON API and its placeholder landing page (``GET /``).
+"""
 
 from __future__ import annotations
 
@@ -8,6 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from frictionless_architect.visualizer.api import get_schema_service, router
+from frictionless_architect.visualizer.placeholder_page import router as placeholder_router
 
 
 @asynccontextmanager
@@ -30,3 +34,4 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(title="Frictionless Architect", lifespan=lifespan)
 app.include_router(router)
+app.include_router(placeholder_router)

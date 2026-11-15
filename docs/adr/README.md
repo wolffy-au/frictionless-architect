@@ -179,9 +179,20 @@ not yet re-ratified in a spec).
 - **A** — [0050](0050-adr-conflict-detection-triple-trigger.md) — FR-014 ADR-conflict
   detection runs on three triggers: automatic on submission, on demand, and a weekly
   scheduled audit sweep over the accepted log
-- **P** — [0051](0051-derived-relationship-overlay-rendering.md) — Derived-relationship
+- **A** — [0051](0051-derived-relationship-overlay-rendering.md) — Derived-relationship
   overlay (`views.yaml`'s `derived: true`) is render-time-only, drawn as a dashed
   `<<derived>>` arrow, never written back to the model
-- **P** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` is
+- **A** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` is
   vendored as a standalone reference model for the multi-tenant case, excluded from the
   merge sweep that pulls IT4IT in (ADR-0029)
+- **A** — [0053](0053-browser-ui-tests-extend-behave-playwright.md) — Browser-level UI
+  tests (GH #119) extend the existing `behave` + Playwright harness already shipped for
+  the playground and LLM provider config page, not a new `pytest-playwright` toolchain;
+  the visualiser gets a minimal placeholder page pending GH #74
+- **A** — [0054](0054-authn-authz-and-tenancy-approach.md) — OIDC token-based
+  authentication; RBAC authorization expressed as OPA/Rego policies (ADR-0019);
+  Workspace is the tenancy boundary, one owning workspace per model
+- **P** — [0055](0055-package-local-diagram-output-path.md) — A context-split view may
+  redirect a context's diagram slice into that package's own `specs/diagrams/`, when the
+  directory already exists, instead of the central `architecture/model/diagrams/` (draft
+  stub, decision unconfirmed)

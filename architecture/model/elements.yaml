@@ -1258,7 +1258,10 @@
     Hosts the platform packages' UIs from one app: mounts each package's
     router and owns only page chrome, navigation and the role landing page,
     never feature logic (ADR-0020, update 2026-10-11, GH #120). Not one of the
-    six subsystems and not a central dashboard.
+    six subsystems and not a central dashboard. Also carries the one shared
+    OIDC authentication check every mounted package's routes depend on
+    (fn-authn-oidc, ADR-0054) — infrastructure at the mounting surface, not
+    package feature logic.
 - type: ApplicationInterface
   id: if-twin-read-path
   context: digital-twin-knowledge-graph
@@ -1324,7 +1327,14 @@
 - type: DataObject
   id: store-akg
   name: Architecture Knowledge Graph
-  desc: "One graph store, two planes: Architecture Intent and Current-State Digital Twin."
+  desc: >-
+    One graph store, two planes: Architecture Intent and Current-State Digital
+    Twin. Access is scoped by workspace — the tenancy boundary (ADR-0054);
+    distinct from art-tech-oscal-workspace's unrelated Trestle filesystem
+    directory, which is a per-model OSCAL round-trip detail, not a tenancy
+    concept. Every model belongs to exactly one workspace, and
+    fn-authz-policy's RBAC check is keyed on (user, workspace, model, action)
+    before a query against this store is allowed to run.
 - type: DataObject
   id: store-frameworks
   name: Framework Pack Library
@@ -1621,6 +1631,25 @@
     Diff the current-state twin against the transition state in effect on the
     Architecture Roadmap and classify the deviations — unplanned gaps — as
     drift findings.
+- type: ApplicationFunction
+  id: fn-authz-policy
+  context: conformance-drift-assurance
+  name: Authorization Policy Evaluation
+  desc: >-
+    Evaluate RBAC rules, authored as Rego and run by the wrapped OPA engine
+    (ADR-0019), against a verified identity's workspace role to decide
+    whether an action on a model is allowed — the dedicated policy component
+    ADR-0013 requires, kept separate from authentication (ADR-0054).
+
+# --- C. Functions: Portal ---
+- type: ApplicationFunction
+  id: fn-authn-oidc
+  name: OIDC Authentication
+  desc: >-
+    Validate an OIDC bearer token (JWKS signature check) on every mounted
+    package's routes and attach the verified identity attributes to the
+    request — the single authentication check every subsystem's API depends
+    on, not re-implemented per package (ADR-0054).
 
 # --- C. Functions: Modelling & Specification ---
 - type: ApplicationFunction

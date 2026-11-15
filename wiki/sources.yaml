@@ -45,11 +45,17 @@ topics:
     sources:
       - path: docs/adr/002*.md
 
-  - name: decision-log-0030-onward
-    title: "Architecture Decision Log: OSCAL, Roadmap, Authoring & Contexts (ADR-0030 onward)"
-    description: ADR-0030 onward — vendored OSCAL content, ArchiMate namespace, value streams, shared packages, the GitHub-roadmap layer, element-id prefixes, conversational authoring, canonical roles, bounded contexts and maintenance agents.
+  - name: decision-log-0030-0039
+    title: "Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)"
+    description: ADR-0030–0039 — vendored OSCAL content, ArchiMate namespace, value streams, shared packages, the GitHub-roadmap layer, element-id prefixes and conversational authoring.
     sources:
-      - path: docs/adr/00[3-9]*.md
+      - path: docs/adr/003*.md
+
+  - name: decision-log-0040-onward
+    title: "Architecture Decision Log: Contexts, Agents & Access (ADR-0040 onward)"
+    description: ADR-0040 onward — bounded contexts, structured suggestion options, PII-gateway semantics, canonical roles, maintenance agents and the authn/authz approach.
+    sources:
+      - path: docs/adr/00[4-9]*.md
 
   - name: architecture-model
     title: Architecture Model
@@ -64,6 +70,16 @@ topics:
       - path: platform/packages/modelling-specification/src/modelling_specification/cli.py
       - path: platform/packages/modelling-specification/src/modelling_specification/model_io.py
       - path: platform/packages/modelling-specification/src/modelling_specification/rendering.py
+
+  - name: architecture-model-history
+    title: "Architecture Model: Provenance & Change History"
+    description: How the canonical model got to its current shape — where each section came from and the dated passes that changed it — split out once Architecture Model passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/elements.yaml
+      - path: architecture/model/relationships.yaml
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
 
   - name: architecture-model-contexts
     title: "Architecture Model: Context-Level Viewpoints & Bounded Contexts"
@@ -149,10 +165,18 @@ topics:
       - path: architecture/model/views-viewpoints.yaml
       - path: architecture/model/diagrams/vision/**
       - path: architecture/model/diagrams/business/**
-      - path: architecture/model/diagrams/layered/**
-      - path: architecture/model/diagrams/c4/**
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
       - path: architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
+
+  - name: architecture-diagrams-layered-c4
+    title: "Architecture Views & Diagrams: Layered & C4"
+    description: The layered-viewpoint ArchiMate views and the generated C4 context/container diagrams — split out once Architecture Views & Diagrams passed ~500 lines.
+    sources:
+      - path: architecture/model/README.md
+      - path: architecture/model/views.yaml
+      - path: architecture/model/views-viewpoints.yaml
+      - path: architecture/model/diagrams/layered/**
+      - path: architecture/model/diagrams/c4/**
 
   - name: architecture-diagrams-application
     title: "Architecture Views & Diagrams: Application Layer"
@@ -265,14 +289,28 @@ topics:
       - path: specs/EPIC-003-conversational-model-authoring/*.md
       - path: specs/EPIC-003-conversational-model-authoring/checklists/*.md
       - path: specs/EPIC-003-conversational-model-authoring/contracts/*.md
-      - path: specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/**/*.md
       - path: platform/packages/modelling-specification/src/modelling_specification/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
       - path: platform/packages/modelling-specification/src/modelling_specification/reference/README.md
       - path: docs/adr/0037-conversational-model-authoring-architecture.md
-      - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
       - path: scripts/run-modelling_specification.sh
+
+  - name: modelling-specification-pipeline
+    title: "Conversational Model Authoring: Candidate-Delta Pipeline"
+    description: The propose → validate → review → accept → render pipeline of the conversational authoring agent, its LLM contract, validation checks and structured suggestions (ADR-0037, ADR-0041) — split out once Conversational Model Authoring passed ~500 lines.
+    sources:
+      - path: platform/packages/modelling-specification/README.md
+      - path: specs/EPIC-003-conversational-model-authoring/spec.md
+      - path: specs/EPIC-003-conversational-model-authoring/data-model.md
+      - path: specs/EPIC-003-conversational-model-authoring/contracts/*.md
+      - path: specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/**/*.md
+      - path: platform/packages/modelling-specification/src/modelling_specification/authoring/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/validation/*.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/markdown_render.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/router.py
+      - path: platform/packages/modelling-specification/src/modelling_specification/ui.py
+      - path: docs/adr/0041-structured-suggestion-options-in-delta-py.md
 
   - name: solution-design-modelling
     title: "Conversational Solution Design Modelling (GH #139)"
@@ -379,6 +417,12 @@ topics:
       - path: CODE_OF_CONDUCT.md
       - path: SECURITY.md
       - path: tests/api/README.md
+
+  - name: ui-testing-epic-004
+    title: "Playwright UI Tests (EPIC-004)"
+    description: EPIC-004 — the @ui behave/Playwright live-server harness and the visualiser placeholder landing page it exercises.
+    sources:
+      - path: specs/EPIC-004-playwright-ui-tests/**/*.md
 
   - name: sample-data
     title: Sample Data

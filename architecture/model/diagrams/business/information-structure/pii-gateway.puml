@@ -1,0 +1,10 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — pii-gateway
+
+Technology_Artifact(e_id8b34f5f03beb50, "packages/pii-gateway")
+
+
+@enduml

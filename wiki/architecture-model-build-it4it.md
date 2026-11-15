@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Build Pipeline & IT4IT Merge'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -38,21 +38,21 @@ build path (`architecture/model/README.md` §"Architecture model";
 1. The CLI loads and merges first-party YAML with optional vendored and
    generated layers (`build_model`), then assembles and validates the model
    (`_assemble`)
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:1119-1173`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:1118-1185`).
 2. Stable identifiers are derived from element ids and relationship fields via
    `det_id`, so repeated builds do not churn the exchange model
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:218-227,326-397`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:230-240,338-409`).
 3. Motivation and viewpoint conventions are checked during model assembly
    (`check_motivation_conventions`, `check_view_coverage`)
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:489-540`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:501-552`).
    `add_views` now hands each view to a `_build_view` helper (nodes, neighbours,
    connections, viewpoint check, layout), with no change in behaviour
-   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:824-968`).
+   (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:837-981`).
 
 The loader rejects null YAML values rather than allowing truncated flow-style
 entries through (`_check_null_keys`), and writes the XML only after
 successful assembly (`write_and_validate`)
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:262-283,1834-1849`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:274-295,1847-1862`).
 `env_dir`, which resolves `FRICTIONLESS_MODEL_DIR` below, now also rejects a
 blank or NUL-bearing value and canonicalises the path with
 `os.path.realpath` rather than `Path.resolve()` — hardening against Snyk's
@@ -68,7 +68,7 @@ second vendored reference model needs no code change to join the merge
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:92,111-117`).
 A 2026-11-11 fix (GH follow-up) carved out one exception:
 `third_party/sample-azure` also carries its own `elements.yaml`, but for the
-opposite reason IT4IT does — [ADR-0045](decision-log-0030-onward.md) lets a
+opposite reason IT4IT does — [ADR-0045](decision-log-0040-onward.md) lets a
 *different* repo install this package and point `FRICTIONLESS_MODEL_DIR`
 straight at its own model directory, and `sample-azure` is exactly that: a
 standalone demo Azure app meant to be built by pointing at it directly, not
@@ -94,7 +94,7 @@ The model loader loads it alongside the first-party YAML and merges both into th
 separate `.xml`, and no ID-reconciliation machinery. Every IT4IT element and
 relationship keeps the `it4it-` id prefix it always had, and that prefix
 alone is what keeps the merged id space collision-free
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:81-105,192,218-227`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:81-105,204,230-240`).
 
 This is a decision about *packaging*, not content — nothing about the IT4IT
 data itself changed:

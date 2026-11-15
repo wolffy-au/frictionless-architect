@@ -8,7 +8,7 @@ Implementation_Deliverable(e_idd0d06b4c05ff55, "v0.2.0")
 Implementation_Plateau(e_idb94c55ad2a0756, "policy-to-oscal-mvp")
 Implementation_WorkPackage(e_id340c952eaee456, "GH-61 Application layer: dedupe artefact views, close OSCAL Catalog/Profile gaps, split & renumber diagrams")
 Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue converter") {
-  Implementation_WorkPackage(e_id3b113120236658, "GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)")
+  Implementation_WorkPackage(e_id3b113120236658, " --GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)--")
   Implementation_WorkPackage(e_id5d51f859e99754, " --GH-47 Create UML diagrams for the Markdown catalogue converter--")
   Implementation_WorkPackage(e_idd0542e6c93e658, "GH-48 Find source and target files for converter testing")
   Implementation_WorkPackage(e_id77d970dbed965a, "GH-166 OSCAL conversion backend: endpoints, approval gate, Trestle assemble/resolve, forensic ledger")
@@ -16,7 +16,7 @@ Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue convert
   Implementation_WorkPackage(e_ida4e1cf750ab05d, "GH-165 Stubbed OSCAL conversion API, validated against the UI")
   Implementation_WorkPackage(e_idfa67ddb39e825f, "GH-164 Stubbed OSCAL conversion UI, validated against stub data")
 }
-Implementation_WorkPackage(e_id6d792a77f2a259, "GH-183 Spike: restructure architecture/model/diagrams/ for legibility")
+Implementation_WorkPackage(e_id6d792a77f2a259, " --GH-183 Spike: restructure architecture/model/diagrams/ for legibility--")
 
 Rel_Realization_Up(e_ide553dac909af52, e_idb94c55ad2a0756, "")
 Rel_Realization_Up(e_idd0d06b4c05ff55, e_idb94c55ad2a0756, "")

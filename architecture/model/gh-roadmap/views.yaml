@@ -13,6 +13,7 @@
   diagram: migration/plat-architecture-governance-mvp-14
   members:
   - del-architecture-governance-mvp-14-unreleased
+  - del-release-v0-11-0
   - plat-architecture-governance-mvp-14
   - wp-adr-decide-how-adr-conflict-detection-fr-gh-199
   - wp-adr-decide-the-cryptographic-attestation-gh-198
@@ -58,6 +59,7 @@
   diagram: migration/plat-compliance-pack-export-mvp-15
   members:
   - del-compliance-pack-export-mvp-15-unreleased
+  - del-release-v0-11-0
   - plat-compliance-pack-export-mvp-15
   - wp-adr-decide-the-compliance-pack-export-gh-203
   - wp-epic-audit-ready-compliance-pack-export-gh-197
@@ -86,15 +88,14 @@
   diagram: migration/plat-general-tasks-12
   members:
   - del-general-tasks-12-unreleased
-  - del-release-v0-2-0
+  - del-release-v0-11-0
   - plat-general-tasks-12
-  - wp-chore-typing-apply-mypy-strict-to-skill-gh-101
   - wp-ci-add-multi-os-test-matrix-gh-9
   - wp-feat-portal-add-a-portal-host-package-gh-120
   - wp-perf-scripts-cut-redundant-work-in-pre-gh-126
   - wp-role-journeys-and-ui-ux-gh-45
-  - wp-schedule-maintenance-subagents-on-a-gh-82
   - wp-test-ui-establish-playwright-browser-gh-119
+  - wp-tighten-dev-workflow-gates-merge-gh-213
 - id: view-plat-github-importer-11
   name: 'Roadmap: github-importer'
   viewpoint: implementation_migration

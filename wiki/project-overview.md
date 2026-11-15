@@ -1,6 +1,6 @@
 ---
 title: Project Overview
-generated: '2026-11-08'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - README.md
@@ -100,13 +100,20 @@ service that aggregates an ArchiMate schema from a live Neo4j instance and/or a
 bundled sample model, falling back to `sample-data/` when Neo4j is unreachable
 (`README.md` §"What is built today"). The FastAPI app is titled "Frictionless
 Architect" (OpenAPI docs at `/docs`) and exposes `GET /schema-payload`,
-`POST /schema-payload/refresh` and `GET /schema-payload/status`; refresh answers `429` with `Retry-After` for
+`POST /schema-payload/refresh` and `GET /schema-payload/status`. `GET /schema-payload` always answers `200`:
+when nothing is reachable and nothing is cached it returns an empty-but-valid payload with a
+warning explaining why (FR-006), not a `503`. Refresh answers `429` with `Retry-After` for
 `FRICTIONLESS_ARCHITECT_REFRESH_BACKOFF_SECONDS` (default 300) after a successful
 refresh. A failed load is retried in the background every
 `FRICTIONLESS_ARCHITECT_RETRY_INTERVAL_SECONDS` (default and maximum 300), and the
-status endpoint reports `retry_pending`. The service is JSON-only; the former
-server-rendered page was dropped ahead of a separate UI extraction
-(`README.md` §"Configuration", §"Running the schema visualiser").
+status endpoint reports `retry_pending`. The data API is JSON-only; the former
+server-rendered page was dropped ahead of a separate UI extraction. In its place
+`GET /` serves a minimal placeholder landing page (a fixed title, a "Page loaded."
+status line and the schema's element count, ADR-0053) so the browser-level `@ui`
+tests have something to drive. It is not a real UI, is to be superseded when one
+ships (GH #74), and still renders with zero elements when neither Neo4j nor the
+sample model is reachable and nothing is cached
+(`README.md` §"Configuration", §"Running the schema visualiser", §"Endpoints").
 
 Seeding Neo4j is a separate script, `scripts/neo4j_schema.py`, which ignores the
 service's `FRICTIONLESS_ARCHITECT_NEO4J_*` settings. Its `NEO4J_URI`, `NEO4J_USER`
@@ -115,8 +122,15 @@ flags, the root `.env` (loaded with `override=True`, so it beats an exported
 variable), the exported environment, then the defaults `neo4j://localhost:7687`,
 `neo4j`, `neo4j` (`README.md` §"Operations: seeding Neo4j"). The README's test
 section adds that `tests/unit/architecture/` covers the GitHub-roadmap importer and
-the platform wrapper scripts, and that `tests/tools/` covers the wiki librarian
-(`README.md` §"Running the tests"). See
+the platform wrapper scripts, and that `tests/tools/` covers the wiki librarian.
+BDD scenarios live under `tests/features/` (behave); those tagged `@ui` drive the
+live app with a Playwright Chromium browser, after a one-time
+`poetry run playwright install --with-deps chromium`, and run with
+`poetry run behave tests/features/ --tags=@ui` — see
+[Playwright UI Tests (EPIC-004)](ui-testing-epic-004.md)
+(`README.md` §"Running the tests"). The seeding CLI's `audit` command reports
+dangling view/diagram relationship references and views with no included
+elements or no relationship references (`README.md` §"Operations: seeding Neo4j"). See
 [Visualizer Service](visualizer-service.md) and
 [Platform Specification & API](platform-spec.md) (spec 002).
 

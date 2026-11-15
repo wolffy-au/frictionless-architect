@@ -695,6 +695,7 @@
 - {type: Assignment, source: sub-assurance, target: fn-build-supervision}
 - {type: Assignment, source: sub-assurance, target: fn-effectiveness-monitor}
 - {type: Assignment, source: sub-assurance, target: fn-drift-engine}
+- {type: Assignment, source: sub-assurance, target: fn-authz-policy}
 - {type: Assignment, source: sub-modelling, target: fn-notation-engine}
 - {type: Assignment, source: sub-modelling, target: fn-conversational-authoring}
 - {type: Assignment, source: sub-modelling, target: fn-override-escalation}
@@ -934,6 +935,8 @@
 #    ApplicationInterface (see the GH #99 note above).
 # =====================================================================
 - {type: Composition, source: sys-platform, target: sub-portal}
+- {type: Assignment, source: sub-portal, target: fn-authn-oidc}
+- {type: Flow, source: fn-authn-oidc, target: fn-authz-policy, label: "verified identity attributes feed"}
 - {type: Composition, source: sub-portal, target: if-portal-ui}
 - {type: Serving, source: if-portal-ui, target: role-compliance, label: landing page & navigation}
 # Derivable (Composition sub-portal -> if-portal-ui + Serving -> role), kept

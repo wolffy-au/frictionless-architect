@@ -571,6 +571,7 @@ _CONTEXT_COVERAGE_TYPES = {
 _SHARED_CONTEXT_EXEMPTIONS = {
     "sys-platform",  # the platform Grouping itself
     "sub-portal",  # host package, not one of the six subsystems (ADR-0020)
+    "fn-authn-oidc",  # shared OIDC check every mounted package's routes depend on (ADR-0054)
     "if-portal-ui",  # the portal's own shared entry point
     "art-flat-src",  # legacy pre-migration flat src/, not one package
     "art-pkg-portal",  # host package Artifact, not one of the six subsystems

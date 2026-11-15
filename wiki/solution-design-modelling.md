@@ -125,7 +125,7 @@ As of this spec, the feature is still at the specification stage (`Status:
 Draft`) — no `reusable-architecture-library` package, journey API, or UI
 exists yet. See [Architecture Model: Skeleton](architecture-model-skeleton.md)
 for `process-conversational-solution-modelling` and `bfn-solution-design`,
-and [Decision Log](decision-log-0030-onward.md) for ADR-0039 in full.
+and [Decision Log](decision-log-0030-0039.md) for ADR-0039 in full.
 
 Not covered by current sources: implementation progress, since the package
 this feature lands in (`reusable-architecture-library`) does not exist yet.

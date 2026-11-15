@@ -81,6 +81,13 @@
     gh-tag: v0.10.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.10.0
 - type: Deliverable
+  id: del-release-v0-11-0
+  name: v0.11.0
+  props:
+    gh-published: '2026-11-13T23:06:29Z'
+    gh-tag: v0.11.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.11.0
+- type: Deliverable
   id: del-release-v0-2-0
   name: v0.2.0
   props:
@@ -322,7 +329,8 @@
   name: 'GH-84 ADR: decide the authn/authz approach for multi-user access'
   props:
     gh-number: '84'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/84
 - type: WorkPackage
   id: wp-adr-decide-the-compliance-pack-export-gh-203
@@ -485,7 +493,8 @@
   name: GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)
   props:
     gh-number: '76'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/76
 - type: WorkPackage
   id: wp-create-uml-diagrams-for-the-markdown-gh-47
@@ -581,7 +590,8 @@
   name: 'GH-120 feat(portal): add a portal host package that composes package UIs'
   props:
     gh-number: '120'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/120
 - type: WorkPackage
   id: wp-find-source-and-target-files-for-gh-48
@@ -898,7 +908,8 @@
   name: 'GH-183 Spike: restructure architecture/model/diagrams/ for legibility'
   props:
     gh-number: '183'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/183
 - type: WorkPackage
   id: wp-stubbed-oscal-conversion-api-validated-gh-165
@@ -948,8 +959,16 @@
   name: 'GH-119 test(ui): establish Playwright browser tests for the HTML UIs'
   props:
     gh-number: '119'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/119
+- type: WorkPackage
+  id: wp-tighten-dev-workflow-gates-merge-gh-213
+  name: 'GH-213 Tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing'
+  props:
+    gh-number: '213'
+    gh-state: open
+    gh-url: https://github.com/wolffy-au/frictionless-architect/issues/213
 - type: WorkPackage
   id: wp-ui-changes-user-role-management-and-per-gh-92
   name: 'GH-92 UI changes: user/role management and per-model sharing in the visualiser'

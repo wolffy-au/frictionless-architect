@@ -34,7 +34,7 @@ constraint on the topology.
 
 ```plantuml
 @startuml
-title Current state — a flat JSON-only visualiser plus the extracted platform packages
+title Current state — a flat JSON visualiser (plus a placeholder page) and the extracted platform packages
 skinparam componentStyle rectangle
 
 package "frictionless-architect (repo root)" {
@@ -46,6 +46,7 @@ package "frictionless-architect (repo root)" {
   package "src/frictionless_architect/" {
     [app.py\nFastAPI entry point] as app
     [visualizer/api.py\nJSON router + payload service] as api
+    [visualizer/placeholder_page.py\nGET / placeholder HTML (ADR-0053)] as placeholder
     [visualizer/cache.py / config.py] as vsupport
     [visualizer/data_loader.py\nNeo4j read] as loader
     [visualizer/sample_parser.py\nsample_validator.py / namespaces.py\nArchiMate XML -> payload] as parser
@@ -69,6 +70,8 @@ package "platform/packages/ (own lock + venv)" {
 [Neo4j] as neo4j
 
 app --> api : mounts router
+app --> placeholder : mounts router
+placeholder --> api : reads payload
 api --> vsupport
 api --> loader
 api --> parser
@@ -95,7 +98,7 @@ end note
 
 | Component | Location | State |
 |---|---|---|
-| Schema visualiser (JSON only) | `src/frictionless_architect/visualizer/`, `app.py` | Runnable: `/schema-payload`, `/refresh`, `/status`. Extracts to `schema-visualizer-api` in §8 step 7 |
+| Schema visualiser (JSON API + placeholder page) | `src/frictionless_architect/visualizer/`, `app.py` | Runnable: `/schema-payload`, `/schema-payload/refresh`, `/schema-payload/status`, and a minimal placeholder HTML page at `GET /` (ADR-0053). Extracts to `schema-visualizer-api` in §8 step 7 |
 | Neo4j schema manager and seeding CLI | `src/frictionless_architect/schema/`, `scripts/neo4j_schema.py` | Runnable operator tooling |
 | `controls-compliance-catalog` | `platform/packages/controls-compliance-catalog/` | Policy-to-OSCAL conversion pipeline and playground UI |
 | `modelling-specification` | `platform/packages/modelling-specification/` | Conversational authoring service, split-screen UI and model build/render/validate CLI |
@@ -207,7 +210,12 @@ modelled in `architecture/model/` (section B). Each package holds an `api/` and 
 - **Security foundations** (old 8) — RBAC and encryption are platform requirements every
   subsystem meets (`specs/001` FR-016 / FR-017, `NONFUNCTIONALS.md`); scanning the platform's
   own as-built state is an operational NFR (`NONFUNCTIONALS.md` "Security Assessments",
-  formerly FR-018); threat modelling as an output is subsystem 2.
+  formerly FR-018); threat modelling as an output is subsystem 2. The concrete authn/authz/
+  tenancy approach is [ADR-0054](docs/adr/0054-authn-authz-and-tenancy-approach.md): OIDC
+  token-based authentication (`fn-authn-oidc`, carried by the Portal host package); RBAC
+  authorization evaluated as OPA/Rego policy (`fn-authz-policy`, owned by Conformance &
+  Drift Assurance, ADR-0019); Workspace as the tenancy boundary scoping the Architecture
+  Knowledge Graph (`store-akg`), one owning workspace per model.
 - **Dashboard** (old 7) — replaced by per-subsystem UIs (ADR-0020).
 
 **Shared packages (not subsystems)** — a capability needed by more than one subsystem
@@ -369,9 +377,11 @@ Checklist:
 
 ### 8.2 Visualiser API/UI split (step 7)
 
-Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
-from the shared FastAPI app in `frictionless_architect/app.py`. It has no HTML route,
-static files or templates (ADR-0005 → Implementation status).
+Today the visualiser's data API serves `/schema-payload*` from the shared FastAPI app in
+`frictionless_architect/app.py`. A separate `placeholder_page.py` router serves a minimal
+HTML smoke-test page at `GET /` (ADR-0053); it is not the subsystem UI, and there are no
+static files or templates. The planned extraction below keeps the API JSON-only and does not
+carry the temporary placeholder forward (ADR-0005).
 
 ```plantuml
 @startuml
@@ -380,10 +390,12 @@ skinparam componentStyle rectangle
 
 package "BEFORE  src/frictionless_architect/visualizer/" {
   [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
+  [placeholder_page.py\nGET / — temporary HTML smoke-test page\n(ADR-0053)] as before_placeholder
   [data_loader.py sample_parser.py\nnamespaces.py (+ schema/manager.py)] as before_kg
   [sample_validator.py\nXSD check — destination undecided] as before_val
   before_api --> before_kg
   before_api --> before_val
+  before_placeholder --> before_api : reads payload
 }
 
 package "AFTER" {
@@ -405,6 +417,8 @@ Checklist:
 - Move `visualizer/{api,cache,config}.py` + the visualiser's own payload /
   coverage-merge logic + the FastAPI router into
   `packages/schema-visualizer-api/src/`.
+- Do not carry `placeholder_page.py` into the API package: it is a temporary smoke-test
+  surface, superseded by the real UI when that ships (ADR-0053).
 - `data_loader.py` (Neo4j read), `sample_parser.py`, and `schema/manager.py` are
   **not** part of this step — they move to `packages/digital-twin-knowledge-graph`, which
   `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,

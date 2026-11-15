@@ -71,6 +71,10 @@ jobs:
       - name: Run mypy for static type checking
         run: poetry run mypy
 
+      - name: Install Playwright Chromium
+        # tests/features/environment.py's @ui harness drives a real browser.
+        run: poetry run playwright install --with-deps chromium
+
       - name: Run behave tests
         run: poetry run behave tests/features/
 

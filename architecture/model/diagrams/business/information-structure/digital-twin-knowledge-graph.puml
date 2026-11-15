@@ -1,0 +1,24 @@
+@startuml
+!include <archimate/Archimate>
+
+scale max 3800 width
+title Information Structure — digital-twin-knowledge-graph
+
+Business_Object(e_id66f6cfb386e056, "Current State Architecture")
+Application_DataObject(e_id989d401ffdae55, "Architecture Knowledge Graph") {
+  Application_DataObject(e_ide732c9a4b52a59, "Current-State Digital Twin")
+}
+Application_DataObject(e_ida4a5b51705f555, "Forensic Audit Ledger") {
+  Application_DataObject(e_idfd63e49cbb7150, "Ledger Entry")
+}
+Application_DataObject(e_id9da413ec6a4b5e, "Live Infrastructure State")
+Application_DataObject(e_id70f4dc177c5c5c, "Deployment Event")
+Technology_Artifact(e_id69891242354858, "packages/digital-twin-knowledge-graph")
+Technology_Artifact(e_id100dd210f7455d, "Forensic Ledger File (JSONL)")
+Technology_Artifact(e_id420f57c4d41e52, "Neo4j Graph Database Files")
+
+Rel_Realization_Up(e_ide732c9a4b52a59, e_id66f6cfb386e056, "")
+Rel_Realization_Up(e_id100dd210f7455d, e_ida4a5b51705f555, "")
+Rel_Realization_Up(e_id420f57c4d41e52, e_id989d401ffdae55, "")
+
+@enduml

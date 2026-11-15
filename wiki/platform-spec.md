@@ -1,6 +1,6 @@
 ---
 title: Platform Specification & API
-generated: '2026-11-11'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/checklists/requirements.md
@@ -155,6 +155,8 @@ valid. A sample in any other namespace yields a warning naming the expected
 namespace and `sample_file_status: "invalid"`, instead of rendering an empty
 model (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/spec.md:66`, citing ADR-0032). The plan's
 target-platform line now runs the app as `uvicorn frictionless_architect.app:app`
+and notes that the service has no static assets or templates, serving only a
+minimal HTML placeholder at `GET /` (see [Visualizer Service](visualizer-service.md))
 (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md:15`).
 
 ### Functional requirements (FR-001 … FR-007)
@@ -178,8 +180,10 @@ Requirements"; see [Governance & Constitution](governance-and-constitution.md)).
 
 `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/research.md`: **cytoscape.js** + vanilla JS/HTML
 tables for the UI (over D3 — too low-level; vis.js — larger bundle). That UI choice
-is now owned by `schema-visualizer-ui` (#55) and the plan no longer carries it
-(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md`);
+is now owned by `schema-visualizer-ui` (#55) and the plan no longer carries it;
+the plan's Research Context adds that the service's `GET /` route serves only a
+minimal HTML placeholder for smoke tests, not that UI
+(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md` §"Research Context");
 **`defusedxml`-wrapped `xml.etree.ElementTree`** to normalize the XSDs +
 `Test Model Full.xml` into a shared JSON payload, with **`xmlschema`** to
 validate against the XSDs (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/research.md` §"Parsing

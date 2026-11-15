@@ -50,7 +50,7 @@ Implementation_WorkPackage(e_ide39528d3a91552, "GH-68 Epic: conversational archi
 }
 Implementation_WorkPackage(e_id266c7cb7c31c56, "GH-73 Epic: multi-specification modelling (ArchiMate + UML + OSCAL types per element)")
 Implementation_WorkPackage(e_ida2391cc6745852, "GH-83 Epic: multi-user access to architecture models (RBAC + collaboration)") {
-  Implementation_WorkPackage(e_id9ff2b7fa34d65b, "GH-84 ADR: decide the authn/authz approach for multi-user access")
+  Implementation_WorkPackage(e_id9ff2b7fa34d65b, " --GH-84 ADR: decide the authn/authz approach for multi-user access--")
   Implementation_WorkPackage(e_id767457b651b151, "GH-93 API contract updates: document auth requirements and extend authz tests")
   Implementation_WorkPackage(e_ida53fb52590ba55, "GH-90 Audit logging: record access and change events on shared models")
   Implementation_WorkPackage(e_idfd20823ddfa45e, "GH-85 Authentication: identify users and issue/validate credentials")
@@ -65,10 +65,10 @@ Implementation_WorkPackage(e_ida2391cc6745852, "GH-83 Epic: multi-user access to
 Implementation_WorkPackage(e_id0d5fd9c46de652, "GH-102 feat(model): generate Gaps from speckit specs with a mapping file")
 Implementation_WorkPackage(e_id975839b5e2f95f, " --GH-129 feat(model): split oversized viewpoint views by bounded context (generated context Groupings + context map)--")
 Implementation_WorkPackage(e_ida666466870f351, " --GH-4 feat(model): vendor IT4IT as third_party/it4it submodule (ADR-0029)--")
-Implementation_WorkPackage(e_id7b8c620c6e8b57, "GH-120 feat(portal): add a portal host package that composes package UIs")
+Implementation_WorkPackage(e_id7b8c620c6e8b57, " --GH-120 feat(portal): add a portal host package that composes package UIs--")
 Implementation_WorkPackage(e_ide9cad46822105d, " --GH-95 Import GitHub milestones/issues/releases into ArchiMate Implementation & Migration layer--")
 Implementation_WorkPackage(e_idec7bd9bf840c5d, "GH-44 Markdown catalogue converter") {
-  Implementation_WorkPackage(e_id3b113120236658, "GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)")
+  Implementation_WorkPackage(e_id3b113120236658, " --GH-76 Control conversion playground UI (prose + OSCAL → Trestle Markdown, compared)--")
   Implementation_WorkPackage(e_id5d51f859e99754, " --GH-47 Create UML diagrams for the Markdown catalogue converter--")
   Implementation_WorkPackage(e_idd0542e6c93e658, "GH-48 Find source and target files for converter testing")
   Implementation_WorkPackage(e_id77d970dbed965a, "GH-166 OSCAL conversion backend: endpoints, approval gate, Trestle assemble/resolve, forensic ledger")
@@ -103,10 +103,11 @@ Implementation_WorkPackage(e_id4608a4b3ca8a52, " --GH-59 Scope the ArchiMate mod
 Implementation_WorkPackage(e_id844a1cfdbe0d54, " --GH-202 Scoping decision: which subsystem owns compliance-pack export (FR-023)--")
 Implementation_WorkPackage(e_idf2ecb4385a2254, "GH-201 speckit-specify: package-level spec.md for architecture-governance")
 Implementation_WorkPackage(e_ida6ae0631776453, "GH-204 speckit-specify: spec.md for compliance-pack export (FR-023)")
-Implementation_WorkPackage(e_id6d792a77f2a259, "GH-183 Spike: restructure architecture/model/diagrams/ for legibility")
+Implementation_WorkPackage(e_id6d792a77f2a259, " --GH-183 Spike: restructure architecture/model/diagrams/ for legibility--")
 Implementation_WorkPackage(e_idf0376def52fa5a, "GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform")
 Implementation_WorkPackage(e_id86bfb9c548ad56, " --GH-104 test(model): set a performance and scale criterion for the GH roadmap importer--")
-Implementation_WorkPackage(e_id0c73670e085f56, "GH-119 test(ui): establish Playwright browser tests for the HTML UIs")
+Implementation_WorkPackage(e_id0c73670e085f56, " --GH-119 test(ui): establish Playwright browser tests for the HTML UIs--")
+Implementation_WorkPackage(e_id6a4e8fab15d05d, "GH-213 Tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing")
 Implementation_WorkPackage(e_idec4726c59a8c51, " --GH-22 Vendor NIST/FedRAMP OSCAL content as third_party submodules--")
 Implementation_WorkPackage(e_id8683212dafbd5b, " --GH-7 Vision: single high-level ArchiMate diagram for the policy-to-runtime controls lifecycle--")
 

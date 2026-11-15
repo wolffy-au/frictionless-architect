@@ -5,14 +5,20 @@
 #
 # Diagram paths are under diagrams/ like any other view.
 #
-# A view may add `split_by: context` + `include_neighbours: true` (GH #129
-# step 4): instead of one `<diagram>.puml`, it renders one
-# `<diagram>/<context>.puml` per bounded context actually on it, with any
-# directly-connected element from another context pulled in too (so a
-# cross-context edge still has both its endpoints on the diagram). Applied
-# below to the oversized whole-platform sweeps named in #129, plus
-# view-application-cooperation-standard and view-product (the latter
-# re-added after #129 step 6 asked to drop it; see its own comment).
+# A view may add `split_by: context` (GH #129 step 4): instead of one
+# `<diagram>.puml`, it renders one `<diagram>/<context>.puml` per bounded
+# context actually on it. `include_neighbours: true` additionally pulled in
+# any directly-connected element from another context (so a cross-context
+# edge still has both its endpoints on the diagram), but was removed from
+# every default viewpoint view below: it blew up data-heavy contexts without
+# a consistent size benefit on the layer-spanning sweeps (see
+# view-information-structure's own comment, which uses `derived: true`
+# instead). `view-product` and `view-application-usage` stay in this file
+# even though each currently renders as a duplicate dump of content already
+# on view-service-realization/view-application-cooperation -- both are
+# standard ArchiMate 3.2 §14 viewpoints, and the model simply has no
+# Product/Contract/Value/Material/ApplicationService element yet to give
+# either its own shape; see their own comments below.
 #
 # #129's ~60-element-per-diagram target is met for most contexts this way,
 # but a handful of per-context splits still come out larger -- the context
@@ -61,8 +67,23 @@
   # that persist those. Swept by type, not members, so new elements of these
   # types appear automatically. Representation and Meaning are not yet
   # modelled, so only BusinessObject, DataObject and Artifact appear for now.
+  # split_by: context (GH #129 step 4) gives each package its own small,
+  # single-facet diagram of just its own data shape, legible on its own
+  # before a reader opens that package's denser Application Cooperation view.
+  # No include_neighbours here, unlike the other split views: a DataObject's
+  # normal one-hop neighbour is every ApplicationFunction that Accesses it,
+  # which is the whole function set the split exists to leave out -- measured
+  # on conformance-drift-assurance, include_neighbours produced a diagram
+  # *larger* than its own Application Cooperation view. Cross-context
+  # Business/DataObject edges are dropped as a result; derived: true overlays
+  # the subset of them a DR2/DR3/DR5/DR7/DR8 chain through an out-of-context
+  # ApplicationFunction still implies, without pulling that function set back
+  # in; view-context-map also covers cross-context dependency at the
+  # boundary level.
   viewpoint: information_structure
   diagram: business/information-structure
+  split_by: context
+  derived: true
   include_types: [BusinessObject, Representation, DataObject, Artifact, Meaning]
   # No Flow/Triggering here to undirect; Realization/Specialization already
   # default Up, which is what keeps this flowing top to bottom. Just cap the
@@ -76,8 +97,12 @@
   # and hardware technology supporting the application layer. Swept by type,
   # not members, so new technology elements appear automatically;
   # view-technology-landscape is the hand-curated infrastructure-topology cut.
+  # split_by: context (GH #129 step 4), same rationale as
+  # view-information-structure above: one small per-package technology
+  # footprint diagram instead of only the whole-platform sweep.
   viewpoint: technology
   diagram: technology/overview
+  split_by: context
   include_types:
     - Location
     - Node
@@ -121,15 +146,14 @@
   # Generic Product viewpoint (ArchiMate 3.2 §14): the composition of a
   # product from the services and contracts that make it up, the value it
   # offers, and the actors/processes that deliver it. Swept by type, not
-  # members. Re-added per request after being dropped at GH #129 step 6: the
-  # model still has no Product, Contract, Value or Material elements -- the
-  # only things that give this viewpoint its own shape -- so until some
-  # exist it renders as a dump of the same Business/Application elements
-  # already covered by view-application-usage/view-service-realization.
+  # members. Kept despite currently duplicating view-application-usage/
+  # view-service-realization: it is one of the standard §14 viewpoints, and
+  # the model still has no Product, Contract, Value or Material element --
+  # the only things that would give it its own shape -- so it renders as a
+  # dump of the same Business/Application elements until some exist.
   viewpoint: product
   diagram: business/product
   split_by: context
-  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -165,13 +189,13 @@
   # Generic Application Usage viewpoint (ArchiMate 3.2 §14): how applications
   # support business processes and each other — the dependencies of business
   # behaviour on application components, services and data. Swept by type,
-  # not members. Spans the Business and Application layers, so it renders
-  # large; the model has no ApplicationService elements yet, which is what
-  # normally links the two layers.
+  # not members. Kept despite currently duplicating view-service-realization/
+  # view-application-cooperation, for the same reason as view-product above:
+  # it is a standard §14 viewpoint, and the model has no ApplicationService
+  # elements yet, which is what normally links the two layers.
   viewpoint: application_usage
   diagram: application/usage
   split_by: context
-  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -240,6 +264,18 @@
   # modelled.
   viewpoint: business_process_cooperation
   diagram: business/process-cooperation
+  # GH #183: the per-context split already used by
+  # view-application-cooperation-standard/view-application-usage/view-product
+  # makes this oversized, cross-layer sweep legible per package too, instead
+  # of hand-curating package-local views like view-business-controls-catalog.
+  # package_diagrams: true additionally routes a context's slice into that
+  # package's own specs/diagrams/ when it has one (rendering.py
+  # `_package_diagram_dir`) -- today that's controls-compliance-catalog only;
+  # every other context still falls back to diagrams/business/
+  # process-cooperation/<context>.puml until its package grows that directory.
+  split_by: context
+  include_neighbours: true
+  package_diagrams: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -270,8 +306,8 @@
   context: platform
   # Generic Application Cooperation viewpoint (ArchiMate 3.2 §14), unmodified:
   # the application landscape — components and the information flows or
-  # services between them — swept by type only, with the same unrestricted
-  # include_neighbours: true every other GH #129 sweep in this file uses.
+  # services between them — swept by type only, split per-context, no
+  # neighbour-pulling (see the file header comment on include_neighbours).
   # view-application-cooperation in views.yaml is the curated sibling: same
   # include_types, but same_layer-only neighbours, to stay strictly
   # Application-layer and legible per-context. Keep both: this one is the
@@ -280,7 +316,6 @@
   viewpoint: application_cooperation
   diagram: application/cooperation-standard
   split_by: context
-  include_neighbours: true
   include_types:
     - Location
     - ApplicationComponent
@@ -308,7 +343,6 @@
   viewpoint: service_realization
   diagram: business/service-realization
   split_by: context
-  include_neighbours: true
   include_types:
     - BusinessActor
     - BusinessRole
@@ -349,7 +383,6 @@
   # types automatically rather than needing to be hand-maintained.
   viewpoint: implementation_migration
   split_by: context
-  include_neighbours: true
   include_types: [Plateau, Gap, WorkPackage, Deliverable]
   # Triggering joins no_direction so the WorkPackage sequence reads
   # top-to-bottom: graphviz's own default rank direction is top-to-bottom,
@@ -373,7 +406,6 @@
   viewpoint: implementation_deployment
   diagram: implementation/deployment
   split_by: context
-  include_neighbours: true
   include_types:
     - ApplicationComponent
     - ApplicationCollaboration

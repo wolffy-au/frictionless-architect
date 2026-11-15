@@ -1,0 +1,11 @@
+@startuml
+!include <archimate/Archimate>
+
+title Technology — conformance-drift-assurance
+
+Technology_Artifact(e_idb422fae52e4652, "packages/conformance-drift-assurance")
+Technology_Function(e_id6603be277fb85c, "Server-Side Role-Journey Composition")
+
+Rel_Realization_Up(e_idb422fae52e4652, e_id6603be277fb85c, "ui/ fragment composed by")
+
+@enduml

@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Strategy'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -105,7 +105,7 @@ The links are (`architecture/model/relationships.yaml:70-80`):
 
 ### Value streams — one per sub-goal, usually one outcome each
 
-[ADR-0033](decision-log-0030-onward.md) replaced the single six-stage "Governed Architecture
+[ADR-0033](decision-log-0030-0039.md) replaced the single six-stage "Governed Architecture
 Delivery" stream with **four streams, one per sub-goal**, organised by who
 *receives* the value. GH #108 then added a fifth, **Intent to Model**, for the
 intent-becomes-model-truth sub-goal. That gives 16 `ValueStream` elements: 5
@@ -140,7 +140,7 @@ the model
 (`architecture/model/relationships.yaml:215-218`).
 
 Stages *move* between streams rather than being duplicated
-([ADR-0033](decision-log-0030-onward.md)):
+([ADR-0033](decision-log-0030-0039.md)):
 
 - "Prove Compliance" now belongs to Obligation to Evidence, and "Reconcile &
   Remediate" to Drift to Remediation.

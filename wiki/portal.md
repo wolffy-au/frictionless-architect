@@ -1,7 +1,7 @@
 ---
 title: "Portal"
-generated: '2026-11-04'
-generator: claude-opus-5-5
+generated: '2026-11-15'
+generator: claude-sonnet-5
 sources:
 - docs/adr/0020-per-subsystem-uis.md
 - platform/packages/portal/README.md
@@ -92,6 +92,14 @@ is realised by the `art-pkg-portal` `Artifact` (one of ten package
 element-level treatment, including the three `ApplicationInterface`s it
 mounts (`if-catalog-playground`, `if-llm-settings-ui`,
 `if-modelling-authoring-ui`).
+
+## Dependencies
+
+`platform/packages/portal/pyproject.toml` pins explicit lower bounds for transitive
+dependencies that have security advisories — `certifi (>=2026.10.19)`,
+`filelock (>=4.2.1)` and, since the latest change, `dnspython (>=2.9.2)` (GHSA-vvf4-9x63-8xvv,
+pulled in via `email-validator`). The lock already satisfied the last one; the pin keeps
+Dependabot's per-manifest graph in agreement with it (`platform/packages/portal/pyproject.toml`).
 
 See [Architecture Overview](architecture.md) §"UI composition" and
 [LLM Provider Configuration](llm-provider-config.md) for the settings-router

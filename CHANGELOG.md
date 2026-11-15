@@ -1,3 +1,29 @@
+## v0.12.0 (2026-11-15)
+
+### Feat
+
+- **model**: prototype a package-local diagram output path (GH #183)
+- **model**: split process cooperation by context (GH #183)
+- **visualizer**: add minimal placeholder landing page
+- add @ui live-server + Playwright harness and retry
+
+### Fix
+
+- **llm-provider-config**: confine env path override to a base dir
+- guarantee UI harness cleanup
+- **model**: reinstate view-product and view-application-usage
+- **model**: disambiguate workspace tenancy from oscal-workspace artifact
+- **adr**: renumber authn/authz ADR to 0054, avoid collision with develop
+- **ci**: install Playwright Chromium before the root behave suite
+- correct @ui scenario retry exit code and placeholder 500 fallback
+- **deps**: pin dnspython floor in controls-compliance-catalog and portal
+
+### Refactor
+
+- **modelling-specification**: generalize package diagram redirect
+- **model**: drop duplicate product/application-usage viewpoints
+- **model**: split viewpoints by context, drop include_neighbours
+
 ## v0.11.0 (2026-11-13)
 
 ### Feat

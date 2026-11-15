@@ -1,6 +1,6 @@
 ---
 title: Architecture Model
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -44,21 +44,21 @@ validation and rendering live there
 `platform/packages/modelling-specification/src/modelling_specification/cli.py:89-113`).
 The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:435-515`; see
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:447-527`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 574 elements, 1288 relationships and 77 views
-(re-counted 2026-11-13 against a clean `build.py` run; the model validates
-with no metamodel or referential-integrity violations). Of those, 287
-elements and 675 relationships are hand-authored in this repo's own
+current merged model is 578 elements, 1296 relationships and 77 views
+(re-counted 2026-11-15 from the committed `frictionless-architect.xml`; the model validates
+with no metamodel or referential-integrity violations). Of those, 289
+elements and 678 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
-view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 136
-elements and 211 relationships are generated into
+view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 138
+elements and 215 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
 roadmap layer" below); 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
 ([ADR-0029](decision-log-ui-visualiser-model.md) — see [Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)). The remaining 9 elements and
-167 relationships are generated purely in-memory at build time — the
+168 relationships are generated purely in-memory at build time — the
 per-context Groupings and their Aggregation edges, plus the Context Map's
 `Serving` edges (ADR-0040 — see [Architecture Model: Context-Level Viewpoints
 & Bounded Contexts](architecture-model-contexts.md)). The generated
@@ -88,7 +88,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
   `BusinessProcess`, `ApplicationComponent`, `ApplicationFunction`,
   `DataObject`, `Grouping`, …). Case-insensitive; the model loader
   canonicalises against the supported ArchiMate types
-  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:194-209`).
+  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:206-221`).
 - **`id`** — a stable kebab id, hashed to a deterministic UUID so regeneration
   never churns identifiers or diagrams. *Never renumber a live id.*
 - **`name` / `desc`** — top-level keys, not inside `props`. Double-quote any
@@ -155,7 +155,7 @@ Schema rules (`architecture/model/README.md` §"Schema";
   and AND-combined per entry) matched against each in-scope relationship
   before it's drawn as a view connection; a relationship is suppressed when
   every key given in an entry matches, and omitted keys are wildcards
-  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:736-780`, GH #20). Added
+  (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:749-792`, GH #20). Added
   because the renderer draws any relationship whose both
   endpoints are in scope, so a mesh that is core to one view's story (e.g.
   the 8-edge capability-to-capability `Serving` mesh on `view-capability`)
@@ -211,11 +211,11 @@ Schema rules (`architecture/model/README.md` §"Schema";
   element-level `props: {derived: "true"}` tag — see [Architecture Model:
   Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md). The
   narrative and a worked example are on [Architecture Views & Diagrams:
-  Vision, Business & Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true).
+  Layered & C4](architecture-diagrams-layered-c4.md#derived-relationship-overlay-derived-true).
 
 The model loader accumulates invalid model entries and reports collected
 build errors before writing or validating the exchange-format model
-(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:230-283,1834-1849`).
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py:242-295,1847-1862`).
 
 ## Model contents — per-layer pages
 
@@ -268,13 +268,13 @@ page once this one passed ~500 lines: see
 
 ## Views and diagrams
 
-75 ArchiMate views cover the merged model: 41 declared in this repo's own
+77 ArchiMate views cover the merged model: 41 declared in this repo's own
 `views.yaml` (sections A–C, the IT4IT touchpoint bridge, sections E/F — see
 [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md) —
 the generated Context Map, and the exploratory Derived Relationship Overlay
 Probe view), 17 generic views in `views-viewpoints.yaml`
 (see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)),
-13 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
+15 generated into `gh-roadmap/views.yaml` by the roadmap importer (see
 "GitHub roadmap layer" above), and 4 declared in `third_party/it4it/views.yaml`
 for the vendored IT4IT reference (see [Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)), loaded the
 same way its elements/relationships are ([ADR-0029](decision-log-ui-visualiser-model.md)). How
@@ -287,237 +287,6 @@ this topic.
 
 ## Provenance
 
-Section A was extracted from `prototype/nodes.yaml` at `prototype-neo4j`
-(`d0c30b4`); section B was ported from the retired
-`sample-data/archimate/build_frictionless_architect.py`; section C was authored
-2026-08-30. A 2026-08-30 pass ([ADR-0027](decision-log-ui-visualiser-model.md)) renamed the
-capabilities as abilities, added `req-authoritative-twin` /
-`req-immutable-audit-ledger` so every capability has a contract, moved
-`req-regulatory-mapping` to `cap-control-catalog`, added the `Governed
-Architecture Delivery` value stream and the driver→goal→outcome spine, merged
-`const-model-governance` into `const-model-risk`, and remodelled "Architecture
-as Executable Intelligence" as an `Outcome`. A follow-on pass added the
-stakeholder/assessment layer and the strategy layer (courses of action,
-resources), wired principles and constraints to the requirements they shape,
-and introduced the seven TOGAF Phase A vision views plus `render_diagrams.py`
-(replacing the earlier per-view manual regeneration).
-
-A subsequent, unrelated series of passes (early September 2026) imported
-section D — the IT4IT 3.0 value-stream skeleton, its derivation-reachable and
-remaining capabilities, and the bridge associations to this platform's own
-capabilities — then iterated on it: refining which capability bridges to
-keep, retargeting the control-plane bridge to the correct IT4IT stage, and
-splitting the 79-element `IT4IT Alignment` monolith view into the one-per-stream
-plus capability-map/bridges views documented above. A final pair of passes
-reframed the four Constraints as platform limits rather than regulation
-summaries, and corrected the motivation-layer chain (driver → assessment → goal
-routing, the fourth Assessment, dropped derived `Constraint → Goal` edges) —
-see
-[Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine). `diagram-archimate`'s default
-`Realization`/`Serving`-up, `Triggering`/`Flow`-right layout hint was added in
-the same window. Full history is in the ADR log — see
-[Architecture Overview](architecture.md) (`architecture/model/README.md`
-§"Provenance"; `git log` on `elements.yaml`/`relationships.yaml`/`views.yaml`
-for the exact commit sequence, which `README.md`'s own Provenance section does
-not yet narrate).
-
-A later pass ([ADR-0029](decision-log-ui-visualiser-model.md), 2026-09-13) vendored the IT4IT
-content out of this repo entirely: `third_party/it4it` (a git submodule)
-now holds its `elements.yaml`/`relationships.yaml`/`views.yaml`/
-`diagrams/vision/`, the package CLI wrappers merge it in at build
-time, and the old 79-element `IT4IT Alignment` monolith view was dropped in
-favour of the 4 focused reference views described above. Only the
-capability-bridge touchpoint relationships and view stayed first-party.
-
-A 2026-09-20 pass (GH #20, #23) landed the per-view `exclude:` mechanism and
-used it to suppress the incidental capability-mesh leak on seven views,
-closed the `view-strategy` value-stream orphan with `coa-*` → value-stream
-`Serving` edges, and — per [ADR-0030](decision-log-0030-onward.md) — added `ext-trestle`
-to the OSCAL conversion chain, bringing the model to 290 elements / 578
-relationships / 21 views. A 2026-09-20 GH #24 spec-alignment review then added
-OSCAL Assessment Plan (wired into both the pre-release gate and continuous-BAU
-monitoring cadences, per OSCAL's required `import-ap` reference on every
-Assessment Results instance) and an OSCAL Plan of Action & Milestones sidecar
-of the remediation backlog, and fixed an internal wording inconsistency in
-`do-oscal-component`'s description — bringing it to 296 elements / 594
-relationships / 21 views.
-
-Three passes on 2026-09-21/22 followed:
-
-- The seven Phase A vision diagrams were renamed with `1-`…`7-` prefixes so
-  they sort in TOGAF order.
-- `view-vision-controls-lifecycle` was folded into
-  `view-business-controls-catalog` by moving role assignments up to the
-  BusinessFunctions.
-- The Controls & OSCAL stage was remodelled around AI-assisted
-  document-to-Markdown conversion and a separate profile-resolution
-  function. This pass removed `fn-policy-authoring` and `ext-regsources`,
-  and added the resolved-catalog and golden-dataset artefacts.
-
-The model now stands at 301 elements / 610 relationships / 21 views (`git log`
-on `architecture/model/`, commits `fce0731`, `7304e53`, `f4458ff`).
-
-A 2026-09-24 fix quoted 12 DataObject `desc` values and one IT4IT bridge
-label. In the flow-style `{...}` YAML entries, an unquoted comma had been
-silently cutting each value short. Among the lost text were the golden-dataset
-artefacts' "not a production pipeline input" caveat and `do-ledger-entry`'s
-actor/action/target fields. The full text is now restored, for example the
-`cap-control-plane` → `it4it-cap-product-development` label "supervises the
-AI agents doing the coding, unit verification, and defect correction this
-capability owns" (`architecture/model/elements.yaml` §"C. Artefacts";
-`architecture/model/relationships.yaml` §"D. IT4IT TOUCHPOINTS"). The model
-build now fails on any such truncation instead of generating from it
-(commits `08ed6e3`, `1fd26e3`). Element and relationship counts are
-unchanged.
-
-A 2026-09-26 pass (PR #62) reworked the business layer and the vision set:
-
-- **Outcomes and value streams.** The goal is now realized by four outcomes,
-  and each outcome has its own value stream, organised by who receives its
-  value. Stages were moved between streams rather than duplicated
-  ([ADR-0033](decision-log-0030-onward.md)). The vision set grew from seven to thirteen
-  views: a Value Stream Hand-offs view, one view per stream (`6a`–`6d`), and a
-  new Requirements Realization view.
-- **Business layer.** It now has 15 business processes grouped under 9
-  business functions, with roles assigned to the functions they perform.
-  A strategy/drift group of business objects was added: Current, Target and
-  Transition State Architecture, Architecture Roadmap, OSCAL POA&M, Drift
-  Finding and Architecture Conformance Register. The objects whose content is
-  an Implementation & Migration concept carry the new `archimate-analogue` tag.
-- **Renames and removals.** The resolved OSCAL artefact was renamed
-  **Resolved OSCAL Profile Catalog**. The `cross-layer/` diagram folder and
-  the Architecture Skeleton view were removed. Delivery Choreography became a
-  Business Process Cooperation view (using the new `max_width:` key), and
-  Subsystems & Capabilities became a `layered` view.
-
-That brings the model to 336 elements / 684 relationships / 29 views
-(`git log` on `architecture/model/`, commit `cf57bfc`). `build.py` itself did
-not change.
-
-A 2026-09-26 partial pass on GH #61 (PR #67) filled the OSCAL Catalog/Profile
-gaps that the Markdown catalogue converter (#44) depends on:
-
-- A new `ApplicationFunction`, **OSCAL Baseline Tailoring**
-  (`fn-baseline-tailoring`), sits on the Controls & Compliance Catalog. It
-  reads the OSCAL Catalog, writes the OSCAL Profile, is served by
-  compliance-trestle, and realizes `process-baseline-tailoring`.
-- The golden-dataset artefacts now realize their matching OSCAL business
-  objects (Catalog, Profile, Resolved OSCAL Profile Catalog) instead of
-  `bo-regulatory-standard`.
-- A new Association, "expected OSCAL output for (golden pair)", links
-  `do-baseline` to `do-regulatory-standard`.
-- The two OSCAL artefact views were split: Controls & OSCAL is now
-  conversion only, and OSCAL Profile Resolution carries tailoring and
-  resolution.
-
-That brings the model to 337 elements / 690 relationships / 29 views
-(`architecture/model/elements.yaml` §"C. Artefacts";
-`architecture/model/relationships.yaml`; `architecture/model/views.yaml`).
-
-A 2026-09-26 pass (GH #65, #60) added section E — see "Packaging and
-migration" above — bringing the platform's own model to 220 elements / 495
-relationships / 27 views (362 / 730 / 31 merged with the unchanged 142 / 235 /
-4-element IT4IT reference). [ADR-0010](decision-log.md) was revised in place
-to cover this wider load-bearing scope, and
-[ADR-0005](decision-log.md) was revised the same day to make
-`controls-compliance-catalog` the first extraction instead of the visualiser
-split (`architecture/model/README.md` §"Model contents"; see [Architecture
-Overview](architecture.md) §"Migration sequence").
-
-A 2026-09-27 pass (GH #55 follow-up, alongside the platform skeleton landing
-under GH #71) added section F — see "Technology (section F)" above — the
-CI golden-dataset check, the persistence-boundary/runtime-target skeleton
-(ADR-0018), the per-subsystem UI composition function (ADR-0020), the
-schema-visualiser-UI-home Serving edge (ADR-0005 + ADR-0020), and the
-catalog's upload/feedback functions and interface. That brings the
-platform's own model to 237 elements / 555 relationships / 33 views (379 /
-790 / 37 merged with the unchanged IT4IT reference).
-
-A later batch of passes (2026-10-08 to 2026-10-14) brought the model to
-477 / 982 / 64: context-level viewpoints were added (GH #105, see
-above); the Baseline Plateau was renamed Current State; `conventions.yaml`
-wired business-layer Enterprise Convention Rules into the model; and the
-`Portal` composition host and its `Portal UI` interface were added
-(ADR-0020, GH #120) alongside `modelling-specification`'s own conversational
-model-authoring elements (GH #108, ADR-0037 — see
-[Conversational Model Authoring](modelling-specification.md)), bringing
-section E to 10 package `Artifact`s (see [Architecture Model:
-Migration](architecture-model-migration.md)).
-
-A 2026-10-17 pass split the flat Goal→Outcome motivation spine into
-Goal→Sub-Goal→Outcome: each of the five former top-level Outcomes
-(`outcome-drift-reconciled`, `outcome-change-at-ai-speed`,
-`outcome-compliance-before-release`, `outcome-accountable-automation`,
-`outcome-intent-becomes-model-truth`) became a `Goal`
-(`Aggregation`-linked under `goal-frictionless-architecture`, the ArchiMate
-pattern for goal decomposition), and each sub-goal now has two concrete,
-measurable Outcomes realizing it instead of one (see [Skeleton § Goal and
-outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)
-for the full chain and rationale). The pass also added a new Driver,
-`driver-unprovable-automation` ("Automation Outpaces Provable Control
-Assurance"), giving the Risk & Compliance stakeholder its own honest
-Driver→Assessment chain into `goal-accountable-automation` rather than
-reusing an ill-fitting existing Driver; a new Requirement,
-`req-decision-model-traceability`, realizing
-`outcome-decision-to-model-latency`; and a new generic `no-restatement`
-Enterprise Convention Rule kind (see [Conversational Model
-Authoring](modelling-specification.md)) that flags a Requirement whose
-description verbatim-restates the Outcome it realizes. Several value
-streams on `4-strategy.puml` that would otherwise have had an orphaned
-second Outcome gained a second `Realization` edge to it rather than a new
-value stream being invented or the Outcome being dropped from the view.
-That brings the model to 489 / 1001 / 64.
-
-A 2026-10-18 follow-on turned on the `Outcome` type that had been left
-commented out of `view-stakeholder`'s `include_types`
-(`architecture/model/views-viewpoints.yaml`), so the Stakeholder view now
-also sweeps in all ten outcomes from the Goal→Sub-Goal→Outcome split above,
-each with a `Realization` edge to the sub-goal it realizes (see
-[Architecture Views & Diagrams: Vision, Business &
-Viewpoints](architecture-diagrams.md)).
-
-ADR-0038 (2026-10-18, GH #69/#45) added six new `BusinessRole`
-`Specialization`s of the section-B six, and ADR-0038's GH #69 follow-on added
-`bfn-security-assurance`/`process-security-assessment` and
-`bfn-implementation`/`process-implementation`, plus the twelve new
-capability-scoped `application_usage` diagram slices (see "Application-usage
-slices" on [Architecture Views & Diagrams: Vision, Business &
-Viewpoints](architecture-diagrams.md)). The two-tier spec re-homing
-(ADR-0004, GH #107, 2026-10-24) and ADR-0039's `fn-solution-modelling` /
-`process-conversational-solution-modelling` (GH #68/#138, 2026-10-24) followed,
-the latter renaming `fn-conversational-authoring` and its process to
-"Conversational Candidate Architecture Authoring" (see
-[Architecture Decision Log: ADR-0030 onward](decision-log-0030-onward.md) and
-[Architecture Model: Skeleton](architecture-model-skeleton.md)). A hand-authored
-Architecture Strategy transition view and a new, generated
-`plat-architecture-strategy-future-13` milestone Plateau were also added (see
-[Architecture Views & Diagrams: Platform, Migration &
-Rendering](architecture-diagrams-platform.md)). That brought the model to 515 elements, 1029 relationships and 66 views on
-2026-10-24.
-
-A GH #45 follow-on (2026-11-08) closed a gap ADR-0038's GH #69 follow-on had
-left open: `process-security-assessment` and `process-implementation` (the
-Security assessor and Implementation contributor role journeys) had no
-`Realization` edge to any `cap-*` capability, so — unlike the other five
-#45 roles — their journeys didn't trace up to a `ValueStream`. Two edges
-closed it: `process-security-assessment` → `cap-reusable-architecture`
-(matching `bfn-security-assurance`'s "before they are reused or shipped",
-the same capability `process-pattern-traceability`, `process-blueprint-traceability`
-and `process-solution-design` already realize) and `process-implementation`
-→ `cap-control-plane` (matching `vss-build`'s "within enforced architectural
-and regulatory boundaries", the same capability `process-cicd-pipeline` and
-`process-agentic-crew` already realize).
-
-A 2026-11-11 fix (`model_io.py`'s `VENDORED_MODELS` sweep) excluded
-`third_party/sample-azure` from the default vendored-model sweep: that
-submodule carries its own `elements.yaml` for standalone use under
-ADR-0045, not reference content meant to merge into this repo's own model
-the way `third_party/it4it` is — see [Architecture Model: Build Pipeline &
-IT4IT Merge](architecture-model-build-it4it.md). The same day, `views.yaml`
-gained the `derived: true` overlay flag and an exploratory
-`view-derived-overlay-probe` view exercising it — see the schema bullet
-above and [Architecture Views & Diagrams: Vision, Business &
-Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true).
-Neither pass changed first-party element or relationship counts; the new
-view brought the total from 74 to 75. See the top of this page for the
-current count.
+Where each section of the model came from, and the dated passes that reshaped it, is on
+[Architecture Model: Provenance & Change History](architecture-model-history.md)
+(`architecture/model/README.md` §"Provenance").

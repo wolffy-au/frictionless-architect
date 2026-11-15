@@ -33,6 +33,7 @@ Application_Component(e_id492c882252a953, "Conformance & Drift Assurance") {
   Application_Function(e_id29feb234dcb55b, "Agentic Build Supervision")
   Application_Function(e_id40274d7630725c, "Controls Effectiveness Monitoring")
   Application_Function(e_id5447be33805351, "Drift & Deviation Detection")
+  Application_Function(e_id3d2207b76bc252, "Authorization Policy Evaluation")
 }
 Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
   Application_Function(e_id3a42c87ebb235a, "Modelling & Notation Rendering")
@@ -43,7 +44,9 @@ Application_Component(e_id82f04fecbdd85e, "Modelling & Specification") {
 Application_Component(e_idd18b3d46fade58, "Schema Visualiser API")
 Application_Component(e_id305eddd7c8dc55, "LLM Provider Configuration")
 Application_Component(e_idc7fc80ba220752, "PII Anonymization Gateway")
-Application_Component(e_id6c2233bb09755d, "Portal")
+Application_Component(e_id6c2233bb09755d, "Portal") {
+  Application_Function(e_idc91a9cfd3e0c5e, "OIDC Authentication")
+}
 Application_Component(e_id4a7b9c4171d855, "Source Control") {
   Application_Function(e_id4726a7b252935e, "Specification & Code Versioning")
   Application_Function(e_iddc6b0701e84d59, "Change Review (Pull Request)")
@@ -131,6 +134,7 @@ Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/mod
 Rel_Realization_Up(e_id2b059f9c51b053, e_id305eddd7c8dc55, "")
 Rel_Association(e_idc7fc80ba220752, e_id2610ae0cc2cc50, "scrubs PII/PHI from content before calls to")
 Rel_Realization_Up(e_id8b34f5f03beb50, e_idc7fc80ba220752, "")
+Rel_Flow(e_idc91a9cfd3e0c5e, e_id3d2207b76bc252, "verified identity attributes feed")
 Rel_Serving_Up(e_ide4bef3733af65a, e_id6c2233bb09755d, "playground router mounted by")
 Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
 Rel_Realization_Up(e_id16c8e0db81fa5f, e_id6c2233bb09755d, "")

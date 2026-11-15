@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-11-13'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -14,12 +14,42 @@ sources:
 - architecture/model/diagrams/business/controls-catalog.svg
 - architecture/model/diagrams/business/delivery.puml
 - architecture/model/diagrams/business/delivery.svg
-- architecture/model/diagrams/business/information-structure.puml
-- architecture/model/diagrams/business/information-structure.svg
+- architecture/model/diagrams/business/information-structure/architecture-governance.puml
+- architecture/model/diagrams/business/information-structure/architecture-governance.svg
+- architecture/model/diagrams/business/information-structure/conformance-drift-assurance.puml
+- architecture/model/diagrams/business/information-structure/conformance-drift-assurance.svg
+- architecture/model/diagrams/business/information-structure/controls-compliance-catalog.puml
+- architecture/model/diagrams/business/information-structure/controls-compliance-catalog.svg
+- architecture/model/diagrams/business/information-structure/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/business/information-structure/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/business/information-structure/llm-provider-config.puml
+- architecture/model/diagrams/business/information-structure/llm-provider-config.svg
+- architecture/model/diagrams/business/information-structure/modelling-specification.puml
+- architecture/model/diagrams/business/information-structure/modelling-specification.svg
+- architecture/model/diagrams/business/information-structure/pii-gateway.puml
+- architecture/model/diagrams/business/information-structure/pii-gateway.svg
+- architecture/model/diagrams/business/information-structure/reusable-architecture-library.puml
+- architecture/model/diagrams/business/information-structure/reusable-architecture-library.svg
+- architecture/model/diagrams/business/information-structure/schema-visualizer-api.puml
+- architecture/model/diagrams/business/information-structure/schema-visualizer-api.svg
 - architecture/model/diagrams/business/organization.puml
 - architecture/model/diagrams/business/organization.svg
-- architecture/model/diagrams/business/process-cooperation.puml
-- architecture/model/diagrams/business/process-cooperation.svg
+- architecture/model/diagrams/business/process-cooperation/architecture-governance.puml
+- architecture/model/diagrams/business/process-cooperation/architecture-governance.svg
+- architecture/model/diagrams/business/process-cooperation/conformance-drift-assurance.puml
+- architecture/model/diagrams/business/process-cooperation/conformance-drift-assurance.svg
+- architecture/model/diagrams/business/process-cooperation/digital-twin-knowledge-graph.puml
+- architecture/model/diagrams/business/process-cooperation/digital-twin-knowledge-graph.svg
+- architecture/model/diagrams/business/process-cooperation/llm-provider-config.puml
+- architecture/model/diagrams/business/process-cooperation/llm-provider-config.svg
+- architecture/model/diagrams/business/process-cooperation/modelling-specification.puml
+- architecture/model/diagrams/business/process-cooperation/modelling-specification.svg
+- architecture/model/diagrams/business/process-cooperation/pii-gateway.puml
+- architecture/model/diagrams/business/process-cooperation/pii-gateway.svg
+- architecture/model/diagrams/business/process-cooperation/reusable-architecture-library.puml
+- architecture/model/diagrams/business/process-cooperation/reusable-architecture-library.svg
+- architecture/model/diagrams/business/process-cooperation/schema-visualizer-api.puml
+- architecture/model/diagrams/business/process-cooperation/schema-visualizer-api.svg
 - architecture/model/diagrams/business/product/architecture-governance.puml
 - architecture/model/diagrams/business/product/architecture-governance.svg
 - architecture/model/diagrams/business/product/conformance-drift-assurance.puml
@@ -58,20 +88,8 @@ sources:
 - architecture/model/diagrams/business/service-realization/schema-visualizer-api.svg
 - architecture/model/diagrams/business/strategy-drift.puml
 - architecture/model/diagrams/business/strategy-drift.svg
-- architecture/model/diagrams/c4/container.puml
-- architecture/model/diagrams/c4/container.svg
-- architecture/model/diagrams/c4/context.puml
-- architecture/model/diagrams/c4/context.svg
 - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.puml
 - architecture/model/diagrams/frictionless-architect-it4it-capability-bridges.svg
-- architecture/model/diagrams/layered/context-modelling-specification.puml
-- architecture/model/diagrams/layered/context-modelling-specification.svg
-- architecture/model/diagrams/layered/derived-overlay-probe.puml
-- architecture/model/diagrams/layered/derived-overlay-probe.svg
-- architecture/model/diagrams/layered/fn-conversational-authoring.puml
-- architecture/model/diagrams/layered/fn-conversational-authoring.svg
-- architecture/model/diagrams/layered/subsystem-capabilities.puml
-- architecture/model/diagrams/layered/subsystem-capabilities.svg
 - architecture/model/diagrams/vision/1-stakeholder.puml
 - architecture/model/diagrams/vision/1-stakeholder.svg
 - architecture/model/diagrams/vision/2-motivation.puml
@@ -113,13 +131,16 @@ Application Layer](architecture-diagrams-application.md). For the
 Implementation & Migration and Technology-layer views, the IT4IT reference
 views, and how to regenerate every `.puml`/`.svg` diagram, see
 [Architecture Views & Diagrams: Platform, Migration &
-Rendering](architecture-diagrams-platform.md). For what the model itself
+Rendering](architecture-diagrams-platform.md). For the cross-layer `layered`
+views, the derived-relationship overlay and the C4 diagrams, see
+[Architecture Views & Diagrams: Layered & C4](architecture-diagrams-layered-c4.md).
+For what the model itself
 *means* (its elements, relationships and content sections), see
 [Architecture Model](architecture-model.md).
 
 ## Views and diagrams
 
-The merged model has 75 ArchiMate views:
+The merged model has 77 ArchiMate views:
 
 - 41 are declared in this repo's own hand-curated `views.yaml`, including the generated-only Context Map (see "Bounded-context views" below) and the
   exploratory Derived Relationship Overlay Probe view (see "Derived
@@ -136,10 +157,17 @@ The merged model has 75 ArchiMate views:
   3.2 §14 viewpoint, swept entirely by `include_types` rather than
   hand-curated `members`, so a new element of a covered type appears
   automatically. Same schema and loader as `views.yaml`; view ids are unique
-  across both files. See "Generic per-viewpoint views (GH #105)" below.
-- 13 are generated into `architecture/model/gh-roadmap/views.yaml` by
+  across both files. `view-product` and `view-application-usage` each
+  render as a duplicate dump of `view-service-realization`/
+  `view-application-cooperation` content, since the model has no
+  `Product`/`Contract`/`Value`/`Material`/`*Service` element to give either
+  viewpoint its own shape, but both are kept: they are standard §14
+  viewpoints (ADR-0040, GH #129). See "Generic per-viewpoint views (GH
+  #105)" below.
+- 15 are generated into `architecture/model/gh-roadmap/views.yaml` by
   `import_gh_roadmap.py`, one per GitHub milestone (including
-  `plat-github-importer-11`, `plat-general-tasks-12` and `plat-architecture-strategy-future-13`) — see
+  `plat-github-importer-11`, `plat-general-tasks-12`, `plat-architecture-strategy-future-13`,
+  `plat-architecture-governance-mvp-14` and `plat-compliance-pack-export-mvp-15`) — see
   [GitHub Roadmap Layer](gh-roadmap-layer.md) and [Architecture Views &
   Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).
 - 4 are declared in `third_party/it4it/views.yaml` for the vendored IT4IT
@@ -147,9 +175,8 @@ The merged model has 75 ArchiMate views:
   ([ADR-0029](decision-log-ui-visualiser-model.md)); see [Architecture Views & Diagrams: Platform,
   Migration & Rendering](architecture-diagrams-platform.md).
 
-The C4 context and container diagrams are **not** views. `render_diagrams.py`
-projects them through `diagram-c4` with `--system "Frictionless Architecture
-Platform"` (`architecture/model/views.yaml:23-24`).
+The C4 context and container diagrams are **not** views; they are projected
+separately (see [Layered & C4](architecture-diagrams-layered-c4.md)).
 
 Rendered files land under `architecture/model/diagrams/`, in one subfolder per
 kind of view:
@@ -157,23 +184,22 @@ kind of view:
 | Folder | Contents |
 |---|---|
 | `vision/` | TOGAF Phase A views (9 hand-curated in `views.yaml` plus 4 generic ones now in `views-viewpoints.yaml`) |
-| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`; `product`, dropped at GH #129 step 6 and since re-added, renders as `product/<context>.puml`). `service-realization` now renders as one file per context |
-| `layered/` | the cross-layer Subsystems & Capabilities view, the Feature Steel Thread view for GH #108's conversational authoring (`fn-conversational-authoring`), the generated per-context split of the Subsystems & Capabilities sweep (`context-modelling-specification` and its siblings), and the exploratory Derived Relationship Overlay Probe view (`derived-overlay-probe`, see "Derived relationship overlay" below) |
-| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` now render as `usage/<context>.puml` and `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml` |
-| `c4/` | the C4 context and container diagrams |
+| `business/` | Phase B business-layer views, plus five generic business-layer views added for GH #105 (`organization`, `information-structure`, `process-cooperation`, `service-realization`, `product`). `information-structure`, `service-realization`, `product` and, since GH #183, `process-cooperation` each render as one file per context — `process-cooperation`'s `controls-compliance-catalog` slice redirects to `platform/packages/controls-compliance-catalog/specs/diagrams/` instead (see "Bounded-context views" below) |
+| `layered/` | the cross-layer views (Subsystems & Capabilities, the GH #108 Feature Steel Thread, the per-context split, and the Derived Relationship Overlay Probe) — see [Layered & C4](architecture-diagrams-layered-c4.md) |
+| `application/` | the data-flow views (renamed from `artefact-*` 2026-10-08, GH #109 / ADR-0036), plus three generic application-layer views added for GH #105 (`structure`, `usage`, `cooperation`); `usage` and `cooperation` render as `usage/<context>.puml` and `cooperation/<context>.puml`, with the unrestricted sweep under `cooperation-standard/<context>.puml` |
+| `c4/` | the C4 context and container diagrams — see [Layered & C4](architecture-diagrams-layered-c4.md) |
 | `diagrams/` root | the cross-model IT4IT bridges diagram |
 
 See [Architecture Views & Diagrams: Platform, Migration &
 Rendering](architecture-diagrams-platform.md) for the `implementation/`,
 `migration/` and `technology/` folders.
 
-The old `cross-layer/` folder is **gone** (PR #62):
+The old `cross-layer/` folder is **gone** (PR #62): Delivery Choreography
+moved to `business/`, Subsystems & Capabilities moved to `layered/` (see
+[Layered & C4](architecture-diagrams-layered-c4.md)), and the `Architecture
+Skeleton` view was removed outright.
 
-- Delivery Choreography moved to `business/`.
-- Subsystems & Capabilities moved to `layered/`.
-- The `Architecture Skeleton` view was removed outright.
-
-After this change, no vision/business/application-layer view used
+After that change, no vision/business/application-layer view used
 `viewpoint: custom` until 2026-11-11, when the exploratory Derived
 Relationship Overlay Probe view adopted it (see "Derived relationship
 overlay" below) for the cross-layer case — every other view outside the
@@ -192,39 +218,13 @@ The README schema also documents `custom` as an option
 ### Derived relationship overlay (`derived: true`)
 
 A view may set `derived: true` to overlay ArchiMate 3.2 Appendix B.2 derived
-relationships at render time — nothing is written to `relationships.yaml` or
-the generated XML; the overlay is computed fresh on every render, from
-`pyArchimate.derivation.find_chains()`, and drawn as a dashed arrow with a
-`<<derived>>` stereotype, never one of the modeled-relationship arrowheads
-(`architecture/model/README.md` §"Schema"). It only draws a relationship
-between two elements already on the view whose implying two-hop chain runs
-through a third element that is *not* on the view — the one case a view's
-own explicit connections can never show, since the chain that implies the
-edge isn't visible there. Scoped to the strict B.2 "certain" rule set
-(DR2/DR3/DR5/DR7/DR8, no Access/Influence/Association chaining) to keep the
-overlay sparse, and an already-modeled relationship with the same
-source/target/type is never duplicated by a derived one.
-
-`view-derived-overlay-probe` ("Derived Relationship Overlay Probe",
-`layered/derived-overlay-probe`) is the exploratory first use: a deliberately
-wide, same-element-type-across-layers sweep (every `BusinessProcess`/
-`ApplicationComponent`/`Node` in the `modelling-specification` context),
-added to see what the overlay looks like against a realistically busy view
-before any production view turns it on — hence `viewpoint: custom`, the
-first cross-layer use of that escape hatch since PR #62 (see "The old
-`cross-layer/` folder" above; the Technology-layer views noted there use it
-for a different reason). On the current model it renders two `BusinessProcess`
-elements ("Deterministic Spec Generation", "Conversational Candidate
-Architecture Authoring") and one `ApplicationComponent` ("Modelling &
-Specification"), with a single derived edge: `Modelling & Specification`
-`<<derived>>`→ `Conversational Candidate Architecture Authoring`, typed
-`Realization` (`architecture/model/diagrams/layered/derived-overlay-probe.puml`).
-No `Node` appears because the `modelling-specification` context has none in
-scope. The implementation (`_compute_derived_edges`, `_derived_rel_line` in
-`puml.py`, wired into all three render paths in `rendering.py`) is covered in
-[Conversational Model Authoring](modelling-specification.md); the schema key
-itself is covered in [Architecture Model](architecture-model.md) §"Schema
-rules".
+relationships at render time, computed fresh on every render and drawn as a
+dashed `<<derived>>` arrow rather than written to `relationships.yaml`
+(`architecture/model/README.md` §"Schema"). The exploratory first use is
+`view-derived-overlay-probe` (`layered/derived-overlay-probe`, `viewpoint:
+custom`). The mechanism, the probe's current rendering and the implementation
+pointers are covered on [Architecture Views & Diagrams: Layered &
+C4](architecture-diagrams-layered-c4.md) §"Derived relationship overlay".
 
 ### The TOGAF Phase A vision set
 
@@ -253,7 +253,7 @@ on them automatically; views 4–7 stay hand-curated in `views.yaml`
 The first Value Stream view was renamed from "Value Stream — Governed
 Architecture Delivery" to **Value Stream Hand-offs**. Each stream's recipients,
 outcome and serving capabilities moved to its own `6a`–`6d` view
-([ADR-0033](decision-log-0030-onward.md); `architecture/model/views.yaml:185-303`).
+([ADR-0033](decision-log-0030-0039.md); `architecture/model/views.yaml:185-303`).
 `8-requirements-realization` is new. It leaves the question of *why* each
 requirement exists to the Motivation and Goal Realization views
 (`architecture/model/views.yaml:404-431`).
@@ -270,7 +270,7 @@ view, plus the four vision views promoted from `views.yaml` above. Every one
 is scoped by `include_types` alone — never `members` — so new elements of a
 covered type appear without anyone remembering to add them, the same GH #117
 motivation behind `view-strategy`/`view-capability`'s own `include_types`
-switch. Twelve are brand new (the Product view was dropped):
+switch. Thirteen are brand new:
 
 | View | Diagram | Viewpoint |
 |---|---|---|
@@ -281,7 +281,7 @@ switch. Twelve are brand new (the Product view was dropped):
 | Physical | `technology/physical` | `physical` |
 | Application Usage | `application/usage/<context>` | `application_usage` |
 | Technology Usage | `technology/usage` | `technology_usage` |
-| Business Process Cooperation | `business/process-cooperation` | `business_process_cooperation` |
+| Business Process Cooperation | `business/process-cooperation/<context>` (GH #183: `controls-compliance-catalog`'s slice redirects to `platform/packages/controls-compliance-catalog/specs/diagrams/` instead) | `business_process_cooperation` |
 | Application Cooperation (Standard) | `application/cooperation-standard/<context>` | `application_cooperation` |
 | Product | `business/product/<context>` | `product` |
 | Service Realization | `business/service-realization/<context>` | `service_realization` |
@@ -349,26 +349,61 @@ because all of them are projections of the same model
 ### Bounded-context views (GH #129)
 
 Six whole-platform sweeps were too large to read as one diagram. A view can
-now add `split_by: context` and `include_neighbours: true`: instead of one
-`<diagram>.puml` it renders one `<diagram>/<context>.puml` per bounded context
-actually on it, and pulls in any directly-connected element from another
-context so a cross-context edge still has both endpoints on the page
-(`architecture/model/views-viewpoints.yaml` header comment). It is applied to
-Application Usage, Application Cooperation, Service Realization, the
-Implementation & Migration overview and Implementation Deployment, so each
-now has a subfolder of per-context files (nine contexts for the first four
-and the deployment view, only `controls-compliance-catalog` and
-`digital-twin-knowledge-graph` for the migration overview). The ~60-element
-target is met for most contexts, but a few come out larger because the
-context owns a lot (`reusable-architecture-library`,
-`controls-compliance-catalog`) or has a wide neighbour set
-(`conformance-drift-assurance`, connected to almost every other context by
-design); a second split axis is left as a follow-up.
+add `split_by: context`: instead of one `<diagram>.puml` it renders one
+`<diagram>/<context>.puml` per bounded context actually on it. It is applied
+to all six: Application Cooperation, Service Realization, the
+Implementation & Migration overview, Implementation Deployment, Product and
+Application Usage, so each has a subfolder of per-context files (nine
+contexts for most, only `controls-compliance-catalog` and
+`digital-twin-knowledge-graph` for the migration overview). Business Process
+Cooperation (a prior 491-line monolith) gained the same split later, as a
+GH #183 spike, bringing the total to seven. The
+~60-element target is met for most contexts, but a few come out larger
+because the context genuinely owns that much cross-layer content —
+`view-service-realization` and `view-implementation-deployment` on
+`conformance-drift-assurance` stay large even so (real `BusinessProcess`/
+`BusinessFunction` realization edges and real Technology-layer
+Artifact/TechnologyFunction mapping, not a rendering artefact); a second
+split axis is left as a follow-up.
 
-The **Product** view (`view-product`) was first dropped rather than split, then
-re-added by request as a per-context sweep. The model still has no Product,
-Contract, Value or Material elements, so it duplicates what Application Usage and
-Service Realization show until some exist (`architecture/model/views-viewpoints.yaml`).
+Business Process Cooperation also prototypes a second axis orthogonal to the
+split itself: a view flag `package_diagrams: true` additionally redirects
+one context's slice from `architecture/model/diagrams/<slug>/<context>.puml`
+into that context's own `platform/packages/<context>/specs/diagrams/`
+directory, when that directory already exists
+(`_package_diagram_dir`/`_package_diagram_dirs` in
+`modelling_specification.rendering`) — today only
+`platform/packages/controls-compliance-catalog/specs/diagrams/`. Nothing is
+created automatically, and a context without that directory keeps the old
+path. `render()`'s orphan sweep covers every such package diagram directory
+unconditionally, independent of which views currently target it, so turning
+the flag off (or a package losing the directory) still cleans up the stale
+file. A GH #183 spike compared this auto-split/redirect approach against
+hand-curating a package-local view and recommended adopting it as the
+standard mechanism; the repo-wide rollout — applying `package_diagrams: true`
+to the other split views and giving every package a `specs/diagrams/`
+directory — is tracked separately (#194).
+
+`include_neighbours: true` originally pulled in any element one relationship
+hop away too, so a cross-context edge kept both endpoints visible, but was
+removed from every default viewpoint view: measured on
+`conformance-drift-assurance`, it inflated data-heavy contexts — a
+`DataObject`'s one-hop neighbour is every `ApplicationFunction` that accesses
+it — without a consistent size benefit on views that already span layers by
+their own `include_types`. `view-information-structure` instead sets
+`derived: true`, which overlays the subset of cross-context edges a two-hop
+derivation chain through an out-of-context element still implies, without
+pulling that element's whole type back onto the diagram (see "Derived
+relationship overlay" above). `view-product` and `view-application-usage`
+each still render as a duplicate dump of content already on
+`view-service-realization`/`view-application-cooperation`, since the model
+still has no `Product`/`Contract`/`Value`/`Material`/`*Service` element to
+give either viewpoint its own shape — but both stay in
+`views-viewpoints.yaml` on the strength of being standard ArchiMate 3.2
+§14 viewpoints, the duplication accepted rather than treated as grounds to
+drop the view
+(`architecture/model/views-viewpoints.yaml` header comment;
+[ADR-0040](decision-log-0040-onward.md)).
 
 **Application Cooperation** is now two views, covered with the rest of the
 application-layer diagrams on [Architecture Views & Diagrams: Application
@@ -396,45 +431,17 @@ had no business-layer presence, closed by the new `bfn-security-assurance`/
 
 ### The remaining vision/business views
 
-- **Subsystems & Capabilities** (`layered/subsystem-capabilities`) uses the
-  standard `layered` viewpoint. `ApplicationComponent → Capability`
-  realization spans the Strategy and Application layers, and showing "how
-  layers line up" is what that viewpoint is for
-  (`architecture/model/views.yaml:453-482`). It previously used
-  `outcome_realization` under `cross-layer/`.
-- **Feature Steel Thread: Conversational Model Authoring (GH #108)**
-  (`layered/fn-conversational-authoring`) also uses `layered`, for the same
-  reason: it traces `fn-conversational-authoring` through every layer the
-  feature touches — motivation (`req-conversational-authoring-alignment`),
-  strategy (`cap-conversational-governance`, `vs-intent-to-model`), business
-  (`process-conversational-authoring`), application and technology — using
-  only edges that already exist elsewhere in the model, rather than a new
-  cross-layer relationship. See [Conversational Model
-  Authoring](modelling-specification.md).
+- **Subsystems & Capabilities** and the **Feature Steel Thread:
+  Conversational Model Authoring (GH #108)** use the standard `layered`
+  viewpoint; both are covered on [Architecture Views & Diagrams: Layered &
+  C4](architecture-diagrams-layered-c4.md).
 - **The five `Data Flow — …` views** use `application_cooperation`; the
   Controls & OSCAL stage's two data-flow views are covered on
   [Architecture Views & Diagrams: Application Layer](architecture-diagrams-application.md).
 - **IT4IT: Capability Bridges** uses `capability`.
 
-**C4 diagrams.** The C4 context diagram draws the business objects as external data stores
-(`SystemDb_Ext`). These include "Resolved OSCAL Profile Catalog" and the new
-strategy/drift objects: Current, Target and Transition State Architecture,
-Architecture Roadmap, OSCAL POA&M, Drift Finding and Architecture Conformance
-Register (`architecture/model/diagrams/c4/context.puml:9-30`). The CI/CD
-Pipeline now "runs the controls enforcement gate inline". The C4 edges
-changed to match:
-
-- CI/CD Pipeline → twin: "deployment events & gate outcomes".
-- Assurance → pipeline: "expected controls".
-- The earlier release-candidate/gate-decision round trip between them is gone.
-
-(`architecture/model/diagrams/c4/container.puml`.) A 2026-09-26 change (GH #65)
-adds a seventh container, **Schema Visualiser API**, with a single edge back
-to the Architecture Knowledge Graph store labelled "reads the knowledge graph
-via" — the C4 projection drops `ApplicationInterface` elements, so
-`if-twin-read-path` itself doesn't appear, but the model's extra direct
-`Serving` edge (see [Architecture Model](architecture-model.md) §"Packaging
-and migration") keeps the container from rendering disconnected.
+**C4 diagrams.** The C4 context and container diagrams are covered on
+[Architecture Views & Diagrams: Layered & C4](architecture-diagrams-layered-c4.md).
 
 ### Suppressing the capability mesh on other views
 
