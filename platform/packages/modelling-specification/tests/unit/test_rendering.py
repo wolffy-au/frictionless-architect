@@ -158,6 +158,11 @@ def test_render_writes_stale_puml_and_renders_svg(monkeypatch: pytest.MonkeyPatc
 
     monkeypatch.setattr(rendering, "_jobs", fake_jobs)
     monkeypatch.setattr(rendering, "_capture", fake_capture)
+    # Isolate from the real repo's platform/packages/*/specs/diagrams/ -- render()
+    # sweeps every one of those unconditionally (see
+    # test_render_sweeps_package_diagram_dirs_even_when_no_job_targets_them), and
+    # this test's `_jobs` fake doesn't account for their real contents as `wanted`.
+    monkeypatch.setattr(rendering, "_package_diagram_dirs", lambda: [])
 
     try:
         stale, orphan = rendering.render([diagram_root], svg=True, write=True)
@@ -175,6 +180,34 @@ def test_render_writes_stale_puml_and_renders_svg(monkeypatch: pytest.MonkeyPatc
         assert not orphan_svg.exists()
     finally:
         shutil.rmtree(diagram_root, ignore_errors=True)
+
+
+def test_render_sweeps_package_diagram_dirs_even_when_no_job_targets_them(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A `package_diagrams: true` redirect can go stale (flag turned off, or the
+    package loses its `specs/diagrams/`) leaving a file nothing in `wanted` names.
+    Since an orphan is by definition absent from `wanted`, `render()` must sweep every
+    `_package_diagram_dirs()` entry unconditionally rather than only directories some
+    live job still targets."""
+    diagram_root = model_io.REPO_ROOT / "build" / "test_render_package_dirs_root"
+    package_dir = model_io.REPO_ROOT / "build" / "test_render_package_dirs_pkg"
+    diagram_root.mkdir(parents=True, exist_ok=True)
+    package_dir.mkdir(parents=True, exist_ok=True)
+    stale_puml = package_dir / "stale.puml"
+    stale_puml.write_text("@startuml\nold\n@enduml\n")
+
+    monkeypatch.setattr(rendering, "_jobs", lambda root: [])
+    monkeypatch.setattr(rendering, "_package_diagram_dirs", lambda: [package_dir])
+
+    try:
+        _stale, orphan = rendering.render([diagram_root], svg=True, write=True)
+
+        assert str(stale_puml.relative_to(model_io.REPO_ROOT)) in orphan
+        assert not stale_puml.exists()
+    finally:
+        shutil.rmtree(diagram_root, ignore_errors=True)
+        shutil.rmtree(package_dir, ignore_errors=True)
 
 
 def test_orphans_reports_without_deleting_when_write_is_false() -> None:
@@ -209,6 +242,7 @@ def test_render_reports_stale_without_writing_when_write_is_false(monkeypatch: p
 
     monkeypatch.setattr(rendering, "_jobs", fake_jobs)
     monkeypatch.setattr(rendering, "_capture", fake_capture)
+    monkeypatch.setattr(rendering, "_package_diagram_dirs", lambda: [])
 
     try:
         stale, orphan = rendering.render([diagram_root], svg=True, write=False)
@@ -237,6 +271,7 @@ def test_render_skips_svg_normalisation_when_the_svg_was_not_produced(monkeypatc
     monkeypatch.setattr(rendering, "_jobs", fake_jobs)
     monkeypatch.setattr(rendering, "_capture", fake_capture)
     monkeypatch.setattr(rendering, "_run", lambda cmd: None)
+    monkeypatch.setattr(rendering, "_package_diagram_dirs", lambda: [])
 
     try:
         stale, _orphan = rendering.render([diagram_root], svg=True, write=True)
@@ -481,6 +516,57 @@ def test_view_diagram_jobs_fans_out_split_by_context(tmp_path: Path) -> None:
     assert paths == ["biz/split-view/ctx-x.puml", "biz/split-view/ctx-y.puml"]
     for _, cmd in jobs:
         assert "--context" in cmd
+
+
+def test_view_diagram_jobs_redirects_split_by_context_into_package_diagram_dir(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    views_file = tmp_path / "views.yaml"
+    views_file.write_text(
+        "- {id: v1, name: V1, diagram: biz/split-view, include_types: [application-component], "
+        "split_by: context, package_diagrams: true}\n"
+    )
+    elements = [
+        {"id": "a", "type": "application-component", "context": "ctx-x", "name": "A"},
+        {"id": "b", "type": "application-component", "context": "ctx-y", "name": "B"},
+    ]
+    types_by_id = {"a": "ApplicationComponent", "b": "ApplicationComponent"}
+
+    monkeypatch.setattr(rendering, "PROJECT_ROOT", tmp_path)
+    package_dir = tmp_path / "platform" / "packages" / "ctx-x" / "specs" / "diagrams"
+    package_dir.mkdir(parents=True)
+
+    jobs = rendering._view_diagram_jobs(views_file, rendering.DIAGRAMS, elements, types_by_id)
+
+    paths = sorted(str(p) for p, _ in jobs)
+    assert str(package_dir / "split-view.puml") in paths
+    assert str(rendering.DIAGRAMS / "biz" / "split-view" / "ctx-y.puml") in paths
+
+
+def test_package_diagram_dir_is_none_without_a_specs_diagrams_directory(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(rendering, "PROJECT_ROOT", tmp_path)
+    assert rendering._package_diagram_dir("no-such-package") is None
+
+
+def test_package_diagram_dirs_globs_every_existing_package_diagrams_dir(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(rendering, "PROJECT_ROOT", tmp_path)
+    wanted = tmp_path / "platform" / "packages" / "pkg-a" / "specs" / "diagrams"
+    unwanted = tmp_path / "platform" / "packages" / "pkg-b" / "specs" / "other"
+    wanted.mkdir(parents=True)
+    unwanted.mkdir(parents=True)
+
+    assert rendering._package_diagram_dirs() == [wanted]
+
+
+def test_package_diagram_dirs_is_empty_without_a_packages_directory(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(rendering, "PROJECT_ROOT", tmp_path)
+    assert rendering._package_diagram_dirs() == []
 
 
 def test_view_diagram_jobs_without_split_by_is_a_single_job(tmp_path: Path) -> None:

@@ -1,6 +1,6 @@
 ---
 title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
-generated: '2026-11-14'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - architecture/model/README.md
@@ -72,7 +72,27 @@ hand-authored Grouping or boundary view:
   `views.yaml` uses `include_neighbours: same_layer` so it stays
   Application-layer only, and `view-application-cooperation-standard` keeps
   the unrestricted, split-by-context sweep for comparison
-  (`architecture/model/views.yaml`).
+  (`architecture/model/views.yaml`). Business Process Cooperation (491 lines
+  as one file) gained the same split later, as a GH #183 spike — a seventh
+  split view.
+- **Package-local diagram redirect (GH #183).** A split view may additionally
+  set `package_diagrams: true`: for a context whose extracted package already
+  has a `platform/packages/<context>/specs/diagrams/` directory,
+  `_package_diagram_dir` routes that context's slice there instead of under
+  `architecture/model/diagrams/<slug>/<context>.puml` — no package-local
+  model or views file needed, since the redirect reuses the shared model's
+  `context:` tag exactly like the split itself. Today only
+  `controls-compliance-catalog` has that directory, and only
+  `view-business-process-cooperation` sets the flag. `render()`'s orphan
+  sweep (`_package_diagram_dirs`) covers every such directory unconditionally
+  rather than only ones a live job currently targets, because an orphaned
+  file is by definition missing from the render's `wanted` set — otherwise
+  turning the flag off, or a package losing the directory, would leave stale
+  output behind. The GH #183 spike compared this auto-split/redirect
+  approach against the pre-existing hand-curated `view-business-controls-catalog`
+  for the same package and recommended adopting it as the standard mechanism
+  for package-scoped diagram legibility; the repo-wide rollout is tracked
+  separately (#194).
 - **A generated context map** (`generate_context_map_relationships`,
   `view-context-map`) derives one directed `Serving` edge per ordered
   context pair with at least one element-level relationship crossing

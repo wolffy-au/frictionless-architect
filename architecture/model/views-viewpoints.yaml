@@ -264,6 +264,18 @@
   # modelled.
   viewpoint: business_process_cooperation
   diagram: business/process-cooperation
+  # GH #183: the per-context split already used by
+  # view-application-cooperation-standard/view-application-usage/view-product
+  # makes this oversized, cross-layer sweep legible per package too, instead
+  # of hand-curating package-local views like view-business-controls-catalog.
+  # package_diagrams: true additionally routes a context's slice into that
+  # package's own specs/diagrams/ when it has one (rendering.py
+  # `_package_diagram_dir`) -- today that's controls-compliance-catalog only;
+  # every other context still falls back to diagrams/business/
+  # process-cooperation/<context>.puml until its package grows that directory.
+  split_by: context
+  include_neighbours: true
+  package_diagrams: true
   include_types:
     - BusinessActor
     - BusinessRole

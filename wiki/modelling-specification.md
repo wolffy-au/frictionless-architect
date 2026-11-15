@@ -1,6 +1,6 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-12'
+generated: '2026-11-15'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
@@ -150,7 +150,7 @@ The working indicator (GH #186) adds no dependency.
 | `router.py` | 1091 | FastAPI router: propose/validate/decide/render/config/state; `_resolve_changes`, `_merge_into_delta` and `_resolved_text` hold the logic once inline in `propose`/`resolve_pii` |
 | `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
 | `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 489 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths |
+| `rendering.py` | 547 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths; gained the GH #183 `package_diagrams: true` redirect (`_package_diagram_dir`/`_package_diagram_dirs`) — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) |
 | `puml.py` | 525 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout. `--derived` (requires `--view`) overlays ArchiMate derived relationships via `_compute_derived_edges`/`pyArchimate.derivation.find_chains` — see [Architecture Views & Diagrams: Vision, Business & Viewpoints](architecture-diagrams.md#derived-relationship-overlay-derived-true) |
 | `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
