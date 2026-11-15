@@ -377,9 +377,11 @@ Checklist:
 
 ### 8.2 Visualiser API/UI split (step 7)
 
-Today the visualiser is JSON only: its router (`visualizer/api.py`) serves `/schema-payload*`
-from the shared FastAPI app in `frictionless_architect/app.py`. It has no HTML route,
-static files or templates (ADR-0005 → Implementation status).
+Today the visualiser's data API serves `/schema-payload*` from the shared FastAPI app in
+`frictionless_architect/app.py`. A separate `placeholder_page.py` router serves a minimal
+HTML smoke-test page at `GET /` (ADR-0053); it is not the subsystem UI, and there are no
+static files or templates. The planned extraction below keeps the API JSON-only and does not
+carry the temporary placeholder forward (ADR-0005).
 
 ```plantuml
 @startuml
@@ -388,10 +390,12 @@ skinparam componentStyle rectangle
 
 package "BEFORE  src/frictionless_architect/visualizer/" {
   [api.py  router — JSON only:\n/schema-payload (+/refresh /status)] as before_api
+  [placeholder_page.py\nGET / — temporary HTML smoke-test page\n(ADR-0053)] as before_placeholder
   [data_loader.py sample_parser.py\nnamespaces.py (+ schema/manager.py)] as before_kg
   [sample_validator.py\nXSD check — destination undecided] as before_val
   before_api --> before_kg
   before_api --> before_val
+  before_placeholder --> before_api : reads payload
 }
 
 package "AFTER" {
@@ -413,6 +417,8 @@ Checklist:
 - Move `visualizer/{api,cache,config}.py` + the visualiser's own payload /
   coverage-merge logic + the FastAPI router into
   `packages/schema-visualizer-api/src/`.
+- Do not carry `placeholder_page.py` into the API package: it is a temporary smoke-test
+  surface, superseded by the real UI when that ships (ADR-0053).
 - `data_loader.py` (Neo4j read), `sample_parser.py`, and `schema/manager.py` are
   **not** part of this step — they move to `packages/digital-twin-knowledge-graph`, which
   `schema-visualizer-api` consumes as a path-dependency library, not over HTTP (ADR-0005,
