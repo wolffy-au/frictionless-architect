@@ -13,8 +13,8 @@ the merge gate and excluded from the fast gate. Research found two of the three 
 `platform/packages/controls-compliance-catalog/tests/features/` and mirrored in
 `platform/packages/modelling-specification`. This plan extends that same pattern rather than
 adding the issue's originally proposed `pytest-playwright` as a second toolchain (ADR-0053),
-adds the same live-server + Playwright capability to the root `tests/features/` harness for a
-new, minimal placeholder page on the visualiser (which has no HTML page today — see
+adds the same live-server + Playwright capability to the root `tests/features/` harness and
+a minimal placeholder page to the visualiser, which previously served only a JSON API (see
 research.md), and deletes the dead `frontend/` stub from `scripts/pre_merge_checks.sh` since
 `scripts/platform_checks.sh` and the pre-existing root `behave` step already gate the real
 work.

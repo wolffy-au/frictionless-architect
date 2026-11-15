@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import shutil
 import socket
 import sys
@@ -26,13 +27,41 @@ UI_TAG = "ui"
 # Lazily populated on the first @ui scenario so non-UI runs never pay for a
 # browser/server launch; torn down in after_all if it was ever started.
 _ui_harness: dict[str, Any] = {}
+_ui_environment: dict[str, str | None] = {}
+_ui_cache_dir: Path | None = None
 
 
 def _ensure_ui_harness() -> None:
+    global _ui_cache_dir
     if _ui_harness:
         return
     import uvicorn
     from playwright.sync_api import sync_playwright
+
+    from frictionless_architect.visualizer import api
+    from frictionless_architect.visualizer import config as visualizer_config
+
+    root = Path(__file__).resolve().parents[2]
+    _ui_environment.update(
+        {
+            key: os.environ.get(key)
+            for key in (
+                "FRICTIONLESS_ARCHITECT_NEO4J_URI",
+                "FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR",
+                "FRICTIONLESS_ARCHITECT_CACHE_DIR",
+            )
+        }
+    )
+    _ui_cache_dir = Path(tempfile.mkdtemp(prefix="behave-ui-cache-"))
+    os.environ.update(
+        {
+            "FRICTIONLESS_ARCHITECT_NEO4J_URI": "",
+            "FRICTIONLESS_ARCHITECT_SAMPLE_DATA_DIR": str(root / "sample-data"),
+            "FRICTIONLESS_ARCHITECT_CACHE_DIR": str(_ui_cache_dir),
+        }
+    )
+    visualizer_config.get_visualizer_settings.cache_clear()
+    api.get_schema_service.cache_clear()
 
     from frictionless_architect.app import app
 
@@ -43,6 +72,7 @@ def _ensure_ui_harness() -> None:
     config = uvicorn.Config(app, fd=sock.fileno(), log_level="warning")
     server = uvicorn.Server(config)
     thread = threading.Thread(target=lambda: server.run(sockets=[sock]), daemon=True)
+    _ui_harness.update(server=server, thread=thread)
     thread.start()
     deadline = time.monotonic() + 10
     while not server.started:
@@ -53,25 +83,41 @@ def _ensure_ui_harness() -> None:
         time.sleep(0.05)
 
     playwright = sync_playwright().start()
+    _ui_harness["playwright"] = playwright
     browser = playwright.chromium.launch()
 
     _ui_harness.update(
         base_url=f"http://127.0.0.1:{port}",
-        server=server,
-        thread=thread,
-        playwright=playwright,
         browser=browser,
     )
 
 
 def _teardown_ui_harness() -> None:
-    if not _ui_harness:
+    global _ui_cache_dir
+    if not _ui_harness and not _ui_environment and _ui_cache_dir is None:
         return
-    _ui_harness["browser"].close()
-    _ui_harness["playwright"].stop()
-    _ui_harness["server"].should_exit = True
-    _ui_harness["thread"].join(timeout=5)
+    if "browser" in _ui_harness:
+        _ui_harness["browser"].close()
+    if "playwright" in _ui_harness:
+        _ui_harness["playwright"].stop()
+    if "server" in _ui_harness:
+        _ui_harness["server"].should_exit = True
+        _ui_harness["thread"].join(timeout=5)
     _ui_harness.clear()
+    from frictionless_architect.visualizer import api
+    from frictionless_architect.visualizer import config as visualizer_config
+
+    api.get_schema_service.cache_clear()
+    visualizer_config.get_visualizer_settings.cache_clear()
+    for key, value in _ui_environment.items():
+        if value is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = value
+    _ui_environment.clear()
+    if _ui_cache_dir is not None:
+        shutil.rmtree(_ui_cache_dir, ignore_errors=True)
+        _ui_cache_dir = None
 
 
 _original_scenario_run = behave.model.Scenario.run

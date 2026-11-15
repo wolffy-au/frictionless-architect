@@ -24,10 +24,11 @@ them.
 
 - **Decision**: Add one minimal placeholder landing page to
   `src/frictionless_architect/visualizer/`, sufficient for smoke testing only.
-- **Rationale**: The visualiser currently serves only a JSON API; GH #74 (still open) tracks
-  its real UI composition/build tooling separately. Without a page, FR-001/FR-002 have
-  nothing to exercise for this surface. The maintainer chose to deliver smoke coverage for
-  all three named surfaces now rather than descope the visualiser to two of three.
+- **Rationale**: At the time of planning, the visualiser served only a JSON API; GH #74
+  (still open) tracks its real UI composition/build tooling separately. Without a page,
+  FR-001/FR-002 had nothing to exercise for this surface. The maintainer chose to deliver
+  smoke coverage for all three named surfaces now rather than descope the visualiser to
+  two of three.
 - **Alternatives considered**: Skip the visualiser entirely until GH #74 ships (rejected by
   maintainer); smoke-test FastAPI's auto-generated `/docs` Swagger UI as a stand-in
   (rejected — exercises code this project doesn't own).
