@@ -11,6 +11,7 @@ import sys
 import tempfile
 import threading
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -31,13 +32,8 @@ _ui_environment: dict[str, str | None] = {}
 _ui_cache_dir: Path | None = None
 
 
-def _ensure_ui_harness() -> None:
+def _configure_ui_environment() -> None:
     global _ui_cache_dir
-    if _ui_harness:
-        return
-    import uvicorn
-    from playwright.sync_api import sync_playwright
-
     from frictionless_architect.visualizer import api
     from frictionless_architect.visualizer import config as visualizer_config
 
@@ -63,7 +59,9 @@ def _ensure_ui_harness() -> None:
     visualizer_config.get_visualizer_settings.cache_clear()
     api.get_schema_service.cache_clear()
 
-    from frictionless_architect.app import app
+
+def _start_ui_server(app: Any) -> str:
+    import uvicorn
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("127.0.0.1", 0))
@@ -82,42 +80,89 @@ def _ensure_ui_harness() -> None:
             )
         time.sleep(0.05)
 
+    return f"http://127.0.0.1:{port}"
+
+
+def _start_ui_browser() -> None:
+    from playwright.sync_api import sync_playwright
+
     playwright = sync_playwright().start()
     _ui_harness["playwright"] = playwright
-    browser = playwright.chromium.launch()
+    _ui_harness["browser"] = playwright.chromium.launch()
 
-    _ui_harness.update(
-        base_url=f"http://127.0.0.1:{port}",
-        browser=browser,
-    )
+
+def _ensure_ui_harness() -> None:
+    if _ui_harness:
+        return
+    _configure_ui_environment()
+    from frictionless_architect.app import app
+
+    _ui_harness["base_url"] = _start_ui_server(app)
+    _start_ui_browser()
+
+
+def _attempt_ui_cleanup(action: Callable[[], object], errors: list[Exception]) -> None:
+    try:
+        action()
+    except Exception as exc:
+        errors.append(exc)
+
+
+def _stop_ui_server() -> None:
+    _ui_harness["server"].should_exit = True
+    _ui_harness["thread"].join(timeout=5)
+
+
+def _close_ui_resources(errors: list[Exception]) -> None:
+    if "browser" in _ui_harness:
+        _attempt_ui_cleanup(_ui_harness["browser"].close, errors)
+    if "playwright" in _ui_harness:
+        _attempt_ui_cleanup(_ui_harness["playwright"].stop, errors)
+    if "server" in _ui_harness:
+        _attempt_ui_cleanup(_stop_ui_server, errors)
+
+
+def _clear_ui_caches(errors: list[Exception]) -> None:
+    try:
+        from frictionless_architect.visualizer import api
+        from frictionless_architect.visualizer import config as visualizer_config
+
+        _attempt_ui_cleanup(api.get_schema_service.cache_clear, errors)
+        _attempt_ui_cleanup(visualizer_config.get_visualizer_settings.cache_clear, errors)
+    except Exception as exc:
+        errors.append(exc)
+
+
+def _restore_ui_environment(errors: list[Exception]) -> None:
+    global _ui_cache_dir
+    for key, value in _ui_environment.items():
+        try:
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+        except Exception as exc:
+            errors.append(exc)
+    _ui_environment.clear()
+    if _ui_cache_dir is not None:
+        cache_dir = _ui_cache_dir
+        _attempt_ui_cleanup(lambda: shutil.rmtree(cache_dir), errors)
+    _ui_cache_dir = None
 
 
 def _teardown_ui_harness() -> None:
-    global _ui_cache_dir
     if not _ui_harness and not _ui_environment and _ui_cache_dir is None:
         return
-    if "browser" in _ui_harness:
-        _ui_harness["browser"].close()
-    if "playwright" in _ui_harness:
-        _ui_harness["playwright"].stop()
-    if "server" in _ui_harness:
-        _ui_harness["server"].should_exit = True
-        _ui_harness["thread"].join(timeout=5)
-    _ui_harness.clear()
-    from frictionless_architect.visualizer import api
-    from frictionless_architect.visualizer import config as visualizer_config
+    errors: list[Exception] = []
+    _close_ui_resources(errors)
+    try:
+        _clear_ui_caches(errors)
+    finally:
+        _restore_ui_environment(errors)
+        _ui_harness.clear()
 
-    api.get_schema_service.cache_clear()
-    visualizer_config.get_visualizer_settings.cache_clear()
-    for key, value in _ui_environment.items():
-        if value is None:
-            os.environ.pop(key, None)
-        else:
-            os.environ[key] = value
-    _ui_environment.clear()
-    if _ui_cache_dir is not None:
-        shutil.rmtree(_ui_cache_dir, ignore_errors=True)
-        _ui_cache_dir = None
+    if errors:
+        raise ExceptionGroup("UI harness cleanup failed", errors)
 
 
 _original_scenario_run = behave.model.Scenario.run
