@@ -103,7 +103,7 @@ Implementation_WorkPackage(e_id4608a4b3ca8a52, " --GH-59 Scope the ArchiMate mod
 Implementation_WorkPackage(e_id844a1cfdbe0d54, " --GH-202 Scoping decision: which subsystem owns compliance-pack export (FR-023)--")
 Implementation_WorkPackage(e_idf2ecb4385a2254, "GH-201 speckit-specify: package-level spec.md for architecture-governance")
 Implementation_WorkPackage(e_ida6ae0631776453, "GH-204 speckit-specify: spec.md for compliance-pack export (FR-023)")
-Implementation_WorkPackage(e_id6d792a77f2a259, "GH-183 Spike: restructure architecture/model/diagrams/ for legibility")
+Implementation_WorkPackage(e_id6d792a77f2a259, " --GH-183 Spike: restructure architecture/model/diagrams/ for legibility--")
 Implementation_WorkPackage(e_idf0376def52fa5a, "GH-74 Technology layer: Postgres/OPA and UI composition mechanism for the rest of the platform")
 Implementation_WorkPackage(e_id86bfb9c548ad56, " --GH-104 test(model): set a performance and scale criterion for the GH roadmap importer--")
 Implementation_WorkPackage(e_id0c73670e085f56, " --GH-119 test(ui): establish Playwright browser tests for the HTML UIs--")

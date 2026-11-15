@@ -908,7 +908,8 @@
   name: 'GH-183 Spike: restructure architecture/model/diagrams/ for legibility'
   props:
     gh-number: '183'
-    gh-state: open
+    gh-state: closed
+    gh-state-reason: completed
     gh-url: https://github.com/wolffy-au/frictionless-architect/issues/183
 - type: WorkPackage
   id: wp-stubbed-oscal-conversion-api-validated-gh-165
