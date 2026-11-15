@@ -23,6 +23,7 @@ Open `http://127.0.0.1:8000/` for the landing page.
 | Path | UI | Package |
 |---|---|---|
 | `/catalog` | Control conversion playground | `controls-compliance-catalog` |
+| `/authoring/` | Conversational model authoring (split-screen chat + render UI) | `modelling-specification` |
 | `/settings/llm` | LLM settings, mounted once for every package | `llm-provider-config` |
 | `/settings/pii-gateway` | PII/PHI scrubbing settings, one page for every registered caller context | `pii-gateway` |
 

@@ -4009,6 +4009,7 @@ dnspython = ">=2.9.2"
 fastapi = ">=0.141.0,<0.142.0"
 filelock = ">=4.2.1"
 llm-provider-config = "*"
+modelling-specification = "*"
 pii-gateway = "*"
 uvicorn = ">=0.43.0,<0.44.0"
 
