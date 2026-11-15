@@ -34,7 +34,7 @@ constraint on the topology.
 
 ```plantuml
 @startuml
-title Current state — a flat JSON-only visualiser plus the extracted platform packages
+title Current state — a flat JSON visualiser (plus a placeholder page) and the extracted platform packages
 skinparam componentStyle rectangle
 
 package "frictionless-architect (repo root)" {
@@ -46,6 +46,7 @@ package "frictionless-architect (repo root)" {
   package "src/frictionless_architect/" {
     [app.py\nFastAPI entry point] as app
     [visualizer/api.py\nJSON router + payload service] as api
+    [visualizer/placeholder_page.py\nGET / placeholder HTML (ADR-0053)] as placeholder
     [visualizer/cache.py / config.py] as vsupport
     [visualizer/data_loader.py\nNeo4j read] as loader
     [visualizer/sample_parser.py\nsample_validator.py / namespaces.py\nArchiMate XML -> payload] as parser
@@ -69,6 +70,8 @@ package "platform/packages/ (own lock + venv)" {
 [Neo4j] as neo4j
 
 app --> api : mounts router
+app --> placeholder : mounts router
+placeholder --> api : reads payload
 api --> vsupport
 api --> loader
 api --> parser
@@ -95,7 +98,7 @@ end note
 
 | Component | Location | State |
 |---|---|---|
-| Schema visualiser (JSON only) | `src/frictionless_architect/visualizer/`, `app.py` | Runnable: `/schema-payload`, `/refresh`, `/status`. Extracts to `schema-visualizer-api` in §8 step 7 |
+| Schema visualiser (JSON API + placeholder page) | `src/frictionless_architect/visualizer/`, `app.py` | Runnable: `/schema-payload`, `/schema-payload/refresh`, `/schema-payload/status`, and a minimal placeholder HTML page at `GET /` (ADR-0053). Extracts to `schema-visualizer-api` in §8 step 7 |
 | Neo4j schema manager and seeding CLI | `src/frictionless_architect/schema/`, `scripts/neo4j_schema.py` | Runnable operator tooling |
 | `controls-compliance-catalog` | `platform/packages/controls-compliance-catalog/` | Policy-to-OSCAL conversion pipeline and playground UI |
 | `modelling-specification` | `platform/packages/modelling-specification/` | Conversational authoring service, split-screen UI and model build/render/validate CLI |

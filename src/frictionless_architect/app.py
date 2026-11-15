@@ -1,4 +1,7 @@
-"""FastAPI entry point for the platform app (currently serves the schema visualiser API)."""
+"""FastAPI entry point for the platform app.
+
+Currently serves the schema visualiser JSON API and its placeholder landing page (``GET /``).
+"""
 
 from __future__ import annotations
 

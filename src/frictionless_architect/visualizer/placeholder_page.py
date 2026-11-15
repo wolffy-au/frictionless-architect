@@ -25,6 +25,10 @@ async def placeholder_page() -> HTMLResponse:
     sample model is reachable and nothing is cached, ``get_payload`` raises
     ``PayloadUnavailable`` carrying an empty-but-valid payload (FR-006) —
     render that instead of letting the page 500.
+
+    Returns:
+        An HTML page with a fixed title, a status line and the number of
+        elements in the schema payload.
     """
     service = get_schema_service()
     try:

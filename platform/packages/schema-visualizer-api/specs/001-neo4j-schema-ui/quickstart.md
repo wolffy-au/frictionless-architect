@@ -54,9 +54,10 @@ The cache directory stores the normalized payload (`schema_payload.json`) so the
    ```
 
 4. Fetch `http://127.0.0.1:8100/schema-payload` (interactive API docs at `/docs`). The
-   service is JSON-only: the server-rendered `/schema-visualizer` page was dropped ahead of
-   the planned `schema-visualizer-ui` extraction (ADR-0005), so there is no browser UI yet.
-   The payload carries:
+   data API is JSON-only: the server-rendered `/schema-visualizer` page was dropped ahead of
+   the planned `schema-visualizer-ui` extraction (ADR-0005), so there is no real browser UI
+   yet. `GET /` serves only a minimal placeholder page (status text plus the schema's element
+   count, ADR-0053) used by the browser-level tests. The payload carries:
 
    - the ArchiMate elements, relationships and views (Neo4j merged with the sample file),
    - a `warnings` list (for example "Sample data unavailable"), and
