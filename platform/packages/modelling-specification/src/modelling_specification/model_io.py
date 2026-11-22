@@ -101,13 +101,14 @@ VIEWS_FILENAME = "views.yaml"
 # A third_party/ directory can carry its own elements.yaml for a reason other than
 # "merge me into this repo's model": ADR-0045 lets a *different* repo install this
 # package and point FRICTIONLESS_MODEL_DIR straight at its own model directory --
-# third_party/sample-azure (a standalone demo Azure app) is exactly that: its
-# elements.yaml describes its own infrastructure, meant to be built by pointing
-# FRICTIONLESS_MODEL_DIR at it directly, not swept into the root model alongside
-# it4it. Excluded from the default sweep for that reason; still buildable/
-# renderable on its own by cd-ing into it, or reachable here by pointing
-# FRICTIONLESS_THIRD_PARTY_DIR at a directory that includes it under another name.
-_STANDALONE_THIRD_PARTY_MODELS = {"sample-azure"}
+# third_party/sample-azure and third_party/sample-gcp (standalone demo apps) are
+# exactly that: their elements.yaml describes their own infrastructure, meant to
+# be built by pointing FRICTIONLESS_MODEL_DIR at it directly, not swept into the
+# root model alongside it4it. Excluded from the default sweep for that reason;
+# still buildable/renderable on their own by cd-ing into them, or reachable here
+# by pointing FRICTIONLESS_THIRD_PARTY_DIR at a directory that includes them
+# under another name.
+_STANDALONE_THIRD_PARTY_MODELS = {"sample-azure", "sample-gcp"}
 VENDORED_MODELS = sorted(
     p.parent for p in THIRD_PARTY.glob(f"*/{ELEMENTS_FILENAME}") if p.parent.name not in _STANDALONE_THIRD_PARTY_MODELS
 )
