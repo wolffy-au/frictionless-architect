@@ -88,12 +88,11 @@
   diagram: migration/plat-general-tasks-12
   members:
   - del-general-tasks-12-unreleased
-  - del-release-v0-11-0
+  - del-release-v0-12-0
   - plat-general-tasks-12
   - wp-ci-add-multi-os-test-matrix-gh-9
   - wp-feat-portal-add-a-portal-host-package-gh-120
   - wp-perf-scripts-cut-redundant-work-in-pre-gh-126
-  - wp-role-journeys-and-ui-ux-gh-45
   - wp-test-ui-establish-playwright-browser-gh-119
   - wp-tighten-dev-workflow-gates-merge-gh-213
 - id: view-plat-github-importer-11
@@ -114,6 +113,7 @@
   diagram: migration/plat-multi-user-collaboration-2
   members:
   - del-multi-user-collaboration-2-unreleased
+  - del-release-v0-12-0
   - plat-multi-user-collaboration-2
   - wp-adr-decide-the-authn-authz-approach-for-gh-84
   - wp-api-contract-updates-document-auth-gh-93
@@ -140,7 +140,7 @@
   diagram: migration/plat-policy-to-oscal-mvp-1
   members:
   - del-policy-to-oscal-mvp-1-unreleased
-  - del-release-v0-2-0
+  - del-release-v0-12-0
   - plat-policy-to-oscal-mvp-1
   - wp-application-layer-dedupe-artefact-views-gh-61
   - wp-control-conversion-playground-ui-prose-gh-76
