@@ -4,3 +4,9 @@
 [submodule "third_party/sample-azure"]
 	path = third_party/sample-azure
 	url = https://github.com/wolffy-au/frictionless-sample-azure.git
+[submodule "third_party/sample-gcp"]
+	path = third_party/sample-gcp
+	url = https://github.com/wolffy-au/frictionless-sample-gcp.git
+[submodule "third_party/sample-oscal"]
+	path = third_party/sample-oscal
+	url = https://github.com/wolffy-au/frictionless-sample-oscal.git
