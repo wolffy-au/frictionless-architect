@@ -1,7 +1,7 @@
 ---
 title: LLM Provider Configuration
-generated: '2026-11-11'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0034-shared-packages-and-llm-provider-config.md
 - platform/packages/llm-provider-config/README.md
@@ -16,6 +16,7 @@ sources:
 - platform/packages/llm-provider-config/specs/001-llm-provider-config/tasks.md
 - platform/packages/llm-provider-config/specs/README.md
 - platform/packages/llm-provider-config/src/llm_provider_config/__init__.py
+- platform/packages/llm-provider-config/src/llm_provider_config/_paths.py
 - platform/packages/llm-provider-config/src/llm_provider_config/credentials.py
 - platform/packages/llm-provider-config/src/llm_provider_config/resolve.py
 - platform/packages/llm-provider-config/src/llm_provider_config/router.py
@@ -74,7 +75,16 @@ name, defaulting to the provider name). Unknown fields are rejected
 (`platform/packages/llm-provider-config/src/llm_provider_config/settings.py`).
 
 They are stored in `~/.config/frictionless-architect/llm.toml`, outside the repo tree;
-`LLM_PROVIDER_CONFIG_PATH` overrides the location. A `[default]` table plus optional
+`LLM_PROVIDER_CONFIG_PATH` overrides the location, but the override is now confined: a
+new module, `_paths.py`, exposes `resolve_override(raw, *, env_var)`, which expands and
+fully resolves the value (defeating `../` segments and symlink tricks) and raises
+`ValueError` unless the result sits under the user's home directory or the OS temp
+directory — the only two trees the default path and test fixtures use. It exists
+because passing the raw environment string into `pathlib.Path` is the CWE-22 path
+traversal shape that Snyk Code flags, and it mirrors `pii_gateway._paths.resolve_override`,
+which fixed the same shape there; `default_config_path()` now documents that `ValueError`
+(`platform/packages/llm-provider-config/src/llm_provider_config/_paths.py`;
+`platform/packages/llm-provider-config/src/llm_provider_config/store.py`). A `[default]` table plus optional
 `[components."<id>"]` tables hold no key, only the reference (`README.md`; `platform/packages/llm-provider-config/src/llm_provider_config/store.py`).
 `save_settings` tries `chmod 0o600` and suppresses `OSError` (via `contextlib.suppress`) on mounts that refuse it
 (`platform/packages/llm-provider-config/src/llm_provider_config/store.py`).
@@ -89,7 +99,9 @@ warning; if neither has a key it raises `MissingCredentialError`
 (`platform/packages/llm-provider-config/src/llm_provider_config/credentials.py`). ADR-0034's "Implementation status" records this fallback as an
 amendment to the original keychain-only decision, to make headless CI and
 devcontainers workable. `key_source` reports only `not-needed`, `keychain`,
-`environment` or `missing`, never the key (`platform/packages/llm-provider-config/src/llm_provider_config/credentials.py`).
+`environment` or `missing`, never the key; when no keyring backend is usable it swallows
+the `KeyringError` explicitly (`contextlib.suppress`, replacing a bare `try`/`except`/`pass`)
+and falls back to the environment check (`platform/packages/llm-provider-config/src/llm_provider_config/credentials.py`).
 
 A key that is really a secret *reference* (`os.environ/NAME`) is refused with
 `InvalidCredentialError` (a subclass of `MissingCredentialError`, so callers that
@@ -223,6 +235,12 @@ every task done except one real, explicitly flagged gap: **T023 (US5)** — no t
 list-comprehension implementation looks correct by inspection. The task is left open rather than
 marked done on inspection alone
 (`platform/packages/llm-provider-config/specs/001-llm-provider-config/tasks.md` §Phase 7).
+The list's closing **Notes** now also restate the plan's verdict — "Model impact: none", since
+`sub-llm-provider-config` and `sw-litellm` already exist (ADR-0034, ADR-0044)
+(`platform/packages/llm-provider-config/specs/001-llm-provider-config/tasks.md` §Notes).
+Since the portal started mounting `modelling-specification`, the one settings router it
+mounts declares two components (the catalog's and the authoring agent's), so T023's
+untested multi-component case now occurs in real wiring ([Portal](portal.md)).
 
 ## Development
 

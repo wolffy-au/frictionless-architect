@@ -1,7 +1,7 @@
 ---
 title: Conversational Model Authoring
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0037-conversational-model-authoring-architecture.md
 - platform/packages/modelling-specification/README.md
@@ -64,7 +64,7 @@ which edits a `do-solution-design` instead. See the Architecture Decision Log ([
 
 ## Why the code lives here
 
-[ADR-0037](decision-log-0030-0039.md) (Proposed 2026-10-10) decided the package's
+[ADR-0037](decision-log-0030-0039.md) (filed 2026-10-10, Accepted 2026-11-23) decided the package's
 shape and three related questions `plan.md`'s Constitution Check flagged as
 load-bearing:
 
@@ -74,8 +74,8 @@ load-bearing:
   pre-migration flat layout.
 - **One implementation, three callers.** `architecture/model/build.py`'s
   YAML load/merge/validate logic and `render_diagrams.py`'s view-render logic
-  moved into this package as `model_io.py` (1702 lines) and `rendering.py`
-  (461 lines). Root's `build.py`, `render_diagrams.py` and the
+  moved into this package as `model_io.py` and `rendering.py` (sizes in
+  "Package layout" below). Root's `build.py`, `render_diagrams.py` and the
   `model-archimate` skill's `validate.py` are now thin wrappers that shell
   into the platform venv's CLI — `poetry run --directory platform python -m
   modelling_specification.cli build|render|validate`
@@ -107,7 +107,7 @@ load-bearing:
 
 `plan.md` first cited this record as "ADR-0036"; that number went to the unrelated
 element-id-prefix ADR during a rebase, so it filed as ADR-0037. A later item 8
-(2026-11-01) amends the same still-Proposed record, because add-only was never a
+(2026-11-01) amended the same record (then still Proposed), because add-only was never a
 deliberated decision and there was nothing to supersede. See [Candidate-Delta Pipeline](modelling-specification-pipeline.md).
 
 ## Dependencies
@@ -138,11 +138,11 @@ The working indicator (GH #186) adds no dependency.
 
 | File | Lines | Role |
 |---|---|---|
-| `model_io.py` | 1861 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view`; `VENDORED_MODELS` excludes `third_party/sample-azure` from the default merge sweep (ADR-0045 standalone-repo model, not reference content) |
+| `model_io.py` | 1863 | Ported YAML load/merge/validate/write logic from root's `build.py`, plus (ADR-0037 item 8) the text-surgical edit/removal writers; `add_views` hands each view to `_build_view`; `VENDORED_MODELS` excludes `third_party/sample-azure` and `third_party/sample-gcp` (`_STANDALONE_THIRD_PARTY_MODELS`) from the default merge sweep (ADR-0045 standalone-repo models, not reference content; ADR-0052) |
 | `router.py` | 1091 | FastAPI router: propose/validate/decide/render/config/state; `_resolve_changes`, `_merge_into_delta` and `_resolved_text` hold the logic once inline in `propose`/`resolve_pii` |
-| `ui.py` | 890 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) |
+| `ui.py` | 898 | Split-screen authoring UI, including the "Thinking…" working indicator (GH #186) and a render-view picker that builds one `<optgroup>` per view `group` (falling back to "Other") |
 | `authoring/delta.py` | 603 | Natural-language request → structured Candidate Delta, via `llm-provider-config`/`litellm` |
-| `rendering.py` | 547 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths; gained the GH #183 `package_diagrams: true` redirect (`_package_diagram_dir`/`_package_diagram_dirs`) — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) |
+| `rendering.py` | 597 | Ported view-render logic from root's `render_diagrams.py`; passes `v.get("derived")` through as `--derived` on both the batch and single-view render paths; gained the GH #183 `package_diagrams: true` redirect (`_package_diagram_dir`/`_package_diagram_dirs`, ADR-0055), with the per-context fan-out now factored into `_context_split_jobs`; `list_views()` returns `{id, name, group}` sorted by group then name, the group coming from `_group_label` (Core Model, ArchiMate Viewpoints, Roadmap, or a vendored directory name such as `IT4IT`) — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md) |
 | `puml.py` | 525 | ArchiMate PlantUML projection, moved from `diagram-archimate`'s script (ADR-0045); prints to stdout. `--derived` (requires `--view`) overlays ArchiMate derived relationships via `_compute_derived_edges`/`pyArchimate.derivation.find_chains` — see [Architecture Views & Diagrams: Layered & C4](architecture-diagrams-layered-c4.md#derived-relationship-overlay-derived-true) |
 | `c4.py` | 379 | ArchiMate-to-C4 projection, moved from `diagram-c4`'s script (ADR-0045); prints to stdout |
 | `viewpoints.py` | 344 | Viewpoint lookup and conformance checking, moved from `model-archimate`'s script (ADR-0045), with its `reference/` data bundled |
@@ -194,7 +194,11 @@ Runs `modelling_specification.app:app` with `uvicorn` from `platform/` on
 `http://127.0.0.1:8001`
 (`platform/packages/modelling-specification/README.md` §"Run the authoring
 service and UI"). Open `/authoring/` for the split-screen UI; OpenAPI docs
-are at `/docs`. Standalone for now — the portal does not mount it yet. It
+are at `/docs`. The [Portal](portal.md) now mounts the same routers at
+`/authoring/` on port 8000 (`uvicorn portal.app:app`), or on 8001 via
+`./scripts/run-portal.sh` — the same port this script uses, so run only one
+(`platform/packages/modelling-specification/README.md`;
+`platform/packages/portal/README.md`). It
 needs an LLM provider configured for the
 `modelling-specification.conversational-authoring` component (see
 [LLM Provider Configuration](llm-provider-config.md)); the app also mounts
@@ -212,7 +216,7 @@ All endpoints are under `/authoring`; shapes are in
 | `POST` | `/sessions/{session_id}/deltas/{delta_id}/decide` | Apply, merge, reject, accept a pattern, keep direct, or override |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/preview` | SVG preview of a pending delta of any kind, nothing written; `view_id` may name a view the delta proposes |
 | `GET` | `/sessions/{session_id}/deltas/{delta_id}/state` | Current / Transition / Target classification |
-| `GET` | `/views` | Renderable views for the picker |
+| `GET` | `/views` | Renderable views for the picker: `{id, name, group}`, grouped by source and sorted by name within a group (EPIC-003 FR-020, T091) |
 | `GET` | `/render` | Render a view by `object_id` or `description` |
 | `GET` / `PUT` | `/config` | Read or set `auto_render` |
 | `GET` | `/` | The split-screen UI |
@@ -295,8 +299,8 @@ home package and journey API. See
 [Conversational Solution Design Modelling](solution-design-modelling.md)
 for the full breakdown, split out once this page passed ~500 lines.
 
-Not covered by current sources: rollout/feature-flag status, since
-ADR-0037 is still **Proposed**, not **Accepted**.
+ADR-0037 was **Accepted** on 2026-11-23. Not covered by current sources:
+rollout/feature-flag status.
 
 See `specs/EPIC-003-conversational-model-authoring/` (spec.md, plan.md,
 data-model.md, tasks.md) for the full requirements and task breakdown, and the

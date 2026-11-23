@@ -1710,7 +1710,7 @@ topics:
           sha256: 88f91aa5735c0de28deae6a3c248a58ec98471436315090a3de9f6e0f63c96d7
     title: IT4IT Reference Model
   llm-provider-config:
-    built: '2026-11-11'
+    built: '2026-11-23'
     page: wiki/llm-provider-config.md
     sources:
       files:
@@ -1745,17 +1745,20 @@ topics:
           lines: 154
           sha256: 754b3f6315d85a0828a939e8e962b59254f0c14693e28631d9e342b55e88d417
         platform/packages/llm-provider-config/specs/001-llm-provider-config/tasks.md:
-          lines: 260
-          sha256: c58b65ab7c975d2e559d4c2c797b534b04dbb39c4ca827e544815397052a0d09
+          lines: 264
+          sha256: 17c2406233d2f6782b03782395a699df27c8ef18e41e548e4071d7e0d80a7cd1
         platform/packages/llm-provider-config/specs/README.md:
           lines: 5
           sha256: cbd65d7edc896a909248f81c4231326fc3d2d470d3b3162ef0d3cc1171000e67
         platform/packages/llm-provider-config/src/llm_provider_config/__init__.py:
           lines: 39
           sha256: a86bb99ac288984b44421d9cb3c94e7455aeb03887437ccfb870b1dbec2da2b1
+        platform/packages/llm-provider-config/src/llm_provider_config/_paths.py:
+          lines: 45
+          sha256: 5938254302ea25778913dcb757c3c8e43d019d58e1ac7965048175e8e8bdd06d
         platform/packages/llm-provider-config/src/llm_provider_config/credentials.py:
-          lines: 143
-          sha256: ce5ec9f7c19b367076b21a7ceb701c8433523a6e4cf8e93b6e5959a0f2699bd4
+          lines: 142
+          sha256: 6651369fa0ae38a26f442db35d7866c15de2086fde450e58b10c3a2dc1b9b9de
         platform/packages/llm-provider-config/src/llm_provider_config/resolve.py:
           lines: 69
           sha256: 229a443324714912614ec51fe20217be406d45cd2ecc9becd835654fac6d12f3
@@ -1766,21 +1769,21 @@ topics:
           lines: 72
           sha256: 193d18441ee40988cc5940fb93dfc0893e0a862c3953331cff40e5ecfc878c0b
         platform/packages/llm-provider-config/src/llm_provider_config/store.py:
-          lines: 72
-          sha256: 8424b0ae1105b4bd9b75521f5aa14853f4b9cdc2acd7b205333306f9f17c3a40
+          lines: 77
+          sha256: 4d4f1b6b54e814f123a885d49bfc01de3ed6c8c2828693208b25d8610b207c40
       urls: {}
     title: LLM Provider Configuration
   modelling-specification:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/modelling-specification.md
     sources:
       files:
         docs/adr/0037-conversational-model-authoring-architecture.md:
           lines: 182
-          sha256: a12a42e6bb3c15b6e0ff0af51ea632f42e3cf2d6f03944a28352624f3c79d243
+          sha256: cde2ad5cbb8c0e050aa225e769edf817cc23371e22f2889948919b10fa411ce7
         platform/packages/modelling-specification/README.md:
           lines: 161
-          sha256: 851d326f7f37a2cf113df664a5a777bf1b1ca3efd309833e42283bd88cecd6d6
+          sha256: ae7234ee83028a943fda3804c7f5bfa80684b592c2ba71ea1a8d62474815b847
         platform/packages/modelling-specification/pyproject.toml:
           lines: 38
           sha256: 7ed00485fa7578d784106f76d9dc0144653892c369626dbb59665eba563495ca
@@ -1815,8 +1818,8 @@ topics:
           lines: 52
           sha256: 707a1252d57d5915a2bacb795c48cbef2a4e1c60b66101d9cf9f7dcb9a7d2073
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          lines: 1862
-          sha256: e06f3513af5cdf8bf8b1e3d61d1a0232d175f7d66519f5c693b7aadd086ca4fb
+          lines: 1863
+          sha256: cc7254c32cb0d46b0d85cdd2c58072c25dfe57a7f467198d5cc31dd141b09110
         platform/packages/modelling-specification/src/modelling_specification/puml.py:
           lines: 525
           sha256: 59c74805f6724b785292ef3c353a18fe8eea5d20ff0d0db0ba3c675fe9ce356d
@@ -1824,14 +1827,14 @@ topics:
           lines: 53
           sha256: 1c5740ae4ebe91c6e34123b521071361b258e86e489315179adfb6987fe72b16
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          lines: 547
-          sha256: cccd117e475e5fc82bf1986435549e20d1043f4fd7282dc4f12c7b602092bd1f
+          lines: 597
+          sha256: 96684e42307387c0dba67158f3f5074fc42911211a4b005bb450d39888655bd3
         platform/packages/modelling-specification/src/modelling_specification/router.py:
           lines: 1091
           sha256: f44cc55508701ff76e1124883c4dceadd8875cb4c4e8778fd793538aaec97285
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          lines: 890
-          sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
+          lines: 898
+          sha256: 5c9b476c1b596734b28fc9e54bbb73b1455f9dc4857c5bf024476690672ceca5
         platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
           lines: 1
           sha256: 31526e2b1389e35ab771eb7115ac944cb9b60455ee56d0c0de1d6982b0dbd270
@@ -1875,13 +1878,15 @@ topics:
           lines: 25
           sha256: 70bc67f17319a4e8935540fa9fac7ded73e0623737f5cc5c3e9049aa3358fcc4
         specs/EPIC-003-conversational-model-authoring/spec.md:
-          lines: 293
-          sha256: 77294f752f345571d540cc1c9290d5a14bdf15832d0332e25614c992ba265372
+          lines: 294
+          sha256: e6f7eb7e301c205dee3782b982c9a6f7acb99c407057992281fd26bf0d14fd37
         specs/EPIC-003-conversational-model-authoring/tasks.md:
-          lines: 455
-          sha256: 54050ff4e5706a1fd20f60da5430261d86145010e7b610d4ccb8ae140b76a996
+          lines: 463
+          sha256: 961a4a86ab65ecc910b7df6cead97902626288d21a48478816085efef8483c9d
+      urls: {}
+    title: Conversational Model Authoring
   modelling-specification-pipeline:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/modelling-specification-pipeline.md
     sources:
       files:
@@ -1890,7 +1895,7 @@ topics:
           sha256: 68cdb36ca73438463e78365dcfb0bad8c2e55e85e41ac3f701d8a4c8a0648e07
         platform/packages/modelling-specification/README.md:
           lines: 161
-          sha256: 851d326f7f37a2cf113df664a5a777bf1b1ca3efd309833e42283bd88cecd6d6
+          sha256: ae7234ee83028a943fda3804c7f5bfa80684b592c2ba71ea1a8d62474815b847
         platform/packages/modelling-specification/src/modelling_specification/authoring/__init__.py:
           lines: 1
           sha256: 39abd98b5f03137d7c8968fb531e3e9c2cdf13c4be3fbdb791fe45d6fecc2392
@@ -1910,8 +1915,8 @@ topics:
           lines: 1091
           sha256: f44cc55508701ff76e1124883c4dceadd8875cb4c4e8778fd793538aaec97285
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          lines: 890
-          sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
+          lines: 898
+          sha256: 5c9b476c1b596734b28fc9e54bbb73b1455f9dc4857c5bf024476690672ceca5
         platform/packages/modelling-specification/src/modelling_specification/validation/__init__.py:
           lines: 1
           sha256: 31526e2b1389e35ab771eb7115ac944cb9b60455ee56d0c0de1d6982b0dbd270
@@ -1949,8 +1954,8 @@ topics:
           lines: 115
           sha256: b34dc1aee1846523012e003a4adaaa3842be07cbeba518caaf3b4f07dc0d85e7
         specs/EPIC-003-conversational-model-authoring/003-llm-working-indicator/tasks.md:
-          lines: 112
-          sha256: f2863d929511a9b52c992e90f54c7320152ea342e899b21204bbb5309890dc09
+          lines: 116
+          sha256: 8697e9429af3adc305f4ce2d2aa6e97029704a2387d76f30c4b4fde750e6871c
         specs/EPIC-003-conversational-model-authoring/contracts/api.md:
           lines: 170
           sha256: bf93b37947248ec6df6c9632f9bbf49f93900aa3f09fcae5d6c15575e5f0957d
@@ -1958,8 +1963,10 @@ topics:
           lines: 206
           sha256: 65ea63e4f8a8868fd5f810645c329a97d4543b2621d501155741f303827cfbcf
         specs/EPIC-003-conversational-model-authoring/spec.md:
-          lines: 293
-          sha256: 77294f752f345571d540cc1c9290d5a14bdf15832d0332e25614c992ba265372
+          lines: 294
+          sha256: e6f7eb7e301c205dee3782b982c9a6f7acb99c407057992281fd26bf0d14fd37
+      urls: {}
+    title: 'Conversational Model Authoring: Candidate-Delta Pipeline'
   non-functionals:
     built: '2026-10-24'
     page: wiki/non-functionals.md
@@ -2032,7 +2039,7 @@ topics:
       urls: {}
     title: OSCAL Compliance Content
   pii-gateway:
-    built: '2026-11-08'
+    built: '2026-11-23'
     page: wiki/pii-gateway.md
     sources:
       files:
@@ -2064,8 +2071,8 @@ topics:
           lines: 1091
           sha256: f44cc55508701ff76e1124883c4dceadd8875cb4c4e8778fd793538aaec97285
         platform/packages/modelling-specification/src/modelling_specification/ui.py:
-          lines: 890
-          sha256: 96fe5b4b87f6ac06050bf66aa255f3b56e0f3f86238841e1011cb30bc84dc239
+          lines: 898
+          sha256: 5c9b476c1b596734b28fc9e54bbb73b1455f9dc4857c5bf024476690672ceca5
         platform/packages/modelling-specification/tests/integration/test_pii_scrubbing.py:
           lines: 58
           sha256: f1c8f836135f5fb3bdeb25e56853d558475fd66804e363e55072bf24c926939b
@@ -2127,8 +2134,8 @@ topics:
           lines: 185
           sha256: 83586f4bb11d11dec24925dad7d1d3a22ffe409c9daddae9ff3a787d48ff7d86
         platform/packages/portal/src/portal/app.py:
-          lines: 79
-          sha256: 2fb288d7ca8f5ec71744d9ee9da9dbacf4404c780a83267cc0743138c5cfc557
+          lines: 100
+          sha256: ef3dff51f72a744687e7c153d9de0fd4b7088cc6747009ea2a74c81e61da9d08
       urls: {}
     title: PII Gateway
   platform-spec:
@@ -2161,7 +2168,7 @@ topics:
           lines: 219
           sha256: b565f4aa7e587a92754c6d1009eac5b2efc4cf91a6a0bea15094872a51b6094c
   portal:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/portal.md
     sources:
       files:
@@ -2169,20 +2176,22 @@ topics:
           lines: 110
           sha256: 2c76702a8b411d77660254d56e8b17e496457d75208af3d8ef20c5cc39c2f0d8
         platform/packages/portal/README.md:
-          lines: 30
-          sha256: 2413d5c6d8beb444e8251e3fb27c70a43485e91ac731bdf40f8ab1ded834d5e8
+          lines: 35
+          sha256: d78e697cb1c07ef31c0fbac360a95b8ffbb387e78441ccbb92d068fbf318dd8a
         platform/packages/portal/pyproject.toml:
-          lines: 36
-          sha256: 87cf3e9bea7b70b00f1ab0f928168b50c493ae715ee1cfecbbc891b18d525ccb
+          lines: 38
+          sha256: 65140b3c36f6e6e3a1a95bd1c10576f4ebad34e1b63148a2a4486a59ff024f02
         platform/packages/portal/specs/README.md:
-          lines: 9
-          sha256: fe664f192ca9b55a8417c999b95b7ea56a16da1696b34977d0d1c6eb27608a96
+          lines: 11
+          sha256: 2356e0e2377bcbfb33ab885ba1db15dea7f45ab1955d6b966457c9f227c3815d
         platform/packages/portal/src/portal/__init__.py:
           lines: 9
           sha256: 51f7dba921870922f2bfa935e274c08837d7ba32280fa2023100c6bdac4837ab
         platform/packages/portal/src/portal/app.py:
-          lines: 79
-          sha256: 2fb288d7ca8f5ec71744d9ee9da9dbacf4404c780a83267cc0743138c5cfc557
+          lines: 100
+          sha256: ef3dff51f72a744687e7c153d9de0fd4b7088cc6747009ea2a74c81e61da9d08
+      urls: {}
+    title: Portal
   project-overview:
     built: '2026-11-15'
     page: wiki/project-overview.md
@@ -2261,7 +2270,7 @@ topics:
           lines: 9
           sha256: 2c8c87b6c92ab5499fed9b1d60d82b0409ec47e11b5527a691ab2221174953c8
   solution-design-modelling:
-    built: '2026-11-08'
+    built: '2026-11-23'
     page: wiki/solution-design-modelling.md
     sources:
       files:
@@ -2272,8 +2281,8 @@ topics:
           lines: 122
           sha256: f5cda7b9dbbb8c39bf4817f145b4b1730fe809706224bdaa038f0abaf53d00e7
         specs/EPIC-003-conversational-model-authoring/tasks.md:
-          lines: 455
-          sha256: 54050ff4e5706a1fd20f60da5430261d86145010e7b610d4ccb8ae140b76a996
+          lines: 463
+          sha256: 961a4a86ab65ecc910b7df6cead97902626288d21a48478816085efef8483c9d
       urls: {}
     title: 'Conversational Solution Design Modelling (GH #139)'
   ui-testing-epic-004:

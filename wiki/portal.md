@@ -1,7 +1,7 @@
 ---
 title: "Portal"
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0020-per-subsystem-uis.md
 - platform/packages/portal/README.md
@@ -34,26 +34,32 @@ than the other way around (`platform/packages/portal/README.md`).
 
 ## What it mounts
 
-`src/portal/app.py` (79 lines) builds one `FastAPI` app and a tuple of
+`src/portal/app.py` (100 lines) builds one `FastAPI` app and a tuple of
 `MountedUi(path, title, role)` entries that drive the landing page:
 
 | Path | UI | Package | Role |
 |---|---|---|---|
 | `/catalog` | Control conversion playground | `controls-compliance-catalog` | Compliance Officer / Auditor |
+| `/authoring/` | Conversational model authoring (split-screen chat + render UI) | `modelling-specification` | Enterprise / Solution Architect |
 | `/settings/llm` | LLM settings | `llm-provider-config` | All roles |
 | `/settings/pii-gateway` | PII gateway settings, one page for every registered caller context | `pii-gateway` | All roles |
 
 `create_playground_router(prefix="/catalog")` and
 `create_settings_router([...])` are the same router factories
 `controls-compliance-catalog` and `llm-provider-config` use in their own
-standalone apps — the portal registers the *catalog's* LLM component
-(`controls_compliance_catalog.llm_client.COMPONENT_ID`) into the settings
-router it mounts, so `/settings/llm` configures every registered package's
-LLM usage from one place rather than per-package pages
+standalone apps. The portal registers two LLM components into the settings
+router it mounts — the catalog's
+(`controls_compliance_catalog.llm_client.COMPONENT_ID`, labelled "Control
+conversion (AI candidate)") and, since the authoring UI was mounted,
+`modelling_specification.authoring.delta.COMPONENT_ID` (labelled
+"Conversational model authoring (AI)") — so `/settings/llm` configures every
+registered package's LLM usage from one place rather than per-package pages
 (ADR-0034; see [LLM Provider Configuration](llm-provider-config.md)). The
-landing page (`GET /`) groups `MOUNTED_UIS` by role and renders a plain
-light/dark-aware HTML page with one `<section>` per role — no JS framework,
-no build step.
+authoring UI is not a factory call: the portal includes the
+`modelling_specification.router` and `modelling_specification.ui` routers
+directly, which already carry the `/authoring` prefix. The landing page
+(`GET /`) groups `MOUNTED_UIS` by role and renders a plain light/dark-aware
+HTML page with one `<section>` per role — no JS framework, no build step.
 
 Each mounted UI's own page JS is written prefix-relative (the
 `llm-provider-config` `__PREFIX__`-substitution pattern), so the path column
@@ -63,12 +69,19 @@ add a `MountedUi` entry so the landing page lists it
 (`platform/packages/portal/README.md` §"Mounted UIs").
 
 The **Conversational Authoring UI** (`if-modelling-authoring-ui`, see
-[Conversational Model Authoring](modelling-specification.md)) is not yet in
-the `MOUNTED_UIS` tuple as of this build — it exists as a model-level
-interface and an `ApplicationFunction` consumer
-(`fn-conversational-authoring`) but the current `app.py` only wires
-`/catalog`, `/settings/llm` and `/settings/pii-gateway`. Not covered by current sources: a committed
-plan or issue for mounting it.
+[Conversational Model Authoring](modelling-specification.md)) was previously
+standalone-only; commit `599a1c3` mounted it at `/authoring/`, along with its
+grouped render-view picker. The per-package-prefix move that made this possible
+(`/catalog`, `/modelling`, now `/authoring`) was settled directly in the ADR-0020
+update and implemented without a separate spec — see
+`platform/packages/portal/specs/README.md`, which still lists no feature specs
+for the package. The portal now has no pending mounts that the sources name.
+
+The portal does **not** yet enforce authentication. The model describes a shared OIDC check
+(`fn-authn-oidc`, ADR-0054) as intended for the mounting surface, but it is modelled and not
+yet built (GH #84), and `app.py` mounts no auth dependency
+(`platform/packages/portal/src/portal/app.py`; see
+[Architecture Model: Ecosystem](architecture-model-ecosystem.md)).
 
 ## Run it
 
@@ -78,6 +91,13 @@ poetry run uvicorn portal.app:app --reload
 ```
 
 Then open `http://127.0.0.1:8000/` for the landing page.
+
+Or, from the repo root, `./scripts/run-portal.sh` runs the same app from
+`platform/` on `http://127.0.0.1:8001/`
+(`uvicorn portal.app:app --reload --app-dir packages/portal/src --host 127.0.0.1 --port 8001`).
+That is the port `run-controls_compliance_catalog.sh` and
+`run-modelling_specification.sh` also use, so run only one of the three at a
+time (`platform/packages/portal/README.md`; `scripts/run-portal.sh`).
 
 ## Model wiring
 
@@ -91,11 +111,19 @@ is realised by the `art-pkg-portal` `Artifact` (one of ten package
 [Architecture Model: Ecosystem](architecture-model-ecosystem.md) for the
 element-level treatment, including the three `ApplicationInterface`s it
 mounts (`if-catalog-playground`, `if-llm-settings-ui`,
-`if-modelling-authoring-ui`).
+`if-modelling-authoring-ui`). Each mounted package has a `Serving` edge into
+`sub-portal` — the playground router (`sub-catalog`), the LLM settings router
+(`sub-llm-provider-config`), and, added 2026-11-23, the authoring router and UI
+(`sub-modelling`) and the PII-gateway settings router (`sub-pii-gateway`)
+(`architecture/model/relationships.yaml`, as drawn in the regenerated
+[C4 container diagram](architecture-diagrams-layered-c4.md)).
 
 ## Dependencies
 
-`platform/packages/portal/pyproject.toml` pins explicit lower bounds for transitive
+`pyproject.toml` path-depends on four packages, all `develop = true`:
+`controls-compliance-catalog`, `llm-provider-config`, `pii-gateway` and, newly,
+`modelling-specification` (`platform/packages/portal/pyproject.toml`).
+It also pins explicit lower bounds for transitive
 dependencies that have security advisories — `certifi (>=2026.10.19)`,
 `filelock (>=4.2.1)` and, since the latest change, `dnspython (>=2.9.2)` (GHSA-vvf4-9x63-8xvv,
 pulled in via `email-validator`). The lock already satisfied the last one; the pin keeps
