@@ -1258,10 +1258,11 @@
     Hosts the platform packages' UIs from one app: mounts each package's
     router and owns only page chrome, navigation and the role landing page,
     never feature logic (ADR-0020, update 2026-10-11, GH #120). Not one of the
-    six subsystems and not a central dashboard. Also carries the one shared
+    six subsystems and not a central dashboard. Will also carry the one shared
     OIDC authentication check every mounted package's routes depend on
-    (fn-authn-oidc, ADR-0054) — infrastructure at the mounting surface, not
-    package feature logic.
+    (fn-authn-oidc) — infrastructure at the mounting surface, not package
+    feature logic — but that check is modelled, intended (ADR-0054), and not
+    yet built; see GH #84.
 - type: ApplicationInterface
   id: if-twin-read-path
   context: digital-twin-knowledge-graph
@@ -1648,8 +1649,9 @@
   desc: >-
     Validate an OIDC bearer token (JWKS signature check) on every mounted
     package's routes and attach the verified identity attributes to the
-    request — the single authentication check every subsystem's API depends
-    on, not re-implemented per package (ADR-0054).
+    request — the single authentication check every subsystem's API would
+    depend on, not re-implemented per package (ADR-0054). Modelled but not
+    yet built — see GH #84.
 
 # --- C. Functions: Modelling & Specification ---
 - type: ApplicationFunction
