@@ -1,6 +1,6 @@
 # ADR-0042: Maintenance subagents and a generated wiki as repo-governance tooling
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-23)
 - **Date:** 2026-10-29
 - **Sources:** `.claude/agents/README.md`; `wiki/sources.yaml`; `AGENTS.md` §Skills & Workflows;
   `RELEASE.md`; commits `f1b77a3`, `db57174` (transitive dependency floor pins)

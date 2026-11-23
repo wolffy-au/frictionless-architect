@@ -1,6 +1,6 @@
 # ADR-0039: Conversational solution modelling — scope, subsystem split, and relation to ADR-0037
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-23)
 - **Date:** 2026-10-24
 - **Sources:** GH #68 (epic, decision 8); GH #138; `architecture/model/elements.yaml`
   (`fn-solution-modelling`, `process-conversational-solution-modelling`)

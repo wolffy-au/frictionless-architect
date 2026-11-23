@@ -1,6 +1,6 @@
 # ADR-0048: CI security-scan topology — SonarQube and CodeQL gate CI; Snyk is local-only
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-23)
 - **Date:** 2026-11-08
 - **Sources:** commit `acb7b81` (`ci: parallelize test jobs, drop Snyk, cache PlantUML jar`,
   pre-dates `v0.9.0`); `.github/workflows/ci.yml`; GitHub code-scanning default setup

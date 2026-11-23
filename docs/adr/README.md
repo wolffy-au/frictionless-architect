@@ -124,7 +124,7 @@ not yet re-ratified in a spec).
 - **A** — [0036](0036-element-id-prefix-scheme.md) — An element id prefix names
   the element's own ArchiMate type; `art-*` is reserved for genuine `Artifact`
   elements, `DataObject` elements use `do-*`
-- **P** — [0037](0037-conversational-model-authoring-architecture.md) — Conversational
+- **A** — [0037](0037-conversational-model-authoring-architecture.md) — Conversational
   model authoring: new `platform/packages/modelling-specification` package, validation
   logic ported from `build.py`/`render_diagrams.py`, Enterprise Convention Rules in
   `conventions.yaml`, overrides as auto-drafted ADR stubs, new `vs-intent-to-model`
@@ -132,7 +132,7 @@ not yet re-ratified in a spec).
 - **A** — [0038](0038-section-b-roles-canonical.md) — The six section-B `BusinessRole`s are
   canonical; GH #45's role-journey list is modelled as `Specialization`s of them; spec 001's
   single "Architect" persona is split into Enterprise, Solution and Security Architect
-- **P** — [0039](0039-conversational-solution-modelling-scope.md) — New
+- **A** — [0039](0039-conversational-solution-modelling-scope.md) — New
   `fn-solution-modelling` (subsystem 2, `sub-library`) edits a Solution Design
   (`do-solution-design`/`store-patterns`), distinct from ADR-0037's `fn-conversational-authoring`
   (enterprise knowledge graph); its new business process Composes into the existing
@@ -146,9 +146,9 @@ not yet re-ratified in a spec).
   structured, validated suggestion options ("ways forward") built against today's
   ADR-0037 agent, a deliberate documented deviation from GH #68's filed #140-#151
   breakdown rather than waiting for #142's journey-API rework
-- **P** — [0042](0042-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
+- **A** — [0042](0042-maintenance-agents-and-generated-wiki.md) — Maintenance subagents and a
   generated wiki as repo-governance tooling; transitive security floors pinned in each package
-  manifest (draft stub, decision unconfirmed)
+  manifest
 - **A** — [0043](0043-pii-gateway-detector-library-presidio.md) — `pii-gateway`
   (GH #136) uses Presidio as its detection/anonymization engine;
   third-party `sether`, `scrubadub`, cloud DLP APIs, and regex-only were
@@ -166,11 +166,11 @@ not yet re-ratified in a spec).
   `pii-gateway`'s engine-error redaction replaces the whole text (the zero-length
   synthetic span was a no-op redaction, the actual bug); `Resolution.ALLOW` is
   rejected outright for that case, `REDACT`/`EDIT` remain available
-- **P** — [0047](0047-sanitised-markdown-rendering-for-llm-chat-text.md) — Untrusted
+- **A** — [0047](0047-sanitised-markdown-rendering-for-llm-chat-text.md) — Untrusted
   LLM chat replies are rendered server-side via `markdown` + `nh3` against a fixed
   tag/attribute/URL-scheme allowlist, not escaped-only text or a hand-rolled client-side
   parser
-- **P** — [0048](0048-ci-security-scan-topology.md) — CI's security gate is SonarQube
+- **A** — [0048](0048-ci-security-scan-topology.md) — CI's security gate is SonarQube
   plus GitHub's CodeQL default setup; Snyk runs local-only (`pre_merge_checks.sh`), not
   in `ci.yml`, after repeated test-quota exhaustion
 - **A** — [0049](0049-pluggable-adr-attestation-gpg-first.md) — ADR attestation is a
@@ -182,9 +182,9 @@ not yet re-ratified in a spec).
 - **A** — [0051](0051-derived-relationship-overlay-rendering.md) — Derived-relationship
   overlay (`views.yaml`'s `derived: true`) is render-time-only, drawn as a dashed
   `<<derived>>` arrow, never written back to the model
-- **A** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` is
-  vendored as a standalone reference model for the multi-tenant case, excluded from the
-  merge sweep that pulls IT4IT in (ADR-0029)
+- **A** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` and
+  `sample-gcp` are vendored as standalone reference models for the multi-tenant case, excluded
+  from the merge sweep that pulls IT4IT in (ADR-0029); `sample-oscal` is vendored alongside them
 - **A** — [0053](0053-browser-ui-tests-extend-behave-playwright.md) — Browser-level UI
   tests (GH #119) extend the existing `behave` + Playwright harness already shipped for
   the playground and LLM provider config page, not a new `pytest-playwright` toolchain;
@@ -192,7 +192,6 @@ not yet re-ratified in a spec).
 - **A** — [0054](0054-authn-authz-and-tenancy-approach.md) — OIDC token-based
   authentication; RBAC authorization expressed as OPA/Rego policies (ADR-0019);
   Workspace is the tenancy boundary, one owning workspace per model
-- **P** — [0055](0055-package-local-diagram-output-path.md) — A context-split view may
+- **A** — [0055](0055-package-local-diagram-output-path.md) — A context-split view may
   redirect a context's diagram slice into that package's own `specs/diagrams/`, when the
-  directory already exists, instead of the central `architecture/model/diagrams/` (draft
-  stub, decision unconfirmed)
+  directory already exists, instead of the central `architecture/model/diagrams/`
