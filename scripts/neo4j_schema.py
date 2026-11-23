@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from dotenv import load_dotenv
+from neo4j.exceptions import DriverError, Neo4jError
 
 from frictionless_architect.schema.manager import SchemaManager
 
@@ -170,7 +171,7 @@ def main() -> int:
         execute_command(manager, args)
     except ValueError as exc:
         parser.error(str(exc))  # noreturn: argparse exits the process
-    except Exception as exc:  # pragma: no cover - inspect in production
+    except (Neo4jError, DriverError, OSError) as exc:  # pragma: no cover - inspect in production
         print(f"Schema command failed: {exc}", file=sys.stderr)
         return 1
     finally:
