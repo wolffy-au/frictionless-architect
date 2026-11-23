@@ -110,3 +110,7 @@ description: "Task list for the LLM working indicator (GH #186)"
 
 4. Add Phase 4 (US2) to cover the `propose/resolve-pii` path GH #186 explicitly calls out.
 5. Phase 5 (Polish): full package regression + manual quickstart walkthrough.
+
+## Notes
+
+- Model impact: none — see `plan.md`'s "Model Impact" section (additive UI behaviour inside an existing package; no element, relationship, or view id in `architecture/model/` is added, changed, or retired).
