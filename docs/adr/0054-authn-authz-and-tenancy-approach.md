@@ -7,6 +7,10 @@
   `NONFUNCTIONALS.md` "Security"; `specs/EPIC-001-governance-platform/spec.md`
   FR-015/FR-016, `data-model.md` "Authentication/Authorization"
 
+<!-- adr-auditor 2026-11-23: the authorization half depends on ADR-0019, still Proposed, with no OPA/Rego in
+     the repo yet. This record is Accepted ahead of its dependency (see Consequences). Also narrows
+     ADR-0024's "RBAC/ABAC deferred, single-user" scope. -->
+
 ## Context
 
 `ADR-0013` separated authorization from authentication but deferred the concrete

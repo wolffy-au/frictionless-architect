@@ -4,6 +4,10 @@
 - **Date:** unknown (pre-dates this log)
 - **Sources:** `PROJECT_SPECIFICATION.md` Phase 3, Phase 4; `specs/001` FR-009, FR-020
 
+<!-- adr-auditor 2026-11-23: ADR-0054 (Accepted) builds its RBAC authorization on this record and says
+     enforcement cannot ship until this is accepted. No .rego policies or OPA wiring exist in the repo yet.
+     Left Proposed: needs a human decision (ratify, or revisit ADR-0054's authorization section). -->
+
 ## Context
 
 The platform must automatically enforce APRA CPS 230 / 234 and RBAC/ABAC policy,

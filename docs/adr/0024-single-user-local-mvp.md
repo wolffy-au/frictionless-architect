@@ -5,6 +5,11 @@
 - **Sources:** `PROJECT_SPECIFICATION.md` §"MVP Target";
   `platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md`; `ARCHITECTURE.md` §1
 
+<!-- adr-auditor 2026-11-23: scope partly overtaken by ADR-0054 (Accepted 2026-11-14), which decides
+     OIDC authentication, RBAC authorization and workspace tenancy for multi-user use (epic GH #83).
+     The "RBAC/ABAC not MVP-blocking" and "per-user passthrough deferred" consequences below no longer
+     hold for that work. Status left Accepted; a human decides whether this becomes "Superseded in part". -->
+
 ## Context
 
 The full vision is a hosted, multi-user governance platform for a bank. Building
