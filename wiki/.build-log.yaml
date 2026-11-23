@@ -1021,7 +1021,7 @@ topics:
           lines: 212
           sha256: 88f91aa5735c0de28deae6a3c248a58ec98471436315090a3de9f6e0f63c96d7
   architecture-model:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model.md
     sources:
       files:
@@ -1032,11 +1032,11 @@ topics:
           lines: 55
           sha256: 695e42e0f4ef2c22e22b9d5d691122d64e239be0624e699fa3cc943196c5a5e0
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
         architecture/model/views-viewpoints.yaml:
           lines: 475
           sha256: 4fff10768b38e7601cd9a9ffffe341555842153545b502b10a59776aafbbafa3
@@ -1047,13 +1047,15 @@ topics:
           lines: 118
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          lines: 1862
-          sha256: e06f3513af5cdf8bf8b1e3d61d1a0232d175f7d66519f5c693b7aadd086ca4fb
+          lines: 1863
+          sha256: cc7254c32cb0d46b0d85cdd2c58072c25dfe57a7f467198d5cc31dd141b09110
         platform/packages/modelling-specification/src/modelling_specification/rendering.py:
-          lines: 547
-          sha256: cccd117e475e5fc82bf1986435549e20d1043f4fd7282dc4f12c7b602092bd1f
+          lines: 597
+          sha256: 96684e42307387c0dba67158f3f5074fc42911211a4b005bb450d39888655bd3
+      urls: {}
+    title: Architecture Model
   architecture-model-artefact-flow:
-    built: '2026-11-14'
+    built: '2026-11-23'
     page: wiki/architecture-model-artefact-flow.md
     sources:
       files:
@@ -1061,15 +1063,15 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
       urls: {}
     title: 'Architecture Model: Artefact Flow'
   architecture-model-build-it4it:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model-build-it4it.md
     sources:
       files:
@@ -1080,11 +1082,11 @@ topics:
           lines: 55
           sha256: 695e42e0f4ef2c22e22b9d5d691122d64e239be0624e699fa3cc943196c5a5e0
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
         architecture/model/render_diagrams.py:
           lines: 56
           sha256: dc0df223392d36986b1906d18c46405835a68247ea86956906210f96e87cf6f1
@@ -1098,16 +1100,18 @@ topics:
           lines: 118
           sha256: 86621fc22322103fdd18769a67891df5547ac1e27e12d7811a9e1775e755b7ed
         platform/packages/modelling-specification/src/modelling_specification/model_io.py:
-          lines: 1862
-          sha256: e06f3513af5cdf8bf8b1e3d61d1a0232d175f7d66519f5c693b7aadd086ca4fb
+          lines: 1863
+          sha256: cc7254c32cb0d46b0d85cdd2c58072c25dfe57a7f467198d5cc31dd141b09110
         third_party/it4it/elements.yaml:
           lines: 1127
           sha256: 60002f1ce238f396a46f24bdca2f562c21075fdeead9583261659c838cc4cd4e
         third_party/it4it/relationships.yaml:
           lines: 282
           sha256: db857c830a82c364f53be53d2c759e3ab1f98f72ee0fa686845cec88f85d629d
+      urls: {}
+    title: 'Architecture Model: Build Pipeline & IT4IT Merge'
   architecture-model-contexts:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model-contexts.md
     sources:
       files:
@@ -1115,11 +1119,11 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
         architecture/model/views-viewpoints.yaml:
           lines: 475
           sha256: 4fff10768b38e7601cd9a9ffffe341555842153545b502b10a59776aafbbafa3
@@ -1132,7 +1136,7 @@ topics:
       urls: {}
     title: 'Architecture Model: Context-Level Viewpoints & Bounded Contexts'
   architecture-model-ecosystem:
-    built: '2026-11-14'
+    built: '2026-11-23'
     page: wiki/architecture-model-ecosystem.md
     sources:
       files:
@@ -1140,15 +1144,15 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
       urls: {}
     title: 'Architecture Model: Ecosystem'
   architecture-model-history:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model-history.md
     sources:
       files:
@@ -1156,19 +1160,21 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
         architecture/model/views-viewpoints.yaml:
           lines: 475
           sha256: 4fff10768b38e7601cd9a9ffffe341555842153545b502b10a59776aafbbafa3
         architecture/model/views.yaml:
           lines: 1259
           sha256: 15d88d6d82e74f123d87f9eba0db547df8d678339a2e3ab69d2838787659501a
+      urls: {}
+    title: 'Architecture Model: Provenance & Change History'
   architecture-model-migration:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model-migration.md
     sources:
       files:
@@ -1176,16 +1182,18 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
         architecture/model/views.yaml:
           lines: 1259
           sha256: 15d88d6d82e74f123d87f9eba0db547df8d678339a2e3ab69d2838787659501a
+      urls: {}
+    title: 'Architecture Model: Packaging, Migration & Technology'
   architecture-model-skeleton:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model-skeleton.md
     sources:
       files:
@@ -1193,13 +1201,15 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
+      urls: {}
+    title: 'Architecture Model: Skeleton'
   architecture-model-strategy:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/architecture-model-strategy.md
     sources:
       files:
@@ -1207,11 +1217,13 @@ topics:
           lines: 192
           sha256: cc9bd938094e736da8f90ce50bb57e7a01727fe6a2b21d7158c28bbff65fe34f
         architecture/model/elements.yaml:
-          lines: 2200
-          sha256: f4fd187de70a4aa148d21a20301b62e72efcf82d010b78e165b0d5874782f4ff
+          lines: 2202
+          sha256: cbe116fa1f6a6ee27ad1c6cf11d960fb73a7fae85f46a16a8d1bc8dc9486d94d
         architecture/model/relationships.yaml:
-          lines: 1091
-          sha256: 2b7bccf9611a668c6dfe5b5bec9e118a0277f1327b03b1582ca5d62ec9c364cd
+          lines: 1093
+          sha256: ba63308c8cf77b6ae08e10e72559748eefc08b47936237c24d6abaf1cc3ced12
+      urls: {}
+    title: 'Architecture Model: Strategy'
   controls-compliance-catalog:
     built: '2026-11-15'
     page: wiki/controls-compliance-catalog.md

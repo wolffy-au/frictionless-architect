@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Packaging, Migration & Technology'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -70,7 +70,7 @@ flat `art-flat-src`, plus one per target package —
 `architecture-governance`, `conformance-drift-assurance`,
 `modelling-specification`, the shared `llm-provider-config`
 (`art-pkg-llm-provider-config`, which the `plat-policy-to-oscal-mvp-1` Plateau
-aggregates), and now `art-pkg-portal` (ADR-0020, GH #120). Each package-Artifact
+aggregates), and now `art-pkg-portal` (ADR-0020, GH #120; since 2026-11-23 the portal it ships mounts four packages' UIs, each with a `Serving` edge into `sub-portal`). Each package-Artifact
 `Realization`-links to the `ApplicationComponent` it ships; `art-flat-src`
 currently realizes both `sub-schema-visualizer` and `sub-twin`, since neither
 has been extracted yet (`architecture/model/relationships.yaml` §"E. Packages
