@@ -44,10 +44,15 @@ every `third_party/*` submodule.
 `elements.yaml` for standalone demo infrastructure, and `b7fea26` added it to
 `_STANDALONE_THIRD_PARTY_MODELS` in `model_io.py`, so it is excluded from the sweep by name. `sample-oscal`
 was added in the same change as `c6243bd`, described as the "steel thread" that ties the Azure and GCP
-samples together via OPA checks. It is vendored as a submodule but is **not** in the exclusion set. Its
-contents are not checked out in this worktree, so whether it carries an `elements.yaml` that the sweep would
-merge is unverified; a human must confirm it is meant to be merged or add it to the exclusion set. Its OPA
-checks also relate to ADR-0019, still Proposed.
+samples together via OPA checks. Checked against the checked-out submodules (2026-11-23): it has **no**
+`elements.yaml`, so the sweep's `third_party/*/elements.yaml` glob never matches it and it needs no entry in
+the exclusion set. It is not an ArchiMate model at all but an OSCAL content repo with its own Trestle
+workspace (`.trestle/`, catalogs, profiles, component definitions, assessment plans/results, SSPs, POA&Ms),
+Rego policies under `policies/datastores/` with their tests, and recorded OPA results under `evidence/`. It
+is therefore a third kind of vendored content, neither merged (IT4IT, ADR-0029) nor a standalone model
+(`sample-azure`, `sample-gcp`). Because it carries working Rego, it is the only OPA/Rego in the platform's
+orbit today and is relevant to ADR-0019, still Proposed. A future `elements.yaml` added to it would be merged
+silently by the glob, so that case needs an explicit decision then.
 
 ## Consequences
 

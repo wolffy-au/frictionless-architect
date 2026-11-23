@@ -184,7 +184,7 @@ not yet re-ratified in a spec).
   `<<derived>>` arrow, never written back to the model
 - **A** — [0052](0052-sample-azure-as-standalone-reference-model.md) — `sample-azure` and
   `sample-gcp` are vendored as standalone reference models for the multi-tenant case, excluded
-  from the merge sweep that pulls IT4IT in (ADR-0029); `sample-oscal` is vendored alongside them
+  from the merge sweep that pulls IT4IT in (ADR-0029); `sample-oscal` (OSCAL + Rego content, no model) is vendored alongside
 - **A** — [0053](0053-browser-ui-tests-extend-behave-playwright.md) — Browser-level UI
   tests (GH #119) extend the existing `behave` + Playwright harness already shipped for
   the playground and LLM provider config page, not a new `pytest-playwright` toolchain;
