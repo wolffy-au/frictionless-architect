@@ -47,7 +47,7 @@ poetry run cz check --rev-range "$(git merge-base main HEAD)..HEAD"
 If `cz` is unavailable (`poetry run cz` fails), check by hand
 against `references/standard.md`:
 
-- subject matches `^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .+`
+- subject matches `^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9_-]+\))?!?: .+`
 - description is imperative, lower-case, no full stop, ≤ 72 chars
 - scope (if present) is in the allowed list
 - body (if present) is separated by a blank line and wrapped
