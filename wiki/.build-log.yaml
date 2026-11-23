@@ -1233,7 +1233,7 @@ topics:
       urls: {}
     title: 'Architecture Model: Strategy'
   controls-compliance-catalog:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/controls-compliance-catalog.md
     sources:
       files:
@@ -1256,8 +1256,8 @@ topics:
           lines: 181
           sha256: 436cf98e9a5553b2cadea57055c877ef571587acd2cc2b9054af959ef91c192b
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md:
-          lines: 83
-          sha256: 06a64f23a68621c557d0aa9257e68e04c50ba9a312ed425974033bf0617f710e
+          lines: 91
+          sha256: dea7372913fcab3ca1ebf69f73c53e2eb4285827e4709acad715948ea4cdb659
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/research.md:
           lines: 198
           sha256: 9c07282b1548d7904ae5568aaf6f0bc25af3021a180deaef78f7a6bd5ffa7ff5
@@ -1286,8 +1286,8 @@ topics:
           lines: 310
           sha256: 6aa986b69eb1df0234bc14ce4bc07f5139493b36f631a0d16118241f0ed8f203
         platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md:
-          lines: 170
-          sha256: fe5d9b9a14c5bede7737b68b43efa90086fea9ecb8f63d1b339b9a31b6cfd5b9
+          lines: 171
+          sha256: 724e0e24d1750536b39fda376c483e2e4c43d01e754b5e6d922d9211afada224
         platform/packages/controls-compliance-catalog/specs/README.md:
           lines: 6
           sha256: c9fd9c378c178cbd825aad58ef0b3e0c05a2dbb2884dd7e443142e25dc2de657
@@ -1324,6 +1324,8 @@ topics:
         scripts/run-controls_compliance_catalog.sh:
           lines: 19
           sha256: 3886b1868d627d1a99f97bdf61d74f7d4125c9f47cbc0c1af24729ab2f8dc966
+      urls: {}
+    title: Controls & Compliance Catalog
   data-model:
     built: '2026-10-24'
     page: wiki/data-model.md
@@ -1978,7 +1980,7 @@ topics:
       urls: {}
     title: Non-Functional Requirements
   oscal-compliance:
-    built: '2026-11-14'
+    built: '2026-11-23'
     page: wiki/oscal-compliance.md
     sources:
       files:
@@ -1987,7 +1989,7 @@ topics:
           sha256: 3375c290f8123368ced68aadf92d22e8640da701d2daf247182592beb4c6b6d4
         pyproject.toml:
           lines: 242
-          sha256: 4955049d9cc0430ef67110a5173dbd39c85ea354838df6ec8bba33b7c0cb4419
+          sha256: afc702c3f396ef7eaeee9b0df83ac839d574cc15d5daf28fd69d53fec8a5610d
         sample-data/oscal/01-nist-baseline-resolution.puml:
           lines: 53
           sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
@@ -2139,7 +2141,7 @@ topics:
       urls: {}
     title: PII Gateway
   platform-spec:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/platform-spec.md
     sources:
       files:
@@ -2159,14 +2161,16 @@ topics:
           lines: 115
           sha256: 824a3da9d1cbc6305eee53167cb58af15e8bcb0f5b9b8881ecf40cc51b314467
         platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/tasks.md:
-          lines: 126
-          sha256: 97a7396929828205440d1f1f25f305b2457e74cc129771522feeb966ec5f107a
+          lines: 130
+          sha256: 7b36c455c19b7e7dd5992d8733e3f7561b94ee26dcbd3759b8abcbefbcd1cb8e
         specs/EPIC-001-governance-platform/contracts/api.yaml:
           lines: 485
           sha256: a4cc4c354e767dadda6923cc1ddc830d8b1ebb72f463710a7fe360656c979625
         specs/EPIC-001-governance-platform/spec.md:
           lines: 219
           sha256: b565f4aa7e587a92754c6d1009eac5b2efc4cf91a6a0bea15094872a51b6094c
+      urls: {}
+    title: Platform Specification & API
   portal:
     built: '2026-11-23'
     page: wiki/portal.md
@@ -2315,7 +2319,7 @@ topics:
           lines: 228
           sha256: 7f420f091f9fac397576435be594f1e9795a6acd40ebe3ffa570335ec049fca9
   visualizer-service:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/visualizer-service.md
     sources:
       files:
@@ -2329,14 +2333,14 @@ topics:
           lines: 5
           sha256: dfbfb90822e85df88dc25050b6972d3d445d14ea719fd9dae550c9a872690113
         src/frictionless_architect/schema/manager.py:
-          lines: 331
-          sha256: 0f67058204719651d5085c9bbec848183309cd8ad6d783732af1fd7a7067851e
+          lines: 338
+          sha256: 0cf0462912fba4b930d63094cb81fb6cbd8ae5ad3f60bdb259d352371ac9b87e
         src/frictionless_architect/visualizer/__init__.py:
           lines: 1
           sha256: 438472b473115a6bb633fb3725a6e1c672802f240a89b62b592dbd5e6c16a177
         src/frictionless_architect/visualizer/api.py:
-          lines: 508
-          sha256: 58eb4f580662023d94c28770a3e0ace181e67ce9f0d8d4915db36924e9e91705
+          lines: 520
+          sha256: e599e7f36d2b87692fb961ade55552c24e1066cccaf03aefd663085b49cae778
         src/frictionless_architect/visualizer/cache.py:
           lines: 51
           sha256: 3657f8bb2924f14b396212f06affcb14b89d55a1bb5b44964c9355acd1419099
@@ -2358,3 +2362,5 @@ topics:
         src/frictionless_architect/visualizer/sample_validator.py:
           lines: 157
           sha256: a26efe1959d81a52d7956e3c86a5c0e7fbe34ddd6a7e6770b0f0b9d70614e21a
+      urls: {}
+    title: Visualizer Service

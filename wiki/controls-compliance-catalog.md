@@ -1,7 +1,7 @@
 ---
 title: Controls & Compliance Catalog
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - platform/packages/controls-compliance-catalog/README.md
 - platform/packages/controls-compliance-catalog/pyproject.toml
@@ -107,7 +107,15 @@ across LLM calls.
 
 ### Pipeline and architecture
 
-The pipeline runs behind its own FastAPI app —
+**Status: planned, not yet implemented.** The quickstart now opens with a banner
+saying the `/oscal/*` REST service it exercises (conversion, approval, assembly,
+resolution; `contracts/api.md`) does not exist yet: `controls_compliance_catalog.app:app`
+currently serves only the control-conversion playground under `/catalog` and the
+`/settings/llm` page, and the quickstart's steps describe target behaviour
+(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md`).
+The rest of this section describes that target design.
+
+The pipeline is designed to run behind its own FastAPI app —
 `uvicorn controls_compliance_catalog.app:app`
 (`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md`)
 — not a router mounted on the flat visualiser app. This reverses an interim
@@ -207,7 +215,8 @@ feature's own `diagrams/` directory
 
 ### API surface
 
-All endpoints are mounted under `/oscal` on the package's own FastAPI app
+The contract (not yet implemented — see "Pipeline and architecture" above) mounts
+all endpoints under `/oscal` on the package's own FastAPI app
 (`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/contracts/api.md`),
 following `TECHNICAL.md`'s action-based-endpoint conventions:
 
@@ -248,7 +257,7 @@ for the rendered Technology-layer diagram).
 
 ### Control conversion playground (GH #76)
 
-Alongside the `/oscal` pipeline the package serves an interim developer tool, a
+Alongside the (planned) `/oscal` pipeline the package serves an interim developer tool, a
 single-control page that runs two conversions to Trestle Markdown and compares
 them, so the AI step can be eyeballed against Trestle's own output one
 control at a time. It is explicitly not a journey-API role, and it is a
@@ -354,8 +363,12 @@ relationship or view id
 ### Running it
 
 From `platform/`: `poetry install`, then `poetry run uvicorn
-controls_compliance_catalog.app:app --reload` serves `/oscal/*`
-(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md`).
+controls_compliance_catalog.app:app --reload` currently serves only the
+playground under `/catalog` and `/settings/llm`; the `/oscal/*` routes are the
+planned target, and the quickstart's steps will not work until they ship
+(`platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md`,
+status banner). The package README's "Run the playground" section is the guide to what
+runs today, and the [Portal](portal.md) mounts the same playground at `/catalog`.
 `third_party/oscal-content` and `third_party/fedramp-automation` are plain
 vendored files already present in the checkout — no submodule init needed
 (GH #167; see [OSCAL Compliance Content](oscal-compliance.md)). For the
@@ -448,7 +461,7 @@ oscal` passes from `platform/`, and that a grep finds no remaining
 `fedramp-automation` (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/quickstart.md`). The task list
 (T001–T020, across setup, foundational, one phase per story and polish) shows
 every task checked off, including the ADR-0030 amendment and the wiki
-regeneration (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md`), and the spec-quality checklist passes
+regeneration (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/tasks.md`, whose closing notes now also record "Model impact: none", pointing at `plan.md`), and the spec-quality checklist passes
 (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/checklists/requirements.md`). The spec header still reads "Draft"
 (`platform/packages/controls-compliance-catalog/specs/002-vendor-oscal-fedramp-files/spec.md`), so the status field and the completed task list disagree.
 This page's [Running it](#running-it) section reflects the outcome. For the
@@ -457,7 +470,8 @@ content itself see [OSCAL Compliance Content](oscal-compliance.md).
 ## Not covered by current sources
 
 The spec documents describe a larger `/oscal/*` pipeline (conversion, assembly,
-resolution, ledger, normalizers) than the code sources here show. The sources for this
+resolution, ledger, normalizers) than the code sources here show; the 001 quickstart
+now says outright that this service is planned and not yet implemented. The sources for this
 page include only `app.py`, `platform/packages/controls-compliance-catalog/src/controls_compliance_catalog/llm_client.py` and the `playground/` module, and `app.py`
 mounts just the playground and settings routers; whether the `/oscal/*` routes
 and the other modules in the specs' Project Structure exist is not something these

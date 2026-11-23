@@ -1,7 +1,7 @@
 ---
 title: OSCAL Compliance Content
-generated: '2026-11-14'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0030-vendor-oscal-reference-content.md
 - pyproject.toml
