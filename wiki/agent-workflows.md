@@ -1,7 +1,7 @@
 ---
 title: Agent Skills & Workflows
-generated: '2026-11-11'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - .claude/agents/README.md
 - .claude/agents/acceptance-author.md
@@ -109,7 +109,13 @@ changelog are driven from commit history, so a malformed message is "a real
 defect, not a style nit". Subject form: `<type>(<scope>)?: <description>`,
 imperative, lower-case, no trailing period, ≤ 72 chars; scope is the affected
 package or top-level area (`agents`, `skills`, `wiki`, `devcontainer`, `specs`,
-`ci`, `architecture`, …). The authoritative ruleset is
+`ci`, `architecture`, …). The scope pattern is now `[a-z0-9_-]+` (the hand-check regex
+in the skill is `^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9_-]+\))?!?: .+`):
+the underscore exists only for `third_party`, which matches its directory name, and every other scope
+uses hyphens. A `schema` area scope (Neo4j schema-management helpers in
+`src/frictionless_architect/schema/`) was added to the area list
+(`.claude/skills/commit-message/SKILL.md`;
+`.claude/skills/commit-message/references/standard.md` §Scopes). The authoritative ruleset is
 `.claude/skills/commit-message/references/standard.md`. `commit-auditor` is the read-only
 branch-wide pre-PR audit; it never amends, rebases, or pushes.
 

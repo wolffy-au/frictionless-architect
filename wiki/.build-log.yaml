@@ -2,7 +2,7 @@ generated: '2026-11-23'
 generator: claude-sonnet-5-5
 topics:
   agent-workflows:
-    built: '2026-11-11'
+    built: '2026-11-23'
     page: wiki/agent-workflows.md
     sources:
       files:
@@ -47,7 +47,7 @@ topics:
           sha256: 6e9cee1c09c7e88be6262d31dd8f75f76628b4e167f0431bea8fbf86d8231903
         .claude/skills/commit-message/SKILL.md:
           lines: 76
-          sha256: 4dc191c20403f330b4c923231e019e12cb95b7d986b00043b0e6fc64fe6f6a21
+          sha256: 9a1811d572777b72e1972151ee790a11da0af1600cd638c5b1a84ffc710d6b7c
         .claude/skills/diagram-archimate/SKILL.md:
           lines: 83
           sha256: cd43de59ada6cb3de8110fec06d721fc69ffe81f194eb9357e16790dc12ff65b
@@ -1548,19 +1548,19 @@ topics:
       urls: {}
     title: 'Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)'
   development:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/development.md
     sources:
       files:
         .github/workflows/ci.yml:
           lines: 202
-          sha256: c763df31cb6db4484ff53efbe054e1c27da270102b3e4591b1fbf865b6aa4b5f
+          sha256: 5dfa969ed6d65f3d703206605b966519585112ed1c60490800cc1b1bc1c84219
         .pre-commit-config.yaml:
           lines: 135
-          sha256: b4d6f98fd1b08cb8d13379c92b386b10ac25cb81de20c13bdb2e0e70057cc074
+          sha256: bbc2ee4e023ee3caf0667b39e64e4ea683245a0b1aba68c1f9cbb60a4f84d3b1
         AGENTS.md:
-          lines: 147
-          sha256: 93e81670efec517a80b8adf712b8224156239b0c8502298f1d3c4b0b6ddda237
+          lines: 154
+          sha256: e0d4fb2c20dc85bcf39cf5cf5e5db1eb22f1ff8addd1b3e85e2fcc32587e9a87
         CODE_OF_CONDUCT.md:
           lines: 128
           sha256: c135627b08b25735d88156b519d9daacf42c3ce3e7ec08b6b4bc56b1a5c19df7
@@ -1585,6 +1585,8 @@ topics:
         tests/api/README.md:
           lines: 54
           sha256: 617845142233f12ca522d1a293cfdd8ee4414481276f37b3e40b6caf1b3af603
+      urls: {}
+    title: Development & Quickstart
   digital-twin-knowledge-graph:
     built: '2026-11-08'
     page: wiki/digital-twin-knowledge-graph.md
@@ -2197,16 +2199,18 @@ topics:
       urls: {}
     title: Portal
   project-overview:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/project-overview.md
     sources:
       files:
         README.md:
-          lines: 310
-          sha256: 1728e1c4b1c1a08c9630e3a332767ceabc282c2ad26c4681b3206a31ee4e547c
+          lines: 314
+          sha256: ffb887a1c737949feb9b9559651b3aed71892894a5b83c399cd84c75c2bc0b92
         specs/EPIC-001-governance-platform/spec.md:
           lines: 219
           sha256: b565f4aa7e587a92754c6d1009eac5b2efc4cf91a6a0bea15094872a51b6094c
+      urls: {}
+    title: Project Overview
   sample-data:
     built: '2026-10-24'
     page: wiki/sample-data.md

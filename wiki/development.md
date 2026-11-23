@@ -1,7 +1,7 @@
 ---
 title: Development & Quickstart
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - .github/workflows/ci.yml
 - .pre-commit-config.yaml
@@ -197,7 +197,22 @@ The constitution's "Quality Gates" (see
 bash scripts/pre_commit_checks.sh   # fast gate: commit messages, pymarkdown, ruff, pyright, mypy, tests/unit/, platform checks
 bash scripts/pre_merge_checks.sh    # + roadmap-layer check, lock refresh, Snyk, behave, coverage-gated pytest, UI harness
 bash scripts/platform_checks.sh     # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
+bash scripts/update-all.sh          # refresh both Poetry locks, pre-commit hooks and third_party/ submodules; commits nothing
+bash scripts/refresh_gh_roadmap.sh  # regenerate the gh-roadmap/ model layer from GitHub (needs `gh`; --check, --no-diagrams)
 ```
+
+`update-all.sh` (new) runs `poetry update` and `poetry install` for the root, then the same
+inside `platform/`, then `pre-commit autoupdate`, then `sudo git submodule update --remote
+--merge --recursive` — the `sudo` working around the drvfs `chmod` EPERM described under
+"Known environment quirks" below. It commits nothing: review `git status`/`git diff`, keep
+what you want, and run `pre_merge_checks.sh` afterwards to confirm the bumped versions still
+pass the full gate (`scripts/update-all.sh`; `AGENTS.md` §"Working on the code").
+`refresh_gh_roadmap.sh` imports, rebuilds the model XML and re-renders diagrams, then lists
+what changed for you to review and commit (ADR-0035; `AGENTS.md` §"Working on the code").
+Recent routine bumps of this kind: the `commitizen` pre-commit hook moved to `v4.19.4`
+(`.pre-commit-config.yaml`, "matches the pinned commitizen in `pyproject.toml`"), the
+`SonarSource/sonarqube-scan-action` pin in CI to a newer commit SHA (`.github/workflows/ci.yml`),
+and the `pymarkdownlnt` floor to `>=0.9.42` (`pyproject.toml`).
 
 Pre-commit hooks are installed (`.pre-commit-config.yaml`): fast autofix on
 commit, type/test suite on push, Conventional Commits check on the message
