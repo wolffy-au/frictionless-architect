@@ -82,6 +82,8 @@ Rel(n_idc7fc80ba220752, n_id2610ae0cc2cc50, "scrubs PII/PHI from content before 
 Rel(n_id5e264d2f4bb551, n_id6c2233bb09755d, "lands on the platform's tools via")
 Rel(n_id6c2233bb09755d, n_ide4bef3733af65a, "mounts the playground router of")
 Rel(n_id6c2233bb09755d, n_id305eddd7c8dc55, "mounts the settings router of")
+Rel(n_id6c2233bb09755d, n_id82f04fecbdd85e, "mounts the authoring router and UI of")
+Rel(n_id6c2233bb09755d, n_idc7fc80ba220752, "mounts the settings router of")
 Rel(n_id2b5394f913985a, n_idd18b3d46fade58, "visualises the Architecture Knowledge Graph schema for")
 
 @enduml

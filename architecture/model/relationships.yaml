@@ -945,6 +945,8 @@
 - {type: Serving, source: sub-portal, target: role-compliance, label: lands on the platform's tools via}
 - {type: Serving, source: sub-catalog, target: sub-portal, label: playground router mounted by, props: {c4-label: mounts the playground router of}}
 - {type: Serving, source: sub-llm-provider-config, target: sub-portal, label: settings router mounted by, props: {c4-label: mounts the settings router of}}
+- {type: Serving, source: sub-modelling, target: sub-portal, label: authoring router and UI mounted by, props: {c4-label: mounts the authoring router and UI of}}
+- {type: Serving, source: sub-pii-gateway, target: sub-portal, label: settings router mounted by, props: {c4-label: mounts the settings router of}}
 - {type: Realization, source: art-pkg-portal, target: sub-portal}
 
 # =====================================================================

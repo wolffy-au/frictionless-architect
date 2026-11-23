@@ -130,5 +130,7 @@ Rel_Association(e_id305eddd7c8dc55, e_id2610ae0cc2cc50, "configures provider/mod
 Rel_Association(e_idc7fc80ba220752, e_id2610ae0cc2cc50, "scrubs PII/PHI from content before calls to")
 Rel_Serving_Up(e_ide4bef3733af65a, e_id6c2233bb09755d, "playground router mounted by")
 Rel_Serving_Up(e_id305eddd7c8dc55, e_id6c2233bb09755d, "settings router mounted by")
+Rel_Serving_Up(e_id82f04fecbdd85e, e_id6c2233bb09755d, "authoring router and UI mounted by")
+Rel_Serving_Up(e_idc7fc80ba220752, e_id6c2233bb09755d, "settings router mounted by")
 
 @enduml
