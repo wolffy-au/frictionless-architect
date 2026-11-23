@@ -231,14 +231,18 @@ monorepo (ADR-0002), which has its own lock and virtualenv — run its commands 
   scrubs PII/PHI from content before it reaches an LLM provider (Presidio-backed,
   ADR-0014/ADR-0043); called from `modelling-specification`'s conversational authoring today.
 - [`portal`](platform/packages/portal/README.md) — the composition host (ADR-0020)
-  that serves every package UI from one app:
+  that serves every package UI from one app. It mounts `/catalog` (control conversion
+  playground), `/authoring/` (conversational model authoring), `/settings/llm` and
+  `/settings/pii-gateway`, and lists them by role on its landing page:
 
   ```bash
   cd platform
   poetry run uvicorn portal.app:app --reload
   ```
 
-  Open `http://127.0.0.1:8000/` for the role-grouped landing page.
+  Open `http://127.0.0.1:8000/` for the role-grouped landing page. Or, from the repo
+  root, `./scripts/run-portal.sh` starts it on `http://127.0.0.1:8001/` (the same port
+  as the two package scripts above, so run only one at a time).
 - [`schema-visualizer-api`](platform/packages/schema-visualizer-api/README.md) — a
   specs-only placeholder; the visualiser in `src/` has not been extracted into it yet.
 
