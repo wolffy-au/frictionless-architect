@@ -19,7 +19,13 @@ from pii_gateway.router import create_settings_router as create_pii_gateway_sett
 
 @dataclass(frozen=True)
 class MountedUi:
-    """A package UI the portal mounts, as the landing page lists it."""
+    """A package UI the portal mounts, as the landing page lists it.
+
+    Attributes:
+        path: URL path the UI is mounted at (e.g. ``/catalog``).
+        title: Link text shown on the landing page.
+        role: Role the UI serves; the landing page groups entries by it.
+    """
 
     path: str
     title: str
@@ -66,7 +72,11 @@ def _landing_page() -> str:
 
 @app.get("/", response_class=HTMLResponse)
 def landing() -> str:
-    """List every mounted UI, grouped by the role it serves."""
+    """``GET /``: list every mounted UI, grouped by the role it serves.
+
+    Returns:
+        The landing page as an HTML document.
+    """
     return _landing_page()
 
 
