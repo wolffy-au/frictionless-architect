@@ -1,7 +1,7 @@
 ---
 title: Architecture Decision Log
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0000-adr-template.md
 - docs/adr/0001-root-is-governance-only.md
@@ -147,6 +147,16 @@ carries this as Plateaus `plat-policy-to-oscal-mvp-1` → `plat-multi-user-colla
 `plat-runtime-mvp`/`plat-runtime-target`/`gap-runtime-hosted` set until the ADR-0035 cut-over), shown in
 its own `view-runtime-migration` rather than the §8 packaging view — a different transition story. See
 [Architecture Model](architecture-model.md).
+
+ADR-0019 is still **P** and an `adr-auditor` review comment (2026-11-23) now
+sits in the record: [ADR-0054](decision-log-0040-onward.md) (Accepted) builds its
+RBAC authorization on this decision and says enforcement cannot ship until
+ADR-0019 is accepted, yet no `.rego` policies or OPA wiring exist in this repo —
+the only Rego is in the `third_party/sample-oscal` submodule (policies under
+`policies/datastores/`, OPA results under `evidence/`; see ADR-0052 on
+[ADR-0040 onward](decision-log-0040-onward.md)). The comment leaves it Proposed
+and asks a human to either ratify it or revisit ADR-0054's authorization section
+(`docs/adr/0019-opa-rego-policy-engine.md`, review comment under the header).
 
 The `adr-auditor` agent sweeps for decisions made without a record and for ADRs
 that have drifted — see [Agent Skills & Workflows](agent-workflows.md).

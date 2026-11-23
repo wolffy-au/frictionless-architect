@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)'
-generated: '2026-10-31'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0020-per-subsystem-uis.md
 - docs/adr/0021-schema-visualiser-cytoscape.md
@@ -58,8 +58,18 @@ page. The ADR is explicit that `portal` is not the central dashboard it had
 earlier rejected: it mounts the packages' UIs but owns no feature logic of
 its own. It currently mounts `controls-compliance-catalog`'s Control
 Conversion Playground at `/catalog` and `llm-provider-config`'s settings UI
-at `/settings/llm` (`docs/adr/0020-per-subsystem-uis.md` §Decision). See
-[Portal](portal.md).
+at `/settings/llm` (`docs/adr/0020-per-subsystem-uis.md` §Decision); the
+package has since mounted more UIs than the ADR lists, so [Portal](portal.md)
+is the current reference.
+
+ADR-0024 carries an `adr-auditor` review comment dated 2026-11-23: its scope is
+**partly overtaken** by [ADR-0054](decision-log-0040-onward.md) (Accepted
+2026-11-14), which decides OIDC authentication, RBAC authorization and
+workspace tenancy for multi-user use (epic GH #83). The "RBAC/ABAC not
+MVP-blocking" and "per-user passthrough deferred" consequences no longer hold
+for that work. The status was left **Accepted**; a human decides whether the
+record becomes "Superseded in part"
+(`docs/adr/0024-single-user-local-mvp.md`, review comment under the header).
 
 ADR-0022 was **corrected in place** on 2026-09-25 rather than superseded,
 because the decision itself didn't change and only the record was wrong. It

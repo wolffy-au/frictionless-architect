@@ -1,4 +1,4 @@
-generated: '2026-11-15'
+generated: '2026-11-23'
 generator: claude-sonnet-5-5
 topics:
   agent-workflows:
@@ -1327,7 +1327,7 @@ topics:
       urls: {}
     title: Data Model
   decision-log:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/decision-log.md
     sources:
       files:
@@ -1389,13 +1389,15 @@ topics:
           lines: 47
           sha256: 62929cfdd0785f95ad34a9fad6a3c458d790c7be7602a63e05d67cda279478a8
         docs/adr/0019-opa-rego-policy-engine.md:
-          lines: 25
-          sha256: 0f92f59961924fe76df3d630a6536cce784eee2921a1b27c38ce0f9d7241838f
+          lines: 31
+          sha256: 02f9bf5e6990012c4dc623f29b77672993be8e95ac45faba23d07c99aa1661d7
         docs/adr/README.md:
-          lines: 194
-          sha256: 0e876bbb41ef4f90a58a9cea83feebbccc1dcd8c4dc182ce84727cb6b289445b
+          lines: 197
+          sha256: 41f5dc0f0eabb12d9ea2d041d985a43a9032678f5c6db879d4b916c257913021
+      urls: {}
+    title: Architecture Decision Log
   decision-log-0030-0039:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/decision-log-0030-0039.md
     sources:
       files:
@@ -1422,15 +1424,17 @@ topics:
           sha256: 43872d5b6aab0af5f611a7990b665192ffb17f24777c1bbd17c39339beb89cb1
         docs/adr/0037-conversational-model-authoring-architecture.md:
           lines: 182
-          sha256: a12a42e6bb3c15b6e0ff0af51ea632f42e3cf2d6f03944a28352624f3c79d243
+          sha256: cde2ad5cbb8c0e050aa225e769edf817cc23371e22f2889948919b10fa411ce7
         docs/adr/0038-section-b-roles-canonical.md:
           lines: 66
           sha256: a8755517c57f836f33c9c978905788f46464f19a2ff58b68e70533c3e4ca5384
         docs/adr/0039-conversational-solution-modelling-scope.md:
           lines: 83
-          sha256: 8c81564c43cbbc7c98a398e7efa5c46aac34b1affc8ac82483399dc082c1c240
+          sha256: b157d6871d40c6b4204da8224a738f3052c0c43df8ef3ca578d5ba91752c6b4f
+      urls: {}
+    title: 'Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)'
   decision-log-0040-onward:
-    built: '2026-11-15'
+    built: '2026-11-23'
     page: wiki/decision-log-0040-onward.md
     sources:
       files:
@@ -1442,7 +1446,7 @@ topics:
           sha256: 68cdb36ca73438463e78365dcfb0bad8c2e55e85e41ac3f701d8a4c8a0648e07
         docs/adr/0042-maintenance-agents-and-generated-wiki.md:
           lines: 44
-          sha256: ad13142f72deb29e597bb46b09ac36ba5d3838ca5488671ad812bea43918bd2c
+          sha256: dfbbaaf6cdb3f5e7db63b61d27de4bdce68119a43f97ea8a787ae6d705bc40ed
         docs/adr/0043-pii-gateway-detector-library-presidio.md:
           lines: 75
           sha256: 167b71ff4645adf40861e929427d09fbe9adefd1c7e2e4085797e82166954cc1
@@ -1457,10 +1461,10 @@ topics:
           sha256: 97f77e47755d0ce9345c125a017b7a80a8b0ac9403d7fdf625b9e245fa7d8faf
         docs/adr/0047-sanitised-markdown-rendering-for-llm-chat-text.md:
           lines: 64
-          sha256: 085c87c3770e297dcdce7e6b118f693a54592049018fab6c60a3648c0adaa8fd
+          sha256: b357480ae80769c741b0622c34f3c94b075344dffb443e5d009e1a8128ae84f9
         docs/adr/0048-ci-security-scan-topology.md:
           lines: 67
-          sha256: 40587c7713e64af2f9c09628558df1acbeddb5dcdf17aafb9e258fccef68944d
+          sha256: 87728d664786827c939af864c8e423da05890985ba934a3ee5abac564b014c62
         docs/adr/0049-pluggable-adr-attestation-gpg-first.md:
           lines: 57
           sha256: d40b8a8334dce82df8c5cb12cda6086ae073347a0d5483bc26c0ed4c82ee6451
@@ -1471,16 +1475,21 @@ topics:
           lines: 52
           sha256: a5b7000d7c718b6bc2b9759a6da409b5c122a48c2c1dc9469224a16cfb8a88a1
         docs/adr/0052-sample-azure-as-standalone-reference-model.md:
-          lines: 47
-          sha256: 4b0c8d9daf2cd35b7d7db8965435d3358307bf2c4e921c092a8da33cc9b5e7ba
+          lines: 67
+          sha256: 792c6adfdbb394ffbbb443835e688512e6cec56c5a9558b3bd2ff6f0724e7ce4
         docs/adr/0053-browser-ui-tests-extend-behave-playwright.md:
           lines: 73
           sha256: 9eba1b280ce00a8efbf6f29f0b171f82abef572cbcb53e1aad82b863ced5f088
         docs/adr/0054-authn-authz-and-tenancy-approach.md:
-          lines: 93
-          sha256: 4298319abcd75112ade31ad261a6e42708bc0a72de9f60c4c84301ddb7c749e2
+          lines: 97
+          sha256: a9d5c0917b12521ad71b91ae5f8ee8205bc36c4e4053d3de0c4248cee5b65590
+        docs/adr/0055-package-local-diagram-output-path.md:
+          lines: 66
+          sha256: d2933b8e37fc68f90378bdf1a3f70fa1899d9056b30c717e310578eb01fc0bc3
+      urls: {}
+    title: 'Architecture Decision Log: Contexts, Agents & Access (ADR-0040 onward)'
   decision-log-ui-visualiser-model:
-    built: '2026-10-31'
+    built: '2026-11-23'
     page: wiki/decision-log-ui-visualiser-model.md
     sources:
       files:
@@ -1497,8 +1506,8 @@ topics:
           lines: 30
           sha256: 4ecc7574bcc1fc21c077fab322886895ab36ea02bed59e93137b289d9703d607
         docs/adr/0024-single-user-local-mvp.md:
-          lines: 29
-          sha256: 0f6f0d8f7adabc96e85646fe7d46efb4badda13f3fffb640c9147c206c0121b4
+          lines: 34
+          sha256: b6f86f45d408121462fa1c12dacdca28885fdfb54ad06fe34b1827fb11570201
         docs/adr/0025-conventional-commits-scm-versioning.md:
           lines: 37
           sha256: 5241ec0d80c0217974c2a8e6c0f41ebf3c6cce17ce8e45fa2d0a1400f574e8d0
