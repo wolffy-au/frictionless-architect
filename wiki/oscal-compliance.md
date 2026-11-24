@@ -1,12 +1,14 @@
 ---
 title: OSCAL Compliance Content
-generated: '2026-11-23'
-generator: claude-sonnet-5-5
+generated: '2026-11-24'
+generator: claude-sonnet-5
 sources:
 - docs/adr/0030-vendor-oscal-reference-content.md
 - pyproject.toml
 - sample-data/oscal/01-nist-baseline-resolution.puml
+- sample-data/oscal/01-nist-baseline-resolution.svg
 - sample-data/oscal/02-nist-fedramp-combined-resolution.puml
+- sample-data/oscal/02-nist-fedramp-combined-resolution.svg
 - tests/fixtures/golden-oscal/README.md
 - tests/fixtures/golden-oscal/slice-1-minimal/README.md
 - tests/fixtures/golden-oscal/slice-2-medium/README.md
@@ -298,7 +300,8 @@ matched the vendored set's own `PROVENANCE.md`.
 
 ## Sample data
 
-`sample-data/oscal/` holds two illustrative PlantUML diagrams — not real
+`sample-data/oscal/` holds two illustrative PlantUML diagrams (each now
+rendered to a committed `.svg` alongside its `.puml` source) — not real
 OSCAL content, just the resolution mechanics:
 
 - `01-nist-baseline-resolution.puml` — one dimension: a NIST catalog imports
