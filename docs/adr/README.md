@@ -195,3 +195,6 @@ not yet re-ratified in a spec).
 - **A** — [0055](0055-package-local-diagram-output-path.md) — A context-split view may
   redirect a context's diagram slice into that package's own `specs/diagrams/`, when the
   directory already exists, instead of the central `architecture/model/diagrams/`
+- **P** — [0056](0056-api-error-wire-format.md) — Wire format for structured API error
+  responses, deferred by `spec.md` but already split between the EPIC-001 contract
+  (`problem+json`) and three built routers' plain `HTTPException` shape

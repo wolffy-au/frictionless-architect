@@ -4603,6 +4603,23 @@
         </property>
       </properties>
     </element>
+    <element identifier="id-b2171403881c5d67aaeb380a9634a903" xsi:type="Deliverable">
+      <name>v0.13.0</name>
+      <properties>
+        <property propertyDefinitionRef="propid-8">
+          <value>2026-11-24T06:52:21Z</value>
+        </property>
+        <property propertyDefinitionRef="propid-9">
+          <value>v0.13.0</value>
+        </property>
+        <property propertyDefinitionRef="propid-10">
+          <value>https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.13.0</value>
+        </property>
+        <property propertyDefinitionRef="propid-1">
+          <value>gh-roadmap</value>
+        </property>
+      </properties>
+    </element>
     <element identifier="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Deliverable">
       <name>v0.2.0</name>
       <properties>
@@ -11032,6 +11049,7 @@
       <item identifierRef="id-ba7982cdbdee5fbdad2996038aba8353"/>
       <item identifierRef="id-1ae5ab16e4af560696322c8ac997d059"/>
       <item identifierRef="id-7459347e16955e5486b55ec58a667cb4"/>
+      <item identifierRef="id-b2171403881c5d67aaeb380a9634a903"/>
       <item identifierRef="id-d0d06b4c05ff554c9adfb585c8bb0ffd"/>
       <item identifierRef="id-3383a505adda5f62b975b077fb58db89"/>
       <item identifierRef="id-7352675b8f3e5fbd8a2dffd7b2439bbc"/>
@@ -50550,7 +50568,14 @@
             </font>
           </style>
         </node>
-        <node identifier="id-3c4d6509808a569c94fc477b324bda6c" elementRef="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Element" x="1440" y="960" w="100" h="80">
+        <node identifier="id-03c6a645d7fe5676ae75ee4611d390c0" elementRef="id-b2171403881c5d67aaeb380a9634a903" xsi:type="Element" x="1200" y="960" w="100" h="80">
+          <style>
+            <font name="Arial" size="10">
+              <color r="0" g="0" b="0"/>
+            </font>
+          </style>
+        </node>
+        <node identifier="id-3c4d6509808a569c94fc477b324bda6c" elementRef="id-d0d06b4c05ff554c9adfb585c8bb0ffd" xsi:type="Element" x="1680" y="960" w="100" h="80">
           <style>
             <font name="Arial" size="10">
               <color r="0" g="0" b="0"/>

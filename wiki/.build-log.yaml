@@ -1,5 +1,5 @@
-generated: '2026-11-23'
-generator: claude-sonnet-5-5
+generated: '2026-11-24'
+generator: claude-sonnet-5
 topics:
   agent-workflows:
     built: '2026-11-23'
@@ -1982,7 +1982,7 @@ topics:
       urls: {}
     title: Non-Functional Requirements
   oscal-compliance:
-    built: '2026-11-23'
+    built: '2026-11-24'
     page: wiki/oscal-compliance.md
     sources:
       files:
@@ -1995,9 +1995,15 @@ topics:
         sample-data/oscal/01-nist-baseline-resolution.puml:
           lines: 53
           sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
+        sample-data/oscal/01-nist-baseline-resolution.svg:
+          lines: 1
+          sha256: 70ded6f333a1ea54403cb1926dc853aac8f78c248942d1801a0a5190e63c42e9
         sample-data/oscal/02-nist-fedramp-combined-resolution.puml:
           lines: 44
           sha256: c743a3e57f784cf136ef8cbd7bf5d5a4023a4bc69bbc1b1cb205d5603c44d428
+        sample-data/oscal/02-nist-fedramp-combined-resolution.svg:
+          lines: 1
+          sha256: e13b229dcf78f1757cbd30e62a72a74592a8428ebbe775963d277725f8979c29
         tests/fixtures/golden-oscal/README.md:
           lines: 73
           sha256: 8eb138ee6d0e8cd01cd250c3abd158025b47364cb4a16c5e37a5b8b884996f09
