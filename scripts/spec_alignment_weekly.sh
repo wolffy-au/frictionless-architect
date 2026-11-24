@@ -1,8 +1,10 @@
 #!/bin/bash
 # Weekly run of the spec-alignment agent (.claude/agents/spec-alignment.md).
-# By default: an interactive session in worktree ../<repo>-spec-alignment, detached at the ref (opened in Herdr when
-# run inside it). The agent is read-only: it reports the gaps, asks which to pursue, and hands those back as concrete
-# speckit steps or ready-to-file issues. --report-only: the unattended report in .cache/spec-alignment/<date>.md.
+# By default: an interactive session in worktree ../<repo>-spec-alignment on feature/spec-alignment-<date> (opened
+# in Herdr when run inside it), with its own Poetry venv. The agent reports the gaps, asks which to pursue, then
+# fixes documentation/model/spec-text findings directly and hands back genuinely Missing/Partial requirements as
+# speckit-specify candidates instead of implementing them.
+# --report-only: the unattended report in .cache/spec-alignment/<date>.md; fixes nothing and opens no PR.
 #
 # Usage: scripts/spec_alignment_weekly.sh [--report-only] [git-ref] [spec]
 #   git-ref  branch/tag to check (default: develop)
@@ -17,8 +19,16 @@ SPEC="${2:-}"
 
 AGENT=spec-alignment
 OUT_NAME=spec-alignment
-TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*),Bash(git tag:*),Bash(gh api:*)"
-TASK="Follow your Steps 1-5 and Output sections. Do not run poetry commands. Put the ranked gap findings under '## Findings'."
+BRANCH="feature/spec-alignment-$(date +%F)"
+SETUP="venv"
+FIX_TASK="Follow your 'Fixing chosen findings' section for the chosen findings: edit spec/model/ADR text for \
+documentation-level findings, re-run the Step 4 check it came from to confirm it now passes, then commit. For any \
+chosen finding that is a Missing/Partial/Diverged requirement, do not implement it — hand back the speckit-specify \
+candidate instead and say so in the commit list."
+TOOLS="Read,Grep,Glob,Bash(git log:*),Bash(git describe:*),Bash(git diff:*),Bash(git tag:*),Bash(gh api:*),\
+Bash(poetry run python architecture/model/build.py)"
+TASK="Follow your Steps 1-5 and Output sections for the review. Do not run poetry commands in this phase. \
+Put the ranked gap findings under '## Findings'."
 TASK="$TASK $AGENT_BASH_RULE"
 
 if [ -n "$SPEC" ]; then

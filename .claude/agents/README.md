@@ -10,14 +10,14 @@ exposes each by its `name`.
 
 | Agent | Writes? | Purpose |
 |-------|---------|---------|
-| `commit-auditor` | read-only | Audit a branch's commits against Conventional Commits + repo conventions; per-commit report with corrected messages. Paired skill: `commit-message`. |
+| `commit-auditor` | report + reword unpublished commits | Audit a branch's commits against Conventional Commits + repo conventions; per-commit report with corrected messages. Rewrites a chosen commit's message only if it hasn't reached a remote yet — a published one (the usual case for `develop`) stays report-only, since fixing it would need a force-push. Paired skill: `commit-message`. |
 | `quality-uplift` | branch + PR | Fix SonarCloud-class quality issues (complexity, duplication, dead code, type gaps) locally before CI. Can consume a SonarCloud issue list. |
 | `coverage-uplift` | branch + PR | Incrementally raise `pytest` coverage toward the 90% gate with real positive/negative tests. |
 | `acceptance-author` | branch + PR | Transcribe a story/ticket/spec's acceptance criteria into `behave` scenarios kept close to verbatim, wire the steps, keep a criterion→scenario map. Owns `tests/features/`. |
 | `docs-uplift` | branch + PR | Resync docstrings, README/quickstart/feature guides, and PlantUML/C4/ArchiMate diagrams with the code. |
 | `vulnerability-remediator` | branch + PR | Resolve Dependabot / Snyk / SonarCloud security findings; bump or pin fixed versions, patch vulnerable code, verify gates. |
-| `refactor-analyst` | read-only | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations, no code changes. |
-| `spec-alignment` | read-only | Traceability gap report: code vs `specs/**`, constitution. |
+| `refactor-analyst` | report + branch for small fixes | Whole-codebase structural assessment vs `ARCHITECTURE.md` / `TECHNICAL.md`; prioritised recommendations. Makes small, local, mechanically-safe fixes (extract/split/rename/dedupe) itself; hands back anything structural (package extraction, directory reshuffle) as a `speckit-specify` candidate. |
+| `spec-alignment` | report + branch for doc/model fixes | Traceability gap report: code vs `specs/**`, constitution, and the canonical model. Fixes documentation/model/spec-text findings (stale lists, spec-vs-model contradictions, missing ADR/spec stubs) itself; hands back a genuinely Missing/Partial requirement as a `speckit-specify` candidate rather than implementing it. |
 | `adr-auditor` | branch + draft PR | Audit `docs/adr/` against the decision-bearing docs and the code; report missing / stale / misaligned / superseded records, and draft `Status:Proposed` ADR stubs plus status edits. Never fleshes out or attests a decision. |
 | `release-runner` | branch + tag + release | Run `RELEASE.md` end to end: gates, `cz bump`, tag, GitHub release, merge back. Stops on any red gate. Has no `Agent` tool: it hands back the agents it needs for the calling session to dispatch. |
 | `wiki-maintenance` | audit-only by default | Audit the generated wiki: stale pages, unmatched or uncovered `sources.yaml` globs, index links, dead citations, oversized pages. When a session asks, fixes chosen findings through `wiki-librarian`, never by hand-editing pages. |

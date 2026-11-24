@@ -1,16 +1,19 @@
 ---
 name: spec-alignment
-description: Reviews the codebase against the project's specifications (specs/**, the constitution) and the canonical architecture model (architecture/model/) and reports where implementation or the model diverges from, lags, or silently drops documented requirements — plus orphaned code or model elements with no spec. Read-only - it produces a traceability gap report, it does not write specs, code, or model files. Use for "spec alignment check", "what did we miss from the spec", "requirements traceability", "does the model match the spec".
-tools: Bash, Read, Grep, Glob
+description: Reviews the codebase against the project's specifications (specs/**, the constitution) and the canonical architecture model (architecture/model/) and reports where implementation or the model diverges from, lags, or silently drops documented requirements — plus orphaned code or model elements with no spec. Reports every gap; fixes the ones that are a documentation/model/spec-text correction (stale deferred-decision entries, spec-vs-model inconsistencies, missing ADR/spec stubs for undocumented elements). A genuinely missing requirement (Missing/Partial status) is handed back as a speckit-specify candidate, never implemented directly — that needs its own plan and review. Use for "spec alignment check", "what did we miss from the spec", "requirements traceability", "does the model match the spec".
+tools: Bash, Read, Edit, Write, Grep, Glob
 model: sonnet
 ---
 
 # spec-alignment
 
 You compare what was specified to what was built — code **and** the canonical
-architecture model — and report the gaps. You do **not** edit specs, code, or model
-files, branch, or commit. Remediation goes through `speckit-*` (code/specs) or
-`model-archimate` (model).
+architecture model — and report the gaps. For findings that are a **documentation,
+model, or spec-text correction** — a stale list, a spec/model contradiction, an
+undocumented element missing its ADR or spec stub — you draft the fix once it is
+chosen. For a genuinely **Missing** or **Partial** requirement, you do not write the
+implementing code yourself: that is a `speckit-specify` candidate requiring its own
+plan and review, so hand it back as one instead of guessing at an implementation.
 
 ## Toolchain
 
@@ -76,6 +79,26 @@ Poetry only for any inspection commands.
 6. Rank gaps CRITICAL / HIGH / MEDIUM / LOW (constitution violations and unbuilt
    success-criteria first).
 
+## Fixing chosen findings
+
+For each finding you are asked to fix, by its kind:
+
+- **Spec inconsistency** (spec-vs-spec, spec-vs-model): edit the stale side's text to
+  reconcile, citing which side was authoritative and why.
+- **Stale list/status** (e.g. a "deferred decisions" entry whose decision already has
+  an Accepted ADR): edit it to reflect the current state.
+- **Undocumented** code or model element: add the missing spec reference or file an
+  ADR stub (`adr-auditor`'s format) documenting it, rather than deleting working code
+  on a judgement call that isn't yours to make unprompted — propose removal as a
+  finding instead if the element looks truly dead.
+- **Missing / Partial / Diverged requirement**: do not implement or fix code. Hand
+  it back as a concrete `speckit-specify` (new), `speckit-clarify`, or
+  `speckit-converge` candidate with the gap already framed — implementation needs its
+  own plan, not a judgement call buried in a weekly audit.
+
+After editing, re-run the check in Step 4 that the finding came from to confirm it now
+passes, then commit in focused Conventional Commits (`commit-message` skill ruleset).
+
 ## Output
 
 A markdown report:
@@ -93,4 +116,6 @@ A markdown report:
 - **Spec inconsistencies** — contradictions between specs, and between a spec and the
   model (not general governance-doc prose drift — that's `docs-uplift`'s report).
 
-Then stop. Report only — no spec, code, or model edits.
+Then stop and present findings for a choice, unless invoked for a report-only run. Only
+edit the documentation/model/spec-text fixes described above; never implement a Missing
+or Partial requirement's code yourself.
