@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Build Pipeline & IT4IT Merge'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/build.py
@@ -60,7 +60,7 @@ Path Traversal findings, though Snyk does not treat `env_dir` itself as a
 sanitiser and still reports them
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:54-64`).
 
-## The vendored-model sweep, and why `sample-azure` is excluded from it
+## The vendored-model sweep, and why `sample-azure` and `sample-gcp` are excluded from it
 
 The merge step does not hardcode `third_party/it4it` by name: `VENDORED_MODELS`
 globs every `third_party/*/elements.yaml` and merges each match in, so a
@@ -75,11 +75,22 @@ standalone demo Azure app meant to be built by pointing at it directly, not
 swept into this repo's own root model. The generic glob couldn't tell the two
 cases apart, so it pulled `sample-azure`'s elements into the platform model
 (and its `diagrams/`) whenever the submodule happened to be checked out
-locally. `_STANDALONE_THIRD_PARTY_MODELS = {"sample-azure"}` now excludes it
-from the default sweep by name; it is still buildable/renderable on its own
-by `cd`-ing into it, or reachable here by pointing
-`FRICTIONLESS_THIRD_PARTY_DIR` at a directory that includes it under another
-name.
+locally. `_STANDALONE_THIRD_PARTY_MODELS` excludes it from the default sweep
+by name; it is still buildable/renderable on its own by `cd`-ing into it, or
+reachable here by pointing `FRICTIONLESS_THIRD_PARTY_DIR` at a directory that
+includes it under another name.
+
+The set grew on 2026-11-23: commit `b7fea26` added the new `third_party/sample-gcp`
+submodule, so `_STANDALONE_THIRD_PARTY_MODELS = {"sample-azure", "sample-gcp"}`
+and the source comment now speaks of "standalone demo apps" (plural). A third
+submodule added in the same change, `third_party/sample-oscal`, needs no entry:
+it has no `elements.yaml` (it is an OSCAL content repo with Rego policies), so
+the `third_party/*/elements.yaml` glob never matches it. If one is ever added,
+the glob would merge it silently — [ADR-0052](decision-log-0040-onward.md)
+flags that case as needing an explicit decision
+(`platform/packages/modelling-specification/src/modelling_specification/model_io.py`
+`_STANDALONE_THIRD_PARTY_MODELS`; `docs/adr/0052-sample-azure-as-standalone-reference-model.md`
+§Extension).
 
 ## IT4IT alignment — vendored as its own repo, imported at build time
 

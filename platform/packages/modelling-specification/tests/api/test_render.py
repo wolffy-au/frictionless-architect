@@ -66,8 +66,8 @@ def test_views_lists_every_renderable_view_with_id_and_name() -> None:
     response = client.get("/authoring/views")
     assert response.status_code == 200
     views = response.json()
-    assert {"id": "view-stakeholder", "name": "Stakeholder"} in views
-    assert all(set(v) == {"id", "name"} for v in views)
+    assert {"id": "view-stakeholder", "name": "Stakeholder", "group": "ArchiMate Viewpoints"} in views
+    assert all(set(v) == {"id", "name", "group"} for v in views)
 
 
 def test_render_svg_reports_which_view_it_rendered() -> None:

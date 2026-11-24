@@ -8,6 +8,7 @@ plaintext, so every use is logged as a warning. Ollama and GitHub Copilot need n
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 
@@ -135,9 +136,7 @@ def key_source(settings: ProviderSettings) -> str:
     """
     if settings.provider in KEYLESS_PROVIDERS:
         return "not-needed"
-    try:
+    with contextlib.suppress(KeyringError):  # no usable keyring backend: fall back to the environment
         if keyring.get_password(SERVICE_NAME, _ref(settings)):
             return "keychain"
-    except KeyringError:
-        pass
     return "environment" if os.environ.get(ENV_VARS[settings.provider]) else "missing"

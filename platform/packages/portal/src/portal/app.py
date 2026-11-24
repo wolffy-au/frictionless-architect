@@ -10,13 +10,22 @@ from controls_compliance_catalog.playground.api import create_playground_router
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from llm_provider_config import Component, create_settings_router
+from modelling_specification.authoring.delta import COMPONENT_ID as MODELLING_COMPONENT_ID
+from modelling_specification.router import router as modelling_specification_router
+from modelling_specification.ui import router as modelling_specification_ui_router
 from pii_gateway.config import KNOWN_CONTEXTS
 from pii_gateway.router import create_settings_router as create_pii_gateway_settings_router
 
 
 @dataclass(frozen=True)
 class MountedUi:
-    """A package UI the portal mounts, as the landing page lists it."""
+    """A package UI the portal mounts, as the landing page lists it.
+
+    Attributes:
+        path: URL path the UI is mounted at (e.g. ``/catalog``).
+        title: Link text shown on the landing page.
+        role: Role the UI serves; the landing page groups entries by it.
+    """
 
     path: str
     title: str
@@ -28,14 +37,22 @@ class MountedUi:
 # is the single place that names where it is reachable.
 MOUNTED_UIS: tuple[MountedUi, ...] = (
     MountedUi("/catalog", "Control conversion playground", "Compliance Officer / Auditor"),
+    MountedUi("/authoring/", "Conversational model authoring", "Enterprise / Solution Architect"),
     MountedUi("/settings/llm", "LLM settings", "All roles"),
     MountedUi("/settings/pii-gateway", "PII gateway settings", "All roles"),
 )
 
 app = FastAPI(title="Frictionless Architect Portal")
 app.include_router(create_playground_router(prefix="/catalog"))
+app.include_router(modelling_specification_router)
+app.include_router(modelling_specification_ui_router)
 app.include_router(
-    create_settings_router([Component(id=CATALOG_COMPONENT_ID, label="Control conversion (AI candidate)")]),
+    create_settings_router(
+        [
+            Component(id=CATALOG_COMPONENT_ID, label="Control conversion (AI candidate)"),
+            Component(id=MODELLING_COMPONENT_ID, label="Conversational model authoring (AI)"),
+        ],
+    ),
 )
 app.include_router(create_pii_gateway_settings_router(KNOWN_CONTEXTS))
 
@@ -55,7 +72,11 @@ def _landing_page() -> str:
 
 @app.get("/", response_class=HTMLResponse)
 def landing() -> str:
-    """List every mounted UI, grouped by the role it serves."""
+    """``GET /``: list every mounted UI, grouped by the role it serves.
+
+    Returns:
+        The landing page as an HTML document.
+    """
     return _landing_page()
 
 

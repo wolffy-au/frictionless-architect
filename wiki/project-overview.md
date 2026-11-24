@@ -1,7 +1,7 @@
 ---
 title: Project Overview
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - README.md
 - specs/EPIC-001-governance-platform/spec.md
@@ -144,7 +144,10 @@ credential resolution), `pii-gateway` (Presidio-backed PII/PHI scrubbing before 
 model authoring: a service, a split-screen UI and a model build/render/validate
 CLI, run with `./scripts/run-modelling_specification.sh`; GH #108) and `portal` (the composition host that serves every
 package's UI from one app, `uvicorn portal.app:app` on `http://127.0.0.1:8000/`,
-ADR-0020), plus `digital-twin-knowledge-graph` (a library for the knowledge-graph read
+ADR-0020; it mounts `/catalog` (control conversion playground), `/authoring/`
+(conversational model authoring), `/settings/llm` and `/settings/pii-gateway`, and lists them
+by role on its landing page; from the repo root, `./scripts/run-portal.sh` starts it on
+`http://127.0.0.1:8001/`, the same port as the two package scripts, so run only one at a time), plus `digital-twin-knowledge-graph` (a library for the knowledge-graph read
 path, not yet consumed by the visualiser) and `schema-visualizer-api` (a specs-only placeholder);
 `bash scripts/platform_checks.sh` runs their gate (`README.md`
 §"Platform packages"). See [Controls & Compliance Catalog](controls-compliance-catalog.md),

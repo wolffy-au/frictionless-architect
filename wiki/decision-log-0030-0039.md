@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0030-vendor-oscal-reference-content.md
 - docs/adr/0031-fr016-no-redaction-for-policy-documents.md
@@ -24,7 +24,7 @@ Related ADR pages: [ADR-0000–0019](decision-log.md) · [ADR-0020–0029](decis
 
 ## Decision log
 
-Status: **A** accepted, **P** proposed (`docs/adr/README.md` §Index). ADR-0037 and 0039 are proposed because they have not been ratified yet (for example `docs/adr/0037-conversational-model-authoring-architecture.md` — Status: Proposed, Date 2026-10-10).
+Status: **A** accepted, **P** proposed (`docs/adr/README.md` §Index). Every ADR on this page is now accepted: ADR-0037 and 0039 were ratified on 2026-11-23 (`docs/adr/0037-conversational-model-authoring-architecture.md` — Status: Accepted (2026-11-23), Date 2026-10-10; the index flips both rows from **P** to **A**).
 
 | ADR | Decision | Status |
 |---|---|---|
@@ -35,9 +35,9 @@ Status: **A** accepted, **P** proposed (`docs/adr/README.md` §Index). ADR-0037 
 | 0034 | Shared cross-subsystem functionality gets its own `platform/packages/` sibling package; first instance `llm-provider-config` (global + per-component LLM settings, OS-keychain secrets, never `.env`) | A |
 | 0035 | The GitHub roadmap (milestones, issues, releases) is imported into the Implementation & Migration layer by `import_gh_roadmap.py`; the generated layer is merged by `build.py` and never hand-edited | A |
 | 0036 | An element id prefix names the element's own ArchiMate type, never a loose business synonym; the 35 `DataObject` elements once prefixed `art-` move to `do-`, freeing `art-` for genuine `Artifact`-typed elements | A |
-| 0037 | Conversational model authoring (GH #108) lives in a new `platform/packages/modelling-specification` package; root's `build.py`/`render_diagrams.py` and the `model-archimate` skill's `validate.py` become thin wrappers shelling into its CLI; Enterprise Convention Rules move to `architecture/model/conventions.yaml`; an overridden objection auto-drafts a `Status: Proposed` ADR stub rather than an `store-ledger` entry; the feature gets its own `vs-intent-to-model` stream and `process-conversational-authoring` process | P |
+| 0037 | Conversational model authoring (GH #108) lives in a new `platform/packages/modelling-specification` package; root's `build.py`/`render_diagrams.py` and the `model-archimate` skill's `validate.py` become thin wrappers shelling into its CLI; Enterprise Convention Rules move to `architecture/model/conventions.yaml`; an overridden objection auto-drafts a `Status: Proposed` ADR stub rather than an `store-ledger` entry; the feature gets its own `vs-intent-to-model` stream and `process-conversational-authoring` process | A |
 | 0038 | Section B's six `BusinessRole`s are canonical; spec 001's single "Architect" persona and GH #45's role-journey list are `Specialization`s of them, not a parallel role set | A |
-| 0039 | Conversational solution modelling (GH #68/#138) gets its own `fn-solution-modelling` function, distinct from ADR-0037's `fn-conversational-authoring`; assigned to `sub-library`, composed into the existing `bfn-solution-design` alongside structured composition | P |
+| 0039 | Conversational solution modelling (GH #68/#138) gets its own `fn-solution-modelling` function, distinct from ADR-0037's `fn-conversational-authoring`; assigned to `sub-library`, composed into the existing `bfn-solution-design` alongside structured composition | A |
 
 ## Revisions and implementation notes
 
@@ -137,7 +137,7 @@ reader expects it to mean
 (`docs/adr/0036-element-id-prefix-scheme.md` §Decision, §Alternatives
 considered). See [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
 
-ADR-0037 (Proposed 2026-10-10, GH #108) is the Constitution-Check-mandated
+ADR-0037 (filed 2026-10-10, GH #108; Accepted 2026-11-23) is the Constitution-Check-mandated
 record for the conversational model-authoring agent's five load-bearing
 decisions: it lives in a new `platform/packages/modelling-specification`
 sibling package (the same shape as `controls-compliance-catalog`); root's
@@ -190,7 +190,7 @@ function matches those journeys
 `bfn-*` functions the new roles touch is out of scope here, tracked as epic
 item 0 of GH #68.
 
-ADR-0039 (Proposed 2026-10-24, GH #68/#138) distinguishes the new
+ADR-0039 (filed 2026-10-24, GH #68/#138; Accepted 2026-11-23) distinguishes the new
 conversational *solution* modelling feature from ADR-0037's conversational
 *candidate-architecture* authoring, which a naive reading could conflate —
 both are natural-language, metamodel-validated and live-rendered. The new

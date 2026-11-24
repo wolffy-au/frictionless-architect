@@ -124,3 +124,7 @@ T026 and T027 share one code path and were **deferred past v0.2.0** (decided 202
 
 - [x] T026 Keep the schema summary accessible when the sample is missing or unreadable and Neo4j is not configured: `GET /schema-payload` returned 503 and the warning showed only on `/schema-payload/status`; fixed per FR-006
 - [x] T027 Report `sample_file_status: "invalid"` for a sample in another namespace even when nothing else supplies data: the build returned 503 and the status stayed "missing"; fixed per Edge 3
+
+## Notes
+
+- Model impact: none — see `plan.md`'s "Model Impact" section (`sub-schema-visualizer`, `art-pkg-schema-visualizer-api` and `gap-neo4j-schema-ui` already model this feature in `architecture/model/`; this feature implements the already-modeled capability without adding, changing, or retiring any element, relationship, or view id).

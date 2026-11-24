@@ -1,7 +1,7 @@
 ---
 title: Platform Specification & API
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/checklists/requirements.md
 - platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/contracts/api.md
@@ -310,4 +310,6 @@ Principle X for a plan predating it): **none** to add, change or retire —
 already model this feature in `architecture/model/`, and the plan implements the
 already-modeled capability as-is
 (`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/plan.md` §Model
-Impact).
+Impact). The task list's closing **Notes** now restate that "Model impact: none"
+verdict and point back to `plan.md`
+(`platform/packages/schema-visualizer-api/specs/001-neo4j-schema-ui/tasks.md` §Notes).

@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Artefact Flow'
-generated: '2026-11-14'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -136,7 +136,10 @@ Two new functions model GH #84's authn/authz decision. **`fn-authn-oidc`**
 ("OIDC Authentication"), assigned to `sub-portal`, validates an OIDC bearer
 token's JWKS signature on every mounted package's routes and attaches the
 verified identity attributes to the request — the one authentication check
-every subsystem's API depends on, not re-implemented per package.
+every subsystem's API would depend on, not re-implemented per package. Since
+2026-11-23 its description says it is modelled but **not yet built** (GH #84);
+the portal's code mounts no auth dependency yet
+(`architecture/model/elements.yaml` — `fn-authn-oidc` desc).
 **`fn-authz-policy`** ("Authorization Policy Evaluation"), assigned to
 `sub-assurance` (context `conformance-drift-assurance`, since ADR-0019
 already places the wrapped OPA engine there), evaluates RBAC rules authored

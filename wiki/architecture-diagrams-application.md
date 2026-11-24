@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Views & Diagrams: Application Layer'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/diagrams/application/1-policy-conversion.puml
@@ -202,6 +202,17 @@ for the C4 diagrams these application-layer data flows correspond to at the
 container level.
 
 ## Application structure
+
+The 2026-11-23 regeneration added the portal's mount edges to the application
+views. `application/structure` now draws two more `Serving` edges into the
+Portal — "authoring router and UI mounted by" from Modelling & Specification
+and "settings router mounted by" from the PII Anonymization Gateway — and the
+per-context `application/cooperation`, `cooperation-standard` and `usage` slices
+for `modelling-specification` and `pii-gateway` each gained a Portal component
+with the matching edge
+(`architecture/model/diagrams/application/structure.puml`,
+`architecture/model/diagrams/application/usage/pii-gateway.puml`). See
+[Architecture Model: Ecosystem](architecture-model-ecosystem.md).
 
 - `application/structure` (`view-application-structure`, Application
   Structure viewpoint, GH #105) is the generic, whole-platform sweep —

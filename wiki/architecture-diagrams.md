@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Views & Diagrams: Vision, Business & Viewpoints'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/diagrams/business/1-policy-conversion.puml
@@ -382,7 +382,7 @@ file. A GH #183 spike compared this auto-split/redirect approach against
 hand-curating a package-local view and recommended adopting it as the
 standard mechanism; the repo-wide rollout — applying `package_diagrams: true`
 to the other split views and giving every package a `specs/diagrams/`
-directory — is tracked separately (#194).
+directory — is tracked separately (#194). The mechanism is recorded as ADR-0055 on [ADR-0040 onward](decision-log-0040-onward.md) (`docs/adr/0055-package-local-diagram-output-path.md`). The 2026-11-23 regeneration added the Portal mount edges to the `modelling-specification` and `pii-gateway` slices of every split business, application and deployment view (see [Application Layer](architecture-diagrams-application.md)).
 
 `include_neighbours: true` originally pulled in any element one relationship
 hop away too, so a cross-context edge kept both endpoints visible, but was

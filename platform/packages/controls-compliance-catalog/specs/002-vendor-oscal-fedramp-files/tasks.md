@@ -168,3 +168,4 @@ Task: "Retain upstream LICENSE.md files for all three vendored sets"
 - No test-writing tasks: this feature's verification is running the *existing* test suite (T007) and the quickstart.md validation steps (T006, T008, T019), not authoring new tests.
 - Each vendored set's upstream commit SHA has exactly one authoritative record — its own `PROVENANCE.md`, written in the same task as its files (T003–T005) — so no other task needs a separate scratch note to track it.
 - Commit after each phase checkpoint, not after every individual task — the submodule-removal-plus-vendoring step (T002–T005) is not meaningfully separable into smaller commits.
+- Model impact: none — see `plan.md`'s "Model Impact" section (`architecture/model/` is untouched; `oscal`, `oscal-content` and `fedramp-automation` are not merged by `build.py`).

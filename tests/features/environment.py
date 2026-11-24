@@ -104,7 +104,7 @@ def _ensure_ui_harness() -> None:
 def _attempt_ui_cleanup(action: Callable[[], object], errors: list[Exception]) -> None:
     try:
         action()
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - teardown must collect every failure, whatever its type
         errors.append(exc)
 
 
@@ -129,7 +129,7 @@ def _clear_ui_caches(errors: list[Exception]) -> None:
 
         _attempt_ui_cleanup(api.get_schema_service.cache_clear, errors)
         _attempt_ui_cleanup(visualizer_config.get_visualizer_settings.cache_clear, errors)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - teardown must collect every failure, whatever its type
         errors.append(exc)
 
 
@@ -141,7 +141,7 @@ def _restore_ui_environment(errors: list[Exception]) -> None:
                 os.environ.pop(key, None)
             else:
                 os.environ[key] = value
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - teardown must collect every failure, whatever its type
             errors.append(exc)
     _ui_environment.clear()
     if _ui_cache_dir is not None:

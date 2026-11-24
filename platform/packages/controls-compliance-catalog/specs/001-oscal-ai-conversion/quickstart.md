@@ -1,5 +1,12 @@
 # Quickstart: AI-Assisted Policy & Standard Conversion to OSCAL
 
+> **Status: planned, not yet implemented.** The `/oscal/*` REST service this guide
+> exercises (conversion, approval, assembly, resolution; `contracts/api.md`) does not
+> exist yet. `controls_compliance_catalog.app:app` currently serves only the control
+> conversion playground under `/catalog` and the `/settings/llm` page. To try what runs
+> today, follow the [package README](../../../README.md#run-the-playground). The steps
+> below describe the target behaviour and will not work until those routes ship.
+
 ## Prerequisites
 
 - From `platform/`: `poetry install` (adds `compliance-trestle`, `litellm`, `pypdf`,
@@ -11,12 +18,13 @@
 - An LLM provider credential available to `litellm` (env var per provider, e.g.
   `ANTHROPIC_API_KEY`) — same trust boundary as other platform LLM uses (FR-016).
 
-## Run the service
+## Run the service (planned)
 
 ```bash
 cd platform
 poetry run uvicorn controls_compliance_catalog.app:app --reload
-# serves the /oscal/* routes in contracts/api.md
+# target: serves the /oscal/* routes in contracts/api.md (not implemented yet);
+# uvicorn defaults to port 8000, which the curl examples below assume
 ```
 
 ## Validate User Story 1 (conversion)

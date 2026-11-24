@@ -357,6 +357,14 @@ guarantee every other `apply`-resulting action already has.
 
 ---
 
+## Reconciliation: render picker grouping had no requirement (2026-11-23 spec-alignment)
+
+- [X] T091 Group the render view picker by source (Core Model, ArchiMate Viewpoints, Roadmap,
+  IT4IT) rather than one flat list (FR-020, commit `599a1c3`); tests in
+  `platform/packages/modelling-specification/tests/api/test_render.py`
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

@@ -1,6 +1,6 @@
 # ADR-0047: Untrusted LLM chat replies are rendered via `markdown` + `nh3`, server-side
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-23)
 - **Date:** 2026-11-08
 - **Sources:** GH #185; commit `a38a89d` (`fix(modelling-specification): sanitise and render
   chat Markdown`); commit `c5f103a` (`fix(modelling-specification): render chat Markdown

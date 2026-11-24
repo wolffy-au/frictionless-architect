@@ -258,3 +258,7 @@ open item.
 4. Phases 4–7 (US2–US5) add key storage, the headless fallback, overrides with a
    connection test, and the mountable multi-component router.
 5. Phase 8 (Polish): close T023, then re-run `scripts/platform_checks.sh`.
+
+## Notes
+
+- Model impact: none — see `plan.md`'s "Model Impact" section (`sub-llm-provider-config` and `sw-litellm` already exist in `architecture/model/elements.yaml`, added by ADR-0034/ADR-0044; this feature documents the existing implementation without adding, changing, or retiring any element, relationship, or view id).

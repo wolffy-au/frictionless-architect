@@ -1,6 +1,6 @@
 # ADR-0037: Conversational model authoring — package, validation, conventions, overrides, business wiring
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-23)
 - **Date:** 2026-10-10
 - **Sources:** `specs/EPIC-003-conversational-model-authoring/plan.md` §Constitution Check
   (Principle X), `specs/EPIC-003-conversational-model-authoring/research.md` (R1, R2, R3, R5,

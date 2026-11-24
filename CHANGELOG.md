@@ -1,3 +1,20 @@
+## v0.13.0 (2026-11-23)
+
+### Feat
+
+- **portal**: mount modelling-specification, group its view picker
+
+### Fix
+
+- **model**: stop over-claiming OIDC auth is built
+- **scripts**: narrow blind except in neo4j_schema CLI
+- **modelling-specification**: exclude sample-gcp from vendored sweep
+
+### Refactor
+
+- **llm-provider-config**: suppress KeyringError explicitly
+- **modelling-specification**: extract context-split job fan-out
+
 ## v0.12.0 (2026-11-15)
 
 ### Feat

@@ -5,8 +5,10 @@ scale max 3800 width
 title Application Cooperation — pii-gateway
 
 Application_Component(e_idc7fc80ba220752, "PII Anonymization Gateway")
+Application_Component(e_id6c2233bb09755d, "Portal")
 Application_Component(e_id2610ae0cc2cc50, "LLM Provider")
 
 Rel_Association(e_idc7fc80ba220752, e_id2610ae0cc2cc50, "scrubs PII/PHI from content before calls to")
+Rel_Serving_Up(e_idc7fc80ba220752, e_id6c2233bb09755d, "settings router mounted by")
 
 @enduml

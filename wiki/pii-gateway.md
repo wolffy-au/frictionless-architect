@@ -1,7 +1,7 @@
 ---
 title: PII Gateway
-generated: '2026-11-08'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0014-pii-anonymization-gateway.md
 - docs/adr/0031-fr016-no-redaction-for-policy-documents.md
@@ -239,10 +239,15 @@ categories and failure-mode, and `PUT /contexts/{context_id}` updates one contex
 the `llm-provider-config` router's shape
 (`platform/packages/pii-gateway/specs/001-pii-gateway/research.md` R5).
 [Portal](portal.md) mounts it for all three known contexts
-(`platform/packages/portal/src/portal/app.py:13-14`,
-`platform/packages/portal/src/portal/app.py:32`,
-`platform/packages/portal/src/portal/app.py:40`). There is no authentication, so bind it
-to localhost (`platform/packages/pii-gateway/README.md:63-65`).
+(`platform/packages/portal/src/portal/app.py:16-17`,
+`platform/packages/portal/src/portal/app.py:42`,
+`platform/packages/portal/src/portal/app.py:57`), alongside the same app's mount of
+`modelling-specification`'s authoring router and UI at `/authoring/` — the caller that
+scrubs through this package — so the portal now serves both sides of that path. The model
+records the mount as a `Serving` edge from `sub-pii-gateway` into `sub-portal`, added
+2026-11-23 ([Architecture Model: Ecosystem](architecture-model-ecosystem.md)). There is no
+authentication, so bind it to localhost (`platform/packages/pii-gateway/README.md:63-65`).
+The shared OIDC check the model describes for the portal is not built yet (GH #84).
 
 ## Who calls it
 

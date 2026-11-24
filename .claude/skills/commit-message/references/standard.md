@@ -41,7 +41,9 @@ change and forces a major bump regardless of type.
 
 ## Scopes
 
-Optional but expected when a change is localised. Lower-case, `[a-z0-9-]+`.
+Optional but expected when a change is localised. Lower-case, `[a-z0-9_-]+`. The
+underscore exists only for `third_party`, which matches its directory name; every other
+scope uses hyphens.
 
 **Package scopes** — a member of the `platform/` Poetry monorepo, named by its
 directory under `platform/packages/` (e.g. `digital-twin-knowledge-graph`, `schema-visualizer`).
@@ -103,7 +105,7 @@ in the same commit that first needs it.
 - `cz bump` reads the log since the last tag, applies the bump implied by the
   types above, and updates the changelog (`update_changelog_on_bump = true`);
   its own `bump: version <A> → <B>` commit is tool-generated and exempt from
-  the type list, like `Merge ` commits
+  the type list, like `Merge` commits
 - never hand-edit the changelog or move a `v*` tag
 
 ## Tooling

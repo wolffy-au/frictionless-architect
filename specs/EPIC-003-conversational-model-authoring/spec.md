@@ -260,6 +260,7 @@ Architect --> UC2
 - **FR-017**: When the architect rejects the agent's proposed fix for an already-rejected change, the agent MUST ask the architect to restate or refine the request rather than automatically retrying a different fix or dropping the request unprompted.
 - **FR-018**: Within a conversation, the agent MUST interpret each request in the light of the turns before it, so a follow-up such as "now connect it to Y" means what those turns established. Only text already cleared for the LLM may be carried forward: a request flagged for PII/PHI review stays out until the architect resolves it, and then only its resolved form is carried (ADR-0037 item 9).
 - **FR-019**: The agent MUST ground each proposal in the existing elements' descriptions as well as their names, so it judges what an element is rather than guessing from its name.
+- **FR-020**: When listing the renderable views for the architect to pick from, the agent MUST group each view by its source (Core Model, ArchiMate Viewpoints, Roadmap, IT4IT) rather than presenting one flat, unordered list.
 
 ### Key Entities *(include if feature involves data)*
 

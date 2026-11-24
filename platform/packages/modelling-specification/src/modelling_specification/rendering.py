@@ -163,6 +163,28 @@ def _rendering_flags(v: dict[str, Any]) -> list[str]:
     return flags
 
 
+def _context_split_jobs(
+    v: dict[str, Any],
+    slug: str,
+    base_cmd: list[str],
+    diagram_root: Path,
+    elements: list[dict[str, Any]],
+    types_by_id: dict[str, str],
+) -> list[tuple[Path, list[str]]]:
+    """One job per context actually present on `v` (GH #129 step 4), for a
+    `split_by: context` view -- the fan-out `_view_diagram_jobs` delegates to.
+    """
+    jobs: list[tuple[Path, list[str]]] = []
+    for context in model_io.view_split_contexts(v, elements, types_by_id):
+        cmd = [*base_cmd, "--context", context]
+        package_dir = _package_diagram_dir(context) if v.get("package_diagrams") else None
+        if package_dir is not None:
+            jobs.append((package_dir / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
+        else:
+            jobs.append((diagram_root / slug / f"{context}.puml", cmd))
+    return jobs
+
+
 def _view_diagram_jobs(
     views_file: Path, diagram_root: Path, elements: list[dict[str, Any]], types_by_id: dict[str, str]
 ) -> list[tuple[Path, list[str]]]:
@@ -192,13 +214,7 @@ def _view_diagram_jobs(
             *_rendering_flags(v),
         ]
         if v.get("split_by") == "context":
-            for context in model_io.view_split_contexts(v, elements, types_by_id):
-                cmd = [*base_cmd, "--context", context]
-                package_dir = _package_diagram_dir(context) if v.get("package_diagrams") else None
-                if package_dir is not None:
-                    jobs.append((package_dir / f"{slug.rsplit('/', 1)[-1]}.puml", cmd))
-                else:
-                    jobs.append((diagram_root / slug / f"{context}.puml", cmd))
+            jobs += _context_split_jobs(v, slug, base_cmd, diagram_root, elements, types_by_id)
         else:
             jobs.append((diagram_root / f"{slug}.puml", base_cmd))
     return jobs
@@ -375,20 +391,54 @@ def _find_view(view_id: str) -> dict[str, Any]:
     raise ViewNotFoundError(f"no view with id {view_id!r} in views.yaml")
 
 
+def _group_label(views_file: Path) -> str:
+    """The view picker's group for everything loaded from `views_file`: which of
+    the sources `_all_views_by_source` walks it came from, in human-readable form
+    -- a vendored model's directory name (`it4it` -> `IT4IT`) for those, the fixed
+    label below for the first-party ones.
+    """
+    if views_file == VIEWS:
+        return "Core Model"
+    if views_file == VIEWPOINT_VIEWS:
+        return "ArchiMate Viewpoints"
+    if views_file == ROADMAP_VIEWS:
+        return "Roadmap"
+    vendor = views_file.parent.name
+    return (
+        vendor.upper() if vendor.isalnum() and len(vendor) <= 6 else vendor.replace("-", " ").replace("_", " ").title()
+    )
+
+
+def _all_views_by_source() -> list[tuple[dict[str, Any], str]]:
+    """Every view across the first-party, gh-roadmap and vendored sources, paired
+    with its group label, same precedence order `_find_view` uses.
+    """
+    views: list[tuple[dict[str, Any], str]] = []
+    for views_file in (VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
+        if views_file.exists():
+            group = _group_label(views_file)
+            views += [(v, group) for v in yaml.safe_load(views_file.read_text()) or []]
+    return views
+
+
 def _all_views() -> list[dict[str, Any]]:
     """Every view across the first-party, gh-roadmap and vendored sources, same
     precedence order `_find_view` uses.
     """
-    views: list[dict[str, Any]] = []
-    for views_file in (VIEWS, VIEWPOINT_VIEWS, ROADMAP_VIEWS, *(vf for vf, _ in VENDORED_VIEW_SOURCES)):
-        if views_file.exists():
-            views += yaml.safe_load(views_file.read_text()) or []
-    return views
+    return [v for v, _group in _all_views_by_source()]
 
 
 def list_views() -> list[dict[str, str]]:
-    """`{id, name}` for every renderable view, in file order (the UI's view picker)."""
-    return [{"id": v["id"], "name": str(v.get("name", v["id"]))} for v in _all_views() if "id" in v]
+    """`{id, name, group}` for every renderable view, grouped by source (the flat,
+    file-order list is unnavigable with dozens of views) and sorted by name
+    within each group -- the UI's view picker.
+    """
+    views = [
+        {"id": v["id"], "name": str(v.get("name", v["id"])), "group": group}
+        for v, group in _all_views_by_source()
+        if "id" in v
+    ]
+    return sorted(views, key=lambda v: (v["group"], v["name"]))
 
 
 def view_catalogue() -> list[tuple[str, str, str]]:

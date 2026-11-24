@@ -88,6 +88,13 @@
     gh-tag: v0.11.0
     gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.11.0
 - type: Deliverable
+  id: del-release-v0-12-0
+  name: v0.12.0
+  props:
+    gh-published: '2026-11-15T10:18:30Z'
+    gh-tag: v0.12.0
+    gh-url: https://github.com/wolffy-au/frictionless-architect/releases/tag/v0.12.0
+- type: Deliverable
   id: del-release-v0-2-0
   name: v0.2.0
   props:

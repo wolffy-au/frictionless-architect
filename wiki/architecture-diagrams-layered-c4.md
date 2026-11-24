@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Views & Diagrams: Layered & C4'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/diagrams/c4/container.puml
@@ -133,3 +133,13 @@ via" — the C4 projection drops `ApplicationInterface` elements, so
 `if-twin-read-path` itself doesn't appear, but the model's extra direct
 `Serving` edge (see [Architecture Model](architecture-model.md) §"Packaging
 and migration") keeps the container from rendering disconnected.
+
+The container diagram was regenerated on 2026-11-23. It gains two edges out of
+the **Portal** container — "mounts the authoring router and UI of" (to
+Modelling & Specification) and "mounts the settings router of" (to the PII
+Anonymization Gateway) — beside the existing catalog and LLM-settings mounts.
+The Portal container's description also changed: it now says the portal "will
+also carry" the shared OIDC authentication check, which is modelled and
+intended (ADR-0054) but not yet built (GH #84), where it previously said the
+portal already carried it
+(`architecture/model/diagrams/c4/container.puml`).

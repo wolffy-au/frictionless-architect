@@ -162,6 +162,15 @@
   source: del-release-v0-11-0
   target: plat-general-tasks-12
 - type: Realization
+  source: del-release-v0-12-0
+  target: plat-general-tasks-12
+- type: Realization
+  source: del-release-v0-12-0
+  target: plat-multi-user-collaboration-2
+- type: Realization
+  source: del-release-v0-12-0
+  target: plat-policy-to-oscal-mvp-1
+- type: Realization
   source: del-release-v0-2-0
   target: plat-architecture-strategy-mvp-7
 - type: Realization
@@ -249,6 +258,9 @@
   source: wp-adr-decide-how-adr-conflict-detection-fr-gh-199
   target: del-release-v0-11-0
 - type: Realization
+  source: wp-adr-decide-the-authn-authz-approach-for-gh-84
+  target: del-release-v0-12-0
+- type: Realization
   source: wp-adr-decide-the-compliance-pack-export-gh-203
   target: del-compliance-pack-export-mvp-15-unreleased
 - type: Realization
@@ -297,6 +309,9 @@
   source: wp-ci-checkout-git-submodules-gh-21
   target: del-release-v0-1-0
 - type: Realization
+  source: wp-control-conversion-playground-ui-prose-gh-76
+  target: del-release-v0-12-0
+- type: Realization
   source: wp-create-uml-diagrams-for-the-markdown-gh-47
   target: del-release-v0-1-0
 - type: Realization
@@ -334,7 +349,7 @@
   target: del-release-v0-3-0
 - type: Realization
   source: wp-feat-portal-add-a-portal-host-package-gh-120
-  target: del-general-tasks-12-unreleased
+  target: del-release-v0-12-0
 - type: Realization
   source: wp-import-github-milestones-issues-releases-gh-95
   target: del-release-v0-2-0
@@ -445,7 +460,7 @@
   target: del-compliance-pack-export-mvp-15-unreleased
 - type: Realization
   source: wp-spike-restructure-architecture-model-gh-183
-  target: del-policy-to-oscal-mvp-1-unreleased
+  target: del-release-v0-12-0
 - type: Realization
   source: wp-tamper-evident-audit-trail-of-prompts-gh-150
   target: del-architecture-strategy-future-13-unreleased
@@ -457,7 +472,7 @@
   target: del-release-v0-2-0
 - type: Realization
   source: wp-test-ui-establish-playwright-browser-gh-119
-  target: del-general-tasks-12-unreleased
+  target: del-release-v0-12-0
 - type: Realization
   source: wp-tighten-dev-workflow-gates-merge-gh-213
   target: del-general-tasks-12-unreleased

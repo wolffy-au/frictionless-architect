@@ -4,6 +4,7 @@
 title Roadmap: multi-user-collaboration
 
 Implementation_Deliverable(e_idc953517679225e, "multi-user-collaboration (unreleased)")
+Implementation_Deliverable(e_id7459347e16955e, "v0.12.0")
 Implementation_Plateau(e_id5024d2087dac51, "multi-user-collaboration")
 Implementation_WorkPackage(e_ida2391cc6745852, "GH-83 Epic: multi-user access to architecture models (RBAC + collaboration)") {
   Implementation_WorkPackage(e_id9ff2b7fa34d65b, " --GH-84 ADR: decide the authn/authz approach for multi-user access--")
@@ -19,6 +20,8 @@ Implementation_WorkPackage(e_ida2391cc6745852, "GH-83 Epic: multi-user access to
 }
 
 Rel_Realization_Up(e_idc953517679225e, e_id5024d2087dac51, "")
+Rel_Realization_Up(e_id7459347e16955e, e_id5024d2087dac51, "")
+Rel_Realization_Up(e_id9ff2b7fa34d65b, e_id7459347e16955e, "")
 Rel_Realization_Up(e_ida2391cc6745852, e_idc953517679225e, "")
 Rel_Triggering_Right(e_id9ff2b7fa34d65b, e_idfd20823ddfa45e, "")
 Rel_Triggering_Right(e_id9ff2b7fa34d65b, e_idda92f54cfe1d5b, "")

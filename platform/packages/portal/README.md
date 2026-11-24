@@ -18,11 +18,16 @@ poetry run uvicorn portal.app:app --reload
 
 Open `http://127.0.0.1:8000/` for the landing page.
 
+Or, from the repo root, `./scripts/run-portal.sh` runs the same app from `platform/` on
+`http://127.0.0.1:8001/`. That is the port `run-controls_compliance_catalog.sh` and
+`run-modelling_specification.sh` also use, so run only one of the three at a time.
+
 ## Mounted UIs
 
 | Path | UI | Package |
 |---|---|---|
 | `/catalog` | Control conversion playground | `controls-compliance-catalog` |
+| `/authoring/` | Conversational model authoring (split-screen chat + render UI) | `modelling-specification` |
 | `/settings/llm` | LLM settings, mounted once for every package | `llm-provider-config` |
 | `/settings/pii-gateway` | PII/PHI scrubbing settings, one page for every registered caller context | `pii-gateway` |
 

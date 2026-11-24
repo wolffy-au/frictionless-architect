@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Provenance & Change History'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -232,3 +232,19 @@ view keys were factored into `rendering.py`'s `_rendering_flags`, shared by batc
 single-view rendering, and `view-product` / `view-application-usage` were reinstated as
 split views (see [Architecture Model: Context-Level Viewpoints & Bounded
 Contexts](architecture-model-contexts.md)).
+
+A 2026-11-23 pass followed the portal mounting `modelling-specification` and
+`pii-gateway` (commit `599a1c3`). Two `Serving` edges into `sub-portal` were
+added in `relationships.yaml` (`sub-modelling` — "authoring router and UI
+mounted by"; `sub-pii-gateway` — "settings router mounted by"), taking the
+hand-authored relationship count from 678 to 680 with no new element. The same
+pass corrected over-claiming: the `sub-portal` and `fn-authn-oidc` descriptions
+(and so the C4 container diagram) now say the shared OIDC check is modelled and
+intended under ADR-0054 but **not yet built** (GH #84), where ADR-0054's first
+pass had said the portal "also carries" it
+(`architecture/model/elements.yaml`; `architecture/model/relationships.yaml`;
+see [Architecture Model: Ecosystem](architecture-model-ecosystem.md)). The
+GitHub roadmap layer was regenerated too: the `v0.12.0` release is a new
+Deliverable and GH #183 is closed (see
+[Architecture Model](architecture-model.md)). With those, the merged model is
+579 elements, 1303 relationships and 77 views.

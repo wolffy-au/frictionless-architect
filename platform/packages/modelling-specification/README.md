@@ -25,8 +25,8 @@ Needs an LLM provider configured for the component
 
 This runs `modelling_specification.app:app` with `uvicorn` from `platform/` on
 `http://127.0.0.1:8001`. Open `/authoring/` for the split-screen UI (chat pane above a
-live render pane); the OpenAPI docs are at `/docs`. Standalone for now: the portal
-does not mount it yet.
+live render pane); the OpenAPI docs are at `/docs`. The
+[`portal`](../portal/README.md) mounts the same routers at `/authoring/` on port 8000.
 
 ### What the chat pane shows for each `propose` outcome
 

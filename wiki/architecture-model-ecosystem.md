@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Model: Ecosystem'
-generated: '2026-11-14'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/elements.yaml
@@ -36,11 +36,21 @@ It appears in the Artefact Flow — Controls & OSCAL and Packaging views
 package's router and owns only page chrome, navigation and the role landing
 page, never feature logic" — explicitly not one of the six subsystems and not
 a central dashboard (`architecture/model/elements.yaml` — `sub-portal` desc).
-It also now carries the one shared OIDC authentication check every mounted
-package's routes depend on — a new `fn-authn-oidc` ApplicationFunction,
+It will also carry the one shared OIDC authentication check every mounted
+package's routes depend on — a `fn-authn-oidc` ApplicationFunction,
 `Assignment`-linked from `sub-portal` (ADR-0054) — infrastructure at the
-mounting surface, not package feature logic; see
+mounting surface, not package feature logic. As of 2026-11-23 the description
+is explicit that this check is modelled and intended but **not yet built**
+(GH #84); an earlier wording said the portal "also carries" it
+(`architecture/model/elements.yaml` — `sub-portal` desc). See
 [Architecture Model: Artefact Flow](architecture-model-artefact-flow.md).
+The portal's mount edges are `Serving` relationships into `sub-portal`:
+`sub-catalog` ("playground router mounted by") and
+`sub-llm-provider-config` ("settings router mounted by") from the start, plus
+two added 2026-11-23 — `sub-modelling` ("authoring router and UI mounted by")
+and `sub-pii-gateway` ("settings router mounted by"), matching the packages the
+portal now actually mounts
+(`architecture/model/relationships.yaml` — the `sub-portal` Serving block).
 Its interface, **Portal UI** (`if-portal-ui`), is "a landing page listing
 each mounted package UI by the role it serves, and the shared navigation
 into them". It is realised by the `art-pkg-portal` Artifact. See
@@ -139,7 +149,7 @@ overrides, mounted by the portal at `/settings/llm` and by each consuming
 package's own standalone app; and **Conversational Authoring UI**
 (`if-modelling-authoring-ui`) — the human-facing split-screen interface (and
 its `/authoring` JSON API) for `sub-modelling`'s conversational model
-authoring. Since ADR-0039 (GH #68/#138), `if-modelling-authoring-ui` is
+authoring, which the portal also mounts at `/authoring/`. Since ADR-0039 (GH #68/#138), `if-modelling-authoring-ui` is
 shared by a second function: `sub-library`'s new `fn-solution-modelling`
 (the Solution Architect's conversational counterpart to `fn-solution-compose`,
 editing a Solution Design rather than the candidate-architecture graph) gets

@@ -1,7 +1,7 @@
 ---
 title: 'Conversational Model Authoring: Candidate-Delta Pipeline'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - docs/adr/0041-structured-suggestion-options-in-delta-py.md
 - platform/packages/modelling-specification/README.md
@@ -158,7 +158,8 @@ environment variables and the business-layer wiring.
    indicator. `plan.md` gained a **Model Impact** section (2026-11-09, satisfying
    constitution Principle X for a plan predating it) confirming this directly:
    **none** — additive UI behaviour inside an existing package, with no
-   `architecture/model/` element, relationship or view id added, changed or retired.
+   `architecture/model/` element, relationship or view id added, changed or retired
+   (the task list's closing **Notes** now repeat that verdict).
    Streaming is out of scope. Tests are a `test_ui.py` markup check and two
    behave scenarios that set a new `FakeCompletion.delay` to observe the in-flight
    state; `tasks.md` marks T001-T011 done, T011 being a human check against a real LLM
@@ -242,6 +243,15 @@ environment variables and the business-layer wiring.
 5. **Render**. On accept, the affected element(s)/view render live via
    `rendering.py` in the split-screen **Conversational Authoring UI**
    (`if-modelling-authoring-ui`, see [Portal](portal.md) and
-   [Architecture Model: Ecosystem](architecture-model-ecosystem.md)). A view
+   [Architecture Model: Ecosystem](architecture-model-ecosystem.md)), which the
+   portal also hosts at `/authoring/`. A view
    request that resolves to more than one plausible view, or none, asks the
-   architect to disambiguate rather than guessing.
+   architect to disambiguate rather than guessing. The UI's view picker is now
+   grouped: it fetches `/authoring/views`, whose entries carry a `group` (Core
+   Model, ArchiMate Viewpoints, Roadmap, or a vendored model such as IT4IT), and
+   builds one `<optgroup>` per group, labelling a missing group "Other" and
+   sorting by group then name. The requirement for it was added after the fact
+   (EPIC-003 FR-020, reconciled as task T091 on 2026-11-23, commit `599a1c3`)
+   (`platform/packages/modelling-specification/src/modelling_specification/ui.py`
+   `initViews`; `specs/EPIC-003-conversational-model-authoring/spec.md` FR-020;
+   `specs/EPIC-003-conversational-model-authoring/tasks.md` T091).

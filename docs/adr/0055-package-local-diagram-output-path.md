@@ -1,6 +1,6 @@
 # ADR-0055: A context-split view may redirect its slice into the owning package's own `specs/diagrams/`
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-23)
 - **Date:** 2026-11-15
 - **Sources:** GH #183; `architecture/model/views-viewpoints.yaml` (`view-business-process-cooperation`'s
   `package_diagrams: true`); `platform/packages/modelling-specification/src/modelling_specification/rendering.py`

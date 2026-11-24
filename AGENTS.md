@@ -82,7 +82,14 @@ poetry run pytest                    # full test suite
 bash scripts/pre_commit_checks.sh    # fast gate: commit messages, pymarkdown, ruff, pyright, mypy, tests/unit/, platform checks
 bash scripts/pre_merge_checks.sh     # + roadmap-layer check, lock refresh, Snyk, behave, coverage-gated pytest, UI harness
 bash scripts/platform_checks.sh      # platform/ only: lock check, pyright, per-package mypy + pytest (90%)
+bash scripts/update-all.sh           # refresh both Poetry locks, pre-commit hooks and third_party/ submodules; commits nothing
+bash scripts/refresh_gh_roadmap.sh   # regenerate the gh-roadmap/ model layer from GitHub (needs `gh`; --check, --no-diagrams)
 ```
+
+`update-all.sh` runs `git submodule update` under `sudo` (see "Known environment quirks"),
+and you should run `pre_merge_checks.sh` after it. `refresh_gh_roadmap.sh` imports,
+rebuilds the model XML and re-renders diagrams, then lists what changed for you to review
+and commit (ADR-0035).
 
 **Snyk runs locally only.** CI no longer runs Snyk, but `pre_merge_checks.sh` still does: an
 open-source scan of the root and `platform/` locks plus Snyk Code. It needs a `SNYK_TOKEN`,

@@ -1,7 +1,7 @@
 ---
 title: 'Conversational Solution Design Modelling (GH #139)'
-generated: '2026-11-08'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/checklists/requirements.md
 - specs/EPIC-003-conversational-model-authoring/002-solution-design-modelling/spec.md
@@ -125,7 +125,12 @@ As of this spec, the feature is still at the specification stage (`Status:
 Draft`) — no `reusable-architecture-library` package, journey API, or UI
 exists yet. See [Architecture Model: Skeleton](architecture-model-skeleton.md)
 for `process-conversational-solution-modelling` and `bfn-solution-design`,
-and [Decision Log](decision-log-0030-0039.md) for ADR-0039 in full.
+and [Decision Log](decision-log-0030-0039.md) for ADR-0039 in full. ADR-0039 itself
+was accepted on 2026-11-23, while the feature spec stays Draft. The shared
+EPIC-003 `tasks.md` also gained a reconciliation task (T091, FR-020) for the
+authoring UI's grouped render-view picker; that belongs to the sibling
+[conversational authoring](modelling-specification.md) feature, not this one
+(`specs/EPIC-003-conversational-model-authoring/tasks.md` §Reconciliation).
 
 Not covered by current sources: implementation progress, since the package
 this feature lands in (`reusable-architecture-library`) does not exist yet.

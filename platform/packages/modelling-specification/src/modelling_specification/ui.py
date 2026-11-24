@@ -853,11 +853,19 @@ _PAGE = """\
   async function initViews() {
     const response = await fetch("/authoring/views");
     const views = await response.json();
+    let currentGroup = null;
+    let optgroup = null;
     for (const view of views) {
+      if (view.group !== currentGroup) {
+        currentGroup = view.group;
+        optgroup = document.createElement("optgroup");
+        optgroup.label = currentGroup || "Other";
+        viewSelect.appendChild(optgroup);
+      }
       const option = document.createElement("option");
       option.value = view.id;
       option.textContent = view.name;
-      viewSelect.appendChild(option);
+      optgroup.appendChild(option);
     }
     viewSelect.disabled = false;
     const savedView = prefs.get("view");

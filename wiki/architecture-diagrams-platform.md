@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Views & Diagrams: Platform, Migration & Rendering'
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/diagrams/implementation/deployment/architecture-governance.puml
@@ -255,6 +255,21 @@ viewpoint.
   Sequence and Data Flow — Controls & OSCAL diagrams, and the OS credential store
   (`sw-keyring`) to the Technology landscape and (now `migration/runtime`) Runtime Migration diagrams
   (`architecture/model/views.yaml`; the regenerated `.puml`/`.svg` pairs).
+- **2026-11-23 regeneration.** The `portal` mount edges changed the generated
+  per-context slices that reach `sub-portal`: `implementation/deployment/modelling-specification`
+  and `implementation/deployment/pii-gateway` each gained a Portal component and a
+  `Serving` edge ("authoring router and UI mounted by" / "settings router
+  mounted by"), and `technology/usage` gained the same two edges beside the
+  existing catalog and LLM-settings ones. The roadmap-generated migration
+  diagrams were regenerated after release `v0.12.0` was published:
+  `migration/plat-general-tasks-12`, `plat-multi-user-collaboration-2` and
+  `plat-policy-to-oscal-mvp-1` now draw a `v0.12.0` Deliverable realising
+  their Plateau (the stale `v0.11.0` and `v0.2.0` Deliverables were dropped
+  from the first and last), GH #120, #119 and #183 moved onto it from the
+  unreleased Deliverable, and GH #45 left `plat-general-tasks-12`;
+  `migration/work-package-dependencies` only re-styles GH #183 as closed
+  (`architecture/model/diagrams/migration/*.puml`;
+  `architecture/model/gh-roadmap/views.yaml`).
 - `implementation/packaging` was rewritten from a broad
   `include_types: [Artifact]` scope to an explicit `members:` list, so the new
   non-package Artifacts added for the persistence-boundary slice

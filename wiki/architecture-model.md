@@ -1,7 +1,7 @@
 ---
 title: Architecture Model
-generated: '2026-11-15'
-generator: claude-sonnet-5
+generated: '2026-11-23'
+generator: claude-sonnet-5-5
 sources:
 - architecture/model/README.md
 - architecture/model/build.py
@@ -46,14 +46,15 @@ The build checks the ArchiMate 3.2 relationship matrix and project-specific
 motivation conventions
 (`platform/packages/modelling-specification/src/modelling_specification/model_io.py:447-527`; see
 [Skeleton § Goal and outcomes](architecture-model-skeleton.md#goal-and-outcomes-the-motivation-spine)). The
-current merged model is 578 elements, 1296 relationships and 77 views
-(re-counted 2026-11-15 from the committed `frictionless-architect.xml`; the model validates
+current merged model is 579 elements, 1303 relationships and 77 views
+(re-counted 2026-11-23 from the committed `frictionless-architect.xml`; the 2026-11-15 count was
+578 / 1296 / 77; the model validates
 with no metamodel or referential-integrity violations). Of those, 289
-elements and 678 relationships are hand-authored in this repo's own
+elements and 680 relationships are hand-authored in this repo's own
 `elements.yaml`/`relationships.yaml` plus `views.yaml`/`views-viewpoints.yaml`
 (sections A–C, E and F, plus the IT4IT touchpoint bridge, plus one generic
-view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 138
-elements and 215 relationships are generated into
+view per standard viewpoint — see [Architecture Model: Context-Level Viewpoints & Bounded Contexts](architecture-model-contexts.md)); 139
+elements and 220 relationships are generated into
 `architecture/model/gh-roadmap/` by `import_gh_roadmap.py` (see "GitHub
 roadmap layer" below); 142 elements and 235 relationships are the
 vendored IT4IT reference model, merged in at build time
@@ -250,6 +251,13 @@ ownership rules are ADR-0035 (`architecture/model/README.md` §"GitHub roadmap
 layer"; `docs/adr/0035-github-roadmap-as-implementation-migration-layer.md`).
 See [Architecture Overview](architecture.md).
 
+The layer was regenerated on 2026-11-23: the published release `v0.12.0` became a
+`Deliverable` (`del-release-v0-12-0`), realising three Plateaus, and GH #183 (the
+diagram-restructure spike) is now closed
+(`architecture/model/gh-roadmap/elements.yaml`, `relationships.yaml`). Only
+`gh-roadmap/` is regenerated this way; the per-view effect is on
+[Architecture Views & Diagrams: Platform, Migration & Rendering](architecture-diagrams-platform.md).
+
 ## Contexts, build pipeline and IT4IT merge
 
 Three topics moved to their own pages once this one passed ~500 lines:
@@ -267,6 +275,22 @@ page once this one passed ~500 lines: see
 [Architecture Model: Packaging, Migration & Technology](architecture-model-migration.md).
 
 ## Views and diagrams
+
+The render pipeline in `rendering.py` expands a `split_by: context` view into
+one job per context through `_context_split_jobs`, factored out of
+`_view_diagram_jobs` in 2026-11 with no behavioural change; a view with
+`package_diagrams: true` sends a context's slice to the owning package's
+`specs/diagrams/` when that directory exists (ADR-0055 on
+[ADR-0040 onward](decision-log-0040-onward.md)). The same module now returns
+each renderable view with a `group` — Core Model, ArchiMate Viewpoints, Roadmap, or
+a vendored model's name such as IT4IT — sorted by group then name, for the
+authoring UI's view picker (see
+[Conversational Model Authoring](modelling-specification.md))
+(`platform/packages/modelling-specification/src/modelling_specification/rendering.py`
+`_context_split_jobs`, `_group_label`, `list_views`). On the loading side,
+`model_io.py`'s `_STANDALONE_THIRD_PARTY_MODELS` is now `{"sample-azure",
+"sample-gcp"}`, so neither is swept into the root model (see
+[Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md)).
 
 77 ArchiMate views cover the merged model: 41 declared in this repo's own
 `views.yaml` (sections A–C, the IT4IT touchpoint bridge, sections E/F — see
