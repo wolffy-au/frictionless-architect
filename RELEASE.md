@@ -225,6 +225,27 @@ git merge --ff-only origin/main   # or a plain merge if develop moved on
 git push origin develop
 ```
 
+### 11. Refresh the gh-roadmap layer (ADR-0035)
+
+Cutting the release is itself what makes the generated `gh-roadmap/` model layer stale: it
+imports GitHub milestones/issues, and this release's own PR merge and tag are what close
+them. Don't wait for the weekly schedule to catch this — it is release-triggered, not
+calendar-triggered, so a weekly job could easily have already run *before* this release
+closed anything. Run it here, every time, right after §10, once `develop` matches `main`
+(doing it any earlier risks a `develop` commit that isn't yet an ancestor of `main`, which
+would break §10's fast-forward):
+
+```bash
+bash scripts/refresh_gh_roadmap.sh
+git status --porcelain   # review the diff
+git add -A && git commit -m "chore(model): refresh gh-roadmap layer with v<X.Y.Z> release"
+git push origin develop  # fast-forward only
+```
+
+If `scripts/pre_merge_checks.sh`'s roadmap-drift check (`import_gh_roadmap.py --check`) would
+otherwise fail the *next* release's §6 gate because this step was skipped, that is the signal
+this step was missed — do it now rather than letting the next release's gate discover it.
+
 ## Not yet configured (TODO)
 
 ### PyPI / package publish

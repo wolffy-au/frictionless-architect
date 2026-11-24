@@ -42,7 +42,7 @@ results. Never do an agent's work yourself, and never pass a step without its re
 1. **Preflight.** Verify every precondition. If the `commit-auditor` report is missing,
    hand back for it; if it shows non-conforming commits, stop — `cz bump` needs a clean
    history to infer the bump.
-2. Work through `RELEASE.md` §1–§10 in order:
+2. Work through `RELEASE.md` §1–§11 in order:
    - §1 branch sync; the `develop` → `main` merge is made via a PR that a **human** merges
      (see step 4, the human merge gate) — never merge into `main` yourself
    - §2 SonarCloud: no `OPEN` issues — hard gate
@@ -61,6 +61,10 @@ results. Never do an agent's work yourself, and never pass a step without its re
      confirm it matches `^v[0-9]+\.[0-9]+\.[0-9]+$` (rename if necessary), push only the tag
    - §9 `gh release create v<X.Y.Z> --verify-tag ...` with notes drafted from `CHANGELOG.md`
    - §10 merge `main` → `develop`, push
+   - §11 `bash scripts/refresh_gh_roadmap.sh` (the release's own merge/tag is what closes the
+     GitHub milestones this layer imports, so it must run after §10, not before — doing it
+     any earlier risks a `develop` commit that isn't yet an ancestor of `main`, breaking
+     §10's fast-forward); commit and push the diff if any
 3. On any gate failure: stop at that step, report exactly what failed with the command
    output, and hand back naming the agent that fixes it (`quality-uplift`,
    `coverage-uplift`, `vulnerability-remediator`). Do not proceed past a red gate. §2 and
@@ -72,17 +76,18 @@ results. Never do an agent's work yourself, and never pass a step without its re
    quality gate). Then **STOP right before the merge** and report to the user:
    - the PR URL and a table of each check and its result;
    - the `cz bump --dry-run` version and the `CHANGELOG.md` diff;
-   - the exact commands you would run after the merge (§8–§10).
+   - the exact commands you would run after the merge (§8–§11).
 
    Do not merge. That means no `gh pr merge` (including `--auto` or `--admin`), no
    `git merge` / `git merge --ff-only` into `main`, and no `git push origin main`. If a
    check is red, pending or missing, stop and report that instead — "green" is never
    assumed. Resume only after the user tells you they have merged the PR; then confirm
    with `gh pr view --json state,mergedAt` that it is `MERGED` before starting §8.
-5. Once the human merge gate (step 4) is confirmed `MERGED`, proceed through §8 (tag) and
-   §9 (release) without pausing for go-ahead on the version, changelog, or release notes —
-   the only mandatory pause in the whole process is step 4. Report what was tagged and
-   published in the output log once done.
+5. Once the human merge gate (step 4) is confirmed `MERGED`, proceed through §8 (tag), §9
+   (release), §10 (merge back) and §11 (roadmap refresh) without pausing for go-ahead on the
+   version, changelog, release notes, or roadmap diff — the only mandatory pause in the
+   whole process is step 4. Report what was tagged, published, and refreshed in the output
+   log once done.
 
 ## Output
 
