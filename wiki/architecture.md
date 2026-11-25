@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-generated: '2026-11-15'
+generated: '2026-11-25'
 generator: claude-sonnet-5
 sources:
 - ARCHITECTURE.md
@@ -148,33 +148,58 @@ historical note until it was retired, with the packaging / deployment view track
 (`docs/adr/0011-six-subsystem-decomposition.md` §Consequences). See
 [Project Overview](project-overview.md).
 
-**Forks to vendor:** an ArchiMate Exchange Format / `.archimate` parser (for
-`digital-twin-knowledge-graph`) is still a candidate, not confirmed (`ARCHITECTURE.md` §4).
-OSCAL is now **resolved** — [ADR-0030](#decision-log) answers `ARCHITECTURE.md`
-§4's "which OSCAL tool?" question: `compliance-trestle` is consumed as an
-ordinary Poetry runtime dependency (not a fork/submodule), and NIST/FedRAMP
-reference content (`third_party/oscal`, `third_party/oscal-content`,
+**`third_party/` submodules follow one of two patterns, decided per submodule
+rather than generalised across the whole directory** (`ARCHITECTURE.md` §4,
+[ADR-0052](decision-log-0040-onward.md)): **merged** into the canonical
+model's own build, or **standalone**, excluded from the merge sweep by name.
+IT4IT is the merged case — the 3.0 value-stream reference model, vendored as
+its own repo (`wolffy-au/frictionless-it4it`, [ADR-0029](#decision-log)),
+whose `elements.yaml`/`relationships.yaml` merge into the canonical model's
+`det_id()`/`NS` hashing pass rather than getting a separate build step (the
+same first-party/vendored split [ADR-0002](#decision-log) draws for actively
+co-developed code vs. a low-touch external reference) — see [Architecture
+Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md).
+`sample-azure` and `sample-gcp` are the standalone case: each carries its own
+`elements.yaml` for the multi-tenant `FRICTIONLESS_MODEL_DIR` use case
+(ADR-0045) — "a different repo's own model," not content meant to merge into
+this one — so `model_io.py`'s `_STANDALONE_THIRD_PARTY_MODELS` excludes them
+by name, since a generic `third_party/*/elements.yaml` glob would otherwise
+pull them in silently. `sample-oscal` is neither: real OSCAL catalog/profile/
+SSP/POA&M reference content plus Rego policies and recorded OPA evidence,
+golden-test fixtures for `controls-compliance-catalog` with no `elements.yaml`
+of its own, so the merge-sweep question doesn't arise for it today
+(ADR-0052's 2026-11-23 extension). A fourth candidate, not yet created: an
+ArchiMate Exchange Format / `.archimate` parser fork for
+`digital-twin-knowledge-graph` — upstream and pattern both still open
+(`ARCHITECTURE.md` §4, §10 Q4).
+
+OSCAL reference content proper (distinct from the `sample-oscal` submodule
+above) is **resolved** — [ADR-0030](#decision-log) answers the "which OSCAL
+tool?" question: `compliance-trestle` is consumed as an ordinary Poetry
+runtime dependency (not a fork/submodule), and NIST/FedRAMP reference content
+(`third_party/oscal`, `third_party/oscal-content`,
 `third_party/fedramp-automation`) — consumed by `controls-compliance-catalog`
 once it's built — is vendored as plain tracked files under `third_party/`
-(not submodules, GH #167), with no `fork-sync` entry and no `build.py`
-merge step — unlike the IT4IT case below, it isn't ArchiMate model data.
-A 2026-09-24 revision adds a third path. The scripts of
+(not submodules, GH #167), with no `fork-sync` entry and no `build.py` merge
+step. A 2026-09-24 revision adds a third path: the scripts of
 `oscal-document-workbench`, a Claude Code plugin with no installable
 interface, are **ported as native Python** (`normalizer.py`,
-`trestle_ops.py`) with Apache-2.0 attribution headers. They are neither
-vendored nor depended on
-(`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
-(2026-09-24)"). See [OSCAL Compliance Content](oscal-compliance.md).
+`trestle_ops.py`) with Apache-2.0 attribution headers, neither vendored nor
+depended on (`docs/adr/0030-vendor-oscal-reference-content.md`
+§"Implementation note (2026-09-24)"). See [OSCAL Compliance
+Content](oscal-compliance.md).
 
-`third_party/` also holds the IT4IT 3.0 value-stream reference model,
-vendored as its own repo (a git submodule,
-`wolffy-au/frictionless-it4it`) per [ADR-0029](#decision-log), the same
-first-party/vendored split
-[ADR-0002](#decision-log) draws for actively co-developed code vs. a
-low-touch external reference. Its `elements.yaml`/`relationships.yaml`
-merge into the canonical model's own `det_id()`/`NS` hashing pass rather
-than getting a separate build step — see
-[Architecture Model: Build Pipeline & IT4IT Merge](architecture-model-build-it4it.md).
+`sample-data/` at the repo root is first-party, not a vendored fork: generic
+ArchiMate/C4 teaching fixtures (`sample-00`–`sample-02`, kept as committed
+`.puml`/`.svg`, `docs/adr/0007-architecture-model-as-graph-loadable-yaml.md`)
+and the ArchiMate XSDs (`schema/`). GH #223 confirmed the `sample-data/*` vs.
+`third_party/sample-*` naming is not an accident: the two trees are
+deliberately distinct — first-party and merged-by-convention rather than
+vendored and excluded (`ARCHITECTURE.md` §4). The one genuine overlap GH #223
+found, `sample-data/oscal/`'s two illustrative OSCAL-resolution-mechanics
+diagrams, was resolved by moving them into `third_party/sample-oscal/
+diagrams/` (`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation
+note (2026-11-25)"). See [Sample Data](sample-data.md).
 
 ## Monorepo tooling
 

@@ -72,13 +72,13 @@ topics:
       urls: {}
     title: Agent Skills & Workflows
   architecture:
-    built: '2026-11-15'
+    built: '2026-11-25'
     page: wiki/architecture.md
     sources:
       files:
         ARCHITECTURE.md:
-          lines: 507
-          sha256: e4d5270c6c4f83883fa0d1a20388b76e607637cc0595bdb569e55d9ff64ed236
+          lines: 530
+          sha256: 6ed35887a475fde97e5329204b224c2556e7eef0cd2f2eb2ab23d28f328cf494
         TECHNICAL.md:
           lines: 439
           sha256: a9cc5c952b025937614d89bf9c78e62b519e04294e2fa440eab30eca71c1340e
