@@ -233,17 +233,40 @@ package, built and gated the same way but carrying no subsystem UI obligation
   standalone dashboard; `packages/portal` mounts it once for every package (ADR-0020). First consumer: `controls-compliance-catalog`'s
   `llm_client.py`.
 
-**Forks to vendor** (`third_party/`, submodules) — *candidates, not confirmed*:
+**`third_party/` submodules today** fall into two patterns, decided per submodule rather
+than generalised across all of `third_party/` (ADR-0052):
 
-- An ArchiMate Exchange Format / `.archimate` parser (consumed by `digital-twin-knowledge-graph`).
+- **Merged into this repo's own model** — `it4it` (ADR-0029): `build.py` loads it alongside
+  the first-party YAML, filtered or whole, into one `det_id()`/`NS` pass. A touchpoint model,
+  not a demo.
+- **Standalone reference/demo models, excluded from the merge sweep by name** —
+  `sample-azure` and `sample-gcp` (ADR-0052): each carries its own `elements.yaml` for the
+  multi-tenant `FRICTIONLESS_MODEL_DIR` use case (ADR-0045) — "a different repo's own model,"
+  not content meant to merge into this one. `model_io.py`'s `_STANDALONE_THIRD_PARTY_MODELS`
+  excludes them by name so a generic `third_party/*/elements.yaml` glob doesn't pull them in
+  silently.
+- **Neither merged nor a standalone ArchiMate model** — `sample-oscal` (ADR-0030, extended by
+  ADR-0052): real OSCAL catalog/profile/SSP/POA&M reference content plus Rego policies and
+  recorded OPA evidence, consumed by `controls-compliance-catalog` as golden-test fixtures and
+  reference material. It has no `elements.yaml`, so the merge-sweep question doesn't arise for
+  it today; it would if one were ever added.
 
-**OSCAL** is resolved (see [ADR-0030](docs/adr/0030-vendor-oscal-reference-content.md)):
-NIST/FedRAMP reference content (`usnistgov/OSCAL`, `usnistgov/oscal-content`,
-`GSA/fedramp-automation`) is vendored as plain tracked files under `third_party/`, consumed by
-`controls-compliance-catalog` when it's built; `compliance-trestle` (the catalog/profile
-authoring and round-trip tool) is an ordinary Poetry dependency, not a submodule.
+A fourth candidate, not yet created: an ArchiMate Exchange Format / `.archimate` parser fork
+(consumed by `digital-twin-knowledge-graph`) — confirm the exact upstream before vendoring it,
+and decide then which of the above patterns it follows.
 
-Confirm the exact ArchiMate-parser upstream before creating that submodule.
+**OSCAL reference content** (distinct from the `sample-oscal` submodule above) is also
+resolved (see [ADR-0030](docs/adr/0030-vendor-oscal-reference-content.md)): NIST/FedRAMP
+reference content (`usnistgov/OSCAL`, `usnistgov/oscal-content`, `GSA/fedramp-automation`) is
+vendored as plain tracked files under `third_party/`, consumed by `controls-compliance-catalog`
+when it's built; `compliance-trestle` (the catalog/profile authoring and round-trip tool) is an
+ordinary Poetry dependency, not a submodule.
+
+`sample-data/` (root) holds first-party fixtures that are **not** vendored forks: generic
+ArchiMate/C4 teaching models (`sample-00`–`sample-02`, kept as committed `.puml`/`.svg` per
+ADR-0007) and the ArchiMate XSDs (`schema/`). These are deliberately distinct from the
+`third_party/sample-*` submodules above — first-party and merged-by-convention rather than
+vendored and excluded — not a naming accident (GH #223).
 
 ---
 
