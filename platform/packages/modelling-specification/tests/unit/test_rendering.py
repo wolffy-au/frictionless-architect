@@ -637,3 +637,59 @@ def test_sanitize_svg_strips_active_content_and_keeps_the_drawing() -> None:
         assert bad not in cleaned
     assert "Safe Label" in cleaned
     assert cleaned.startswith("<svg")
+
+
+@pytest.mark.parametrize(
+    "element",
+    [
+        '<set attributeName="href" to="javascript:alert(1)"/>',
+        '<animate attributeName="href" values="javascript:alert(1)"/>',
+        '<animateTransform attributeName="transform" type="rotate"/>',
+        '<animateMotion path="M0,0"/>',
+    ],
+)
+def test_sanitize_svg_strips_animation_that_could_rewrite_a_link(element: str) -> None:
+    from modelling_specification.rendering import sanitize_svg
+
+    cleaned = sanitize_svg(f'<svg xmlns="http://www.w3.org/2000/svg"><a>{element}<text>Safe Label</text></a></svg>')
+
+    for bad in ("<set", "animate", "javascript:"):
+        assert bad not in cleaned
+    assert "Safe Label" in cleaned
+
+
+@pytest.mark.parametrize(
+    "href",
+    [
+        # Browsers drop tabs and newlines inside a URL, so these still run as `javascript:`.
+        "java&#x9;script:alert(1)",
+        "java&#xA;script:alert(1)",
+        "java&#xD;script:alert(1)",
+        "vbscript:msgbox(1)",
+        "data:text/html,x",
+    ],
+)
+@pytest.mark.parametrize("attribute", ["href", "xlink:href"])
+def test_sanitize_svg_drops_links_that_are_not_web_or_fragment(attribute: str, href: str) -> None:
+    from modelling_specification.rendering import sanitize_svg
+
+    cleaned = sanitize_svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+        f'<a {attribute}="{href}"><text>Safe Label</text></a></svg>'
+    )
+
+    assert "href" not in cleaned
+    assert "Safe Label" in cleaned
+
+
+@pytest.mark.parametrize("href", ["#gradient", "http://example.com/a", "HTTPS://example.com/b"])
+@pytest.mark.parametrize("attribute", ["href", "xlink:href"])
+def test_sanitize_svg_keeps_web_and_fragment_links(attribute: str, href: str) -> None:
+    from modelling_specification.rendering import sanitize_svg
+
+    cleaned = sanitize_svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+        f'<a {attribute}="{href}"><text>Safe Label</text></a></svg>'
+    )
+
+    assert href in cleaned

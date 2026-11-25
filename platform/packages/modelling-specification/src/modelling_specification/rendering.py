@@ -515,13 +515,30 @@ def resolve_view_request(object_id: str | None, description: str | None) -> dict
 
 _SVG_NS = "http://www.w3.org/2000/svg"
 _XLINK_NS = "http://www.w3.org/1999/xlink"
-_ACTIVE_ELEMENTS = {"script", "foreignobject", "iframe", "object", "embed", "audio", "video"}
+_ACTIVE_ELEMENTS = {
+    "script",
+    "foreignobject",
+    "iframe",
+    "object",
+    "embed",
+    "audio",
+    "video",
+    # SVG animation can rewrite a link after it has been checked here.
+    "animate",
+    "animatemotion",
+    "animatetransform",
+    "set",
+}
+# An allow-list: browsers drop tabs and newlines inside a URL, so matching the
+# unsafe schemes by prefix would miss `java<tab>script:`.
+_SAFE_HREF_PREFIXES = ("#", "http://", "https://")
 
 
 def sanitize_svg(svg: str) -> str:
     """Strip anything active from a rendered SVG before it is served or inlined into
-    the page: script-like elements, `on*` event attributes and `javascript:` links.
-    Element names in a preview come from the LLM, so the SVG is not trusted markup.
+    the page: script-like and animation elements, `on*` event attributes and any link
+    that is not `http(s)` or a fragment. Element names in a preview come from the LLM,
+    so the SVG is not trusted markup.
     """
     ET.register_namespace("", _SVG_NS)
     ET.register_namespace("xlink", _XLINK_NS)
@@ -539,8 +556,9 @@ def sanitize_svg(svg: str) -> str:
     for element in root.iter():
         # Same reason: del element.attrib[attr] below mutates the dict being iterated.
         for attr in list(element.attrib):  # NOSONAR python:S7504 -- deletion below mutates this
+            name = local(attr)
             value = element.attrib[attr].strip().lower()
-            if local(attr).startswith("on") or (local(attr) == "href" and value.startswith(("javascript:", "data:"))):
+            if name.startswith("on") or (name == "href" and not value.startswith(_SAFE_HREF_PREFIXES)):
                 del element.attrib[attr]
     return ET.tostring(root, encoding="unicode")
 
