@@ -213,6 +213,24 @@ fields needed no rewrite: each vendored set kept its existing directory name and
 upstream-relative subpaths, and every sidecar's recorded commit already matches
 the vendored set's own `PROVENANCE.md`.
 
+## Implementation note (2026-11-25): `sample-data/oscal/` relocated to `third_party/sample-oscal`
+
+GH #223 (investigate overlap between `sample-data/` and `third_party/sample-*`) revisited the
+two illustrative PlantUML diagrams this ADR's 2026-09-28 note already flagged as unused
+(`sample-data/oscal/01-nist-baseline-resolution.puml`,
+`02-nist-fedramp-combined-resolution.puml`, plus their rendered `.svg`). They were never real
+OSCAL content and were never consumed by code or tests — only a now-corrected stale reference
+in `platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md`
+pointed at a file that never existed in that directory.
+
+Since the two diagrams illustrate generic OSCAL resolution mechanics (the same topic
+`third_party/sample-oscal`'s real steel thread works through concretely for SC-28), and since
+`sample-data/oscal/` vs `third_party/sample-oscal/` was itself a source of naming confusion for
+newcomers, they were moved into `third_party/sample-oscal/diagrams/` (alongside
+`steel-thread.puml`) rather than kept as a separate, unused first-party directory.
+`sample-data/oscal/` is deleted; `wiki/sources.yaml`'s `oscal-compliance` topic dropped the
+corresponding source line.
+
 ## Alternatives considered
 
 - **Vendor `compliance-trestle` as a submodule** (mirroring IT4IT) —

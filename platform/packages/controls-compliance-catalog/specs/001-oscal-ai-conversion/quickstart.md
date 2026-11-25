@@ -33,7 +33,7 @@ poetry run uvicorn controls_compliance_catalog.app:app --reload
 curl -s -X POST http://localhost:8000/oscal/conversions \
   -F "source_document_id=demo-policy-v1" \
   -F "source_kind=custom-policy" \
-  -F "file=@sample-data/oscal/example-policy.docx"
+  -F "file=@example-policy.docx"
 ```
 
 Expect `201` with `status: "validated"` and a `workspace_path` under `.data/oscal/`
