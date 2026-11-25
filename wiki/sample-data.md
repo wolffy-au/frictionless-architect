@@ -1,10 +1,8 @@
 ---
 title: Sample Data
-generated: '2026-10-24'
+generated: '2026-11-25'
 generator: claude-sonnet-5
 sources:
-- sample-data/oscal/01-nist-baseline-resolution.puml
-- sample-data/oscal/02-nist-fedramp-combined-resolution.puml
 - sample-data/sample-01/sample-1-archimate.puml
 - sample-data/sample-01/sample-1-c4-container.puml
 - sample-data/sample-01/sample-1-c4-context-elements.puml
@@ -23,8 +21,8 @@ sources:
 `sample-data/` bundles reference models used by the schema visualiser, the
 diagram skills, and as decomposition input. This page covers the
 human-readable `.puml` and `.csv` files; the binary/XML models
-(`*.archimate`, `*.xml` under `sample-00`/`sample-01`, and
-`sample-data/schema/*.xsd`) are not in this topic — the XSDs are described in
+(`*.archimate`, `*.xml` under `sample-00`, and `sample-data/schema/*.xsd`)
+are not in this topic — the XSDs are described in
 [Data Model](data-model.md).
 
 ## `sample-data/schema/` — ArchiMate 3.1 XSDs
@@ -83,29 +81,18 @@ a still-parallel before/after pair. Both remain worked examples of the
 ArchiMate → C4 projection the [`diagram-c4`](agent-workflows.md) skill
 performs, just against different source shapes now.
 
-## `sample-data/oscal/` — OSCAL profile resolution
+## `sample-data/oscal/` — relocated to `third_party/sample-oscal` (GH #223)
 
-Two PlantUML artifact diagrams documenting how NIST SP 800-53 rev5 control
-baselines are resolved into a component's control set. These illustrate the
-kind of OSCAL profile resolution the platform's controls-and-compliance
-work covers — see [OSCAL Compliance Content](oscal-compliance.md) and
-[Architecture Overview](architecture.md) §"Subsystem → package mapping".
-
-- **`01-nist-baseline-resolution.puml`** — "one dimension, plus an optional
-  privacy add-on". A catalog is imported and tailored into exactly one of
-  LOW / MODERATE / HIGH (per FIPS 199 impact), optionally combined with an
-  orthogonal PRIVACY overlay via an intermediate `combining-profile.yaml`,
-  producing a resolved catalog that components then implement (citing specific
-  control IDs like `SC-8`, `SC-8(1)`, `AC-2(3)`). Notes explain that PRIVACY is
-  not a fourth exclusive baseline and that combining it in still needs an
-  intermediate profile (43 shared + 53 privacy-only controls vs MODERATE).
-- **`02-nist-fedramp-combined-resolution.puml`** — "two dimensions": a NIST HIGH
-  baseline and a FedRAMP HIGH baseline, both tailoring the same catalog, are
-  imported into one combining profile. Overlapping control IDs (e.g. `ac-2.3`)
-  collide and are reconciled with `merge.combine` + explicit
-  `modify.set-parameters`. The example component carries two
-  control-implementations for `ac-2.3`, one per source profile; no merged
-  catalog file exists — the component cites both source profiles directly.
+The two illustrative OSCAL resolution-mechanics diagrams that used to live
+here (`01-nist-baseline-resolution.puml`, `02-nist-fedramp-combined-resolution.puml`)
+have moved to `third_party/sample-oscal/diagrams/`, alongside that
+submodule's own `steel-thread.puml` — see
+[OSCAL Compliance Content](oscal-compliance.md) §"Sample data" and
+`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
+(2026-11-25)". This resolves the naming confusion GH #223 raised between
+`sample-data/oscal/` and `third_party/sample-oscal/`: `sample-data/` no
+longer has an `oscal`-named tree at all, and the diagrams now live next to
+the real OSCAL content whose resolution mechanics they illustrate.
 
 ## Related
 

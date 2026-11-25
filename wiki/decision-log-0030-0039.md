@@ -1,7 +1,7 @@
 ---
 title: 'Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)'
-generated: '2026-11-23'
-generator: claude-sonnet-5-5
+generated: '2026-11-25'
+generator: claude-sonnet-5
 sources:
 - docs/adr/0030-vendor-oscal-reference-content.md
 - docs/adr/0031-fr016-no-redaction-for-policy-documents.md

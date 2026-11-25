@@ -1,14 +1,10 @@
 ---
 title: OSCAL Compliance Content
-generated: '2026-11-24'
+generated: '2026-11-25'
 generator: claude-sonnet-5
 sources:
 - docs/adr/0030-vendor-oscal-reference-content.md
 - pyproject.toml
-- sample-data/oscal/01-nist-baseline-resolution.puml
-- sample-data/oscal/01-nist-baseline-resolution.svg
-- sample-data/oscal/02-nist-fedramp-combined-resolution.puml
-- sample-data/oscal/02-nist-fedramp-combined-resolution.svg
 - tests/fixtures/golden-oscal/README.md
 - tests/fixtures/golden-oscal/slice-1-minimal/README.md
 - tests/fixtures/golden-oscal/slice-2-medium/README.md
@@ -300,27 +296,37 @@ matched the vendored set's own `PROVENANCE.md`.
 
 ## Sample data
 
-`sample-data/oscal/` holds two illustrative PlantUML diagrams (each now
-rendered to a committed `.svg` alongside its `.puml` source) — not real
-OSCAL content, just the resolution mechanics:
+`sample-data/oscal/` used to hold two illustrative PlantUML diagrams of
+generic OSCAL resolution mechanics — not real OSCAL content:
 
-- `01-nist-baseline-resolution.puml` — one dimension: a NIST catalog imports
+- `nist-baseline-resolution.puml` — one dimension: a NIST catalog imports
   and tailors into exactly one of the LOW/MODERATE/HIGH baseline profiles,
   optionally combined with the PRIVACY add-on profile, merged into a resolved
   catalog that components then implement against.
-- `02-nist-fedramp-combined-resolution.puml` — two dimensions: a component's
+- `fedramp-combined-resolution.puml` — two dimensions: a component's
   resolved catalog combines NIST's own HIGH baseline with FedRAMP's
   independently-tailored HIGH baseline.
 
 ADR-0030 originally tracked pointing these (and future tests) at real
 catalog/profile files from the vendored submodules as a follow-up. The
-2026-09-28 revision resolved that follow-up differently: real OSCAL ground
-truth for tests now comes from the `tests/fixtures/golden-oscal/` fixtures
-described above, not from wiring `sample-data/oscal/` up to the submodules —
-fixtures belong under `tests/fixtures/` per this repo's testing-layout
-convention. These two diagrams remain illustrative-only
-(`docs/adr/0030-vendor-oscal-reference-content.md` §Consequences,
-§"Implementation note (2026-09-28)").
+2026-09-28 revision resolved the *test-fixture* half of that follow-up:
+real OSCAL ground truth for tests comes from the
+`tests/fixtures/golden-oscal/` fixtures described above, not from wiring
+these diagrams up to the submodules — fixtures belong under
+`tests/fixtures/` per this repo's testing-layout convention.
+
+GH #223 (investigating overlap between `sample-data/` and
+`third_party/sample-*`) then resolved the diagrams' *location*: kept as
+first-party fixtures, `sample-data/oscal/` and `third_party/sample-oscal/`
+(the vendored OSCAL "steel thread" submodule, below) read as two
+confusingly-named, unrelated "OSCAL sample" trees to a newcomer. The two
+diagrams illustrate the same general topic — OSCAL resolution — that
+`sample-oscal`'s steel thread works through concretely for one control, so
+they moved into `third_party/sample-oscal/diagrams/`, alongside that
+submodule's own `steel-thread.puml`, and `sample-data/oscal/` was deleted
+(`docs/adr/0030-vendor-oscal-reference-content.md` §"Implementation note
+(2026-11-25)"). They remain illustrative-only, generic diagrams — not test
+fixtures, and not specific to the SC-28 steel thread they now sit beside.
 
 ## Consequences and open follow-ups
 

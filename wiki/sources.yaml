@@ -224,7 +224,6 @@ topics:
       - path: third_party/fedramp-automation/LICENSE.md
       - path: third_party/fedramp-automation/PROVENANCE.md
       - path: pyproject.toml
-      - path: sample-data/oscal/**
       - path: docs/adr/0030-vendor-oscal-reference-content.md
       - path: tests/fixtures/golden-oscal/README.md
       - path: tests/fixtures/golden-oscal/*/README.md

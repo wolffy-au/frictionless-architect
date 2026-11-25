@@ -1,14 +1,14 @@
-generated: '2026-11-24'
+generated: '2026-11-25'
 generator: claude-sonnet-5
 topics:
   agent-workflows:
-    built: '2026-11-23'
+    built: '2026-11-25'
     page: wiki/agent-workflows.md
     sources:
       files:
         .claude/agents/README.md:
           lines: 40
-          sha256: a22b3adbd41f3d182d8fcfa3b4314bb63ace8d068993754ce770e2daad0beb2c
+          sha256: a482eef6acd15539caaa84f7813df101a83bbeb55883c2b8abf88882d3c499c8
         .claude/agents/acceptance-author.md:
           lines: 77
           sha256: 0dfe679f953201c94ca6b8c7c5f3e76d31a3647a6c023b79d274d19facc8082f
@@ -16,8 +16,8 @@ topics:
           lines: 114
           sha256: 17b00800f4db2260be63f59e9967c1893f916bad71189ef57aac6204883dba91
         .claude/agents/commit-auditor.md:
-          lines: 46
-          sha256: a8d5cafaad98f5ae5cfcb0e4b1ab7cf1be9c388b27cea7323e0084d43e2c12f1
+          lines: 74
+          sha256: 8743954a05fee16304d65b1d4152f292d21e171820468a67cd6dfc58d54daed6
         .claude/agents/coverage-uplift.md:
           lines: 72
           sha256: adb67534bc4d7aa538ae2e8b7f524e5b25fe342679f3963d0ba5e632f3e54b78
@@ -28,14 +28,14 @@ topics:
           lines: 76
           sha256: 18f645b3a76c87bbc4cfd20dca2907a4e74288ca4fe2a88bd32188432e43b9a0
         .claude/agents/refactor-analyst.md:
-          lines: 57
-          sha256: ebaa2b5f69b30f254628fe3552db51cc6a26a2346ceeba9df5804f9cadf79e2b
+          lines: 76
+          sha256: 6c2eda2cc373eebbddde85de30d98bf9cf33e2b858f1cf7eb9fe9832668299f4
         .claude/agents/release-runner.md:
-          lines: 102
-          sha256: ba2815528a4b52a0a0b36ae96f35e7e4985ceb8b408b46a509ea1b3875e55306
+          lines: 107
+          sha256: 6d175aa07f9b149854a42d689b4ca078f90a971e55f60bc8f266856990d4bfa7
         .claude/agents/spec-alignment.md:
-          lines: 96
-          sha256: 1526fcfe0971ef1d5b162f09a24ddc8f1febcec11326237fb013b8e3c93d914f
+          lines: 121
+          sha256: 2540f5965559d623a6a947b8de7d2bec81e01e8f4817b58dc05b109e63110a8d
         .claude/agents/vulnerability-remediator.md:
           lines: 70
           sha256: df6a95a4935cd91e796a030c61978cce11701b8307f2c341cc284ead4b409fe3
@@ -1233,7 +1233,7 @@ topics:
       urls: {}
     title: 'Architecture Model: Strategy'
   controls-compliance-catalog:
-    built: '2026-11-23'
+    built: '2026-11-25'
     page: wiki/controls-compliance-catalog.md
     sources:
       files:
@@ -1257,7 +1257,7 @@ topics:
           sha256: 436cf98e9a5553b2cadea57055c877ef571587acd2cc2b9054af959ef91c192b
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/quickstart.md:
           lines: 91
-          sha256: dea7372913fcab3ca1ebf69f73c53e2eb4285827e4709acad715948ea4cdb659
+          sha256: dcd3afe4ae34207fd7b3c72337af7c709f62f6174004f6ba9ae5fa0c0e97bc8c
         platform/packages/controls-compliance-catalog/specs/001-oscal-ai-conversion/research.md:
           lines: 198
           sha256: 9c07282b1548d7904ae5568aaf6f0bc25af3021a180deaef78f7a6bd5ffa7ff5
@@ -1349,7 +1349,7 @@ topics:
       urls: {}
     title: Data Model
   decision-log:
-    built: '2026-11-23'
+    built: '2026-11-25'
     page: wiki/decision-log.md
     sources:
       files:
@@ -1414,18 +1414,18 @@ topics:
           lines: 31
           sha256: 02f9bf5e6990012c4dc623f29b77672993be8e95ac45faba23d07c99aa1661d7
         docs/adr/README.md:
-          lines: 197
-          sha256: 41f5dc0f0eabb12d9ea2d041d985a43a9032678f5c6db879d4b916c257913021
+          lines: 200
+          sha256: e7d1ff10e3f7549f1e4d6614f16052599465635ea02604ed57e1e8a9841b2aa0
       urls: {}
     title: Architecture Decision Log
   decision-log-0030-0039:
-    built: '2026-11-23'
+    built: '2026-11-25'
     page: wiki/decision-log-0030-0039.md
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
-          lines: 236
-          sha256: 3375c290f8123368ced68aadf92d22e8640da701d2daf247182592beb4c6b6d4
+          lines: 254
+          sha256: d8efc8898d48db26aa8ce1a780182a8e1f72553d853c2b4c95b901144cd24dcc
         docs/adr/0031-fr016-no-redaction-for-policy-documents.md:
           lines: 48
           sha256: 753c699f633443bce3d376df219d67194d406622edf1c9acc8ff7eb9f34a418d
@@ -1456,7 +1456,7 @@ topics:
       urls: {}
     title: 'Architecture Decision Log: OSCAL, Roadmap & Authoring Foundations (ADR-0030–0039)'
   decision-log-0040-onward:
-    built: '2026-11-23'
+    built: '2026-11-25'
     page: wiki/decision-log-0040-onward.md
     sources:
       files:
@@ -1508,6 +1508,9 @@ topics:
         docs/adr/0055-package-local-diagram-output-path.md:
           lines: 66
           sha256: d2933b8e37fc68f90378bdf1a3f70fa1899d9056b30c717e310578eb01fc0bc3
+        docs/adr/0056-api-error-wire-format.md:
+          lines: 54
+          sha256: c1c78e8c3d2c35c5859ef2be26f0bf480d25c198cc95708397445c93b1001ac5
       urls: {}
     title: 'Architecture Decision Log: Contexts, Agents & Access (ADR-0040 onward)'
   decision-log-ui-visualiser-model:
@@ -1548,7 +1551,7 @@ topics:
       urls: {}
     title: 'Architecture Decision Log: UIs, Visualiser & Model Conventions (ADR-0020–0029)'
   development:
-    built: '2026-11-23'
+    built: '2026-11-25'
     page: wiki/development.md
     sources:
       files:
@@ -1559,8 +1562,8 @@ topics:
           lines: 135
           sha256: bbc2ee4e023ee3caf0667b39e64e4ea683245a0b1aba68c1f9cbb60a4f84d3b1
         AGENTS.md:
-          lines: 154
-          sha256: e0d4fb2c20dc85bcf39cf5cf5e5db1eb22f1ff8addd1b3e85e2fcc32587e9a87
+          lines: 156
+          sha256: ab3dbf6eaad8793017b9a611e7d6d02d877b7c4e4d2359fcbbed2e0f3b3bb9b2
         CODE_OF_CONDUCT.md:
           lines: 128
           sha256: c135627b08b25735d88156b519d9daacf42c3ce3e7ec08b6b4bc56b1a5c19df7
@@ -1568,8 +1571,8 @@ topics:
           lines: 122
           sha256: bcbc5cf3ed7aabee525c5cf9d692af56903ddb75cf88e01d26db4374a475cc69
         RELEASE.md:
-          lines: 303
-          sha256: ffc396dd43930964c51f5e4c6e877c26ae80a969474a2a1d41a6992a1d2fa7d5
+          lines: 324
+          sha256: 05467795341612e60425006ec0576f41f9c5702714556d9dd3c7f5e6fc34cce3
         SECURITY.md:
           lines: 52
           sha256: 111aef5523b0d54882cc75ee7635b77f5c4fde14d095ca6de8f5454b33efb8fc
@@ -1982,28 +1985,16 @@ topics:
       urls: {}
     title: Non-Functional Requirements
   oscal-compliance:
-    built: '2026-11-24'
+    built: '2026-11-25'
     page: wiki/oscal-compliance.md
     sources:
       files:
         docs/adr/0030-vendor-oscal-reference-content.md:
-          lines: 236
-          sha256: 3375c290f8123368ced68aadf92d22e8640da701d2daf247182592beb4c6b6d4
+          lines: 254
+          sha256: d8efc8898d48db26aa8ce1a780182a8e1f72553d853c2b4c95b901144cd24dcc
         pyproject.toml:
           lines: 242
           sha256: afc702c3f396ef7eaeee9b0df83ac839d574cc15d5daf28fd69d53fec8a5610d
-        sample-data/oscal/01-nist-baseline-resolution.puml:
-          lines: 53
-          sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
-        sample-data/oscal/01-nist-baseline-resolution.svg:
-          lines: 1
-          sha256: 70ded6f333a1ea54403cb1926dc853aac8f78c248942d1801a0a5190e63c42e9
-        sample-data/oscal/02-nist-fedramp-combined-resolution.puml:
-          lines: 44
-          sha256: c743a3e57f784cf136ef8cbd7bf5d5a4023a4bc69bbc1b1cb205d5603c44d428
-        sample-data/oscal/02-nist-fedramp-combined-resolution.svg:
-          lines: 1
-          sha256: e13b229dcf78f1757cbd30e62a72a74592a8428ebbe775963d277725f8979c29
         tests/fixtures/golden-oscal/README.md:
           lines: 73
           sha256: 8eb138ee6d0e8cd01cd250c3abd158025b47364cb4a16c5e37a5b8b884996f09
@@ -2218,16 +2209,10 @@ topics:
       urls: {}
     title: Project Overview
   sample-data:
-    built: '2026-10-24'
+    built: '2026-11-25'
     page: wiki/sample-data.md
     sources:
       files:
-        sample-data/oscal/01-nist-baseline-resolution.puml:
-          lines: 53
-          sha256: ed04db34794c95f0fd5dc1c3b4f343895381d1f07f85672db725f875aba38985
-        sample-data/oscal/02-nist-fedramp-combined-resolution.puml:
-          lines: 44
-          sha256: c743a3e57f784cf136ef8cbd7bf5d5a4023a4bc69bbc1b1cb205d5603c44d428
         sample-data/sample-01/sample-1-archimate.puml:
           lines: 24
           sha256: f30b3efa435e0aa2d1a072e599f8866fae576055bcc3a59ef33323cfc1f7fc5e

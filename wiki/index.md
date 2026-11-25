@@ -170,8 +170,8 @@ generator: claude-sonnet-5
 - [Playwright UI Tests (EPIC-004)](ui-testing-epic-004.md) — the `@ui`
   behave/Playwright live-server harness, its one-retry policy and merge-gate
   wiring, and the visualiser placeholder landing page it exercises (ADR-0053).
-- [Sample Data](sample-data.md) — the bundled ArchiMate/C4 sample models, the
-  Archi CSV exports, and the OSCAL profile-resolution diagrams.
+- [Sample Data](sample-data.md) — the bundled ArchiMate/C4 sample models and
+  the Archi CSV exports.
 - [Agent Skills & Workflows](agent-workflows.md) — the repo's committed
   coding-agent skills (`commit-message`, `fork-sync`, the diagram/model
   chain, the wiki skills) and the maintenance-agent fleet (`quality-uplift`,
