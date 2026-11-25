@@ -7,7 +7,8 @@ from fastapi.testclient import TestClient
 from llm_provider_config import router as router_module
 from llm_provider_config.credentials import SERVICE_NAME
 from llm_provider_config.router import Component, create_settings_router
-from llm_provider_config.store import load_settings
+from llm_provider_config.settings import LlmSettings, Provider, ProviderSettings
+from llm_provider_config.store import load_settings, save_settings
 
 COMPONENT = Component(id="pkg.feature", label="Feature")
 OLLAMA = {"provider": "ollama", "model": "gemma4:12b", "params": {"temperature": 0}}
@@ -88,6 +89,37 @@ def test_secret_reference_key_is_refused_and_not_stored(client: TestClient, fake
     assert "secret reference" in response.json()["detail"]
     assert "AWS_SECRET_ACCESS_KEY" not in response.text
     assert fake_keyring.get_password(SERVICE_NAME, "openai") is None
+
+
+@pytest.mark.parametrize("path", ["/settings/llm/default", "/settings/llm/components/pkg.feature"])
+@pytest.mark.parametrize("params", [{"api_key": "sk-secret"}, {"user": "os.environ/AWS_SECRET_ACCESS_KEY"}])
+def test_credential_in_params_is_refused_and_not_saved(client: TestClient, path: str, params: dict[str, str]) -> None:
+    response = client.put(path, json={**OLLAMA, "params": params})
+
+    assert response.status_code == 422
+    assert "params" in response.json()["detail"]
+    assert "sk-secret" not in response.text
+    assert "AWS_SECRET_ACCESS_KEY" not in response.text
+    assert load_settings().default is None
+    assert load_settings().components == {}
+
+
+def test_stored_credential_in_params_is_never_sent_and_can_be_replaced(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A settings file edited by hand, or saved before the check, must not reach litellm."""
+    bad = ProviderSettings(provider=Provider.OLLAMA, model="llama3", params={"api_key": "os.environ/HOME"})
+    save_settings(LlmSettings(default=bad))
+    calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(router_module, "completion", lambda **kwargs: calls.append(kwargs))
+
+    body = client.post("/settings/llm/test", json={}).json()
+
+    assert body["ok"] is False
+    assert "params" in body["message"]
+    assert calls == []
+    assert client.get("/settings/llm/state").status_code == 200
+    assert client.put("/settings/llm/default", json=OLLAMA).status_code == 200
 
 
 def test_ollama_key_is_refused(client: TestClient) -> None:

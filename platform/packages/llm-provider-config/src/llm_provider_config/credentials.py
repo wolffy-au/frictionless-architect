@@ -11,6 +11,9 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
+import re
+from collections.abc import Mapping, Sequence
+from typing import cast
 
 import keyring
 from keyring.errors import KeyringError
@@ -33,7 +36,7 @@ class MissingCredentialError(Exception):
 
 
 class InvalidCredentialError(MissingCredentialError):
-    """Raised when a key is a secret *reference* (``os.environ/NAME``), not a literal key.
+    """Raised for a secret *reference* (``os.environ/NAME``), or a credential in call params.
 
     litellm resolves ``os.environ/NAME`` values passed as ``api_key`` to that environment
     variable (CVE-2026-108575, ``get_secret``). A user-supplied key must never be able to
@@ -44,6 +47,10 @@ class InvalidCredentialError(MissingCredentialError):
 
 
 _SECRET_REFERENCE_PREFIX = "os.environ/"
+# Parameter names that carry a credential. Token *counts* (`max_tokens`) must not match.
+_CREDENTIAL_PARAM = re.compile(
+    r"api[_-]?key|authorization|secret|password|credential|access_key|(^|_)(ad|auth|session|identity)_token"
+)
 
 
 def _reject_secret_reference(key: str, origin: str) -> str:
@@ -53,6 +60,39 @@ def _reject_secret_reference(key: str, origin: str) -> str:
             "not a literal key; refusing to use it."
         )
     return key
+
+
+def check_params(params: Mapping[str, object]) -> None:
+    """Refuse call parameters that carry a credential or a secret reference, at any depth.
+
+    ``params`` is passed straight to litellm, so without this it bypasses the key guard:
+    a keyless provider has no key of its own to overwrite ``params["api_key"]``.
+
+    Args:
+        params: The free-form call parameters of one configuration.
+
+    Raises:
+        InvalidCredentialError: If a name is a credential's, or a value is ``os.environ/...``.
+    """
+    _check_param(params)
+
+
+def _check_param(value: object) -> None:
+    if isinstance(value, Mapping):
+        for name, item in cast("Mapping[str, object]", value).items():
+            if _CREDENTIAL_PARAM.search(name.lower()):
+                raise InvalidCredentialError(
+                    f"params may not set {name!r}: credentials belong in the keychain or the "
+                    "provider's environment variable."
+                )
+            _check_param(item)
+    elif isinstance(value, list | tuple):
+        for item in cast("Sequence[object]", value):
+            _check_param(item)
+    elif isinstance(value, str) and value.strip().lower().startswith(_SECRET_REFERENCE_PREFIX):
+        raise InvalidCredentialError(
+            f"A value in params is a secret reference ({_SECRET_REFERENCE_PREFIX}...); refusing to use it."
+        )
 
 
 def _ref(settings: ProviderSettings) -> str:

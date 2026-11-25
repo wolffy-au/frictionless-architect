@@ -49,6 +49,11 @@ arbitrary environment variable it was never meant to expose.
 **Alternatives considered:** None — this is a security fix for a specific, named CVE,
 not a design trade-off.
 
+`params` reaches `litellm` too, so credential names and `os.environ/` values in it are
+refused at any depth (FR-017): in the API on save and in `resolve_call` on use, not at
+load, so a bad stored file can still be corrected from the settings page. A deny-list,
+not an allow-list, because `params` is deliberately provider-specific (FR-003).
+
 ## Provider-to-litellm model string mapping
 
 **Decision:** A fixed `Provider -> litellm` prefix table (`openai`, `gemini`,

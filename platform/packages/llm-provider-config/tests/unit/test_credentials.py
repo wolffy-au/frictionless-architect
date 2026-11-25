@@ -1,6 +1,7 @@
 """Credential resolution: keychain first, labelled env fallback, Ollama keyless."""
 
 import logging
+from typing import Any
 
 import keyring
 import pytest
@@ -14,7 +15,7 @@ from llm_provider_config import (
     get_api_key,
     set_api_key,
 )
-from llm_provider_config.credentials import SERVICE_NAME
+from llm_provider_config.credentials import SERVICE_NAME, check_params
 
 _OPENAI = ProviderSettings(provider=Provider.OPENAI, model="gpt-4o")
 
@@ -113,6 +114,42 @@ def test_a_refused_reference_is_still_a_missing_credential(fake_keyring: InMemor
 
     with pytest.raises(MissingCredentialError):
         get_api_key(_OPENAI)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"api_key": "sk-x"},
+        {"API_KEY": "sk-x"},
+        {"aws_secret_access_key": "x"},
+        {"vertex_credentials": "x"},
+        {"azure_ad_token": "x"},
+        {"extra_headers": {"Authorization": "Bearer x"}},
+        {"extra_headers": {"x-api-key": "x"}},
+        {"fallbacks": [{"model": "openai/gpt-4o", "api_key": "sk-x"}]},
+        {"anything": "os.environ/HOME"},
+        {"stop": ["  OS.Environ/HOME"]},
+    ],
+)
+def test_params_may_not_carry_a_credential_or_a_secret_reference(params: dict[str, Any]) -> None:
+    """CVE-2026-108575: `params` is passed to litellm, so it needs the same guard as a key."""
+    with pytest.raises(InvalidCredentialError) as excinfo:
+        check_params(params)
+
+    assert "sk-x" not in str(excinfo.value)
+    assert "HOME" not in str(excinfo.value)
+
+
+def test_ordinary_call_params_are_allowed() -> None:
+    check_params(
+        {
+            "temperature": 0,
+            "max_tokens": 16,
+            "max_completion_tokens": 32,
+            "thinking": {"type": "enabled", "budget_tokens": 1024},
+            "stop": ["END"],
+        }
+    )
 
 
 def test_delete_removes_the_keychain_entry(fake_keyring: InMemoryKeyring) -> None:

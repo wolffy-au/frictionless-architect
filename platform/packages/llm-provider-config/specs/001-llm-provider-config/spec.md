@@ -124,6 +124,7 @@ A subsystem developer adds the settings page and its API to their own applicatio
 - **FR-014**: The system MUST offer a mountable settings page and JSON API, under a host-chosen path, that edits the default, overrides and keys and lists only the components the host declares.
 - **FR-015**: The system MUST offer a connection test that returns success or a readable failure message and never raises to the caller.
 - **FR-016**: The system MUST NOT authenticate callers (single-user local MVP, ADR-0024); documentation MUST state that the page is to be bound to localhost.
+- **FR-017**: The system MUST refuse call parameters that carry a credential or a secret reference, when settings are saved through the API and again before they are used.
 
 ### Key Entities
 

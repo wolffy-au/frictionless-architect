@@ -27,7 +27,7 @@ litellm.completion(messages=[...], **call.completion_kwargs())
 - **Keys** come from the OS keychain (`set_api_key`). Where there is no keychain
   backend, or no entry, the provider's environment variable (`OPENAI_API_KEY`,
   `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) is used as a plaintext escape hatch, with a
-  logged warning. Ollama needs no key. GitHub Copilot (`github_copilot/<model>`) needs none either: litellm runs GitHub's device-flow sign-in on first use and caches the token under `~/.config/litellm/github_copilot/`, so sign in once from a terminal before using it from the UI.
+  logged warning. `params` may not carry a credential or an `os.environ/...` reference. Ollama needs no key. GitHub Copilot (`github_copilot/<model>`) needs none either: litellm runs GitHub's device-flow sign-in on first use and caches the token under `~/.config/litellm/github_copilot/`, so sign in once from a terminal before using it from the UI.
 
 ### Settings page
 
@@ -49,8 +49,8 @@ The JSON API, relative to the prefix (`/settings/llm` by default):
 |---|---|---|
 | `GET` | `` (empty) | The settings page (HTML) |
 | `GET` | `/state` | Config path, providers (`needs_key`, `env_var`), global default and each component's override, with the `key_source` of each |
-| `PUT` | `/default` | Save the global default provider settings |
-| `PUT` | `/components/{component_id}` | Save a per-component override; `404` for an unknown component |
+| `PUT` | `/default` | Save the global default provider settings; `422` for a credential or `os.environ/...` reference in `params` |
+| `PUT` | `/components/{component_id}` | Save a per-component override; `404` for an unknown component, `422` as for `/default` |
 | `DELETE` | `/components/{component_id}` | Remove the override so the component inherits the default; `404` if unknown |
 | `PUT` | `/keys/{provider}` | Store an API key in the OS keychain; `422` for keyless providers or an `os.environ/...` reference, `503` without a keychain |
 | `DELETE` | `/keys/{provider}` | Remove the stored key; `404` if there is none |

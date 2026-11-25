@@ -12,7 +12,7 @@
 - **Description:** Provider, model, and call parameters for one configuration slot
   (either the global default or one component's override). Never holds a secret.
 - **Fields:** `provider` (`Provider`), `model` (string, `min_length=1`), `params` (free-form
-  dict, default `{}`), `api_base` (optional string), `credential_ref` (optional string —
+  dict, default `{}`; no credential or secret reference, FR-017), `api_base` (optional string), `credential_ref` (optional string —
   the keyring entry name; defaults to the provider name when unset).
 - **Validation:** `extra="forbid"` rejects unknown fields (FR-003); `frozen=True` —
   an instance is replaced, not mutated.

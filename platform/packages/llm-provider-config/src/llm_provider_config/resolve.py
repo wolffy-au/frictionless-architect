@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from llm_provider_config.credentials import get_api_key
+from llm_provider_config.credentials import check_params, get_api_key
 from llm_provider_config.settings import LlmSettings, Provider
 from llm_provider_config.store import load_settings
 
@@ -56,8 +56,11 @@ def resolve_call(component: str, settings: LlmSettings | None = None) -> Resolve
     Raises:
         NotConfiguredError: If neither an override nor a global default applies.
         MissingCredentialError: If the provider needs an API key and none is available.
+        InvalidCredentialError: If the key or ``params`` hold a refused credential or
+            secret reference (a subclass of ``MissingCredentialError``).
     """
     chosen = (settings or load_settings()).resolve(component)
+    check_params(chosen.params)
     api_base = chosen.api_base
     if api_base is None and chosen.provider is Provider.OLLAMA:
         api_base = DEFAULT_OLLAMA_API_BASE

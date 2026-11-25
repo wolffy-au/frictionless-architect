@@ -27,7 +27,8 @@ per route. Secrets are never present in any request or response body (FR-005, SC
   `credential_ref`).
 - **Response (200)**: `{"status": "saved"}`.
 - **Errors**: `422` (FastAPI validation) for an unsupported provider, empty model, or
-  unknown field (US1 AC3, FR-003).
+  unknown field (US1 AC3, FR-003), or for a credential or secret reference in `params`
+  (FR-017).
 
 ## PUT /components/{component_id}
 
@@ -35,7 +36,7 @@ per route. Secrets are never present in any request or response body (FR-005, SC
 - **Body**: `ProviderSettings`, same shape as `/default`.
 - **Response (200)**: `{"status": "saved"}`.
 - **Errors**: `404` if `component_id` was not declared to `create_settings_router`
-  (US4 AC3).
+  (US4 AC3); `422` as for `/default`.
 
 ## DELETE /components/{component_id}
 

@@ -54,7 +54,8 @@ ignore:
           the api_key argument to litellm's get_secret (os.environ/NAME references),
           reported up to 1.94.0, no vendor fix known. This is SDK code, not proxy-only.
           Mitigated in first-party code: llm-provider-config refuses os.environ/...
-          values as API keys on store and on use (credentials.py), so no user input
-          can reach get_secret as an api_key reference. Re-review on expiry.
+          values as API keys, and credentials or os.environ/... values in call
+          params, on store and on use (credentials.py), so no user input can reach
+          get_secret as an api_key reference. Re-review on expiry.
         expires: 2026-11-30T00:00:00.000Z
         created: 2026-10-31T00:00:00.000Z

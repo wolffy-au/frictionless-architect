@@ -77,6 +77,17 @@ def test_unconfigured_component_raises() -> None:
         resolve_call("c", settings)
 
 
+@pytest.mark.parametrize("provider", [Provider.OLLAMA, Provider.GITHUB_COPILOT])
+def test_keyless_provider_cannot_be_given_a_key_through_params(provider: Provider) -> None:
+    """CVE-2026-108575: with no key of its own to overwrite it, `params.api_key` would reach litellm."""
+    settings = LlmSettings(
+        default=ProviderSettings(provider=provider, model="m", params={"api_key": "os.environ/HOME"})
+    )
+
+    with pytest.raises(MissingCredentialError, match="params"):
+        resolve_call("c", settings)
+
+
 @pytest.mark.usefixtures("no_keyring")
 def test_missing_credential_surfaces() -> None:
     settings = LlmSettings(default=ProviderSettings(provider=Provider.OPENAI, model="gpt-4o"))

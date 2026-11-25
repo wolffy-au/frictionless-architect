@@ -23,6 +23,7 @@ from llm_provider_config.credentials import (
     ENV_VARS,
     InvalidCredentialError,
     MissingCredentialError,
+    check_params,
     delete_api_key,
     key_source,
     set_api_key,
@@ -76,6 +77,16 @@ def _require_component(known: dict[str, Component], component_id: str) -> None:
         raise HTTPException(status_code=404, detail=f"Unknown component {component_id!r}.")
 
 
+def _require_safe_params(settings: ProviderSettings) -> None:
+    try:
+        check_params(settings.params)
+    except InvalidCredentialError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+_REFUSED_PARAMS = "params carry a credential or a secret reference."
+
+
 def _settings_routes(router: APIRouter, components: Sequence[Component], known: dict[str, Component]) -> None:
     @router.get("/state")
     def state() -> dict[str, Any]:
@@ -102,17 +113,22 @@ def _settings_routes(router: APIRouter, components: Sequence[Component], known: 
             ],
         }
 
-    @router.put("/default")
+    @router.put("/default", responses={422: {"description": _REFUSED_PARAMS}})
     def put_default(body: ProviderSettings) -> dict[str, str]:
-        """Save the global default provider settings."""
+        """Save the global default provider settings (422 for a credential in ``params``)."""
+        _require_safe_params(body)
         settings = load_settings()
         save_settings(LlmSettings(default=body, components=settings.components))
         return {"status": "saved"}
 
-    @router.put("/components/{component_id}", responses={404: {"description": "Unknown component."}})
+    @router.put(
+        "/components/{component_id}",
+        responses={404: {"description": "Unknown component."}, 422: {"description": _REFUSED_PARAMS}},
+    )
     def put_override(component_id: str, body: ProviderSettings) -> dict[str, str]:
-        """Save a per-component override (404 for an unknown component)."""
+        """Save a per-component override (404 unknown component, 422 credential in ``params``)."""
         _require_component(known, component_id)
+        _require_safe_params(body)
         settings = load_settings()
         save_settings(LlmSettings(default=settings.default, components={**settings.components, component_id: body}))
         return {"status": "saved"}
@@ -188,6 +204,12 @@ def _test_route(router: APIRouter, known: dict[str, Component]) -> None:
             return {
                 "ok": False,
                 "message": f"No LLM provider is configured for {target!r} and there is no global default.",
+            }
+        except InvalidCredentialError:
+            return {
+                "ok": False,
+                "message": "Refused: the API key or params hold a secret reference or credential. "
+                "Remove it from params, or store a literal key.",
             }
         except MissingCredentialError:
             return {
