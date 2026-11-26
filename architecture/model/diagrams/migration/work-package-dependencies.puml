@@ -84,7 +84,7 @@ Implementation_WorkPackage(e_id3957ac79b8315e, " --GH-65 Model the packaging and
 Implementation_WorkPackage(e_id6440e8a7ae7655, " --GH-55 Model the technology layer: packages as Artifacts and an Implementation & Deployment view--")
 Implementation_WorkPackage(e_id7f85f2f6ae6c5b, " --GH-20 model: wire GH #7 bfn-* into outcome-realization; formalize per-view relationship suppression--")
 Implementation_WorkPackage(e_id3edadaa5212b59, " --GH-24 OSCAL spec-alignment review--")
-Implementation_WorkPackage(e_id5e8885cf97065f, "GH-126 perf(scripts): cut redundant work in pre_merge_checks.sh/platform_checks.sh")
+Implementation_WorkPackage(e_id5e8885cf97065f, " --GH-126 perf(scripts): cut redundant work in pre_merge_checks.sh/platform_checks.sh--")
 Implementation_WorkPackage(e_id3e99ac1ff48453, " --GH-107 Re-home specs/ to two-tier scheme (ADR-0004, migration step 6)--")
 Implementation_WorkPackage(e_id376701595fe15e, " --GH-117 refactor(model): scope type-wide views by include_types + exclude_elements--")
 Implementation_WorkPackage(e_ide9791d510f1f5a, " --GH-130 refactor(model): split Goal/Outcome motivation chain and restore stakeholder traceability--")

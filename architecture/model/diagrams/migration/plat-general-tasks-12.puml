@@ -8,7 +8,7 @@ Implementation_Deliverable(e_id7459347e16955e, "v0.12.0")
 Implementation_Plateau(e_id22bf5f935a2e57, "general-tasks")
 Implementation_WorkPackage(e_ida0b8100bd68356, "GH-9 CI: add multi-OS test matrix")
 Implementation_WorkPackage(e_id7b8c620c6e8b57, " --GH-120 feat(portal): add a portal host package that composes package UIs--")
-Implementation_WorkPackage(e_id5e8885cf97065f, "GH-126 perf(scripts): cut redundant work in pre_merge_checks.sh/platform_checks.sh")
+Implementation_WorkPackage(e_id5e8885cf97065f, " --GH-126 perf(scripts): cut redundant work in pre_merge_checks.sh/platform_checks.sh--")
 Implementation_WorkPackage(e_id0c73670e085f56, " --GH-119 test(ui): establish Playwright browser tests for the HTML UIs--")
 Implementation_WorkPackage(e_id6a4e8fab15d05d, "GH-213 Tighten dev-workflow gates: merge strategy, branch protection, fast/deep gate split, cache sharing")
 
